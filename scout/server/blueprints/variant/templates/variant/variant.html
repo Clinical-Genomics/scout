@@ -5,7 +5,7 @@
 {% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel, custom_annotations %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
-{% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
+{% from "variant/variant_details.html" import conservations, frequencies, gtcall_panel, mappability, observations_panel, old_observations, severity_list, str_db_card %}
 {% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
@@ -90,11 +90,15 @@
         {{ panel_summary() }}
       </div>
       <div class="col-lg-4">
-        {{ frequencies(variant) }}
-        {% if config['LOQUSDB_SETTINGS'] %}
-          {{ observations_panel(variant, observations, case) }}
+        {% if str %}
+          {{ str_db_card(variant) }}
+        {% else %}
+          {{ frequencies(variant) }}
+          {% if config['LOQUSDB_SETTINGS'] %}
+            {{ observations_panel(variant, observations, case) }}
+          {% endif %}
+          {{  old_observations(variant) }}
         {% endif %}
-        {{  old_observations(variant) }}
       </div>
     </div>
     <div class="row">
@@ -227,8 +231,8 @@
           <tr>
             <td>
               Position:
-	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
-             <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}" title="Copy to clipboard">
+	            <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+              <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}" title="Copy to clipboard">
               </button>
             </td>
             <td {% if not mei %}colspan="3"{% endif %}>
@@ -282,13 +286,12 @@
               </strong></span>
             </td>
           </tr>
-
         </tbody>
       </table>
       <table class="table table-bordered table-fixed table-sm">
         <tbody class="border-top">
           <tr>
-            <td>
+            <td {% if str %}colspan="2"{% endif %}>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
                 <span class="badge bg-success float-end">Yes</span>
@@ -296,12 +299,14 @@
                 <div class="badge bg-warning float-end">No</div>
               {% endif %}
             </td>
-            <td>
-              Frequency
-              <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-end">
-                {{ variant.frequency }}
-              </div>
-            </td>
+            {% if not str %}
+              <td>
+                Frequency
+                <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-end">
+                  {{ variant.frequency }}
+                </div>
+              </td>
+            {% endif %}
           </tr>
         </tbody>
       </table>
