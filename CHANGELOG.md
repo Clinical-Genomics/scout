@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Added
+### Added
 - Tooltip for combined score in tables for compounds and overlapping vars
 - Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
 - STR variant information card with database links, replacing empty frequency panel
@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
+- Fusion variants in case report now contain same info as on fusion variantS page
+### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 
 ## [4.81]
