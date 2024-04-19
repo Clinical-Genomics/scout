@@ -1,3 +1,5 @@
+{% from "cases/chanjo2_form.html" import chanjo2_report_form %}
+
 {% macro genepanels_table(case, institute) %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
@@ -211,17 +213,8 @@
             {% endif %}
 
             {% if case.chanjo2_coverage %}
-              <a class="btn btn-secondary btn-sm text-white"
-                href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
-                                 case_name=case.display_name, panel_name='HPO Panel', report_type='report') }}" target="_blank" rel="noopener">
-                  Coverage report (Chanjo2)
-              </a>
-
-              <a class="btn btn-secondary btn-sm text-white"
-                href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
-                                 case_name=case.display_name, panel_name='HPO Panel', report_type='overview') }}" target="_blank" rel="noopener">
-                  Coverage overview (Chanjo2)
-              </a>
+              {{ chanjo2_report_form(institute, case, "HPO Panel", 'report', case.dynamic_gene_list|map(attribute='hgnc_id')|join(',')) }} <!--chanjo2 report-->
+              {{ chanjo2_report_form(institute, case, "HPO Panel", 'overview', case.dynamic_gene_list|map(attribute='hgnc_id')|join(',')) }} <!--chanjo2 genes overview -->
             {% endif %}
 
           </div>
