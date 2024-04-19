@@ -1,3 +1,4 @@
+{% from "cases/chanjo2_form.html" import chanjo2_report_form %}
 {% extends "layout.html" %}
 
 {% block title %}
@@ -106,15 +107,15 @@
       {% if case and case.chanjo2_coverage %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report (chanjo2)</label>
-          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id, report_type='report') }}" target="_blank" rel="noopener">
-            {{ case.display_name }}
-          </a>
+          <span class="float-end">
+          {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'report', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 report-->
+          </span>
         </li>
         <li class="list-group-item">
           <label for="coverage_report">Coverage overview (chanjo2)</label>
-          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id, report_type='overview') }}" target="_blank" rel="noopener">
-            {{ case.display_name }}
-          </a>
+          <span class="float-end">
+          {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'overview', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 genes overview -->
+          </span>
         </li>
       {% endif %}
       <li class="list-group-item">

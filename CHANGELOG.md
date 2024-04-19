@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated IGV.js to 2.15.11
 - Fusion variants in case report now contain same info as on fusion variantS page
 ### Fixed
+- Submit requests to Chanjo2 using HTML forms instead of JSON data
 
 ## [4.81]
 ### Added
