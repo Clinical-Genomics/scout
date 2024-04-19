@@ -24,9 +24,9 @@
   {% endfor %}
 
   {% if "wes" in analysis_types %}
-    {% set interval_type = "transcripts" %}
-  {% elif "wts" in analysis_types %}
     {% set interval_type = "exons" %}
+  {% elif "wts" in analysis_types %}
+    {% set interval_type = "transcripts" %}
   {% endif %}
 
   <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener">
