@@ -4,8 +4,8 @@
   {% set form_action = config.CHANJO2_URL+"/"+report_type %}
   {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
   {% set default_level = institute_obj.coverage_cutoff %}
-  {% set interval_type = "genes" %}
-  {% set samples = [] %} <!-- wgs analysis as default -->
+  {% set interval_type = "genes" %} <!-- wgs analysis as default -->
+  {% set samples = [] %}
   {% set analysis_types = [] %}
 
   <!-- set sample dictionaries -->
