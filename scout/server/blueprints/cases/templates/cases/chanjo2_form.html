@@ -1,0 +1,47 @@
+{% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type, hgnc_ids, link_text) %}
+
+  {% set form_name = "chanjo2_"+panel_name+"_"+report_type %}
+  {% set form_action = config.CHANJO2_URL+"/"+report_type %}
+  {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
+  {% set default_level = institute_obj.coverage_cutoff %}
+  {% set interval_type = "genes" %} <!-- wgs analysis as default -->
+  {% set samples = [] %}
+  {% set analysis_types = [] %}
+
+  <!-- set sample dictionaries -->
+
+  {% for ind in case_obj.individuals %}
+    {% if ind.d4_file %}
+      {% set sample = {
+        "name" : ind.display_name,
+        "coverage_file_path" : ind.d4_file,
+        "case_name" : case_obj.display_name,
+        "analysis_date" : case_obj.analysis_date.strftime("%FT%T.%f")[:-3] ~ "Z" }
+      %}
+      {% do samples.append( sample ) %}
+      {% do analysis_types.append( ind.analysis_type ) %}
+    {% endif %}
+  {% endfor %}
+
+  {% if "wes" in analysis_types %}
+    {% set interval_type = "exons" %}
+  {% elif "wts" in analysis_types %}
+    {% set interval_type = "transcripts" %}
+  {% endif %}
+
+  <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener">
+    <input type="hidden" id="build" name="build" value="{{build}}">
+    <input type="hidden" id="default_level" name="default_level" value="{{default_level}}">
+    <input type="hidden" id="interval_type" name="interval_type" value="{{interval_type}}">
+    <input type="hidden" id="panel_name" name="panel_name" value="{{panel_name}}">
+    <input type="hidden" id="case_display_name" name="case_display_name" value="{{case_obj.display_name}}">
+    <input type="hidden" id="hgnc_gene_ids" name="hgnc_gene_ids" value={{hgnc_ids}}>
+    <input type="hidden" id="samples" name="samples" value="{{samples|safe}}">
+    {% if panel_name == "HPO Panel" %}
+      <button type="submit" class="btn btn-secondary btn-sm text-white"> Coverage {{report_type}} (Chanjo2) </button>
+    {% else %}
+      <a class="link-primary" onclick="this.closest('form').submit();return false;">{{link_text}}</a>
+    {% endif %}
+  </form>
+
+{% endmacro %}
