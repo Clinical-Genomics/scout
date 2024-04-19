@@ -105,37 +105,88 @@
   </div>
 {% endmacro %}
 
+{% macro str_db_card(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">STR locus details</div>
+    <div class="card-body">
+      <table class="table" aria-label="STR locus details">
+        <thead class="thead table-light">
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
+            <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
+            {% set str_mc = variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int %}
+            {% if variant.str_status == 'full_mutation' %}
+              <tr class="bg-danger">
+            {% elif variant.str_status == 'pre_mutation' %}
+              <tr class="bg-warning">
+            {% else %}
+              <tr>
+	          {% endif %}
+              <td>Motif copies</td><td>{{ str_mc }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
+            </tr>
+            <tr><td colspan=2>&nbsp;</td></tr>
+            {% if variant.str_swegen_mean %}
+              <tr><td>SweGen Z-score</td><td>
+              {{ ((str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+              </td></tr>
+              <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
+              <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>
+              <tr><td colspan=2>&nbsp;</td></tr>
+            {% endif %}
+            {% for gene in variant.genes %}
+              {% if gene.stripy_link %}
+                <tr><td>
+                  <a href="{{ gene.str_gnomad_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">gnomAD</a>
+                </td><td>{{ gene.hgnc_symbol }}</td></tr>
+              {% endif %}
+              {% if gene.stripy_link %}
+                <tr><td>
+                  <a href="{{ gene.stripy_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">STRipy</a>
+                </td><td>{{ gene.hgnc_symbol }}</td></tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro frequencies(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">Frequencies</div>
     <div class="card-body">
       <table class="table">
-        <thead class="thead table-light">
-          <tr>
-            <th scope="col">Source</th>
-            <th scope="col">Frequency</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for freq_name, value, link in variant.frequencies %}
-          <tr>
-            <td>
-              {% if link %}
-                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
-              {% else %}
-                {{ freq_name }}
-              {% endif %}
-            </td>
-            <td>
-              {% if value %}
-                <span class="badge bg-secondary">{{ value|human_decimal }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
+          <thead class="thead table-light">
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for freq_name, value, link in variant.frequencies %}
+              <tr>
+                <td>
+                  {% if link %}
+                    <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
+                  {% else %}
+                    {{ freq_name }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if value %}
+                    <span class="badge bg-secondary">{{ value|human_decimal }}</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
       </table>
     </div>
   </div>
