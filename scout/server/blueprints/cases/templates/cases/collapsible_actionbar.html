@@ -1,3 +1,5 @@
+{% from "cases/chanjo2_form.html" import chanjo2_report_form %}
+
 {% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
@@ -88,9 +90,7 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed">Coverage (chanjo2)</span>
-          <a href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=case.panel_names|join(', '), report_type='report') }}" target="_blank" rel="noopener">
-            <span class="fa fa-link"></span>
-          </a>
+          {{ chanjo2_report_form(institute, case, case.panel_names|join(', '), 'report', case.default_genes|join(','), "<span class='fa fa-link'></span>"|safe ) }} <!--chanjo2 report-->
         </div>
       </div>
     {% endif %}
