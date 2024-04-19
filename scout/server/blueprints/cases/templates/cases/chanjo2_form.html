@@ -5,7 +5,7 @@
   {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
   {% set default_level = institute_obj.coverage_cutoff %}
   {% set interval_type = "genes" %}
-  {% set samples = [] %}
+  {% set samples = [] %} <!-- wgs analysis as default -->
   {% set analysis_types = [] %}
 
   <!-- set sample dictionaries -->
