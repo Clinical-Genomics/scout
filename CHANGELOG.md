@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## Added
 - Tooltip for combined score in tables for compounds and overlapping vars
 - Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
+- STR variant information card with database links, replacing empty frequency panel
 - Parse TRGT STR VCF
 ### Changed
 - In the case_report #panel-tables has a fixed width
