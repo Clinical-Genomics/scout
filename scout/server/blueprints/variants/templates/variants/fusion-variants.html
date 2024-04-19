@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import fusion_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, fusion_variant_gene_symbols_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, fusion_variant_gene_symbols_cell, fusion_variants_header, default_fusion_variant_cells %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Fusion variants
@@ -54,24 +54,7 @@ onsubmit="return validateForm()">
 
     <div class="card mt-3">
       <table id="variantsTable" class="table table-hover table-bordered" aria-label="Fusion variants table">
-        <thead class="table-light thead">
-          <tr>
-            <th style="width:3%"></th>
-            <th style="width:4%" title="Beta version. Currently testing">Rank (beta)</th>
-            <th style="width:6%" title="Genes">Fusion Genes</th>
-            <th style="width:4%" title="Number of callers detecting a given event">Callers</th>
-            <th style="width:4%" title="Observed database matches">Observed</th>
-            <th style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
-            <th style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
-            <th style="width:6%" title="Number of split reads that support the event">Split Reads</th>
-            <th style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
-            <th style="width:8%" title="Frame status of the fusion">Frame Status</th>
-            <th style="width:8%" title="Transcript ID">Transcript ID</th>
-            <th style="width:4%" title="Exon Number">Exon Number</th>
-            <th style="width:4%" title="Breakpoints">Breakpoints</th>
-            <th style="width:4%" title="Orientation">Orientation</th>
-          </tr>
-        </thead>
+        {{ fusion_variants_header() }}
         <tbody>
           {% for variant in variants %}
             {{ variant_row(variant) }}
@@ -103,37 +86,7 @@ onsubmit="return validateForm()">
     <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td>
-      {{ fusion_variant_gene_symbols_cell(variant) }}
-    </td>
-    <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
-      {{ variant.tool_hits|int }}</span></td>
-    <td>{{variant.found_db|join(", ") if variant.found_db else "-"}}</td>
-    <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
-    <td>{{ variant.samples[0].read_depth }}</td>
-    <td>{{ variant.samples[0].split_read }}</td>
-    <td>{{ variant.samples[0].ffpm }}</td>
-    <td>{{ variant.frame_status }}</td>
-    <td>
-      {% if variant.genes %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
-            <div>{{ transcript.transcript_id }} </div>
-          {% endfor %}
-        {% endfor %}
-      {% endif %}
-    </td>
-    <td>
-      {% if variant.genes %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
-            <div>{% if "exon" in transcript %}{{ transcript.exon|int }}{% endif %} </div>
-          {% endfor %}
-        {% endfor %}
-      {% endif %}
-    </td>
-    <td> {{ variant.chromosome }}:{{ variant.position }}  <br> {{ variant.end_chrom }}:{{ variant.end }} </td>
-    <td>{{ variant.orientation }}</td>
+    {{ default_fusion_variant_cells(institute, case, variant) }}
   </tr>
 {% endmacro %}
 
