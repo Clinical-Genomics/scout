@@ -23,6 +23,61 @@
   </div>
 {% endmacro %}
 
+{% macro fusion_variants_header() %}
+  <thead class="table-light">
+    <tr>
+      <th id="checkbox" style="width:1%"></th>
+      <th id="rank" style="width:3%;" title="Beta version. Currently testing" class="text-left">Rank (beta)</th>
+      <th id="genes" style="width:6%" title="Genes">Fusion Genes</th>
+      <th id="callers" style="width:4%" title="Number of callers detecting a given event">Callers</th>
+      <th id="observed" style="width:4%" title="Observed database matches">Observed</th>
+      <th id="score" style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
+      <th id="junction_reads" style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
+      <th id="split_reads" style="width:6%" title="Number of split reads that support the event">Split Reads</th>
+      <th id="ffpm" style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
+      <th id="frame_status" style="width:8%" title="Frame status of the fusion">Frame Status</th>
+      <th id="transcripts" style="width:8%" title="Transcript ID">Transcript ID</th>
+      <th id="exons" style="width:4%" title="Exon Number">Exon Number</th>
+      <th id="brealpoints" style="width:4%" title="Breakpoints">Breakpoints</th>
+      <th id="oriantation" style="width:4%" title="Orientation">Orientation</th>
+    </tr>
+  </thead>
+{% endmacro %}
+
+{% macro default_fusion_variant_cells(institute, case, variant) %}
+  <td>
+    {{ fusion_variant_gene_symbols_cell(variant) }}
+  </td>
+  <td class="text-center"><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
+    {{ variant.tool_hits|int }}</span></td>
+  <td>{{variant.found_db|join(", ") if variant.found_db else "-"}}</td>
+  <td class="text-center">{{ variant.fusion_score|float|round(3) }}</td>
+  <td class="text-center">{{ variant.samples[0].read_depth }}</td>
+  <td class="text-center">{{ variant.samples[0].split_read }}</td>
+  <td class="text-center">{{ variant.samples[0].ffpm }}</td>
+  <td>{{ variant.frame_status }}</td>
+  <td>
+    {% if variant.genes %}
+      {% for gene in variant.genes %}
+        {% for transcript in gene.transcripts %}
+          <div>{{ transcript.transcript_id }} </div>
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+  </td>
+  <td>
+    {% if variant.genes %}
+      {% for gene in variant.genes %}
+        {% for transcript in gene.transcripts %}
+          <div>{% if "exon" in transcript %}{{ transcript.exon|int }}{% endif %} </div>
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+  </td>
+  <td> {{ variant.chromosome }}:{{ variant.position }}  <br> {{ variant.end_chrom }}:{{ variant.end }} </td>
+  <td class="text-center">{{ variant.orientation }}</td>
+{% endmacro %}
+
 {% macro fusion_variant_gene_symbols_cell(variant) %}
 <div class="align-items-center">
   {% if variant.genes %}
