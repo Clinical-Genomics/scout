@@ -92,8 +92,7 @@
             <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td class="str-link">{{ str_locus_info(variant) }}</td>
 	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru or variant.reference }}</td>
-            {% set alt_size = variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int  %}
-            <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ alt_size }}</span></b></td>
+            <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc }}</span></b></td>
             <td class="text-end">{{ variant.str_ref }}</td  >
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
@@ -188,8 +187,7 @@
       <tr><td colspan=2>&nbsp;</td></tr>
       {% if variant.str_swegen_mean %}
         <tr><td>SweGen Z-score</td><td>
-          {% set alt_size = variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int  %}
-          {{ ((alt_size - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+          {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
         </td></tr>
         <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
         <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>

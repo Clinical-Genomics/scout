@@ -1173,7 +1173,7 @@
           <tr class="bg-warning">
         {% endif %}
           <td><span class="badge bg-info">{{variant.category | upper}}</span></td>
-          <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+          <td>{{ variant.str_mc }}</td>
           <td>{{ variant.str_ref }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}

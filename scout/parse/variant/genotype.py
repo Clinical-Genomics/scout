@@ -105,6 +105,8 @@ def parse_genotype(variant, ind, pos):
 
     # TRGT long read STR specific
     (mc_ref, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
+    gt_call["alt_mc"] = mc_alt
+
     (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
     (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
     (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
