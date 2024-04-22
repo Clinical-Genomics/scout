@@ -21,7 +21,7 @@
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header">HPO terms</div>
+        <div class="card-header">Number of HPO terms present in the database:{{phenotypes|length}}</div>
         <div class="card-body">
           {% if phenotypes|length == 0 %}
             The search didn't return any phenotype term
@@ -54,7 +54,8 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $('#phenotypes_table').DataTable( {
-          paging: false,
+          paging: true,
+          pageLength: 50,
           dom: 'fBrtip',
           buttons: [
             {
