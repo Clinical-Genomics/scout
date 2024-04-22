@@ -24,10 +24,10 @@ To enable a Scout case to display links to Chanjo2 pages such as gene coverage r
 
 Prior to loading a case into Scout, it's essential to create .d4 files. Instructions on how to generate these files using the d4tools software can be found in the [software's documentation][d4tools_create].
 
-The path to the .d4 files should be provided in the .yaml Scout load config, as outlined in the [scout documentation](loading-case.md).
+The path to the .d4 files should be provided in the .yaml Scout load config, as outlined in the [scout documentation](load-config.md).
 
 
-## Chanjo coverage integration
+## Chanjo coverage integration (soon deprecated)
 
 Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo].
 To do so it is necessary to install the python package [Chanjo][chanjo] and its report visualization app, [chanjo-report][chanjo-report].
