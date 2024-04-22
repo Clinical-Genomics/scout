@@ -34,7 +34,7 @@ To do so it is necessary to install the python package [Chanjo][chanjo] and its 
 
 Both these programs require a database to store samples names, transcript specifications and statistics relative to the trascript coverage for all samples. Note that chanjo can be used as a standalone but chanjo-report needs to have access to the data produced by chanjo to generate coverage reports. **Scout does not require chanjo installed in the path to visualize coverage reports, but it is necessary to install chanjo-report and set up the connection to a database containing coverage data in order to use this fuctionality**.
 
-### Chanjo database ##
+### Chanjo database
 Chanjo-report (and chanjo) work with MySQL and SQLite databases. This guide explains how to set up a MySQL database since this database is the one used in production at Clinical Genomics. For a guide on how to install MySQL on your server click [here](https://dev.mysql.com/doc/mysql-getting-started/en/). <br>
 Once the database and the administrator user and password are configured, you can create the new database to contain the chanjo structures. To do so, from a terminal type:
 
@@ -91,7 +91,7 @@ Chanjo database consists of 3 tables:
 | transcript_id     | varchar(32) | NO   | MUL | NULL    |&nbsp;          |
 
 
-### chanjo-report ##
+### chanjo-report
 
 This package might be downloaded and installed via `git clone` and using `pip install` command (instructions [here](https://github.com/robinandeer/chanjo-report)), but perhaps the easiest way to make sure that it will serve pages once the app is invoked by scout is to install it with this command:
 ```bash
@@ -103,7 +103,7 @@ Note that chanjo-report requires the package pymysql if it will be connecting to
 pip install pymysql
 ```
 
-### Enabling the chanjo coverage integration in scout ##
+### Enabling the chanjo coverage integration in scout
 In order to enable the support for the coverage report visualization in scout the configuration file named `config.py` under `scout/server` must be modified to include the following line:
 <pre>
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://username:password@host:port/chanjo4_demo'
