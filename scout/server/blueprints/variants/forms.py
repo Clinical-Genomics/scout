@@ -203,6 +203,13 @@ class SvFiltersForm(VariantFiltersForm):
     swegen = IntegerField("SweGen obs")
     clinical_filter = SubmitField(label="Clinical filter")
 
+    local_obs_cancer_somatic_old = IntegerField(
+        "Local somatic obs. (archive)", validators=[validators.Optional()]
+    )
+    local_obs_cancer_germline_old = IntegerField(
+        "Local germile obs. (archive)", validators=[validators.Optional()]
+    )
+
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE_SV
 

@@ -842,27 +842,35 @@
     </div>
     <div id="chromosome_search">
       <div class="row" style="margin-top:20px;">
-        <div class="col-1">
+        <div class="col">
          {{ form.gnomad_frequency.label(class="control-label") }}
          {{ form.gnomad_frequency(class="form-control") }}
         </div>
-        <div class="col-1">
-          {{ wtf.form_field(form.local_obs_old) }}
-        </div>
-        <div class="col-2">
+        {% if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
+          <div class="col">
+            {{ wtf.form_field(form.local_obs_old) }}
+          </div>
+          <div class="col">
+            {{ wtf.form_field(form.local_obs_cancer_somatic_old) }}
+          </div>
+          <div class="col">
+            {{ wtf.form_field(form.local_obs_cancer_germline_old) }}
+          </div>
+        {% endif %}
+        <div class="col">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
         </div>
-        <div class="col-2">
+        <div class="col">
           {{ wtf.form_field(form.start) }}
         </div>
-        <div class="col-2">
+        <div class="col">
           {{ wtf.form_field(form.end) }}
         </div>
-        <div class="col-2">
+        <div class="col">
           {{ wtf.form_field(form.cytoband_start) }}
         </div>
-        <div class="col-2">
+        <div class="col">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
       </div>
