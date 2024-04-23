@@ -55,7 +55,14 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro archived_observation_cancer_filters(form) %}
+{% macro archived_observations_filter(form) %}
+  {% if if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
+    {{ form.local_obs_old.label(class="control-label") }}
+    {{ form.local_obs_old(class="form-control") }}
+  {% endif %}
+{% endmacro %}
+
+{% macro archived_observations_cancer_filters(form) %}
   {% if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
     <div class="col">
       {{ wtf.form_field(form.local_obs_old) }}
@@ -303,8 +310,7 @@
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
         <div class="col-4">
-          {{ form.local_obs_old.label(class="control-label") }}
-          {{ form.local_obs_old(class="form-control") }}
+          {{ archived_observations_filter(form) }}
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
@@ -404,8 +410,7 @@
           {{ form.swegen_freq(class="form-control") }}
          </div>
         <div class="col-4">
-          {{ form.local_obs_old.label(class="control-label") }}
-          {{ form.local_obs_old(class="form-control") }}
+          {{ archived_observations_filter(form) }}
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
@@ -583,8 +588,7 @@
   <div class="col-6">
     <div class="row">
       <div class="col-3">
-        {{ form.local_obs_old.label(class="control-label") }}
-        {{ form.local_obs_old(class="form-control") }}
+        {{ archived_observations_filter(form) }}
       </div>
       <div class="col-3">
          {{ form.clingen_ngi.label(class="control-label") }}
@@ -726,7 +730,7 @@
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
-        {{ archived_observation_cancer_filters(form) }}
+        {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
@@ -850,7 +854,7 @@
          {{ form.gnomad_frequency.label(class="control-label") }}
          {{ form.gnomad_frequency(class="form-control") }}
         </div>
-        {{ archived_observation_cancer_filters(form) }}
+        {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
