@@ -56,7 +56,7 @@
 {% endmacro %}
 
 {% macro archived_observations_filter(form) %}
-  {% if if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
+  {% if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
     {{ form.local_obs_old.label(class="control-label") }}
     {{ form.local_obs_old(class="form-control") }}
   {% endif %}
