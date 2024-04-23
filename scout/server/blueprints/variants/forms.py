@@ -112,7 +112,7 @@ class VariantFiltersForm(FlaskForm):
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
 
     gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
-    local_obs = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
+    local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
@@ -166,8 +166,12 @@ class CancerFiltersForm(VariantFiltersForm):
     clinvar_tag = BooleanField("ClinVar hits")
     cosmic_tag = BooleanField("Cosmic hits")
     mvl_tag = BooleanField("Managed Variants hits")
-    local_somatic_obs = IntegerField("Local somatic obs. (archive)", validators=[validators.Optional()])
-    local_germline_obs = IntegerField("Local germline obs. (archive)", validators=[validators.Optional()])
+    local_obs_cancer_somatic_old = IntegerField(
+        "Local somatic obs. (archive)", validators=[validators.Optional()]
+    )
+    local_obs_cancer_germline_old = IntegerField(
+        "Local germline obs. (archive)", validators=[validators.Optional()]
+    )
 
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE_CANCER

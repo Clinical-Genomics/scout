@@ -289,8 +289,8 @@
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
         <div class="col-4">
-          {{ form.local_obs.label(class="control-label") }}
-          {{ form.local_obs(class="form-control") }}
+          {{ form.local_obs_old.label(class="control-label") }}
+          {{ form.local_obs_old(class="form-control") }}
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
@@ -390,8 +390,8 @@
           {{ form.swegen_freq(class="form-control") }}
          </div>
         <div class="col-4">
-          {{ form.local_obs.label(class="control-label") }}
-          {{ form.local_obs(class="form-control") }}
+          {{ form.local_obs_old.label(class="control-label") }}
+          {{ form.local_obs_old(class="form-control") }}
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
@@ -569,8 +569,8 @@
   <div class="col-6">
     <div class="row">
       <div class="col-3">
-        {{ form.local_obs.label(class="control-label") }}
-        {{ form.local_obs(class="form-control") }}
+        {{ form.local_obs_old.label(class="control-label") }}
+        {{ form.local_obs_old(class="form-control") }}
       </div>
       <div class="col-3">
          {{ form.clingen_ngi.label(class="control-label") }}
@@ -714,13 +714,13 @@
         </div>
         {% if config.SHOW_OBSERVED_VARIANT_ARCHIVE and config.SHOW_OBSERVED_VARIANT_ARCHIVE is true %}
           <div class="col">
-            {{ wtf.form_field(form.local_obs) }}
+            {{ wtf.form_field(form.local_obs_old) }}
           </div>
           <div class="col">
-            {{ wtf.form_field(form.local_somatic_obs) }}
+            {{ wtf.form_field(form.local_obs_cancer_somatic_old) }}
           </div>
           <div class="col">
-            {{ wtf.form_field(form.local_germline_obs) }}
+            {{ wtf.form_field(form.local_obs_cancer_germline_old) }}
           </div>
         {% endif %}
         <div class="col">
@@ -847,7 +847,7 @@
          {{ form.gnomad_frequency(class="form-control") }}
         </div>
         <div class="col-1">
-          {{ wtf.form_field(form.local_obs) }}
+          {{ wtf.form_field(form.local_obs_old) }}
         </div>
         <div class="col-2">
           {{ form.chrom.label(class="control-label") }}
