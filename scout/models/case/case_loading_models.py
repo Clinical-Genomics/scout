@@ -15,7 +15,7 @@ except ImportError:
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from scout.constants import ANALYSIS_TYPES
+from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP
 from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
@@ -58,25 +58,7 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report_research",
 ]
 
-VCF_FILE_PATH_CHECKS = [
-    "vcf_cancer",
-    "vcf_cancer_research",
-    "vcf_cancer_sv",
-    "vcf_cancer_sv_research",
-    "vcf_fusion",
-    "vcf_fusion_research",
-    "vcf_snv",
-    "vcf_snv_mt",
-    "vcf_snv_research",
-    "vcf_snv_research_mt",
-    "vcf_mei",
-    "vcf_mei_research",
-    "vcf_str",
-    "vcf_sv",
-    "vcf_sv_mt",
-    "vcf_sv_research",
-    "vcf_sv_research_mt",
-]
+VCF_FILE_PATH_CHECKS = FILE_TYPE_MAP.keys()
 
 GENOME_BUILDS = ["37", "38"]
 TRACKS = ["rare", "cancer"]
