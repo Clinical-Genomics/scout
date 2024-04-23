@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Block submission of somatic variants to ClinVar, until we don't introduce the changes needed to harmonise with their changed API
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
+- `Research somatic variants` link name on caseS page
 
 ## [4.81]
 ### Added
