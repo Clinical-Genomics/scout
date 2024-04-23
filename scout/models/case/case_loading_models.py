@@ -66,12 +66,16 @@ VCF_FILE_PATH_CHECKS = [
     "vcf_fusion",
     "vcf_fusion_research",
     "vcf_snv",
+    "vcf_snv_mt",
     "vcf_snv_research",
+    "vcf_snv_research_mt",
     "vcf_mei",
     "vcf_mei_research",
     "vcf_str",
     "vcf_sv",
+    "vcf_sv_mt",
     "vcf_sv_research",
+    "vcf_sv_research_mt",
 ]
 
 GENOME_BUILDS = ["37", "38"]
@@ -110,12 +114,16 @@ class VcfFiles(BaseModel):
     vcf_cancer_sv: Optional[str] = None
     vcf_cancer_sv_research: Optional[str] = None
     vcf_snv: Optional[str] = None
+    vcf_snv_mt: Optional[str] = None
     vcf_snv_research: Optional[str] = None
+    vcf_snv_research_mt: Optional[str] = None
     vcf_mei: Optional[str] = None
     vcf_mei_research: Optional[str] = None
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
+    vcf_sv_mt: Optional[str] = None
     vcf_sv_research: Optional[str] = None
+    vcf_sv_research_mt: Optional[str] = None
     vcf_fusion: Optional[str] = None
     vcf_fusion_research: Optional[str] = None
 
