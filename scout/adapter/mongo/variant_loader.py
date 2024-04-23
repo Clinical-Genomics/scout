@@ -611,6 +611,16 @@ class VariantLoader(object):
             is not None
         )
 
+    def _has_variants_in_file(self, variant_file: str) -> bool:
+        """Check if variant file has any variants."""
+        try:
+            vcf_obj = VCF(variant_file)
+            var = next(vcf_obj)
+            return True
+        except StopIteration as err:
+            LOG.warning("Variant file %s does not include any variants", variant_file)
+            return False
+
     def load_variants(
         self,
         case_obj,
@@ -649,7 +659,7 @@ class VariantLoader(object):
 
         nr_inserted = 0
 
-        variant_file = None
+        variant_files = []
         for vcf_file_key in FILE_TYPE_MAP.keys():
             if FILE_TYPE_MAP[vcf_file_key]["variant_type"] != variant_type:
                 continue
@@ -658,85 +668,82 @@ class VariantLoader(object):
 
             LOG.debug("Attempt to load %s %s VCF.", variant_type, category.upper())
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
+            if variant_file:
+                variant_files.append(variant_file)
 
-        if not variant_file:
+        if not variant_files:
             raise SyntaxError(
-                "VCF file {} {} does not seem to exist".format(category, variant_type)
+                "VCF files for {} {} does not seem to exist".format(category, variant_type)
             )
 
-        # Check if there are any variants in file
-        try:
+        for variant_file in variant_files:
+            if not self._has_variants_in_file(variant_file):
+                continue
+
             vcf_obj = VCF(variant_file)
-            var = next(vcf_obj)
-        except StopIteration as err:
-            LOG.warning("Variant file %s does not include any variants", variant_file)
-            return nr_inserted
-        # We need to reload the file
-        vcf_obj = VCF(variant_file)
 
-        # Parse the neccessary headers from vcf file
-        rank_results_header = parse_rank_results_header(vcf_obj)
+            # Parse the necessary headers from vcf file
+            rank_results_header = parse_rank_results_header(vcf_obj)
 
-        local_archive_info = parse_local_archive_header(vcf_obj)
+            local_archive_info = parse_local_archive_header(vcf_obj)
 
-        vep_header = parse_vep_header(vcf_obj)
-        if vep_header:
-            LOG.info("Found VEP header %s", "|".join(vep_header))
+            vep_header = parse_vep_header(vcf_obj)
+            if vep_header:
+                LOG.info("Found VEP header %s", "|".join(vep_header))
 
-        # This is a dictionary to tell where ind are in vcf
-        individual_positions = {}
-        for i, ind in enumerate(vcf_obj.samples):
-            individual_positions[ind] = i
+            # This is a dictionary to tell where ind are in vcf
+            individual_positions = {ind: i for i, ind in enumerate(vcf_obj.samples)}
 
-        # Dictionary for cancer analysis
-        sample_info = {}
-        if category in ("cancer", "cancer_sv"):
-            for ind in case_obj["individuals"]:
-                if ind["phenotype"] == 2:
-                    sample_info[ind["individual_id"]] = "case"
-                else:
-                    sample_info[ind["individual_id"]] = "control"
+            # Dictionary for cancer analysis
+            sample_info = {}
+            if category in ("cancer", "cancer_sv"):
+                for ind in case_obj["individuals"]:
+                    if ind["phenotype"] == 2:
+                        sample_info[ind["individual_id"]] = "case"
+                    else:
+                        sample_info[ind["individual_id"]] = "control"
 
-        # Check if a region scould be uploaded
-        region = ""
-        if gene_obj:
-            chrom = gene_obj["chromosome"]
-            # Add same padding as VEP
-            start = max(gene_obj["start"] - 5000, 0)
-            end = gene_obj["end"] + 5000
-        if chrom:
-            # We want to load all variants in the region regardless of rank score
-            rank_threshold = rank_threshold or -1000
-            if not (start and end):
-                raise SyntaxError("Specify chrom start and end")
-            region = "{0}:{1}-{2}".format(chrom, start, end)
-        else:
-            rank_threshold = rank_threshold or 0
+            # Check if a region scould be uploaded
+            region = ""
+            if gene_obj:
+                chrom = gene_obj["chromosome"]
+                # Add same padding as VEP
+                start = max(gene_obj["start"] - 5000, 0)
+                end = gene_obj["end"] + 5000
+            if chrom:
+                # We want to load all variants in the region regardless of rank score
+                rank_threshold = rank_threshold or -1000
+                if not (start and end):
+                    raise SyntaxError("Specify chrom start and end")
+                region = "{0}:{1}-{2}".format(chrom, start, end)
+            else:
+                rank_threshold = rank_threshold or 0
 
-        variants = vcf_obj(region)
+            variants = vcf_obj(region)
 
-        try:
-            nr_inserted = self._load_variants(
-                variants=variants,
-                variant_type=variant_type,
-                case_obj=case_obj,
-                individual_positions=individual_positions,
-                rank_threshold=rank_threshold,
-                institute_id=institute_id,
-                build=build,
-                rank_results_header=rank_results_header,
-                vep_header=vep_header,
-                category=category,
-                sample_info=sample_info,
-                custom_images=custom_images,
-                local_archive_info=local_archive_info,
-            )
-        except Exception as error:
-            LOG.exception("unexpected error")
-            LOG.warning("Deleting inserted variants")
-            self.delete_variants(case_obj["_id"], variant_type)
-            raise error
+            try:
+                nr_inserted = self._load_variants(
+                    variants=variants,
+                    variant_type=variant_type,
+                    case_obj=case_obj,
+                    individual_positions=individual_positions,
+                    rank_threshold=rank_threshold,
+                    institute_id=institute_id,
+                    build=build,
+                    rank_results_header=rank_results_header,
+                    vep_header=vep_header,
+                    category=category,
+                    sample_info=sample_info,
+                    custom_images=custom_images,
+                    local_archive_info=local_archive_info,
+                )
+            except Exception as error:
+                LOG.exception("unexpected error")
+                LOG.warning("Deleting inserted variants")
+                self.delete_variants(case_obj["_id"], variant_type)
+                raise error
 
-        self.update_variant_rank(case_obj, variant_type, category=category)
+        if nr_inserted:
+            self.update_variant_rank(case_obj, variant_type, category=category)
 
         return nr_inserted

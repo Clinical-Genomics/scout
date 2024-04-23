@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, ID_PROJECTION
+from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -884,25 +884,12 @@ class CaseHandler(object):
             )
 
         files = [
-            {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
-            {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
             {
-                "file_name": "vcf_cancer",
-                "variant_type": "clinical",
-                "category": "cancer",
-            },
-            {
-                "file_name": "vcf_cancer_sv",
-                "variant_type": "clinical",
-                "category": "cancer_sv",
-            },
-            {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
-            {"file_name": "vcf_mei", "variant_type": "clinical", "category": "mei"},
-            {
-                "file_name": "vcf_fusion",
-                "variant_type": "clinical",
-                "category": "fusion",
-            },
+                "file_name": file_type,
+                "variant_type": FILE_TYPE_MAP[file_type]["variant_type"],
+                "category": FILE_TYPE_MAP[file_type]["category"],
+            }
+            for file_type in FILE_TYPE_MAP.keys()
         ]
 
         try:
