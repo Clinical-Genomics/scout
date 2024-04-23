@@ -892,6 +892,7 @@ class CaseHandler(object):
             for file_type in FILE_TYPE_MAP.keys()
         ]
 
+        deleted = []
         try:
             for vcf_file in files:
                 # Check if file exists
@@ -902,11 +903,13 @@ class CaseHandler(object):
                 variant_type = vcf_file["variant_type"]
                 category = vcf_file["category"]
                 if update:
-                    self.delete_variants(
-                        case_id=case_obj["_id"],
-                        variant_type=variant_type,
-                        category=category,
-                    )
+                    if (variant_type, category) not in deleted:
+                        self.delete_variants(
+                            case_id=case_obj["_id"],
+                            variant_type=variant_type,
+                            category=category,
+                        )
+                    deleted.append((variant_type, category))
 
                 # add variants
                 self.load_variants(
