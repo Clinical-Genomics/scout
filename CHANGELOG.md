@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
 - Fusion variants in case report now contain same info as on fusion variantS page
+- Block submission of somatic variants to ClinVar, until we don't introduce the changes needed to harmonise with their changed API
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
