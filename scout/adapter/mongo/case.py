@@ -909,7 +909,7 @@ class CaseHandler(object):
                             variant_type=variant_type,
                             category=category,
                         )
-                    deleted.append((variant_type, category))
+                        deleted.append((variant_type, category))
 
                 # add variants
                 self.load_variants(
