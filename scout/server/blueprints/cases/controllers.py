@@ -85,61 +85,6 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
         flash("Could not establish a conection to Phenomizer", "danger")
 
 
-def chanjo2_coverage_report_contents(
-    institute_obj: dict, case_obj: dict, panel_name: str, panel_id: Optional[str], report_type: str
-) -> Optional[str]:
-    """Retrieve the HTML contents of the Chanjo2 coverage report/overview for a case."""
-
-    if panel_id:
-        hgnc_gene_ids: List[int] = store.panel_to_genes(panel_id=panel_id, gene_format="hgnc_id")
-    elif panel_name == "HPO Panel":
-        hgnc_gene_ids: List[int] = [
-            gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])
-        ]
-    else:
-        hgnc_gene_ids: List[int] = _get_default_panel_genes(store, case_obj)
-
-    if not hgnc_gene_ids:
-        flash("Case should have at least one default gene panel containing genes", "warning")
-        return
-
-    query_samples: List[dict] = []
-    analysis_types: List[str] = []
-
-    for ind in case_obj.get("individuals", []):
-        if not ind.get("d4_file"):
-            continue
-        query_samples.append(
-            {
-                "name": ind.get("display_name"),
-                "coverage_file_path": ind.get("d4_file"),
-                "case_name": case_obj["display_name"],
-                "analysis_date": case_obj["analysis_date"].isoformat(),
-            }
-        )
-        analysis_types.append(ind.get("analysis_type"))
-
-    interval_type = "genes"
-    if "wes" in analysis_types:
-        interval_type = "transcripts"
-    elif "wts" in analysis_types:
-        interval_type = "exons"
-
-    report_query: dict = {
-        "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37",
-        "default_level": institute_obj.get("coverage_cutoff"),
-        "interval_type": interval_type,
-        "panel_name": panel_name,
-        "case_display_name": case_obj["display_name"],
-        "hgnc_gene_ids": hgnc_gene_ids,
-        "samples": query_samples,
-    }
-
-    report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), report_type])
-    response = requests.post(report_url, json=report_query)
-    return response.text
-
-
 def coverage_report_contents(base_url, institute_obj, case_obj):
     """Capture the contents of a case coverage report (chanjo-report), to be displayed in the general case report
 

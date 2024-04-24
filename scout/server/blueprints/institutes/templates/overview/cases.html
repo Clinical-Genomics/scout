@@ -153,7 +153,7 @@
         {% if case.vcf_files.vcf_snv %}
           <a href="{{ url_for('variants.variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
         {% elif case.vcf_files.vcf_cancer %}
-          <a href="{{ url_for('variants.cancer_variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Clinical Somatic Variants</a>
+          <a href="{{ url_for('variants.cancer_variants', institute_id=case.owner, case_name=case.display_name, variant_type='research') }}">Research Somatic Variants</a>
         {% endif %}
       {% else %}
         {% if case.vcf_files.vcf_snv %}

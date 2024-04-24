@@ -313,28 +313,6 @@ def pdf_case_report(institute_id, case_name):
     )
 
 
-@cases_bp.route("/<institute_id>/<case_name>/chanjo2_report/<report_type>", methods=["GET"])
-def chanjo2_coverage_report(institute_id: str, case_name: str, report_type: str):
-    """Return the HTML coverage report or coverage overview created by chanjo2."""
-
-    REPORT_TYPES = ["report", "overview"]
-    if report_type not in REPORT_TYPES:
-        flash(f"Wrong value for report_type parameter. Accepted values: {REPORT_TYPES}", "warning")
-        return redirect(request.referrer)
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report_html_content: str = controllers.chanjo2_coverage_report_contents(
-        institute_obj=institute_obj,
-        case_obj=case_obj,
-        panel_name=request.args.get("panel_name"),
-        panel_id=request.args.get("panel_id"),
-        report_type=report_type,
-    )
-    if report_html_content is None:
-        return redirect(request.referrer)
-    return report_html_content
-
-
 @cases_bp.route("/<institute_id>/<case_name>/mt_report", methods=["GET"])
 def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
