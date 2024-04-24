@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
 - Broken `Install the HTML 2 PDF renderer` step in a GitHub action
+- Fix ClinVar form parsing to not include ":" in conditionType.id when condition conditionType.db is Orphanet
 - Improved visibility of ClinVar form in dark mode
 
 ## [4.81]
