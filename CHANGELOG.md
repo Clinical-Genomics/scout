@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
+- Broken `Install the HTML 2 PDF renderer` step in a GitHub action
 
 ## [4.81]
 ### Added
