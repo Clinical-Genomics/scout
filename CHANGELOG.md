@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Research somatic variants` link name on caseS page
 - Broken `Install the HTML 2 PDF renderer` step in a GitHub action
 - Fix ClinVar form parsing to not include ":" in conditionType.id when condition conditionType.db is Orphanet
+- Fix condition dropdown and pre-selection on ClinVar form for cases with associated ORPHA diagnoses
 
 ## [4.81]
 ### Added
