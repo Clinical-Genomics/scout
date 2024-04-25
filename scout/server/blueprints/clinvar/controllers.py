@@ -107,7 +107,7 @@ def _get_snv_var_form(variant_obj, case_obj):
     var_form.variations_ids.data = var_ids.split(";")[0]
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.start.data = variant_obj.get("position")
-    var_form.stop.data = variant_obj.get("position")
+    var_form.stop.data = variant_obj.get("end")
     return var_form
 
 
@@ -276,7 +276,7 @@ def parse_variant_form_fields(form):
         clinvar_var["variations_ids"] = form["dbsnp_id"]
 
     if clinvar_var.get("ref_seq") and clinvar_var.get("hgvs"):
-        # Variant is described by RefSeq and HGVS already, remove redundanti fields from submission
+        # Variant is described by RefSeq and HGVS already, remove redundant fields from submission
         for item in ["chromosome", "start", "stop", "ref", "alt"]:
             clinvar_var.pop(item)
 
