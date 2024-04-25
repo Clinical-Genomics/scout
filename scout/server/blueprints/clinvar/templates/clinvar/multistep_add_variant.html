@@ -368,6 +368,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Validates fields for conditions associated to a variant
 function validateConditions(){
+
   if ($("#condition_tags option:selected").length == 0) {
     alert("Please provide at least one condition ID");
     return false;
@@ -383,7 +384,15 @@ function validateConditions(){
     return false;
   }
 
-  return true
+  var selectedConditionsValues = $('#condition_tags').val();
+  for (let i = 0; i < selectedConditionsValues.length; i++) {
+    if (isNaN(selectedConditionsValues[i])){
+      alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 var current_fs, next_fs, previous_fs; //fieldsets
