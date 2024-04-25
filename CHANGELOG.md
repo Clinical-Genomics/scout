@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
 - STR variant information card with database links, replacing empty frequency panel
 - Display paging and number of HPO terms available in the database on Phenotypes page
+- Typeahead hints when searching for disease with substrings containing source ("OMIM:", "ORPHA:")
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
