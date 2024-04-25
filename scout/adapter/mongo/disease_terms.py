@@ -10,6 +10,7 @@ from scout.exceptions import IntegrityError
 LOG = logging.getLogger(__name__)
 
 DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
+REGEX = "$regex"
 REGEX_OPTIONS = "$options"
 REGEX_IGNORECASE = "i"
 
@@ -34,9 +35,8 @@ class DiagnosisHandler(object):
         if query:
             query_dict = {
                 "$or": [
-                    {"disease_nr": {"$regex": query, REGEX_OPTIONS: REGEX_IGNORECASE}},
-                    {"disease_id": {"$regex": query, REGEX_OPTIONS: REGEX_IGNORECASE}},
-                    {"description": {"$regex": query, REGEX_OPTIONS: REGEX_IGNORECASE}},
+                    {"disease_id": {REGEX: query, REGEX_OPTIONS: REGEX_IGNORECASE}},
+                    {"description": {REGEX: query, REGEX_OPTIONS: REGEX_IGNORECASE}},
                 ]
             }
             # If source is specified, add this restriction to the query
