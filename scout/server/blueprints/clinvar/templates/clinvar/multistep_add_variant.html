@@ -240,11 +240,7 @@
 
                     <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
                       {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
-                        {% if dbtype == "OMIM" and variant_data.var_form.omim_terms.choices or dbtype == "HP" and variant_data.var_form.hpo_terms.choices or dbtype == "Orphanet" and variant_data.var_form.orpha_terms.choices %}
-                          <option value="{{dbtype}}" selected>{{dbtype}}</option>
-                        {% else %}
-                          <option value="{{dbtype}}">{{dbtype}}</option>
-                        {% endif %}
+                        <option value="{{dbtype}}">{{dbtype}}</option>
                       {% endfor %}
                     </select>
 
@@ -525,6 +521,18 @@ $('#condition_tags').select2({
   tokenSeparators: [','],
   allowClear: true,
 });
+
+// Set selected condition type on page load
+window.onload = function() {
+  const selectedCondId = document.getElementById('condition_type');
+  {% if variant_data.var_form.omim_terms.choices %}
+    selectedCondId.options.selectedIndex = 4;
+  {% elif variant_data.var_form.orpha_terms.choices %}
+    selectedCondId.options.selectedIndex = 5;
+  {% elif variant_data.var_form.hpo_terms.choices %}
+    selectedCondId.options.selectedIndex = 0;
+  {% endif %}
+};
 
 // reset and modify conditions field's placeholder when condition ID type changes
 $(function(){
