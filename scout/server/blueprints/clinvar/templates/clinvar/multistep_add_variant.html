@@ -384,9 +384,10 @@ function validateConditions(){
     return false;
   }
 
+  // Make sure that provided conditions are numbers, except when condition type is MeSH
   var selectedConditionsValues = $('#condition_tags').val();
   for (let i = 0; i < selectedConditionsValues.length; i++) {
-    if (isNaN(selectedConditionsValues[i])){
+    if (isNaN(selectedConditionsValues[i]) && $('#condition_type').val() != 'MeSH'){
       alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
       return false;
     }
