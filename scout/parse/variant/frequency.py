@@ -27,8 +27,8 @@ def parse_frequencies(variant, transcripts):
     exac_max_keys = ["ExAC_MAX_AF", "EXAC_MAX_AF"]
 
     # Gnomad have both snv and sv frequencies
-    gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomad_svAF"]
-    gnomad_max_keys = ["GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
+    gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomADg_AF", "gnomad_svAF"]
+    gnomad_max_keys = ["GNOMADAF_popmax", "gnomADg_AF_POPMAX", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
 
     update_frequency_from_vcf(frequencies, variant, exac_keys, "exac")
     update_frequency_from_vcf(frequencies, variant, exac_max_keys, "exac_max")
