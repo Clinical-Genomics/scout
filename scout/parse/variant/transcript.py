@@ -320,7 +320,7 @@ def set_variant_frequencies(transcript, entry):
                 continue
 
             value = entry[key]
-            if not value:
+            if not value or value == ".":
                 continue
 
             # This is the 1000G max af information
