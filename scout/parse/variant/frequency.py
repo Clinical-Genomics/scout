@@ -42,13 +42,13 @@ def parse_frequencies(variant, transcripts):
     update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HOM"], "gnomad_mt_homoplasmic")
     update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HET"], "gnomad_mt_heteroplasmic")
 
-    # Search transcripts CSQ if not found in VCF INFO
-    if not frequencies:
-        update_frequency_from_transcript(frequencies, transcripts)
-
     # These are SV-specific frequencies
     update_frequency_from_vcf(frequencies, variant, ["left_1000GAF"], "thousand_g_left")
     update_frequency_from_vcf(frequencies, variant, ["right_1000GAF"], "thousand_g_right")
+
+    # Search transcripts CSQ if not found in VCF INFO
+    if not frequencies:
+        update_frequency_from_transcript(frequencies, transcripts)
 
     return frequencies
 

@@ -333,11 +333,11 @@ def set_variant_frequencies(transcript, entry):
                 transcript["gnomad_maf"] = float(value)
                 continue
 
-            if key == "GNOMADG_AF" and not transcript["gnomad_maf"]:
+            if key == "GNOMADG_AF" and "gnomad_maf" not in transcript:
                 transcript["gnomad_maf"] = float(value)
                 continue
 
-            if key == "GNOMAD_EXOMES_AF" and not transcript["gnomad_maf"]:
+            if key == "GNOMAD_EXOMES_AF" "gnomad_maf" not in transcript:
                 transcript["gnomad_maf"] = float(value)
                 continue
 
@@ -366,4 +366,4 @@ def set_variant_frequencies(transcript, entry):
         )
         LOG.debug("Exception details", exc_info=True)
         LOG.debug("Current entry: %s", entry)
-        LOG.warning("Only splitted and normalised VEP v90+ frequencies are supported")
+        LOG.warning("Only decomposed/split and normalised VEP v90+ frequencies are supported")
