@@ -6,6 +6,7 @@ from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
+STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
 API_CSV_2_JSON_URL = "/".join([PRECLINVAR_URL, "csv_2_json"])
 API_VALIDATE_ENDPOINT = "/".join([PRECLINVAR_URL, "validate"])
@@ -297,6 +298,47 @@ def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
         )
         assert resp.status_code == 200
         assert resp.mimetype == "text/csv"
+
+
+@responses.activate
+def test_clinvar_api_status(app):
+    """Test the endpoint used to check the status of a ClinVar submission."""
+
+    DEMO_SUBMISSION_ID = "SUB12345678"
+    DEMO_API_KEY = "test_key"
+
+    # GIVEN a mocked submitted response from ClinVar:
+    actions: list[dict] = [
+        {
+            "id": f"{DEMO_SUBMISSION_ID}-1",
+            "responses": [],
+            "status": "submitted",
+            "targetDb": "clinvar",
+            "updated": "2024-04-29T13:39:24.384085Z",
+        }
+    ]
+
+    responses.add(
+        responses.GET,
+        f"{CLINVAR_API_URL}{DEMO_SUBMISSION_ID}/actions/",
+        json={"actions": actions},
+        status=200,
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN a call to the status endpoint
+        response = client.post(
+            url_for(STATUS_ENDPOINT, submission_id=DEMO_SUBMISSION_ID),
+            data={"apiKey": DEMO_API_KEY},
+        )
+
+        # THEN the response should redirect
+        assert response.status_code == 302
 
 
 @responses.activate
