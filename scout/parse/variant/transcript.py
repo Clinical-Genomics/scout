@@ -316,7 +316,7 @@ def set_variant_frequencies(transcript, entry):
     try:
         for key in entry:
             # All frequencies endswith AF
-            if not key.endswith("AF"):
+            if not key.endswith("AF") or key.endswith("POPMAX"):
                 continue
 
             value = entry[key]
