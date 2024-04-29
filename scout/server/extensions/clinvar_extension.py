@@ -81,6 +81,6 @@ class ClinVarApi:
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
 
         header: dict = self.set_header(api_key)
-        actions_url = f"{CLINVAR_API_URL}/{submission_id}/actions/"
+        actions_url = f"{CLINVAR_API_URL}{submission_id}/actions/"
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
         flash(f"Response from ClinVar: {actions_resp.json()}", "primary")
