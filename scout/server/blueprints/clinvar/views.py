@@ -8,7 +8,7 @@ from flask import Blueprint, flash, redirect, render_template, request, send_fil
 from flask_login import current_user
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, GERMLINE_CLASSIF_TERMS
-from scout.server.extensions import store
+from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case
 
 from . import controllers
@@ -22,6 +22,18 @@ clinvar_bp = Blueprint(
     static_folder="static",
     static_url_path="/clinvar/static",
 )
+
+
+@clinvar_bp.route("/clinvar/status-enquiry/<submission_id>", methods=["POST"])
+def clinvar_submission_status(submission_id):
+    """Sends a request to ClinVar to retrieve and display the status of a submission."""
+
+    # flash a message with current submission status for a ClinVar submission
+    clinvar_api.show_submission_status(
+        submission_id=submission_id, api_key=request.form.get("apiKey")
+    )
+
+    return redirect(request.referrer)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
@@ -88,6 +100,7 @@ def clinvar_delete_object(submission: str, object_type: str):
 @clinvar_bp.route("/<institute_id>/<submission>/update_status", methods=["POST"])
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
+    return
     controllers.update_clinvar_submission_status(request, institute_id, submission)
     return redirect(request.referrer)
 

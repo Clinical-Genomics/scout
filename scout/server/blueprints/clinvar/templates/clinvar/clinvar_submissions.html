@@ -99,6 +99,12 @@
                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
                 </form>
               {% endif %}
+              {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
+                 <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj._id) }}" method="POST">
+                   {{ status_modal(subm_obj.clinvar_subm_id) }}
+                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal">Submission status enquiry</button></td>
+                 </form>
+              {% endif %}
             </tr>
           </table>
         </div>
@@ -234,6 +240,27 @@
         {% else %}
           <p>No case data provided for the above variants</p>
         {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro status_modal(submission_id) %}
+<div class="modal fade" id="statusModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Submission status</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="show_status" value="status" class="btn btn-primary">Submission status enquiry</button>
       </div>
     </div>
   </div>
