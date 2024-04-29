@@ -327,7 +327,6 @@ def test_clinvar_api_status(app):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # WITH a logged user
         client.get(url_for("auto_login"))
 
