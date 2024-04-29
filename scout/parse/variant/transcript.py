@@ -337,7 +337,7 @@ def set_variant_frequencies(transcript, entry):
                 transcript["gnomad_maf"] = float(value)
                 continue
 
-            if key == "GNOMAD_EXOMES_AF" "gnomad_maf" not in transcript:
+            if key == "GNOMAD_EXOMES_AF" and "gnomad_maf" not in transcript:
                 transcript["gnomad_maf"] = float(value)
                 continue
 
