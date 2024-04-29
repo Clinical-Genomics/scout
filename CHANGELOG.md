@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated IGV.js to 2.15.11
 - Fusion variants in case report now contain same info as on fusion variantS page
 - Block submission of somatic variants to ClinVar, until we don't introduce the changes needed to harmonise with their changed API
+- Additional control on the format of conditions provided in ClinVar form
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
@@ -23,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix ClinVar form parsing to not include ":" in conditionType.id when condition conditionType.db is Orphanet
 - Fix condition dropdown and pre-selection on ClinVar form for cases with associated ORPHA diagnoses
 - Improved visibility of ClinVar form in dark mode
+- End coordinates for indels in ClinVar form
 
 ## [4.81]
 ### Added
