@@ -5,6 +5,10 @@ from scout.constants import SO_TERMS
 
 LOG = logging.getLogger(__name__)
 
+# gnomAD transcript CSQ keys. Use plain (older) AF if available. For a secondary choice, prefer genomes over exomes.
+GNOMAD_CSQ_KEYS = ["GNOMAD_AF", "GNOMADG_AF", "GNOMAD_EXOMES_AF"]
+THOUSAND_GENOMES_CSQ_KEYS = ["AF", "1000GAF", "1000GP3_AF"]
+
 
 def parse_transcripts(raw_transcripts):
     """Parse transcript information from VCF variants
@@ -303,6 +307,10 @@ def set_variant_frequencies(transcript, entry):
     * 'gnomAD_AF' - gnomAD exomes, all populations combined
     * 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
     * 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
+    In VEP 107/111 keys are
+    * 'gnomADg_AF' - genomes
+    * 'gnomAD_exomes_AF' - exomes
+    * 1000GP3_AF - 1000G Phase 3
 
     Reference: https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
@@ -312,30 +320,30 @@ def set_variant_frequencies(transcript, entry):
     try:
         for key in entry:
             # All frequencies endswith AF
-            if not key.endswith("AF"):
+            if not (key.endswith("AF") or key.endswith("POPMAX")):
                 continue
 
             value = entry[key]
-            if not value:
+            if not value or value == ".":
                 continue
 
-            # This is the 1000G max af information
-            if key == "AF" or key == "1000GAF":
+            if key in THOUSAND_GENOMES_CSQ_KEYS:
                 transcript["thousand_g_maf"] = float(value)
                 continue
 
-            if key == "GNOMAD_AF":
-                transcript["gnomad_maf"] = float(value)
-                continue
+            for gnomad_ordered_key in GNOMAD_CSQ_KEYS:
+                if key == gnomad_ordered_key:
+                    transcript["gnomad_maf"] = float(value)
+                    break
 
             if key == "EXAC_MAX_AF":
                 transcript["exac_max"] = float(value)
                 transcript["exac_maf"] = float(value)
                 continue
 
+            # remaining gnomAD or 1000G subpopulation frequencies and/or popmax values
             if "GNOMAD" in key:
                 gnomad_freqs.append(float(value))
-
             else:
                 thousandg_freqs.append(float(value))
 
@@ -354,4 +362,4 @@ def set_variant_frequencies(transcript, entry):
         )
         LOG.debug("Exception details", exc_info=True)
         LOG.debug("Current entry: %s", entry)
-        LOG.warning("Only splitted and normalised VEP v90+ frequencies are supported")
+        LOG.warning("Only decomposed/split and normalised VEP v90+ frequencies are supported")
