@@ -29,12 +29,13 @@ def upload_managed_variants():
 
     csv_file = request.files["csv_file"]
     content = csv_file.stream.read()
-    lines = None
     try:
         if b"\n" in content:
             lines = content.decode("utf-8-sig", "ignore").split("\n")
         else:
             lines = content.decode("windows-1252").split("\r")
+
+        result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
     except Exception as err:
         flash(
             "Something went wrong while parsing the panel CSV file! ({})".format(err),
@@ -42,8 +43,6 @@ def upload_managed_variants():
         )
         return redirect(request.referrer)
 
-    LOG.debug("Loading lines %s", lines)
-    result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
     flash(
         "In total {} new variants out of {} in file added".format(result[0], result[1]),
         "success",
