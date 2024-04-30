@@ -323,29 +323,23 @@ def set_variant_frequencies(transcript, entry):
             if not value or value == ".":
                 continue
 
-            # This is the 1000G max af information
+            # This is the 1000G max AF information
             if key in ["AF", "1000GAF", "1000GP3_AF"]:
                 transcript["thousand_g_maf"] = float(value)
                 continue
 
             # gnomAD. Use plain (older) AF if available. For a secondary choice, prefer genomes over exomes.
-            if key == "GNOMAD_AF":
-                transcript["gnomad_maf"] = float(value)
-                continue
-
-            if key == "GNOMADG_AF" and "gnomad_maf" not in transcript:
-                transcript["gnomad_maf"] = float(value)
-                continue
-
-            if key == "GNOMAD_EXOMES_AF" and "gnomad_maf" not in transcript:
-                transcript["gnomad_maf"] = float(value)
-                continue
+            for gnomad_ordered_key in ["GNOMAD_AF", "GNOMADG_AF", "GNOMAD_EXOMES_AF"]:
+                if key == gnomad_ordered_key:
+                    transcript["gnomad_maf"] = float(value)
+                    break
 
             if key == "EXAC_MAX_AF":
                 transcript["exac_max"] = float(value)
                 transcript["exac_maf"] = float(value)
                 continue
 
+            # remaining gnomAD or 1000G subpopulation frequencies and/or popmax values
             if "GNOMAD" in key:
                 gnomad_freqs.append(float(value))
             else:
