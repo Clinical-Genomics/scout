@@ -2,7 +2,41 @@ from typing import Dict
 
 import cyvcf2
 
-swegen_keys = ["swegen", "swegenAF", "SWEGENAF"]
+# SNV
+SWEGEN_KEYS = ["swegen", "swegenAF", "SWEGENAF"]
+THOUSAND_GENOMES_KEYS = ["1000GAF"]
+THOUSAND_GENOMES_MAX_KEYS = ["1000G_MAX_AF"]
+
+EXAC_KEYS = ["EXACAF"]
+EXAC_MAX_KEYS = ["ExAC_MAX_AF", "EXAC_MAX_AF"]
+
+# gnomAD has both SNV and SV
+GNOMAD_INFO_KEYS = ["GNOMADAF", "GNOMAD_AF", "gnomADg_AF", "gnomad_svAF"]
+GNOMAD_INFO_MAX_KEYS = ["gnomADg_AF_POPMAX", "GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
+
+# SV
+CLINGEN_BENIGN_KEYS = [
+    "clingen_cgh_benignAF",
+    "clingen_cgh_benign",
+    "clingen_cgh_benignOCC",
+]
+
+CLINGEN_PATHOGENIC_KEYS = [
+    "clingen_cgh_pathogenicAF",
+    "clingen_cgh_pathogenic",
+    "clingen_cgh_pathogenicOCC",
+]
+
+CLINGEN_NGI_KEYS = ["clingen_ngi", "clingen_ngiAF", "clingen_ngiOCC"]
+
+DECIPHER_KEYS = ["decipherAF", "decipher"]
+CG_KEYS = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
+
+# MEI
+SWEGEN_ALU_KEYS = ["swegen_alu_FRQ", "swegen_alu_OCC"]
+SWEGEN_HERV_KEYS = ["swegen_herv_FRQ", "swegen_herv_OCC"]
+SWEGEN_L1_KEYS = ["swegen_l1_FRQ", "swegen_l1_OCC"]
+SWEGEN_SVA_KEYS = ["swegen_sva_FRQ", "swegen_sva_OCC"]
 
 
 def parse_frequencies(variant, transcripts):
@@ -19,24 +53,14 @@ def parse_frequencies(variant, transcripts):
         frequencies(dict): A dictionary with the relevant frequencies
     """
     frequencies = {}
-    # These lists could be extended...
-    thousand_genomes_keys = ["1000GAF"]
-    thousand_genomes_max_keys = ["1000G_MAX_AF"]
 
-    exac_keys = ["EXACAF"]
-    exac_max_keys = ["ExAC_MAX_AF", "EXAC_MAX_AF"]
-
-    # Gnomad have both snv and sv frequencies
-    gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomADg_AF", "gnomad_svAF"]
-    gnomad_max_keys = ["GNOMADAF_popmax", "gnomADg_AF_POPMAX", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
-
-    update_frequency_from_vcf(frequencies, variant, exac_keys, "exac")
-    update_frequency_from_vcf(frequencies, variant, exac_max_keys, "exac_max")
-    update_frequency_from_vcf(frequencies, variant, gnomad_keys, "gnomad")
-    update_frequency_from_vcf(frequencies, variant, swegen_keys, "swegen")
-    update_frequency_from_vcf(frequencies, variant, gnomad_max_keys, "gnomad_max")
-    update_frequency_from_vcf(frequencies, variant, thousand_genomes_keys, "thousand_g")
-    update_frequency_from_vcf(frequencies, variant, thousand_genomes_max_keys, "thousand_g_max")
+    update_frequency_from_vcf(frequencies, variant, EXAC_KEYS, "exac")
+    update_frequency_from_vcf(frequencies, variant, EXAC_MAX_KEYS, "exac_max")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_INFO_KEYS, "gnomad")
+    update_frequency_from_vcf(frequencies, variant, SWEGEN_KEYS, "swegen")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_INFO_MAX_KEYS, "gnomad_max")
+    update_frequency_from_vcf(frequencies, variant, THOUSAND_GENOMES_KEYS, "thousand_g")
+    update_frequency_from_vcf(frequencies, variant, THOUSAND_GENOMES_MAX_KEYS, "thousand_g_max")
 
     # For mitochondrial variants, keep both "hom" and "het" freqs
     update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HOM"], "gnomad_mt_homoplasmic")
@@ -85,31 +109,14 @@ def parse_sv_frequencies(variant: cyvcf2.Variant) -> Dict:
     """
     sv_frequencies = {}
 
-    clingen_benign_keys = [
-        "clingen_cgh_benignAF",
-        "clingen_cgh_benign",
-        "clingen_cgh_benignOCC",
-    ]
-
-    clingen_pathogenic_keys = [
-        "clingen_cgh_pathogenicAF",
-        "clingen_cgh_pathogenic",
-        "clingen_cgh_pathogenicOCC",
-    ]
-
-    clingen_ngi_keys = ["clingen_ngi", "clingen_ngiAF", "clingen_ngiOCC"]
-
-    decipher_keys = ["decipherAF", "decipher"]
-    cg_keys = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
-
-    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_benign_keys, "clingen_cgh_benign")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, CLINGEN_BENIGN_KEYS, "clingen_cgh_benign")
     update_sv_frequency_from_vcf(
-        sv_frequencies, variant, clingen_pathogenic_keys, "clingen_cgh_pathogenic"
+        sv_frequencies, variant, CLINGEN_PATHOGENIC_KEYS, "clingen_cgh_pathogenic"
     )
-    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_ngi_keys, "clingen_ngi")
-    update_sv_frequency_from_vcf(sv_frequencies, variant, swegen_keys, "swegen")
-    update_sv_frequency_from_vcf(sv_frequencies, variant, decipher_keys, "decipher")
-    update_sv_frequency_from_vcf(sv_frequencies, variant, cg_keys, "clingen_mip")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, CLINGEN_NGI_KEYS, "clingen_ngi")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, SWEGEN_KEYS, "swegen")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, DECIPHER_KEYS, "decipher")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, CG_KEYS, "clingen_mip")
 
     return sv_frequencies
 
@@ -117,17 +124,12 @@ def parse_sv_frequencies(variant: cyvcf2.Variant) -> Dict:
 def parse_mei_frequencies(variant: cyvcf2.Variant) -> Dict:
     """Parsing of some custom mei frequencies."""
 
-    swegen_alu_keys = ["swegen_alu_FRQ", "swegen_alu_OCC"]
-    swegen_herv_keys = ["swegen_herv_FRQ", "swegen_herv_OCC"]
-    swegen_l1_keys = ["swegen_l1_FRQ", "swegen_l1_OCC"]
-    swegen_sva_keys = ["swegen_sva_FRQ", "swegen_sva_OCC"]
-
     mei_frequencies = {}
 
-    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_alu_keys, "swegen_alu")
-    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_herv_keys, "swegen_herv")
-    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_l1_keys, "swegen_l1")
-    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_sva_keys, "swegen_sva")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_ALU_KEYS, "swegen_alu")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_HERV_KEYS, "swegen_herv")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_L1_KEYS, "swegen_l1")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_SVA_KEYS, "swegen_sva")
 
     if any(mei_frequencies.values()):
         max_mei_frequency = max(mei_frequencies.values())

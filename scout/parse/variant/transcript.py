@@ -5,6 +5,10 @@ from scout.constants import SO_TERMS
 
 LOG = logging.getLogger(__name__)
 
+# gnomAD transcript CSQ keys. Use plain (older) AF if available. For a secondary choice, prefer genomes over exomes.
+GNOMAD_CSQ_KEYS = ["GNOMAD_AF", "GNOMADG_AF", "GNOMAD_EXOMES_AF"]
+THOUSAND_GENOMES_CSQ_KEYS = ["AF", "1000GAF", "1000GP3_AF"]
+
 
 def parse_transcripts(raw_transcripts):
     """Parse transcript information from VCF variants
@@ -323,13 +327,11 @@ def set_variant_frequencies(transcript, entry):
             if not value or value == ".":
                 continue
 
-            # This is the 1000G max AF information
-            if key in ["AF", "1000GAF", "1000GP3_AF"]:
+            if key in THOUSAND_GENOMES_CSQ_KEYS:
                 transcript["thousand_g_maf"] = float(value)
                 continue
 
-            # gnomAD. Use plain (older) AF if available. For a secondary choice, prefer genomes over exomes.
-            for gnomad_ordered_key in ["GNOMAD_AF", "GNOMADG_AF", "GNOMAD_EXOMES_AF"]:
+            for gnomad_ordered_key in GNOMAD_CSQ_KEYS:
                 if key == gnomad_ordered_key:
                     transcript["gnomad_maf"] = float(value)
                     break
