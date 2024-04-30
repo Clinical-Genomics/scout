@@ -34,6 +34,8 @@ def upload_managed_variants():
         else:
             lines = content.decode("windows-1252").split("\r")
 
+        result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
+
     except Exception as err:
         flash(
             "Something went wrong while parsing the panel CSV file! ({})".format(err),
@@ -41,7 +43,6 @@ def upload_managed_variants():
         )
         return redirect(request.referrer)
 
-    result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
     flash(
         "In total {} new variants out of {} in file added".format(result[0], result[1]),
         "success",
