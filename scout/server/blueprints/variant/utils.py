@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from scout.adapter import MongoAdapter
 from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
 from scout.server.links import add_gene_links, add_tx_links
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -175,15 +176,16 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     The case_obj should be up-to-date first. Call update_case_panels() as needed in context:
     to save some resources we do not call it here for each variant.
     """
-
+    variant_obj["case_panels"] = []
     variant_panel_names = variant_obj.get("panels") or []
-    case_panel_objs = [
-        panel
-        for panel in (case_obj.get("panels") or [])
-        if panel["panel_name"] in variant_panel_names
-    ]
-
-    variant_obj["case_panels"] = case_panel_objs
+    for panel in case_obj.get("panels") or []:
+        if panel["panel_name"] not in variant_panel_names:
+            continue
+        latest_panel_hgnc_genes: List[int] = store.panel_to_genes(
+            panel_name=panel["panel_name"], gene_format="hgnc_id"
+        )
+        if set(latest_panel_hgnc_genes).intersection(variant_obj["hgnc_ids"]):
+            variant_obj["case_panels"].append(panel)
 
 
 def get_extra_info(gene_panels: list) -> Dict[int, dict]:
