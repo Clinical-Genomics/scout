@@ -187,7 +187,9 @@
       <tr><td colspan=2>&nbsp;</td></tr>
       {% if variant.str_swegen_mean %}
         <tr><td>SweGen Z-score</td><td>
-          {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+          {% if variant.str_mc %}
+            {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+          {% endif %}
         </td></tr>
         <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
         <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>

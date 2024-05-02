@@ -106,7 +106,6 @@ def parse_genotype(variant, ind, pos):
     # TRGT long read STR specific
     (mc_ref, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
     gt_call["alt_mc"] = mc_alt
-
     (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
     (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
     (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
@@ -422,14 +421,13 @@ def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
         try:
             values = variant.format(format_entry_name)[pos]
 
+            new_values = []
             for value in values:
-                new_values = []
-                if "/" in value:
-                    new_values = list(value.split("/"))
-                if "," in value:
-                    new_values = list(value.split(","))
-                if new_values:
-                    values = new_values
+                for delim in ["/", ","]:
+                    if delim in value:
+                        new_values = list(value.split(delim))
+            if new_values:
+                values = new_values
 
             ref_value = None
             alt_value = None
@@ -463,19 +461,16 @@ def _parse_format_entry_trgt_mc(variant, pos):
     mc_alt = None
     pathologic_struc = variant.INFO.get("PathologicStruc", None)
 
-    repeat_res = []
-
     pathologic_counts = 0
     if "MC" not in variant.FORMAT:
         return (mc_ref, mc_alt)
 
     mc = variant.format("MC")[pos]
-    ref_idx = 0
-    gt = variant.format("GT")[pos]
-
+    ref_idx = None
+    gt = variant.genotypes[pos]
     if gt:
         for idx, allele in enumerate(gt):
-            if allele == "0":
+            if allele == 0:
                 ref_idx = idx
 
     if mc:
@@ -491,7 +486,7 @@ def _parse_format_entry_trgt_mc(variant, pos):
             else:
                 pathologic_counts = int(allele)
 
-            if idx == ref_idx:
+            if ref_idx is not None and idx == ref_idx:
                 mc_ref = pathologic_counts
                 continue
 
