@@ -34,9 +34,14 @@ def build_managed_variant(managed_variant_info):
             sub_category=managed_variant_info.get("sub_category", "snv"),
             description=managed_variant_info.get("description", ""),
         )
-    except Exception as err:
+    except KeyError:
         flash(
-            "Could not build managed variant {}".format(err),
+            "Managed variant has to have chr, pos, ref and alt",
+            "danger",
+        )
+    except ValueError as ve:
+        flash(
+            "Could not build managed variant {}".format(ve),
             "danger",
         )
 
