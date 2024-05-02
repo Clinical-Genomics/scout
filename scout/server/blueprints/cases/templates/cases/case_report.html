@@ -443,6 +443,18 @@
 </div>
 {% endmacro %}
 
+{% macro overlapping_panels(variant) %}
+{% if variant.case_panels %}
+  {% if variant.case_panels|length <= 3 %}
+    {% for panel in variant.case_panels %}
+      <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge bg-secondary">{{ panel.panel_name }}</a><br>
+    {% endfor %}
+  {% else %}
+    {{ variant.case_panels|length }} panels
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
 {% macro variant_content(variant, index) %}
   {% if variant.category == 'snv' %}
     {{ sn_variant_content(variant, index) }}
@@ -544,15 +556,7 @@
               {% endif %}
             </td>
             <td>
-              {% if variant.panels%}
-                {% if variant.panels|length <= 3 %}
-                  {% for panel_id in variant.panels %}
-                   <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" rel="noopener" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
-                  {% endfor %}
-                {% else %}
-                  {{ variant.panels|length }} panels
-                {% endif %}
-              {% endif %}
+              {{ overlapping_panels(variant) }}
             </td>
           </tr>
         </tbody>
@@ -965,15 +969,7 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% if variant.panels %}
-              {% if variant.panels|length <= 3 %}
-                {% for panel_id in variant.panels %}
-                  <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" rel="noopener" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
-                {% endfor %}
-              {% else %}
-                {{ variant.panels|length }} panels
-              {% endif %}
-            {% endif %}
+            {{ overlapping_panels(variant) }}
           </td>
           <td>
             {% if variant.callers %}
@@ -1183,15 +1179,7 @@
             {% endif %}
           </td>
           <td>
-            {% if variant.panels %}
-              {% if variant.panels|length <= 3 %}
-                {% for panel_id in variant.panels %}
-                  <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
-                {% endfor %}
-              {% else %}
-                {{ variant.panels|length }} panels
-              {% endif %}
-            {% endif %}
+            {{ overlapping_panels(variant) }}
           </td>
         </tr>
       </tbody>
