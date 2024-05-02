@@ -1,4 +1,7 @@
 import logging
+
+from flask import flash
+
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
@@ -31,8 +34,11 @@ def build_managed_variant(managed_variant_info):
             sub_category=managed_variant_info.get("sub_category", "snv"),
             description=managed_variant_info.get("description", ""),
         )
-    except KeyError:
-        raise KeyError("Managed variant has to have chr, pos, ref and alt.")
+    except Exception as err:
+        flash(
+            "Could not buidl managed variant. ({})".format(err),
+            "danger",
+        )
 
     LOG.debug("Built managed variant %s", managed_variant.get("display_id"))
 
