@@ -423,12 +423,14 @@ def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
             values = variant.format(format_entry_name)[pos]
 
             for value in values:
+                new_values = []
                 if "/" in value:
                     new_values = list(value.split("/"))
                 if "," in value:
                     new_values = list(value.split(","))
+                if new_values:
+                    values = new_values
 
-            values = new_values
             ref_value = None
             alt_value = None
 
