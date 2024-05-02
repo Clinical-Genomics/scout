@@ -399,7 +399,10 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     # repeat unit - used e g in PanelApp naming of STRs
     parsed_variant["str_struc"] = call_safe(str, variant.INFO.get("STRUC"))
 
-    # repeat unit - used e g in PanelApp naming of STRs
+    # repeat motif(s) - used e g in TRGT MC motif splits
+    parsed_variant["str_motifs"] = call_safe(str, variant.INFO.get("MOTIFS"))
+
+    # repeat pathologic motifs structure - list of indicies of pathologic motifs counting towards MC
     parsed_variant["str_pathologic_struc"] = call_safe(str, variant.INFO.get("PathologicStruc"))
 
     # repeat unit - used e g in PanelApp naming of STRs
