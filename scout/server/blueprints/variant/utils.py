@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 
 from scout.adapter import MongoAdapter
 from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
-from scout.server.links import add_gene_links, add_tx_links
 from scout.server.extensions import store
+from scout.server.links import add_gene_links, add_tx_links
 
 LOG = logging.getLogger(__name__)
 
