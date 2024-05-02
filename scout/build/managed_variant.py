@@ -36,7 +36,7 @@ def build_managed_variant(managed_variant_info):
         )
     except Exception as err:
         flash(
-            "Could not buidl managed variant. ({})".format(err),
+            "Could not build managed variant {}".format(err),
             "danger",
         )
 
