@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint as pp
-
-import pymongo
-import pytest
 
 from scout.server.blueprints.institutes.controllers import get_sanger_unevaluated
 
@@ -109,7 +105,7 @@ def test_get_sanger_unevaluated(
         adapter.load_variant(variant_obj)
 
     # Check that variant collections is NOT empty
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     # Collect 2 variants from the database
     test_variants = list(adapter.variant_collection.find().limit(2))
@@ -148,7 +144,7 @@ def test_get_sanger_unevaluated(
 
     # Test that the Sanger ordered but not validated for the institute are 2
     # sanger_unevaluated should look like this: [{ 'case_id': [var1, var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
+    sanger_unevaluated, _ = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
     assert len(sanger_unevaluated[0][case_obj["display_name"]]) == 2
 
     # Set one of the two variants as validated
@@ -158,6 +154,6 @@ def test_get_sanger_unevaluated(
 
     # Test that now the Sanger ordered but not validated is only one
     # sanger_unevaluated should look like this: [{ 'case_id': [var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
-    pp(sanger_unevaluated)
+    sanger_unevaluated, _ = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
+
     assert len(sanger_unevaluated[0][case_obj["display_name"]]) == 1
