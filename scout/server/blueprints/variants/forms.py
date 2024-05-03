@@ -207,7 +207,7 @@ class SvFiltersForm(VariantFiltersForm):
         "Local somatic obs. (archive)", validators=[validators.Optional()]
     )
     local_obs_cancer_germline_old = IntegerField(
-        "Local germile obs. (archive)", validators=[validators.Optional()]
+        "Local germline obs. (archive)", validators=[validators.Optional()]
     )
 
     # polymorphic constant base for clinical filter
