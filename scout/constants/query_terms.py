@@ -31,7 +31,9 @@ PRIMARY_CRITERIA = ["clinsig"]
 # such as a Pathogenic ClinSig.
 SECONDARY_CRITERIA = [
     "gnomad_frequency",
-    "local_obs",
+    "local_obs_old",
+    "local_obs_cancer_somatic_old",
+    "local_obs_cancer_germline_old",
     "local_obs_freq",
     "clingen_ngi",
     "swegen",
