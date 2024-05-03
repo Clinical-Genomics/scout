@@ -36,6 +36,8 @@ def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
 
         for gene in gene_ids:
             gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene)
+            if not gene_caption:
+                continue
             gene_ids_symbols.append(
                 {"hgnc_id": gene_caption["hgnc_id"], "hgnc_symbol": gene_caption["hgnc_symbol"]}
             )
