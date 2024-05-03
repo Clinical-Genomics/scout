@@ -79,6 +79,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links to ACMG structural variant pathogenicity classification guidelines
 - Phenomodels checkboxes can now include orpha terms
 - Add incidental finding to case tags
+- Get an alert on caseS page when somebody validates variants you ordered Sanger sequencing for
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
