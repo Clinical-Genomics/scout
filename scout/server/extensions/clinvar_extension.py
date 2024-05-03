@@ -1,8 +1,8 @@
 import json
 import logging
-from tempfile import NamedTemporaryFile
 
 import requests
+from flask import flash
 
 from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
 
@@ -19,7 +19,7 @@ class ClinVarApi:
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
         self.submit_service = CLINVAR_API_URL
 
-    def set_header(self, api_key):
+    def set_header(self, api_key) -> dict:
         """Creates a header to be submitted a in a POST rquest to the CLinVar API
         Args:
             api_key(str): API key to be used to submit to ClinVar (64 alphanumeric characters)
@@ -76,3 +76,11 @@ class ClinVarApi:
 
         except Exception as ex:
             return None, ex
+
+    def show_submission_status(self, submission_id: str, api_key=None):
+        """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
+
+        header: dict = self.set_header(api_key)
+        actions_url = f"{CLINVAR_API_URL}{submission_id}/actions/"
+        actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
+        flash(f"Response from ClinVar: {actions_resp.json()}", "primary")
