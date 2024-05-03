@@ -39,6 +39,8 @@ def count_diagnoses():
 def api_diagnoses():
     """Return JSON data about diseases in the database."""
     query: Union[str, None] = request.args.get("query") or None
+    if query is None or len(query) < 3:
+        return jsonify({"error": "Diagnose query must be at least 3 characters long."})
     source: Union[str, None] = request.args.get("source") or None
     data: dict = controllers.disease_terms(store, query=query, source=source)
     return jsonify(data)
