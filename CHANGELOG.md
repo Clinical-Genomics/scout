@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix condition dropdown and pre-selection on ClinVar form for cases with associated ORPHA diagnoses
 - Improved visibility of ClinVar form in dark mode
 - End coordinates for indels in ClinVar form
+- Diagnoses API search crashing with empty search string
 
 ## [4.81]
 ### Added
