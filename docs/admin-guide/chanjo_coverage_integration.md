@@ -1,7 +1,7 @@
 # Considerations
 
 Scout is well integrated with the Chanjo software for coverage reporting.
-While Chanjo has been efficient and speedy in calculating metrics over transcript data, making it a valuable tool for visualizing statistics in WES analyses, the incorporation of support for other types of analyses (WGS, WTS) in Scout has rendered **Chanjo outdated**.
+While Chanjo is efficient and speedy in calculating metrics over transcript data, making it a valuable tool for visualizing statistics in WES analyses, the incorporation of support for other types of analyses (WGS, WTS) in Scout has rendered **Chanjo outdated**. In particular, updating the reference transcript set in an active Chanjo instance is challenging.
 
 In response to this, efforts at Clinical Genomics led to the development of Chanjo2, an updated tool designed to calculate coverage and coverage completeness statistics with the advantage of utilizing the **.d4 (Dense Depth Data Dump) format**.
 
