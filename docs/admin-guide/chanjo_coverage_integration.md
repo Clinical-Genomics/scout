@@ -8,7 +8,7 @@ In response to this, efforts at Clinical Genomics led to the development of Chan
 For further information on d4tools and the .d4 format, please visit the relevant [project pages][d4tools].
 Instructions on setting up a Chanjo2 server can be found in the documentation available on the [Chanjo2 GitHub pages][chanjo2].
 
-For system administrators configuring communication with either of these tools, **we recommend integrating with Chanjo2, as the Chanjo repository is likely to be deprecated in the near future**.
+For system administrators configuring communication with either of these tools, **we recommend integrating with Chanjo2, as the Chanjo repository is likely to be deprecated**.
 
 
 ## Chanjo2 coverage integration
