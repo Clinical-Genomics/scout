@@ -55,6 +55,7 @@ Below are available configuration parameters for a Scout case. Names marked with
         - **upd_regions** _String_ Path to file.
         - **upd_sites** _String_ Path to file.
     - **confirmed_parent** _Bool_ True if parent confirmed.
+    - **d4_path** _String_ Path to [.d4 file][d4_file]. Required for Chanjo2 integration
     - **expected_coverage** _Int_ The level of expected coverage.
     - **father** _String/Int_ Sample ID for father or 0.
     - **is_sma** _Bool/None_ if SMA status determined - None if not done.
@@ -130,6 +131,7 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 
 
 [arriba]: https://arriba.readthedocs.io/en/latest/
+[d4_file]: https://github.com/38/d4-format
 [multiqc]: https://github.com/ewels/multiqc
 [rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
 [rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
