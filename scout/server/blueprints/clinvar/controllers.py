@@ -437,7 +437,7 @@ def send_api_submission(institute_id, submission_id, key):
 
     clinvar_id = store.get_clinvar_id(
         submission_id
-    )  # This is the official ID associated with this submission in Clinvar ((ex: SUB999999)
+    )  # This is the official ID associated with this submission in Clinvar (ex: SUB999999)
 
     if clinvar_id:  # Check if submission object has already an associated ClinVar ID
         conversion_res["submissionName"] = clinvar_id
