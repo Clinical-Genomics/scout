@@ -469,7 +469,12 @@ def cases(store, request, institute_id):
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
-    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
+
+    sanger_ordered_not_validated: Tuple[Dict[str, list]] = get_sanger_unevaluated(
+        store, institute_id, current_user.email
+    )
+    data["sanger_unevaluated"]: Dict[str, list] = sanger_ordered_not_validated[0]
+    data["sanger_validated_by_others"]: Dict[str, list] = sanger_ordered_not_validated[1]
 
     # local function to add info to case obj
     def populate_case_obj(case_obj):
@@ -559,27 +564,76 @@ def populate_case_filter_form(params):
     return form
 
 
-def get_sanger_unevaluated(store, institute_id, user_id):
-    """Get all variants for an institute having Sanger validations ordered but still not evaluated
+def _get_unevaluated_variants_for_case(
+    case_obj: dict, var_ids_list: List[str], sanger_validated_by_user_by_case: Dict[str, List[str]]
+) -> Tuple[Dict[str, list]]:
+    """Returns the variants with Sanger ordered by a user that need validation or are validated by another user."""
 
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_id(str)
+    case_display_name: str = case_obj["display_name"]
+    case_id: str = case_obj["_id"]
+
+    def _variant_has_sanger_ordered(variant_obj: dict) -> bool:
+        """Returns True if the sanger_ordered status of a variant is True, else False."""
+
+        if (
+            variant_obj is None
+            or variant_obj.get("sanger_ordered") is None
+            or variant_obj.get("sanger_ordered") is False
+        ):
+            return False
+        return True
+
+    unevaluated_by_case = {case_display_name: []}
+    evaluated_by_others_by_case = {case_display_name: []}
+    for var_id in var_ids_list:
+        # For each variant with sanger validation ordered
+        variant_obj = store.variant(document_id=var_id, case_id=case_id)
+
+        # Double check that Sanger was ordered (and not canceled) for the variant
+        if _variant_has_sanger_ordered(variant_obj) is False:
+            continue
+
+        validation = variant_obj.get("validation", "not_evaluated")
+
+        # Check that the variant is not evaluated
+        if validation in ["True positive", "False positive"]:
+            if var_id in sanger_validated_by_user_by_case.get(
+                case_id, []
+            ):  # User had validated this variant
+                continue
+
+            # Another user has validated the variant
+            evaluated_by_others_by_case[case_display_name].append(variant_obj["_id"])
+        else:
+            unevaluated_by_case[case_display_name].append(variant_obj["_id"])
+
+    return unevaluated_by_case, evaluated_by_others_by_case
+
+
+def get_sanger_unevaluated(
+    store: MongoAdapter, institute_id: str, user_id: str
+) -> Tuple[List[Dict[str, list]]]:
+    """Return all variant with Sanger sequencing ordered by a user with validation missing or validated by another user.
 
     Returns:
-        unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+        unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, .. ],
                      where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+        evaluated_by_others: a list that looks like the one above where varID_1, varID_2 etc are variants validated by some other user
 
     """
+    sanger_ordered_by_user_by_case: Dict[str, List[str]] = {
+        case_variants["_id"]: case_variants["vars"]
+        for case_variants in store.sanger_ordered(institute_id=institute_id, user_id=user_id)
+    }
+    sanger_validated_by_user_by_case: Dict[str, List[str]] = {
+        case_variants["_id"]: case_variants["vars"]
+        for case_variants in store.validated(institute_id=institute_id, user_id=user_id)
+    }
 
-    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
-    # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered(institute_id, user_id)
     unevaluated = []
+    evaluated_by_others = []
 
-    # for each object where key==case and value==[variant_id with Sanger ordered]
-    for item in sanger_ordered_by_case:
-        case_id = item["_id"]
+    for case_id, var_ids_list in sanger_ordered_by_user_by_case.items():
         # Get the case to collect display name
         CASE_SANGER_UNEVALUATED_PROJECTION = {"display_name": 1}
         case_obj = store.case(case_id=case_id, projection=CASE_SANGER_UNEVALUATED_PROJECTION)
@@ -588,36 +642,20 @@ def get_sanger_unevaluated(store, institute_id, user_id):
             continue
 
         case_display_name = case_obj.get("display_name")
-
-        # List of variant document ids
-        varid_list = item["vars"]
-
-        unevaluated_by_case = {case_display_name: []}
-        for var_id in varid_list:
-            # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case_id)
-
-            # Double check that Sanger was ordered (and not canceled) for the variant
-            if (
-                variant_obj is None
-                or variant_obj.get("sanger_ordered") is None
-                or variant_obj.get("sanger_ordered") is False
-            ):
-                continue
-
-            validation = variant_obj.get("validation", "not_evaluated")
-
-            # Check that the variant is not evaluated
-            if validation in ["True positive", "False positive"]:
-                continue
-
-            unevaluated_by_case[case_display_name].append(variant_obj["_id"])
+        unevaluated_by_case, evaluated_by_others_by_case = _get_unevaluated_variants_for_case(
+            case_obj=case_obj,
+            var_ids_list=var_ids_list,
+            sanger_validated_by_user_by_case=sanger_validated_by_user_by_case,
+        )
 
         # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
         if len(unevaluated_by_case[case_display_name]) > 0:
             unevaluated.append(unevaluated_by_case)
 
-    return unevaluated
+        if len(evaluated_by_others_by_case[case_display_name]) > 0:
+            evaluated_by_others.append(evaluated_by_others_by_case)
+
+    return unevaluated, evaluated_by_others
 
 
 def export_gene_variants(
