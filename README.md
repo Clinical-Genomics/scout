@@ -111,9 +111,9 @@ scout load panel scout/demo/panel_1.txt
 scout load case scout/demo/643594.config.yaml
 ```
 
-## Integration with chanjo for coverage report visualization
+## Integration with chanjo and chanjo2 for coverage report visualization
 
-Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo]. Instructions on
+Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo] or [chanjo2][chanjo2]. Instructions on
 how to enable this feature can be found in the document [chanjo_coverage_integration][chanjo-scout].
 
 ## Integration with loqusdb for integrating local variant frequencies
@@ -251,6 +251,7 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 
 
 [chanjo]: https://github.com/Clinical-Genomics/chanjo
+[chanjo2]: https://github.com/Clinical-Genomics/chanjo2
 [chanjo-scout]: docs/admin-guide/chanjo_coverage_integration.md
 [loqusdb]: https://github.com/moonso/loqusdb
 [loqusdb-scout]: docs/admin-guide/loqusdb_integration.md
