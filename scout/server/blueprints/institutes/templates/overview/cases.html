@@ -209,7 +209,7 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="evaluateModal_validated_{{validated_by_others}}" tabindex="-1" role="dialog" aria-labelledby="sangerModalLabel" aria-hidden="true">
+  <div class="modal fade" id="evaluateModal_validated{% if validated_by_others %}_by_others{% endif %}" tabindex="-1" role="dialog" aria-labelledby="sangerModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
