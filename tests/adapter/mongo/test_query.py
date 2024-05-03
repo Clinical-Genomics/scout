@@ -655,27 +655,33 @@ def test_build_swegen_sv(adapter):
     ]
 
 
-def test_build_local_obs_sv(adapter):
-    """Test building query. Given query parameters from interface, check that
-    a correct db query is made. This tests local observation counts for SVs.
-    """
+def test_build_local_obs(adapter):
+    """Test building a query containing local archived observations (RD and cancer variants."""
 
     # GIVEN query parameters for local observations
+    LOCAL_OLD_OBS_FIELDS = [
+        "local_obs_old",
+        "local_obs_cancer_somatic_old",
+        "local_obs_cancer_germline_old",
+    ]
     case_id = "cust000"
     count = 5
-    query = {"local_obs": count}
+    query = {}
+    for query_field in LOCAL_OLD_OBS_FIELDS:
+        query[query_field] = count
+
     # WHEN asking adapter to build a db query
     mongo_query = adapter.build_query(case_id, query=query)
 
     # THEN the expected query part for local observations is returned
-    assert mongo_query["$and"] == [
-        {
+    for query_field in LOCAL_OLD_OBS_FIELDS:
+        query_item = {
             "$or": [
-                {"local_obs_old": None},
-                {"local_obs_old": {"$lt": query["local_obs"] + 1}},
+                {query_field: None},
+                {query_field: {"$lt": query[query_field] + 1}},
             ]
         }
-    ]
+        assert query_item in mongo_query["$and"]
 
 
 def test_build_local_obs_freq(adapter):
