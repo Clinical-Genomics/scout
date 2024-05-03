@@ -203,7 +203,7 @@
       These variants have been validated by another user, but you ordered the Sanger sequencing. Adding your validation will silence this message.
     {% endif %}
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluateModal_validated_{{validated_by_others}}">
+    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluateModal_validated{% if validated_by_others %}_by_others{% endif %}">
       evaluate
     </button>
   </div>
