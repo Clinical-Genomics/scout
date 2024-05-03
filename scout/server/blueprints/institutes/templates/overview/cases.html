@@ -200,7 +200,7 @@
   <div class="col">
     You have <strong>{{ unevaluated|length }}</strong> cases with Sanger validations to evaluate.
     {% if validated_by_others == true %}
-      These variants have been validated by another user but they need also your validation since you ordered the Sanger sequencing.
+      These variants have been validated by another user, but you ordered the Sanger sequencing. Adding your validation will silence this message.
     {% endif %}
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluateModal_validated_{{validated_by_others}}">
