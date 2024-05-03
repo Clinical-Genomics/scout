@@ -579,16 +579,21 @@ class QueryHandler(object):
                     }
                 )
 
-            if criterion == "local_obs":
-                local_obs = query.get("local_obs")
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"local_obs_old": None},
-                            {"local_obs_old": {"$lt": local_obs + 1}},
-                        ]
-                    }
-                )
+            for local_obs_old_type in [
+                "local_obs_old",
+                "local_obs_cancer_germline_old",
+                "local_obs_cancer_somatic_old",
+            ]:
+                if criterion == local_obs_old_type:
+                    local_obs = query.get(local_obs_old_type)
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {local_obs_old_type: None},
+                                {local_obs_old_type: {"$lt": local_obs + 1}},
+                            ]
+                        }
+                    )
 
             if criterion == "local_obs_freq":
                 local_obs_freq = query.get("local_obs_freq")
