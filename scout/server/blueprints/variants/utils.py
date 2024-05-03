@@ -15,5 +15,6 @@ def update_case_panels(store: MongoAdapter, case_obj: dict):
         panel_name = panel_info["panel_name"]
         latest_panel = store.gene_panel(panel_name)
         panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
-        latest_panel["hgnc_ids"] = [gene["hgnc_id"] for gene in latest_panel.get("genes", [])]
-        case_obj["latest_panels"].append(latest_panel)
+        if latest_panel:
+            latest_panel["hgnc_ids"] = [gene["hgnc_id"] for gene in latest_panel.get("genes", [])]
+            case_obj["latest_panels"].append(latest_panel)
