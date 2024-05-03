@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STR variant information card with database links, replacing empty frequency panel
 - Display paging and number of HPO terms available in the database on Phenotypes page
 - On case page, typeahead hints when searching for a disease using substrings containing source ("OMIM:", "ORPHA:")
+- Button to monitor the status of submissions on ClinVar Submissions page
 - Option to filter cancer variants by number of observations in somatic and germiline archived database
 ### Changed
 - In the case_report #panel-tables has a fixed width
