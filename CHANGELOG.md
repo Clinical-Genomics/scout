@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On case page, typeahead hints when searching for a disease using substrings containing source ("OMIM:", "ORPHA:")
 - Button to monitor the status of submissions on ClinVar Submissions page
 - Option to filter cancer variants by number of observations in somatic and germline archived database
+- Documentation for integrating chanjo2
 - Optional separate MT VCFs, for `nf-core/raredisease`
 ### Changed
 - In the case_report #panel-tables has a fixed width

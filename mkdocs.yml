@@ -72,7 +72,7 @@ nav:
       - IGV browser settings: 'admin-guide/igv-settings.md'
       - Server: 'admin-guide/server.md'
       - Server Extension Integration:
-          - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
+          - Chanjo and Chanjo2 coverage integration: 'admin-guide/chanjo_coverage_integration.md'
           - Loqusdb integration: 'admin-guide/loqusdb_integration.md'
           - Gens integration: 'admin-guide/gens_integration.md'
           - Scout REViewer Service integration: 'admin-guide/reviewer_service.md'
