@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 t
 - Button to monitor the status of submissions on ClinVar Submissions page
 - Option to filter cancer variants by number of observations in somatic and germline archived database
+- Documentation for integrating chanjo2
 - Parse TRGT STR VCF
 ### Changed
 - In the case_report #panel-tables has a fixed width
