@@ -4,7 +4,7 @@ import itertools
 import json
 import logging
 import os
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Set
 
 import query_phenomizer
 import requests
@@ -334,7 +334,7 @@ def case(store, institute_obj, case_obj):
     clinvar_variants_not_in_suspects = [
         store.variant(variant_id) or variant_id
         for variant_id in case_obj["clinvar_variants"]
-        if variant_id not in [entry.get("_id") for entry in suspects]
+        if variant_id not in case_obj.get("suspects", [])
     ]
 
     case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
