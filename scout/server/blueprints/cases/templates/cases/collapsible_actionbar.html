@@ -86,7 +86,7 @@
     </div>
 
     <!-- If connected to a chanjo or chanjo2 instance, display coverage report -->
-    {% if case.chanjo2_coverage %}
+    {% if case.chanjo2_coverage and case.default_genes %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed">Coverage (chanjo2)</span>

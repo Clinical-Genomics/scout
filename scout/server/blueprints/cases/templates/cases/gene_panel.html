@@ -212,7 +212,7 @@
               </form>
             {% endif %}
 
-            {% if case.chanjo2_coverage %}
+            {% if case.chanjo2_coverage and case.dynamic_gene_list %}
               {{ chanjo2_report_form(institute, case, "HPO Panel", 'report', case.dynamic_gene_list|map(attribute='hgnc_id')|join(',')) }} <!--chanjo2 report-->
               {{ chanjo2_report_form(institute, case, "HPO Panel", 'overview', case.dynamic_gene_list|map(attribute='hgnc_id')|join(',')) }} <!--chanjo2 genes overview -->
             {% endif %}
