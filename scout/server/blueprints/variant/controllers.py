@@ -238,7 +238,7 @@ def variant(
     # The hierarchical call order is relevant: cases are used to populate variants
     update_variant_case_panels(case_obj, variant_obj)
 
-    associate_variant_genes_with_case_panels(store, variant_obj)
+    associate_variant_genes_with_case_panels(case_obj, variant_obj)
 
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
