@@ -4,7 +4,7 @@ import itertools
 import json
 import logging
 import os
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Set
 
 import query_phenomizer
 import requests
