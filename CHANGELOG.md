@@ -14,11 +14,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to monitor the status of submissions on ClinVar Submissions page
 - Option to filter cancer variants by number of observations in somatic and germline archived database
 - Documentation for integrating chanjo2
+- More up-to-date VEP CSQ dbNSFP frequency keys
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
 - Fusion variants in case report now contain same info as on fusion variantS page
-- Block submission of somatic variants to ClinVar, until we don't introduce the changes needed to harmonise with their changed API
+- Block submission of somatic variants to ClinVar until we harmonise with their changed API
 - Additional control on the format of conditions provided in ClinVar form
 - Errors while loading managed variants from file are now displayed on the Managed Variants page
 ### Fixed
@@ -105,7 +106,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
 - Display common/uncommon/rare on summary of mei variant page
-- More up-to-date VEP CSQ dbNSFP frequency keys
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
