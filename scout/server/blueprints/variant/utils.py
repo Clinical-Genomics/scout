@@ -175,15 +175,13 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     The case_obj should be up-to-date first. Call update_case_panels() as needed in context:
     to save some resources we do not call it here for each variant.
     """
-
+    variant_obj["case_panels"] = []
     variant_panel_names = variant_obj.get("panels") or []
-    case_panel_objs = [
-        panel
-        for panel in (case_obj.get("panels") or [])
-        if panel["panel_name"] in variant_panel_names
-    ]
-
-    variant_obj["case_panels"] = case_panel_objs
+    for latest_panel in case_obj.get("latest_panels") or []:
+        if latest_panel["panel_name"] not in variant_panel_names:
+            continue
+        if not set(latest_panel["hgnc_ids"]).isdisjoint(variant_obj["hgnc_ids"]):
+            variant_obj["case_panels"].append(latest_panel)
 
 
 def get_extra_info(gene_panels: list) -> Dict[int, dict]:
@@ -660,17 +658,15 @@ def callers(variant_obj):
     return list(calls)
 
 
-def associate_variant_genes_with_case_panels(store: MongoAdapter, variant_obj: Dict) -> None:
+def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) -> None:
     """Add associated gene panels to each gene in variant object"""
 
     genes = variant_obj.get("genes", [])
-    gene_panels = variant_obj.get("case_panels", [])
 
     for gene in genes:
         hgnc_id = gene["hgnc_id"]
         matching_panels = []
-        for panel in gene_panels:
-            genes_on_panel = store.panel_to_genes(panel_id=panel["panel_id"], gene_format="hgnc_id")
-            if hgnc_id in genes_on_panel:
+        for panel in case_obj.get("latest_panels", []):
+            if hgnc_id in panel["hgnc_ids"]:
                 matching_panels.append(panel["panel_name"])
         gene["associated_gene_panels"] = matching_panels
