@@ -104,7 +104,7 @@
           </span>
         </li>
       {% endif %}
-      {% if case and case.chanjo2_coverage %}
+      {% if case and case.chanjo2_coverage and panel.genes %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report (chanjo2)</label>
           <span class="float-end">
