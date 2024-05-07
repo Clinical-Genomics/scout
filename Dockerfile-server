@@ -29,7 +29,7 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get -y install -y --no-install-recommends git wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
