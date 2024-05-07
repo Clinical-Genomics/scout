@@ -35,6 +35,7 @@ t
 - Diagnoses API search crashing with empty search string
 - Variant's overlapping panels should show overlapping of variant genes against the latest version of the panel
 - Case page crashing when case has both variants in a ClinVar submission and pinned not loaded variants
+- Unfreeze Werkzeug - update to v3.0.3 to patch debugger security issue
 
 ## [4.81]
 ### Added
