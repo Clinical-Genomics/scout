@@ -23,6 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional control on the format of conditions provided in ClinVar form
 - Errors while loading managed variants from file are now displayed on the Managed Variants page
 - Chanjo2 coverage button visible only when query will contain a list of HGNC gene IDs
+- Use Python-Markdown directly instead of the unmaintained Flask-Markdown
+- Use Markupsafe instead of long deprecated, now removed Flask Markup
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
