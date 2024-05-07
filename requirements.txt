@@ -1,10 +1,10 @@
 # Everything needed in production
-werkzeug<2.3
+werkzeug>=3.0.3
 Flask>=2.0
 Flask-Bootstrap
 Flask-CORS
 path.py
-Flask-Markdown
+markdown
 WTForms
 Flask-WTF
 Flask-Mail
@@ -29,7 +29,7 @@ importlib_resources
 # webapp login
 authlib
 flask_login
-flask-ldapconn
+flask-ldapconn @ git+https://github.com/Clinical-Genomics/flask-ldapconn.git@v0.10.2
 
 # Parsing
 cyvcf2
