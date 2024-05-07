@@ -10,7 +10,7 @@ from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import current_user
-from flaskext.markdown import Markdown
+from flask_misaka import Misaka
 from markupsafe import Markup
 
 from . import extensions
@@ -109,7 +109,7 @@ def configure_extensions(app):
     extensions.login_manager.init_app(app)
     extensions.mail.init_app(app)
 
-    Markdown(app)
+    Misaka(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         LOG.info("Chanjo extension enabled")
