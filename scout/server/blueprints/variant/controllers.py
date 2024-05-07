@@ -3,8 +3,9 @@ import os
 from typing import Dict, List, Optional
 
 import requests
-from flask import Markup, abort, current_app, flash, url_for
+from flask import abort, current_app, flash, url_for
 from flask_login import current_user
+from markupsafe import Markup
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
