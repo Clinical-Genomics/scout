@@ -1,4 +1,5 @@
 """Code for flask app"""
+
 import logging
 import os
 from datetime import timedelta
@@ -10,7 +11,7 @@ from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import current_user
-from flask_misaka import Misaka
+from markdown import markdown as python_markdown
 from markupsafe import Markup
 
 from . import extensions
@@ -108,8 +109,6 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.mail.init_app(app)
-
-    Misaka(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         LOG.info("Chanjo extension enabled")
@@ -226,6 +225,10 @@ def register_filters(app):
 
         # round all other numbers
         return round(number, ndigits)
+
+    @app.template_filter()
+    def markdown(text: str):
+        return Markup(python_markdown(text))
 
     @app.template_filter()
     def tuple_list_to_dict(tuple_list, key_elem, value_elem):
