@@ -104,6 +104,8 @@ def case(
 
     data = controllers.case(store, institute_obj, case_obj)
 
+    LOG.debug("Current URL map is %s", current_app.url_map)
+
     return dict(
         **data,
     )

@@ -325,11 +325,15 @@ def configure_coverage(app):
     """Setup coverage related extensions."""
     # setup chanjo report
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
+    LOG.debug("configure coverage")
+
     if chanjo_api:
         chanjo_api.init_app(app)
         configure_template_filters(app)
         # register chanjo report blueprint
+        LOG.debug("Current URL map is %s", current_app.url_map)
         app.register_blueprint(report_bp, url_prefix="/reports")
+        LOG.debug("Current URL map is %s", current_app.url_map)
 
     babel = Babel()
 
