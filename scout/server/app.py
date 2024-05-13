@@ -36,15 +36,16 @@ from .blueprints import (
 
 LOG = logging.getLogger(__name__)
 
-try:
-    from chanjo_report.server.app import configure_template_filters
-    from chanjo_report.server.blueprints import report_bp
-    from chanjo_report.server.extensions import api as chanjo_api
-except ImportError:
-    chanjo_api = None
-    report_bp = None
-    configure_template_filters = None
-    LOG.info("chanjo report not installed!")
+# try:
+from chanjo_report.server.app import configure_template_filters
+from chanjo_report.server.blueprints import report_bp
+from chanjo_report.server.extensions import api as chanjo_api
+
+# except ImportError:
+#    chanjo_api = None
+#    report_bp = None
+#    configure_template_filters = None
+#    LOG.info("chanjo report not installed!")
 
 
 def create_app(config_file=None, config=None):
@@ -331,9 +332,9 @@ def configure_coverage(app):
         chanjo_api.init_app(app)
         configure_template_filters(app)
         # register chanjo report blueprint
-        LOG.debug("Current URL map is %s", current_app.url_map)
+        LOG.debug("Current URL map is %s", app.url_map)
         app.register_blueprint(report_bp, url_prefix="/reports")
-        LOG.debug("Current URL map is %s", current_app.url_map)
+        LOG.debug("Current URL map is %s", app.url_map)
 
     babel = Babel()
 
