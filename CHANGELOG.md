@@ -36,7 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Diagnoses API search crashing with empty search string
 - Variant's overlapping panels should show overlapping of variant genes against the latest version of the panel
 - Case page crashing when case has both variants in a ClinVar submission and pinned not loaded variants
-- Unfreeze Werkzeug - update to v3.0.3 to patch debugger security issue
+- Prepare to unfreeze Werkzeug, but don't actually activate until chanjo can deal with the change
 - Installation of git in second build stage of Dockerfile, allowing correct installation of libraries
 
 ## [4.81]
