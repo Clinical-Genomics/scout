@@ -6,8 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.82]
 ### Added
-- Tooltip for combined score in tables for compounds and overlapping vars
-- Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
+- Tooltip for combined score in tables for compounds and overlapping variants
+- Checkbox to filter variants by excluding genes listed in selected gene panels, files or provided as list
 - STR variant information card with database links, replacing empty frequency panel
 - Display paging and number of HPO terms available in the database on Phenotypes page
 - On case page, typeahead hints when searching for a disease using substrings containing source ("OMIM:", "ORPHA:")
@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chanjo2 coverage button visible only when query will contain a list of HGNC gene IDs
 - Use Python-Markdown directly instead of the unmaintained Flask-Markdown
 - Use Markupsafe instead of long deprecated, now removed Flask Markup
+- Prepare to unfreeze Werkzeug, but don't actually activate until chanjo can deal with the change
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
@@ -37,7 +38,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Diagnoses API search crashing with empty search string
 - Variant's overlapping panels should show overlapping of variant genes against the latest version of the panel
 - Case page crashing when case has both variants in a ClinVar submission and pinned not loaded variants
-- Prepare to unfreeze Werkzeug, but don't actually activate until chanjo can deal with the change
 - Installation of git in second build stage of Dockerfile, allowing correct installation of libraries
 
 ## [4.81]
