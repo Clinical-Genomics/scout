@@ -29,7 +29,7 @@ importlib_resources
 # webapp login
 authlib
 flask_login
-flask-ldapconn @ git+https://github.com/Clinical-Genomics/flask-ldapconn.git@v0.10.2
+flask-ldapconn
 
 # Parsing
 cyvcf2
