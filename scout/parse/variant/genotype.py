@@ -19,7 +19,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import cyvcf2
 
@@ -104,7 +104,7 @@ def parse_genotype(variant, ind, pos):
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
     # TRGT long read STR specific
-    (mc_ref, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
+    (_, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
     gt_call["alt_mc"] = mc_alt
 
     (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
@@ -403,32 +403,39 @@ def get_str_so(variant, pos):
     return str_so
 
 
-def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
-    """Parse genotype format entry for named integer values.
-    Expects that ref/alt values could be separated by /.
+def split_values(values: List[str]) -> List[str]:
+    """
+    Expects that ref/alt values could be separated by "/" or ",".
 
-    Args:
-        variant(cyvcf2.Variant)
-        pos(int): individual position in VCF
-        format_entry_name: name of format entry
-        number_format: type of numbers expected (int or float)
-    Returns:
-        (ref(int), alt(int)) tuple
+    """
+    new_values = []
+    for value in values:
+        for delim in ["/", ","]:
+            if delim in value:
+                new_values = list(value.split(delim))
+
+    if new_values:
+        return new_values
+
+    return values
+
+
+def _parse_format_entry(
+    variant: cyvcf2.Variant,
+    pos: int,
+    format_entry_name: str,
+    number_format: Optional[Union[float, int]] = int,
+) -> Tuple[Union[float, int], ...]:
+    """Parse genotype format entry for named integer values.
+    Expects that ref/alt values could be separated by "/" or ",".
+    Give individual position in VCF as pos and name of format entry to parse as format_entry_name.
     """
 
     ref = None
     alt = None
     if format_entry_name in variant.FORMAT:
         try:
-            values = variant.format(format_entry_name)[pos]
-
-            new_values = []
-            for value in values:
-                for delim in ["/", ","]:
-                    if delim in value:
-                        new_values = list(value.split(delim))
-            if new_values:
-                values = new_values
+            values = split_values(variant.format(format_entry_name)[pos])
 
             ref_value = None
             alt_value = None
@@ -447,22 +454,18 @@ def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
     return (ref, alt)
 
 
-def _parse_format_entry_trgt_mc(variant, pos):
+def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
     """Parse genotype entry for TRGT FORMAT MC
 
-    Args:
-        variant:
-        pos:
-
-    Returns:
-        mc_ref, mc_alt
+    The MC format contains the Motif Counts for each motif in an expansion, as a "_" separated list of the different available
+    enumerated motifs. For some loci, only certain motifs count towards a pathologic size, and if so a PathologicStruc INFO key is passed.
+    E.g. for non-reference motifs and more complex loci or alleles with different motifs.
+    As usual, VCF lines are decomposed, so only one alt per entry. The GT position gives us a ref index for any allele 0 in the call.
     """
 
     mc_ref = None
     mc_alt = None
-    pathologic_struc = variant.INFO.get("PathologicStruc", None)
 
-    pathologic_counts = 0
     if "MC" not in variant.FORMAT:
         return (mc_ref, mc_alt)
 
@@ -473,6 +476,9 @@ def _parse_format_entry_trgt_mc(variant, pos):
         for idx, allele in enumerate(gt):
             if allele == 0:
                 ref_idx = idx
+
+    pathologic_struc = variant.INFO.get("PathologicStruc", None)
+    pathologic_counts = 0
 
     if mc:
         for idx, allele in enumerate(mc.split(",")):
