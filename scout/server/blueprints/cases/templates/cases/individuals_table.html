@@ -149,6 +149,8 @@
                   {% endif %}
                   {% if ind.confirmed_sex %}
                     <i class="fa fa-check"></i>
+                  {% else %}
+                    <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex not confirmed."></span>
                   {% endif %}
                 </div>
               </td>

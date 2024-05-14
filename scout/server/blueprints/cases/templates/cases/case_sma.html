@@ -101,16 +101,18 @@
               <td>{{ ind.display_name }}</td>
               <td style="font-weight: bold;">
                 {% if ind.sex_human in ['female','male'] %}
-                    {% if ind.sex_human == 'female' %}
-                      F
-                    {% elif ind.sex_human == 'male' %}
-                      M
-                    {% else %}
-                      {{ind.sex_human}}
-                    {% endif %}
+                  {% if ind.sex_human == 'female' %}
+                    F
+                  {% elif ind.sex_human == 'male' %}
+                    M
+                  {% else %}
+                    {{ind.sex_human}}
                   {% endif %}
+                {% endif %}
                 {% if ind.confirmed_sex %}
                   <i class="fa fa-check"></i>
+                {% else %}
+                  <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex not confirmed."></span>
                 {% endif %}
               </td>
               <td>{{ ind.phenotype_human }}</td>
