@@ -227,7 +227,7 @@ def register_filters(app):
         return round(number, ndigits)
 
     @app.template_filter()
-    def markdown(text: str):
+    def markdown(text: str) -> Markup:
         return Markup(python_markdown(text))
 
     @app.template_filter()
