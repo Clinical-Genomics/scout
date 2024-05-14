@@ -112,6 +112,7 @@ gt_call = dict(
     genotype_call=str,
     allele_depths=list,  # int
     read_depth=int,
+    alt_mc=int,
     genotype_quality=int,
     so=str,
 )

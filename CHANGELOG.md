@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to filter cancer variants by number of observations in somatic and germline archived database
 - Documentation for integrating chanjo2
 - More up-to-date VEP CSQ dbNSFP frequency keys
+- Parse PacBio TRGT (Tandem repeat genotyping tool) Short Tandem Repeat VCFs
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11

@@ -19,7 +19,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import cyvcf2
 
@@ -102,6 +102,14 @@ def parse_genotype(variant, ind, pos):
     (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
     (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
+
+    # TRGT long read STR specific
+    (_, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
+    gt_call["alt_mc"] = mc_alt
+
+    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
+    (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
+    (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
 
     # MEI specific
     (spanning_mei_ref, clip5_alt, clip3_alt) = get_mei_reads(
@@ -395,33 +403,48 @@ def get_str_so(variant, pos):
     return str_so
 
 
-def _parse_format_entry(variant, pos, format_entry_name):
-    """Parse genotype format entry for named integer values.
-    Expects that ref/alt values could be separated by /.
+def split_values(values: List[str]) -> List[str]:
+    """
+    Expects that ref/alt values could be separated by "/" or ",".
 
-    Args:
-        variant(cyvcf2.Variant)
-        pos(int): individual position in VCF
-        format_entry_name: name of format entry
-    Returns:
-        (ref(int), alt(int)) tuple
+    """
+    new_values = []
+    for value in values:
+        for delim in ["/", ","]:
+            if delim in value:
+                new_values = list(value.split(delim))
+
+    if new_values:
+        return new_values
+
+    return values
+
+
+def _parse_format_entry(
+    variant: cyvcf2.Variant,
+    pos: int,
+    format_entry_name: str,
+    number_format: Optional[Union[float, int]] = int,
+) -> Tuple[Union[float, int], ...]:
+    """Parse genotype format entry for named integer values.
+    Expects that ref/alt values could be separated by "/" or ",".
+    Give individual position in VCF as pos and name of format entry to parse as format_entry_name.
     """
 
     ref = None
     alt = None
     if format_entry_name in variant.FORMAT:
         try:
-            value = variant.format(format_entry_name)[pos]
-            values = list(value.split("/"))
+            values = split_values(variant.format(format_entry_name)[pos])
 
             ref_value = None
             alt_value = None
 
             if len(values) > 1:
-                ref_value = int(values[0])
-                alt_value = int(values[1])
+                ref_value = (number_format)(values[0])
+                alt_value = (number_format)(values[1])
             if len(values) == 1:
-                alt_value = int(values[0])
+                alt_value = (number_format)(values[0])
             if ref_value >= 0:
                 ref = ref_value
             if alt_value >= 0:
@@ -429,3 +452,54 @@ def _parse_format_entry(variant, pos, format_entry_name):
         except (ValueError, TypeError) as _ignore_error:
             pass
     return (ref, alt)
+
+
+def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
+    """Parse genotype entry for TRGT FORMAT MC
+
+    The MC format contains the Motif Counts for each allele, separated with "," and each motif in an expansion,
+    as a "_" separated list of the different available enumerated motifs. For some loci,
+    only certain motifs count towards a pathologic size, and if so a PathologicStruc INFO key is passed.
+    E.g. for non-reference motifs and more complex loci or alleles with different motifs.
+    As usual, VCF lines are decomposed, so at most one alt is present per entry.
+    The GT position gives us a ref index for any allele 0 in the call.
+    """
+
+    mc_ref = None
+    mc_alt = None
+
+    if "MC" not in variant.FORMAT:
+        return (mc_ref, mc_alt)
+
+    mc = variant.format("MC")[pos]
+    if not mc:
+        return (mc_ref, mc_alt)
+
+    ref_idx = None
+    gt = variant.genotypes[pos]
+    if gt:
+        for idx, allele in enumerate(gt):
+            if allele == 0:
+                ref_idx = idx
+
+    pathologic_struc = variant.INFO.get("PathologicStruc", None)
+    pathologic_counts = 0
+    for idx, allele in enumerate(mc.split(",")):
+        mcs = allele.split("_")
+
+        if len(mcs) > 1:
+            pathologic_mcs = pathologic_struc or range(len(mcs))
+
+            for index, count in enumerate(mcs):
+                if index in pathologic_mcs:
+                    pathologic_counts += int(count)
+        else:
+            pathologic_counts = int(allele)
+
+        if ref_idx is not None and idx == ref_idx:
+            mc_ref = pathologic_counts
+            continue
+
+        mc_alt = pathologic_counts
+
+    return (mc_ref, mc_alt)
