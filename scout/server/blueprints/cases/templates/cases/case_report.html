@@ -116,7 +116,7 @@
 	              {% for ind in case.individuals %}
 	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
 	                  <td>{{ ind.display_name }}</td>
-	                  <td bgcolor="red">
+	                  <td>
                       {% if ind.sex == '2' %}
                         F
                       {% elif ind.sex == '1' %}
@@ -127,7 +127,7 @@
                       {% if ind.confirmed_sex %}
                         <i class="fa fa-check"></i>
                       {% else %}
-                        <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex not confirmed."></span>
+                        <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex is not confirmed."></span>
                       {% endif %}
 	                  </td>
 	                  <td>
