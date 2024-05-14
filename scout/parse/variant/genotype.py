@@ -457,10 +457,12 @@ def _parse_format_entry(
 def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
     """Parse genotype entry for TRGT FORMAT MC
 
-    The MC format contains the Motif Counts for each motif in an expansion, as a "_" separated list of the different available
-    enumerated motifs. For some loci, only certain motifs count towards a pathologic size, and if so a PathologicStruc INFO key is passed.
+    The MC format contains the Motif Counts for each allele, separated with "," and each motif in an expansion,
+    as a "_" separated list of the different available enumerated motifs. For some loci,
+    only certain motifs count towards a pathologic size, and if so a PathologicStruc INFO key is passed.
     E.g. for non-reference motifs and more complex loci or alleles with different motifs.
-    As usual, VCF lines are decomposed, so only one alt per entry. The GT position gives us a ref index for any allele 0 in the call.
+    As usual, VCF lines are decomposed, so at most one alt is present per entry.
+    The GT position gives us a ref index for any allele 0 in the call.
     """
 
     mc_ref = None
@@ -470,6 +472,9 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
         return (mc_ref, mc_alt)
 
     mc = variant.format("MC")[pos]
+    if not mc:
+        return (mc_ref, mc_alt)
+
     ref_idx = None
     gt = variant.genotypes[pos]
     if gt:
@@ -479,24 +484,22 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
 
     pathologic_struc = variant.INFO.get("PathologicStruc", None)
     pathologic_counts = 0
+    for idx, allele in enumerate(mc.split(",")):
+        mcs = allele.split("_")
 
-    if mc:
-        for idx, allele in enumerate(mc.split(",")):
-            mcs = allele.split("_")
+        if len(mcs) > 1:
+            pathologic_mcs = pathologic_struc or range(len(mcs))
 
-            if len(mcs) > 1:
-                pathologic_mcs = pathologic_struc or range(len(mcs))
+            for index, count in enumerate(mcs):
+                if index in pathologic_mcs:
+                    pathologic_counts += int(count)
+        else:
+            pathologic_counts = int(allele)
 
-                for index, count in enumerate(mcs):
-                    if index in pathologic_mcs:
-                        pathologic_counts += int(count)
-            else:
-                pathologic_counts = int(allele)
+        if ref_idx is not None and idx == ref_idx:
+            mc_ref = pathologic_counts
+            continue
 
-            if ref_idx is not None and idx == ref_idx:
-                mc_ref = pathologic_counts
-                continue
-
-            mc_alt = pathologic_counts
+        mc_alt = pathologic_counts
 
     return (mc_ref, mc_alt)
