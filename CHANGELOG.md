@@ -4,25 +4,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.82]
 ### Added
-- Tooltip for combined score in tables for compounds and overlapping vars
-- Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
+- Tooltip for combined score in tables for compounds and overlapping variants
+- Checkbox to filter variants by excluding genes listed in selected gene panels, files or provided as list
 - STR variant information card with database links, replacing empty frequency panel
 - Display paging and number of HPO terms available in the database on Phenotypes page
 - On case page, typeahead hints when searching for a disease using substrings containing source ("OMIM:", "ORPHA:")
 - Button to monitor the status of submissions on ClinVar Submissions page
 - Option to filter cancer variants by number of observations in somatic and germline archived database
 - Documentation for integrating chanjo2
+- More up-to-date VEP CSQ dbNSFP frequency keys
 - Parse PacBio TRGT (Tandem repeat genotyping tool) Short Tandem Repeat VCFs
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
 - Fusion variants in case report now contain same info as on fusion variantS page
-- Block submission of somatic variants to ClinVar, until we don't introduce the changes needed to harmonise with their changed API
+- Block submission of somatic variants to ClinVar until we harmonise with their changed API
 - Additional control on the format of conditions provided in ClinVar form
 - Errors while loading managed variants from file are now displayed on the Managed Variants page
 - Chanjo2 coverage button visible only when query will contain a list of HGNC gene IDs
+- Use Python-Markdown directly instead of the unmaintained Flask-Markdown
+- Use Markupsafe instead of long deprecated, now removed Flask Markup
+- Prepare to unfreeze Werkzeug, but don't actually activate until chanjo can deal with the change
 ### Fixed
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 - `Research somatic variants` link name on caseS page
@@ -34,7 +38,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Diagnoses API search crashing with empty search string
 - Variant's overlapping panels should show overlapping of variant genes against the latest version of the panel
 - Case page crashing when case has both variants in a ClinVar submission and pinned not loaded variants
-- Prepare to unfreeze Werkzeug, but don't actually activate until chanjo can deal with the change
 - Installation of git in second build stage of Dockerfile, allowing correct installation of libraries
 
 ## [4.81]
@@ -110,7 +113,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
 - Display common/uncommon/rare on summary of mei variant page
-- More up-to-date VEP CSQ dbNSFP frequency keys
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
