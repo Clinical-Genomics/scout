@@ -119,7 +119,6 @@
           <tbody>
             <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
             <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
-            {% set str_mc = variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int %}
             {% if variant.str_status == 'full_mutation' %}
               <tr class="bg-danger">
             {% elif variant.str_status == 'pre_mutation' %}
@@ -127,12 +126,14 @@
             {% else %}
               <tr>
 	          {% endif %}
-              <td>Motif copies</td><td>{{ str_mc }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
+              <td>Motif copies</td><td>{{ variant.str_mc }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
             </tr>
             <tr><td colspan=2>&nbsp;</td></tr>
             {% if variant.str_swegen_mean %}
               <tr><td>SweGen Z-score</td><td>
-              {{ ((str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+                {% if variant.str_mc %}
+                  {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+                {% endif %}
               </td></tr>
               <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
               <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>
