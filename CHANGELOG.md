@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show allele sizes form ExpansionHunter on STR variantS page again
 
 ## [4.82.1]
+### Added
+- Events for case CLI events (add_case, ...)
 ### Fixed
 - Revert the installation of flask-ldapconn to use the version available on PyPI to be able to push new scout releases to PyPI
 
