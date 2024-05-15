@@ -21,19 +21,19 @@ class CaseEventHandler(object):
         if self.case(case_obj["_id"], projection=ID_PROJECTION):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
-        cli_user_name = os.getlogin() or "CLI user"
+        cli_user_name = getlogin() or "CLI user"
 
-        cli_user = {"_id": "CLI", "user_name": cli_user_name}
-        link = f"/{case_obj['institute']}/{case_obj['display_name']}"
+        cli_user = {"_id": "CLI", "name": cli_user_name}
+        link = f"/{case_obj['owner']}/{case_obj['display_name']}"
 
         self.create_event(
-            institute=case_obj["institute"],
-            case=case,
+            institute=case_obj["owner"],
+            case=case_obj,
             user=cli_user,
             link=link,
             category="case",
             verb="add_case",
-            subject=case["display_name"],
+            subject=case_obj["display_name"],
         )
 
         return self.case_collection.insert_one(case_obj)
