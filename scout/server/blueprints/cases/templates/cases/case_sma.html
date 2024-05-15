@@ -101,7 +101,7 @@
                 {% endif %}>
               <td>{{ ind.display_name }}</td>
               <td style="font-weight: bold;">
-                {% from "cases/utils.html" import sex_table_cell_content %}
+                {{ sex_table_cell_content(ind) }}
               </td>
               <td>{{ ind.phenotype_human }}</td>
               <td>{{ ind.is_sma }}</td>

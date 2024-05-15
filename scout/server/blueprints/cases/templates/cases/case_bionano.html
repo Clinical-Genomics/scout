@@ -97,7 +97,7 @@
                   {% if loop.index == 1 %}
                     <td> {{ ind.display_name }}</td>
                     <td style="font-weight: bold;">
-                      {% from "cases/utils.html" import sex_table_cell_content %}
+                      {{ sex_table_cell_content(ind) }}
                     </td>
                     <td>{{ ind.phenotype_human }}</td>
                   {% else %}
@@ -120,7 +120,7 @@
               <tr class="bg-secondary text-white">
                 <td> {{ ind.display_name }}</td>
                     <td style="font-weight: bold;">
-                      {% from "cases/utils.html" import sex_table_cell_content %}
+                      {{ sex_table_cell_content(ind) }}
                     </td>
                     <td>{{ ind.phenotype_human }}</td>
                   <td colspan="4">N/A</td>
