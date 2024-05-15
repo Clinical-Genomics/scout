@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [4.82.2]
 ### Fixed
 - Warning icon in case pages for individuals where `confirmed_sex` is false
 - Show allele sizes form ExpansionHunter on STR variantS page again
