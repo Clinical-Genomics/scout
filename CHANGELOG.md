@@ -6,7 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Fixed
-- Warning icon in case pages for individuals where `confirmed_sex` is false 
+- Warning icon in case pages for individuals where `confirmed_sex` is false
+- Show allele sizes form ExpansionHunter on STR variantS page again
 
 ## [4.82.1]
 ### Fixed

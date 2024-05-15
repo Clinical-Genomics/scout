@@ -93,7 +93,7 @@
             <td class="str-link">{{ str_locus_info(variant) }}</td>
 	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru or variant.reference }}</td>
             <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc }}</span></b></td>
-        <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
+            <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
