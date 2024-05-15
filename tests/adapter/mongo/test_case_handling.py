@@ -16,7 +16,7 @@ def test_add_cases(adapter, case_obj):
     assert adapter.case_collection.find_one() is None
 
     ## WHEN adding a new case to the database
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     ## THEN it should be populated with the new case
     result = adapter.cases()
@@ -29,11 +29,11 @@ def test_add_existing_case(adapter, case_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
 
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     ## WHEN adding a existing case to the database
     with pytest.raises(IntegrityError):
         ## THEN it should raise integrity error
-        adapter._add_case(case_obj)
+        adapter.add_case(case_obj)
 
 
 def test_load_case_existing_case_id(adapter, institute_obj, case_obj):
@@ -42,7 +42,7 @@ def test_load_case_existing_case_id(adapter, institute_obj, case_obj):
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     ## GIVEN an attempt to load the same case using the load_case function
     ## THEN it should raise integrity error
@@ -56,7 +56,7 @@ def test_load_case_existing_display_name(adapter, institute_obj, case_obj):
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     # GIVEN another case with same institute and display name of first case
     config2 = copy.deepcopy(case_obj)
@@ -74,7 +74,7 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     # GIVEN another case with same _id but different display_name
     config2 = copy.deepcopy(case_obj)
@@ -92,7 +92,7 @@ def test_load_case_existing_case_different_individuals(adapter, institute_obj, c
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     # GIVEN another case with same _id but different individuals information
     config2 = copy.deepcopy(case_obj)
@@ -416,7 +416,7 @@ def test_get_cases_non_existing_display_name(real_adapter, case_obj):
 def test_get_non_existing_case(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     logger.info("Testing to get case")
 
     # WHEN retreiving an non existing case from the database

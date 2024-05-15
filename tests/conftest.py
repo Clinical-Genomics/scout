@@ -948,7 +948,7 @@ def case_database(request, panel_database, parsed_case):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = panel_database
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     return adapter
 
@@ -960,7 +960,7 @@ def populated_database(request, panel_database, parsed_case):
 
     LOG.info("Adding case to adapter")
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     return adapter
 
 
@@ -971,7 +971,7 @@ def real_populated_database(real_panel_database, parsed_case):
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     return adapter
 

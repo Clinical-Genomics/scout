@@ -1,16 +1,42 @@
 import logging
 from collections import Counter
+from os import getlogin
 from typing import Dict, List, Optional
 
 import pymongo
 
-from scout.constants import CASE_STATUSES, CASE_TAGS
+from scout.constants import CASE_STATUSES, CASE_TAGS, ID_PROJECTION
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
 
 class CaseEventHandler(object):
     """Class to handle case events for the mongo adapter"""
+
+    def add_case(self, case_obj: dict):
+        """Add a case to the database
+        If the case already exists exception is raised.
+        """
+        if self.case(case_obj["_id"], projection=ID_PROJECTION):
+            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+
+        cli_user_name = os.getlogin() or "CLI user"
+
+        cli_user = {"_id": "CLI", "user_name": cli_user_name}
+        link = f"/{case_obj['institute']}/{case_obj['display_name']}"
+
+        self.create_event(
+            institute=case_obj["institute"],
+            case=case,
+            user=cli_user,
+            link=link,
+            category="case",
+            verb="add_case",
+            subject=case["display_name"],
+        )
+
+        return self.case_collection.insert_one(case_obj)
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.

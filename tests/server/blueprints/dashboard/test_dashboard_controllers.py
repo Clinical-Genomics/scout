@@ -65,7 +65,7 @@ def test_empty_database(real_adapter):
 def test_one_case(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     ## WHEN asking for data
     data = get_dashboard_info(adapter)
@@ -80,10 +80,10 @@ def test_one_case(real_adapter, case_obj):
 def test_one_causative(real_adapter, case_obj):
     ## GIVEN an database with two cases where one has a causative
     adapter = real_adapter
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     case_obj["causatives"] = ["a variant"]
     case_obj["_id"] = "test1"
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     ## WHEN asking for data
     institute_id = case_obj["owner"]
     data = get_dashboard_info(adapter, institute_id=institute_id)
@@ -98,7 +98,7 @@ def test_one_causative(real_adapter, case_obj):
 def test_with_slice_query(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     ## WHEN asking for data
     case_display_id = case_obj["display_name"]
 
@@ -118,13 +118,13 @@ def test_with_slice_query(real_adapter, case_obj):
 def test_with_hpo_query(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     phenotype = {"phenotype_id": "HP:0000001", "feature": "Bioterm"}
 
     ## WITH a phenotype set for one case
     case_obj["phenotype_terms"] = [phenotype]
     case_obj["_id"] = "test1"
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]
@@ -142,13 +142,13 @@ def test_with_hpo_query(real_adapter, case_obj):
 def test_with_phenotype_group_query(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
     phenotype = {"phenotype_id": "HP:0000001", "feature": "Bioterm"}
 
     ## WITH a phenotype set for one case
     case_obj["phenotype_groups"] = [phenotype]
     case_obj["_id"] = "test1"
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]

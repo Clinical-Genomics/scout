@@ -365,7 +365,7 @@ def test_add_mim(adapter, institute_obj, case_obj, user_obj):
 def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     adapter = hpo_database
     logger.info("Add a HPO term for a case")
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj)
 
     # GIVEN a populated database
     assert sum(1 for i in adapter.event_collection.find()) == 0
