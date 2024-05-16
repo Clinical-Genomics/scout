@@ -11,12 +11,12 @@ from scout.exceptions import IntegrityError
 logger = logging.getLogger(__name__)
 
 
-def test_add_cases(adapter, case_obj):
+def test_add_cases(adapter, case_obj, institute_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
 
     ## WHEN adding a new case to the database
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     ## THEN it should be populated with the new case
     result = adapter.cases()
@@ -25,15 +25,44 @@ def test_add_cases(adapter, case_obj):
         assert case["owner"] == case_obj["owner"]
 
 
-def test_add_existing_case(adapter, case_obj):
+def test_add_existing_case(adapter, case_obj, institute_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
 
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
     ## WHEN adding a existing case to the database
     with pytest.raises(IntegrityError):
         ## THEN it should raise integrity error
-        adapter.add_case(case_obj)
+        adapter.add_case(case_obj, institute_obj)
+
+
+def test_add_case_rank_model_version(case_obj, institute_obj, adapter):
+    ## GIVEN a database with no cases
+    assert adapter.case_collection.find_one() is None
+
+    ## WHEN loading a case
+    adapter.add_case(case_obj, institute_obj)
+
+    ## THEN assert that the case have been loaded with rank_model
+    loaded_case = adapter.case_collection.find_one({"_id": case_obj["_id"]})
+
+    assert loaded_case["rank_model_version"] == case_obj["rank_model_version"]
+    assert loaded_case["sv_rank_model_version"] == case_obj["sv_rank_model_version"]
+
+
+def test_add_case_limsid(case_obj, institute_obj, adapter):
+    """Test loading a case with lims_id"""
+
+    ## GIVEN a database with no cases
+    assert adapter.case_collection.find_one() is None
+
+    ## WHEN loading a case
+    adapter.add_case(case_obj, institute_obj)
+
+    ## THEN assert that the case have been loaded with lims id
+    loaded_case = adapter.case_collection.find_one({"_id": case_obj["_id"]})
+
+    assert loaded_case["lims_id"] == case_obj["lims_id"]
 
 
 def test_load_case_existing_case_id(adapter, institute_obj, case_obj):
@@ -42,7 +71,7 @@ def test_load_case_existing_case_id(adapter, institute_obj, case_obj):
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     ## GIVEN an attempt to load the same case using the load_case function
     ## THEN it should raise integrity error
@@ -56,7 +85,7 @@ def test_load_case_existing_display_name(adapter, institute_obj, case_obj):
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     # GIVEN another case with same institute and display name of first case
     config2 = copy.deepcopy(case_obj)
@@ -74,7 +103,7 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     # GIVEN another case with same _id but different display_name
     config2 = copy.deepcopy(case_obj)
@@ -92,7 +121,7 @@ def test_load_case_existing_case_different_individuals(adapter, institute_obj, c
     ## GIVEN an empty database with an isntitute
     adapter.institute_collection.insert_one(institute_obj)
     ## AND a case
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     # GIVEN another case with same _id but different individuals information
     config2 = copy.deepcopy(case_obj)
@@ -413,10 +442,10 @@ def test_get_cases_non_existing_display_name(real_adapter, case_obj):
     assert sum(1 for _ in result) == 0
 
 
-def test_get_non_existing_case(adapter, case_obj):
+def test_get_non_existing_case(adapter, case_obj, institute_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
-    adapter.add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
     logger.info("Testing to get case")
 
     # WHEN retreiving an non existing case from the database

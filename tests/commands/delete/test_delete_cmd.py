@@ -90,8 +90,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     assert n_current_vars < n_initial_vars
     assert n_current_vars + n_variants_to_exclude == n_initial_vars
     # and a relative event should be created
-    event = store.event_collection.find_one()
-    assert event["verb"] == "remove_variants"
+    event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
     assert (
         event["content"]

@@ -957,7 +957,7 @@ class CaseHandler(object):
 
         else:
             LOG.info("Loading case %s into database", case_obj["display_name"])
-            self.add_case(case_obj)
+            self.add_case(case_obj, institute_obj)
 
         return case_obj
 

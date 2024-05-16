@@ -14,22 +14,32 @@ LOG = logging.getLogger(__name__)
 class CaseEventHandler(object):
     """Class to handle case events for the mongo adapter"""
 
-    def add_case(self, case_obj: dict):
+    def get_cli_user(self) -> dict:
+        """
+        Return a faux CLI user with a login username from OS CLI if it is available.
+        """
+        try:
+            cli_user_name = getlogin()
+        except OSError:
+            # no controlling terminal
+            cli_user_name = "CLI user"
+
+        return {"_id": "CLI", "name": cli_user_name}
+
+    def add_case(self, case_obj: dict, institute_obj: dict):
         """Add a case to the database
         If the case already exists exception is raised.
+        Add case will only be called from CLI, or tests, so the user will be the faux CLI user with
+        a login username from OS CLI if available.
         """
         if self.case(case_obj["_id"], projection=ID_PROJECTION):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
-
-        cli_user_name = getlogin() or "CLI user"
-
-        cli_user = {"_id": "CLI", "name": cli_user_name}
         link = f"/{case_obj['owner']}/{case_obj['display_name']}"
 
         self.create_event(
-            institute=case_obj["owner"],
+            institute=institute_obj,
             case=case_obj,
-            user=cli_user,
+            user=self.get_cli_user(),
             link=link,
             category="case",
             verb="add_case",
@@ -37,6 +47,39 @@ class CaseEventHandler(object):
         )
 
         return self.case_collection.insert_one(case_obj)
+
+    def update_case_individual(
+        self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str
+    ):
+        """Update case with new individual data (age and/or Tissue type) for a case
+        and create an associated event"""
+        self._update_case_component(
+            case_obj, user_obj, institute_obj, link, verb="update_individual"
+        )
+
+    def update_case_sample(self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str):
+        """Handle update of sample data data (tissue, tumor_type, tumor_purity) for a cancer case
+        and create an associated event"""
+        self._update_case_component(case_obj, user_obj, institute_obj, link, verb="update_sample")
+
+    def _update_case_component(
+        self, case_obj: dict, user_obj: Optional[dict], institute_obj: dict, link: str, verb: str
+    ):
+        """Update case with new sample data, and create an associated event"""
+        self.update_case(case_obj, keep_date=True)
+
+        if not user_obj:
+            user_obj = self.get_cli_user()
+
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb=verb,
+            subject=case_obj["display_name"],
+        )
 
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
@@ -576,7 +619,7 @@ class CaseEventHandler(object):
         updated_diagnoses = []
         case_diagnoses = case.get("diagnosis_phenotypes") or []
 
-        if remove is True:  # Remove term from case diagnoses list
+        if remove:  # Remove term from case diagnoses list
             for case_dia in case_diagnoses:
                 if case_dia.get("disease_id") == disease_id:
                     continue
@@ -713,7 +756,7 @@ class CaseEventHandler(object):
         )
         return updated_case
 
-    def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_ids):
+    def update_case_group_ids(store, institute_obj, case_obj, user_obj, link, group_ids):
         """Sets case group_ids, used to group a small number of cases for similar analysis.
 
         Args:
@@ -723,7 +766,7 @@ class CaseEventHandler(object):
             updated_case(case_obj)
         """
 
-        self.create_event(
+        store.create_event(
             institute=institute_obj,
             case=case_obj,
             user=user_obj,
@@ -733,7 +776,7 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        updated_case = self.case_collection.find_one_and_update(
+        updated_case = store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"group": group_ids}},
             return_document=pymongo.ReturnDocument.AFTER,

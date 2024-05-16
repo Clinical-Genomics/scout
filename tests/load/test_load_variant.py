@@ -469,7 +469,7 @@ def test_updated_panel(real_variant_database, case_obj):
     case_obj["panels"][0]["panel_id"] = new_panel["_id"]
 
     # Insert the new case and the variants
-    adapter.add_case(case_obj)
+    adapter.case_collection.insert_one(case_obj)
 
     new_caseobj = adapter.case_collection.find_one({"_id": "second_case"})
 

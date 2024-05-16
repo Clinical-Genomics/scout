@@ -99,6 +99,7 @@ def test_get_sanger_unevaluated(
     ## Prepare for variants for Sanger assignment
     # Check that variant collections is empty
     assert sum(1 for i in adapter.variant_collection.find()) == 0
+    previous_events = sum(1 for i in adapter.event_collection.find())
 
     # Adding a number of variants to the empty database
     for index, variant_obj in enumerate(variant_objs):
@@ -140,7 +141,7 @@ def test_get_sanger_unevaluated(
         assert updated_variant["sanger_ordered"]
 
     # Assert that 4 events were created in events collection (Sanger ordered case X2 + Sanger ordered variant X2)
-    assert sum(1 for i in adapter.event_collection.find()) == 4
+    assert sum(1 for i in adapter.event_collection.find()) == previous_events + 4
 
     # Test that the Sanger ordered but not validated for the institute are 2
     # sanger_unevaluated should look like this: [{ 'case_id': [var1, var2] }]
