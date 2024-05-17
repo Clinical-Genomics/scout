@@ -13,7 +13,7 @@ from flask import (
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.constants import ACMG_CRITERIA, ACMG_MAP
+from scout.constants import ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS
 from scout.server.blueprints.variant.controllers import check_reset_variant_classification
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
@@ -336,6 +336,7 @@ def evaluation(evaluation_id):
         case=evaluation_obj["case"],
         variant=evaluation_obj["variant"],
         CRITERIA=ACMG_CRITERIA,
+        ACMG_OPTIONS=ACMG_OPTIONS
     )
 
 
