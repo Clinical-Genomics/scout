@@ -49,15 +49,19 @@
         {% endif %}
       </span>
     </div>
-    <small class="text-muted">
-      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
+    <span>
+      <small class="text-muted">
       {{ data.user_name }} on {{ data.created_at.date() }}
       {% if current_variant %}
-        <button class="btn btn-xs btn-link" name="action" value="delete">Delete</button>
-        <button class="btn btn-xs btn-link" name="action" value="edit">Edit</button>
+          <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST" style="display: inline-block;">
+            <button class="btn btn-xs btn-link" >Delete</button>
+          </form>
+          <form action="{{ url_for('variant.variant_acmg', institute_id=data.institute_id, case_name=data.case.display_name, variant_id=variant._id) }}" style="display: inline-block;">
+            <button class="btn btn-xs btn-link" type="submit">Edit</button>
+          </form>
       {% endif %}
-      </form>
-    </small>
+      </small>
+    </span>
   </li>
 {% endmacro %}
 
