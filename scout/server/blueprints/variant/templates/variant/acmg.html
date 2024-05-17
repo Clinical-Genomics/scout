@@ -25,25 +25,30 @@
 {% endblock %}
 
 {% block content_main %}
+  evaluation and edit -> {{ evaluation and edit }}
   <div class="container mt-3 mb-5">
     <form action="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
       <div class="card panel-default mt-3">
         <div class="card-body">
-          {% if not evaluation %}
-              <div class="mt-3 fixed-bottom bg-light border">
-                <div class="text-center">
-                  {% for option in ACMG_OPTIONS %}
-                    <a id="acmg-{{ option.code }}" class="btn acmg-preview">{{ option.label }}</a>
-                  {% endfor %}
-                </div>
+          <div class="mt-3 fixed-bottom bg-light border">
+              <div class="text-center">
+                {% for option in ACMG_OPTIONS %}
+                  <a id="acmg-{{ option.code }}" class="btn acmg-preview">{{ option.label }}</a>
+                {% endfor %}
               </div>
-            <button class="btn btn-primary form-control">Submit</button>
-          {% else %}
-            <h4>
+            </div>
+          {% if evaluation %}
+             <h4>
               {{ evaluation.classification.label }}
               <span class="badge bg-info">{{ evaluation.classification.short }}</span>
             </h4>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
+            {% if edit %}
+              <br><br>
+              <button class="btn btn-primary form-control">Update</button>
+            {% endif %}
+          {% elif not evaluation %}
+            <button class="btn btn-primary form-control">Submit</button>
           {% endif %}
         </div>
       </div>
@@ -79,7 +84,7 @@
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe}}</span></div>{% endif %}
                       <div class="row">
-                        <select {{ 'disabled' if evaluation }} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
+                        <select {{ 'disabled' if evaluation and edit }} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
                           {% for level in "Strong", "Moderate", "Supporting" %}
                             {% if(level != evidence) %}
@@ -89,10 +94,10 @@
                         </select>
                       </div>
                       <div class="row">
-                        <textarea {{ 'disabled' if evaluation }} class="form-control"
+                        <textarea {{ 'disabled' if evaluation and edit }} class="form-control"
                           name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
                       </div>
-                      <input type="url" {{ 'disabled' if evaluation }} class="form-control" name="link-{{ criterion_code }}"
+                      <input type="url" {{ 'disabled' if evaluation and edit}} class="form-control" name="link-{{ criterion_code }}"
                         placeholder="{{ link or 'Supporting link (optional)' }}" value="">
                     </div>
                   </div>

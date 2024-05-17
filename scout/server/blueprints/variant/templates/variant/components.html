@@ -56,9 +56,9 @@
           <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST" style="display: inline-block;">
             <button class="btn btn-xs btn-link" >Delete</button>
           </form>
-          <form action="{{ url_for('variant.variant_acmg', institute_id=data.institute_id, case_name=data.case.display_name, variant_id=variant._id) }}" style="display: inline-block;">
-            <button class="btn btn-xs btn-link" type="submit">Edit</button>
-          </form>
+          {% if data.criteria %}
+            <a class="btn btn-xs btn-link" href="{{ url_for('variant.evaluation', evaluation_id=data._id, edit=True) }}">Edit</a>
+          {% endif %}
       {% endif %}
       </small>
     </span>
