@@ -336,7 +336,7 @@ def evaluation(evaluation_id):
         case=evaluation_obj["case"],
         variant=evaluation_obj["variant"],
         CRITERIA=ACMG_CRITERIA,
-        ACMG_OPTIONS=ACMG_OPTIONS
+        ACMG_OPTIONS=ACMG_OPTIONS,
     )
 
 
