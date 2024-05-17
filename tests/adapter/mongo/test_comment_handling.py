@@ -12,8 +12,8 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
     # GIVEN a populated database with a variant and no events
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) == 1
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 1
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # WHEN commenting a specific comment on a variant
     updated_variant = adapter.comment(
@@ -46,7 +46,7 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
         variant_id=variant_obj["variant_id"],
         comments=True,
     )
-    assert sum(1 for i in comments) == 0
+    assert sum(1 for _ in comments) == 0
 
 
 def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj):
@@ -54,8 +54,8 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
     # GIVEN a populated database with two variants from two cases and no events
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) == 1
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 1
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # WHEN commenting a global comment on a variant
     updated_variant = adapter.comment(
@@ -88,7 +88,7 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
         variant_id=variant_obj["variant_id"],
         comments=True,
     )
-    assert sum(1 for i in comments) == 1
+    assert sum(1 for _ in comments) == 1
 
 
 def test_global_and_specific_comments_one_case(
@@ -128,7 +128,7 @@ def test_global_and_specific_comments_one_case(
         variant_id=variant_obj["variant_id"],
         comments=True,
     )
-    assert sum(1 for i in comments) == 2
+    assert sum(1 for _ in comments) == 2
 
 
 def test_global_and_specific_comments_two_cases_same_institute(
@@ -177,7 +177,7 @@ def test_global_and_specific_comments_two_cases_same_institute(
         comments=True,
     )
 
-    assert sum(1 for i in comments) == 1
+    assert sum(1 for _ in comments) == 1
 
 
 def test_global_and_specific_comments_two_cases_different_institutes(
@@ -229,4 +229,4 @@ def test_global_and_specific_comments_two_cases_different_institutes(
         comments=True,
     )
 
-    assert sum(1 for i in comments) == 1
+    assert sum(1 for _ in comments) == 1

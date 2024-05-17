@@ -188,7 +188,7 @@ def test_evaluated_variants(case_obj, institute_obj, user_obj, real_variant_data
     institute_id = case_obj["owner"]
 
     # Assert that the database contains variants
-    n_documents = sum(1 for i in adapter.variant_collection.find())
+    n_documents = sum(1 for _ in adapter.variant_collection.find())
     assert n_documents > 0
 
     ## I want to test for the existence of variants with the following keys:

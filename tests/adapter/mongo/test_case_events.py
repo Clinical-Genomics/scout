@@ -18,7 +18,7 @@ def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, var
         dismiss_variant=dismiss_reason,
     )
     # THEN one event should be found in events collection
-    assert sum(1 for i in adapter.event_collection.find()) == 1
+    assert sum(1 for _ in adapter.event_collection.find()) == 1
     # AND case_dismissed_variants should return a list containing the id of the variant
     assert adapter.case_dismissed_variants(institute_obj, case_obj) == [variant_obj["_id"]]
 
@@ -32,7 +32,7 @@ def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, var
         dismiss_variant=[],  # with this list empty the status is reset to not dismissed
     )
     # THEN two events should be found in events collection
-    assert sum(1 for i in adapter.event_collection.find()) == 2
+    assert sum(1 for _ in adapter.event_collection.find()) == 2
     # AND case_dismissed_variants should NOT return a list containing the id of the variant
     assert adapter.case_dismissed_variants(institute_obj, case_obj) == []
 
@@ -46,6 +46,6 @@ def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, var
         dismiss_variant=dismiss_reason,
     )
     # THEN three events should be found in events collection
-    assert sum(1 for i in adapter.event_collection.find()) == 3
+    assert sum(1 for _ in adapter.event_collection.find()) == 3
     # AND case_dismissed_variants should again return a list containing the id of the variant
     assert adapter.case_dismissed_variants(institute_obj, case_obj) == [variant_obj["_id"]]

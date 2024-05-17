@@ -27,7 +27,7 @@ def test_load_variant_twice(real_populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database twice
     adapter.load_variant(variant_obj=variant_obj)
@@ -117,7 +117,7 @@ def test_load_cancer_SV_variant(
     # GIVEN a database containing one cancer case
     adapter = real_populated_database
     adapter.case_collection.insert_one(cancer_case_obj)
-    assert sum(1 for i in adapter.case_collection.find({"track": "cancer"})) == 1
+    assert sum(1 for _ in adapter.case_collection.find({"track": "cancer"})) == 1
 
     # AND no variants
     assert adapter.variant_collection.find_one() is None
@@ -143,7 +143,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     rank_threshold = 0
@@ -155,7 +155,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     )
     # THEN assert the variant is loaded
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
     pathogenic_categories = set(
         [
             "pathogenic",
@@ -183,7 +183,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     """Test that loading variants will include variants on the managed variants list"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # GIVEN a managed variant info dict for a variant in the file,
     # but which has a rank score less than loading threshold (-2)
@@ -211,7 +211,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     )
 
     # THEN assert any variant is loaded
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     ## THEN assert that the variant has been loaded
     query = adapter.build_query(
@@ -225,14 +225,14 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
         category="snv",
     )
     print("Query: {}".format(query))
-    assert sum(1 for i in adapter.variant_collection.find(query)) == 1
+    assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
 def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     rank_threshold = 0
@@ -244,7 +244,7 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     )
     # THEN assert the variant is loaded
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
         assert variant["rank_score"] >= rank_threshold
@@ -256,7 +256,7 @@ def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     """Test to load variants from a region into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
     chrom = "1"
@@ -272,7 +272,7 @@ def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     )
     # THEN assert all variants loaded are in the given region
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
         assert variant["chromosome"] == chrom
@@ -296,7 +296,7 @@ def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_
     assert mt_variants
 
     # GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
 
@@ -327,7 +327,7 @@ def test_compounds_region(real_populated_database, case_obj):
     variant_type = "clinical"
     category = "snv"
     ## GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
 
     ## WHEN loading a variant into the database
     adapter.load_variants(
