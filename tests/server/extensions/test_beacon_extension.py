@@ -137,8 +137,7 @@ def test_add_variants(app, user_obj, case_obj):
         assert "beacon" in updated_case
 
         # AND the relative event should be saved in the database:
-        beacon_event = store.event_collection.find_one()
-        assert beacon_event["verb"] == "beacon_add"
+        beacon_event = store.event_collection.find_one({"verb": "beacon_add"})
         assert beacon_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
 
 

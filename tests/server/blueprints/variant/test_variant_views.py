@@ -274,7 +274,6 @@ def test_edit_variants_comments(
             level="specific",
         )
         comment = store.event_collection.find_one({"verb": "comment"})
-        assert comment
         assert comment["level"] == "specific"
 
         # WHEN a user updates the comment via the modal form
@@ -297,7 +296,7 @@ def test_edit_variants_comments(
         assert resp.status_code == 302
 
         # And the comment should be updated
-        updated_comment = store.event_collection.find_one()
+        updated_comment = store.event_collection.find_one({"verb": "comment"})
         assert updated_comment["content"] == "a global comment"
         assert updated_comment["level"] == "global"
 

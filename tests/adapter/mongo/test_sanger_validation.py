@@ -98,8 +98,8 @@ def test_get_sanger_unevaluated(
 
     ## Prepare for variants for Sanger assignment
     # Check that variant collections is empty
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
-    previous_events = sum(1 for i in adapter.event_collection.find())
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
+    previous_events = sum(1 for _ in adapter.event_collection.find())
 
     # Adding a number of variants to the empty database
     for index, variant_obj in enumerate(variant_objs):

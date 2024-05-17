@@ -81,6 +81,23 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
+    def update_case_cli(self, case_obj: dict, institute_obj: dict):
+        """Update case with new case obj, and create an associated CLI user event."""
+
+        link = f"/{case_obj['owner']}/{case_obj['display_name']}"
+
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=self.get_cli_user(),
+            link=link,
+            category="case",
+            verb="update_case",
+            subject=case_obj["display_name"],
+        )
+
+        self.update_case(case_obj)
+
     def assign(self, institute, case, user, link):
         """Assign a user to a case.
 
@@ -756,7 +773,7 @@ class CaseEventHandler(object):
         )
         return updated_case
 
-    def update_case_group_ids(store, institute_obj, case_obj, user_obj, link, group_ids):
+    def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_ids):
         """Sets case group_ids, used to group a small number of cases for similar analysis.
 
         Args:
@@ -766,7 +783,7 @@ class CaseEventHandler(object):
             updated_case(case_obj)
         """
 
-        store.create_event(
+        self.create_event(
             institute=institute_obj,
             case=case_obj,
             user=user_obj,
@@ -776,7 +793,7 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        updated_case = store.case_collection.find_one_and_update(
+        updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"group": group_ids}},
             return_document=pymongo.ReturnDocument.AFTER,

@@ -80,7 +80,7 @@ def test_events_timeline(app, user_obj, institute_obj, case_obj):
 
         # GIVEN one user event present in the database
         store.assign(institute=institute_obj, case=case_obj, user=user_obj, link="test_link")
-        assert store.event_collection.find_one()
+        assert store.event_collection.find_one({"verb": "assign"})
 
         resp = client.get(
             url_for(

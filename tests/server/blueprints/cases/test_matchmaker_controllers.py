@@ -115,8 +115,7 @@ def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
         )
 
         # AND the corresponding event should be saved in the database:
-        mme_event = store.event_collection.find_one()
-        assert mme_event["verb"] == "mme_add"
+        mme_event = store.event_collection.find_one({"verb": "mme_add"})
         assert mme_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
 
 
@@ -201,8 +200,7 @@ def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
         assert updated_case.get("mme_submission") is None
 
         # AND an event should have been added to the event collection:
-        mme_event = store.event_collection.find_one()
-        assert mme_event["verb"] == "mme_remove"
+        mme_event = store.event_collection.find_one({"verb": "mme_remove"})
         assert mme_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
 
 
