@@ -53,7 +53,8 @@
       <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
       {{ data.user_name }} on {{ data.created_at.date() }}
       {% if current_variant %}
-        <button class="btn btn-xs btn-link">Delete</button>
+        <button class="btn btn-xs btn-link" name="action" value="delete">Delete</button>
+        <button class="btn btn-xs btn-link" name="action" value="edit">Edit</button>
       {% endif %}
       </form>
     </small>
