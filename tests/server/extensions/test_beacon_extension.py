@@ -170,6 +170,5 @@ def test_remove_variants(app, user_obj, institute_obj, case_obj):
         assert "beacon" not in updated_case
 
         # AND the relative event should be saved in the database:
-        beacon_event = store.event_collection.find_one()
-        assert beacon_event["verb"] == "beacon_remove"
+        beacon_event = store.event_collection.find_one({"verb": "beacon_remove"})
         assert beacon_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
