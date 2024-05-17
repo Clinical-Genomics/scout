@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Edit ACMG classifications from variant page
+- Edit ACMG classifications from variant page (only for classifications with criteria)
 
 ## [4.82.2]
 ### Fixed
