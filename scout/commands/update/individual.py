@@ -96,4 +96,8 @@ def individual(case_id, ind, key, value):
 
             ind_obj[key] = value
 
-    store.update_case_individual(case_obj, keep_date=False)
+    link = f"/{case_obj['owner']}/{case_obj['display_name']}"
+    institute_obj = store.institute(case_obj["owner"])
+    store.update_case_individual(
+        case_obj, user_obj=None, institute_obj=institute_obj, link=link, keep_date=False
+    )
