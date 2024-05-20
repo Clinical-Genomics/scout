@@ -330,6 +330,7 @@ def configure_coverage(app):
         configure_template_filters(app)
         # register chanjo report blueprint
         app.register_blueprint(report_bp, url_prefix="/reports")
+        app.config["chanjo_report"] = True
     else:
         LOG.warning("An SQL db path was given, but chanjo-report could not be registered.")
         app.config["chanjo_report"] = False
