@@ -36,10 +36,11 @@ from .blueprints import (
 
 LOG = logging.getLogger(__name__)
 
-#try:
+# try:
 from chanjo_report.server.app import configure_template_filters
 from chanjo_report.server.blueprints import report_bp
 from chanjo_report.server.extensions import api as chanjo_api
+
 """
 except ImportError:
     chanjo_api = None
