@@ -1,5 +1,6 @@
 """Code for updating information on individuals
 """
+
 from pathlib import Path
 
 import click
@@ -95,4 +96,4 @@ def individual(case_id, ind, key, value):
 
             ind_obj[key] = value
 
-    store.update_case(case_obj)
+    store.update_case_individual(case_obj, keep_date=False)
