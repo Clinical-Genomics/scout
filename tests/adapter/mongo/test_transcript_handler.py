@@ -8,7 +8,7 @@ from scout.models.hgnc_map import HgncGene
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert sum(1 for i in adapter.transcripts()) == 0
+    assert sum(1 for _ in adapter.transcripts()) == 0
 
     ##WHEN inserting a transcript
     transcript_obj = {
@@ -22,15 +22,15 @@ def test_insert_transcript(adapter):
     obj_id = adapter.load_hgnc_transcript(transcript_obj)
 
     ##THEN assert that the transcript is there
-    assert sum(1 for i in adapter.transcripts()) == 1
+    assert sum(1 for _ in adapter.transcripts()) == 1
     ##THEN assert that no transcripts are in the '38' build
-    assert sum(1 for i in adapter.transcripts(build="38")) == 0
+    assert sum(1 for _ in adapter.transcripts(build="38")) == 0
 
 
 def test_insert_many_transcripts(adapter):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert sum(1 for i in adapter.transcripts()) == 0
+    assert sum(1 for _ in adapter.transcripts()) == 0
 
     transcript_objs = []
     ##WHEN inserting a bulk of transcripts
@@ -49,9 +49,9 @@ def test_insert_many_transcripts(adapter):
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert sum(1 for i in adapter.transcripts()) == 300
+    assert sum(1 for _ in adapter.transcripts()) == 300
     ##THEN assert that no transcripts are in the '38' build
-    assert sum(1 for i in adapter.transcripts(build="38")) == 0
+    assert sum(1 for _ in adapter.transcripts(build="38")) == 0
 
 
 def test_insert_many_transcripts_duplicate(adapter):
@@ -81,15 +81,15 @@ def test_insert_many_transcripts_duplicate(adapter):
 def test_insert_transcripts(adapter, transcript_objs):
     adapter = adapter
     ##GIVEN a empty adapter
-    assert sum(1 for i in adapter.transcripts()) == 0
+    assert sum(1 for _ in adapter.transcripts()) == 0
 
     ##WHEN inserting a bulk of transcripts
     result = adapter.load_transcript_bulk(transcript_objs)
 
     ##THEN assert that the transcripts are loaded
-    assert sum(1 for i in adapter.transcripts()) == len(transcript_objs)
+    assert sum(1 for _ in adapter.transcripts()) == len(transcript_objs)
     ##THEN assert that no transcripts are in the '38' build
-    assert sum(1 for i in adapter.transcripts(build="38")) == 0
+    assert sum(1 for _ in adapter.transcripts(build="38")) == 0
 
 
 #################### Combined transcript/gene tests ####################
@@ -97,8 +97,8 @@ def test_insert_transcripts(adapter, transcript_objs):
 
 def test_insert_transcript(adapter):
     ##GIVEN a empty adapter
-    assert sum(1 for i in adapter.transcripts()) == 0
-    assert sum(1 for i in adapter.all_genes()) == 0
+    assert sum(1 for _ in adapter.transcripts()) == 0
+    assert sum(1 for _ in adapter.all_genes()) == 0
 
     ##WHEN inserting a gene and some transcripts
     hgnc_id = 257
@@ -324,6 +324,6 @@ def test_insert_exon_bulk(adapter):
     adapter.load_exon_bulk(exon_bulk)
 
     ##THEN assert that the transcript is there
-    assert sum(1 for i in adapter.exons(build="37")) == 299
+    assert sum(1 for _ in adapter.exons(build="37")) == 299
     ##THEN assert that no transcripts are in the '38' build
-    assert sum(1 for i in adapter.exons(build="38")) == 0
+    assert sum(1 for _ in adapter.exons(build="38")) == 0

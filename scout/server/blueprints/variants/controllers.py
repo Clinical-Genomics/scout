@@ -1996,7 +1996,7 @@ def activate_case(store, institute_obj, case_obj, current_user):
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
 
-def reset_all_dimissed(store, institute_obj, case_obj):
+def reset_all_dismissed(store, institute_obj, case_obj):
     """Reset all dismissed variants for a case.
 
     Args:

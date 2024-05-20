@@ -53,7 +53,7 @@ def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
     res = store.institute_collection.find({"_id": "cust000"})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
@@ -61,7 +61,7 @@ def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     # Test command to upload case using demo resources:
     result = runner.invoke(cli, ["load", "case", load_path])
     assert result.exit_code == 0
-    assert sum(1 for i in store.case_collection.find()) == 1
+    assert sum(1 for _ in store.case_collection.find()) == 1
 
 
 def test_load_case_key_error(mock_app, institute_obj, case_obj, monkeypatch):
@@ -120,7 +120,7 @@ def test_load_case_key_missing(mock_app, institute_obj, case_obj):
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
     res = store.institute_collection.find({"_id": "cust000"})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
@@ -151,7 +151,7 @@ def test_load_case_no_config(mock_app, institute_obj, case_obj):
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
     res = store.institute_collection.find({"_id": "cust000"})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
     no_load_path = ""
 
     # WHEN load command is run
@@ -170,7 +170,7 @@ def test_load_case_bad_path(mock_app, institute_obj, case_obj):
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
     res = store.institute_collection.find({"_id": "cust000"})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
 
     # Make sure the scout config file is available
     assert os.path.exists(load_path)

@@ -6,7 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Events for case CLI events (add_case, update_case, ...)
 - Edit ACMG classifications from variant page (only for classifications with criteria)
+### Changed
+- Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
+### Fixed
+- Fix several tests that relied on number of events after setup to be 0
+- Removed unused load case function
+
 
 ## [4.82.2]
 ### Fixed

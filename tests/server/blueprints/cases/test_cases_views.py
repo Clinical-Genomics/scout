@@ -114,9 +114,8 @@ def test_add_individual_phenotype(app, institute_obj):
         }
     ]
 
-    # AND a relatove event with specific HPO term and affected individual should be created in database
-    update_event = store.event_collection.find_one()
-    assert update_event["hpo_term"] == phenotype_term["phenotype_id"]
+    # AND a relative event with specific HPO term and affected individual should be created in database
+    update_event = store.event_collection.find_one({"hpo_term": phenotype_term["phenotype_id"]})
     assert update_event["individuals"] == [ind_name]
 
 
@@ -181,8 +180,7 @@ def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
         assert updated_case["rerun_monitoring"] is True
 
         # AND an unmonitor event should be created
-        rerun_event = store.event_collection.find_one()
-        assert rerun_event.get("verb") == "rerun_monitor"
+        assert store.event_collection.find_one({"verb": "rerun_monitor"})
 
 
 def test_research(app, institute_obj, case_obj, mocker, mock_redirect):
@@ -772,7 +770,7 @@ def test_case_diagnosis(
     # GIVEN a case with no diagnosis:
     assert case_obj.get("diagnosis_phenotypes") is None
     # And no events in the database
-    assert not store.event_collection.find_one()
+    assert not store.event_collection.find_one({"verb": "update_diagnosis"})
 
     # GIVEN a disease term present in the database
     store.disease_term_collection.insert_one(test_omim_database_term)
@@ -800,7 +798,7 @@ def test_case_diagnosis(
         case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
         assert case_obj.get("diagnosis_phenotypes")
         # And a new event should have been saved into the database
-        assert store.event_collection.find_one()
+        assert store.event_collection.find_one({"verb": "update_diagnosis"})
 
         # WHEN using the same endpoint to remove the diagnosis
         req_data = {"disease_term": disease_id}
@@ -819,7 +817,7 @@ def test_case_diagnosis(
         case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
         assert not case_obj.get("diagnosis_phenotypes")
         # And a new event should have been saved into the database
-        assert sum(1 for _ in store.event_collection.find()) == 2
+        assert sum(1 for _ in store.event_collection.find({"verb": "update_diagnosis"})) == 2
 
 
 def test_pdf_case_report(app, institute_obj, case_obj):

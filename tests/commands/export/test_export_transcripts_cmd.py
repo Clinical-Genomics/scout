@@ -25,7 +25,7 @@ def test_export_transcripts(mock_app):
         "length": 223992,
     }
     assert store.transcript_collection.insert_one(transcript_obj)
-    assert sum(1 for i in store.transcript_collection.find()) == 1
+    assert sum(1 for _ in store.transcript_collection.find()) == 1
 
     # Test the export panel cli without passing any data (default will be build 38)
     result = runner.invoke(cli, ["export", "transcripts"])

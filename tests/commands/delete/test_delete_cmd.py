@@ -21,7 +21,7 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
         cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 5]
     )
     assert result.exit_code == 0
-    n_initial_vars = sum(1 for i in store.variant_collection.find())
+    n_initial_vars = sum(1 for _ in store.variant_collection.find())
 
     # Then the function that delete variants in dry run should run without error
     cmd_params = [
@@ -49,7 +49,7 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
     assert "Estimated space freed" in result.output
 
     # And no variants should be deleted
-    assert sum(1 for i in store.variant_collection.find()) == n_initial_vars
+    assert sum(1 for _ in store.variant_collection.find()) == n_initial_vars
 
 
 def test_delete_variants(mock_app, case_obj, user_obj):
@@ -61,7 +61,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
         cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 5]
     )
     assert result.exit_code == 0
-    n_initial_vars = sum(1 for i in store.variant_collection.find())
+    n_initial_vars = sum(1 for _ in store.variant_collection.find())
     n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
 
     # Then the function that delete variants should run without error
@@ -86,12 +86,11 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     assert "estimated deleted variants" not in result.output
     assert "Estimated space freed" in result.output
     # variants should be deleted
-    n_current_vars = sum(1 for i in store.variant_collection.find())
+    n_current_vars = sum(1 for _ in store.variant_collection.find())
     assert n_current_vars < n_initial_vars
     assert n_current_vars + n_variants_to_exclude == n_initial_vars
     # and a relative event should be created
-    event = store.event_collection.find_one()
-    assert event["verb"] == "remove_variants"
+    event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
     assert (
         event["content"]
@@ -142,7 +141,7 @@ def test_delete_panel(empty_mock_app, testpanel_obj):
     assert "WARNING Deleting panel {}".format(testpanel_obj["panel_name"]) in result.output
 
     # And no panels ahould be available in database
-    assert sum(1 for i in store.panel_collection.find()) == 0
+    assert sum(1 for _ in store.panel_collection.find()) == 0
 
 
 def test_delete_index(empty_mock_app):

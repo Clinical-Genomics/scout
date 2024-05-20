@@ -43,7 +43,7 @@ def test_view_cases(mock_app):
     # load research variants for this case:
     result = runner.invoke(cli, ["load", "variants", "internal_id", "--snv"])
     assert result.exit_code == 0
-    n_vars = sum(1 for i in store.variant_collection.find())
+    n_vars = sum(1 for _ in store.variant_collection.find())
     assert n_vars > 0
 
     # Test CLI with --nr-variants flag
