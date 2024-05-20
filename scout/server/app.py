@@ -40,11 +40,11 @@ try:
     from chanjo_report.server.app import configure_template_filters
     from chanjo_report.server.blueprints import report_bp
     from chanjo_report.server.extensions import api as chanjo_api
-except ImportError:
+except ImportError as error:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.info("chanjo report not installed!")
+    LOG.warning("chanjo-report not properly installed! %s", error.message)
 
 
 def create_app(config_file=None, config=None):
@@ -330,6 +330,9 @@ def configure_coverage(app):
         configure_template_filters(app)
         # register chanjo report blueprint
         app.register_blueprint(report_bp, url_prefix="/reports")
+    else:
+        LOG.warning("An SQL db path was given, but chanjo-report could not be registered.")
+        app.config["SQLALCHEMY_DATABASE_URI"] = False
 
     babel = Babel()
 
