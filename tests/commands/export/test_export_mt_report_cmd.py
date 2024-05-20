@@ -24,7 +24,7 @@ def test_export_mt_report(mock_app, case_obj):
     assert store.variant_collection.find_one() is None
     result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
     assert "INFO Updating variant_rank done" in result.output
-    assert sum(1 for i in store.variant_collection.find({"chromosome": "MT"})) > 0
+    assert sum(1 for _ in store.variant_collection.find({"chromosome": "MT"})) > 0
 
     # Test the CLI providing case_id
     result = runner.invoke(cli, ["export", "mt_report", "--case_id", case_obj["_id"], "--test"])

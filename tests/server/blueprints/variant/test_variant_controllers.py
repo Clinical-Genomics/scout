@@ -327,7 +327,7 @@ def test_case_matching_causatives(app, real_variant_database):
     other_variant["_id"] = "other_variant"
     adapter.variant_collection.insert_one(other_variant)
 
-    assert sum(1 for _ in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.event_collection.find({"verb": "mark_causative"})) == 0
 
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
@@ -340,7 +340,7 @@ def test_case_matching_causatives(app, real_variant_database):
     )
 
     # THEN an event object should have been created linking the variant
-    event_obj = adapter.event_collection.find_one()
+    event_obj = adapter.event_collection.find_one({"verb": "mark_causative"})
     assert event_obj["link"] == link
 
     # THEN an function will find the matching causative

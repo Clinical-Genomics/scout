@@ -94,7 +94,6 @@ def case(
     """
     Update a case in the database
     """
-    adapter = store
 
     if not case_id:
         if not (case_name and institute):
@@ -104,7 +103,7 @@ def case(
             raise click.Abort()
 
     # Check if the case exists
-    case_obj = adapter.case(case_id=case_id, institute_id=institute, display_name=case_name)
+    case_obj = store.case(case_id=case_id, institute_id=institute, display_name=case_name)
 
     if not case_obj:
         LOG.warning("Case %s could not be found", case_id)
@@ -112,7 +111,7 @@ def case(
 
     case_changed = False
     if collaborator:
-        if not adapter.institute(collaborator):
+        if not store.institute(collaborator):
             LOG.warning("Institute %s could not be found", collaborator)
             return
         if not collaborator in case_obj["collaborators"]:
@@ -139,7 +138,8 @@ def case(
         case_changed = True
 
     if case_changed:
-        adapter.update_case(case_obj)
+        institute_obj = store.institute(case_obj["owner"])
+        store.update_case_cli(case_obj, institute_obj)
 
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
@@ -151,7 +151,7 @@ def case(
         if vcf_sv:
             updates["vcf_files.vcf_sv_research"] = vcf_sv_research
 
-        updated_case = adapter.case_collection.find_one_and_update(
+        updated_case = store.case_collection.find_one_and_update(
             {"_id": case_id},
             {"$set": updates},
             return_document=pymongo.ReturnDocument.AFTER,
@@ -159,8 +159,8 @@ def case(
         rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
         # Delete and reload the clinical SV variants
         if updated_case["vcf_files"].get("vcf_sv"):
-            adapter.delete_variants(case_id, variant_type="clinical", category="sv")
-            adapter.load_variants(
+            store.delete_variants(case_id, variant_type="clinical", category="sv")
+            store.load_variants(
                 updated_case,
                 variant_type="clinical",
                 category="sv",
@@ -168,13 +168,13 @@ def case(
             )
         # Delete and reload research SV variants
         if updated_case["vcf_files"].get("vcf_sv_research"):
-            adapter.delete_variants(case_id, variant_type="research", category="sv")
+            store.delete_variants(case_id, variant_type="research", category="sv")
             if updated_case.get("is_research"):
-                adapter.load_variants(
+                store.load_variants(
                     updated_case,
                     variant_type="research",
                     category="sv",
                     rank_threshold=int(rankscore_treshold),
                 )
         # Update case variants count
-        adapter.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)
+        store.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)

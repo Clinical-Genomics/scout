@@ -324,7 +324,7 @@ def test_build_clinsig_filter(real_variant_database):
             ]
         }
     )
-    n_results_raw_query = sum(1 for i in res)
+    n_results_raw_query = sum(1 for _ in res)
     assert n_results_raw_query
 
     # filter real variants using query:
@@ -341,7 +341,7 @@ def test_build_clinsig_filter(real_variant_database):
 
     # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
     res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
     adapter.variant_collection.update_one(
@@ -351,7 +351,7 @@ def test_build_clinsig_filter(real_variant_database):
 
     # One variant has multiple clssig now:
     res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
 
     # Update raw query to find this variant as well
     res = adapter.variant_collection.find(
@@ -375,11 +375,11 @@ def test_build_clinsig_filter(real_variant_database):
             ]
         }
     )
-    n_results_raw_query = sum(1 for i in res)
+    n_results_raw_query = sum(1 for _ in res)
 
     # Makes sure that the variant is found anyway by the query:
     n_filtered_variants = sum(
-        1 for i in adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
+        1 for _ in adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
     )
     assert n_results_raw_query == n_filtered_variants
 
@@ -443,7 +443,7 @@ def test_build_clinsig_always(real_variant_database):
     case_id = case_obj["_id"]
 
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res)
+    assert sum(1 for _ in res)
 
     # filter variants using query:
     filtered_variants = list(adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))

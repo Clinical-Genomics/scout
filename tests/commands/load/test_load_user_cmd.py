@@ -11,7 +11,7 @@ def test_load_user(mock_app, user_obj):
     assert runner
 
     # One user is preloaded into populated database
-    assert sum(1 for i in store.user_collection.find()) == 1
+    assert sum(1 for _ in store.user_collection.find()) == 1
 
     # remove it
     store.user_collection.find_one_and_delete({"_id": user_obj["_id"]})
@@ -37,4 +37,4 @@ def test_load_user(mock_app, user_obj):
     assert result.exit_code == 0
 
     # And the user should be in database:
-    assert sum(1 for i in store.user_collection.find({"_id": user_obj["email"]})) == 1
+    assert sum(1 for _ in store.user_collection.find({"_id": user_obj["email"]})) == 1

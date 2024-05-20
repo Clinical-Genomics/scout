@@ -47,7 +47,7 @@ variants_bp = Blueprint(
 def reset_dismissed(institute_id, case_name):
     """Reset all dismissed variants for a case"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    controllers.reset_all_dimissed(store, institute_obj, case_obj)
+    controllers.reset_all_dismissed(store, institute_obj, case_obj)
     return redirect(request.referrer)
 
 

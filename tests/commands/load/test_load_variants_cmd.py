@@ -78,7 +78,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
     assert runner
 
     # Given an empty variant database
-    assert sum(1 for i in store.variant_collection.find()) == 0
+    assert sum(1 for _ in store.variant_collection.find()) == 0
 
     # After using the CLI uploading SNV variants for a case
     result = runner.invoke(
@@ -87,7 +87,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
     assert result.exit_code == 0
 
     # Variants collection should be populated
-    assert sum(1 for i in store.variant_collection.find()) > 0
+    assert sum(1 for _ in store.variant_collection.find()) > 0
 
     ## Order Sanger for one variant and set it to validated
     one_variant = store.variant_collection.find_one()
@@ -101,7 +101,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # then one variant should have an associated Sanger event
     assert (
-        sum(1 for i in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 1
+        sum(1 for _ in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 1
     )
 
     store.validate(
@@ -115,7 +115,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # then one variant should have an associated Sanger event
     assert (
-        sum(1 for i in store.event_collection.find({"verb": "validate", "category": "variant"}))
+        sum(1 for _ in store.event_collection.find({"verb": "validate", "category": "variant"}))
         == 1
     )
 
@@ -144,5 +144,5 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # And 2 Sanger events shouls be found associated with the variants
     assert (
-        sum(1 for i in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 2
+        sum(1 for _ in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 2
     )

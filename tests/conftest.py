@@ -944,34 +944,34 @@ def real_panel_database(request, real_gene_database, parsed_panel):
 
 
 @pytest.fixture(scope="function")
-def case_database(request, panel_database, parsed_case):
+def case_database(request, panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = panel_database
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     return adapter
 
 
 @pytest.fixture(scope="function")
-def populated_database(request, panel_database, parsed_case):
+def populated_database(request, panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
     LOG.info("Adding case to adapter")
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
     return adapter
 
 
 @pytest.fixture(scope="function")
-def real_populated_database(real_panel_database, parsed_case):
+def real_populated_database(request, real_panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
-    adapter._add_case(case_obj)
+    adapter.add_case(case_obj, institute_obj)
 
     return adapter
 
