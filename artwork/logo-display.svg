@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="637px" height="165px" viewBox="0 0 637 165" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>logo-display</title>
+    <defs>
+        <path d="M60.0016484,0 C27.210989,0 0.628021978,28.2216 0.628021978,59.43135 C0.628021978,103.39395 58.7802198,164.4522 60.0016484,164.99505 C61.2197802,165.5379 119.371978,103.39395 119.371978,59.43135 C119.371978,26.5947 92.7923077,0 60.0016484,0 L60.0016484,0 L60.0016484,0 Z M60.0018067,98.911725 C38.6686231,98.911725 21.3733516,81.6009667 21.3733516,60.2482585 C21.3733516,38.8919333 38.6686231,21.581175 60.0018067,21.581175 C81.3331835,21.581175 98.6266484,38.8919333 98.6266484,60.2482585 C98.6266484,81.6009667 81.3331835,98.911725 60.0018067,98.911725 L60.0018067,98.911725 Z M60,85.8 C73.6553929,85.8 84.7252747,74.7190483 84.7252747,61.05 C84.7252747,47.3809517 73.6553929,36.3 60,36.3 C46.3446071,36.3 35.2747253,47.3809517 35.2747253,61.05 C35.2747253,74.7190483 46.3446071,85.8 60,85.8 L60,85.8 Z" id="path-1"></path>
+    </defs>
+    <g id="logo-display" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Logo">
+            <ellipse id="Oval-1" fill="#FFFFFF" cx="61.6483516" cy="61.05" rx="44.5054945" ry="44.55"></ellipse>
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="path-1" fill="#FFC107" xlink:href="#path-1"></use>
+            <rect id="Rectangle-7-2" fill="#FFFFFF" mask="url(#mask-2)" transform="translate(101.4841, 84.6519) rotate(-330) translate(-101.4841, -84.6519)" x="83.0769231" y="76.9676702" width="36.814429" height="15.3684179"></rect>
+        </g>
+        <text id="Scout" font-family="Helvetica-Bold, Helvetica" font-size="154" font-weight="bold" fill="#FFC107">
+            <tspan x="150" y="132">Scout</tspan>
+        </text>
+    </g>
+</svg>
