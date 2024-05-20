@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Events for case CLI events (add_case, update_case, ...)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
+- Version of chanjo and chanjo libs used for generating coverage reports
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function

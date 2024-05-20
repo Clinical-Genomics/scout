@@ -70,10 +70,7 @@ setup(
     install_requires=REQUIRED,
     include_package_data=True,
     extras_require={
-        "coverage": [
-            "chanjo-report",
-            "pymysql",
-        ],
+        "coverage": ["chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report@remove_alchy"],
     },
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
     test_suite="tests",
