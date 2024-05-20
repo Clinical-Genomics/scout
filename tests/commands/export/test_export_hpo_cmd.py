@@ -28,7 +28,7 @@ def test_export_hpo(mock_app):
         "genes": [17582, 1151],
     }
     store.hpo_term_collection.insert_one(hpo_term)
-    assert sum(1 for i in store.hpo_term_collection.find()) == 1
+    assert sum(1 for _ in store.hpo_term_collection.find()) == 1
 
     # Test CLI with a non-valid HPO term
     result = runner.invoke(cli, ["export", "hpo_genes", "non_HPO_term"])

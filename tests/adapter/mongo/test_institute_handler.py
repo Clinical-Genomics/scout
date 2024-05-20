@@ -8,7 +8,7 @@ from scout.exceptions import IntegrityError
 
 def test_add_institute(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute
 
@@ -31,7 +31,7 @@ def test_add_institute(adapter, institute_obj):
 
 def test_add_institute_twice(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding the institute twice
 
@@ -45,7 +45,7 @@ def test_add_institute_twice(adapter, institute_obj):
 
 def test_fetch_institute(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute
 
@@ -61,7 +61,7 @@ def test_fetch_institute(adapter, institute_obj):
 
 def test_fetch_non_existing_institute(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and trying to fetch another institute
 
@@ -76,7 +76,7 @@ def test_fetch_non_existing_institute(adapter, institute_obj):
 
 def test_update_institute_sanger(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it
 
@@ -100,7 +100,7 @@ def test_update_institute_sanger(adapter, institute_obj, user_obj):
 
 def test_update_institute_sanger_IntegrityError(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it without sanger_recipients
     adapter.add_institute(institute_obj)
@@ -115,7 +115,7 @@ def test_update_institute_sanger_IntegrityError(adapter, institute_obj, user_obj
 
 def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it
 
@@ -141,7 +141,7 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
 
 def test_update_display_name(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it
     adapter.add_institute(institute_obj)
@@ -160,7 +160,7 @@ def test_update_display_name(adapter, institute_obj):
 
 def test_update_institute_coverage_cutoff(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it
 
@@ -184,7 +184,7 @@ def test_update_institute_coverage_cutoff(adapter, institute_obj):
 
 def test_update_institute_sanger_and_cutoff(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it
 
@@ -215,14 +215,14 @@ def test_update_institute_sanger_and_cutoff(adapter, institute_obj, user_obj):
 
 def test_updating_non_existing_institute(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
-    assert sum(1 for i in adapter.institutes()) == 0
+    assert sum(1 for _ in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating the wrong one
 
     adapter.add_institute(institute_obj)
 
     ## THEN assert that the update did not add any institutes to the database
-    assert sum(1 for i in adapter.institutes()) == 1
+    assert sum(1 for _ in adapter.institutes()) == 1
 
     with pytest.raises(IntegrityError):
         adapter.update_institute(internal_id="nom existing", sanger_recipient="john.doe@mail.com")
