@@ -2,10 +2,8 @@
 
 import io
 import os
-import sys
-from shutil import rmtree
 
-from setuptools import Command, find_packages, setup
+from setuptools import find_packages, setup
 
 # Package meta-data.
 NAME = "scout-browser"
