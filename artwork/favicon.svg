@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>favicon</title>
+    <defs>
+        <path d="M18.0005,0 C8.054,0 -0.0095,8.552 -0.0095,18.0095 C-0.0095,31.3315 17.63,49.834 18.0005,49.9985 C18.37,50.163 36.0095,31.3315 36.0095,18.0095 C36.0095,8.059 27.947,0 18.0005,0 L18.0005,0 L18.0005,0 Z M18.000548,29.97325 C11.5294824,29.97325 6.28325,24.7275657 6.28325,18.257048 C6.28325,11.7854343 11.5294824,6.53975 18.000548,6.53975 C24.4710657,6.53975 29.71675,11.7854343 29.71675,18.257048 C29.71675,24.7275657 24.4710657,29.97325 18.000548,29.97325 L18.000548,29.97325 Z M18,26 C22.1421358,26 25.5,22.6421358 25.5,18.5 C25.5,14.3578641 22.1421358,11 18,11 C13.8578641,11 10.5,14.3578641 10.5,18.5 C10.5,22.6421358 13.8578641,26 18,26 L18,26 Z" id="path-1"></path>
+    </defs>
+    <g id="favicon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Logo" transform="translate(7, 0)">
+            <circle id="Oval-1" fill="#FFFFFF" cx="18.5" cy="18.5" r="13.5"></circle>
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="path-1" fill="#FFC107" xlink:href="#path-1"></use>
+            <rect id="Rectangle-7-2" fill="#FFFFFF" mask="url(#mask-2)" transform="translate(30.5835, 25.6521) rotate(-330) translate(-30.5835, -25.6521)" x="25" y="23.3235364" width="11.1670434" height="4.65709634"></rect>
+        </g>
+    </g>
+</svg>

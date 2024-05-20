@@ -1,5 +1,6 @@
 """Code for updating information on individuals
 """
+
 from pathlib import Path
 
 import click
