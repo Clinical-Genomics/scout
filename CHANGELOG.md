@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Events for case CLI events (add_case, update_case, ...)
+- Events for case CLI events (load case, update case, update individual)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 ### Fixed
