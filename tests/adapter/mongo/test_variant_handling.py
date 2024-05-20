@@ -1,4 +1,5 @@
 """Tests for variant handling"""
+
 import logging
 import os
 
@@ -38,7 +39,7 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
     # Make sure that there are no variants in the database
     # GIVEN a populated database without any variants
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     # WHEN adding a number of variants
     index = 0
@@ -47,7 +48,7 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
 
     # THEN the same number of variants should have been loaded
     result = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    nr_variants = sum(1 for i in result)
+    nr_variants = sum(1 for _ in result)
     LOG.info("Number of variants loaded:%s", nr_variants)
     assert nr_variants == index + 1
 
@@ -59,7 +60,7 @@ def test_load_sv_variants(real_populated_database, sv_variant_objs, case_obj):
 
     # GIVEN a populated database without any sv variants
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     # WHEN adding a number of sv variants
     index = 0
@@ -68,7 +69,7 @@ def test_load_sv_variants(real_populated_database, sv_variant_objs, case_obj):
 
     # THEN the same number of SV variants should have been loaded
     result = adapter.variants(case_id=case_id, nr_of_variants=-1, category="sv")
-    assert sum(1 for i in result) == index + 1
+    assert sum(1 for _ in result) == index + 1
 
 
 def test_load_all_variants(real_populated_database, case_obj):
@@ -77,7 +78,7 @@ def test_load_all_variants(real_populated_database, case_obj):
 
     ## GIVEN a populated database without any variants
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     ## WHEN loading all variants into the database
     nr_loaded = adapter.load_variants(
@@ -94,7 +95,7 @@ def test_load_all_variants(real_populated_database, case_obj):
     # THEN the same number of SV variants should have been loaded
     result = adapter.variants(case_id=case_id, nr_of_variants=-1, category="snv")
 
-    assert nr_loaded == sum(1 for i in result)
+    assert nr_loaded == sum(1 for _ in result)
 
 
 def test_load_whole_gene(real_populated_database, variant_objs, case_obj):
@@ -102,7 +103,7 @@ def test_load_whole_gene(real_populated_database, variant_objs, case_obj):
     case_id = case_obj["_id"]
 
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     nr_loaded = adapter.load_variants(
         case_obj=case_obj,
@@ -120,7 +121,7 @@ def test_load_whole_gene(real_populated_database, variant_objs, case_obj):
     gene_obj = adapter.hgnc_gene(hgnc_id)
     assert gene_obj
     res = adapter.variant_collection.find({"hgnc_ids": hgnc_id})
-    nr_variants_in_gene = sum(1 for i in res)
+    nr_variants_in_gene = sum(1 for _ in res)
 
     ## WHEN loading all variants for that gene
     nr_loaded = adapter.load_variants(
@@ -135,7 +136,7 @@ def test_load_whole_gene(real_populated_database, variant_objs, case_obj):
     )
 
     res = adapter.variant_collection.find({"hgnc_ids": hgnc_id})
-    new_nr_variants_in_gene = sum(1 for i in res)
+    new_nr_variants_in_gene = sum(1 for _ in res)
 
     ## Then assert that the other variants where loaded
     assert new_nr_variants_in_gene > nr_variants_in_gene
@@ -146,7 +147,7 @@ def test_load_coordinates(real_populated_database, variant_objs, case_obj):
     case_id = case_obj["_id"]
 
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
+    assert sum(1 for _ in res) == 0
 
     nr_loaded = adapter.load_variants(
         case_obj=case_obj,
@@ -164,7 +165,7 @@ def test_load_coordinates(real_populated_database, variant_objs, case_obj):
     gene_obj = adapter.hgnc_gene(hgnc_id)
     assert gene_obj
     res = adapter.variant_collection.find({"hgnc_ids": hgnc_id})
-    nr_variants_in_gene = sum(1 for i in res)
+    nr_variants_in_gene = sum(1 for _ in res)
 
     ## WHEN loading all variants for that gene
     nr_loaded = adapter.load_variants(
@@ -179,7 +180,7 @@ def test_load_coordinates(real_populated_database, variant_objs, case_obj):
     )
 
     res = adapter.variant_collection.find({"hgnc_ids": hgnc_id})
-    new_nr_variants_in_gene = sum(1 for i in res)
+    new_nr_variants_in_gene = sum(1 for _ in res)
 
     ## Then assert that the other variants where loaded
     assert new_nr_variants_in_gene > nr_variants_in_gene

@@ -805,27 +805,6 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
 
-def _update_case(store, case_obj, user_obj, institute_obj, verb):
-    """Update case with new sample data, and create an associated event"""
-    store.update_case(case_obj, keep_date=True)
-
-    link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
-    )
-
-    store.create_event(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        category="case",
-        verb=verb,
-        subject=case_obj["display_name"],
-    )
-
-
 def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissue):
     """Handle update of individual data (age and/or Tissue type) for a case"""
 
@@ -841,8 +820,13 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     case_obj["individuals"] = case_individuals
 
-    verb = "update_individual"
-    _update_case(store, case_obj, user_obj, institute_obj, verb)
+    link = url_for(
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
+    )
+
+    store.update_case_individual(case_obj, user_obj, institute_obj, link)
 
 
 def update_cancer_samples(
@@ -866,8 +850,13 @@ def update_cancer_samples(
 
     case_obj["individuals"] = case_samples
 
-    verb = "update_sample"
-    _update_case(store, case_obj, user_obj, institute_obj, verb)
+    link = url_for(
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
+    )
+
+    store.update_case_sample(case_obj, user_obj, institute_obj, link)
 
 
 def _all_hpo_gene_list_genes(

@@ -81,8 +81,8 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 
@@ -98,7 +98,7 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
     # THEN the case should have a causative variant
     assert len(updated_case["causatives"]) == 1
     # THEN two events should have been created, one for the case and one for the variant
-    assert sum(1 for i in adapter.event_collection.find()) == 2
+    assert sum(1 for _ in adapter.event_collection.find()) == 2
 
     # THEN assert that case status is updated to solved
     assert updated_case["status"] == "solved"
@@ -141,7 +141,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     assert updated_case["status"] == "active"
     ## THEN assert that two more events was created
 
-    assert sum(1 for i in adapter.event_collection.find()) == 4
+    assert sum(1 for _ in adapter.event_collection.find()) == 4
 
 
 def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
@@ -151,8 +151,8 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # And at least a phenotype (OMIM diagnosis or HPO terms)
     omim_terms = ["OMIM:145590", "OMIM:615349"]
@@ -177,7 +177,7 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
     assert len(updated_case["partial_causatives"].keys()) == 1
 
     # And 2 associated events should be created in database
-    assert sum(1 for i in adapter.event_collection.find()) == 2
+    assert sum(1 for _ in adapter.event_collection.find()) == 2
 
 
 def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
@@ -187,8 +187,8 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # And at least a phenotype (OMIM diagnosis or HPO terms)
     omim_terms = ["OMIM:145590", "OMIM:615349"]
@@ -222,7 +222,7 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
     assert len(updated_case["partial_causatives"]) == 0
 
     ## THEN assert that two more events was created
-    assert sum(1 for i in adapter.event_collection.find()) == 4
+    assert sum(1 for _ in adapter.event_collection.find()) == 4
 
 
 def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
@@ -232,8 +232,8 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
     assert variant.get("sanger_ordered") is not True
@@ -249,7 +249,7 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
     )
 
     # THEN one events should have been created, one for the variant
-    assert sum(1 for i in adapter.event_collection.find()) == 2
+    assert sum(1 for _ in adapter.event_collection.find()) == 2
 
     # THEN updated variant should have same id as original variant
     assert variant.get("_id") == updated_variant.get("_id")
@@ -270,8 +270,8 @@ def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     link = "orderSangerlink"
     updated_variant = adapter.order_verification(
@@ -406,8 +406,8 @@ def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 
@@ -442,8 +442,8 @@ def test_update_manual_rank(adapter, institute_obj, case_obj, user_obj, variant_
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 

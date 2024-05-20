@@ -23,7 +23,7 @@ def test_load_institute(empty_mock_app):
     ins_id = "cust000"
     display_name = "A special name"
 
-    assert sum(1 for i in store.institute_collection.find()) == 0
+    assert sum(1 for _ in store.institute_collection.find()) == 0
 
     ## WHEN loading the institute into the database
     result = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-d", display_name])
@@ -38,7 +38,7 @@ def test_load_institute(empty_mock_app):
     )
 
     ## THEN assert institute is added
-    assert sum(1 for i in store.institute_collection.find()) == 1
+    assert sum(1 for _ in store.institute_collection.find()) == 1
 
 
 def test_load_institute2(empty_mock_app):
@@ -52,7 +52,7 @@ def test_load_institute2(empty_mock_app):
     display_name = "A special name"
     loqusdb = "loqusDB_test"
 
-    assert sum(1 for i in store.institute_collection.find()) == 0
+    assert sum(1 for _ in store.institute_collection.find()) == 0
 
     ## WHEN loading the institute into the database
     result = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-l", loqusdb])
@@ -67,7 +67,7 @@ def test_load_institute2(empty_mock_app):
     )
 
     ## THEN assert institute is added
-    assert sum(1 for i in store.institute_collection.find()) == 1
+    assert sum(1 for _ in store.institute_collection.find()) == 1
 
 
 def test_load_institute_exception(empty_mock_app):

@@ -681,3 +681,20 @@
     </div>
   </form>
 {% endmacro %}
+
+{% macro sex_table_cell_content(ind) %}
+  {% if ind.sex_human in ['female','male'] %}
+    {% if ind.sex_human == 'female' %}
+      F
+    {% elif ind.sex_human == 'male' %}
+      M
+    {% else %}
+      {{ind.sex_human}}
+    {% endif %}
+  {% endif %}
+  {% if ind.confirmed_sex %}
+    <i class="fa fa-check"></i>
+  {% else %}
+    <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex is not confirmed."></span>
+  {% endif %}
+{% endmacro %}

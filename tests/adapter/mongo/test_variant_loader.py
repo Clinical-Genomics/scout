@@ -6,7 +6,7 @@ from cyvcf2 import VCF
 def test_update_variant_rank_no_variants(real_populated_database):
     adapter = real_populated_database
     ## GIVEN a database without any variants
-    assert sum(1 for i in adapter.variant_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) == 0
     case_obj = {"_id": "test"}
     ## WHEN Trying to update variant rank for nen existing variants
     adapter.update_variant_rank(case_obj, variant_type="clinical", category="snv")

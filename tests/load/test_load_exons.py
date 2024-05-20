@@ -9,9 +9,9 @@ from scout.utils.handle import get_file_handle
 
 def test_load_exons(adapter, gene_bulk, transcripts_file, exons_handle):
     # GIVEN a empty database
-    assert sum(1 for i in adapter.all_genes()) == 0
-    assert sum(1 for i in adapter.transcripts()) == 0
-    assert sum(1 for i in adapter.exons()) == 0
+    assert sum(1 for _ in adapter.all_genes()) == 0
+    assert sum(1 for _ in adapter.transcripts()) == 0
+    assert sum(1 for _ in adapter.exons()) == 0
 
     # WHEN inserting a number of genes and some transcripts and the exons
     adapter.load_hgnc_bulk(gene_bulk)
@@ -25,4 +25,4 @@ def test_load_exons(adapter, gene_bulk, transcripts_file, exons_handle):
 
     load_exons(adapter, exons_handle, build="37", nr_exons=19826)
 
-    assert sum(1 for i in adapter.exons()) > 1
+    assert sum(1 for _ in adapter.exons()) > 1

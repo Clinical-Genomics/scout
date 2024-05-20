@@ -941,7 +941,6 @@ def parse_variant(
         variant_obj["end_chrom"] = variant_obj["chromosome"]
 
     # common motif count for STR variants
-
     variant_obj["str_mc"] = get_str_mc(variant_obj)
 
     # variant level links shown on variants page
@@ -970,7 +969,6 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
-
     alt_mc = None
     if variant_obj["alternative"] == ".":
         return alt_mc
@@ -982,9 +980,9 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
     if alt_mc:
         return alt_mc
 
-    alt_num = NUM.match(variant_obj["alternative"])
+    alt_num = NUM.search(variant_obj["alternative"])
     if alt_num:
-        alt_mc = int(alt_num)
+        alt_mc = int(alt_num.group())
         return alt_mc
 
     return None
@@ -1998,7 +1996,7 @@ def activate_case(store, institute_obj, case_obj, current_user):
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
 
-def reset_all_dimissed(store, institute_obj, case_obj):
+def reset_all_dismissed(store, institute_obj, case_obj):
     """Reset all dismissed variants for a case.
 
     Args:

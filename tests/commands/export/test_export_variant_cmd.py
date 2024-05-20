@@ -15,7 +15,7 @@ def test_export_variants(mock_app, case_obj):
 
     # Load snv variants using the cli
     result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
-    assert sum(1 for i in store.variant_collection.find()) > 0
+    assert sum(1 for _ in store.variant_collection.find()) > 0
 
     # update case registering a causative variant
     variant_obj = store.variant_collection.find_one()
@@ -23,7 +23,7 @@ def test_export_variants(mock_app, case_obj):
         {"_id": case_obj["_id"]}, {"$set": {"causatives": [variant_obj["_id"]]}}
     )
     res = store.case_collection.find({"causatives": {"$exists": True}})
-    assert sum(1 for i in res) == 1
+    assert sum(1 for _ in res) == 1
 
     # Test the cli by not providing any options or arguments
     result = runner.invoke(cli, ["export", "variants"])

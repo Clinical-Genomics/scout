@@ -947,7 +947,7 @@ class CaseHandler(object):
 
         else:
             LOG.info("Loading case %s into database", case_obj["display_name"])
-            self._add_case(case_obj)
+            self.add_case(case_obj, institute_obj)
 
         return case_obj
 
@@ -961,18 +961,6 @@ class CaseHandler(object):
             return case["custom_images"].get(f"{variant_category}_variants_images") or case[
                 "custom_images"
             ].get(variant_category)
-
-    def _add_case(self, case_obj):
-        """Add a case to the database
-        If the case already exists exception is raised
-
-         Args:
-             case_obj(Case)
-        """
-        if self.case(case_obj["_id"], projection=ID_PROJECTION):
-            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
-
-        return self.case_collection.insert_one(case_obj)
 
     def update_case(self, case_obj, keep_date=False):
         """Update a case in the database.

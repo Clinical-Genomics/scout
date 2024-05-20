@@ -1,3 +1,4 @@
+{% from "cases/utils.html" import sex_table_cell_content %}
 
 {% macro cancer_individuals_table(case, institute, tissues, gens_info=None) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
@@ -138,18 +139,7 @@
                   <option {% if not ind.sex_human in ["female", "male"] %} selected= {% endif %} value="unknown">Unknown</option>
                 </select>
                 <div class="sex-display fw-bold">
-                  {% if ind.sex_human in ['female','male'] %}
-                    {% if ind.sex_human == 'female' %}
-                      F
-                    {% elif ind.sex_human == 'male' %}
-                      M
-                    {% else %}
-                      {{ind.sex_human}}
-                    {% endif %}
-                  {% endif %}
-                  {% if ind.confirmed_sex %}
-                    <i class="fa fa-check"></i>
-                  {% endif %}
+                  {{ sex_table_cell_content(ind) }}
                 </div>
               </td>
               <td><input name="age_{{ind.individual_id}}" type="number" step="0.1" min="0"
