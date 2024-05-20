@@ -90,7 +90,7 @@
             {% endif %}
             </div>
           {% endfor %}
-          {% if config.SQLALCHEMY_DATABASE_URI %}
+          {% if config.chanjo_report %}
             <div class="d-flex flex-wrap ms-1">
               {% for gene in variant.genes %}
                 <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">

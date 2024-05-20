@@ -332,7 +332,7 @@ def configure_coverage(app):
         app.register_blueprint(report_bp, url_prefix="/reports")
     else:
         LOG.warning("An SQL db path was given, but chanjo-report could not be registered.")
-        app.config["SQLALCHEMY_DATABASE_URI"] = False
+        app.config["chanjo_report"] = False
 
     babel = Babel()
 
