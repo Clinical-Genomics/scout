@@ -44,7 +44,7 @@ except ImportError as error:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.warning("chanjo-report not properly installed! %s", error)
+    LOG.warning("chanjo-report is not properly installed! %s.", error)
 
 
 def create_app(config_file=None, config=None):
