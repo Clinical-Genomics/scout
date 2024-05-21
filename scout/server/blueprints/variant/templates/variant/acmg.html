@@ -37,7 +37,7 @@
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
             {% if edit %}
               <br><br>
-              <button class="btn btn-primary form-control">Reclassify</button>
+              <button class="btn btn-primary form-control" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Reclassify</button>
             {% endif %}
           {% elif not evaluation %}
             <button class="btn btn-primary form-control">Submit</button>
