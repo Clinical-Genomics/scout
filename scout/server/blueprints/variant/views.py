@@ -13,7 +13,7 @@ from flask import (
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.constants import ACMG_CRITERIA, ACMG_MAP
+from scout.constants import ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS
 from scout.server.blueprints.variant.controllers import check_reset_variant_classification
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
@@ -308,7 +308,7 @@ def variant_update(institute_id, case_name, variant_id):
 @variant_bp.route("/evaluations/<evaluation_id>", methods=["GET", "POST"])
 @templated("variant/acmg.html")
 def evaluation(evaluation_id):
-    """Show or delete an ACMG evaluation."""
+    """Show, edit or delete an ACMG evaluation."""
 
     evaluation_obj = store.get_evaluation(evaluation_id)
     if evaluation_obj is None:
@@ -328,12 +328,15 @@ def evaluation(evaluation_id):
             flash("Cleared ACMG classification.", "info")
 
         return redirect(link)
+
     return dict(
         evaluation=evaluation_obj,
+        edit=bool(request.args.get("edit")),
         institute=evaluation_obj["institute"],
         case=evaluation_obj["case"],
         variant=evaluation_obj["variant"],
         CRITERIA=ACMG_CRITERIA,
+        ACMG_OPTIONS=ACMG_OPTIONS,
     )
 
 
