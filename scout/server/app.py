@@ -36,18 +36,15 @@ from .blueprints import (
 
 LOG = logging.getLogger(__name__)
 
-# try:
-from chanjo_report.server.app import configure_template_filters
-from chanjo_report.server.blueprints import report_bp
-from chanjo_report.server.extensions import api as chanjo_api
-
-"""
-except ImportError:
+try:
+    from chanjo_report.server.app import configure_template_filters
+    from chanjo_report.server.blueprints import report_bp
+    from chanjo_report.server.extensions import api as chanjo_api
+except Exception as error:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.info("chanjo report not installed!")
-"""
+    LOG.info(f"Error importing chanjo ->{error}!")
 
 
 def create_app(config_file=None, config=None):
