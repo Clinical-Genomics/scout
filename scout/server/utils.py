@@ -209,7 +209,7 @@ def user_institutes(store, login_user):
 def case_has_chanjo_coverage(case_obj: dict):
     """Set case_obj["chanjo_coverage"] to True if there is an instance of chanjo available and case has coverage stats in chanjo."""
 
-    chanjo_instance: bool = bool(current_app.config.get("SQLALCHEMY_DATABASE_URI"))
+    chanjo_instance: bool = bool(current_app.config.get("chanjo_report"))
     if case_obj.get("track", "rare") != "cancer" and chanjo_instance:
         case_obj["chanjo_coverage"] = True
 
