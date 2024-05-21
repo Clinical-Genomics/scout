@@ -735,7 +735,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     file_header = MT_EXPORT_HEADER
     coverage_stats = None
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
-    if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
+    if current_app.config.get("chanjo_report"):
         coverage_stats = mt_coverage_stats(samples)
 
     query = {"chrom": "MT"}
