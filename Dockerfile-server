@@ -48,7 +48,7 @@ WORKDIR /home/worker/app
 COPY --chown=worker:worker . /home/worker/app
 
 # Install only Scout app
-RUN pip install --no-cache-dir --editable .
+RUN pip install --no-cache-dir --editable .[coverage]
 
 # Run the app as non-root user
 USER worker

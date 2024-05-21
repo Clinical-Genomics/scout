@@ -325,7 +325,6 @@ def configure_coverage(app):
     """Setup coverage related extensions."""
     # setup chanjo report
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
-    app.config["chanjo_report"] = False
 
     if not chanjo_api:
         raise ImportError("An SQL db path was given, but chanjo-report could not be registered.")
