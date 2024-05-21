@@ -40,11 +40,11 @@ try:
     from chanjo_report.server.app import configure_template_filters
     from chanjo_report.server.blueprints import report_bp
     from chanjo_report.server.extensions import api as chanjo_api
-except ImportError:
+except ImportError as error:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.info("chanjo report not installed!")
+    LOG.warning("chanjo-report is not properly installed! %s.", error)
 
 
 def create_app(config_file=None, config=None):
@@ -322,14 +322,22 @@ def configure_email_logging(app):
 
 
 def configure_coverage(app):
-    """Setup coverage related extensions."""
-    # setup chanjo report
+    """Setup coverage related extensions, i.e. the chanjo-report extension.
+    Fail with exception if the Chanjo API did not load although
+    a corresponding app configuration option was given, otherwise
+    register its blueprint and set an app state variable indicating that
+    chanjo_report is available. Use Babel to set report language."""
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
-    if chanjo_api:
-        chanjo_api.init_app(app)
-        configure_template_filters(app)
-        # register chanjo report blueprint
-        app.register_blueprint(report_bp, url_prefix="/reports")
+
+    if not chanjo_api:
+        raise ImportError("An SQL db path was given, but chanjo-report could not be registered.")
+
+    chanjo_api.init_app(app)
+    configure_template_filters(app)
+
+    app.register_blueprint(report_bp, url_prefix="/reports")
+    app.config["chanjo_report"] = True
 
     babel = Babel()
 
