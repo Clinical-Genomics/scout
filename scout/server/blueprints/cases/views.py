@@ -271,10 +271,7 @@ def pdf_case_report(institute_id, case_name):
         store=store, institute_obj=institute_obj, case_obj=case_obj
     )
     # add coverage report on the bottom of this report
-    if (
-        current_app.config.get("SQLALCHEMY_DATABASE_URI")
-        and case_obj.get("track", "rare") != "cancer"
-    ):
+    if current_app.config.get("chanjo_report") and case_obj.get("track", "rare") != "cancer":
         data["coverage_report"] = controllers.coverage_report_contents(
             request.url_root, institute_obj, case_obj
         )
