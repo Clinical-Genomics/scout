@@ -49,14 +49,19 @@
         {% endif %}
       </span>
     </div>
-    <small class="text-muted">
-      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
+    <span>
+      <small class="text-muted">
       {{ data.user_name }} on {{ data.created_at.date() }}
       {% if current_variant %}
-        <button class="btn btn-xs btn-link">Delete</button>
+          <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST" style="display: inline-block;">
+            <button class="btn btn-xs btn-link" >Delete</button>
+          </form>
+          {% if data.criteria %}
+            <a class="btn btn-xs btn-link" href="{{ url_for('variant.evaluation', evaluation_id=data._id, edit=True) }}" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Edit</a>
+          {% endif %}
       {% endif %}
-      </form>
-    </small>
+      </small>
+    </span>
   </li>
 {% endmacro %}
 
