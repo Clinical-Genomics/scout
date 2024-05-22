@@ -732,7 +732,6 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     """
     today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     samples = case_obj.get("individuals")
-    file_header = MT_EXPORT_HEADER
     coverage_stats = None
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
     if current_app.config.get("chanjo_report"):
