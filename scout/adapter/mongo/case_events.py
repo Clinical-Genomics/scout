@@ -49,24 +49,34 @@ class CaseEventHandler(object):
         return self.case_collection.insert_one(case_obj)
 
     def update_case_individual(
-        self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str
+        self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str, keep_date: bool = True
     ):
         """Update case with new individual data (age and/or Tissue type) for a case
         and create an associated event"""
         self._update_case_component(
-            case_obj, user_obj, institute_obj, link, verb="update_individual"
+            case_obj, user_obj, institute_obj, link, verb="update_individual", keep_date=keep_date
         )
 
-    def update_case_sample(self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str):
+    def update_case_sample(
+        self, case_obj: dict, user_obj: dict, institute_obj: dict, link: str, keep_date=True
+    ):
         """Handle update of sample data data (tissue, tumor_type, tumor_purity) for a cancer case
         and create an associated event"""
-        self._update_case_component(case_obj, user_obj, institute_obj, link, verb="update_sample")
+        self._update_case_component(
+            case_obj, user_obj, institute_obj, link, verb="update_sample", keep_date=keep_date
+        )
 
     def _update_case_component(
-        self, case_obj: dict, user_obj: Optional[dict], institute_obj: dict, link: str, verb: str
+        self,
+        case_obj: dict,
+        user_obj: Optional[dict],
+        institute_obj: dict,
+        link: str,
+        verb: str,
+        keep_date: bool = True,
     ):
         """Update case with new sample data, and create an associated event"""
-        self.update_case(case_obj, keep_date=True)
+        self.update_case(case_obj, keep_date)
 
         if not user_obj:
             user_obj = self.get_cli_user()
