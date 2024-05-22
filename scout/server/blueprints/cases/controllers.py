@@ -674,7 +674,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     return data
 
 
-def mt_coverage_stats(individuals, ref_chrom="14"):
+def mt_coverage_stats(individuals, ref_chrom="14") -> dict:
     """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
 
     Args:
@@ -765,9 +765,8 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
-        if bool(
-            coverage_stats
-        ):  # it's None if app is not connected to Chanjo or {} if samples are not in Chanjo db
+        if coverage_stats and coverage_stats.get(sample_id):
+            # it's None if app is not connected to Chanjo or {} if samples are not in Chanjo db
             # Write coverage stats header after introducing 2 empty lines
             for col, field in enumerate(MT_COV_STATS_HEADER):
                 Report_Sheet.write(row + 3, col, field)

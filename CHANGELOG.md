@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused load case function
 - Artwork logo sync sketch with png and export svg
 - Clearer exception handling on chanjo-report setup - fail early and visibly
+- MT-report crashing when one of the case samples is not in chanjo database
 
 ## [4.82.2]
 ### Fixed
