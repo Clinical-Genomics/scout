@@ -54,11 +54,11 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    case_file_types = []
+    case_file_types = set()
 
     for file_type in FILE_TYPE_MAP:
         if case_obj.get("vcf_files", {}).get(file_type):
-            case_file_types.append(
+            case_file_types.add(
                 (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
             )
 

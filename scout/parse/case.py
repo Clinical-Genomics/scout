@@ -86,7 +86,6 @@ def parse_case_data(**kwargs):
         config_dict["case_id"] = config_dict["family"]
 
     if config_dict.get("smn_tsv"):
-        LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
 
     return remove_none_recursive(config_dict)

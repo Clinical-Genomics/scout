@@ -186,11 +186,11 @@ class GeneHandler(object):
         if build == "GRCh38":
             build = "38"
 
-        LOG.info("Fetching all genes")
+        LOG.debug("Fetching all genes")
 
         hgnc_tx = {}
         if add_transcripts:
-            LOG.info("Adding transcripts")
+            LOG.debug("Adding transcripts")
             for tx in self.transcripts(build=str(build)):
                 hgnc_id = tx["hgnc_id"]
                 if not hgnc_id in hgnc_tx:
@@ -333,7 +333,7 @@ class GeneHandler(object):
         Returns:
             alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
-        LOG.info("Fetching all genes by alias")
+        LOG.debug("Fetching all genes by alias")
         # Collect one entry for each alias symbol that exists
         alias_genes = {}
         # Loop over all genes

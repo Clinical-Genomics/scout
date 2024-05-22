@@ -32,7 +32,6 @@ LOG = logging.getLogger(__name__)
 
 
 class VariantLoader(object):
-
     """Methods to handle variant loading in the mongo adapter"""
 
     def update_variant(self, variant_obj):
@@ -363,6 +362,9 @@ class VariantLoader(object):
         sample_info=None,
         custom_images=None,
         local_archive_info=None,
+        gene_to_panels=None,
+        hgncid_to_gene=None,
+        genomic_intervals=None,
     ):
         """Perform the loading of variants
 
@@ -389,10 +391,6 @@ class VariantLoader(object):
             nr_inserted(int)
         """
         build = build or "37"
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        gene_to_panels = self.gene_to_panels(case_obj)
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
         LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
@@ -676,6 +674,11 @@ class VariantLoader(object):
                 "VCF files for {} {} does not seem to exist".format(category, variant_type)
             )
 
+        gene_to_panels = self.gene_to_panels(case_obj)
+        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
         for variant_file in variant_files:
             if not self._has_variants_in_file(variant_file):
                 continue
@@ -689,7 +692,7 @@ class VariantLoader(object):
 
             vep_header = parse_vep_header(vcf_obj)
             if vep_header:
-                LOG.info("Found VEP header %s", "|".join(vep_header))
+                LOG.debug("Found VEP header %s", "|".join(vep_header))
 
             # This is a dictionary to tell where ind are in vcf
             individual_positions = {ind: i for i, ind in enumerate(vcf_obj.samples)}
@@ -703,7 +706,7 @@ class VariantLoader(object):
                     else:
                         sample_info[ind["individual_id"]] = "control"
 
-            # Check if a region scould be uploaded
+            # Check if a region should be uploaded
             region = ""
             if gene_obj:
                 chrom = gene_obj["chromosome"]
@@ -736,6 +739,9 @@ class VariantLoader(object):
                     sample_info=sample_info,
                     custom_images=custom_images,
                     local_archive_info=local_archive_info,
+                    gene_to_panels=gene_to_panels,
+                    hgncid_to_gene=hgncid_to_gene,
+                    genomic_intervals=genomic_intervals,
                 )
             except Exception as error:
                 LOG.exception("unexpected error")
