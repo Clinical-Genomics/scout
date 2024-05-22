@@ -938,7 +938,7 @@ class CaseHandler(object):
                 force_update_case=True,
             )
 
-            self.update_case(case_obj)
+            self.update_case_cli(case_obj, institute_obj)
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
