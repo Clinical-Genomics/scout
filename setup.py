@@ -69,7 +69,7 @@ setup(
     include_package_data=True,
     extras_require={
         "coverage": [
-            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report@remove_alchy"
+            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report@indexed_genes_overview"
         ],
     },
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
