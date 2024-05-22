@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused load case function
 - Artwork logo sync sketch with png and export svg
 - Clearer exception handling on chanjo-report setup - fail early and visibly
-- mtDNA report crashing one or more samples from a case is not in the chanjo database
+- mtDNA report crashing when one or more samples from a case is not in the chanjo database
 
 ## [4.82.2]
 ### Fixed
