@@ -65,7 +65,7 @@ def test_case_has_mt_alignments(case_obj):
 
 
 def test_case_has_case_has_mtdna_report_show(case_obj):
-    """Test function that adds info on availability of MT report for a non-cancer case without WTS analyses ."""
+    """Test function that adds info on availability of MT report for a non-cancer case without WTS analyses."""
 
     # GIVEN a non-cancer case
     assert case_obj["track"] != "cancer"
@@ -79,7 +79,7 @@ def test_case_has_case_has_mtdna_report_show(case_obj):
 
 
 def test_case_has_case_has_mtdna_report_hide(fusion_case_obj):
-    """Test function that adds info on availability of MT report for a non-cancer case with WTS analyses ."""
+    """Test function that adds info on availability of MT report for a non-cancer case with WTS analyses."""
 
     # GIVEN a non-cancer case
     fusion_case_obj["track"] = "rare"
