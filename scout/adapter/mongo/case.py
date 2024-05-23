@@ -883,6 +883,7 @@ class CaseHandler(object):
                 self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             )
 
+        # load from files
         files = [
             {
                 "file_name": file_type,
@@ -892,25 +893,23 @@ class CaseHandler(object):
             for file_type in FILE_TYPE_MAP.keys()
         ]
 
-        deleted = []
+        # (type, category) tuples are not unique - eg SNV, SNV_MT
+        load_variants = set()
         try:
             for vcf_file in files:
-                # Check if file exists
+                # Check if any file of this kind is configured for case
                 if not case_obj["vcf_files"].get(vcf_file["file_name"]):
                     LOG.debug("didn't find {}, skipping".format(vcf_file["file_name"]))
                     continue
+                load_variants.add((vcf_file["variant_type"], vcf_file["category"]))
 
-                variant_type = vcf_file["variant_type"]
-                category = vcf_file["category"]
+            for variant_type, category in load_variants:
                 if update:
-                    if (variant_type, category) not in deleted:
-                        self.delete_variants(
-                            case_id=case_obj["_id"],
-                            variant_type=variant_type,
-                            category=category,
-                        )
-                        deleted.append((variant_type, category))
-
+                    self.delete_variants(
+                        case_id=case_obj["_id"],
+                        variant_type=variant_type,
+                        category=category,
+                    )
                 # add variants
                 self.load_variants(
                     case_obj=case_obj,
