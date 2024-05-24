@@ -1,4 +1,5 @@
 """Tests for server utils"""
+
 import tempfile
 from datetime import datetime
 from io import BytesIO
@@ -12,6 +13,7 @@ from scout.server.utils import (
     append_safe,
     case_has_alignments,
     case_has_mt_alignments,
+    case_has_mtdna_report,
     document_generated,
     find_index,
     html_to_pdf_file,
@@ -60,6 +62,34 @@ def test_case_has_mt_alignments(case_obj):
     assert case_obj.get("mt_bams") is None
     case_has_mt_alignments(case_obj)
     assert case_obj["mt_bams"] is True
+
+
+def test_case_has_case_has_mtdna_report_show(case_obj):
+    """Test function that adds info on availability of MT report for a non-cancer and non WTS case."""
+
+    # GIVEN a non-cancer case
+    assert case_obj["track"] != "cancer"
+    # WITH no WTS analyses
+    for ind in case_obj["individuals"]:
+        assert ind["analysis_type"] != "wts"
+
+    # THEN mtDNA report should be shown on case sidebar
+    case_has_mtdna_report(case_obj)
+    assert case_obj["mtdna_report"] is True
+
+
+def test_case_has_case_has_mtdna_report_hide(fusion_case_obj):
+    """Test function that adds info on availability of MT report for a non-cancer case with WTS analyses only."""
+
+    # GIVEN a non-cancer case
+    fusion_case_obj["track"] = "rare"
+    # WITH WTS analyses only
+    for ind in fusion_case_obj["individuals"]:
+        assert ind["analysis_type"] == "wts"
+
+    # THEN mtDNA report should NOT be shown on case sidebar
+    case_has_mtdna_report(fusion_case_obj)
+    assert "mtdna_report" not in fusion_case_obj
 
 
 def test_html_to_pdf_file():

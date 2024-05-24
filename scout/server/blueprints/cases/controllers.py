@@ -48,6 +48,7 @@ from scout.server.utils import (
     case_has_chanjo2_coverage,
     case_has_chanjo_coverage,
     case_has_mt_alignments,
+    case_has_mtdna_report,
     case_has_rna_tracks,
     institute_and_case,
 )
@@ -305,6 +306,7 @@ def case(store, institute_obj, case_obj):
     case_has_mt_alignments(case_obj)
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
+    case_has_mtdna_report(case_obj)
 
     case_groups = {}
     case_group_label = {}
