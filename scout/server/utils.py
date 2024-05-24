@@ -208,11 +208,13 @@ def user_institutes(store, login_user):
 
 def case_has_mtdna_report(case_obj: dict):
     """Display mtDNA report on the case sidebar only for some specific cases."""
-    if case_obj.get("track", "rare") != "cancer":
-        for ind in case_obj.get("individuals", []):
-            if ind.get("analysis_type") != "wts":
-                case_obj["mtdna_report"] = True
-                return
+    if case_obj.get("track", "rare") == "cancer":
+        return
+    for ind in case_obj.get("individuals", []):
+        if ind.get("analysis_type") == "wts":
+            continue
+        case_obj["mtdna_report"] = True
+        return
 
 
 def case_has_chanjo_coverage(case_obj: dict):
