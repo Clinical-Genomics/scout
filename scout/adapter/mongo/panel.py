@@ -1,4 +1,5 @@
 """Code to handle panels in the mongo database"""
+
 import datetime as dt
 import logging
 import math

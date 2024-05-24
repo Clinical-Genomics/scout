@@ -32,7 +32,6 @@ LOG = logging.getLogger(__name__)
 
 
 class VariantLoader(object):
-
     """Methods to handle variant loading in the mongo adapter"""
 
     def update_variant(self, variant_obj):
