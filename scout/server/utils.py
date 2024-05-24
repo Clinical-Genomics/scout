@@ -206,12 +206,26 @@ def user_institutes(store, login_user):
     return institutes
 
 
+def case_has_mtdna_report(case_obj: dict):
+    """Display mtDNA report on the case sidebar only for some specific cases."""
+    if case_obj.get("track", "rare") == "cancer":
+        return
+    for ind in case_obj.get("individuals", []):
+        if ind.get("analysis_type") == "wts":
+            continue
+        case_obj["mtdna_report"] = True
+        return
+
+
 def case_has_chanjo_coverage(case_obj: dict):
     """Set case_obj["chanjo_coverage"] to True if there is an instance of chanjo available and case has coverage stats in chanjo."""
 
     chanjo_instance: bool = bool(current_app.config.get("chanjo_report"))
     if case_obj.get("track", "rare") != "cancer" and chanjo_instance:
-        case_obj["chanjo_coverage"] = True
+        for ind in case_obj.get("individuals", []):
+            if ind.get("analysis_type") != "wts":
+                case_obj["chanjo_coverage"] = True
+                return
 
 
 def case_has_chanjo2_coverage(case_obj: dict):
