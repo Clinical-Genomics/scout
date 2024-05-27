@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, ID_PROJECTION
+from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -883,44 +883,33 @@ class CaseHandler(object):
                 self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             )
 
+        # load from files
         files = [
-            {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
-            {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
             {
-                "file_name": "vcf_cancer",
-                "variant_type": "clinical",
-                "category": "cancer",
-            },
-            {
-                "file_name": "vcf_cancer_sv",
-                "variant_type": "clinical",
-                "category": "cancer_sv",
-            },
-            {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
-            {"file_name": "vcf_mei", "variant_type": "clinical", "category": "mei"},
-            {
-                "file_name": "vcf_fusion",
-                "variant_type": "clinical",
-                "category": "fusion",
-            },
+                "file_name": file_type,
+                "variant_type": FILE_TYPE_MAP[file_type]["variant_type"],
+                "category": FILE_TYPE_MAP[file_type]["category"],
+            }
+            for file_type in FILE_TYPE_MAP.keys()
         ]
 
+        # (type, category) tuples are not unique - eg SNV, SNV_MT
+        load_variants = set()
         try:
             for vcf_file in files:
-                # Check if file exists
+                # Check if any file of this kind is configured for case
                 if not case_obj["vcf_files"].get(vcf_file["file_name"]):
                     LOG.debug("didn't find {}, skipping".format(vcf_file["file_name"]))
                     continue
+                load_variants.add((vcf_file["variant_type"], vcf_file["category"]))
 
-                variant_type = vcf_file["variant_type"]
-                category = vcf_file["category"]
+            for variant_type, category in load_variants:
                 if update:
                     self.delete_variants(
                         case_id=case_obj["_id"],
                         variant_type=variant_type,
                         category=category,
                     )
-
                 # add variants
                 self.load_variants(
                     case_obj=case_obj,
