@@ -236,11 +236,13 @@
       <!-- Display and remove added HPO terms -->
       <div class="row mt-3">
         <div class="col-12 ms-3">
-          {% for hpo_term in case.phenotype_terms %}
-            {{ hpo_item(hpo_term, case) }}
-          {% else %}
-            <span class="text-mute">No phenotypes added yet</span>
-          {% endfor %}
+         {% if "phenotype_terms" in case and case.phenotype_terms|length > 0 %}
+           {% for hpo_term in case.phenotype_terms %}
+             {{ hpo_item(hpo_term, case) }}
+           {% endfor %}
+         {% else %}
+           <span class="text-mute">No phenotypes added yet</span>
+         {% endif %}
         </div>
       </div>
 
@@ -251,7 +253,7 @@
             <input class="ms-3" name="min_match" type="number" min="0" step="1" placeholder="Min matches" style="width:130px"/>
             {% if config.PHENOMIZER_USERNAME %}
               <button class="btn btn-secondary btn-sm" type="submit" name="action" value="PHENOMIZER"
-              {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>
+              {% if "phenotype_terms" not in case or case.phenotype_terms|length == 0 %} disabled {% endif %}>Phenomizer</button>
             {% endif %}
           </div>
           <div class="col-1">
