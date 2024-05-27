@@ -108,9 +108,10 @@ class MongoAdapter(
         self.hpo_term_collection = database.hpo_term
         self.institute_collection = database.institute
         self.managed_variant_collection = database.managed_variant
+        self.omics_variant = database.omics_variant
         self.panel_collection = database.gene_panel
-        self.rank_model_collection = database.rank_model
         self.phenomodel_collection = database.phenomodel
+        self.rank_model_collection = database.rank_model
         self.transcript_collection = database.transcript
         self.user_collection = database.user
         self.variant_collection = database.variant
