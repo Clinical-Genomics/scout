@@ -15,7 +15,7 @@ except ImportError:
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP
+from scout.constants import ANALYSIS_TYPES
 from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
@@ -58,7 +58,21 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report_research",
 ]
 
-VCF_FILE_PATH_CHECKS = FILE_TYPE_MAP.keys()
+VCF_FILE_PATH_CHECKS = [
+    "vcf_cancer",
+    "vcf_cancer_research",
+    "vcf_cancer_sv",
+    "vcf_cancer_sv_research",
+    "vcf_fusion",
+    "vcf_fusion_research",
+    "vcf_snv",
+    "vcf_snv_research",
+    "vcf_mei",
+    "vcf_mei_research",
+    "vcf_str",
+    "vcf_sv",
+    "vcf_sv_research",
+]
 
 GENOME_BUILDS = ["37", "38"]
 TRACKS = ["rare", "cancer"]
@@ -96,16 +110,12 @@ class VcfFiles(BaseModel):
     vcf_cancer_sv: Optional[str] = None
     vcf_cancer_sv_research: Optional[str] = None
     vcf_snv: Optional[str] = None
-    vcf_snv_mt: Optional[str] = None
     vcf_snv_research: Optional[str] = None
-    vcf_snv_research_mt: Optional[str] = None
     vcf_mei: Optional[str] = None
     vcf_mei_research: Optional[str] = None
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
-    vcf_sv_mt: Optional[str] = None
     vcf_sv_research: Optional[str] = None
-    vcf_sv_research_mt: Optional[str] = None
     vcf_fusion: Optional[str] = None
     vcf_fusion_research: Optional[str] = None
 

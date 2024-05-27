@@ -1,5 +1,4 @@
 """Code to handle panels in the mongo database"""
-
 import datetime as dt
 import logging
 import math
@@ -245,7 +244,7 @@ class PanelHandler:
         for panel in res:
             return panel
 
-        LOG.warning("Gene panel not found")
+        LOG.info("No gene panel found")
 
         return None
 
