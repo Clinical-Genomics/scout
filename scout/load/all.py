@@ -54,11 +54,11 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    case_file_types = []
+    case_file_types = set()
 
     for file_type in FILE_TYPE_MAP:
         if case_obj.get("vcf_files", {}).get(file_type):
-            case_file_types.append(
+            case_file_types.add(
                 (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
             )
 
@@ -84,13 +84,12 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     adapter.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)
 
 
-def load_scout(adapter, config, ped=None, update=False):
+def load_scout(adapter, config, update=False):
     """Load a new case from a Scout config.
 
     Args:
         adapter(MongoAdapter)
         config(dict): loading info
-        ped(Iterable(str)): Pedigree ingformation
         update(bool): If existing case should be updated
 
     DEPRECATED method, historically used by the CG monolith, which has since switched to call the Scout CLI instead.

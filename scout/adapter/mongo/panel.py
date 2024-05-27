@@ -245,7 +245,7 @@ class PanelHandler:
         for panel in res:
             return panel
 
-        LOG.info("No gene panel found")
+        LOG.warning("Gene panel not found")
 
         return None
 
