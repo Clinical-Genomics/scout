@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only
+- Modified OMIM-AUTO gene panel to includes genes in both genome builds
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function

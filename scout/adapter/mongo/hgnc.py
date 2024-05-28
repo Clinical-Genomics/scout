@@ -318,7 +318,7 @@ class GeneHandler(object):
         res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
         return res
 
-    def genes_by_alias(self, build="37", genes=None):
+    def genes_by_alias(self, build=None, genes=None):
         """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
              as value.
 
@@ -338,7 +338,11 @@ class GeneHandler(object):
         alias_genes = {}
         # Loop over all genes
         if not genes:
-            genes = self.hgnc_collection.find({"build": str(build)})
+            genes_query = {}
+            if build:
+                genes_query = {"build": str(build)}
+
+            genes = self.hgnc_collection.find(genes_query)
 
         for gene in genes:
             # Collect the hgnc_id
