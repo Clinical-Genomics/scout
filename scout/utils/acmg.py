@@ -197,7 +197,8 @@ def get_acmg(acmg_terms):
             if term.startswith("B"):
                 bs_terms.append(term)
         elif term.endswith("_Moderate"):
-            pm_terms.append(term)
+            if term.startswith("P"):
+                pm_terms.append(term)
         elif term.endswith("_Supporting"):
             if term.startswith("P"):
                 pp_terms.append(term)
