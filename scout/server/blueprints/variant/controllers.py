@@ -142,7 +142,7 @@ def get_igv_tracks(build: str = "37") -> set:
     # Collect hardcoded tracks, common for all Scout instances
     for track in IGV_TRACKS.get(build, []):
         igv_tracks.add(track.get("name"))
-    # Collect instance-specif cloud public tracks, if available
+    # Collect instance-specific public tracks, if available
     if hasattr(config_igv_tracks, "tracks"):
         for track in config_igv_tracks.tracks.get(build, []):
             igv_tracks.add(track.get("name"))
@@ -372,7 +372,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
-        "igv_tracks": get_igv_tracks(genome_build),
+        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else "37"),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
