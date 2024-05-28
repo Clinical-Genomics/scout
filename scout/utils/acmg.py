@@ -192,11 +192,17 @@ def get_acmg(acmg_terms):
     bp_terms = []
     for term in acmg_terms:
         if term.endswith("_Strong"):
-            ps_terms.append(term)
+            if term.startswith("P"):
+                ps_terms.append(term)
+            if term.startswith("B"):
+                bs_terms.append(term)
         elif term.endswith("_Moderate"):
             pm_terms.append(term)
         elif term.endswith("_Supporting"):
-            pp_terms.append(term)
+            if term.startswith("P"):
+                pp_terms.append(term)
+            if term.startswith("B"):
+                bp_terms.append(term)
         elif term.startswith("PVS"):
             pvs = True
         elif term.startswith("PS"):
