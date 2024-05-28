@@ -372,7 +372,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
-        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else "37"),
+        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
