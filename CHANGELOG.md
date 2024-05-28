@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Edit ACMG classifications from variant page (only for classifications with criteria)
 - Events for case CLI events (load case, update case, update individual)
+- Support for loading and displaying local custom IGV tracks
+- MANE IGV track to be used as a local track for igv.js (see scout demo config file)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only

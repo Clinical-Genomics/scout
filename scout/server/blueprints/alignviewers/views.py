@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 import requests
 from flask import (
@@ -11,7 +12,6 @@ from flask import (
     request,
     session,
 )
-from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
@@ -119,20 +119,15 @@ def sashimi_igv(institute_id, case_name, variant_id=None):
 @alignviewers_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
 )  # from SV variant page, where you have to pass breakpoints coordinates
-def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
-    """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
-
-    Args:
-        institute_id(str): _id of an institute
-        case_name(str): dislay_name of a case
-        variant_id(str/None): variant _id or None
-        chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
-        start(int/None): start of the genomic interval to be displayed
-        stop(int/None): stop of the genomic interval to be displayed
-
-    Returns:
-        a string, corresponging to the HTML rendering of the IGV alignments page
-    """
+def igv(
+    institute_id: str,
+    case_name: str,
+    variant_id: Optional[str] = None,
+    chrom: Optional[str] = None,
+    start: Optional[int] = None,
+    stop: Optional[int] = None,
+) -> Response:
+    """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)."""
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function takes care of checking if user is authorized to see resource

@@ -28,7 +28,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import LoqusDB, cloud_tracks, gens
+from scout.server.extensions import LoqusDB, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
@@ -142,9 +142,9 @@ def get_igv_tracks(build: str = "37") -> set:
     # Collect hardcoded tracks, common for all Scout instances
     for track in IGV_TRACKS.get(build, []):
         igv_tracks.add(track.get("name"))
-    # Collect instance-specif cloud public tracks, if available
-    if hasattr(cloud_tracks, "public_tracks"):
-        for track in cloud_tracks.public_tracks.get(build, []):
+    # Collect instance-specific public tracks, if available
+    if hasattr(config_igv_tracks, "tracks"):
+        for track in config_igv_tracks.tracks.get(build, []):
             igv_tracks.add(track.get("name"))
     return igv_tracks
 
@@ -372,7 +372,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
-        "igv_tracks": get_igv_tracks(genome_build),
+        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
