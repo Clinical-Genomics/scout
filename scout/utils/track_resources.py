@@ -64,7 +64,6 @@ class AlignTrackHandler:
                 track_obj = self.track_template(track)
 
                 if not URL_PATTERN.search(track_obj["url"]):  # It's a local file
-                    LOG.warning(track_obj["url"])
                     track_obj["url"] = self.set_local_track_path(track_obj["url"])
 
                 custom_tracks[build].append(track_obj)
