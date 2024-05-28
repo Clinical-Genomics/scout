@@ -69,6 +69,7 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
+                          height: 70,
                           {% if "http" in custTrack.url %}
                             url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
                             {% if custTrack.indexURL %}

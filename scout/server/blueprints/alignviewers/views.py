@@ -77,6 +77,10 @@ def remote_static():
     if controllers.check_session_tracks(file_path) is False:
         return abort(403)
 
+    range_header = request.headers.get("Range", None)
+    if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
+        return abort(500)
+
     new_resp = send_file_partial(file_path)
     return new_resp
 
