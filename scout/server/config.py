@@ -75,10 +75,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # Connection details for Scout REViewer service
 # SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
-#
-# Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
-# A number of publicly-available tracks can be found here: https://trackhubregistry.org/
-# CLOUD_IGV_TRACKS = [
+# Custom IGV tracks can be configured here to allow users to enable them on their IGV views.
+# A number of publicly-available tracks can be found here: https://trackhubregistry.org/ or downloaded from
+# CUSTOM_IGV_TRACKS = [
 #    {
 #        "name": "public_tracks",
 #        "access": "public",
@@ -96,6 +95,19 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #                "format": "bigbed",
 #                "build": "38",
 #                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg38/common_global.bb",
+#            },
+#        ],
+#    },
+#    {
+#        "name": "local_tracks",
+#        "access": "public",
+#        "tracks": [
+#            {
+#                "name": "MANE",
+#                "type": "annotation",
+#                "format": "bigbed",
+#                "build": "38",
+#                "url": "scout/resources/custom_igv_tracks/mane.bb",
 #            },
 #        ],
 #    },

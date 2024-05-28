@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 from scout.adapter import MongoAdapter
-from scout.utils.cloud_resources import AlignTrackHandler
+from scout.utils.track_resources import AlignTrackHandler
 
 from .beacon_extension import Beacon
 from .bionano_extension import BioNanoAccessAPI
@@ -33,5 +33,5 @@ phenopacketapi = PhenopacketAPI()
 rerunner = RerunnerService()
 matchmaker = MatchMaker()
 beacon = Beacon()
-cloud_tracks = AlignTrackHandler()
+config_igv_tracks = AlignTrackHandler()
 bionano_access = BioNanoAccessAPI()

@@ -12,3 +12,6 @@ cytoband_files = {
     "37": cytobands_37_path,
     "38": cytobands_38_path,
 }
+
+# Custom IGV tracks
+mane_igv_track_path = str(files(BASE_PATH).joinpath("custom_igv_tracks", "mane.bb"))
