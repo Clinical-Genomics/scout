@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from scout.constants import (
     INCOMPLETE_PENETRANCE_MAP,
@@ -276,7 +276,7 @@ def parse_gene_panel(
 
 
 def parse_panel_app_gene(
-    adapter: "scout.adapter.MongoAdapter", app_gene: dict, hgnc_map: Dict[str, int], confidence: str
+    adapter, app_gene: dict, hgnc_map: Dict[str, int], confidence: str
 ) -> dict:
     """Parse a panel app-formatted gene."""
 
@@ -324,7 +324,7 @@ def parse_panel_app_gene(
 
 
 def parse_panel_app_panel(
-    adapter: "scout.adapter.MongoAdapter",
+    adapter,
     panel_info: dict,
     hgnc_map: Dict[str, int],
     institute: Optional[str] = "cust000",
