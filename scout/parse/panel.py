@@ -1,6 +1,8 @@
 """Code to parse panel information"""
+
 import logging
 from datetime import datetime
+from typing import Dict, Optional
 
 from scout.constants import (
     INCOMPLETE_PENETRANCE_MAP,
@@ -233,7 +235,12 @@ def parse_genes(gene_lines):
 
 
 def parse_gene_panel(
-    path, institute="cust000", panel_id="test", panel_type="clinical", genes=None, **kwargs
+    path,
+    institute="cust000",
+    panel_id="test",
+    panel_type="clinical",
+    genes=None,
+    **kwargs,
 ):
     """Parse the panel info and return a gene panel
 
@@ -268,17 +275,11 @@ def parse_gene_panel(
     return gene_panel
 
 
-def parse_panel_app_gene(app_gene, hgnc_map, confidence):
-    """Parse a panel app formatted gene.
+def parse_panel_app_gene(
+    adapter: "scout.adapter.MongoAdapter", app_gene: dict, hgnc_map: Dict[str, int], confidence: str
+) -> dict:
+    """Parse a panel app-formatted gene."""
 
-    Args:
-        app_gene(dict): dict with panel app info, where Ensembl ids are present as a loist with key "EnsembleGeneIds"
-        hgnc_map(dict): a dictionary with Ensembl IDs as keys and HGNC ids as values
-        confidence(str): enum green|amber|red
-
-    Returns:
-        gene_info(dict): Scout infromation
-    """
     gene_info = {}
     confidence_level = app_gene["LevelOfConfidence"]
     # Return empty gene if not confident gene
@@ -288,6 +289,15 @@ def parse_panel_app_gene(app_gene, hgnc_map, confidence):
     hgnc_symbol = app_gene["GeneSymbol"]
 
     ensembl_ids = app_gene["EnsembleGeneIds"]
+
+    if not ensembl_ids:  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
+        LOG.warning(
+            f"Gene {hgnc_symbol} does not contain Ensembl IDs. Retrieving Ensembl IDs from Scout instead."
+        )
+        scout_genes_by_symbol: List[dict] = adapter.gene_by_symbol_or_aliases(symbol=hgnc_symbol)
+        for scout_gene in scout_genes_by_symbol:
+            ensembl_ids.append(scout_gene.get("ensembl_id"))
+
     hgnc_ids = set(
         hgnc_map.get(ensembl_id) for ensembl_id in ensembl_ids if hgnc_map.get(ensembl_id)
     )
@@ -314,11 +324,17 @@ def parse_panel_app_gene(app_gene, hgnc_map, confidence):
 
 
 def parse_panel_app_panel(
-    panel_info, hgnc_map, institute="cust000", panel_type="clinical", confidence="green"
-):
+    adapter: "scout.adapter.MongoAdapter",
+    panel_info: dict,
+    hgnc_map: Dict[str, int],
+    institute: Optional[str] = "cust000",
+    panel_type: Optional[str] = "clinical",
+    confidence: Optional[str] = "green",
+) -> dict:
     """Parse a PanelApp panel
 
     Args:
+        adapter(scout.adapter.MongoAdapter)
         panel_info(dict)
         hgnc_map(dict): Map from symbol to hgnc ids
         institute(str)
@@ -346,7 +362,7 @@ def parse_panel_app_panel(
     nr_excluded = 0
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info["Genes"], 1):
-        gene_info = parse_panel_app_gene(gene, hgnc_map, confidence)
+        gene_info = parse_panel_app_gene(adapter, gene, hgnc_map, confidence)
         if not gene_info:
             nr_excluded += 1
             continue
