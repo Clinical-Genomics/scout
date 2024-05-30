@@ -190,34 +190,40 @@ def get_acmg(acmg_terms):
     bs_terms = []
     # Collection of terms with supporting Benign evidence
     bp_terms = []
+
+    suffix_map = {
+        "_Strong": {"P": ps_terms, "B": bs_terms},
+        "_Moderate": {"P": pm_terms},
+        "_Supporting": {"P": pp_terms, "B": bp_terms},
+    }
+
+    prefix_map = {
+        "PS": ps_terms,
+        "PM": pm_terms,
+        "PP": pp_terms,
+        "BS": bs_terms,
+        "BP": bp_terms,
+    }
+
     for term in acmg_terms:
-        if term.endswith("_Strong"):
-            if term.startswith("P"):
-                ps_terms.append(term)
-            if term.startswith("B"):
-                bs_terms.append(term)
-        elif term.endswith("_Moderate"):
-            if term.startswith("P"):
-                pm_terms.append(term)
-        elif term.endswith("_Supporting"):
-            if term.startswith("P"):
-                pp_terms.append(term)
-            if term.startswith("B"):
-                bp_terms.append(term)
-        elif term.startswith("PVS"):
-            pvs = True
-        elif term.startswith("PS"):
-            ps_terms.append(term)
-        elif term.startswith("PM"):
-            pm_terms.append(term)
-        elif term.startswith("PP"):
-            pp_terms.append(term)
-        elif term.startswith("BA"):
-            ba = True
-        elif term.startswith("BS"):
-            bs_terms.append(term)
-        elif term.startswith("BP"):
-            bp_terms.append(term)
+        for suffix, prefix_dict in suffix_map.items():
+            if term.endswith(suffix):
+                for prefix, term_list in prefix_dict.items():
+                    if term.startswith(prefix):
+                        term_list.append(term)
+                        break
+                break
+        else:
+            # Do we match any of the two standalone terms
+            if term == "PVS":
+                pvs = True
+            elif term == "BA":
+                ba = True
+            else:  # Check remaining prefixes if no suffix match or standalone criteria match
+                for prefix, term_list in prefix_map.items():
+                    if term.startswith(prefix):
+                        term_list.append(term)
+                        break
 
     # We need to start by checking for Pathogenecity
     pathogenic = is_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
