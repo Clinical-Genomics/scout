@@ -19,23 +19,23 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Install deps
-        run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt -e .
-          pip check
-
         # Cache package installation step to speed up the following step
       - uses: actions/cache@v4
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
 
+      - name: Install deps
+        run: |
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt -e .
+          pip check
+
   test:
     needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        group: [1, 2, 3, 4, 5, 6]
+        group: [1, 2, 3, 4, 5, 6, 7, 8]
         mongodb-version: ['7']
     steps:
       - name: Start MongoDB
@@ -59,12 +59,8 @@ jobs:
       - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
-      - name: Install python deps
-        run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
-
       - name: Run pytest
-        run: pytest --cov --test-group-count 6 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
+        run: pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
