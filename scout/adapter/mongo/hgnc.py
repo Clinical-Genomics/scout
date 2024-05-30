@@ -339,7 +339,9 @@ class GeneHandler(object):
 
         if genes is None:
             genes_query = {"build": str(build)} if build else {}
-            genes = self.hgnc_collection.find(genes_query)
+            genes = self.hgnc_collection.find(
+                genes_query, projection={"hgnc_id": 1, "hgnc_symbol": 1, "aliases": 1}
+            )
 
         for gene in genes:
             hgnc_id = gene["hgnc_id"]
