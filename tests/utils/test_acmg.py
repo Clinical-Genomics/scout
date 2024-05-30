@@ -414,6 +414,6 @@ def test_get_acmg_uncertain():
 
 
 def test_acmg_modifier_on_both_benign_and_pathogenic():
-    acmg_terms = ["PS3_moderate", "PP1_moderate", "PP3", "BS1_supporting"]
+    acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
