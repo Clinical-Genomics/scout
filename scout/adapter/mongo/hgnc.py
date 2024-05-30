@@ -345,7 +345,6 @@ class GeneHandler(object):
             hgnc_id = gene["hgnc_id"]
             hgnc_symbol = gene["hgnc_symbol"]
 
-            # Loop aver all aliases
             for alias in gene["aliases"]:
                 if alias not in alias_genes:
                     alias_genes[alias] = {"true": None, "ids": set()}
