@@ -275,7 +275,12 @@ def parse_gene_panel(
     return gene_panel
 
 
-def parse_panel_app_gene(app_gene: dict, hgnc_map: Dict[str, int], confidence: str) -> dict:
+def parse_panel_app_gene(
+    app_gene: dict,
+    ensembl_gene_hgnc_id_map: Dict[str, int],
+    hgnc_symbol_ensembl_gene_map: [str, str],
+    confidence: str,
+) -> dict:
     """Parse a panel app-formatted gene."""
 
     gene_info = {}
@@ -288,18 +293,18 @@ def parse_panel_app_gene(app_gene: dict, hgnc_map: Dict[str, int], confidence: s
 
     ensembl_ids = app_gene["EnsembleGeneIds"]
 
-    if not ensembl_ids:  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
+    if (
+        not ensembl_ids and hgnc_symbol in hgnc_symbol_ensembl_gene_map
+    ):  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
         LOG.warning(
             f"Gene {hgnc_symbol} does not contain Ensembl IDs. Retrieving Ensembl IDs from Scout instead."
         )
-        """
-        scout_genes_by_symbol: List[dict] = adapter.gene_by_symbol_or_aliases(symbol=hgnc_symbol)
-        for scout_gene in scout_genes_by_symbol:
-            ensembl_ids.append(scout_gene.get("ensembl_id"))
-        """
+        ensembl_ids = [hgnc_symbol_ensembl_gene_map[hgnc_symbol]]
 
     hgnc_ids = set(
-        hgnc_map.get(ensembl_id) for ensembl_id in ensembl_ids if hgnc_map.get(ensembl_id)
+        ensembl_gene_hgnc_id_map.get(ensembl_id)
+        for ensembl_id in ensembl_ids
+        if ensembl_gene_hgnc_id_map.get(ensembl_id)
     )
     if not hgnc_ids:
         LOG.warning("Gene %s does not exist in database. Skipping gene...", hgnc_symbol)
@@ -324,9 +329,9 @@ def parse_panel_app_gene(app_gene: dict, hgnc_map: Dict[str, int], confidence: s
 
 
 def parse_panel_app_panel(
-    adapter,
     panel_info: dict,
-    hgnc_map: Dict[str, int],
+    ensembl_gene_hgnc_id_map: Dict[str, int],
+    hgnc_symbol_ensembl_gene_map: Dict[str, str],
     institute: Optional[str] = "cust000",
     panel_type: Optional[str] = "clinical",
     confidence: Optional[str] = "green",
@@ -334,7 +339,6 @@ def parse_panel_app_panel(
     """Parse a PanelApp panel
 
     Args:
-        adapter(scout.adapter.MongoAdapter)
         panel_info(dict)
         hgnc_map(dict): Map from symbol to hgnc ids
         institute(str)
@@ -362,7 +366,9 @@ def parse_panel_app_panel(
     nr_excluded = 0
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info["Genes"], 1):
-        gene_info = parse_panel_app_gene(adapter, gene, hgnc_map, confidence)
+        gene_info = parse_panel_app_gene(
+            gene, ensembl_gene_hgnc_id_map, hgnc_symbol_ensembl_gene_map, confidence
+        )
         if not gene_info:
             nr_excluded += 1
             continue
