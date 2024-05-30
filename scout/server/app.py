@@ -36,16 +36,6 @@ from .blueprints import (
 
 LOG = logging.getLogger(__name__)
 
-try:
-    from chanjo_report.server.app import configure_template_filters
-    from chanjo_report.server.blueprints import report_bp
-    from chanjo_report.server.extensions import api as chanjo_api
-except ImportError as error:
-    chanjo_api = None
-    report_bp = None
-    configure_template_filters = None
-    LOG.warning("chanjo-report is not properly installed! %s.", error)
-
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
@@ -111,8 +101,8 @@ def configure_extensions(app):
     extensions.mail.init_app(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
-        LOG.info("Chanjo extension enabled")
-        configure_coverage(app)
+        LOG.info("Chanjo-report extension enabled")
+        extensions.chanjo_report.init_app(app)
 
     if app.config.get("LOQUSDB_SETTINGS"):
         LOG.info("LoqusDB enabled")
