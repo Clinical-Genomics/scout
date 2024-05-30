@@ -133,7 +133,6 @@ def _parse_panelapp_panel(adapter, panel_id, institute, confidence):
     hgnc_map = adapter.ensembl_to_hgnc_mapping()
     json_lines = fetch_resource(PANELAPP_BASE_URL.format("get_panel") + panel_id, json=True)
     parsed_panel = parse_panel_app_panel(
-        adapter=adapter,
         panel_info=json_lines["result"],
         hgnc_map=hgnc_map,
         institute=institute,

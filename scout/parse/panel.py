@@ -275,9 +275,7 @@ def parse_gene_panel(
     return gene_panel
 
 
-def parse_panel_app_gene(
-    adapter, app_gene: dict, hgnc_map: Dict[str, int], confidence: str
-) -> dict:
+def parse_panel_app_gene(app_gene: dict, hgnc_map: Dict[str, int], confidence: str) -> dict:
     """Parse a panel app-formatted gene."""
 
     gene_info = {}
@@ -294,9 +292,11 @@ def parse_panel_app_gene(
         LOG.warning(
             f"Gene {hgnc_symbol} does not contain Ensembl IDs. Retrieving Ensembl IDs from Scout instead."
         )
+        """
         scout_genes_by_symbol: List[dict] = adapter.gene_by_symbol_or_aliases(symbol=hgnc_symbol)
         for scout_gene in scout_genes_by_symbol:
             ensembl_ids.append(scout_gene.get("ensembl_id"))
+        """
 
     hgnc_ids = set(
         hgnc_map.get(ensembl_id) for ensembl_id in ensembl_ids if hgnc_map.get(ensembl_id)
