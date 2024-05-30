@@ -7,7 +7,7 @@ functions to load panels into the database
 import logging
 import math
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from click import Abort
 from flask.cli import current_app
