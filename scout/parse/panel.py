@@ -297,7 +297,7 @@ def parse_panel_app_gene(
         not ensembl_ids and hgnc_symbol in hgnc_symbol_ensembl_gene_map
     ):  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
         LOG.warning(
-            f"Gene {hgnc_symbol} does not contain Ensembl IDs. Retrieving Ensembl IDs from Scout instead."
+            f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs. Using Ensembl IDs from internal gene collection instead."
         )
         ensembl_ids = [hgnc_symbol_ensembl_gene_map[hgnc_symbol]]
 
