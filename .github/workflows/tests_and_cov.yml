@@ -19,11 +19,9 @@ jobs:
         with:
           python-version: 3.
 
-        # Cache package installation step to speed up the following step
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+      # Cache package installation step to speed up the following step
+      - uses: syphar/restore-virtualenv@v1
+        id: cache-virtualenv
 
       - name: Install deps
         run: |
@@ -47,6 +45,14 @@ jobs:
          mongodb-version: ${{ matrix.mongodb-version }}
 
       - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - uses: syphar/restore-virtualenv@v1
+         id: cache-virtualenv
 
       - name: Run pytest
         run: pytest --cov --test-group-count 6 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
