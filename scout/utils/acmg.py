@@ -215,9 +215,9 @@ def get_acmg(acmg_terms):
                 break
         else:
             # Do we match any of the two standalone terms
-            if term == "PVS":
+            if term.startswith("PVS"):
                 pvs = True
-            elif term == "BA":
+            elif term.startswith("BA"):
                 ba = True
             else:  # Check remaining prefixes if no suffix match or standalone criteria match
                 for prefix, term_list in prefix_map.items():
