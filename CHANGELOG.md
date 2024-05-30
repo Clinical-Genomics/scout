@@ -13,7 +13,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only
-- Modified OMIM-AUTO gene panel to include genes in both genome builds
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function
@@ -21,8 +20,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer exception handling on chanjo-report setup - fail early and visibly
 - mtDNA report crashing when one or more samples from a case is not in the chanjo database
 - Case page crashing on missing phenotype terms
-- ACMG benign modifiers
-- Virtual environment caching in Tests & Coverage GitHub action
+- ACMG benign modifier
+- Speed up tests by caching python env correctly in Github action
 
 ## [4.82.2]
 ### Fixed
