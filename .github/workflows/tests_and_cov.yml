@@ -10,7 +10,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: Beefy_Linux
     steps:
       - uses: actions/checkout@v4
 
@@ -19,9 +19,11 @@ jobs:
         with:
           python-version: 3.11
 
-      # Cache package installation step to speed up the following step
-      - uses: syphar/restore-virtualenv@v1
-        id: cache-virtualenv
+        # Cache package installation step to speed up the following step
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
 
       - name: Install deps
         run: |
@@ -30,10 +32,10 @@ jobs:
 
   test:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: Beefy_Linux
     strategy:
       matrix:
-        group: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        group: [1, 2, 3, 4, 5, 6]
         mongodb-version: ['7']
     steps:
       - name: Start MongoDB
@@ -48,14 +50,17 @@ jobs:
         with:
           python-version: 3.11
 
+        # Cache package installation step to speed up the following step
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+
       - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
-      - uses: syphar/restore-virtualenv@v1
-        id: cache-virtualenv
-
       - name: Run pytest
-        run: pytest --cov --test-group-count 6 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
+        run: pytest -n logical --cov --test-group-count 6 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
