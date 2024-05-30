@@ -376,7 +376,14 @@ class GeneHandler(object):
            mapping(dict): {"A1BG": "ENSG00000121410".}
         """
         pipeline = [
-            {"$group": {"_id": {"ensembl_id": "$ensembl_id", "hgnc_symbol": "$hgnc_symbol"}}}
+            {
+                "$group": {
+                    "_id": {
+                        "hgnc_symbol": "$hgnc_symbol",
+                        "ensembl_id": "$ensembl_id",
+                    }
+                }
+            }
         ]
         result = self.hgnc_collection.aggregate(pipeline)
         mapping = {res["_id"]["hgnc_symbol"]: res["_id"]["ensembl_id"] for res in result}
