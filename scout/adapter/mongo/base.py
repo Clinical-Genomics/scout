@@ -79,7 +79,6 @@ class MongoAdapter(
     PhenoModelHandler,
     RankModelHandler,
 ):
-
     """Adapter for communication with a Mongo database."""
 
     def __init__(self, database=None):

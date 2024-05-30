@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer exception handling on chanjo-report setup - fail early and visibly
 - mtDNA report crashing when one or more samples from a case is not in the chanjo database
 - Case page crashing on missing phenotype terms
+- ACMG benign modifiers
 - PanelApp panel not saving genes with empty `EnsembleGeneIds` list
 
 ## [4.82.2]
