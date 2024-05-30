@@ -318,7 +318,7 @@ class GeneHandler(object):
         res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
         return res
 
-    def genes_by_alias(self, build="37", genes=None):
+    def genes_by_alias(self, build=None, genes=None):
         """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
              as value.
 
@@ -336,28 +336,24 @@ class GeneHandler(object):
         LOG.debug("Fetching all genes by alias")
         # Collect one entry for each alias symbol that exists
         alias_genes = {}
-        # Loop over all genes
-        if not genes:
-            genes = self.hgnc_collection.find({"build": str(build)})
+
+        if genes is None:
+            genes_query = {"build": str(build)} if build else {}
+            genes = self.hgnc_collection.find(
+                genes_query, projection={"hgnc_id": 1, "hgnc_symbol": 1, "aliases": 1}
+            )
 
         for gene in genes:
-            # Collect the hgnc_id
             hgnc_id = gene["hgnc_id"]
-            # Collect the true symbol given by hgnc
             hgnc_symbol = gene["hgnc_symbol"]
-            # Loop aver all aliases
+
             for alias in gene["aliases"]:
-                true_id = None
-                # If the alias is the same as hgnc symbol we know the true id
+                if alias not in alias_genes:
+                    alias_genes[alias] = {"true": None, "ids": set()}
+
+                alias_genes[alias]["ids"].add(hgnc_id)
                 if alias == hgnc_symbol:
-                    true_id = hgnc_id
-                # If the alias is already in the list we add the id
-                if alias in alias_genes:
-                    alias_genes[alias]["ids"].add(hgnc_id)
-                    if true_id:
-                        alias_genes[alias]["true"] = hgnc_id
-                else:
-                    alias_genes[alias] = {"true": hgnc_id, "ids": set([hgnc_id])}
+                    alias_genes[alias]["true"] = hgnc_id
 
         return alias_genes
 
