@@ -10,6 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Events for case CLI events (load case, update case, update individual)
 - Support for loading and displaying local custom IGV tracks
 - MANE IGV track to be used as a local track for igv.js (see scout demo config file)
+- Support for loading and storing OMICS data
+- Parse DROP Fraser and Outrider TSVs
+- Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only

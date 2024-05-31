@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION
+from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -833,6 +833,20 @@ class CaseHandler(object):
             if key in old_case:
                 new_case[key] = old_case[key]
 
+    def _load_omics_variants(self, case_obj: dict):
+        """Load omics variants. The OMICS FILE type dict contains all we need to
+        determine how to load variants (type, category etc)."""
+
+        for omics_file in OMICS_FILE_TYPE_MAP.keys():
+            if not case_obj["omics_files"].get(omics_file):
+                LOG.debug("didn't find %s for case, skipping", omics_file)
+                continue
+
+            if update:
+                self.delete_omics_variants(case_id=case_obj["_id"], file_type=omics_file)
+
+            self.load_omics_variants(case_obj=case_obj, build=build, file_type=omics_file)
+
     def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
         """Load a case into the database
 
@@ -924,6 +938,8 @@ class CaseHandler(object):
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
+
+        self._load_omics_variants(case_obj)
 
         if existing_case:
             self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)

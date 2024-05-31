@@ -45,7 +45,7 @@ from .disease_parsing import (
     MIMNR_PATTERN,
     OMIM_STATUS_MAP,
 )
-from .file_types import FILE_TYPE_MAP
+from .file_types import FILE_TYPE_MAP, OMICS_FILE_TYPE_MAP
 from .filters import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
