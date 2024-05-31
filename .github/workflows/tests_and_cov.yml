@@ -27,7 +27,7 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt -e .
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt chanjo-report -e .
           pip check
 
   test:
