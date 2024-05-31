@@ -22,7 +22,6 @@ class ChanjoReport:
     """Interfaces with chanjo-report. Creates the /reports endpoints in scout domain. Use Babel to set report language."""
 
     def init_app(self, app):
-
         if not chanjo_api:
             raise ImportError(
                 "An SQL db path was given, but chanjo-report could not be registered."
