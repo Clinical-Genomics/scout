@@ -101,7 +101,8 @@ def configure_extensions(app):
     extensions.mail.init_app(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
-        LOG.info("Chanjo-report extension enabled")
+        babel = Babel(app)
+        babel.init_app(app, locale_selector=get_locale)
         extensions.chanjo_report.init_app(app)
 
     if app.config.get("LOQUSDB_SETTINGS"):
@@ -311,44 +312,22 @@ def configure_email_logging(app):
     app.logger.addHandler(mail_handler)
 
 
-def configure_coverage(app):
-    """Setup coverage related extensions, i.e. the chanjo-report extension.
-    Fail with exception if the Chanjo API did not load although
-    a corresponding app configuration option was given, otherwise
-    register its blueprint and set an app state variable indicating that
-    chanjo_report is available. Use Babel to set report language."""
+def get_locale():
+    """Determine locale to use for translations."""
+    accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
 
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
+    # first check request args
+    session_language = Markup.escape(request.args.get("lang"))
+    if session_language in accept_languages:
+        current_app.logger.info("using session language: %s", session_language)
+        return session_language
 
-    if not chanjo_api:
-        raise ImportError("An SQL db path was given, but chanjo-report could not be registered.")
+    # language can be forced in config
+    user_language = current_app.config.get("REPORT_LANGUAGE")
+    if user_language:
+        return user_language
 
-    chanjo_api.init_app(app)
-    configure_template_filters(app)
-
-    app.register_blueprint(report_bp, url_prefix="/reports")
-    app.config["chanjo_report"] = True
-
-    babel = Babel()
-
-    def get_locale():
-        """Determine locale to use for translations."""
-        accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
-
-        # first check request args
-        session_language = Markup.escape(request.args.get("lang"))
-        if session_language in accept_languages:
-            current_app.logger.info("using session language: %s", session_language)
-            return session_language
-
-        # language can be forced in config
-        user_language = current_app.config.get("REPORT_LANGUAGE")
-        if user_language:
-            return user_language
-
-        # try to guess the language from the user accept header that
-        # the browser transmits.  We support de/fr/en in this example.
-        # The best match wins.
-        return request.accept_languages.best_match(accept_languages)
-
-    babel.init_app(app, locale_selector=get_locale)
+    # try to guess the language from the user accept header that
+    # the browser transmits.  We support de/fr/en in this example.
+    # The best match wins.
+    return request.accept_languages.best_match(accept_languages)
