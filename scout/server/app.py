@@ -8,7 +8,6 @@ from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
-from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import current_user
 from markdown import markdown as python_markdown
@@ -101,8 +100,6 @@ def configure_extensions(app):
     extensions.mail.init_app(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
-        babel = Babel(app)
-        babel.init_app(app, locale_selector=get_locale)
         extensions.chanjo_report.init_app(app)
 
     if app.config.get("LOQUSDB_SETTINGS"):
@@ -310,24 +307,3 @@ def configure_email_logging(app):
         )
     )
     app.logger.addHandler(mail_handler)
-
-
-def get_locale():
-    """Determine locale to use for translations."""
-    accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
-
-    # first check request args
-    session_language = Markup.escape(request.args.get("lang"))
-    if session_language in accept_languages:
-        current_app.logger.info("using session language: %s", session_language)
-        return session_language
-
-    # language can be forced in config
-    user_language = current_app.config.get("REPORT_LANGUAGE")
-    if user_language:
-        return user_language
-
-    # try to guess the language from the user accept header that
-    # the browser transmits.  We support de/fr/en in this example.
-    # The best match wins.
-    return request.accept_languages.best_match(accept_languages)

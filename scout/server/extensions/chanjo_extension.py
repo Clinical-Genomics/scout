@@ -4,6 +4,8 @@
 
 import logging
 
+from flask_babel import Babel
+
 LOG = logging.getLogger(__name__)
 try:
     from chanjo_report.server.app import configure_template_filters
@@ -25,6 +27,29 @@ class ChanjoReport:
             raise ImportError(
                 "An SQL db path was given, but chanjo-report could not be registered."
             )
+
+        def get_locale():
+            """Determine locale to use for translations."""
+            accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
+
+            # first check request args
+            session_language = Markup.escape(request.args.get("lang"))
+            if session_language in accept_languages:
+                current_app.logger.info("using session language: %s", session_language)
+                return session_language
+
+            # language can be forced in config
+            user_language = current_app.config.get("REPORT_LANGUAGE")
+            if user_language:
+                return user_language
+
+            # try to guess the language from the user accept header that
+            # the browser transmits.  We support de/fr/en in this example.
+            # The best match wins.
+            return request.accept_languages.best_match(accept_languages)
+
+        babel = Babel(app)
+        babel.init_app(app, locale_selector=get_locale)
         chanjo_api.init_app(app)
         app.register_blueprint(report_bp, url_prefix="/reports")
         app.config["chanjo_report"] = True
