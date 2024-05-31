@@ -52,6 +52,7 @@ class ChanjoReport:
         babel = Babel(app)
         babel.init_app(app, locale_selector=get_locale)
         chanjo_api.init_app(app)
+        configure_template_filters(app)
         app.register_blueprint(report_bp, url_prefix="/reports")
         app.config["chanjo_report"] = True
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False

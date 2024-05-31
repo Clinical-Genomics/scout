@@ -101,6 +101,7 @@ def configure_extensions(app):
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         extensions.chanjo_report.init_app(app)
+        LOG.info("Chanjo extension enabled")
 
     if app.config.get("LOQUSDB_SETTINGS"):
         LOG.info("LoqusDB enabled")
