@@ -4,7 +4,9 @@
 
 import logging
 
+from flask import current_app, request
 from flask_babel import Babel
+from markupsafe import Markup
 
 LOG = logging.getLogger(__name__)
 try:
