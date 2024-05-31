@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case page crashing on missing phenotype terms
 - ACMG benign modifiers
 - Speed up tests by caching python env correctly in Github action
+- Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers.
 
 ## [4.82.2]
 ### Fixed
