@@ -27,7 +27,8 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt -e .[coverage]
+          pip install --upgrade --upgrade-strategy eager -e .[coverage]
+          pip install -r requirements-dev.txt
           pip check
 
   test:
