@@ -59,17 +59,20 @@ class OmicsVariantHandler(OmicsVariantLoader):
 
         file_handle = open(case_obj["omics_files"].get(file_type), "r")
 
-        for info in parse_omics_file(
+        for omics_info in parse_omics_file(
             file_handle, omics_file_type=case_obj["omics_files"].get(file_type)
         ):
-            omics_model = OmicsVariantLoader(**info).model_dump(by_alias=True)
-            omics_model["case_id"] = case_obj["_id"]
-            omics_model["build"] = "37" if "37" in build else "38"
-            omics_model["file_type"] = file_type
+            omics_info["case_id"] = case_obj["_id"]
+            omics_info["build"] = "37" if "37" in build else "38"
+            omics_info["file_type"] = file_type
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
-                omics_model[key] = omics_file_type[key]
+                omics_info[key] = omics_file_type[key]
+
+            omics_model = OmicsVariantLoader(**info).model_dump(by_alias=True)
 
             self._connect_gene(omics_model)
+
+            self._get_ids(omics_model)
 
             # If case has gene panels, only add clinical variants with a matching gene
             variant_genes = [gene["hgnc_id"] for gene in omics_model["genes"]]
@@ -86,10 +89,24 @@ class OmicsVariantHandler(OmicsVariantLoader):
 
         LOG.info("%s variants inserted", nr_inserted)
 
-    def omics_variant(self, id: str):
+    def omics_variant(self, variant_id: str, projection: Optional[Dict] = None):
         """Return omics variant"""
 
+        return self.omics_variant_collection.find({"_id": variant_id}, projection)
+
     def omics_variants(
-        self, case_id: str, variant_type: str = "clinical", category: str = "outlier"
+        self,
+        case_id: str,
+        variant_type: str = "clinical",
+        category: str = "outlier",
+        hgnc_id: Optional[str] = None,
+        projection: Optional[Dict] = None,
     ):
-        """Return omics variants"""
+        """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
+
+        query = {"case_id": case_id, "variant_type": variant_type, "category": category}
+
+        if hgnc_id:
+            query["genes.hgnc_id"] = hgnc_id
+
+        return self.omics_variant_collection.find(query, projection)

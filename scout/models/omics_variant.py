@@ -12,9 +12,22 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from scout.utils.md5 import generate_md5_key
 
+
 class OmicsVariantLoader(BaseModel):
-    # case_id: str
-    # build: str
+    # An OmicsVariant on db will also have
+    case_id: str
+    institute_id: str
+    build: str = "38"
+    variant_type: str = "clinical"
+    category: str = ("outlier",)
+    sub_category: str = ("fraser",)
+    date: datetime.datetime
+    display_name: str
+
+    # omics_variant_id  gene, category, sub_category, qualification
+    # display_id
+    # omics variant id hash (including clinical/research)
+
     # DROP Fraser and Outrider outlier TSVs
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
@@ -60,7 +73,7 @@ class OmicsVariantLoader(BaseModel):
 
     # Outrider specific
     padjust: Optional[float]
-    zScore:  Optional[float]
+    zScore: Optional[float]
     l2fc: Optional[float]
     rawcounts: Optional[int]
     normcounts: Optional[float]
@@ -73,79 +86,56 @@ class OmicsVariantLoader(BaseModel):
     FDR_set: Optional[str]
     foldChange: Optional[float]
 
+    @model_validator(mode="before")
+    def set_display_name(cls, values) -> "OmicsVariantLoader":
+        """Set a free text qualification, depending on the kind of variant."""
 
+        if values.get("sub_category") == "outrider":
+            qualification = "up" if zScore > 0 else "down"
+        if values.get("sub_category") == "fraser":
+            qualification = values.get("potentialImpact")
 
+            values["display_name"] = "_".join(
+                [
+                    values.get("hgncSymbol"),
+                    values.get("category"),
+                    values.get("sub_category"),
+                    qualification,
+                    values.get("seqnames"),  # chrom, unserialised
+                    values.get("start"),
+                    values.get("end"),
+                    values.get("variant_type"),
+                ]
+            )
+        return values
 
-class OmicsVariant(dict):
-    """
-    # required primary fields
-    chromosome=str,  # required
-    position=int,  # required
-    end=int,  # required
-    reference=str,  # required
-    alternative=str,  # required
-    build=str, # required, ["37","38"], default "37"
-    date=datetime.datetime
-    # required derived fields
-    # display name is variant_id (no md5) chrom_pos_ref_alt (simple_id)
-    display_name=str,  # required
+    @model_validator(mode="before")
+    def set_omics_variant_id(cls, values) -> "OmicsVariantLoader":
+        """Set OMICS variant id based on the kind of variant."""
 
-    #optional fields
-    # maintainer user_id list
-    maintainer=list(user_id), # optional
-    institute=institute_id, # optional
+        if values.get("sub_category") == "outrider":
+            qualification = "up" if zScore > 0 else "down"
+        if values.get("sub_category") == "fraser":
+            qualification = values.get("potentialImpact")
 
-    # optional fields foreseen for future use
-    category=str,  # choices=('sv', 'snv', 'str', 'cancer', 'cancer_sv')
-    sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str')
-    description=str,
-    """
+            values["omics_variant_id"] = "_".join(
+                [
+                    values.get("seqnames"),  # chrom, unserialised
+                    values.get("start"),
+                    values.get("end"),
+                    values.get("build"),
+                    values.get("hgncSymbol"),
+                    values.get("sub_category"),
+                    qualification,
+                    values.get("variant_type"),
+                ]
+            )
+        return values
 
-
-    def __init__(
-        self,
-        institute,
-        case,
-        maintainer=[],
-        build="37",
-        date=None,
-        category="outlier",
-        sub_category="splicing",
-        description=None,
-        variant_type="clinical"
-        samples=list,  # list of dictionaries that are <gt_calls>
-    ):
-        super(OmicsVariant, self).__init__()
-        self["chromosome"] = str(chromosome)
-        self["position"] = position
-        self["end"] = end
-        self["build"] = build
-
-        self["reference"] = reference
-        self["alternative"] = alternative
-
-        self["omics_variant_id"] = "_".join(
-            [
-                str(part)
-                for part in (
-                    chromosome,
-                    position,
-                    category,
-                    sub_category,
-                    build,
-                )
-            ]
+    @model_validator(mode="before")
+    def set_display_name(cls, values) -> "OmicsVariantLoader":
+        """Set a display name."""
+        values["display_name"] = values.get(
+            "display_name", values.get("sample_name", values.get("individual_id"))
         )
-        self["display_id"] = "_".join(
-            [str(part) for part in (chromosome, position, reference, alternative)]
-        )
-        self["variant_id"] = generate_md5_key(
-            [str(part) for part in (chromosome, position, reference, alternative, "clinical")]
-        )
-        self["date"] = date or datetime.now()
-
-        self["institute"] = institute or None
-        self["maintainer"] = maintainer or []
-        self["category"] = category
-        self["sub_category"] = sub_category
-        self["description"] = description
+        return values
