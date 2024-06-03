@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from scout.utils.md5 import generate_md5_key
 
 class OmicsVariantLoader(BaseModel):
-    case_id: str
+    # case_id: str
+    # build: str
     # DROP Fraser and Outrider outlier TSVs
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others

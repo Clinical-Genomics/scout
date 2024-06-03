@@ -37,7 +37,15 @@ class OmicsVariantHandler(OmicsVariantLoader):
 
         LOG.info("%s variants deleted", result.deleted_count)
 
-    def load_omics_variants(self, case_obj: str, file_type: str):
+    def _connect_gene(self, omics_model: dict):
+        """Internal member function to connect gene based on the hgnc_id / symbol / geneID given in outlier file.
+        We start with the case of having one hgnc_id.
+        """
+        hgnc_gene = self.hgnc_gene(omics_model["hgnc_id"], omics_model["build"])
+        if hgnc_gene:
+            omics_model["genes"] = [hgnc_gene]
+
+    def load_omics_variants(self, case_obj: str, file_type: str, build: Optional[str] = "37"):
         """Load OMICS variants for a case"""
 
         gene_to_panels = self.gene_to_panels(case_obj)
@@ -46,14 +54,21 @@ class OmicsVariantHandler(OmicsVariantLoader):
 
         nr_inserted = 0
 
-        # FIXME pass filename on dict
         file_handle = open(case_obj["omics_files"].get(file_type), "r")
-        omics_infos = parse_omics_file(
-            file_handle, omics_file_type=case_obj["omics_files"].get(file_type)
-        )
 
-        for info in omics_infos:
-            omics_model_obj = OmicsVariantLoader(**info).model_dump()
+        for info in parse_omics_file(
+            file_handle, omics_file_type=case_obj["omics_files"].get(file_type)
+        ):
+            omics_model = OmicsVariantLoader(**info).model_dump(by_alias=True)
+            omics_model["case_id"] = case_obj["_id"]
+            omics_model["build"] = "37" if "37" in build else "38"
+
+            self._connect_gene(omics_model)
+
+            if self.omics_variant_collection.insert_one():
+                nr_inserted += 1
+
+        LOG.info("%s variants inserted", nr_inserted)
 
     def omics_variant(self, id: str):
         """Return omics variant"""
