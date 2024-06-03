@@ -3,6 +3,8 @@ import logging
 
 from typing import Dict
 
+from scout.parse.omics_variant import parse_omics_file
+
 LOG = logging.getLogger(__name__)
 
 class OmicsVariantHandler(OmicsVariantLoader):
@@ -17,9 +19,24 @@ class OmicsVariantHandler(OmicsVariantLoader):
         result = self.omics_variant_collection.delete_many(query)
         LOG.info("%s variants deleted", result.deleted_count)
 
-    def load_omics_variants(self):
+    def load_omics_variants(self, case_obj: str, file_type: Dict[str, str]):
+        """ Load OMICS variants for a case"""
 
+        gene_to_panels = self.gene_to_panels(case_obj)
+        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
 
-    def omics_variant(self):
+        nr_inserted = 0
 
+        # FIXME pass filename on dict
+        file_handle = open(case_obj["omics_files"].get(file_type.file_name.), "r")
 
+        omics_infos = parse_omics_file(omics_lines, omics_file_type=file_type)
+
+        
+
+    def omics_variant(self, id: str):
+        """ Return omics variant"""
+
+    def omics_variants(self, case_id: str, variant_type: str = "clinical", category: str = "outlier"):
+        """ Return omics variants """
