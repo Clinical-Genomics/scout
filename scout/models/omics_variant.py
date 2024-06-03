@@ -6,8 +6,73 @@
 """
 
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from scout.utils.md5 import generate_md5_key
+
+class OmicsVariantLoader(BaseModel):
+    case_id: str
+    # DROP Fraser and Outrider outlier TSVs
+
+    # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
+    sampleID: str
+
+    # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
+    hgnc_id: Optional[str]
+    geneID: Optional[str]
+    hgncSymbol: Optional[str] = Field(serialization_alias="hgnc_symbol")
+    gene_name_orig: Optional[str]
+
+    gene_type: Optional[str]
+
+    # coordinates if applicable
+    seqnames: Optional[str] = Field(serialization_alias="chrom")
+    start: Optional[int]
+    end: Optional[int]
+    width: Optional[int]
+    strand: Optional[str]
+
+    pValue: Optional[float]
+
+    # Fraser specific
+    type: Optional[str]
+    psiValue: Optional[float]
+    deltaPsi: Optional[float]
+    counts: Optional[int]
+    totalCounts: Optional[int]
+    meanCounts: Optional[float]
+    meanTotalCounts: Optional[float]
+    nonsplitCounts: Optional[int]
+    nonsplitProportion: Optional[float]
+    nonsplitProportion_99quantile: Optional[float]
+    annotatedJunction: Optional[str]
+    pValueGene: Optional[float]
+    padjustGene: Optional[float]
+    PAIRED_END: Optional[str]
+    isExternal: Optional[bool]
+    potentialImpact: Optional[str]
+    causesFrameshift: Optional[str]
+    UTR_overlap: Optional[str]
+    blacklist: Optional[bool]
+
+    # Outrider specific
+    padjust: Optional[float]
+    zScore:  Optional[float]
+    l2fc: Optional[float]
+    rawcounts: Optional[int]
+    normcounts: Optional[float]
+    meanCorrected: Optional[float]
+    theta: Optional[float]
+    aberrant: Optional[bool]
+    aberrantBySample: Optional[float]
+    aberrantByGene: Optional[float]
+    padj_rank: Optional[float]
+    FDR_set: Optional[str]
+    foldChange: Optional[float]
+
+
 
 
 class OmicsVariant(dict):
@@ -35,12 +100,11 @@ class OmicsVariant(dict):
     description=str,
     """
 
+
     def __init__(
         self,
-        chromosome,
-        position,
-        end,
         institute,
+        case,
         maintainer=[],
         build="37",
         date=None,
