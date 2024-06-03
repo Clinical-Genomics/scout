@@ -71,9 +71,12 @@ class OmicsVariantHandler(OmicsVariantLoader):
 
             self._connect_gene(omics_model)
 
+            # If case has gene panels, only add clinical variants with a matching gene
             variant_genes = [gene["hgnc_id"] for gene in omics_model["genes"]]
-            if case_panels and all(
-                variant_gene not in gene_to_panels for variant_gene in variant_genes
+            if (
+                omics_model["variant_type"] == "clinical"
+                and case_panels
+                and all(variant_gene not in gene_to_panels for variant_gene in variant_genes)
             ):
                 continue
 
