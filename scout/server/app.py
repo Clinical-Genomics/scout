@@ -15,10 +15,24 @@ from markdown import markdown as python_markdown
 from markupsafe import Markup
 
 from . import extensions
-from .blueprints import (alignviewers, api, cases, clinvar, dashboard,
-                         diagnoses, genes, institutes, login, managed_variants,
-                         panels, phenomodels, phenotypes, public, variant,
-                         variants)
+from .blueprints import (
+    alignviewers,
+    api,
+    cases,
+    clinvar,
+    dashboard,
+    diagnoses,
+    genes,
+    institutes,
+    login,
+    managed_variants,
+    panels,
+    phenomodels,
+    phenotypes,
+    public,
+    variant,
+    variants,
+)
 
 LOG = logging.getLogger(__name__)
 

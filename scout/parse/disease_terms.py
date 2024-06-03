@@ -1,14 +1,16 @@
 """Code for parsing disease terms from OMIM and ORPHA data"""
+
 import logging
 from typing import Dict, List
 
 from scout.parse.hpo_mappings import parse_hpo_annotations
 from scout.parse.omim import get_mim_disease
-from scout.parse.orpha import (get_orpha_inheritance_information,
-                               get_orpha_to_genes_information,
-                               get_orpha_to_hpo_information)
-from scout.utils.scout_requests import (fetch_hpo_disease_annotation,
-                                        fetch_orpha_files)
+from scout.parse.orpha import (
+    get_orpha_inheritance_information,
+    get_orpha_to_genes_information,
+    get_orpha_to_hpo_information,
+)
+from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
 

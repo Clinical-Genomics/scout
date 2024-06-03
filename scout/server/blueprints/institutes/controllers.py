@@ -10,11 +10,14 @@ from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
-from scout.constants import (CASE_SEARCH_TERMS, CASE_STATUSES,
-                             DATE_DAY_FORMATTER, ID_PROJECTION,
-                             PHENOTYPE_GROUPS)
-from scout.server.blueprints.variant.utils import (predictions,
-                                                   update_representative_gene)
+from scout.constants import (
+    CASE_SEARCH_TERMS,
+    CASE_STATUSES,
+    DATE_DAY_FORMATTER,
+    ID_PROJECTION,
+    PHENOTYPE_GROUPS,
+)
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 

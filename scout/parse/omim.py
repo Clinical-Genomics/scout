@@ -1,10 +1,15 @@
 """Code for parsing OMIM formatted files"""
+
 import logging
 from typing import Any, Dict, Iterable
 
-from scout.constants import (DISEASE_INHERITANCE_TERMS, ENTRY_PATTERN,
-                             INHERITANCE_TERMS_MAPPER, MIMNR_PATTERN,
-                             OMIM_STATUS_MAP)
+from scout.constants import (
+    DISEASE_INHERITANCE_TERMS,
+    ENTRY_PATTERN,
+    INHERITANCE_TERMS_MAPPER,
+    MIMNR_PATTERN,
+    OMIM_STATUS_MAP,
+)
 
 LOG = logging.getLogger(__name__)
 

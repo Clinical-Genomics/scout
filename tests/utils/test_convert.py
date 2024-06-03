@@ -1,5 +1,10 @@
-from scout.utils.convert import (amino_acid_residue_change_3_to_1,
-                                 convert_number, isfloat, isint, make_bool)
+from scout.utils.convert import (
+    amino_acid_residue_change_3_to_1,
+    convert_number,
+    isfloat,
+    isint,
+    make_bool,
+)
 
 
 def test_is_float_float():

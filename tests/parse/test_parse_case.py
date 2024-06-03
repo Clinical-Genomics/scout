@@ -8,8 +8,7 @@ from pydantic import ValidationError
 from scout.build.individual import BUILD_INDIVIDUAL_FILES
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.parse.case import (parse_case_config, parse_case_data, parse_ped,
-                              remove_none_values)
+from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
 
 LOG = logging.getLogger(__name__)
 

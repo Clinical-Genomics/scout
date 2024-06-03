@@ -8,10 +8,17 @@ from wtforms import SelectField, StringField
 
 from scout.constants import CANCER_EXPORT_HEADER, CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
-    compounds_need_updating, gene_panel_choices, hide_compounds_query,
-    match_gene_txs_variant_txs, populate_chrom_choices, sv_variants,
-    update_form_hgnc_symbols, variant_export_lines, variants,
-    variants_export_header)
+    compounds_need_updating,
+    gene_panel_choices,
+    hide_compounds_query,
+    match_gene_txs_variant_txs,
+    populate_chrom_choices,
+    sv_variants,
+    update_form_hgnc_symbols,
+    variant_export_lines,
+    variants,
+    variants_export_header,
+)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

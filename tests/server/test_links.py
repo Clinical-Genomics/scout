@@ -2,10 +2,18 @@
 
 from flask import url_for
 
-from scout.server.links import (BEACON_LINK_TEMPLATE, add_gene_links,
-                                alamut_gene_link, alamut_variant_link,
-                                beacon_link, cbioportal, ckb_gene, mutalyzer,
-                                mycancergenome, snp_links)
+from scout.server.links import (
+    BEACON_LINK_TEMPLATE,
+    add_gene_links,
+    alamut_gene_link,
+    alamut_variant_link,
+    beacon_link,
+    cbioportal,
+    ckb_gene,
+    mutalyzer,
+    mycancergenome,
+    snp_links,
+)
 
 BUILD_37 = 37
 BUILD_38 = 38

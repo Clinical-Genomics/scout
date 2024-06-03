@@ -8,26 +8,49 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.adapter import MongoAdapter
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
-                             ACMG_OPTIONS,
-                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                             CANCER_TIER_OPTIONS, CASE_TAGS,
-                             DISMISS_VARIANT_OPTIONS, IGV_TRACKS,
-                             INHERITANCE_PALETTE, MANUAL_RANK_OPTIONS,
-                             MOSAICISM_OPTIONS, VERBS_MAP)
-from scout.server.blueprints.variant.utils import (update_representative_gene,
-                                                   update_variant_case_panels)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_CRITERIA,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
+    CASE_TAGS,
+    DISMISS_VARIANT_OPTIONS,
+    IGV_TRACKS,
+    INHERITANCE_PALETTE,
+    MANUAL_RANK_OPTIONS,
+    MOSAICISM_OPTIONS,
+    VERBS_MAP,
+)
+from scout.server.blueprints.variant.utils import (
+    update_representative_gene,
+    update_variant_case_panels,
+)
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
-from scout.server.utils import (case_has_alignments, case_has_mt_alignments,
-                                case_has_rna_tracks, user_institutes,
-                                variant_institute_and_case)
+from scout.server.utils import (
+    case_has_alignments,
+    case_has_mt_alignments,
+    case_has_rna_tracks,
+    user_institutes,
+    variant_institute_and_case,
+)
 
-from .utils import (add_gene_info, associate_variant_genes_with_case_panels,
-                    callers, clinsig_human, default_panels, end_position,
-                    evaluation, frequencies, frequency, is_affected,
-                    predictions)
+from .utils import (
+    add_gene_info,
+    associate_variant_genes_with_case_panels,
+    callers,
+    clinsig_human,
+    default_panels,
+    end_position,
+    evaluation,
+    frequencies,
+    frequency,
+    is_affected,
+    predictions,
+)
 
 LOG = logging.getLogger(__name__)
 

@@ -2,8 +2,7 @@ import copy
 
 from werkzeug.datastructures import MultiDict
 
-from scout.server.blueprints.phenomodels.controllers import \
-    phenomodel_checkgroups_filter
+from scout.server.blueprints.phenomodels.controllers import phenomodel_checkgroups_filter
 from scout.server.extensions import store
 
 

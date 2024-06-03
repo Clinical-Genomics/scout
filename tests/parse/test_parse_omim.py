@@ -1,6 +1,10 @@
-from scout.parse.omim import (get_mim_disease, parse_genemap2,
-                              parse_genemap2_diseases, parse_mim2gene,
-                              parse_omim_line)
+from scout.parse.omim import (
+    get_mim_disease,
+    parse_genemap2,
+    parse_genemap2_diseases,
+    parse_mim2gene,
+    parse_omim_line,
+)
 
 
 def test_parse_omim_line():

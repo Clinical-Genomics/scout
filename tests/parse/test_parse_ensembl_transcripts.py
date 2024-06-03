@@ -1,5 +1,4 @@
-from scout.parse.ensembl import (parse_ensembl_line, parse_ensembl_transcripts,
-                                 parse_transcripts)
+from scout.parse.ensembl import parse_ensembl_line, parse_ensembl_transcripts, parse_transcripts
 
 
 def test_parse_ensembl_line(unparsed_transcript):

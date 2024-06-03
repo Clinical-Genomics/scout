@@ -1,7 +1,6 @@
 from flask import url_for
 
-from scout.server.blueprints.variant.verification_controllers import \
-    variant_verification
+from scout.server.blueprints.variant.verification_controllers import variant_verification
 
 
 def mock_url_for(param, institute_id, case_name, variant_id):

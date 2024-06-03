@@ -6,8 +6,7 @@ from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
 from scout.models.case.case_loading_models import CaseLoader
 from scout.parse.mitodel import parse_mitodel_file
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
-                               parse_peddy_sex_check)
+from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
 
 LOG = logging.getLogger(__name__)

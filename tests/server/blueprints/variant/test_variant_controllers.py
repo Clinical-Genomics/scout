@@ -9,8 +9,13 @@ from flask_login import current_user
 from scout.constants import IGV_TRACKS
 from scout.server.app import create_app
 from scout.server.blueprints.variant.controllers import (
-    check_reset_variant_classification, get_igv_tracks, observations,
-    tx_overview, variant, variant_rank_scores)
+    check_reset_variant_classification,
+    get_igv_tracks,
+    observations,
+    tx_overview,
+    variant,
+    variant_rank_scores,
+)
 from scout.server.blueprints.variant.utils import evaluation
 from scout.server.extensions import config_igv_tracks, loqusdb, store
 from scout.server.utils import case_has_rna_tracks

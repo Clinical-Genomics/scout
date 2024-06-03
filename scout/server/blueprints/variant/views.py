@@ -1,24 +1,29 @@
 import logging
 
-from flask import (Blueprint, current_app, flash, jsonify, redirect,
-                   render_template, request, url_for)
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS
-from scout.server.blueprints.variant.controllers import \
-    check_reset_variant_classification
-from scout.server.blueprints.variant.controllers import \
-    evaluation as evaluation_controller
-from scout.server.blueprints.variant.controllers import (observations,
-                                                         str_variant_reviewer)
-from scout.server.blueprints.variant.controllers import \
-    variant as variant_controller
-from scout.server.blueprints.variant.controllers import \
-    variant_acmg as acmg_controller
+from scout.server.blueprints.variant.controllers import check_reset_variant_classification
+from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
+from scout.server.blueprints.variant.controllers import variant as variant_controller
+from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import variant_acmg_post
 from scout.server.blueprints.variant.verification_controllers import (
-    MissingVerificationRecipientError, variant_verification)
+    MissingVerificationRecipientError,
+    variant_verification,
+)
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg

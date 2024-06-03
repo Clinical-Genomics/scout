@@ -2,8 +2,14 @@
 import logging
 
 from flask_wtf import FlaskForm
-from wtforms import (IntegerField, SelectField, SelectMultipleField,
-                     StringField, SubmitField, validators)
+from wtforms import (
+    IntegerField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    SubmitField,
+    validators,
+)
 
 from scout.constants import CHROMOSOMES, SV_TYPES
 

@@ -1,17 +1,33 @@
 import logging
 
 from flask_wtf import FlaskForm
-from wtforms import (BooleanField, DateField, HiddenField, IntegerField,
-                     RadioField, SelectField, SelectMultipleField, StringField,
-                     TextAreaField, validators, widgets)
+from wtforms import (
+    BooleanField,
+    DateField,
+    HiddenField,
+    IntegerField,
+    RadioField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    TextAreaField,
+    validators,
+    widgets,
+)
 
-from scout.constants import (AFFECTED_STATUS, ALLELE_OF_ORIGIN,
-                             ASSERTION_METHOD, ASSERTION_METHOD_CIT,
-                             CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS,
-                             CLINVAR_INHERITANCE_MODELS, CLINVAR_SV_TYPES,
-                             COLLECTION_METHOD, CONDITION_PREFIX,
-                             GERMLINE_CLASSIF_TERMS,
-                             MULTIPLE_CONDITION_EXPLANATION)
+from scout.constants import (
+    AFFECTED_STATUS,
+    ALLELE_OF_ORIGIN,
+    ASSERTION_METHOD,
+    ASSERTION_METHOD_CIT,
+    CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS,
+    CLINVAR_INHERITANCE_MODELS,
+    CLINVAR_SV_TYPES,
+    COLLECTION_METHOD,
+    CONDITION_PREFIX,
+    GERMLINE_CLASSIF_TERMS,
+    MULTIPLE_CONDITION_EXPLANATION,
+)
 
 LOG = logging.getLogger(__name__)
 

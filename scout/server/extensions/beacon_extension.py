@@ -1,14 +1,14 @@
 """Scout supports integration with the Clinical Genomics SciLifeLab Beacon
    cgbeacon2: https://github.com/Clinical-Genomics/cgbeacon2
 """
+
 import datetime
 import logging
 
 from flask import flash, url_for
 from flask_login import current_user
 
-from scout.utils.scout_requests import (delete_request_json, get_request_json,
-                                        post_request_json)
+from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 DATASET_BUILDS = ["GRCh37", "GRCh38"]

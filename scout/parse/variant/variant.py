@@ -14,8 +14,7 @@ from .compound import parse_compounds
 from .conservation import parse_conservations
 from .coordinates import parse_coordinates
 from .deleteriousness import parse_cadd
-from .frequency import (parse_frequencies, parse_mei_frequencies,
-                        parse_sv_frequencies)
+from .frequency import parse_frequencies, parse_mei_frequencies, parse_sv_frequencies
 from .gene import parse_genes
 from .genotype import parse_genotypes
 from .ids import parse_ids

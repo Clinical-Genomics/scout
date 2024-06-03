@@ -2,10 +2,14 @@ from typing import Iterator
 
 import pytest
 
-from scout.demo.resources import (exons37_reduced_path, exons38_reduced_path,
-                                  genes37_reduced_path, genes38_reduced_path,
-                                  transcripts37_reduced_path,
-                                  transcripts38_reduced_path)
+from scout.demo.resources import (
+    exons37_reduced_path,
+    exons38_reduced_path,
+    genes37_reduced_path,
+    genes38_reduced_path,
+    transcripts37_reduced_path,
+    transcripts38_reduced_path,
+)
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 
