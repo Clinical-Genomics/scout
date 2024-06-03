@@ -4,12 +4,14 @@ import logging
 from typing import Dict, Optional
 
 from scout.constants import OMICS_FILE_TYPE_MAP
+from scout.models.omics_variant import OmicsVariantLoader
 from scout.parse.omics_variant import parse_omics_file
+
 
 LOG = logging.getLogger(__name__)
 
 
-class OmicsVariantHandler(OmicsVariantLoader):
+class OmicsVariantHandler:
     def delete_omics_variants(self, case_id: str, omics_file: str):
         """Delete OMICS variants for a case"""
         file_type = OMICS_FILE_TYPE_MAP.get("omics_file")
@@ -68,7 +70,7 @@ class OmicsVariantHandler(OmicsVariantLoader):
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
                 omics_info[key] = omics_file_type[key]
 
-            omics_model = OmicsVariantLoader(**info).model_dump(by_alias=True)
+            omics_model = OmicsVariantLoader(**omics_info).model_dump(by_alias=True)
 
             self._connect_gene(omics_model)
 

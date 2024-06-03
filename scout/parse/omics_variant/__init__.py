@@ -1,6 +1,6 @@
-from .drop import parse_omics_tsv
+from typing import Dict, Iterable, List
 
-from typing import Iterable
+from .drop import parse_omics_tsv
 
 OMICS_CATEGORY_PARSER = {"tsv": parse_omics_tsv}
 

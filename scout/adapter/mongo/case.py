@@ -833,7 +833,7 @@ class CaseHandler(object):
             if key in old_case:
                 new_case[key] = old_case[key]
 
-    def _load_omics_variants(self, case_obj: dict):
+    def _load_omics_variants(self, case_obj: dict, build: str, update: bool = False):
         """Load omics variants. The OMICS FILE type dict contains all we need to
         determine how to load variants (type, category etc)."""
 
@@ -939,7 +939,7 @@ class CaseHandler(object):
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
-        self._load_omics_variants(case_obj)
+        self._load_omics_variants(case_obj, build=genome_build, update=update)
 
         if existing_case:
             self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)

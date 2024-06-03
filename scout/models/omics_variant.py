@@ -14,19 +14,25 @@ from scout.utils.md5 import generate_md5_key
 
 
 class OmicsVariantLoader(BaseModel):
-    # An OmicsVariant on db will also have
+    """Omics variants loader
+    OmicsVariants are e.g. RNA expression outliers as identified by the DROP pipeline.
+
+    Variable names are as found in the original files, plus a set common to all mixed in after file parsing,
+    but before model validation by this class.
+
+    The serialisation names will be used when dumping the model for e.g. db storage.
+    """
+
     case_id: str
     institute_id: str
     build: str = "38"
     variant_type: str = "clinical"
-    category: str = ("outlier",)
-    sub_category: str = ("fraser",)
+    category: str = "outlier"
+    sub_category: str = "fraser"
     date: datetime.datetime
     display_name: str
-
-    # omics_variant_id  gene, category, sub_category, qualification
-    # display_id
-    # omics variant id hash (including clinical/research)
+    omics_variant_id: str
+    # omics variant id hash (including clinical/research)?
 
     # DROP Fraser and Outrider outlier TSVs
 
@@ -91,22 +97,23 @@ class OmicsVariantLoader(BaseModel):
         """Set a free text qualification, depending on the kind of variant."""
 
         if values.get("sub_category") == "outrider":
-            qualification = "up" if zScore > 0 else "down"
+            qualification = "up" if values.get("zScore") > 0 else "down"
+
         if values.get("sub_category") == "fraser":
             qualification = values.get("potentialImpact")
 
-            values["display_name"] = "_".join(
-                [
-                    values.get("hgncSymbol"),
-                    values.get("category"),
-                    values.get("sub_category"),
-                    qualification,
-                    values.get("seqnames"),  # chrom, unserialised
-                    values.get("start"),
-                    values.get("end"),
-                    values.get("variant_type"),
-                ]
-            )
+        values["display_name"] = "_".join(
+            [
+                values.get("hgncSymbol"),
+                values.get("category"),
+                values.get("sub_category"),
+                qualification,
+                values.get("seqnames"),  # chrom, unserialised
+                values.get("start"),
+                values.get("end"),
+                values.get("variant_type"),
+            ]
+        )
         return values
 
     @model_validator(mode="before")
@@ -114,7 +121,7 @@ class OmicsVariantLoader(BaseModel):
         """Set OMICS variant id based on the kind of variant."""
 
         if values.get("sub_category") == "outrider":
-            qualification = "up" if zScore > 0 else "down"
+            qualification = "up" if values.get("zScore") > 0 else "down"
         if values.get("sub_category") == "fraser":
             qualification = values.get("potentialImpact")
 

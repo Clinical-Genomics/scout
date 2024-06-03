@@ -15,7 +15,7 @@ except ImportError:
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP
+from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP, OMICS_FILE_TYPE_MAP
 from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
