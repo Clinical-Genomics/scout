@@ -9,7 +9,8 @@ from scout.build.hpo import build_hpo_term
 from scout.models.phenotype_term import HpoTerm
 from scout.parse.hpo_mappings import parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
-from scout.utils.scout_requests import fetch_hpo_terms, fetch_hpo_to_genes_to_disease
+from scout.utils.scout_requests import (fetch_hpo_terms,
+                                        fetch_hpo_to_genes_to_disease)
 
 LOG = logging.getLogger(__name__)
 

@@ -9,15 +9,10 @@ from bson.objectid import ObjectId
 from flask import url_for
 
 from scout.server.links import get_variant_links
-from scout.server.utils import (
-    append_safe,
-    case_has_alignments,
-    case_has_mt_alignments,
-    case_has_mtdna_report,
-    document_generated,
-    find_index,
-    html_to_pdf_file,
-)
+from scout.server.utils import (append_safe, case_has_alignments,
+                                case_has_mt_alignments, case_has_mtdna_report,
+                                document_generated, find_index,
+                                html_to_pdf_file)
 
 
 def test_objectid_generated_valid_objid():

@@ -4,11 +4,7 @@ import responses
 from flask import Blueprint, Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
-    case,
-    coverage_report_contents,
-    mt_coverage_stats,
-    phenotypes_genes,
-)
+    case, coverage_report_contents, mt_coverage_stats, phenotypes_genes)
 from scout.server.extensions import store
 
 

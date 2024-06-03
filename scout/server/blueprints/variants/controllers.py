@@ -13,42 +13,25 @@ from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
 from wtforms import DecimalField
 
 from scout.adapter import MongoAdapter
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CANCER_EXPORT_HEADER,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    CHROMOSOMES,
-    CHROMOSOMES_38,
-    CLINSIG_MAP,
-    DISMISS_VARIANT_OPTIONS,
-    EXPORT_HEADER,
-    EXPORTED_VARIANTS_LIMIT,
-    FUSION_EXPORT_HEADER,
-    MANUAL_RANK_OPTIONS,
-    MOSAICISM_OPTIONS,
-    SPIDEX_HUMAN,
-    VARIANT_FILTERS,
-    VARIANTS_TARGET_FROM_CATEGORY,
-)
-from scout.server.blueprints.variant.utils import (
-    callers,
-    clinsig_human,
-    predictions,
-    update_representative_gene,
-    update_variant_case_panels,
-)
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CANCER_EXPORT_HEADER,
+                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, CHROMOSOMES, CHROMOSOMES_38,
+                             CLINSIG_MAP, DISMISS_VARIANT_OPTIONS,
+                             EXPORT_HEADER, EXPORTED_VARIANTS_LIMIT,
+                             FUSION_EXPORT_HEADER, MANUAL_RANK_OPTIONS,
+                             MOSAICISM_OPTIONS, SPIDEX_HUMAN, VARIANT_FILTERS,
+                             VARIANTS_TARGET_FROM_CATEGORY)
+from scout.server.blueprints.variant.utils import (callers, clinsig_human,
+                                                   predictions,
+                                                   update_representative_gene,
+                                                   update_variant_case_panels)
 from scout.server.blueprints.variants.forms import BetterDecimalField
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
-from scout.server.utils import (
-    case_has_alignments,
-    case_has_mt_alignments,
-    institute_and_case,
-    user_institutes,
-)
+from scout.server.utils import (case_has_alignments, case_has_mt_alignments,
+                                institute_and_case, user_institutes)
 
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
+from .forms import (FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm,
+                    SvFiltersForm)
 from .utils import update_case_panels
 
 NUM = re.compile(r"\d+")

@@ -9,34 +9,17 @@ from operator import itemgetter
 from typing import Generator, Optional, Union
 
 from cairosvg import svg2png
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    url_for,
-)
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
+                   redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from flask_login import current_user
 
 from scout.constants import DATE_DAY_FORMATTER
 from scout.server.blueprints.variants.controllers import activate_case
 from scout.server.extensions import beacon, phenopacketapi, store
-from scout.server.utils import (
-    html_to_pdf_file,
-    institute_and_case,
-    jsonconverter,
-    templated,
-    user_cases,
-    user_institutes,
-    zip_dir_to_obj,
-)
+from scout.server.utils import (html_to_pdf_file, institute_and_case,
+                                jsonconverter, templated, user_cases,
+                                user_institutes, zip_dir_to_obj)
 from scout.utils.gene import parse_raw_gene_ids, parse_raw_gene_symbols
 
 from . import controllers

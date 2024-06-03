@@ -1,11 +1,9 @@
 from cyvcf2 import VCF
 
-from scout.parse.variant.headers import (
-    parse_header_format,
-    parse_local_archive_header,
-    parse_rank_results_header,
-    parse_vep_header,
-)
+from scout.parse.variant.headers import (parse_header_format,
+                                         parse_local_archive_header,
+                                         parse_rank_results_header,
+                                         parse_vep_header)
 
 
 def test_parse_header_format():

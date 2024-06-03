@@ -1,12 +1,9 @@
-# stdlib modules
 import logging
-
 from typing import Dict, Optional
 
 from scout.constants import OMICS_FILE_TYPE_MAP
 from scout.models.omics_variant import OmicsVariantLoader
 from scout.parse.omics_variant import parse_omics_file
-
 
 LOG = logging.getLogger(__name__)
 

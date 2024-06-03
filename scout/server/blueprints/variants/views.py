@@ -8,27 +8,16 @@ from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    GENETIC_MODELS_PALETTE,
-    MANUAL_RANK_OPTIONS,
-    SEVERE_SO_TERMS,
-    SEVERE_SO_TERMS_SV,
-)
+from scout.constants import (CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, DISMISS_VARIANT_OPTIONS,
+                             GENETIC_MODELS_PALETTE, MANUAL_RANK_OPTIONS,
+                             SEVERE_SO_TERMS, SEVERE_SO_TERMS_SV)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-from .forms import (
-    CancerFiltersForm,
-    FiltersForm,
-    FusionFiltersForm,
-    MeiFiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-)
+from .forms import (CancerFiltersForm, FiltersForm, FusionFiltersForm,
+                    MeiFiltersForm, StrFiltersForm, SvFiltersForm)
 
 LOG = logging.getLogger(__name__)
 

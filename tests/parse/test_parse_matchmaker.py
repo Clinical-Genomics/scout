@@ -1,6 +1,7 @@
 import pytest
 
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (genomic_features, hpo_terms, omim_terms,
+                                    parse_matches)
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):

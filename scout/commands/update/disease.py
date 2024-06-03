@@ -8,11 +8,8 @@ from scout.constants import UPDATE_DISEASES_RESOURCES
 from scout.load.disease import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import (
-    fetch_hpo_disease_annotation,
-    fetch_mim_files,
-    fetch_orpha_files,
-)
+from scout.utils.scout_requests import (fetch_hpo_disease_annotation,
+                                        fetch_mim_files, fetch_orpha_files)
 
 LOG = logging.getLogger(__name__)
 

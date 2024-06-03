@@ -2,16 +2,8 @@
 import logging
 from datetime import datetime
 
-from flask import (
-    Blueprint,
-    current_app,
-    flash,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from flask import (Blueprint, current_app, flash, redirect, render_template,
+                   request, session, url_for)
 from flask_login import login_user, logout_user
 
 from scout.server.extensions import login_manager, oauth_client, store

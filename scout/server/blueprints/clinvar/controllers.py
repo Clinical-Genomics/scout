@@ -9,12 +9,9 @@ from flask_login import current_user
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
-from scout.constants.clinvar import (
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    CONDITION_PREFIX,
-    SCOUT_CLINVAR_SV_TYPES_MAP,
-)
+from scout.constants.clinvar import (CASEDATA_HEADER, CLINVAR_HEADER,
+                                     CONDITION_PREFIX,
+                                     SCOUT_CLINVAR_SV_TYPES_MAP)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import clinvar_api, store

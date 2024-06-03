@@ -3,7 +3,8 @@ import datetime
 import json
 import logging
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
+from flask import (Blueprint, Response, flash, redirect, render_template,
+                   request, send_file, url_for)
 from flask_login import current_user
 from markupsafe import escape
 
@@ -11,16 +12,10 @@ from scout.constants import DATE_DAY_FORMATTER
 from scout.export.panel import export_gene_panels
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
-from scout.server.utils import (
-    case_has_chanjo2_coverage,
-    case_has_chanjo_coverage,
-    html_to_pdf_file,
-    institute_and_case,
-    jsonconverter,
-    public_endpoint,
-    templated,
-    user_institutes,
-)
+from scout.server.utils import (case_has_chanjo2_coverage,
+                                case_has_chanjo_coverage, html_to_pdf_file,
+                                institute_and_case, jsonconverter,
+                                public_endpoint, templated, user_institutes)
 from scout.utils.gene import parse_raw_gene_ids
 
 from . import controllers

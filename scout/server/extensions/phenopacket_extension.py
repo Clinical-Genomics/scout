@@ -7,7 +7,8 @@ import json as json_lib
 import logging
 
 from google.protobuf.json_format import MessageToJson, Parse
-from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
+from phenopackets import (Individual, OntologyClass, Phenopacket,
+                          PhenotypicFeature)
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.server.utils import jsonconverter

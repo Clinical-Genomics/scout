@@ -10,7 +10,6 @@ import yaml
 # General, logging
 from scout import __version__
 from scout.adapter.client import get_connection
-
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 

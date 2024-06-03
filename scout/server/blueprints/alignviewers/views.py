@@ -3,15 +3,8 @@ import logging
 from typing import Optional
 
 import requests
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    copy_current_request_context,
-    render_template,
-    request,
-    session,
-)
+from flask import (Blueprint, Response, abort, copy_current_request_context,
+                   render_template, request, session)
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case

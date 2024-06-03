@@ -1,6 +1,7 @@
 import datetime
 
-from scout.parse.panel import get_panel_info, parse_gene, parse_gene_panel, parse_genes
+from scout.parse.panel import (get_panel_info, parse_gene, parse_gene_panel,
+                               parse_genes)
 from scout.utils.handle import get_file_handle
 
 

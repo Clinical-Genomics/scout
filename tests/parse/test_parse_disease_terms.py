@@ -2,13 +2,11 @@ from typing import Dict
 
 import pytest
 
-from scout.parse.disease_terms import (
-    consolidate_gene_and_hpo_annotation,
-    get_all_disease_terms,
-    get_omim_disease_terms,
-    get_orpha_disease_terms,
-    parse_disease_terms,
-)
+from scout.parse.disease_terms import (consolidate_gene_and_hpo_annotation,
+                                       get_all_disease_terms,
+                                       get_omim_disease_terms,
+                                       get_orpha_disease_terms,
+                                       parse_disease_terms)
 
 
 def test_get_all_disease_terms(

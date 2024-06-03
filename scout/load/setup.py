@@ -11,29 +11,24 @@ import logging
 import yaml
 
 from scout.build import build_institute
-
 # Case files
 # Gene panel
-from scout.demo import cancer_load_path, load_path, panel_path, rnafusion_load_path
-
+from scout.demo import (cancer_load_path, load_path, panel_path,
+                        rnafusion_load_path)
 ### Import demo files ###
 from scout.demo.resources import demo_files
 from scout.load import load_cytobands, load_hgnc_genes, load_transcripts
 from scout.load.disease import load_disease_terms
 from scout.load.hpo import load_hpo_terms
-
 # Resources
 from scout.parse.case import parse_case_data
 from scout.parse.panel import parse_gene_panel
 from scout.resources import cytoband_files
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import (
-    fetch_constraint,
-    fetch_genes_to_hpo_to_disease,
-    fetch_hgnc,
-    fetch_mim_files,
-)
+from scout.utils.scout_requests import (fetch_constraint,
+                                        fetch_genes_to_hpo_to_disease,
+                                        fetch_hgnc, fetch_mim_files)
 
 LOG = logging.getLogger(__name__)
 

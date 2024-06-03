@@ -1,12 +1,10 @@
 from typing import List
 from xml.etree.ElementTree import Element
 
-from scout.parse.orpha import (
-    get_orpha_inheritance_information,
-    get_orpha_to_genes_information,
-    get_orpha_to_hpo_information,
-    parse_orpha_downloads,
-)
+from scout.parse.orpha import (get_orpha_inheritance_information,
+                               get_orpha_to_genes_information,
+                               get_orpha_to_hpo_information,
+                               parse_orpha_downloads)
 
 
 def test_parse_orpha_downloads(orpha_to_genes_lines: List[str]):

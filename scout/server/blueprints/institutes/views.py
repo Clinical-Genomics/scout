@@ -2,23 +2,18 @@
 import json
 import logging
 
-from flask import (
-    Blueprint,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import (Blueprint, current_app, flash, jsonify, redirect,
+                   render_template, request, url_for)
 from flask_login import current_user
 from pymongo import DESCENDING
 
-from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
-from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS,
+                             VERBS_ICONS_MAP, VERBS_MAP)
+from scout.server.blueprints.variants.controllers import \
+    update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
+from scout.server.utils import (institute_and_case, jsonconverter, templated,
+                                user_institutes)
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm

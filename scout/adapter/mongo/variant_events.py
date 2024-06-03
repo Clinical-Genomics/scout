@@ -4,7 +4,8 @@ from typing import Dict, List
 
 import pymongo
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, REV_ACMG_MAP
+from scout.constants import (CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS,
+                             REV_ACMG_MAP)
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
