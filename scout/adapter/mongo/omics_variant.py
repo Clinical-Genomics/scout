@@ -48,9 +48,10 @@ class OmicsVariantHandler(OmicsVariantLoader):
     def load_omics_variants(self, case_obj: dict, file_type: str, build: Optional[str] = "37"):
         """Load OMICS variants for a case"""
 
+        case_panels = case_obj.get("panels", [])
         gene_to_panels = self.gene_to_panels(case_obj)
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        # genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        # hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
 
         omics_file_type: dict = OMICS_FILE_TYPE_MAP.get("file_type")
 
@@ -63,18 +64,22 @@ class OmicsVariantHandler(OmicsVariantLoader):
         ):
             omics_model = OmicsVariantLoader(**info).model_dump(by_alias=True)
             omics_model["case_id"] = case_obj["_id"]
-
             omics_model["build"] = "37" if "37" in build else "38"
             omics_model["file_type"] = file_type
-            omics_model["category"] = omics_file_type["category"]
-            omics_model["sub_category"] = omics_file_type["sub_category"]
-            omics_model["variant_type"] = omics_file_type["variant_type"]
-            omics_model["analysis_type"] = omics_file_type["analysis_type"]
+            for key in ["category", "sub_category", "variant_type", "analysis_type"]:
+                omics_model[key] = omics_file_type[key]
 
             self._connect_gene(omics_model)
 
-            if self.omics_variant_collection.insert_one(omics_model):
-                nr_inserted += 1
+            variant_genes = [gene["hgnc_id"] for gene in omics_model["genes"]]
+            if case_panels and all(
+                variant_gene not in gene_to_panels for variant_gene in variant_genes
+            ):
+                continue
+
+            # try - catch to catch duplicates?
+            self.omics_variant_collection.insert_one(omics_model)
+            nr_inserted += 1
 
         LOG.info("%s variants inserted", nr_inserted)
 
