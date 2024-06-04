@@ -278,7 +278,7 @@ def parse_gene_panel(
 def parse_panel_app_gene(
     app_gene: dict,
     ensembl_gene_hgnc_id_map: Dict[str, int],
-    hgnc_symbol_ensembl_gene_map: [str, str],
+    hgnc_symbol_ensembl_gene_map: Dict[str, str],
     confidence: str,
 ) -> dict:
     """Parse a panel app-formatted gene."""
