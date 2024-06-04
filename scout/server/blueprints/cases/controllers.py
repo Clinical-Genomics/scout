@@ -398,14 +398,16 @@ def case(store, institute_obj, case_obj):
         )
 
     # Limit secondary findings according to institute settings
-    limit_genes = store.safe_genes_filter(institute_obj["_id"])
+    institute_safe_genes: List[int] = institute_obj.get(
+        "safe_genes_matching"
+    ) or store.safe_genes_filter(institute_obj["_id"])
 
     limit_genes_default_panels = _limit_genes_on_default_panels(
-        case_obj["default_genes"], limit_genes
+        case_obj["default_genes"], institute_safe_genes
     )
 
     other_causatives, other_causatives_in_default_panels = _matching_causatives(
-        store, case_obj, limit_genes, limit_genes_default_panels
+        store, case_obj, institute_safe_genes, limit_genes_default_panels
     )
 
     data = {
@@ -414,7 +416,7 @@ def case(store, institute_obj, case_obj):
         "other_causatives": other_causatives,
         "default_other_causatives": other_causatives_in_default_panels,
         "managed_variants": [
-            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+            var for var in store.check_managed(case_obj=case_obj, limit_genes=institute_safe_genes)
         ],
         "default_managed_variants": [
             var

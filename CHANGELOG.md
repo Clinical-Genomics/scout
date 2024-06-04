@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only
 - Modified OMIM-AUTO gene panel to include genes in both genome builds
 - Moved chanjo code into a dedicated extension
+- Speed up case loading by save the list of genes included in `Gene panels available for other variants matching` (institute settings) in institute's database documents
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function
