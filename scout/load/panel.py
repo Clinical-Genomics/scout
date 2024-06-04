@@ -7,6 +7,7 @@ functions to load panels into the database
 import logging
 import math
 from datetime import datetime
+from typing import Dict, List
 
 from click import Abort
 from flask.cli import current_app
@@ -110,7 +111,7 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
 
-def _panelapp_panel_ids():
+def _panelapp_panel_ids() -> List[str]:
     """Fetch all PanelApp panel IDs"""
     json_lines = fetch_resource(PANELAPP_BASE_URL.format("list_panels"), json=True)
     return [panel_info["Panel_Id"] for panel_info in json_lines.get("result", [])]
@@ -129,11 +130,14 @@ def _parse_panelapp_panel(adapter, panel_id, institute, confidence):
             {'version': 3.3, 'date': datetime.datetime(2023, 1, 31, 16, 43, 37, 521719), 'display_name': 'Diabetes - neonatal onset - [GREEN]', 'institute': 'cust000', 'panel_type': 'clinical', 'genes': [list of genes], 'panel_id': '55a9041e22c1fc6711b0c6c0'}
 
     """
-    hgnc_map = adapter.ensembl_to_hgnc_mapping()
+    ensembl_gene_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
+    hgnc_symbol_ensembl_gene_map: Dict[str, str] = adapter.hgnc_symbol_ensembl_id_mapping()
+
     json_lines = fetch_resource(PANELAPP_BASE_URL.format("get_panel") + panel_id, json=True)
     parsed_panel = parse_panel_app_panel(
         panel_info=json_lines["result"],
-        hgnc_map=hgnc_map,
+        ensembl_gene_hgnc_id_map=ensembl_gene_hgnc_id_map,
+        hgnc_symbol_ensembl_gene_map=hgnc_symbol_ensembl_gene_map,
         institute=institute,
         confidence=confidence,
     )
@@ -160,7 +164,7 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
 
     if not panel_id:
         LOG.info("Fetching all panel app panels")
-        panel_ids = _panelapp_panel_ids()
+        panel_ids: List[str] = _panelapp_panel_ids()
 
     for _ in panel_ids:
         parsed_panel = _parse_panelapp_panel(adapter, _, institute, confidence)

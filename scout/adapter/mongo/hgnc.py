@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 import intervaltree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
@@ -357,15 +358,35 @@ class GeneHandler(object):
 
         return alias_genes
 
-    def ensembl_to_hgnc_mapping(self):
+    def ensembl_to_hgnc_id_mapping(self) -> Dict[str, int]:
         """Return a dictionary with Ensembl ids as keys and hgnc_ids as values
 
         Returns:
-            mapping(dict): {"ENSG00000121410":"A1BG", ...}
+            mapping(dict): {"ENSG00000121410": 5, ...}
         """
         pipeline = [{"$group": {"_id": {"ensembl_id": "$ensembl_id", "hgnc_id": "$hgnc_id"}}}]
         result = self.hgnc_collection.aggregate(pipeline)
         mapping = {res["_id"]["ensembl_id"]: res["_id"]["hgnc_id"] for res in result}
+        return mapping
+
+    def hgnc_symbol_ensembl_id_mapping(self) -> Dict[str, str]:
+        """Return a dictionary with HGNC symbols as keys and Ensembl ids as values.
+
+        Returns:
+           mapping(dict): {"A1BG": "ENSG00000121410".}
+        """
+        pipeline = [
+            {
+                "$group": {
+                    "_id": {
+                        "hgnc_symbol": "$hgnc_symbol",
+                        "ensembl_id": "$ensembl_id",
+                    }
+                }
+            }
+        ]
+        result = self.hgnc_collection.aggregate(pipeline)
+        mapping = {res["_id"]["hgnc_symbol"]: res["_id"]["ensembl_id"] for res in result}
         return mapping
 
     def ensembl_genes(self, build=None, add_transcripts=False, id_transcripts=False):
