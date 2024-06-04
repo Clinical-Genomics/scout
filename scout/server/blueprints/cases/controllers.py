@@ -430,6 +430,9 @@ def case(store, institute_obj, case_obj):
             "case_images", case_obj["custom_images"].get("case", {})
         )
 
+    flash("Time custom images {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
@@ -437,7 +440,11 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
-    flash("Time _limit_genes_on_default_panels {0}".format(datetime.datetime.now() - split_time))
+    flash(
+        "Time _limit_genes_on_default_panels and safe_genes_filter {0}".format(
+            datetime.datetime.now() - split_time
+        )
+    )
     split_time = datetime.datetime.now()
 
     other_causatives, other_causatives_in_default_panels = _matching_causatives(
