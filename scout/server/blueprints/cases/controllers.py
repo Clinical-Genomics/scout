@@ -295,11 +295,16 @@ def case(store, institute_obj, case_obj):
     """
     # Convert individual information to more readable format
 
+    start_time = datetime.datetime.now()
+
     _populate_case_individuals(case_obj)
 
     case_obj["assignees"] = [
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
     ]
+
+    flash("Time _populate_case_individuals {0}".format(datetime.datetime.now() - start_time))
+    split_time = datetime.datetime.now()
 
     # Provide basic info on alignment files & coverage data availability for this case
     case_has_alignments(case_obj)
@@ -308,27 +313,43 @@ def case(store, institute_obj, case_obj):
     case_has_chanjo2_coverage(case_obj)
     case_has_mtdna_report(case_obj)
 
+    flash("Time check files and reports {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     case_groups = {}
     case_group_label = {}
     _populate_case_groups(store, case_obj, case_groups, case_group_label)
+
+    flash("Time case groups {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
     _populate_assessments(suspects)
+    flash("Time populate pinned {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     causatives = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
     _populate_assessments(causatives)
+    flash("Time populate causatives {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     # get evaluated variants
     evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
     _populate_assessments(evaluated_variants)
+    flash("Time populate evaluated variants {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     # check for partial causatives and associated phenotypes
     partial_causatives = _get_partial_causatives(store, case_obj)
     _populate_assessments(partial_causatives)
+
+    flash("Time populate partial causatives {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
@@ -341,7 +362,13 @@ def case(store, institute_obj, case_obj):
 
     case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
 
+    flash("Time populate clinvar vars {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
+
+    flash("Time default panels {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
@@ -391,6 +418,10 @@ def case(store, institute_obj, case_obj):
             )
         }
     add_link_for_disease(case_obj)
+
+    flash("Time HPO etc {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     if case_obj.get("custom_images"):
         # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
@@ -404,9 +435,15 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
+    flash("Time HPO etc {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
+
     other_causatives, other_causatives_in_default_panels = _matching_causatives(
         store, case_obj, limit_genes, limit_genes_default_panels
     )
+
+    flash("Time matching causatives {0}".format(datetime.datetime.now() - split_time))
+    split_time = datetime.datetime.now()
 
     data = {
         "institute": institute_obj,
@@ -444,6 +481,14 @@ def case(store, institute_obj, case_obj):
         "gens_info": gens.connection_settings(case_obj.get("genome_build")),
         "display_rerunner": rerunner.connection_settings.get("display", False),
     }
+
+    flash(
+        "Time final heat - events and final matching/mananged {0}".format(
+            datetime.datetime.now() - split_time
+        )
+    )
+    total_time = datetime.datetime.now()
+    flash("Grand total {0}".format(total_time - start_time))
 
     return data
 

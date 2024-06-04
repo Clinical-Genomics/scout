@@ -1,4 +1,5 @@
 """Code to parse panel information"""
+
 import logging
 from datetime import datetime
 
