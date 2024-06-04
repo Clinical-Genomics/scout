@@ -293,13 +293,16 @@ def parse_panel_app_gene(
 
     ensembl_ids = app_gene["EnsembleGeneIds"]
 
-    if (
-        not ensembl_ids and hgnc_symbol in hgnc_symbol_ensembl_gene_map
-    ):  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
-        LOG.warning(
-            f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs. Using Ensembl IDs from internal gene collection instead."
-        )
-        ensembl_ids = [hgnc_symbol_ensembl_gene_map[hgnc_symbol]]
+    if not ensembl_ids:  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
+        if hgnc_symbol in hgnc_symbol_ensembl_gene_map:
+            LOG.warning(
+                f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs. Using Ensembl IDs from internal gene collection instead."
+            )
+            ensembl_ids = [hgnc_symbol_ensembl_gene_map[hgnc_symbol]]
+        else:
+            LOG.warning(
+                f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs and gene symbol does not correspond to a gene in scout."
+            )
 
     hgnc_ids = set(
         ensembl_gene_hgnc_id_map.get(ensembl_id)
