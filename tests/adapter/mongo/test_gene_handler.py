@@ -438,6 +438,32 @@ def test_gene_by_symbol_or_aliases(adapter, parsed_gene):
     assert type(result) != list
 
 
+def test_ensembl_to_hgnc_id_mapping(adapter, parsed_gene):
+    """Test the function that maps Ensembl gene IDs to HGNC gene IDs."""
+
+    # GIVEN a database containing a gene
+    adapter.load_hgnc_gene(parsed_gene)
+
+    # WHEN using the mapping function
+    result = adapter.ensembl_to_hgnc_id_mapping()
+
+    # THEN it should return the expected result
+    assert result == {parsed_gene["ensembl_id"]: parsed_gene["hgnc_id"]}
+
+
+def test_hgnc_symbol_ensembl_id_mapping(adapter, parsed_gene):
+    """Test the function that maps HGNC symbols to Ensembl gene IDs."""
+
+    # GIVEN a database containing a gene
+    adapter.load_hgnc_gene(parsed_gene)
+
+    # WHEN using the mapping function
+    result = adapter.hgnc_symbol_ensembl_id_mapping()
+
+    # THEN it should return the expected result
+    assert result == {parsed_gene["hgnc_symbol"]: parsed_gene["ensembl_id"]}
+
+
 #################### HGNC transcript tests ####################
 
 
