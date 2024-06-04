@@ -23,8 +23,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - mtDNA report crashing when one or more samples from a case is not in the chanjo database
 - Case page crashing on missing phenotype terms
 - ACMG benign modifiers
-- Speed up tests by caching python env correctly in Github action
-- Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers.
+- Speed up tests by caching python env correctly in Github action and adding two more test groups
+- Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers
+- PanelApp panel not saving genes with empty `EnsembleGeneIds` list
 
 ## [4.82.2]
 ### Fixed
