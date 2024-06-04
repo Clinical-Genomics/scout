@@ -281,7 +281,9 @@ def sma_case(store, institute_obj, case_obj):
     return data
 
 
-def case(store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching = "yes": str) -> dict:
+def case(
+    store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching: str = "yes"
+) -> dict:
     """Preprocess a single case.
 
     Prepare the case to be displayed in the case view.
