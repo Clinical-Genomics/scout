@@ -281,22 +281,14 @@ def sma_case(store, institute_obj, case_obj):
     return data
 
 
-def case(store, institute_obj, case_obj):
+def case(store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching: str) -> dict:
     """Preprocess a single case.
 
     Prepare the case to be displayed in the case view.
 
-    Args:
-        store(adapter.MongoAdapter)
-        institute_obj(models.Institute)
-        case_obj(models.Case)
-
-    Returns:
-        data(dict): includes the cases, how many there are and the limit.
-
+    The return data dict includes the cases, how many there are and the limit.
     """
     # Convert individual information to more readable format
-
     _populate_case_individuals(case_obj)
 
     case_obj["assignees"] = [
@@ -406,24 +398,33 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
-    other_causatives, other_causatives_in_default_panels = _matching_causatives(
-        store, case_obj, limit_genes, limit_genes_default_panels
-    )
+    other_causatives = []
+    other_causatives_in_default_panels = []
+    default_managed_variants = []
+    managed_variants = []
+
+    if hide_matching == "no":
+        other_causatives, other_causatives_in_default_panels = _matching_causatives(
+            store, case_obj, limit_genes, limit_genes_default_panels
+        )
+
+        managed_variants = [
+            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+        ]
+        default_managed_variants = [
+            var
+            for var in store.check_managed(
+                case_obj=case_obj, limit_genes=limit_genes_default_panels
+            )
+        ]
 
     data = {
         "institute": institute_obj,
         "case": case_obj,
         "other_causatives": other_causatives,
         "default_other_causatives": other_causatives_in_default_panels,
-        "managed_variants": [
-            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
-        ],
-        "default_managed_variants": [
-            var
-            for var in store.check_managed(
-                case_obj=case_obj, limit_genes=limit_genes_default_panels
-            )
-        ],
+        "managed_variants": managed_variants,
+        "default_managed_variants": default_managed_variants,
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "case_groups": case_groups,
@@ -445,6 +446,7 @@ def case(store, institute_obj, case_obj):
         "mme_nodes": matchmaker.connected_nodes,
         "gens_info": gens.connection_settings(case_obj.get("genome_build")),
         "display_rerunner": rerunner.connection_settings.get("display", False),
+        "hide_matching": hide_matching,
     }
 
     return data

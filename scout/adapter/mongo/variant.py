@@ -543,7 +543,7 @@ class VariantHandler(VariantLoader):
                 "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
                 "category": "variant",
             },
-            {"case": 1, "link": 1},
+            {"case": 1, "link": 1, "subject": 1},
         )
 
         positional_variant_ids = set()

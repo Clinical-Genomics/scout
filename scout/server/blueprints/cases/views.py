@@ -86,7 +86,6 @@ def case(
     So do case_id, but we still call institute_and_case again to fetch institute
     and reuse its user access verification.
     """
-
     if case_id:
         case_obj = store.case(case_id=case_id, projection={"display_name": 1, "owner": 1})
 
@@ -102,7 +101,10 @@ def case(
         flash("Case {} does not exist in database!".format(case_name))
         return redirect(request.referrer)
 
-    data = controllers.case(store, institute_obj, case_obj)
+    hide_matching = (
+        request.args.get("hide_matching") if request.args.get("hide_matching") else "yes"
+    )
+    data = controllers.case(store, institute_obj, case_obj, hide_matching)
 
     return dict(
         **data,
