@@ -400,9 +400,11 @@ def case(store, institute_obj, case_obj):
         )
 
     # Limit secondary findings according to institute settings
-    institute_safe_genes: List[int] = institute_obj.get(
-        "safe_genes_matching"
-    ) or store.safe_genes_filter(institute_obj["_id"])
+    institute_safe_genes: List[int] = (
+        institute_obj["safe_genes_matching"]
+        if "safe_genes_matching" in institute_obj
+        else store.safe_genes_filter(institute_obj["_id"])
+    )
 
     limit_genes_default_panels = _limit_genes_on_default_panels(
         case_obj["default_genes"], institute_safe_genes
