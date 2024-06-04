@@ -63,6 +63,8 @@ JSON_HEADERS = {
 
 COVERAGE_REPORT_TIMEOUT = 20
 
+PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1}
+
 
 def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms on Phenomizer
@@ -543,8 +545,12 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
             continue
         panel_name = panel_info["panel_name"]
         panel_version = panel_info.get("version")
-        panel_obj = store.gene_panel(panel_name, version=panel_version)
-        latest_panel = store.gene_panel(panel_name)
+        panel_obj = store.gene_panel(
+            panel_name,
+            version=panel_version,
+            projection=PANEL_PROJECTION,
+        )
+        latest_panel = store.gene_panel(panel_name, projection=PANEL_PROJECTION)
         panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
         if not panel_obj:
             panel_obj = latest_panel
@@ -602,19 +608,17 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
         missing_genes, extra_genes
     """
     # Create a list of minified gene object for the case panel {hgnc_id, gene_symbol}
-    case_panel_genes = [
-        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
-        for gene in panel_obj["genes"]
-    ]
+    case_panel_genes = set([gene.get("symbol", gene["hgnc_id"]) for gene in panel_obj["genes"]])
     # And for the latest panel
-    latest_panel_genes = [
-        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
-        for gene in latest_panel["genes"]
-    ]
+    latest_panel_genes = set(
+        [gene.get("symbol", gene["hgnc_id"]) for gene in latest_panel["genes"]]
+    )
     # Extract the genes unique to case panel
-    extra_genes = [gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes]
+    extra_genes = case_panel_genes.difference(latest_panel_genes)
+
     # Extract the genes unique to latest panel
-    missing_genes = [gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes]
+    missing_genes = latest_panel_genes.difference(case_panel_genes)
+
     return extra_genes, missing_genes
 
 
