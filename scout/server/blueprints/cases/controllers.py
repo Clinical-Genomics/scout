@@ -435,7 +435,7 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
-    flash("Time HPO etc {0}".format(datetime.datetime.now() - split_time))
+    flash("Time _limit_genes_on_default_panels {0}".format(datetime.datetime.now() - split_time))
     split_time = datetime.datetime.now()
 
     other_causatives, other_causatives_in_default_panels = _matching_causatives(
