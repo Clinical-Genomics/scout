@@ -27,7 +27,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers
 - PanelApp panel not saving genes with empty `EnsembleGeneIds` list
 
-
 ## [4.82.2]
 ### Fixed
 - Warning icon in case pages for individuals where `confirmed_sex` is false
