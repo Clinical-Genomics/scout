@@ -97,6 +97,7 @@ class InstituteHandler(object):
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
             "safe_genes_matching": self.safe_genes_filter(internal_id),
+            "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
             "clinvar_submitters": clinvar_submitters,
         }
