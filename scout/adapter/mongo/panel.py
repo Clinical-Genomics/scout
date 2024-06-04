@@ -195,6 +195,9 @@ class PanelHandler:
         # Else create a new panel document with a given version
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
+
+        self.update_institutes_safe_genes(institute_id=panel_obj["institute"])
+
         return result.inserted_id
 
     def panel(
@@ -225,6 +228,7 @@ class PanelHandler:
         LOG.warning(
             "Deleting panel %s, version %s" % (panel_obj["panel_name"], panel_obj["version"])
         )
+        self.update_institutes_safe_genes(institute_id=panel_obj["institute"])
         return res
 
     def gene_panel(
@@ -367,7 +371,7 @@ class PanelHandler:
         return gene_list
 
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
-        """Replace a existing gene panel with a new one
+        """Replace an existing gene panel with a new one
 
         Keeps the object id
 
@@ -403,7 +407,6 @@ class PanelHandler:
             panel_obj,
             return_document=pymongo.ReturnDocument.AFTER,
         )
-
         return updated_panel
 
     def add_pending(self, panel_obj, hgnc_gene, action, info=None):
@@ -548,6 +551,8 @@ class PanelHandler:
 
             # insert the new panel
             inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
+
+        self.update_institutes_safe_genes(institute_id=panel_obj["institute"])
 
         return inserted_id
 

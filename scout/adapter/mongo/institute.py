@@ -96,7 +96,6 @@ class InstituteHandler(object):
             "frequency_cutoff": frequency_cutoff,
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
-            "safe_genes_matching": self.safe_genes_filter(internal_id),
             "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
             "clinvar_submitters": clinvar_submitters,
@@ -145,10 +144,22 @@ class InstituteHandler(object):
 
             LOG.info("Institute updated")
 
+        self.update_institutes_safe_genes(institute_id=internal_id)
+
         return updated_institute
 
+    def update_institutes_safe_genes(self, institute_id: str):
+        """Update the list of genes from gene panels considered safe for matching variants for one institute.
+        These panels are set by modifying the `Gene panels available for other variants matching` multiselect on institute's settings page.
+        """
+        self.institute_collection.find_one_and_update(
+            {"_id": institute_id},
+            {"$set": {"safe_genes_matching": self.safe_genes_filter(institute_id)}},
+        )
+        LOG.warning("Updated list of institute's safe genes.")
+
     def institute(self, institute_id: str):
-        """Featch a single institute from the backend
+        """Fetch a single institute from the backend
 
         Returns:
             Institute object
