@@ -391,19 +391,19 @@ def case(store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching
             "case_images", case_obj["custom_images"].get("case", {})
         )
 
-    # Limit secondary findings according to institute settings
-    limit_genes = store.safe_genes_filter(institute_obj["_id"])
-
-    limit_genes_default_panels = _limit_genes_on_default_panels(
-        case_obj["default_genes"], limit_genes
-    )
-
     other_causatives = []
     other_causatives_in_default_panels = []
     default_managed_variants = []
     managed_variants = []
 
     if hide_matching == "no":
+        # Limit secondary findings according to institute settings
+        limit_genes = store.safe_genes_filter(institute_obj["_id"])
+
+        limit_genes_default_panels = _limit_genes_on_default_panels(
+            case_obj["default_genes"], limit_genes
+        )
+
         other_causatives, other_causatives_in_default_panels = _matching_causatives(
             store, case_obj, limit_genes, limit_genes_default_panels
         )
