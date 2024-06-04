@@ -1424,13 +1424,13 @@ def _matching_causatives(
     other_causatives_in_default_panels = []
 
     for causative in matching_causatives:
-        hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
+        hgnc_ids = {gene.get("hgnc_id") for gene in causative.get("genes", [])}
         # Fetch all matching causatives if no causatives_filter defined
         # or only causatives matching the filter:
-        if not other_causatives_filter or (set(hgnc_ids) & set(other_causatives_filter)):
+        if not other_causatives_filter or (hgnc_ids & set(other_causatives_filter)):
             other_causatives.append(causative)
         # Only matching causatives in default gene panels:
-        if set(hgnc_ids) & set(other_causatives_in_default_panels_filter):
+        if hgnc_ids & set(other_causatives_in_default_panels_filter):
             other_causatives_in_default_panels.append(causative)
 
     return other_causatives, other_causatives_in_default_panels

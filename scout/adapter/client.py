@@ -4,6 +4,7 @@ client.py
 Establish a connection to the database
 
 """
+
 import logging
 
 from pymongo import MongoClient

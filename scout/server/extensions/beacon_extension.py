@@ -1,6 +1,7 @@
 """Scout supports integration with the Clinical Genomics SciLifeLab Beacon
    cgbeacon2: https://github.com/Clinical-Genomics/cgbeacon2
 """
+
 import datetime
 import logging
 

@@ -542,7 +542,8 @@ class VariantHandler(VariantLoader):
                 "institute": case_obj["owner"],
                 "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
                 "category": "variant",
-            }
+            },
+            {"case": 1, "link": 1},
         )
 
         positional_variant_ids = set()
@@ -553,7 +554,7 @@ class VariantHandler(VariantLoader):
 
             other_case = self.case(var_event["case"], CASE_CAUSATIVES_PROJECTION)
             if other_case is None:
-                # Other variant belongs to a case that   doesn't exist any more
+                # Other variant belongs to a case that doesn't exist anymore
                 continue
             other_link = var_event["link"]
             # link contains other variant ID

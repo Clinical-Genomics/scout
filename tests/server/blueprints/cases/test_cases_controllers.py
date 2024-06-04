@@ -1,4 +1,5 @@
 """Tests for the cases controllers"""
+
 import requests
 import responses
 from flask import Blueprint, Flask, url_for
