@@ -1,4 +1,5 @@
 """Code for parsing disease terms from OMIM and ORPHA data"""
+
 import logging
 from typing import Dict, List
 

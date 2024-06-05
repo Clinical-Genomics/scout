@@ -3,6 +3,7 @@ Extension to Scout for Phenopacket integration (http://phenopackets.org).
 Write and read JSON Phenopackets, and interact with phenopacket-api backend
 (https://github.com/squeezeday/phenopacket-api).
 """
+
 import json as json_lib
 import logging
 

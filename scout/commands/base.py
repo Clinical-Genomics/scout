@@ -1,4 +1,5 @@
 """Code for CLI base"""
+
 import logging
 import pathlib
 

@@ -120,30 +120,46 @@
       </div>
 
       <div class="card panel-default" >
-      {% if other_causatives|length > 0%}
         <div class="row mt-0">
-          <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
+          <div class="col-sm-12 col-md-12 ms-3">
+           <div data-bs-toggle='tooltip' class="panel-heading" title="Check if there are any variants in this case
+              marked as causative in another case for this institute, or are on the managed variants list.">
+             <strong>{% if hide_matching == false %}
+               <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name, hide_matching='True') }}" class="text-body"><span class="me-1 fa fa-caret-right"></span>Search for matching causatives and managed variants</a>
+             {% else %}
+               <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name, hide_matching='False') }}" class="text-body"><span class="me-1 fa fa-caret-down"></span>Search for matching causatives and managed variants</a>
+             {% endif %}
+             </strong>
+           </div>
+          </div>
         </div>
+        {% if hide_matching == false %}
+        {% if other_causatives|length > 0 %}
+          <div class="row mt-0 ms-3">
+            <div class="col-xs-12 col-md-12 ms-3">{{ matching_causatives(other_causatives, institute, case) }}</div>
+          </div>
+        {% endif %}
+        {% if default_other_causatives|length > 0%}
+          <div class="row mt-0 ms-3">
+            <div class="col-xs-12 col-md-12 ms-3">{{ matching_causatives(default_other_causatives, institute, case, default=True) }}</div>
+          </div>
+        {% endif %}
+        {% if managed_variants|length > 0%}
+          <div class="row mt-0 ms-3">
+            <div class="col-sm-12 col-md-12 ms-3">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
+          </div>
+        {% endif %}
+        {% if default_managed_variants|length > 0%}
+          <div class="row mt-0 ms-3">
+            <div class="col-sm-12 col-md-12 ms-3">{{ matching_managed_variants(default_managed_variants, institute, case, default=True) }}</div>
+          </div>
+        {% endif %}
+        {% if other_causatives|length == 0 and default_other_causatives|length == 0 and managed_variants|length == 0 and default_managed_variants|length == 0%}
+          <div class="row mt-0 ms-3">
+            <div class="col-sm-12 col-md-12 ms-3">No matching causatives or managed variants found</div>
+          </div>
+        {% endif %}
       {% endif %}
-      {% if default_other_causatives|length > 0%}
-        <div class="row mt-0">
-          <div class="col-xs-12 col-md-12">{{ matching_causatives(default_other_causatives, institute, case, default=True) }}</div>
-        </div>
-      {% endif %}
-
-      {% if managed_variants|length > 0%}
-        <div class="row mt-0">
-          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
-        </div>
-      {% endif %}
-
-      {% if default_managed_variants|length > 0%}
-        <div class="row mt-0">
-          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(default_managed_variants, institute, case, default=True) }}</div>
-        </div>
-      {% endif %}
-      </div>
-
       <div class="row">
         <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
