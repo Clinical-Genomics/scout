@@ -1,4 +1,5 @@
 """Code for parsing OMIM formatted files"""
+
 import logging
 from typing import Any, Dict, Iterable
 
