@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Events for case CLI events (load case, update case, update individual)
 - Support for loading and displaying local custom IGV tracks
 - MANE IGV track to be used as a local track for igv.js (see scout demo config file)
+- Optional separate MT VCFs, for `nf-core/raredisease`
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only
@@ -28,7 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers
 - PanelApp panel not saving genes with empty `EnsembleGeneIds` list
 - Speed up checking outdated gene panels
-- Automatically loading research variants when loading a case
+- Do not load research variants automatically when loading a case
 
 ## [4.82.2]
 ### Fixed
@@ -51,7 +52,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for integrating chanjo2
 - More up-to-date VEP CSQ dbNSFP frequency keys
 - Parse PacBio TRGT (Tandem repeat genotyping tool) Short Tandem Repeat VCFs
-- Optional separate MT VCFs, for `nf-core/raredisease`
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
