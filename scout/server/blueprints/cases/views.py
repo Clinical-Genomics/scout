@@ -4,8 +4,8 @@ import json
 import logging
 import os.path
 import shutil
-from io import BytesIO
 from ast import literal_eval
+from io import BytesIO
 from operator import itemgetter
 from typing import Generator, Optional, Union
 
