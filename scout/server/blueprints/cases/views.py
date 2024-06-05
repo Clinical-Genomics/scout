@@ -5,6 +5,7 @@ import logging
 import os.path
 import shutil
 from io import BytesIO
+from ast import literal_eval
 from operator import itemgetter
 from typing import Generator, Optional, Union
 
@@ -102,7 +103,9 @@ def case(
         return redirect(request.referrer)
 
     hide_matching = (
-        request.args.get("hide_matching") if request.args.get("hide_matching") else "yes"
+        literal_eval(request.args.get("hide_matching"))
+        if request.args.get("hide_matching")
+        else True
     )
     data = controllers.case(store, institute_obj, case_obj, hide_matching)
 

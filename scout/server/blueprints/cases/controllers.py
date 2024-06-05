@@ -282,7 +282,7 @@ def sma_case(store, institute_obj, case_obj):
 
 
 def case(
-    store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching: str = "yes"
+    store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching: bool = True
 ) -> dict:
     """Preprocess a single case.
 
@@ -398,7 +398,7 @@ def case(
     default_managed_variants = []
     managed_variants = []
 
-    if hide_matching == "no":
+    if hide_matching is False:
         # Limit secondary findings according to institute settings
         limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
