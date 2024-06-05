@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved chanjo code into a dedicated extension
 - Optimise the function that collects "match-safe" genes for an institute by avoiding duplicated genes from different panels
 - Users must actively select "show matching causatives/managed" on a case page to see matching numbers
+- Changelog reminder to check specifically for change in latest unreleased/version segment
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function
@@ -40,8 +41,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.82.1]
 ### Fixed
 - Revert the installation of flask-ldapconn to use the version available on PyPI to be able to push new scout releases to PyPI
-### Changed
-- Changelog reminder to check specifically for change in latest unreleased/version segment
 
 ## [4.82]
 ### Added
