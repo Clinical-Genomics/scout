@@ -905,6 +905,7 @@ class CaseHandler(object):
                 "category": FILE_TYPE_MAP[file_type]["category"],
             }
             for file_type in FILE_TYPE_MAP.keys()
+            if FILE_TYPE_MAP[file_type]["variant_type"] != "research"
         ]
 
         # (type, category) tuples are not unique - eg SNV, SNV_MT
