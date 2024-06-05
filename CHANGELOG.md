@@ -40,6 +40,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.82.1]
 ### Fixed
 - Revert the installation of flask-ldapconn to use the version available on PyPI to be able to push new scout releases to PyPI
+### Changed
+- Changelog reminder to check specifically for change in latest unreleased/version segment
 
 ## [4.82]
 ### Added
