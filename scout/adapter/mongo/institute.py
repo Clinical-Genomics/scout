@@ -158,15 +158,9 @@ class InstituteHandler(object):
 
         return institute_obj
 
-    def safe_genes_filter(self, institute_id):
+    def safe_genes_filter(self, institute_id: str) -> List[int]:
         """Returns a list of "safe" HGNC IDs to filter variants with. These genes are retrieved from the institute.gene_panels_matching
-        Can be used to limit secondary findings when retrieving other causatives or matching managed variants
-
-        Args:
-            institute_id(str): _id of an institute
-
-        Returns:
-            safe_genes(list of HGNC ids)
+        Can be used to limit secondary findings when retrieving other causatives or matching managed variants.
         """
         safe_genes = []
         institute_obj = self.institute(institute_id)
@@ -174,7 +168,7 @@ class InstituteHandler(object):
             return safe_genes  # return an empty list
         for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
             safe_genes += self.panel_to_genes(panel_name=panel_name, gene_format="hgnc_id")
-        return safe_genes
+        return list(set(safe_genes))
 
     def institutes(self, institute_ids=None):
         """Fetch all institutes.

@@ -351,6 +351,24 @@ body {
 }
 /* end of sidebar-related stuff */
 
+/* Closed submenu icon - general case */
+.text-body[aria-expanded="false"] .collapse-icon::after {
+  content: " \f0d7";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
+  display: inline;
+  text-align: left;
+}
+/* Opened submenu icon - general case */
+.text-body[aria-expanded="true"] .collapse-icon::after {
+  content: " \f0da";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
+  display: inline;
+  text-align: left;
+}
+/* end of sidebar-related stuff */
+
 option {
   width: 100%;
 }
