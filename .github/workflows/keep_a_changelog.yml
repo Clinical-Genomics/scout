@@ -9,7 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Read version file
+        id: get-version
+        run: echo "version=$(cat __version__.py|sed -e 's/__version__ = "//; s/"//;')" >> $GITHUB_OUTPUT
     - uses: dangoslen/changelog-enforcer@v3
       with:
         changeLogPath: 'CHANGELOG.md'
         skipLabels: 'Skip-Changelog'
+        expectedLatestVersion: ${{ steps.get-version.outputs.version }}
