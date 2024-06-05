@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Agile issue templates were added globally to the CG-org. Adding custom issue templates to avoid exposing customers
 - PanelApp panel not saving genes with empty `EnsembleGeneIds` list
 - Speed up checking outdated gene panels
+- Automatically loading research variants when loading a case
 
 ## [4.82.2]
 ### Fixed
