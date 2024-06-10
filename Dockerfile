@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM clinicalgenomics/python3.8-venv:1.0 AS python-builder
+FROM clinicalgenomics/python3.11-venv:1.0 AS python-builder
 
 ENV PATH="/venv/bin:$PATH"
 
@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 #########
 # FINAL #
 #########
-FROM python:3.8-slim-bullseye
+FROM python:3.11-slim-bullseye
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
