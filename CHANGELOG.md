@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved chanjo code into a dedicated extension
 - Optimise the function that collects "match-safe" genes for an institute by avoiding duplicated genes from different panels
 - Users must actively select "show matching causatives/managed" on a case page to see matching numbers
+- Upgraded python version from 3.8 to 3.11 in Docker images
 ### Fixed
 - Fix several tests that relied on number of events after setup to be 0
 - Removed unused load case function
