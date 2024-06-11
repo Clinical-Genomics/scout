@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.83]
 ### Added
 - Edit ACMG classifications from variant page (only for classifications with criteria)
 - Events for case CLI events (load case, update case, update individual)
