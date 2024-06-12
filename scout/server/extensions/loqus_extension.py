@@ -3,11 +3,13 @@
 * Requires loqusdb version 2.5 or greater.
 * If multiple instances are configured, version will be default's.
 """
+
 import json
 import logging
 import subprocess
 import traceback
 from subprocess import CalledProcessError
+from typing import Optional
 
 from scout.exceptions.config import ConfigError
 from scout.utils.scout_requests import get_request_json as api_get
@@ -202,7 +204,7 @@ class LoqusDB:
         return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
 
     @staticmethod
-    def get_api_loqus_variant(api_url, variant_info):
+    def get_api_loqus_variant(api_url: str, variant_info: dict) -> Optional[dict]:
         """get variant data using a Loqus instance available via REST API
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
@@ -231,8 +233,7 @@ class LoqusDB:
 
         search_resp = api_get(search_url)
         if search_resp.get("status_code") != 200:
-            LOG.info(search_resp.get("detail"))
-            return {}
+            return None
         return search_resp.get("content")
 
     def get_exec_loqus_variant(self, loqus_instance, variant_info):
