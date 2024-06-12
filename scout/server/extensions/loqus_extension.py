@@ -9,7 +9,9 @@ import logging
 import subprocess
 import traceback
 from subprocess import CalledProcessError
-from typing import Optional
+from typing import Dict, Optional
+
+from flask import flash
 
 from scout.exceptions.config import ConfigError
 from scout.utils.scout_requests import get_request_json as api_get
@@ -134,7 +136,7 @@ class LoqusDB:
     def get_api_loqus_version(api_url):
         """Get version of LoqusDB instance available from a REST API"""
         if api_url is None:
-            return
+            return None
         json_resp = api_get("".join([api_url, "/"]))
         version = json_resp.get("content", {}).get("loqusdb_version")
         return version
@@ -182,16 +184,9 @@ class LoqusDB:
         }
         return loqus_query
 
-    def get_variant(self, variant_info, loqusdb_id="default"):
-        """Return information for a variant (SNV or SV) from loqusdb
+    def get_variant(self, variant_info: dict, loqusdb_id: str = "default") -> Dict:
+        """Return information for a variant (SNV or SV) from loqusdb"""
 
-        Args:
-            variant_info(dict)
-            loqusdb_id(string)
-
-        Returns:
-            loqus_variant(dict)
-        """
         loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         if loqus_instance is None:
             LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
@@ -204,7 +199,7 @@ class LoqusDB:
         return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
 
     @staticmethod
-    def get_api_loqus_variant(api_url: str, variant_info: dict) -> Optional[dict]:
+    def get_api_loqus_variant(api_url, variant_info) -> Optional[dict]:
         """get variant data using a Loqus instance available via REST API
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
@@ -232,8 +227,16 @@ class LoqusDB:
             search_url = f"{search_url}/?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
 
         search_resp = api_get(search_url)
+
+        # Variant not found in loqusdb instance
         if search_resp.get("status_code") != 200:
-            return
+            if "details" not in search_resp.get("message", {}):  # Connection error
+                flash(
+                    f"Connection to Loqusdb instance returned error: '{search_resp['message']}'",
+                    "warning",
+                )
+            return {}
+
         return search_resp.get("content")
 
     def get_exec_loqus_variant(self, loqus_instance, variant_info):
