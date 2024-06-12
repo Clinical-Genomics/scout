@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Support for loading and storing OMICS data
+- Parse DROP Fraser and Outrider TSVs
+- Display omics variants - wts outliers (Fraser, Outrider)
+
+
 ## [4.83]
 ### Added
 - Edit ACMG classifications from variant page (only for classifications with criteria)
@@ -11,9 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for loading and displaying local custom IGV tracks
 - MANE IGV track to be used as a local track for igv.js (see scout demo config file)
 - Optional separate MT VCFs, for `nf-core/raredisease`
-- Support for loading and storing OMICS data
-- Parse DROP Fraser and Outrider TSVs
-- Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Avoid passing verbs from CaseHandler - functions for case sample and individual in CaseEventHandler
 - Hide mtDNA report and coverage report links on case sidebar for cases with WTS data only
