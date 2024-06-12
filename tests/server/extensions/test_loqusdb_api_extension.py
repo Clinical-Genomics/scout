@@ -76,7 +76,7 @@ def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 def test_loqus_api_snv_variant_not_found(loqus_api_app, monkeypatch, loqus_api_variant):
     # GIVEN a mocked loqus API that doesn't return usable info
     def mockapi(*args):
-        return {"message": {"details": "not found"}}
+        return {"details": "not found", "status_code": 404}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
