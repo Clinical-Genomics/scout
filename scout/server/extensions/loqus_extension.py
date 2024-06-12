@@ -9,7 +9,7 @@ import logging
 import subprocess
 import traceback
 from subprocess import CalledProcessError
-from typing import Dict, Optional
+from typing import Dict
 
 from flask import flash
 
@@ -199,7 +199,7 @@ class LoqusDB:
         return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
 
     @staticmethod
-    def get_api_loqus_variant(api_url, variant_info) -> Optional[dict]:
+    def get_api_loqus_variant(api_url, variant_info) -> dict:
         """get variant data using a Loqus instance available via REST API
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
