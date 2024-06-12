@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Clearer error message when scout fails to connect to a loqusdb instance
+- Clearer error message when a loqusdb query fails for an instance that initially connected
 
 ## [4.83]
 ### Added
