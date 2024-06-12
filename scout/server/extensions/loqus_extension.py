@@ -227,9 +227,9 @@ class LoqusDB:
             search_url = f"{search_url}/?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
 
         search_resp = api_get(search_url)
-        variant_content: dict = search_resp.get("content")
-        if variant_content:
-            return variant_content
+
+        if search_resp.get("status_code") == 200:
+            return search_resp.get("content")
         if search_resp.get("message"):  # An error occurred during the request
             flash(
                 f"Connection to Loqusdb instance returned error: '{search_resp['message']}'",
