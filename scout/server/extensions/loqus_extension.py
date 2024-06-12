@@ -9,7 +9,7 @@ import logging
 import subprocess
 import traceback
 from subprocess import CalledProcessError
-from typing import Dict
+from typing import Dict, Optional
 
 from flask import flash
 
@@ -184,7 +184,7 @@ class LoqusDB:
         }
         return loqus_query
 
-    def get_variant(self, variant_info: dict, loqusdb_id: str = "default") -> Dict:
+    def get_variant(self, variant_info: dict, loqusdb_id: str = "default") -> Optional[Dict]:
         """Return information for a variant (SNV or SV) from loqusdb"""
 
         loqus_instance = self.loqusdb_settings.get(loqusdb_id)
