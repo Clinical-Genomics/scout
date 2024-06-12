@@ -30,7 +30,7 @@
 {% endblock %}
 
 {% block content_main %}
-<form method="POST" id="filters_form" action="{{url_for('omics_variants.omics_variants', institute_id=institute._id, case_name=case.display_name)}}"
+<form method="POST" id="filters_form" action="{{url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name)}}"
       enctype="multipart/form-data" onsubmit="return validateForm()">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
@@ -44,6 +44,8 @@
                 <th title="Variant display name">Outlier</th>
                 <th title="HGNC symbols">Gene</th>
                 <th title="Chromosome">Chr</th>
+                <th title="Start">Start</th>
+                <th title="End">End</th>
                 <th title="Functional annotation">Func. annotation</th>
                 <th title="Value - delta Psi or l2fc ">Value</th>
                 <th title="P-value">P-value</th>
