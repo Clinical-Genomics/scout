@@ -1,8 +1,5 @@
 """Tests for the loqusdb REST API extension"""
 
-import pytest
-
-from scout.exceptions.config import ConfigError
 from scout.server.extensions import loqus_extension, loqusdb
 
 
@@ -87,7 +84,7 @@ def test_loqus_api_snv_variant_not_found(loqus_api_app, monkeypatch, loqus_api_v
         # WHEN fetching the variant info
         var_info = loqusdb.get_variant({"_id": "a variant", "category": "snv"})
 
-        # THEN the loqus extensions should return an empty dictionary
+        # THEN the loqusdb extensions should return no content
         assert var_info == None
 
 
