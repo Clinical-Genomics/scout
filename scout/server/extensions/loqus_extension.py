@@ -134,7 +134,7 @@ class LoqusDB:
     def get_api_loqus_version(api_url):
         """Get version of LoqusDB instance available from a REST API"""
         if api_url is None:
-            return None
+            return
         json_resp = api_get("".join([api_url, "/"]))
         version = json_resp.get("content", {}).get("loqusdb_version")
         return version
@@ -233,7 +233,7 @@ class LoqusDB:
 
         search_resp = api_get(search_url)
         if search_resp.get("status_code") != 200:
-            return None
+            return
         return search_resp.get("content")
 
     def get_exec_loqus_variant(self, loqus_instance, variant_info):
