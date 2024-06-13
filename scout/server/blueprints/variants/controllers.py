@@ -3,12 +3,10 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-import bson
 from flask import Response, flash, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 from pymongo.cursor import CursorType
-from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
 from wtforms import DecimalField
 
@@ -874,7 +872,7 @@ def parse_variant(
     compounds_have_changed = False
     if get_compounds:
         compounds_have_changed = update_compounds(store, variant_obj, case_dismissed_vars)
-        if compounds_have_changed:
+        if update and compounds_have_changed:
             store.variant_update_field(
                 variant_id=variant_obj["_id"],
                 field_name="compounds",
@@ -882,7 +880,7 @@ def parse_variant(
             )
 
     genes_have_changed = update_variant_genes(store, variant_obj, genome_build)
-    if genes_have_changed:
+    if update and genes_have_changed:
         store.variant_update_field(
             variant_id=variant_obj["_id"], field_name="genes", field_value=variant_obj["genes"]
         )
