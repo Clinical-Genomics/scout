@@ -3,11 +3,26 @@
 import logging
 import os
 
-import pytest
-
 TRAVIS = os.getenv("TRAVIS")
 
 LOG = logging.getLogger(__name__)
+
+
+def test_variant_update_field(real_variant_database):
+    """Test the function that updates a value for a given key."""
+    adapter = real_variant_database
+    # GIVEN a variant in the database:
+    variant_obj = adapter.variant_collection.find_one()
+    # GIVEN a key not set in the variant
+    A_KEY = "a_key"
+    A_VALUE = "a_value"
+    assert A_KEY not in variant_obj
+    # WHEN setting the key using the "variant_update_field" function
+    updated_variant_obj = adapter.variant_update_field(
+        variant_id=variant_obj["_id"], field_name=A_KEY, field_value=A_VALUE
+    )
+    # THEN the returned variant document should contain the expected key/value
+    assert updated_variant_obj[A_KEY] == A_VALUE
 
 
 def test_variant(real_variant_database, variant_objs, case_obj):
