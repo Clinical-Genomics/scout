@@ -5,11 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Clearer error message when a loqusdb query fails for an instance that initially connected
 ### Added
 - Support for loading and storing OMICS data
 - Parse DROP Fraser and Outrider TSVs
 - Display omics variants - wts outliers (Fraser, Outrider)
-
 
 ## [4.83]
 ### Added

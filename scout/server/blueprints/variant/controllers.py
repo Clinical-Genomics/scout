@@ -486,26 +486,21 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
     loqus_query = loqusdb.get_loqus_query(variant_obj, category)
 
     for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
-        obs_data[loqus_id] = {}
-        loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
+        # collect observation on that loqusdb instance
+        obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
 
-        if loqus_settings is None:  # An instance might have been renamed or removed
+        if obs_data[loqus_id] is None:
             flash(
-                f"Could not connect to the preselected loqusdb '{loqus_id}' instance",
+                f"Could not find a Loqus instance with id:{loqus_id}",
                 "warning",
             )
-            obs_data[loqus_id]["total"] = "N/A"
+            obs_data[loqus_id]["observations"] = "N/A"
             continue
-        obs_data[loqus_id] = loqusdb.get_variant(
-            loqus_query, loqusdb_id=loqus_id
-        )  # collect observation on that loqus instance
 
-        if not obs_data[loqus_id]:  # data is an empty dictionary
-            # Collect count of variants in variant's case
-            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
-            if obs_data[loqus_id].get("total"):
-                obs_data[loqus_id]["observations"] = 0
+        if obs_data[loqus_id] == {}:  # Variant was not found
+            obs_data[loqus_id]["observations"] = 0
             continue
+
         # Check if the current case is represented in the loqusdb instance
         obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[loqus_id].get(
             "families", []
