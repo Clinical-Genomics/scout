@@ -221,6 +221,14 @@ class VariantHandler(VariantLoader):
         query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
         return self.variant_collection.count_documents(query)
 
+    def variant_update_field(self, variant_id: str, field_name: str, field_value: Any) -> dict:
+        """Updates the value of the given key(field_name) in the variant document in the database."""
+        return self.variant_collection.find_one_and_update(
+            {"_id": variant_id},
+            {"$set": {field_name: field_value}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+
     def variant(
         self,
         document_id=None,

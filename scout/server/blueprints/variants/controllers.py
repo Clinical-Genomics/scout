@@ -513,7 +513,7 @@ def update_variant_genes(store, variant_obj, genome_build):
 
     if variant_genes is not None:
         for gene_obj in variant_genes:
-            # If there is no hgnc id there is nothin we can do
+            # If there is no hgnc id there is nothing we can do
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
@@ -528,27 +528,6 @@ def update_variant_genes(store, variant_obj, genome_build):
             add_gene_links(gene_obj, genome_build)
 
     return has_changed
-
-
-def update_variant_store(store, variant_obj):
-    """
-    Update variants in db store if anything changed.
-    Args:
-        store(scout.adapter.MongoAdapter)
-        variant_obj(scout.models.Variant)
-
-        update(boolean): upsert only if this is set true
-
-        get_compounds(bool): if compounds should be added to added to the returned variant object
-
-    """
-    try:
-        variant_obj = store.update_variant(variant_obj)
-    except DocumentTooLarge:
-        flash(
-            f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
-            "warning",
-        )
 
 
 def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
@@ -895,11 +874,18 @@ def parse_variant(
     compounds_have_changed = False
     if get_compounds:
         compounds_have_changed = update_compounds(store, variant_obj, case_dismissed_vars)
+        if compounds_have_changed:
+            store.variant_update_field(
+                variant_id=variant_obj["_id"],
+                field_name="compounds",
+                field_value=variant_obj["compounds"],
+            )
 
     genes_have_changed = update_variant_genes(store, variant_obj, genome_build)
-
-    if update and (compounds_have_changed or genes_have_changed):
-        update_variant_store(store, variant_obj)
+    if genes_have_changed:
+        store.variant_update_field(
+            variant_id=variant_obj["_id"], field_name="genes", field_value=variant_obj["genes"]
+        )
 
     variant_obj["comments"] = store.events(
         institute_obj,
