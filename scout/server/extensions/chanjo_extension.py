@@ -15,7 +15,6 @@ class ChanjoReport:
     """Interfaces with chanjo-report. Creates the /reports endpoints in scout domain. Use Babel to set report language."""
 
     def init_app(self, app):
-
         try:
             from chanjo_report.server.app import configure_template_filters
             from chanjo_report.server.blueprints import report_bp
