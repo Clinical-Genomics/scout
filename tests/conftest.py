@@ -239,7 +239,7 @@ def gene_bulk(genes):
     """Return a list with HgncGene objects"""
     bulk = []
     for gene_key in genes:
-        bulk.append(build_hgnc_gene(genes[gene_key], cytoband_coords={}))
+        bulk.append(build_hgnc_gene(genes[gene_key]))
 
     return bulk
 
@@ -249,7 +249,7 @@ def gene_bulk_38(genes):
     """Return a list with HgncGene objects"""
     bulk = []
     for gene_key in genes:
-        gene_obj = build_hgnc_gene(genes[gene_key], cytoband_coords={})
+        gene_obj = build_hgnc_gene(genes[gene_key])
         gene_obj["build"] = "38"
         bulk.append(gene_obj)
 

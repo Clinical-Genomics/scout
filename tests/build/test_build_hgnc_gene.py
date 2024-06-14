@@ -9,7 +9,7 @@ def test_build_hgnc_genes(genes):
     # WHEN building hgnc gene objecs
     for hgnc_id in genes:
         gene_info = genes[hgnc_id]
-        gene_obj = build_hgnc_gene(gene_info=gene_info, cytoband_coords={})
+        gene_obj = build_hgnc_gene(gene_info)
         # THEN check that the gene models have a hgnc id
         assert gene_obj["hgnc_id"]
 
@@ -23,7 +23,7 @@ def test_build_hgnc_gene():
         "start": 1,
         "end": 1000,
     }
-    gene_obj = build_hgnc_gene(gene_info=gene_info, cytoband_coords={})
+    gene_obj = build_hgnc_gene(gene_info)
 
     assert gene_obj["hgnc_id"] == gene_info["hgnc_id"]
     assert gene_obj["hgnc_symbol"] == gene_info["hgnc_symbol"]
@@ -38,4 +38,4 @@ def test_build_hgnc_gene_missing_hgnc_symbol(test_gene, key):
     # WHEN deleting a required key
     test_gene.pop(key)
     # THEN calling build_hgnc_gene() will return None
-    assert build_hgnc_gene(gene_info=test_gene, cytoband_coords={}) is None
+    assert build_hgnc_gene(gene_info) is None
