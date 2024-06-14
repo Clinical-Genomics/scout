@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Dict
 
 from click import progressbar
 
@@ -78,20 +79,28 @@ def load_hgnc_genes(
             genemap_lines=genemap_lines,
         )
 
-    non_existing = 0
+    not_loaded = 0
     nr_genes = len(genes)
     LOG.info(f"Building info for {nr_genes} genes")
+
+    cyoband_coords: Dict[str, dict] = adapter.cytoband_to_coordinates(build=build)
+
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
-            if not gene_data.get("chromosome"):
-                non_existing += 1
-                continue
 
-            gene_obj = build_hgnc_gene(gene_data, build=build)
-            gene_objects.append(gene_obj)
+            gene_obj = build_hgnc_gene(
+                gene_data,
+                cyoband_coords=cyoband_coords,
+                build=build,
+            )
 
-    LOG.info("Nr of genes without coordinates in build %s: %s", build, non_existing)
-    LOG.info(f"Loading {len(gene_objects)} genes to database")
+            if gene_obj:
+                gene_objects.append(gene_obj)
+            else:
+                not_loaded += 1
+
+    LOG.info("Nr of genes without coordinates in build %s: %s", build, not_loaded)
+    LOG.info(f"Loading {len(gene_objects)} genes to database")
     adapter.load_hgnc_bulk(gene_objects)
 
     LOG.info("Loading done. %s genes loaded", len(gene_objects))

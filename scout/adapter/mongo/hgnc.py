@@ -405,7 +405,7 @@ class GeneHandler(object):
             add_transcripts = True
 
         for gene_obj in self.all_genes(build=build, add_transcripts=add_transcripts):
-            ensg_id = gene_obj["ensembl_id"]
+            ensg_id = gene_obj.get("ensembl_id")
             hgnc_id = gene_obj["hgnc_id"]
             transcript_objs = gene_obj.get("ens_transcripts")
             if id_transcripts and transcript_objs:

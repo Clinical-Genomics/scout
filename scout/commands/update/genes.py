@@ -167,8 +167,9 @@ def genes(build, downloads_folder, api_key):
 
         ensembl_genes_dict = {}
         for gene_obj in hgnc_genes:
-            ensembl_id = gene_obj["ensembl_id"]
-            ensembl_genes_dict[ensembl_id] = gene_obj
+            if gene_obj.get("ensembl_id"):
+                ensembl_id = gene_obj["ensembl_id"]
+                ensembl_genes_dict[ensembl_id] = gene_obj
 
         # Load the transcripts
         ensembl_tx_res = (

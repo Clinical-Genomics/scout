@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 from scout.constants import GENE_CONSTRAINT_LABELS
 from scout.models.hgnc_map import HgncGene
@@ -16,11 +17,8 @@ def build_phenotype(phenotype_info):
     return phenotype_obj
 
 
-def build_hgnc_gene(gene_info, build="37"):
+def build_hgnc_gene(gene_info: dict, cyoband_coords: Dict[str, dict], build: str = "37") -> dict:
     """Build a hgnc_gene object
-
-    Args:
-        gene_info(dict): Gene information
 
     Returns:
         gene_obj(dict)
@@ -57,51 +55,37 @@ def build_hgnc_gene(gene_info, build="37"):
             'phenotypes': list(), # List of dictionaries with phenotype information
         }
     """
-    try:
-        hgnc_id = int(gene_info["hgnc_id"])
-    except KeyError as err:
-        raise KeyError("Gene has to have a hgnc_id")
-    except ValueError as err:
-        raise ValueError("hgnc_id has to be integer")
 
-    try:
-        hgnc_symbol = gene_info["hgnc_symbol"]
-    except KeyError as err:
-        raise KeyError("Gene has to have a hgnc_symbol")
+    if gene_info.get("chromosome") is None:  # Gene not present in Ensembl.
+        # Try to use cytoband coordinates instead
+        cytoband_coords: Optional[dict] = cyoband_coords.get(gene_info["location"])
+        if not cytoband_coords:
+            LOG.warning(
+                f"Gene {gene_info.get('hgnc_symbol') or gene_info.get('hgnc_id')} doesn't have coordinates and cytoband not present in database, skipping."
+            )
+            return
+        cytoband_chrom: str = cytoband_coords["chromosome"]
+        cytoband_start: int = cytoband_coords["start"]
+        cytoband_end: int = cytoband_coords["stop"]
 
-    try:
-        ensembl_id = gene_info["ensembl_gene_id"]
-    except KeyError as err:
-        raise KeyError("Gene has to have a ensembl_id")
-
-    try:
-        chromosome = gene_info["chromosome"]
-    except KeyError as err:
-        raise KeyError("Gene has to have a chromosome")
-
-    try:
-        start = int(gene_info["start"])
-    except KeyError as err:
-        raise KeyError("Gene has to have a start position")
-    except TypeError as err:
-        raise TypeError("Gene start has to be a integer")
-
-    try:
-        end = int(gene_info["end"])
-    except KeyError as err:
-        raise KeyError("Gene has to have a end position")
-    except TypeError as err:
-        raise TypeError("Gene end has to be a integer")
+    chromosome: Optional[str] = gene_info.get("chromosome") or cytoband_chrom
+    start: Optional[int] = int(gene_info.get("start")) if gene_info.get("start") else cytoband_start
+    end: Optional[int] = int(gene_info.get("end")) if gene_info.get("end") else cytoband_end
 
     gene_obj = HgncGene(
-        hgnc_id=hgnc_id,
-        hgnc_symbol=hgnc_symbol,
-        ensembl_id=ensembl_id,
+        hgnc_id=gene_info.get("hgnc_id"),
+        hgnc_symbol=gene_info.get("hgnc_symbol"),
+        ensembl_id=gene_info.get("ensembl_gene_id"),
         chrom=chromosome,
         start=start,
         end=end,
         build=build,
     )
+
+    for key in ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"]:
+        if key not in gene_obj:
+            LOG.warning(f"Gene {gene_obj} is missing {key}, skipping.")
+            return
 
     if gene_info.get("description"):
         gene_obj["description"] = gene_info["description"]
