@@ -1,4 +1,5 @@
 import logging
+
 from typing import Dict, Optional
 
 from scout.constants import OMICS_FILE_TYPE_MAP
@@ -49,8 +50,6 @@ class OmicsVariantHandler:
 
         case_panels = case_obj.get("panels", [])
         gene_to_panels = self.gene_to_panels(case_obj)
-        # genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        # hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
 
         omics_file_type: dict = OMICS_FILE_TYPE_MAP.get(file_type)
 
@@ -71,7 +70,7 @@ class OmicsVariantHandler:
             self._connect_gene(omics_model)
 
             # If case has gene panels, only add clinical variants with a matching gene
-            variant_genes = [gene["hgnc_id"] for gene in omics_model["genes"]]
+            variant_genes = [gene["hgnc_id"] for gene in omics_model.get("genes", [])]
             if (
                 omics_model["variant_type"] == "clinical"
                 and case_panels

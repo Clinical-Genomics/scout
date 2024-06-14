@@ -1,9 +1,16 @@
+from scout.server.blueprints.variants.controllers import get_variants_page
+
+from scout.server.utils import (
+    institute_and_case,
+)
+
+
 @variants_bp.route("/<institute_id>/<case_name>/omics_variants/outliers", methods=["GET", "POST"])
 @templated("omics_variants/outliers.html")
 def outliers(institute_id, case_name):
     """Display a list of outlier omics variants."""
 
-    page = controllers.get_variants_page(request.form)
+    page = get_variants_page(request.form)
     category = "outlier"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -51,12 +58,10 @@ def outliers(institute_id, case_name):
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     # if variants should be exported
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
+    # if request.form.get("export"):
+    #    return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
-    )
+    data = controllers.outliers(store, institute_obj, case_obj, variants_query, result_size, page)
 
     return dict(
         case=case_obj,
