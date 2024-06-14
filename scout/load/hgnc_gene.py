@@ -87,7 +87,6 @@ def load_hgnc_genes(
 
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
-
             gene_obj = build_hgnc_gene(
                 gene_data,
                 cyoband_coords=cyoband_coords,
