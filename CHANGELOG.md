@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Clearer error message when a loqusdb query fails for an instance that initially connected
-- Less alarming warning at scout boot when chanjo-report lib is not available and no reports will be generated
+- Do not load chanjo-report module if not needed and more visible message when it fails loading
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
 
