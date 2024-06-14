@@ -1,11 +1,27 @@
+from flask import Blueprint, request
+from flask_login import current_user
+from markupsafe import Markup
+
 from scout.server.blueprints.variants.controllers import get_variants_page
 
+from scout.server.extensions import store
 from scout.server.utils import (
     institute_and_case,
+    templated,
+)
+
+from . import controllers
+
+omics_variants_bp = Blueprint(
+    "omics_variants",
+    __name__,
+    template_folder="templates",
 )
 
 
-@variants_bp.route("/<institute_id>/<case_name>/omics_variants/outliers", methods=["GET", "POST"])
+@omics_variants_bp.route(
+    "/<institute_id>/<case_name>/omics_variants/outliers", methods=["GET", "POST"]
+)
 @templated("omics_variants/outliers.html")
 def outliers(institute_id, case_name):
     """Display a list of outlier omics variants."""
@@ -23,19 +39,21 @@ def outliers(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    if "dismiss_submit" in request.form:  # dismiss a list of variants
-        controllers.dismiss_variant_list(
-            store,
-            institute_obj,
-            case_obj,
-            "variant.sv_variant",
-            request.form.getlist("dismiss"),
-            request.form.getlist("dismiss_choices"),
-        )
+    #    if "dismiss_submit" in request.form:  # dismiss a list of variants
+    #        controllers.dismiss_variant_list(
+    #            store,
+    #            institute_obj,
+    #            case_obj,
+    #            "variant.sv_variant",
+    #            request.form.getlist("dismiss"),
+    #            request.form.getlist("dismiss_choices"),
+    #        )
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+    form = controllers.populate_omics_filters_form(
+        store, institute_obj, case_obj, category, request
+    )
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
