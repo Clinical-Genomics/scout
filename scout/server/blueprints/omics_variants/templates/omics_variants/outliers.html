@@ -1,4 +1,7 @@
 {% extends "layout.html" %}
+{% from "variants/components.html" import external_scripts, external_stylesheets %}
+
+{% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} omics outlier variants
@@ -53,10 +56,6 @@
         </thead>
           <tbody>
             {% for variant in omics_variants %}
-              {% if variant.dismiss_variant %}
-                <tr class="dismiss">
-              {% endif %}
-
             {% for annotation in variant.functional_annotations %}
               <div>{{ annotation }}</div>
             {% endfor %}
@@ -72,7 +71,6 @@
        </table>
      </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-    {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
   </form> <!--end of form containing filters and variants' table elements -->
   <div class="container-fluid" style="padding-bottom: 100px">
     {{ pagination_footer(more_variants, page) }}

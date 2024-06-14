@@ -4,10 +4,13 @@ from markupsafe import Markup
 
 from scout.server.blueprints.variants.controllers import (
     activate_case,
+    case_default_panels,
+    get_expand_search,
     get_variants_page,
     populate_chrom_choices,
     populate_filters_form,
 )
+from scout.server.blueprints.variants.forms import OutlierFiltersForm
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
@@ -30,6 +33,7 @@ def outliers(institute_id, case_name):
     page = get_variants_page(request.form)
     category = "outlier"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
@@ -42,7 +46,20 @@ def outliers(institute_id, case_name):
 
     # update status of case if visited for the first time
     activate_case(store, institute_obj, case_obj, current_user)
-    form = populate_filters_form(store, institute_obj, case_obj, category, request)
+
+    if request.method == "GET":
+        form = OutlierFiltersForm(request.args)
+        variant_type = request.args.get("variant_type", "clinical")
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = case_default_panels(case_obj)
+    else:  # POST
+        user_obj = store.user(current_user.email)
+        form = populate_filters_form(
+            store, institute_obj, case_obj, user_obj, category, request.form
+        )
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
@@ -69,7 +86,7 @@ def outliers(institute_id, case_name):
     return dict(
         case=case_obj,
         cytobands=cytobands,
-        expand_search=controllers.get_expand_search(request.form),
+        expand_search=get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,

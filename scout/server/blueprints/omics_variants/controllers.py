@@ -28,7 +28,7 @@ def decorate_omics_variant(store, institute_obj, case_obj, omics_variant_obj):
     omics_variant_obj["comments"] = store.events(
         institute_obj,
         case=case_obj,
-        variant_id=variant_obj["variant_id"],
+        variant_id=omics_variant_obj["variant_id"],
         comments=True,
     )
 
