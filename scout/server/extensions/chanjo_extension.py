@@ -17,7 +17,7 @@ except ImportError as error:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.warning("chanjo-report is not properly installed! %s.", error)
+    LOG.warning(f"{error} - coverage reports will not be available for this instance.")
 
 
 class ChanjoReport:
