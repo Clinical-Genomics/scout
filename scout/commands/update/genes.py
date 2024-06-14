@@ -102,6 +102,10 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
             raise click.Abort()
 
 
+def load_genes():
+    """Load genes into the database."""
+
+
 @click.command("genes", short_help="Update all genes")
 @click.option(
     "--build",
@@ -131,14 +135,15 @@ def genes(build, downloads_folder, api_key):
 
     # If required resources are missing, download them to a temporary directory
     if downloads_folder is None:
-        with tempfile.TemporaryDirectory() as tempdir:
+        with tempfile.TemporaryDirectory() as downloads_folder:
             try:
-                download_resources(tempdir, api_key, builds)
+                download_resources(downloads_folder, api_key, builds)
             except Exception as ex:
                 LOG.error(ex)
-            fetch_downloaded_resources(resources, tempdir, builds)
-    else:  # If resources have been previosly downloaded, read those file and return their lines
-        fetch_downloaded_resources(resources, downloads_folder, builds)
+
+    fetch_downloaded_resources(
+        resources=resources, downloads_folder=downloads_folder, builds=builds
+    )
 
     # Load genes and transcripts info
     for genome_build in builds:

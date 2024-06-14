@@ -32,7 +32,7 @@ def test_build_hgnc_gene():
 
 
 @pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
-def test_build_hgnc_gene_missing_hgnc_symbol(test_gene, key):
+def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with gene information
 
     # WHEN deleting a required key
