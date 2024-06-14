@@ -38,4 +38,4 @@ def test_build_hgnc_gene_missing_hgnc_symbol(test_gene, key):
     # WHEN deleting a required key
     test_gene.pop(key)
     # THEN calling build_hgnc_gene() will return None
-    assert build_hgnc_gene(gene_info) is None
+    assert build_hgnc_gene(test_gene) is None
