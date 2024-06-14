@@ -23,7 +23,7 @@ class ChanjoReport:
             chanjo_api = None
             report_bp = None
             configure_template_filters = None
-            LOG.error(f"{error}")
+            LOG.error(error)
 
         if not chanjo_api:
             raise ImportError(
