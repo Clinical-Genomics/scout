@@ -29,7 +29,7 @@ class OmicsVariantLoader(BaseModel):
     variant_type: str = "clinical"
     category: str = "outlier"
     sub_category: str = "fraser"
-    date: datetime.datetime
+    date: datetime
     display_name: str
     omics_variant_id: str
     # omics variant id hash (including clinical/research)?

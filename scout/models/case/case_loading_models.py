@@ -414,7 +414,7 @@ class CaseLoader(BaseModel):
     madeline_info: Optional[str] = Field(None, alias="madeline")
     multiqc: Optional[str] = None
     multiqc_rna: Optional[str] = None
-    omics_files: Optional[OmicsFiles]
+    omics_files: Optional[OmicsFiles] = None
     owner: Optional[str] = None
     peddy_ped: Optional[str] = None  # Soon to be deprecated
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated

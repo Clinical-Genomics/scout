@@ -45,6 +45,7 @@ from .index import IndexHandler
 from .institute import InstituteHandler
 from .managed_variant import ManagedVariantHandler
 from .matchmaker import MMEHandler
+from .omics_variant import OmicsVariantHandler
 from .panel import PanelHandler
 from .phenomodel import PhenoModelHandler
 from .query import QueryHandler
@@ -57,27 +58,28 @@ LOG = logging.getLogger(__name__)
 
 
 class MongoAdapter(
-    GeneHandler,
-    CaseHandler,
-    CaseGroupHandler,
-    InstituteHandler,
-    EventHandler,
-    HpoHandler,
-    DiagnosisHandler,
-    PanelHandler,
-    QueryHandler,
-    VariantHandler,
-    UserHandler,
     ACMGHandler,
-    IndexHandler,
+    CaseGroupHandler,
+    CaseHandler,
     ClinVarHandler,
-    MMEHandler,
-    TranscriptHandler,
-    FilterHandler,
-    ManagedVariantHandler,
     CytobandHandler,
+    DiagnosisHandler,
+    EventHandler,
+    FilterHandler,
+    GeneHandler,
+    HpoHandler,
+    IndexHandler,
+    InstituteHandler,
+    MMEHandler,
+    ManagedVariantHandler,
+    OmicsVariantHandler,
+    PanelHandler,
     PhenoModelHandler,
+    QueryHandler,
     RankModelHandler,
+    TranscriptHandler,
+    UserHandler,
+    VariantHandler,
 ):
     """Adapter for communication with a Mongo database."""
 

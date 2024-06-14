@@ -9,13 +9,13 @@ LOG = logging.getLogger(__name__)
 
 
 class OmicsVariantHandler:
-    def delete_omics_variants(self, case_id: str, omics_file: str):
+    def delete_omics_variants(self, case_id: str, file_type: str):
         """Delete OMICS variants for a case"""
-        file_type = OMICS_FILE_TYPE_MAP.get("omics_file")
-        category = file_type["category"]
-        sub_category = file_type["sub_category"]
-        variant_type = file_type["variant_type"]
-        analysis_type = file_type["analysis_type"]
+        omics_file_type = OMICS_FILE_TYPE_MAP.get("file_type")
+        category = omics_file_type["category"]
+        sub_category = omics_file_type["sub_category"]
+        variant_type = omics_file_type["variant_type"]
+        analysis_type = omics_file_type["analysis_type"]
 
         LOG.info(
             "Deleting old %s %s %s %s OMICS variants.",

@@ -843,7 +843,7 @@ class CaseHandler(object):
                 continue
 
             if update:
-                self.delete_omics_variants(case_id=case_obj["_id"], file_type=omics_file)
+                self.delete_omics_variants(case_id=case_obj["_id"], omics_file=omics_file)
 
             self.load_omics_variants(case_obj=case_obj, build=build, file_type=omics_file)
 
