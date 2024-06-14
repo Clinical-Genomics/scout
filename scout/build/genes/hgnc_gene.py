@@ -69,7 +69,7 @@ def build_hgnc_gene(
         cytoband_coords: Optional[dict] = cytoband_coords.get(gene_info["location"])
         if not cytoband_coords:
             LOG.warning(
-                f"Gene {gene_info.get('hgnc_symbol') or gene_info.get('hgnc_id')} doesn't have coordinates and cytoband not present in database, skipping."
+                f"Gene {gene_info.get('hgnc_symbol') or gene_info.get('hgnc_id')} doesn't have coordinates and cytoband {gene_info['location']} is not present in database, skipping."
             )
             return
         cytoband_chrom: str = cytoband_coords["chromosome"]
@@ -98,7 +98,7 @@ def build_hgnc_gene(
 
     for key in ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"]:
         if gene_obj.get(key) is None:
-            LOG.warning(f"Gene {gene_obj} is missing {key}, skipping.")
+            LOG.warning(f"Gene dictionary {gene_info} is missing {key}, skipping.")
             return
 
     if gene_info.get("description"):
