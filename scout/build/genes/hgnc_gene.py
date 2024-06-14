@@ -17,7 +17,9 @@ def build_phenotype(phenotype_info):
     return phenotype_obj
 
 
-def build_hgnc_gene(gene_info: dict, cytoband_coords: Dict[str, dict], build: str = "37") -> dict:
+def build_hgnc_gene(
+    gene_info: dict, cytoband_coords: Dict[str, dict], build: str = "37"
+) -> Optional[dict]:
     """Build a hgnc_gene object
 
     Returns:
