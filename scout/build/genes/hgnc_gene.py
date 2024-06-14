@@ -55,6 +55,12 @@ def build_hgnc_gene(gene_info: dict, cyoband_coords: Dict[str, dict], build: str
             'phenotypes': list(), # List of dictionaries with phenotype information
         }
     """
+    if gene_info is None:
+        return
+
+    cytoband_chrom = None
+    cytoband_start = None
+    cytoband_end = None
 
     if gene_info.get("chromosome") is None:  # Gene not present in Ensembl.
         # Try to use cytoband coordinates instead
@@ -72,18 +78,24 @@ def build_hgnc_gene(gene_info: dict, cyoband_coords: Dict[str, dict], build: str
     start: Optional[int] = int(gene_info.get("start")) if gene_info.get("start") else cytoband_start
     end: Optional[int] = int(gene_info.get("end")) if gene_info.get("end") else cytoband_end
 
-    gene_obj = HgncGene(
-        hgnc_id=gene_info.get("hgnc_id"),
-        hgnc_symbol=gene_info.get("hgnc_symbol"),
-        ensembl_id=gene_info.get("ensembl_gene_id"),
-        chrom=chromosome,
-        start=start,
-        end=end,
-        build=build,
-    )
+    try:
+        gene_obj = HgncGene(
+            hgnc_id=gene_info.get("hgnc_id"),
+            hgnc_symbol=gene_info.get("hgnc_symbol"),
+            ensembl_id=gene_info.get("ensembl_gene_id"),
+            chrom=chromosome,
+            start=start,
+            end=end,
+            build=build,
+        )
+    except Exception as ex:
+        LOG.error(
+            f"failed to build gene {gene_info.get('hgnc_id') or gene_info.get('hgnc_symbol')}: {ex}"
+        )
+        return
 
     for key in ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"]:
-        if key not in gene_obj:
+        if gene_obj.get(key) is None:
             LOG.warning(f"Gene {gene_obj} is missing {key}, skipping.")
             return
 
