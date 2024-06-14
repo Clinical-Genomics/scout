@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.server.blueprints.variants.controllers import get_variants_page
+from scout.server.blueprints.variants.controllers import activate_case, get_variants_page
 
 from scout.server.extensions import store
 from scout.server.utils import (
@@ -39,18 +39,8 @@ def outliers(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    #    if "dismiss_submit" in request.form:  # dismiss a list of variants
-    #        controllers.dismiss_variant_list(
-    #            store,
-    #            institute_obj,
-    #            case_obj,
-    #            "variant.sv_variant",
-    #            request.form.getlist("dismiss"),
-    #            request.form.getlist("dismiss_choices"),
-    #        )
-
     # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
+    activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_omics_filters_form(
         store, institute_obj, case_obj, category, request
     )
@@ -62,12 +52,12 @@ def outliers(institute_id, case_name):
     ]
 
     # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
+    #  controllers.populate_chrom_choices(form, case_obj)
 
     genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
+    #    controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(
         case_obj["_id"], category=category, query=form.data, build=genome_build
@@ -75,27 +65,17 @@ def outliers(institute_id, case_name):
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
-    # if variants should be exported
-    # if request.form.get("export"):
-    #    return controllers.download_variants(store, case_obj, variants_query)
-
     data = controllers.outliers(store, institute_obj, case_obj, variants_query, result_size, page)
 
     return dict(
         case=case_obj,
         cytobands=cytobands,
-        dismiss_variant_options={
-            **DISMISS_VARIANT_OPTIONS,
-        },
         expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
         result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
         **data,
