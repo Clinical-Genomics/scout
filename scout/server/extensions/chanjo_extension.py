@@ -9,21 +9,23 @@ from flask_babel import Babel
 from markupsafe import Markup
 
 LOG = logging.getLogger(__name__)
-try:
-    from chanjo_report.server.app import configure_template_filters
-    from chanjo_report.server.blueprints import report_bp
-    from chanjo_report.server.extensions import api as chanjo_api
-except ImportError as error:
-    chanjo_api = None
-    report_bp = None
-    configure_template_filters = None
-    LOG.warning(f"{error} - coverage reports will not be available for this instance.")
 
 
 class ChanjoReport:
     """Interfaces with chanjo-report. Creates the /reports endpoints in scout domain. Use Babel to set report language."""
 
     def init_app(self, app):
+
+        try:
+            from chanjo_report.server.app import configure_template_filters
+            from chanjo_report.server.blueprints import report_bp
+            from chanjo_report.server.extensions import api as chanjo_api
+        except ImportError as error:
+            chanjo_api = None
+            report_bp = None
+            configure_template_filters = None
+            LOG.error(f"{error}")
+
         if not chanjo_api:
             raise ImportError(
                 "An SQL db path was given, but chanjo-report could not be registered."
