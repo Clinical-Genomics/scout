@@ -1,9 +1,6 @@
 """Tests for variant handling"""
 
 import logging
-import os
-
-TRAVIS = os.getenv("TRAVIS")
 
 LOG = logging.getLogger(__name__)
 
