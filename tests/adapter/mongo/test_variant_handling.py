@@ -1,7 +1,6 @@
 """Tests for variant handling"""
 
 import logging
-import os
 
 LOG = logging.getLogger(__name__)
 
