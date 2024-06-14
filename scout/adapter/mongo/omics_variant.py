@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 class OmicsVariantHandler:
     def delete_omics_variants(self, case_id: str, file_type: str):
         """Delete OMICS variants for a case"""
-        omics_file_type = OMICS_FILE_TYPE_MAP.get("file_type")
+        omics_file_type = OMICS_FILE_TYPE_MAP.get(file_type)
         category = omics_file_type["category"]
         sub_category = omics_file_type["sub_category"]
         variant_type = omics_file_type["variant_type"]
@@ -52,26 +52,23 @@ class OmicsVariantHandler:
         # genes = [gene_obj for gene_obj in self.all_genes(build=build)]
         # hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
 
-        omics_file_type: dict = OMICS_FILE_TYPE_MAP.get("file_type")
+        omics_file_type: dict = OMICS_FILE_TYPE_MAP.get(file_type)
 
         nr_inserted = 0
 
         file_handle = open(case_obj["omics_files"].get(file_type), "r")
 
-        for omics_info in parse_omics_file(
-            file_handle, omics_file_type=case_obj["omics_files"].get(file_type)
-        ):
+        for omics_info in parse_omics_file(file_handle, omics_file_type=omics_file_type):
             omics_info["case_id"] = case_obj["_id"]
             omics_info["build"] = "37" if "37" in build else "38"
             omics_info["file_type"] = file_type
+            omics_info["institute_id"] = case_obj["owner"]
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
                 omics_info[key] = omics_file_type[key]
 
             omics_model = OmicsVariantLoader(**omics_info).model_dump(by_alias=True)
 
             self._connect_gene(omics_model)
-
-            self._get_ids(omics_model)
 
             # If case has gene panels, only add clinical variants with a matching gene
             variant_genes = [gene["hgnc_id"] for gene in omics_model["genes"]]
@@ -98,7 +95,7 @@ class OmicsVariantHandler:
         case_id: str,
         variant_type: str = "clinical",
         category: str = "outlier",
-        hgnc_id: Optional[str] = None,
+        hgnc_id: Optional[int] = None,
         projection: Optional[Dict] = None,
     ):
         """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
