@@ -83,13 +83,13 @@ def load_hgnc_genes(
     nr_genes = len(genes)
     LOG.info(f"Building info for {nr_genes} genes")
 
-    cyoband_coords: Dict[str, dict] = adapter.cytoband_to_coordinates(build=build)
+    cytoband_coords: Dict[str, dict] = adapter.cytoband_to_coordinates(build=build)
 
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
             gene_obj = build_hgnc_gene(
                 gene_data,
-                cyoband_coords=cyoband_coords,
+                cytoband_coords=cytoband_coords,
                 build=build,
             )
 

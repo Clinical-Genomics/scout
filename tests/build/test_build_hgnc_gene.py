@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 
 from scout.build.genes.hgnc_gene import build_hgnc_gene
@@ -11,7 +9,7 @@ def test_build_hgnc_genes(genes):
     # WHEN building hgnc gene objecs
     for hgnc_id in genes:
         gene_info = genes[hgnc_id]
-        gene_obj = build_hgnc_gene(gene_info=gene_info, cyoband_coords={})
+        gene_obj = build_hgnc_gene(gene_info=gene_info, cytoband_coords={})
         # THEN check that the gene models have a hgnc id
         assert gene_obj["hgnc_id"]
 
@@ -25,7 +23,7 @@ def test_build_hgnc_gene():
         "start": 1,
         "end": 1000,
     }
-    gene_obj = build_hgnc_gene(gene_info=gene_info, cyoband_coords={})
+    gene_obj = build_hgnc_gene(gene_info=gene_info, cytoband_coords={})
 
     assert gene_obj["hgnc_id"] == gene_info["hgnc_id"]
     assert gene_obj["hgnc_symbol"] == gene_info["hgnc_symbol"]
@@ -33,7 +31,6 @@ def test_build_hgnc_gene():
     assert gene_obj["ensembl_id"] == gene_info["ensembl_gene_id"]
 
 
-# TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
 @pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
 def test_build_hgnc_gene_missing_hgnc_symbol(test_gene, key):
     ## GIVEN a dictionary with gene information
@@ -41,4 +38,4 @@ def test_build_hgnc_gene_missing_hgnc_symbol(test_gene, key):
     # WHEN deleting a required key
     test_gene.pop(key)
     # THEN calling build_hgnc_gene() will return None
-    assert build_hgnc_gene(gene_info=test_gene, cyoband_coords={}) is None
+    assert build_hgnc_gene(gene_info=test_gene, cytoband_coords={}) is None

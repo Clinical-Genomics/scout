@@ -17,7 +17,7 @@ def build_phenotype(phenotype_info):
     return phenotype_obj
 
 
-def build_hgnc_gene(gene_info: dict, cyoband_coords: Dict[str, dict], build: str = "37") -> dict:
+def build_hgnc_gene(gene_info: dict, cytoband_coords: Dict[str, dict], build: str = "37") -> dict:
     """Build a hgnc_gene object
 
     Returns:
@@ -64,7 +64,7 @@ def build_hgnc_gene(gene_info: dict, cyoband_coords: Dict[str, dict], build: str
 
     if gene_info.get("chromosome") is None:  # Gene not present in Ensembl.
         # Try to use cytoband coordinates instead
-        cytoband_coords: Optional[dict] = cyoband_coords.get(gene_info["location"])
+        cytoband_coords: Optional[dict] = cytoband_coords.get(gene_info["location"])
         if not cytoband_coords:
             LOG.warning(
                 f"Gene {gene_info.get('hgnc_symbol') or gene_info.get('hgnc_id')} doesn't have coordinates and cytoband not present in database, skipping."
