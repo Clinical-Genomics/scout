@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from scout.constants import GENE_CONSTRAINT_LABELS
 from scout.models.hgnc_map import HgncGene
