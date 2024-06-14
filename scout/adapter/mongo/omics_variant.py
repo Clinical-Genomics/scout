@@ -1,5 +1,4 @@
 import logging
-
 from typing import Dict, Optional
 
 from scout.constants import OMICS_FILE_TYPE_MAP
@@ -92,16 +91,30 @@ class OmicsVariantHandler:
     def omics_variants(
         self,
         case_id: str,
-        variant_type: str = "clinical",
+        query=None,
         category: str = "outlier",
-        hgnc_id: Optional[int] = None,
         projection: Optional[Dict] = None,
     ):
         """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
 
-        query = {"case_id": case_id, "variant_type": variant_type, "category": category}
+        if nr_of_variants == -1:
+            nr_of_variants = 0  # This will return all variants
+        else:
+            nr_of_variants = skip + nr_of_variants
 
-        if hgnc_id:
-            query["genes.hgnc_id"] = hgnc_id
-
+        query = self.build_query(case_id, query=query, category=category)
         return self.omics_variant_collection.find(query, projection)
+
+    def count_omics_variants(self, case_id, query, variant_ids):
+        """Returns number of variants
+
+        Arguments:
+            case_id(str): A string that represents the case
+            query(dict): A query dictionary
+
+        Returns:
+             integer
+        """
+
+        query = self.build_query(case_id, query=query, category="outlier")
+        return self.omics_variant_collection.count_documents(query)

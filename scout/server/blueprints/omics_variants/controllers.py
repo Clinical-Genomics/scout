@@ -4,6 +4,7 @@ def outliers(store, institute_obj, case_obj, variants_query, variant_count, page
 
     more_variants = variant_count > (skip_count + per_page)
     variants = []
+
     genome_build = str(case_obj.get("genome_build", "38"))
     if genome_build not in ["37", "38"]:
         genome_build = "38"
@@ -14,7 +15,6 @@ def outliers(store, institute_obj, case_obj, variants_query, variant_count, page
             institute_obj,
             case_obj,
             variant_obj,
-            genome_build=genome_build,
         )
 
         variants.append(parsed_variant)
@@ -22,9 +22,7 @@ def outliers(store, institute_obj, case_obj, variants_query, variant_count, page
     return {"variants": variants, "more_variants": more_variants}
 
 
-def decorate_omics_variant(
-    store, institute_obj, case_obj, omics_variant_obj, genome_build=genome_build
-):
+def decorate_omics_variant(store, institute_obj, case_obj, omics_variant_obj):
     """Decorate each variant with a limited selection of variant obj level information for display on variantS page."""
 
     omics_variant_obj["comments"] = store.events(
