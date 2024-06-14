@@ -23,6 +23,7 @@ from scout.constants import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_MEI,
+    CLINICAL_FILTER_BASE_OUTLIER,
     CLINICAL_FILTER_BASE_SV,
     CLINSIG_MAP,
     FEATURE_TYPES,
@@ -236,6 +237,47 @@ class FusionFiltersForm(VariantFiltersForm):
     fusion_caller = SelectMultipleField("Fusion Caller", choices=FUSION_CALLER_CHOICES, default=[])
 
 
+class OutlierFiltersForm(FlaskForm):
+    variant_type = HiddenField(default="clinical")
+
+    gene_panels = NonValidatingSelectMultipleField(choices=[])
+    gene_panels_exclude = BooleanField("Exclude genes")
+    hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
+
+    #    region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
+    #    functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
+
+    #        local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
+
+    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
+    filter_display_name = StringField(default="")
+    save_filter = SubmitField(label="Save filter")
+    load_filter = SubmitField(label="Load filter")
+    lock_filter = SubmitField(label="Lock filter")
+    delete_filter = SubmitField(label="Delete filter")
+    audit_filter = SubmitField(label="Audit filter")
+
+    chrom_pos = StringField(
+        "Chromosome position",
+        [validators.Optional()],
+        render_kw={"placeholder": "<chr>:<start pos>-<end pos>[optional +/-<span>]"},
+    )
+
+    chrom = NonValidatingSelectMultipleField("Chromosome", choices=[], default="")
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
+    cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
+    cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
+    filter_variants = SubmitField(label="Filter variants")
+    export = SubmitField(label="Filter and export")
+
+    clinical_filter_base = CLINICAL_FILTER_BASE_OUTLIER
+
+
+#        show_unaffected = BooleanField("Show also variants present only in unaffected", default=False)
+
+
 FILTERSFORMCLASS = {
     "snv": FiltersForm,
     "str": StrFiltersForm,
@@ -244,4 +286,5 @@ FILTERSFORMCLASS = {
     "cancer": CancerFiltersForm,
     "mei": MeiFiltersForm,
     "fusion": FusionFiltersForm,
+    "outlier": OutlierFiltersForm,
 }

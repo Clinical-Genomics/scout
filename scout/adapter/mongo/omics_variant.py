@@ -93,7 +93,10 @@ class OmicsVariantHandler:
         case_id: str,
         query=None,
         category: str = "outlier",
+        nr_of_variants=10,
+        skip=0,
         projection: Optional[Dict] = None,
+        build="37",
     ):
         """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
 
@@ -102,8 +105,10 @@ class OmicsVariantHandler:
         else:
             nr_of_variants = skip + nr_of_variants
 
-        query = self.build_query(case_id, query=query, category=category)
-        return self.omics_variant_collection.find(query, projection)
+        query = self.build_query(case_id, query=query, category=category, build=build)
+        return self.omics_variant_collection.find(
+            query, projection, skip=skip, limit=nr_of_variants
+        )
 
     def count_omics_variants(self, case_id, query, variant_ids):
         """Returns number of variants
