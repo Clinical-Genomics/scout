@@ -5,6 +5,7 @@ from markupsafe import Markup
 from scout.server.blueprints.variants.controllers import (
     activate_case,
     case_default_panels,
+    gene_panel_choices,
     get_expand_search,
     get_variants_page,
     populate_chrom_choices,
@@ -67,6 +68,9 @@ def outliers(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
+    # populate available panel choices
+    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
+
     # Populate chromosome select choices
     populate_chrom_choices(form, case_obj)
 
@@ -74,12 +78,13 @@ def outliers(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(genome_build)
 
     #    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    variants_query = store.variants(
-        case_obj["_id"], category=category, query=form.data, build=genome_build
+    variants_query = store.omics_variants(
+        case_obj["_id"], query=form.data, category=category, build=genome_build
     )
 
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_omics_variants(
+        case_id=case_obj["_id"], query=form.data, category=category
+    )
 
     data = controllers.outliers(store, institute_obj, case_obj, variants_query, result_size, page)
 

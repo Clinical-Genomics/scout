@@ -33,7 +33,24 @@ class OmicsVariantHandler:
 
         LOG.info("%s variants deleted", result.deleted_count)
 
-    def _connect_gene(self, omics_model: dict):
+    def set_samples(self, case_obj: dict, omics_model: dict):
+        """Internal member function to connect individuals.
+        OMICS variants do not have a genotype as such."""
+
+        samples = []
+
+        for ind in case_obj.get("individuals"):
+            if omics_model["sampleID"] == ind.get("individual_id"):
+                sample = {
+                    "sample_id": ind["individual_id"],
+                    "display_name": ind["display_name"],
+                    "genotype_call": "./1",
+                }
+                samples.append(sample)
+
+        omics_model["samples"] = samples
+
+    def set_genes(self, omics_model: dict):
         """Internal member function to connect gene based on the hgnc_id / symbol / geneID given in outlier file.
         We start with the case of having one hgnc_id.
         """
@@ -63,7 +80,8 @@ class OmicsVariantHandler:
 
             omics_model = OmicsVariantLoader(**omics_info).model_dump(by_alias=True)
 
-            self._connect_gene(omics_model)
+            self.set_genes(omics_model)
+            self.set_samples(case_obj, omics_model)
 
             # If case has gene panels, only add clinical variants with a matching gene
             variant_genes = [gene["hgnc_id"] for gene in omics_model.get("genes", [])]
@@ -90,7 +108,7 @@ class OmicsVariantHandler:
         case_id: str,
         query=None,
         category: str = "outlier",
-        nr_of_variants=10,
+        nr_of_variants=50,
         skip=0,
         projection: Optional[Dict] = None,
         build="37",
@@ -107,7 +125,7 @@ class OmicsVariantHandler:
             query, projection, skip=skip, limit=nr_of_variants
         )
 
-    def count_omics_variants(self, case_id, query, variant_ids):
+    def count_omics_variants(self, case_id, query, variant_ids=None, category="outlier"):
         """Returns number of variants
 
         Arguments:

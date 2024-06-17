@@ -68,24 +68,32 @@
               </tr>
         </thead>
           <tbody>
-            {% for variant in omics_variants %}
-              <td>variant.display_name</td>
+            {% for variant in variants %}
+              <tr>
+              <td>{{ variant.display_name }}</td>
               <td> {% if variant.genes %}
                     {% for gene in variant.genes %}
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     {% endfor %}
                   {% endif %}
                 </td>
-              <td>variant.pos</td>
-              <td>variant.end</td>
+              <td>{{ variant.chrom }}</td>
+              <td>{{ variant.start }}</td>
+              <td>{{ variant.end  }}</td>
               <td>
-              {% for annotation in variant.functional_annotations %}
-               <div>{{ annotation }}</div>
-              {% endfor %}
+                {%  if variant.sub_category == "splicing" %}
+                  {{ variant.potentialImpact }} - fs {{ variant.causesFrameshift }}
+                {% endif %}
               </td>
-              <td>variant.value</td>
-              <td>variant.pvalue</td>
+              <td> {%  if variant.sub_category == "splicing" %}
+                  {{ variant.deltaPsi }}
+                {% else %}
+                  {{ variant.l2fc }}
+                {% endif %}
+              </td>
+              <td>{{ variant.pValue }}</td>
               <td>{{ case.individuals.0.display_name }}</td>
+              </tr>
             {% else %}
               <tr>
                 <td colspan="10">

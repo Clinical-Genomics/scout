@@ -38,6 +38,7 @@ class OmicsVariantLoader(BaseModel):
     # DROP Fraser and Outrider outlier TSVs
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
+    # In the db object, this will be replaced with a "samples" array of individual dict.
     sampleID: str
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
@@ -97,7 +98,7 @@ class OmicsVariantLoader(BaseModel):
     @model_validator(mode="before")
     def ensure_end(cls, values):
         end_guess = int(values.get("start")) + int(values.get("width", 1))
-        if not "end" in values:
+        if "end" not in values:
             values["end"] = end_guess
 
         if isinstance(values["end"], str):
