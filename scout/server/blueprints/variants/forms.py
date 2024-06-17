@@ -256,6 +256,7 @@ class OutlierFiltersForm(FlaskForm):
     lock_filter = SubmitField(label="Lock filter")
     delete_filter = SubmitField(label="Delete filter")
     audit_filter = SubmitField(label="Audit filter")
+    clinical_filter = SubmitField(label="Clinical filter")
 
     chrom_pos = StringField(
         "Chromosome position",
@@ -274,8 +275,7 @@ class OutlierFiltersForm(FlaskForm):
 
     clinical_filter_base = CLINICAL_FILTER_BASE_OUTLIER
 
-
-#        show_unaffected = BooleanField("Show also variants present only in unaffected", default=False)
+    show_unaffected = BooleanField("Show also variants present only in unaffected", default=False)
 
 
 FILTERSFORMCLASS = {

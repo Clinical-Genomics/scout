@@ -1,3 +1,7 @@
+from scout.server.blueprints.variant.utils import update_variant_case_panels
+from scout.server.blueprints.variants.utils import update_case_panels
+
+
 def outliers(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of outlier omics variants."""
     skip_count = per_page * max(page - 1, 0)
@@ -8,6 +12,8 @@ def outliers(store, institute_obj, case_obj, variants_query, variant_count, page
     genome_build = str(case_obj.get("genome_build", "38"))
     if genome_build not in ["37", "38"]:
         genome_build = "38"
+
+    update_case_panels(store, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         parsed_variant = decorate_omics_variant(
@@ -31,5 +37,7 @@ def decorate_omics_variant(store, institute_obj, case_obj, omics_variant_obj):
         variant_id=omics_variant_obj["variant_id"],
         comments=True,
     )
+
+    update_variant_case_panels(case_obj, omics_variant_obj)
 
     return omics_variant_obj
