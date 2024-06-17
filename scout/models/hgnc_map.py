@@ -112,7 +112,7 @@ class HgncGene(BaseModel):
     def set_phenotypes_inheritance(cls, phenotypes) -> Optional[List[dict]]:
         """Convert field 'inheritance' of each phenotype in phenotypes from set to list."""
         for phenotype in phenotypes:
-            phenotype["inheritance_models"] = list(phenotype.get("inheritance"))
+            phenotype["inheritance_models"] = list(phenotype.get("inheritance", {}))
             phenotype.pop("inheritance", None)
 
         return phenotypes
