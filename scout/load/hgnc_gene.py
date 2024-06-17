@@ -88,8 +88,7 @@ def load_hgnc_genes(
                 continue
 
             gene_obj = build_hgnc_gene(gene_data, build=build)
-            if gene_obj:
-                gene_objects.append(gene_obj)
+            gene_objects.append(gene_obj)
 
     LOG.info("Nr of genes without coordinates in build %s: %s", build, non_existing)
     LOG.info(f"Loading {len(gene_objects)} genes into the database")
