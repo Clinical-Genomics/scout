@@ -107,10 +107,7 @@ class HgncGene(BaseModel):
     @field_validator("phenotypes", mode="before")
     @classmethod
     def set_phenotypes_inheritance(cls, phenotypes) -> Optional[List[dict]]:
-<<<<<<< HEAD
-=======
         """Convert field 'inheritance' of each phenotype in phenotypes from set to list."""
->>>>>>> bcb9ca1bb (Fixed a few tests)
         for phenotype in phenotypes:
             phenotype["inheritance"] = list(phenotype["inheritance"])
 
