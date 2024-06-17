@@ -15,11 +15,9 @@ class OmicsVariantHandler:
         category = omics_file_type["category"]
         sub_category = omics_file_type["sub_category"]
         variant_type = omics_file_type["variant_type"]
-        analysis_type = omics_file_type["analysis_type"]
 
         LOG.info(
-            "Deleting old %s %s %s %s OMICS variants.",
-            analysis_type,
+            "Deleting old %s %s %s OMICS variants.",
             variant_type,
             sub_category,
             category,
@@ -28,7 +26,6 @@ class OmicsVariantHandler:
         query = {
             "case_id": case_id,
             "variant_type": variant_type,
-            "analysis_type": analysis_type,
             "category": category,
             "sub_category": sub_category,
         }
@@ -40,7 +37,7 @@ class OmicsVariantHandler:
         """Internal member function to connect gene based on the hgnc_id / symbol / geneID given in outlier file.
         We start with the case of having one hgnc_id.
         """
-        hgnc_gene = self.hgnc_gene(omics_model["hgnc_id"], omics_model["build"])
+        hgnc_gene = self.hgnc_gene(omics_model["hgnc_ids"][0], omics_model["build"])
         if hgnc_gene:
             omics_model["genes"] = [hgnc_gene]
 

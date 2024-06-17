@@ -43,7 +43,6 @@
       <table class="table table-hover table-bordered" style="table-layout: fixed">
         <thead class="thead table-light">
               <tr>
-                <th></th>
                 <th title="Variant display name">Outlier</th>
                 <th title="HGNC symbols">Gene</th>
                 <th title="Chromosome">Chr</th>
@@ -52,14 +51,28 @@
                 <th title="Functional annotation">Func. annotation</th>
                 <th title="Value - delta Psi or l2fc ">Value</th>
                 <th title="P-value">P-value</th>
+                <th title="Individual">Ind</th>
               </tr>
         </thead>
           <tbody>
             {% for variant in omics_variants %}
-            {% for annotation in variant.functional_annotations %}
-              <div>{{ annotation }}</div>
-            {% endfor %}
+              <td>variant.display_name</td>
+              <td> {% if variant.genes %}
+                    {% for gene in variant.genes %}
+                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    {% endfor %}
+                  {% endif %}
                 </td>
+              <td>variant.pos</td>
+              <td>variant.end</td>
+              <td>
+              {% for annotation in variant.functional_annotations %}
+               <div>{{ annotation }}</div>
+              {% endfor %}
+              </td>
+              <td>variant.value</td>
+              <td>variant.pvalue</td>
+              <td>{{ case.individuals.0.display_name }}</td>
             {% else %}
               <tr>
                 <td colspan="10">

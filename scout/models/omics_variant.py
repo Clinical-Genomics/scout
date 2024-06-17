@@ -7,7 +7,7 @@
 
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -41,9 +41,10 @@ class OmicsVariantLoader(BaseModel):
     sampleID: str
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
-    hgnc_id: Optional[int]
+    hgnc_id: Optional[List[int]] = Field(serialization_alias="hgnc_ids")
     geneID: Optional[str]
-    hgncSymbol: Optional[str] = Field(serialization_alias="hgnc_symbol")
+
+    hgncSymbol: Optional[List[str]] = Field(serialization_alias="hgnc_symbols")
     gene_name_orig: Optional[str]
 
     gene_type: Optional[str]
@@ -105,6 +106,19 @@ class OmicsVariantLoader(BaseModel):
             if values["end"] == "Imp":
                 # imprecise?
                 values["end"] = end_guess
+
+        return values
+
+    @model_validator(mode="before")
+    def genes_become_lists(cls, values):
+        """HGNC ids and gene symbols are found one on each line in DROP tsvs.
+        Convert to a list with a single member in omics_variants for storage."""
+
+        if "hgnc_id" in values:
+            values["hgnc_id"] = [int(values.get("hgnc_id"))]
+
+        if "hgncSymbol" in values:
+            values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
 
         return values
 
