@@ -86,7 +86,7 @@ class HgncGene(BaseModel):
     uniprot_ids: Optional[List[str]] = None
     vega_id: Optional[str] = None
     inheritance_models: Optional[List[str]] = None
-    incomplete_penetrance: Optional[bool] = None
+    incomplete_penetrance: Optional[bool] = False
     phenotypes: Optional[List[dict]] = None
     pli_score: Optional[float] = None
     constraint_lof_oe: Optional[float] = None
@@ -112,6 +112,7 @@ class HgncGene(BaseModel):
     def set_phenotypes_inheritance(cls, phenotypes) -> Optional[List[dict]]:
         """Convert field 'inheritance' of each phenotype in phenotypes from set to list."""
         for phenotype in phenotypes:
-            phenotype["inheritance"] = list(phenotype["inheritance"])
+            phenotype["inheritance_models"] = list(phenotype.get("inheritance"))
+            phenotype.pop("inheritance", None)
 
         return phenotypes
