@@ -125,16 +125,18 @@ def mock_redirect():
 def gene_obj():
     """Get a dictionary with with gene obj information"""
     gene = HgncGene(
-        hgnc_symbol="B3GALT6",
-        hgnc_id=17978,
-        ensembl_id="ENSG00000176022",
-        chrom="1",
-        start=1232237,
-        end=1235041,
-        build="38",
+        **dict(
+            hgnc_symbol="B3GALT6",
+            hgnc_id=17978,
+            ensembl_id="ENSG00000176022",
+            chromosome="1",
+            start=1232237,
+            end=1235041,
+            build="38",
+        )
     )
 
-    return gene
+    return gene.model_dump()
 
 
 @pytest.fixture

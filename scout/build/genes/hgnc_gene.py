@@ -21,9 +21,7 @@ def build_hgnc_gene(gene_info: dict, build: bool = "37") -> dict:
     """Build a HGNC gene object"""
 
     gene_info["build"] = build
-
-    try:
-        hgnc_gene = HgncGene(**gene_info)
-        return hgnc_gene.model_dump()
-    except ValidationError as ve:
-        raise ValueError(gene_info)
+    LOG.error(gene_info)
+    hgnc_gene = HgncGene(**gene_info)
+    LOG.warning(hgnc_gene)
+    return hgnc_gene.model_dump()

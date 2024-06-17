@@ -71,13 +71,13 @@ class HgncTranscript(dict):
 class HgncGene(BaseModel):
     hgnc_id: int
     hgnc_symbol: str
-    ensembl_id: str = Field(alias="ensembl_gene_id")
     build: str
     chromosome: str
     start: int
     end: int
     length: int
-    description: str
+    description: Optional[str] = None
+    ensembl_id: Optional[str] = Field(None, alias="ensembl_gene_id")
     aliases: Optional[List[str]] = Field(None, alias="previous_symbols")
     entrez_id: Optional[int] = None
     omim_id: Optional[int] = None
@@ -87,7 +87,7 @@ class HgncGene(BaseModel):
     vega_id: Optional[str] = None
     inheritance_models: Optional[List[str]] = None
     incomplete_penetrance: Optional[bool] = None
-    phenotypes: List[dict] = None
+    phenotypes: Optional[List[dict]] = None
     pli_score: Optional[float] = None
     constraint_lof_oe: Optional[float] = None
     constraint_lof_oe_ci_lower: Optional[float] = None
@@ -107,6 +107,10 @@ class HgncGene(BaseModel):
     @field_validator("phenotypes", mode="before")
     @classmethod
     def set_phenotypes_inheritance(cls, phenotypes) -> Optional[List[dict]]:
+<<<<<<< HEAD
+=======
+        """Convert field 'inheritance' of each phenotype in phenotypes from set to list."""
+>>>>>>> bcb9ca1bb (Fixed a few tests)
         for phenotype in phenotypes:
             phenotype["inheritance"] = list(phenotype["inheritance"])
 
