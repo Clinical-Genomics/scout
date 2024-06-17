@@ -54,7 +54,6 @@ def test_build_hgnc_gene_inappropriate_type(test_gene, key):
         build_hgnc_gene(test_gene)
 
 
-# TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
 @pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
 def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with gene information
