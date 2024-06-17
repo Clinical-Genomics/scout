@@ -30,6 +30,9 @@ from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 
+ENSEMBL_GENE_RESOURCES = {"37": "ensembl_genes_37", "38": "ensembl_genes_38"}
+ENSEMBL_TX_RESOURCES = {"37": "ensembl_transcripts_37", "38": "ensembl_transcripts_38"}
+
 LOG = logging.getLogger(__name__)
 
 
@@ -135,15 +138,14 @@ def genes(build, downloads_folder, api_key):
 
     # If required resources are missing, download them to a temporary directory
     if downloads_folder is None:
-        with tempfile.TemporaryDirectory() as downloads_folder:
+        with tempfile.TemporaryDirectory() as tempdir:
             try:
-                download_resources(downloads_folder, api_key, builds)
+                download_resources(tempdir, api_key, builds)
             except Exception as ex:
                 LOG.error(ex)
-
-    fetch_downloaded_resources(
-        resources=resources, downloads_folder=downloads_folder, builds=builds
-    )
+            fetch_downloaded_resources(resources, tempdir, builds)
+    else:  # If resources have been previously downloaded, read those file and return their lines
+        fetch_downloaded_resources(resources, downloads_folder, builds)
 
     # Load genes and transcripts info
     for genome_build in builds:
@@ -152,11 +154,7 @@ def genes(build, downloads_folder, api_key):
         LOG.warning("Dropping all transcript information")
         adapter.drop_transcripts(genome_build)
 
-        ensembl_gene_res = (
-            resources.get("ensembl_genes_37")
-            if genome_build == "37"
-            else resources.get("ensembl_genes_38")
-        )  # It will be none if everything needs to be downloaded
+        ensembl_gene_res = resources.get(ENSEMBL_GENE_RESOURCES[genome_build])
 
         # Load the genes
         hgnc_genes = load_hgnc_genes(
@@ -177,11 +175,7 @@ def genes(build, downloads_folder, api_key):
                 ensembl_genes_dict[ensembl_id] = gene_obj
 
         # Load the transcripts
-        ensembl_tx_res = (
-            resources.get("ensembl_transcripts_37")
-            if genome_build == "37"
-            else resources.get("ensembl_transcripts_38")
-        )  # It will be none if everything needs to be downloaded
+        ensembl_tx_res = resources.get(ENSEMBL_TX_RESOURCES[genome_build])
 
         load_transcripts(adapter, ensembl_tx_res, genome_build, ensembl_genes_dict)
 
