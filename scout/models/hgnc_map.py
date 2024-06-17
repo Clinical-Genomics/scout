@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Exon(dict):
@@ -71,29 +71,44 @@ class HgncTranscript(dict):
 class HgncGene(BaseModel):
     hgnc_id: int
     hgnc_symbol: str
-    ensembl_id: str
+    ensembl_id: str = Field(alias="ensembl_gene_id")
     build: str
     chromosome: str
     start: int
     end: int
     length: int
     description: str
-    aliases: List[str]
-    entrez_id: int
-    omim_id: int
-    primary_transcripts: List[str]
-    ucsc_id: str
-    uniprot_ids: List[str]
-    vega_id: str
-    inheritance_models: Optional[str]
-    incomplete_penetrance: bool
-    phenotypes: List[dict]
-    pli_score: float
-    constraint_lof_oe: Optional[float]
-    constraint_lof_oe_ci_lower: Optional[float]
-    constraint_lof_oe_ci_upper: Optional[float]
-    constraint_lof_z: Optional[float]
-    constraint_mis_oe: Optional[float]
-    constraint_mis_oe_ci_lower: Optional[float]
-    constraint_mis_oe_ci_upper: Optional[float]
-    constraint_mis_z: Optional[float]
+    aliases: Optional[List[str]] = Field(None, alias="previous_symbols")
+    entrez_id: Optional[int] = None
+    omim_id: Optional[int] = None
+    primary_transcripts: Optional[List[str]] = Field(None, alias="ref_seq")
+    ucsc_id: Optional[str] = None
+    uniprot_ids: Optional[List[str]] = None
+    vega_id: Optional[str] = None
+    inheritance_models: Optional[List[str]] = None
+    incomplete_penetrance: Optional[bool] = None
+    phenotypes: List[dict] = None
+    pli_score: Optional[float] = None
+    constraint_lof_oe: Optional[float] = None
+    constraint_lof_oe_ci_lower: Optional[float] = None
+    constraint_lof_oe_ci_upper: Optional[float] = None
+    constraint_lof_z: Optional[float] = None
+    constraint_mis_oe: Optional[float] = None
+    constraint_mis_oe_ci_lower: Optional[float] = None
+    constraint_mis_oe_ci_upper: Optional[float] = None
+    constraint_mis_z: Optional[float] = None
+
+    @model_validator(mode="before")
+    def set_gene_length(cls, values) -> "HgncGene":
+        """Set gene length."""
+        values.update({"length": values.get("end", values.get("start"))})
+        return values
+
+    @field_validator("phenotypes", mode="before")
+    @classmethod
+    def set_phenotypes_inheritance(cls, phenotypes) -> Optional[List[dict]]:
+
+        for phenotype in phenotypes:
+            phenotype["inheritance"] = list(phenotype["inheritance"])
+
+        return phenotypes
