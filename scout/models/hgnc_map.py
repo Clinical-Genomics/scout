@@ -101,7 +101,10 @@ class HgncGene(BaseModel):
     @model_validator(mode="before")
     def set_gene_length(cls, values) -> "HgncGene":
         """Set gene length."""
-        values.update({"length": values.get("end", values.get("start"))})
+        if None in [values.get("end"), values.get("start")]:
+            values.update({"length": None})
+        else:
+            values.update({"length": values.get("end") - values.get("start")})
         return values
 
     @field_validator("phenotypes", mode="before")
