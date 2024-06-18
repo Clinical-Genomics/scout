@@ -159,7 +159,7 @@ def genemania(hgnc_symbol):
 
 
 def genenames(hgnc_id):
-    link = "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{}"
+    link = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:{}"
     if not hgnc_id:
         return None
     return link.format(hgnc_id)
