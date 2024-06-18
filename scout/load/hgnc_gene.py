@@ -113,7 +113,7 @@ def load_hgnc_genes(
             if gene_obj:
                 gene_objects.append(gene_obj)
             else:
-                not_loaded += 1
+                without_coords += 1
 
     LOG.info(
         "Nr of genes without coordinates in build %s and therefore skipped: %s",
