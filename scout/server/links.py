@@ -159,10 +159,13 @@ def genemania(hgnc_symbol):
 
 
 def genenames(hgnc_id):
-    link = "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{}"
+    link = "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:{}"
     if not hgnc_id:
         return None
     return link.format(hgnc_id)
+
+
+6481
 
 
 def omim(omim_id):
@@ -679,9 +682,9 @@ def snp_links(variant_obj):
         if "rs" in snp:
             snp_links[snp] = f"https://www.ncbi.nlm.nih.gov/snp/{snp}"  # dbSNP
         elif snp.isnumeric():
-            snp_links[
-                snp
-            ] = f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+            snp_links[snp] = (
+                f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+            )
 
     return snp_links
 
