@@ -136,7 +136,7 @@ def gene_obj():
         )
     )
 
-    return gene.model_dump()
+    return gene.model_dump(exclude_none=True)
 
 
 @pytest.fixture
