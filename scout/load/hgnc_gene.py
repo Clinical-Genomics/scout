@@ -17,6 +17,19 @@ from scout.utils.scout_requests import (
 LOG = logging.getLogger(__name__)
 
 
+def set_gene_coordinates(gene_data: dict, cytoband_coords: Dict[str, dict]):
+    """Attempt at collecting gene coordinates from cytoband for genes missing Ensembl ID."""
+    if gene_data.get(
+        "ensembl_gene_id"
+    ):  # Coordinates are present, since they're collected from the Ensembl file
+        return
+    cytoband_coord: dict = cytoband_coords.get(gene_data["location"])
+    if cytoband_coord:
+        gene_data["chrom"]: str = cytoband_coord["chromosome"]
+        gene_data["start"]: int = cytoband_coord["start"]
+        gene_data["end"]: int = cytoband_coord["stop"]
+
+
 def load_hgnc_genes(
     adapter,
     genes=None,
@@ -37,7 +50,7 @@ def load_hgnc_genes(
     Args:
         adapter(scout.adapter.MongoAdapter)
         genes(dict): If genes are already parsed
-        ensembl_lines(iterable(str)): Lines formated with ensembl gene information
+        ensembl_lines(iterable(str)): Lines formatted with ensembl gene information
         hgnc_lines(iterable(str)): Lines with gene information from genenames.org
         exac_lines(iterable(str)): Lines with information pLi-scores from ExAC
         mim2gene(iterable(str)): Lines with map from omim id to gene symbol
@@ -79,7 +92,7 @@ def load_hgnc_genes(
             genemap_lines=genemap_lines,
         )
 
-    not_loaded = 0
+    without_coords = 0
     nr_genes = len(genes)
     LOG.info(f"Building info for {nr_genes} genes")
 
@@ -87,9 +100,14 @@ def load_hgnc_genes(
 
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
+
+            set_gene_coordinates(gene_data=gene_data, cytoband_coords=cytoband_coords)
+
+            if not gene_data.get("chromosome"):
+                without_coords += 1
+                continue
             gene_obj = build_hgnc_gene(
                 gene_data,
-                cytoband_coords=cytoband_coords,
                 build=build,
             )
 
@@ -98,7 +116,11 @@ def load_hgnc_genes(
             else:
                 not_loaded += 1
 
-    LOG.info("Nr of genes without coordinates in build %s: %s", build, non_existing)
+    LOG.info(
+        "Nr of genes without coordinates in build %s and therefore skipped: %s",
+        build,
+        without_coords,
+    )
     LOG.info(f"Loading {len(gene_objects)} genes into the database")
 
     adapter.load_hgnc_bulk(gene_objects)

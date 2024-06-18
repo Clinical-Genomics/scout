@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, Optional
 
 from scout.models.hgnc_map import HgncGene
 
