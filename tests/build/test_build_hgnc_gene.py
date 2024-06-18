@@ -1,7 +1,7 @@
-from pprint import pprint as pp
+import pytest
+from pydantic_core._pydantic_core import ValidationError
 
 from scout.build.genes.hgnc_gene import build_hgnc_gene
-import pytest
 
 
 def test_build_hgnc_genes(genes):
@@ -50,11 +50,10 @@ def test_build_hgnc_gene_inappropriate_type(test_gene, key):
     # WHEN setting key to None
     test_gene[key] = None
     # THEN calling build_hgnc_gene() will raise TypeError
-    with pytest.raises(TypeError):
+    with pytest.raises(ValidationError):
         build_hgnc_gene(test_gene)
 
 
-# TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
 @pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
 def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with gene information
@@ -62,5 +61,5 @@ def test_build_hgnc_gene_missing_key(test_gene, key):
     # WHEN deleteing key
     test_gene.pop(key)
     # THEN calling build_hgnc_gene() will raise KeyError
-    with pytest.raises(KeyError):
+    with pytest.raises(ValidationError):
         build_hgnc_gene(test_gene)
