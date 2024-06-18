@@ -105,10 +105,6 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
             raise click.Abort()
 
 
-def load_genes():
-    """Load genes into the database."""
-
-
 @click.command("genes", short_help="Update all genes")
 @click.option(
     "--build",
