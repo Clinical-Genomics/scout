@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 from scout.load.hgnc_gene import load_hgnc_genes
 
 
@@ -65,3 +63,10 @@ def test_load_hgnc_genes_no_omim(
 
     # THEN assert that the last gene was loaded
     assert adapter.hgnc_gene(gene_info["hgnc_id"])
+
+
+def test_set_gene_coordinates():
+    """Test function that sets coordinates for genes without ensembl_gene_id."""
+
+    # GIVEN a gene without ensembl_gene_id key:
+    gene_dict = {}
