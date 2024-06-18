@@ -1,5 +1,6 @@
 from scout.server.blueprints.variant.utils import update_variant_case_panels
 from scout.server.blueprints.variants.utils import update_case_panels
+from scout.server.utils import case_has_alignments, case_has_mt_alignments, case_has_rna_tracks
 
 
 def outliers(
@@ -16,6 +17,10 @@ def outliers(
         genome_build = "38"
 
     update_case_panels(store, case_obj)
+
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
+    case_has_rna_tracks(case_obj)
 
     for variant_obj in omics_variants_query.skip(skip_count).limit(per_page):
         parsed_variant = decorate_omics_variant(

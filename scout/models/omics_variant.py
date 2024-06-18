@@ -97,8 +97,15 @@ class OmicsVariantLoader(BaseModel):
     FDR_set: Optional[str] = None
     foldChange: Optional[float] = None
 
+    @field_validator("chromosome")
+    def strip_chr(cls, chrom: str) -> str:
+        """We store chromosome names without a chr prefix internally."""
+        return chrom.lstrip("chr")
+
     @model_validator(mode="before")
     def ensure_end(cls, values):
+        """End is not always set, but sometimes width is.
+        Sometimes Imp is given as end. Worst case we default to width 1."""
         end_guess = int(values.get("start")) + int(values.get("width", 1))
         if "end" not in values:
             values["end"] = end_guess
