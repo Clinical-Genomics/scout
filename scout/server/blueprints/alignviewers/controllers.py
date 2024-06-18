@@ -75,7 +75,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
         stop = stop or variant_obj["end"]
         chrom = chrom or variant_obj.get("chromosome")
 
-    if all(start, stop, chrom):
+    if all([start, stop, chrom]):
         chromosome = chrom.replace("MT", "M")
         display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
