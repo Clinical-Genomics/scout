@@ -84,3 +84,6 @@ def test_set_gene_coordinates():
 
     for coord in ["chromosome", "start", "end"]:
         assert coord in gene_dict
+
+    # THEN Ensembl ID should also be set to None
+    assert gene_dict["ensembl_gene_id"] is None
