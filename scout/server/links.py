@@ -682,9 +682,9 @@ def snp_links(variant_obj):
         if "rs" in snp:
             snp_links[snp] = f"https://www.ncbi.nlm.nih.gov/snp/{snp}"  # dbSNP
         elif snp.isnumeric():
-            snp_links[snp] = (
-                f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
-            )
+            snp_links[
+                snp
+            ] = f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
 
     return snp_links
 
