@@ -68,16 +68,16 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     display_obj = {}
     variant_obj = store.variant(document_id=variant_id)
 
+    chromosome = "All"
     if variant_obj:
         # Set display locus
         start = start or variant_obj["position"]
         stop = stop or variant_obj["end"]
+        chrom = chrom or variant_obj.get("chromosome")
 
-        chromosome = chrom or variant_obj.get("chromosome")
-        chromosome = chromosome.replace("MT", "M")
+    if all(start, stop, chrom):
+        chromosome = chrom.replace("MT", "M")
         display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
-    else:
-        chromosome = "All"
 
     # Set genome build for displaying alignments:
     if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":

@@ -3,7 +3,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell %}
-
+{% from "variant/buttons.html" import splice_junctions_button %}
 {% from "variants/utils.html" import filter_script_main, pagination_footer, pagination_hidden_div, stash_filter_buttons, update_stash_filter_button_status%}
 
 {% block title %}
@@ -70,7 +70,7 @@
           <tbody>
             {% for variant in variants %}
               <tr>
-              <td>{{ variant.display_name|truncate(20,True) }}</td>
+              <td>{{ variant.display_name|truncate(36,True) }}</td>
               <td>{{ variant.sub_category }}</td>
               <td>
                 {% if variant.genes %}
@@ -95,11 +95,14 @@
               <td class="text-end">{{ variant.chromosome }}</td>
                 <td class="text-end"><span style="white-space: nowrap;">{{ variant.start|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
                 {% if case.bam_files %}
-                  <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['omics_variant_id'])}}" rel="noopener" target="_blank">IGV viewer</a>
+                  <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['omics_variant_id'], chrom=variant['chromosome'], start=variant['start'], end=variant['end'])}}"
+                     rel="noopener" target="_blank">IGV viewer</a>
                 {% else %}
                   <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled>IGV viewer</button>
                 {% endif %}
-              </td>
+                {% if case.has_rna_tracks %}
+                  {{ splice_junctions_button(institute._id, case.display_name) }}
+                {% endif %}
               </tr>
             {% else %}
               <tr>
@@ -122,6 +125,7 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
     window.onload=function() {

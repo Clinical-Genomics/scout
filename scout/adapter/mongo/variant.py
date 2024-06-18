@@ -237,6 +237,7 @@ class VariantHandler(VariantLoader):
         case_id=None,
         simple_id=None,
         variant_type="clinical",
+        projection=None,
     ):
         """Returns the specified variant.
 
@@ -264,7 +265,7 @@ class VariantHandler(VariantLoader):
             # search with a unique id
             query["_id"] = document_id
 
-        variant_obj = self.variant_collection.find_one(query)
+        variant_obj = self.variant_collection.find_one(query, projection=projection)
         if not variant_obj:
             return variant_obj
         case_obj = self.case(
