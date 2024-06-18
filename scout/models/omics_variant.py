@@ -42,16 +42,18 @@ class OmicsVariantLoader(BaseModel):
     sampleID: str
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
-    hgnc_id: Optional[List[int]] = Field(serialization_alias="hgnc_ids")
+    hgnc_ids: Optional[List[int]] = Field(alias="hgnc_id", serialization_alias="hgnc_ids")
     geneID: Optional[str]
 
-    hgncSymbol: Optional[List[str]] = Field(serialization_alias="hgnc_symbols")
+    hgnc_symbols: Optional[List[str]] = Field(
+        alias="hgncSymbol", serialization_alias="hgnc_symbols"
+    )
     gene_name_orig: Optional[str]
 
     gene_type: Optional[str]
 
     # coordinates if applicable
-    seqnames: Optional[str] = Field(serialization_alias="chrom")
+    chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
     start: Optional[int]
     end: Optional[int]
     width: Optional[int] = None
