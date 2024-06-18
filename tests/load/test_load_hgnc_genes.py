@@ -1,4 +1,4 @@
-from scout.load.hgnc_gene import load_hgnc_genes
+from scout.load.hgnc_gene import load_hgnc_genes, set_gene_coordinates
 
 
 def test_load_hgnc_genes(
@@ -68,5 +68,19 @@ def test_load_hgnc_genes_no_omim(
 def test_set_gene_coordinates():
     """Test function that sets coordinates for genes without ensembl_gene_id."""
 
-    # GIVEN a gene without ensembl_gene_id key:
-    gene_dict = {}
+    # GIVEN a gene with blank ensembl_gene_id key:
+    gene_dict = {
+        "hgnc_id": 5477,
+        "hgnc_symbol": "IGH",
+        "ensembl_gene_id": "",
+        "location": "14q32.33",
+    }
+
+    # GIVEN cytoband coordinates containing that specific band:
+    cytoband_coords = {"14q32.33": {"chromosome": "14", "start": 104000001, "stop": 107349541}}
+
+    # THEN the set_gene_coordinates function should set coordinates to the genes:
+    set_gene_coordinates(gene_data=gene_dict, cytoband_coords=cytoband_coords)
+
+    for coord in ["chromosome", "start", "end"]:
+        assert coord in gene_dict

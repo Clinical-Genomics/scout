@@ -20,7 +20,7 @@ LOG = logging.getLogger(__name__)
 def set_gene_coordinates(gene_data: dict, cytoband_coords: Dict[str, dict]):
     """Attempt at collecting gene coordinates from cytoband for genes missing Ensembl ID."""
 
-    if gene_data["ensembl_gene_id"] not in [
+    if gene_data.get("ensembl_gene_id") not in [
         "",
         None,
     ]:  # Coordinates are present, since they're collected from the Ensembl file
