@@ -1,4 +1,5 @@
 import pytest
+from pydantic_core._pydantic_core import ValidationError
 
 from scout.build.genes.hgnc_gene import build_hgnc_gene
 
@@ -31,11 +32,34 @@ def test_build_hgnc_gene():
     assert gene_obj["ensembl_id"] == gene_info["ensembl_gene_id"]
 
 
+@pytest.mark.parametrize("key", ["hgnc_id"])
+def test_build_hgnc_gene_inappropriate_value(test_gene, key):
+    ## GIVEN a dictionary with gene information
+
+    # WHEN setting key to a non-valid value
+    test_gene[key] = "cause_error"
+    # THEN calling build_hgnc_gene() will raise ValueError
+    with pytest.raises(ValueError):
+        build_hgnc_gene(test_gene)
+
+
+@pytest.mark.parametrize("key", ["start", "end"])
+def test_build_hgnc_gene_inappropriate_type(test_gene, key):
+    ## GIVEN a dictionary with gene information
+
+    # WHEN setting key to None
+    test_gene[key] = None
+    # THEN calling build_hgnc_gene() will raise TypeError
+    with pytest.raises(ValidationError):
+        build_hgnc_gene(test_gene)
+
+
 @pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
 def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with gene information
 
-    # WHEN deleting a required key
+    # WHEN deleteing key
     test_gene.pop(key)
-    # THEN calling build_hgnc_gene() will return None
-    assert build_hgnc_gene(test_gene) is None
+    # THEN calling build_hgnc_gene() will raise KeyError
+    with pytest.raises(ValidationError):
+        build_hgnc_gene(test_gene)
