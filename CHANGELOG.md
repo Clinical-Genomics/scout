@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Converted the HgncGene class into a Pydantic class
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
+- Link to HGNC gene report on gene page
 
 ## [4.83]
 ### Added
