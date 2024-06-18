@@ -11,7 +11,7 @@ def test_insert_gene(adapter, parsed_gene):
 
     ##WHEN inserting a gene
 
-    gene_obj = HgncGene(**parsed_gene)
+    gene_obj = HgncGene(**parsed_gene).model_dump(exclude_none=True)
 
     obj_id = adapter.load_hgnc_gene(gene_obj)
 
@@ -30,7 +30,7 @@ def test_insert_many_genes(adapter, parsed_gene):
     ##WHEN inserting a bulk of genes
     for i in range(300):
         parsed_gene["hgnc_id"] = i
-        gene_objs.append(HgncGene(**parsed_gene))
+        gene_objs.append(HgncGene(**parsed_gene).model_dump(exclude_none=True))
 
     result = adapter.load_hgnc_bulk(gene_objs)
 

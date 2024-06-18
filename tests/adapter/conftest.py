@@ -59,7 +59,7 @@ def parsed_gene():
         "hgnc_id": 1,
         "hgnc_symbol": "AAA",
         "ensembl_id": "ENSG1",
-        "chrom": "1",
+        "chromosome": "1",
         "start": 10,
         "end": 100,
         "build": "37",
