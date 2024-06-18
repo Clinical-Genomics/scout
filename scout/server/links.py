@@ -165,9 +165,6 @@ def genenames(hgnc_id):
     return link.format(hgnc_id)
 
 
-6481
-
-
 def omim(omim_id):
     link = "https://www.omim.org/entry/{}"
     if not omim_id:
