@@ -100,7 +100,6 @@ def load_hgnc_genes(
 
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
-
             set_gene_coordinates(gene_data=gene_data, cytoband_coords=cytoband_coords)
 
             if not gene_data.get("chromosome"):
