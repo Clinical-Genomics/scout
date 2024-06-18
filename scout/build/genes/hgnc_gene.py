@@ -20,4 +20,4 @@ def build_hgnc_gene(gene_info: dict, build: bool = "37") -> dict:
 
     gene_info["build"] = build
     hgnc_gene = HgncGene(**gene_info)
-    return hgnc_gene.model_dump()
+    return hgnc_gene.model_dump(exclude_none=True)
