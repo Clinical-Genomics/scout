@@ -78,7 +78,9 @@ class OmicsVariantHandler:
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
                 omics_info[key] = omics_file_type[key]
 
-            omics_model = OmicsVariantLoader(**omics_info).model_dump(by_alias=True)
+            omics_model = OmicsVariantLoader(**omics_info).model_dump(
+                by_alias=True, exclude_none=True
+            )
 
             self.set_genes(omics_model)
             self.set_samples(case_obj, omics_model)
@@ -92,7 +94,6 @@ class OmicsVariantHandler:
             ):
                 continue
 
-            # try - catch to catch duplicates?
             self.omics_variant_collection.insert_one(omics_model)
             nr_inserted += 1
 
@@ -136,5 +137,5 @@ class OmicsVariantHandler:
              integer
         """
 
-        query = self.build_query(case_id, query=query, category="outlier")
+        query = self.build_query(case_id, query=query, category=category)
         return self.omics_variant_collection.count_documents(query)
