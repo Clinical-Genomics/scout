@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer error message when a loqusdb query fails for an instance that initially connected
 - Do not load chanjo-report module if not needed and more visible message when it fails loading
 - Converted the HgncGene class into a Pydantic class
+- Swap menu open and collapse indicator chevrons - down is now displayed-open, right hidden-closed
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
 - Link to HGNC gene report on gene page
