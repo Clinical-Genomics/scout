@@ -904,7 +904,7 @@ class CaseHandler(object):
                     continue
                 load_variants.add((vcf_file["variant_type"], vcf_file["category"]))
 
-            for variant_type, category in load_variants:
+            for variant_type, category in sorted(load_variants, key=lambda tup: tup[1]):
                 if update:
                     self.delete_variants(
                         case_id=case_obj["_id"],

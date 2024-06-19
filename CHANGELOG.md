@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
 - Link to HGNC gene report on gene page
+- Case file load order set alphabetical with variant category (SNV before SV) giving consistent variant_id collision resolution
 
 ## [4.83]
 ### Added

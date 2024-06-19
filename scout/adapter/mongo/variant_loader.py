@@ -200,7 +200,8 @@ class VariantLoader(object):
         """
 
         case_id = case_obj["_id"]
-        # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv':
+        # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv'. Sort alphabetically to ensure Cancer SNVs before
+        # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
         categories = set()
         # Possible variant types 'clinical', 'research':
         variant_types = set()
@@ -215,7 +216,7 @@ class VariantLoader(object):
         for chrom in CHROMOSOMES:
             intervals = coding_intervals.get(chrom, IntervalTree())
             for var_type in variant_types:
-                for category in categories:
+                for category in sorted(categories):
                     LOG.info(
                         "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
                             chrom, var_type, category, case_id
