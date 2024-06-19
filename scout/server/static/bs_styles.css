@@ -333,7 +333,7 @@ body {
 
 /* Closed submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
-  content: " \f0d7";
+  content: " \f0da";
   font-family: "Font Awesome 5 Free", ui-monospace;
   font-weight: 900;
   display: inline;
@@ -342,7 +342,7 @@ body {
 }
 /* Opened submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
-  content: " \f0da";
+  content: " \f0d7";
   font-family: "Font Awesome 5 Free", ui-monospace;
   font-weight: 900;
   display: inline;
@@ -353,7 +353,7 @@ body {
 
 /* Closed submenu icon - general case */
 .text-body[aria-expanded="false"] .collapse-icon::after {
-  content: " \f0d7";
+  content: " \f0da";
   font-family: "Font Awesome 5 Free", ui-monospace;
   font-weight: 900;
   display: inline;
@@ -361,7 +361,7 @@ body {
 }
 /* Opened submenu icon - general case */
 .text-body[aria-expanded="true"] .collapse-icon::after {
-  content: " \f0da";
+  content: " \f0d7";
   font-family: "Font Awesome 5 Free", ui-monospace;
   font-weight: 900;
   display: inline;
