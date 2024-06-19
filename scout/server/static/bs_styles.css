@@ -359,7 +359,7 @@ body {
   display: inline;
   text-align: left;
 }
-/* Openeqd submenu icon - general case */
+/* Open submenu icon - general case */
 .text-body[aria-expanded="true"] .collapse-icon::after {
   content: " \f0d7";
   font-family: "Font Awesome 5 Free", ui-monospace;
