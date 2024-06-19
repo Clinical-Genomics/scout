@@ -203,89 +203,88 @@ class VariantLoader(object):
         case_id = case_obj["_id"]
         # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv'. Sort according to load order to ensure Cancer SNVs before
         # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
-        categories = set()
         # Possible variant types 'clinical', 'research':
-        variant_types = set()
+        load_variants = set()
 
         for file_type in FILE_TYPE_MAP:
             if case_obj.get("vcf_files", {}).get(file_type):
-                categories.add(FILE_TYPE_MAP[file_type]["category"])
-                variant_types.add(FILE_TYPE_MAP[file_type]["variant_type"])
+                load_variants.add(
+                    (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
+                )
 
         coding_intervals = self.get_coding_intervals(build=build)
         # Loop over all intervals
         for chrom in CHROMOSOMES:
             intervals = coding_intervals.get(chrom, IntervalTree())
-            for var_type in variant_types:
-                for category in sorted(
-                    list(categories),
-                    key=lambda cat: get_lowest_load_priority(category=cat, variant_type=var_type),
-                ):
-                    LOG.info(
-                        "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
-                            chrom, var_type, category, case_id
-                        )
+            for var_type, category in sorted(
+                list(load_variants),
+                key=lambda tup: get_lowest_load_priority(var_type=tup[0], category=tup[1]),
+            ):
+                LOG.info(
+                    "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
+                        chrom, var_type, category, case_id
+                    )
+                )
+
+                # Fetch all variants from a chromosome
+                query = {"variant_type": var_type, "chrom": chrom}
+
+                # Get all variants from the database of the specific type
+                variant_objs = self.variants(
+                    case_id=case_id,
+                    query=query,
+                    category=category,
+                    nr_of_variants=-1,
+                    sort_key="position",
+                )
+
+                # Initiate a bulk
+                bulk = {}
+                current_region = None
+                special = False
+
+                # Loop over the variants and check if they are in a coding region
+                for var_obj in variant_objs:
+                    var_id = var_obj["_id"]
+                    var_chrom = var_obj["chromosome"]
+                    var_start = var_obj["position"]
+                    var_end = var_obj["end"] + 1
+
+                    update_bulk = True
+                    new_region = None
+
+                    # Check if the variant is in a coding region
+                    genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).overlap(
+                        var_start, var_end
                     )
 
-                    # Fetch all variants from a chromosome
-                    query = {"variant_type": var_type, "chrom": chrom}
+                    # If the variant is in a coding region
+                    if genomic_regions:
+                        # We know there is data here so get the interval id
+                        new_region = genomic_regions.pop().data
 
-                    # Get all variants from the database of the specific type
-                    variant_objs = self.variants(
-                        case_id=case_id,
-                        query=query,
-                        category=category,
-                        nr_of_variants=-1,
-                        sort_key="position",
-                    )
+                    if new_region and (new_region == current_region):
+                        # If the variant is in the same region as previous
+                        # we add it to the same bulk
+                        update_bulk = False
 
-                    # Initiate a bulk
-                    bulk = {}
-                    current_region = None
-                    special = False
+                    current_region = new_region
 
-                    # Loop over the variants and check if they are in a coding region
-                    for var_obj in variant_objs:
-                        var_id = var_obj["_id"]
-                        var_chrom = var_obj["chromosome"]
-                        var_start = var_obj["position"]
-                        var_end = var_obj["end"] + 1
+                    # If the variant is not in a current region we update the compounds
+                    # from the previous region, if any. Otherwise continue
+                    if update_bulk and bulk:
+                        self.update_compounds(bulk)
+                        self.update_mongo_compound_variants(bulk)
+                        bulk = {}
 
-                        update_bulk = True
-                        new_region = None
+                    if new_region:
+                        bulk[var_id] = var_obj
 
-                        # Check if the variant is in a coding region
-                        genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).overlap(
-                            var_start, var_end
-                        )
+                if not bulk:
+                    continue
 
-                        # If the variant is in a coding region
-                        if genomic_regions:
-                            # We know there is data here so get the interval id
-                            new_region = genomic_regions.pop().data
-
-                        if new_region and (new_region == current_region):
-                            # If the variant is in the same region as previous
-                            # we add it to the same bulk
-                            update_bulk = False
-
-                        current_region = new_region
-
-                        # If the variant is not in a current region we update the compounds
-                        # from the previous region, if any. Otherwise continue
-                        if update_bulk and bulk:
-                            self.update_compounds(bulk)
-                            self.update_mongo_compound_variants(bulk)
-                            bulk = {}
-
-                        if new_region:
-                            bulk[var_id] = var_obj
-
-                    if not bulk:
-                        continue
-
-                    self.update_compounds(bulk)
-                    self.update_mongo_compound_variants(bulk)
+                self.update_compounds(bulk)
+                self.update_mongo_compound_variants(bulk)
 
         LOG.info("All compounds updated")
 
