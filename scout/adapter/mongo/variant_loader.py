@@ -218,7 +218,7 @@ class VariantLoader(object):
             intervals = coding_intervals.get(chrom, IntervalTree())
             for var_type, category in sorted(
                 list(load_variants),
-                key=lambda tup: get_lowest_load_priority(var_type=tup[0], category=tup[1]),
+                key=lambda tup: get_lowest_load_priority(variant_type=tup[0], category=tup[1]),
             ):
                 LOG.info(
                     "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
