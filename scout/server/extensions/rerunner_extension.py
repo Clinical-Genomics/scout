@@ -1,4 +1,5 @@
 """Code for Rerunner integration."""
+
 import logging
 
 LOG = logging.getLogger(__name__)

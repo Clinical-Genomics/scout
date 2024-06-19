@@ -1,4 +1,5 @@
 """Fixtures for CLI tests"""
+
 import pathlib
 
 import pytest

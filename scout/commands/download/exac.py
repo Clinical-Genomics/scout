@@ -1,4 +1,5 @@
 """Code for handling downloading of the ExAC genes file used by scout from CLI"""
+
 import logging
 import pathlib
 

@@ -1,6 +1,7 @@
 """
 Test Phenopacket API extension
 """
+
 import responses
 
 from scout.server.extensions import bionano_access

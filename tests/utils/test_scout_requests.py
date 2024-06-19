@@ -1,4 +1,5 @@
 """Tests for scout requests"""
+
 import tempfile
 from urllib.error import HTTPError
 

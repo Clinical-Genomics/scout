@@ -1,4 +1,5 @@
 """Code for scout load panel CLI functionality"""
+
 import logging
 
 import click

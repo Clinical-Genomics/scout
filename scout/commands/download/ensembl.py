@@ -1,4 +1,5 @@
 """Code for handling downloading of ensembl files used by scout from CLI"""
+
 import logging
 import pathlib
 from typing import List, Optional
