@@ -203,14 +203,12 @@ class VariantLoader(object):
         case_id = case_obj["_id"]
         # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv'. Sort according to load order to ensure Cancer SNVs before
         # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
-        # Possible variant types 'clinical', 'research':
-        load_variants = set()
-
-        for file_type in FILE_TYPE_MAP:
-            if case_obj.get("vcf_files", {}).get(file_type):
-                load_variants.add(
-                    (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
-                )
+        # Possible variant types are 'clinical', 'research'.
+        load_variants = {
+            (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
+            for file_type in FILE_TYPE_MAP
+            if case_obj.get("vcf_files", {}).get(file_type)
+        }
 
         coding_intervals = self.get_coding_intervals(build=build)
         # Loop over all intervals
