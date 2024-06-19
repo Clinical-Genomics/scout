@@ -216,7 +216,7 @@ class VariantLoader(object):
         for chrom in CHROMOSOMES:
             intervals = coding_intervals.get(chrom, IntervalTree())
             for var_type in variant_types:
-                for category in sorted(categories):
+                for category in sorted(list(categories)):
                     LOG.info(
                         "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
                             chrom, var_type, category, case_id

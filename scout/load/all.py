@@ -62,7 +62,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
                 (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
             )
 
-    for variant_type, category in case_file_types.sort(key=lambda tup: tup[1]):
+    for variant_type, category in sorted(case_file_types, key=lambda tup: tup[1]):
         if variant_type == "research" and not case_obj["is_research"]:
             continue
 
