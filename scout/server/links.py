@@ -461,7 +461,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
     """Return links for a variant object
 
     Args:
-        variant_obj(scout.models.Variant)
+        variant_obj(scout.models.Variant)A
         build(int)
 
     Returns:
@@ -679,9 +679,9 @@ def snp_links(variant_obj):
         if "rs" in snp:
             snp_links[snp] = f"https://www.ncbi.nlm.nih.gov/snp/{snp}"  # dbSNP
         elif snp.isnumeric():
-            snp_links[
-                snp
-            ] = f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+            snp_links[snp] = (
+                f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+            )
 
     return snp_links
 

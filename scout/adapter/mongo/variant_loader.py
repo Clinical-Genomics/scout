@@ -27,6 +27,7 @@ from scout.parse.variant.headers import (
 from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.utils.sort import get_lowest_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -200,7 +201,7 @@ class VariantLoader(object):
         """
 
         case_id = case_obj["_id"]
-        # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv'. Sort alphabetically to ensure Cancer SNVs before
+        # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv'. Sort according to load order to ensure Cancer SNVs before
         # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
         categories = set()
         # Possible variant types 'clinical', 'research':
@@ -216,7 +217,10 @@ class VariantLoader(object):
         for chrom in CHROMOSOMES:
             intervals = coding_intervals.get(chrom, IntervalTree())
             for var_type in variant_types:
-                for category in sorted(list(categories)):
+                for category in sorted(
+                    list(categories),
+                    key=lambda cat: get_lowest_load_priority(category=cat, variant_type=var_type),
+                ):
                     LOG.info(
                         "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
                             chrom, var_type, category, case_id
