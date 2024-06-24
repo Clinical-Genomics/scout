@@ -45,42 +45,42 @@ FILE_TYPE_MAP = {
     "vcf_snv": {
         "category": "snv",
         "variant_type": "clinical",
-        "load_priority": 30,
+        "load_priority": 35,
     },
     "vcf_snv_mt": {
         "category": "snv",
         "variant_type": "clinical",
-        "load_priority": 35,
+        "load_priority": 30,
     },
     "vcf_snv_research": {
         "category": "snv",
         "variant_type": "research",
-        "load_priority": 130,
+        "load_priority": 135,
     },
     "vcf_snv_research_mt": {
         "category": "snv",
         "variant_type": "research",
-        "load_priority": 135,
+        "load_priority": 130,
     },
     "vcf_sv": {
         "category": "sv",
         "variant_type": "clinical",
-        "load_priority": 40,
+        "load_priority": 45,
     },
     "vcf_sv_mt": {
         "category": "sv",
         "variant_type": "clinical",
-        "load_priority": 45,
+        "load_priority": 40,
     },
     "vcf_sv_research": {
         "category": "sv",
         "variant_type": "research",
-        "load_priority": 140,
+        "load_priority": 145,
     },
     "vcf_sv_research_mt": {
         "category": "sv",
         "variant_type": "research",
-        "load_priority": 145,
+        "load_priority": 140,
     },
     "vcf_str": {
         "category": "str",

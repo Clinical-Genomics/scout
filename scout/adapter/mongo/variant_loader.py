@@ -27,7 +27,7 @@ from scout.parse.variant.headers import (
 from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
-from scout.utils.sort import get_lowest_load_priority
+from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -216,7 +216,7 @@ class VariantLoader(object):
             intervals = coding_intervals.get(chrom, IntervalTree())
             for var_type, category in sorted(
                 list(load_variants),
-                key=lambda tup: get_lowest_load_priority(variant_type=tup[0], category=tup[1]),
+                key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
             ):
                 LOG.info(
                     "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(

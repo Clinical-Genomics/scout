@@ -1,12 +1,10 @@
 from scout.constants import FILE_TYPE_MAP
 
 
-def get_lowest_load_priority(
-    category: str = None, variant_type: str = None, file_type: str = None
-) -> int:
+def get_load_priority(category: str = None, variant_type: str = None, file_type: str = None) -> int:
     """
-    Returns lowest load priority for the given variables from a FILE_TYPE_MAP dict of dicts.
-    Helper useful in a sort function.
+    Returns most urgent, highest load priority (numerically the lowest prio number) for the given variables
+    from a FILE_TYPE_MAP dict of dicts. Helper useful in a sort function.
     """
     ordered_file_type_map = sorted(FILE_TYPE_MAP.items(), key=lambda ftm: ftm[1]["load_priority"])
 

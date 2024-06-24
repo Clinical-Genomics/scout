@@ -14,7 +14,7 @@ from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
-from scout.utils.sort import get_lowest_load_priority
+from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -907,7 +907,7 @@ class CaseHandler(object):
 
             for variant_type, category in sorted(
                 load_variants,
-                key=lambda tup: get_lowest_load_priority(variant_type=tup[0], category=tup[1]),
+                key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
             ):
                 if update:
                     self.delete_variants(

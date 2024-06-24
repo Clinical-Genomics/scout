@@ -3,7 +3,7 @@ import logging
 
 from scout.constants import FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
-from scout.utils.sort import get_lowest_load_priority
+from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
 
     for variant_type, category in sorted(
         case_file_types,
-        key=lambda tup: get_lowest_load_priority(variant_type=tup[0], category=tup[1]),
+        key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
     ):
         if variant_type == "research" and not case_obj["is_research"]:
             continue
