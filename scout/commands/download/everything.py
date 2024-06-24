@@ -1,6 +1,7 @@
 """Code for handling downloading Download all necessary resources for scout used by scout from
 CLI
 """
+
 import logging
 import pathlib
 

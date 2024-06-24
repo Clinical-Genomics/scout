@@ -43,9 +43,11 @@ class LdapManager(LDAPConn):
         self.tls = Tls(
             local_private_key_file=app.config["LDAP_CLIENT_PRIVATE_KEY"],
             local_certificate_file=app.config["LDAP_CLIENT_CERT"],
-            validate=app.config["LDAP_REQUIRE_CERT"]
-            if app.config.get("LDAP_CLIENT_CERT")
-            else ssl.CERT_NONE,
+            validate=(
+                app.config["LDAP_REQUIRE_CERT"]
+                if app.config.get("LDAP_CLIENT_CERT")
+                else ssl.CERT_NONE
+            ),
             version=app.config["LDAP_TLS_VERSION"],
             ca_certs_file=app.config["LDAP_CA_CERTS_FILE"],
             valid_names=app.config["LDAP_VALID_NAMES"],
