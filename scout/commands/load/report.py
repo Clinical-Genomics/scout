@@ -1,4 +1,5 @@
 """Code for updating reports"""
+
 import logging
 
 import click

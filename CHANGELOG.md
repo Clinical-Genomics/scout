@@ -7,14 +7,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
+
+
+## [4.84]
 ### Changed
 - Clearer error message when a loqusdb query fails for an instance that initially connected
 - Do not load chanjo-report module if not needed and more visible message when it fails loading
 - Converted the HgncGene class into a Pydantic class
 - Swap menu open and collapse indicator chevrons - down is now displayed-open, right hidden-closed
+- Linters and actions now all use python 3.11
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
 - Link to HGNC gene report on gene page
+- Case file load priority so that e.g. SNV get loaded before SV, or clinical before research, for consistent variant_id collisions
 
 ## [4.83]
 ### Added

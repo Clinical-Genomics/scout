@@ -1,4 +1,5 @@
 """Code for handling downloading of HPO files used by scout from CLI"""
+
 import logging
 import pathlib
 

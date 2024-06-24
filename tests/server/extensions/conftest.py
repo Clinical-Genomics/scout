@@ -1,4 +1,5 @@
 """Fixtures for extenstions"""
+
 import datetime
 
 import pytest

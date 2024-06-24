@@ -1,4 +1,5 @@
 """Code for panel gene form"""
+
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectMultipleField, StringField
 

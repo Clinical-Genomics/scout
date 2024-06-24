@@ -2,6 +2,7 @@
 
 * Requires gens version 1.1.1 or greater
 """
+
 import logging
 
 LOG = logging.getLogger(__name__)

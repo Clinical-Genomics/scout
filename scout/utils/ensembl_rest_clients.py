@@ -1,4 +1,5 @@
 """Code for talking to ensembl rest API"""
+
 import logging
 from urllib.parse import urlencode
 

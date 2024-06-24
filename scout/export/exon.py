@@ -11,6 +11,7 @@ head develop/mip_references/grch37_scout_exons_-2017-01-.bed
 7	65413656	65413769	7-65413658-65413767	NM_173517	21492	VKORC1L1
 5	159776172	159776790	5-159776174-159776788	NM_031908	14325	C1QTNF2
 """
+
 import logging
 
 LOG = logging.getLogger(__name__)

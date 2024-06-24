@@ -1,4 +1,5 @@
 """Code to handle updates of the OMIM-AUTO gene panel via scout CLI"""
+
 import logging
 
 import click

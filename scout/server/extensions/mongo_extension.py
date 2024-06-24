@@ -1,4 +1,5 @@
 """Code for flask mongodb extension in scout"""
+
 import os
 
 from scout.adapter.client import get_connection

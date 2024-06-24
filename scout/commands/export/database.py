@@ -3,6 +3,7 @@
 Since the variants collection is very large this dump will be optional.
 
 """
+
 import logging
 import subprocess
 from subprocess import CalledProcessError
