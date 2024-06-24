@@ -1,4 +1,5 @@
 """Test the CLI command that converts a gene panel with hgnc symbols to a new one with hgnc ids"""
+
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli

@@ -1,4 +1,5 @@
 """Fixtures for cases"""
+
 import datetime
 
 import pytest

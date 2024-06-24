@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not load chanjo-report module if not needed and more visible message when it fails loading
 - Converted the HgncGene class into a Pydantic class
 - Swap menu open and collapse indicator chevrons - down is now displayed-open, right hidden-closed
+- Linters and actions now all use python 3.11
 ### Fixed
 - Safer way to update variant genes and compounds that avoids saving temporary decorators into variants' database documents
 - Link to HGNC gene report on gene page

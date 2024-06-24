@@ -1,4 +1,5 @@
 """Code for parsing conservation"""
+
 import logging
 import numbers
 
