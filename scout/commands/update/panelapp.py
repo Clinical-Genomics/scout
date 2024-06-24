@@ -1,4 +1,5 @@
 """Code to handle updates of the PANELAPP-GREEN gene panel via scout CLI"""
+
 import logging
 
 import click

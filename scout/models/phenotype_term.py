@@ -14,9 +14,9 @@ class HpoTerm(BaseModel):
     """
 
     hpo_id: str  # id field in the hpo.obo file
-    hpo_number: Optional[
-        int
-    ] = None  # id field in the hpo.obo file, stripped of the 'HP:' part and the zeroes
+    hpo_number: Optional[int] = (
+        None  # id field in the hpo.obo file, stripped of the 'HP:' part and the zeroes
+    )
     description: str  # name field in the hpo.obo file
     ancestors: List = []
     all_ancestors: List = []

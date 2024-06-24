@@ -1,4 +1,5 @@
 """Code for performing requests"""
+
 import logging
 import urllib.request
 import zlib
