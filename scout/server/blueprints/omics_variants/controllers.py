@@ -12,10 +12,6 @@ def outliers(
     more_variants = variant_count > (skip_count + per_page)
     variants = []
 
-    genome_build = str(case_obj.get("genome_build", "38"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "38"
-
     update_case_panels(store, case_obj)
 
     case_has_alignments(case_obj)

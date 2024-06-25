@@ -244,11 +244,6 @@ class OutlierFiltersForm(FlaskForm):
     gene_panels_exclude = BooleanField("Exclude genes")
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
 
-    #    region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
-    #    functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
-
-    #        local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
-
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")

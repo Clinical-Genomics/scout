@@ -519,4 +519,5 @@ VARIANTS_TARGET_FROM_CATEGORY = {
     "snv": "variants.variants",
     "str": "variants.str_variants",
     "fusion": "variants.fusion_variants",
+    "outlier": "omics_variants.outliers",
 }
