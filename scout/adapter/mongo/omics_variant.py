@@ -139,5 +139,7 @@ class OmicsVariantHandler:
              integer
         """
 
-        query = self.build_query(case_id, query=query, category=category, build=build)
+        query = self.build_query(
+            case_id, query=query, variant_ids=variant_ids, category=category, build=build
+        )
         return self.omics_variant_collection.count_documents(query)

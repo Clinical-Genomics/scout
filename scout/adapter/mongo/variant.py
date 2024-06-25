@@ -206,7 +206,7 @@ class VariantHandler(VariantLoader):
 
         return result
 
-    def count_variants(self, case_id, query, variant_ids, category):
+    def count_variants(self, case_id, query, variant_ids, category, build="37"):
         """Returns number of variants
 
         Arguments:
@@ -219,7 +219,9 @@ class VariantHandler(VariantLoader):
              integer
         """
 
-        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        query = self.build_query(
+            case_id, query=query, variant_ids=variant_ids, category=category, build="37"
+        )
         return self.variant_collection.count_documents(query)
 
     def variant_update_field(self, variant_id: str, field_name: str, field_value: Any) -> dict:
