@@ -25,7 +25,7 @@ class OmicsVariantLoader(BaseModel):
     """
 
     case_id: str
-    institute_id: str
+    institute: str
     build: str = "38"
     variant_type: str = "clinical"
     category: str = "outlier"

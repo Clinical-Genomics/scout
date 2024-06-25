@@ -74,7 +74,7 @@ class OmicsVariantHandler:
             omics_info["case_id"] = case_obj["_id"]
             omics_info["build"] = "37" if "37" in build else "38"
             omics_info["file_type"] = file_type
-            omics_info["institute_id"] = case_obj["owner"]
+            omics_info["institute"] = case_obj["owner"]
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
                 omics_info[key] = omics_file_type[key]
 
@@ -126,7 +126,9 @@ class OmicsVariantHandler:
             query, projection, skip=skip, limit=nr_of_variants
         )
 
-    def count_omics_variants(self, case_id, query, variant_ids=None, category="outlier"):
+    def count_omics_variants(
+        self, case_id, query, variant_ids=None, category="outlier", build="37"
+    ):
         """Returns number of variants
 
         Arguments:
@@ -137,5 +139,5 @@ class OmicsVariantHandler:
              integer
         """
 
-        query = self.build_query(case_id, query=query, category=category)
+        query = self.build_query(case_id, query=query, category=category, build=build)
         return self.omics_variant_collection.count_documents(query)

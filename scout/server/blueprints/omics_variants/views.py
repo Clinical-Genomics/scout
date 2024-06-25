@@ -83,7 +83,7 @@ def outliers(institute_id, case_name):
     )
 
     result_size = store.count_omics_variants(
-        case_id=case_obj["_id"], query=form.data, category=category
+        case_id=case_obj["_id"], query=form.data, category=category, build=genome_build
     )
 
     data = controllers.outliers(store, institute_obj, case_obj, variants_query, result_size, page)
