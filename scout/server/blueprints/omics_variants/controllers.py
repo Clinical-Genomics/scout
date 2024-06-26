@@ -1,6 +1,10 @@
+import logging
+
 from scout.server.blueprints.variant.utils import update_variant_case_panels
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, case_has_rna_tracks
+
+log = logging.getLogger(__name__)
 
 
 def outliers(

@@ -28,6 +28,7 @@ from scout.constants import (
     CLINSIG_MAP,
     FEATURE_TYPES,
     GENETIC_MODELS,
+    OUTLIER_TYPES,
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
@@ -40,6 +41,7 @@ CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
+OUTLIER_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in OUTLIER_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 FUSION_CALLER_CHOICES = [(term.get("id"), term.get("name")) for term in CALLERS.get("fusion")]
 
@@ -243,6 +245,8 @@ class OutlierFiltersForm(FlaskForm):
     gene_panels = NonValidatingSelectMultipleField(choices=[])
     gene_panels_exclude = BooleanField("Exclude genes")
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
+
+    svtype = SelectMultipleField("Type", choices=OUTLIER_TYPE_CHOICES)
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")

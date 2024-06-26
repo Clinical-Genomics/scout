@@ -220,7 +220,7 @@ class VariantHandler(VariantLoader):
         """
 
         query = self.build_query(
-            case_id, query=query, variant_ids=variant_ids, category=category, build="37"
+            case_id, query=query, variant_ids=variant_ids, category=category, build=build
         )
         return self.variant_collection.count_documents(query)
 
