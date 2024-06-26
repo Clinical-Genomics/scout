@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Unfreeze werkzeug again
+
+
 ## [4.84]
 ### Changed
 - Clearer error message when a loqusdb query fails for an instance that initially connected
