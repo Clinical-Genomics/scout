@@ -31,6 +31,7 @@ def test_gene():
         "chromosome": 1,  # required
         "start": 10,  # required
         "end": 100,  # required
+        "location": "11p3.1",
         "description": "A gene",  # Gene description
         "aliases": ["test"],  # Gene symbol aliases, includes hgnc_symbol, str
         "entrez_id": 1,

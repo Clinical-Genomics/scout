@@ -5,8 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
 ### Changed
 - Unfreeze werkzeug again
+
 
 
 ## [4.84]

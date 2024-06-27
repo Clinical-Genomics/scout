@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Dict
 
 import pymongo
 
@@ -19,6 +20,18 @@ class CytobandHandler(object):
         LOG.debug(f"Inserting {len(cytobands)} cytoband intervals into database")
         result = self.cytoband_collection.insert_many(cytobands)
         LOG.debug(f"Number of inserted documents:{len(result.inserted_ids)}")
+
+    def cytoband_to_coordinates(self, build: str) -> Dict[str, dict]:
+        """Returns a dictionary with cytoband name as key and its coordinates as value."""
+        cytobands = self.cytoband_collection.find({"build": build})
+        return {
+            "".join([cytoband["chrom"], cytoband["band"]]): {
+                "chromosome": cytoband["chrom"],
+                "start": int(cytoband["start"]),
+                "stop": int(cytoband["stop"]),
+            }
+            for cytoband in cytobands
+        }
 
     def cytoband_by_chrom(self, build="37"):
         """Returns a dictionary of cytobands with chromosomes as keys
