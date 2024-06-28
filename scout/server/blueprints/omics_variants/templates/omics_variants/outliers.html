@@ -58,11 +58,11 @@
               <tr>
                 <th title="Variant display name">Outlier</th>
                 <th style="width:7%" title="Sub-category">Type</th>
-                <th style="width:10%" title="HGNC symbols">Gene</th>
+                <th style="width:14%" title="HGNC symbols">Gene</th>
                 <th title="Functional annotation">Func. annotation</th>
-                <th style="width:5%" title="Value - delta Psi or l2fc ">Value</th>
-                <th style="width:5%" title="P-value">P-value</th>
-                <th title="Individual">Ind</th>
+                <th style="width:7%" title="Value - delta Psi or l2fc ">Value</th>
+                <th style="width:7%" title="P-value">P-value</th>
+                <th style="width:10%" title="Individual">Ind</th>
                 <th style="width:3%" title="Chromosome">Chr</th>
                 <th title="Position">Pos</th>
               </tr>
@@ -101,14 +101,9 @@
                 {% endif %}
               </td>
               <td class="text-end"> {%  if variant.sub_category == "splicing" %}
-                  &Delta;&psi;&nbsp;{{ variant.deltaPsi }}
+                  {{ variant.deltaPsi }}&nbsp;&Delta;&psi;
                 {% else %}
-                  {% if variant.l2fc > 0 %}
-                    &uarr;&nbsp;
-                  {% elif variant.l2fc < 0 %}
-                    &darr;&nbsp;
-                  {% endif %}
-                  {{ variant.l2fc }}
+                  {{ variant.l2fc }}{% if variant.l2fc > 0 %}&nbsp;&nbsp;&uarr;{% elif variant.l2fc < 0 %}&nbsp;&nbsp;&darr;{% endif %}
                 {% endif %}
               </td>
               <td class="text-end">{{ '%.3e' % variant.pValue }}</td>
