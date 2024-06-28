@@ -72,8 +72,8 @@
               <tr>
               <td>{{ variant.display_name|truncate(36,True) }}</td>
               <td>{{ variant.sub_category }}</td>
-              <td>
-                <div class="d-flex flex-row justify-content-between">
+              <td class="text-end">
+                <div class="d-flex flex-row justify-content-between align-items-baseline">
                 {% if variant.genes %}
                   {{ gene_cell(variant) }}
                 {% else %}
