@@ -57,8 +57,8 @@
         <thead class="thead table-light">
               <tr>
                 <th title="Variant display name">Outlier</th>
-                <th style="width:10%" title="Sub-category">Type</th>
-                <th title="HGNC symbols">Gene</th>
+                <th style="width:7%" title="Sub-category">Type</th>
+                <th style="width:10%" title="HGNC symbols">Gene</th>
                 <th title="Functional annotation">Func. annotation</th>
                 <th style="width:5%" title="Value - delta Psi or l2fc ">Value</th>
                 <th style="width:5%" title="P-value">P-value</th>
@@ -93,15 +93,9 @@
               <td class="text-end">{{ '%.3e' % variant.pValue }}</td>
               <td>{{ case.individuals.0.display_name }}</td>
               <td class="text-end">{{ variant.chromosome }}</td>
-                <td class="text-end"><span style="white-space: nowrap;">{{ variant.start|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
-                {% if case.bam_files %}
-                  <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['omics_variant_id'], chrom=variant['chromosome'], start=variant['start'], end=variant['end'])}}"
-                     rel="noopener" target="_blank">IGV viewer</a>
-                {% else %}
-                  <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled>IGV viewer</button>
-                {% endif %}
+                <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
                 {% if case.has_rna_tracks %}
-                  {{ splice_junctions_button(institute._id, case.display_name) }}
+                  {{ splice_junctions_button(institute._id, case.display_name, None, variant.omics_variant_id) }}
                 {% endif %}
               </tr>
             {% else %}

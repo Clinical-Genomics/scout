@@ -54,7 +54,7 @@ class OmicsVariantLoader(BaseModel):
 
     # coordinates if applicable
     chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
-    start: Optional[int]
+    position: Optional[int] = Field(alias="start", serialization_alias="position")
     end: Optional[int]
     width: Optional[int] = None
     strand: Optional[str] = None

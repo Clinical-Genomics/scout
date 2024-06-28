@@ -102,7 +102,7 @@ class OmicsVariantHandler:
     def omics_variant(self, variant_id: str, projection: Optional[Dict] = None):
         """Return omics variant"""
 
-        return self.omics_variant_collection.find({"_id": variant_id}, projection)
+        return self.omics_variant_collection.find_one({"omics_variant_id": variant_id}, projection)
 
     def omics_variants(
         self,
