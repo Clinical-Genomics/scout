@@ -73,11 +73,20 @@
               <td>{{ variant.display_name|truncate(36,True) }}</td>
               <td>{{ variant.sub_category }}</td>
               <td>
+                <div class="d-flex flex-row justify-content-between">
                 {% if variant.genes %}
                   {{ gene_cell(variant) }}
                 {% else %}
                   {{ variant.gene_name_orig }}
                 {% endif %}
+                {% if case.vcf_files.vcf_snv %}
+                  <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+                  <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+                  <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">SNVs</button>
+                </form>
+                {% endif %}
+                </div>
               </td>
               <td>
                 {%  if variant.sub_category == "splicing" %}
@@ -85,8 +94,13 @@
                 {% endif %}
               </td>
               <td class="text-end"> {%  if variant.sub_category == "splicing" %}
-                  {{ variant.deltaPsi }}
+                  &Delta;&psi;&nbsp;{{ variant.deltaPsi }}
                 {% else %}
+                  {% if variant.l2fc > 0 %}
+                    &uarr;&nbsp;
+                  {% elif variant.l2fc < 0 %}
+                    &darr;&nbsp;
+                  {% endif %}
                   {{ variant.l2fc }}
                 {% endif %}
               </td>
