@@ -138,10 +138,12 @@ def gene_variants(institute_id):
         form = GeneVariantFiltersForm(request.args)
     else:  # POST
         form = GeneVariantFiltersForm(request.form)
+
         if form.variant_type.data == []:
             form.variant_type.data = ["clinical"]
-
         variant_type = form.data.get("variant_type")
+
+        category = form.data.get("category") or "snv"
 
         update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 
@@ -153,7 +155,7 @@ def gene_variants(institute_id):
         variants_query = store.build_variant_query(
             query=form.data,
             institute_ids=[inst["_id"] for inst in user_institutes(store, current_user)],
-            category="snv",
+            category=category,
             variant_type=variant_type,
         )  # This is the actual query dictionary, not the cursor with results
 

@@ -12,17 +12,14 @@ INDEXES = {
         IndexModel(
             [("build", ASCENDING), ("chromosome", ASCENDING)],
             name="build_chromosome",
-            background=True,
         ),
         IndexModel(
             [("build", ASCENDING), ("hgnc_id", ASCENDING)],
             name="build_hgncid",
-            background=True,
         ),
         IndexModel(
             [("build", ASCENDING), ("aliases", ASCENDING)],
             name="build_aliases",
-            background=True,
         ),
         IndexModel(
             [("build", ASCENDING), ("hgnc_symbol", ASCENDING)],
@@ -39,7 +36,6 @@ INDEXES = {
                 ("hgnc_ids", ASCENDING),
             ],
             name="caseid_category_varianttype_variantrank_hgncids",
-            background=True,
         ),
         IndexModel(
             [
@@ -49,8 +45,17 @@ INDEXES = {
                 ("variant_type", ASCENDING),
             ],
             name="hgncsymbol_rankscore_category_varianttype",
-            background=True,
             partialFilterExpression={"rank_score": {"$gt": 5}, "category": "snv"},
+        ),
+        IndexModel(
+            [
+                ("hgnc_symbols", ASCENDING),
+                ("rank_score", DESCENDING),
+                ("category", ASCENDING),
+                ("variant_type", ASCENDING),
+            ],
+            name="sv_hgncsymbol_rankscore_category_varianttype",
+            partialFilterExpression={"rank_score": {"$gt": 5}, "category": "sv"},
         ),
         IndexModel(
             [
@@ -59,7 +64,6 @@ INDEXES = {
                 ("category", ASCENDING),
             ],
             name="variantid_caseid_category",
-            background=True,
         ),
         IndexModel(
             [
@@ -69,7 +73,6 @@ INDEXES = {
                 ("rank_score", ASCENDING),
             ],
             name="category_caseid_varianttype_rankscore",
-            background=True,
         ),
         IndexModel(
             [
@@ -81,18 +84,16 @@ INDEXES = {
                 ("end", ASCENDING),
             ],
             name="caseid_category_chromosome_start_end",
-            background=True,
         ),
         IndexModel(
             [("variant_id", ASCENDING), ("institute", ASCENDING)],
             name="variant_id_institute",
-            background=True,
         ),
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
         IndexModel([("description", TEXT)], default_language="english", name="description_text"),
-        IndexModel([("hpo_number", ASCENDING)], name="number", background=True),
+        IndexModel([("hpo_number", ASCENDING)], name="number"),
     ],
     "event": [
         IndexModel(
@@ -115,14 +116,12 @@ INDEXES = {
         IndexModel(
             [("build", ASCENDING), ("hgnc_id", ASCENDING), ("length", DESCENDING)],
             name="hgncid_length",
-            background=True,
         )
     ],
     "exon": [
         IndexModel(
             [("build", ASCENDING), ("hgnc_id", ASCENDING)],
             name="build_hgncid",
-            background=True,
         )
     ],
     "case": [
