@@ -101,10 +101,13 @@
                 {% endif %}
               </td>
               <td class="text-end"> {%  if variant.sub_category == "splicing" %}
-                  {{ variant.deltaPsi }}&nbsp;&Delta;&psi;
+                  <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
+                  {{ variant.deltaPsi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a>
                 {% else %}
-                  {{ variant.l2fc }}{% if variant.l2fc > 0 %}&nbsp;&nbsp;&uarr;{% elif variant.l2fc < 0 %}&nbsp;&nbsp;&darr;{% endif %}
+                  <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change - click to see OUTRIDER vignette for details.'>
+                {{ variant.l2fc }}&nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a>
                 {% endif %}
+                </a>
               </td>
               <td class="text-end">{{ '%.3e' % variant.pValue }}</td>
               <td>{{ case.individuals.0.display_name }}</td>
