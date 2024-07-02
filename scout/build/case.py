@@ -285,6 +285,7 @@ def build_case(case_data, adapter):
             case_obj[report_key] = case_data.get(report_key)
 
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
+    case_obj["omics_files"] = case_data.get("omics_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
 
     _populate_pipeline_info(case_obj, case_data)
@@ -296,6 +297,10 @@ def build_case(case_data, adapter):
     case_obj["has_strvariants"] = bool(case_obj["vcf_files"].get("vcf_str"))
 
     case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
+
+    case_obj["has_outliers"] = bool(
+        case_obj["omics_files"].get("fraser") or case_obj["omics_files"].get("outrider")
+    )
 
     case_obj["is_migrated"] = False
 

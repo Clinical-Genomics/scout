@@ -15,7 +15,7 @@ except ImportError:
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP
+from scout.constants import ANALYSIS_TYPES, FILE_TYPE_MAP, OMICS_FILE_TYPE_MAP
 from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
@@ -41,15 +41,17 @@ CASE_FILE_PATH_CHECKS = [
     "cnv_report",
     "coverage_qc_report",
     "delivery_report",
+    "exe_ver",
+    "fraser_tsv",
     "gene_fusion_report",
     "gene_fusion_report_research",
     "madeline_info",
     "multiqc",
     "multiqc_rna",
+    "outrider_tsv",
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
-    "exe_ver",
     "smn_tsv",
     "reference_info",
     "RNAfusion_inspector",
@@ -59,6 +61,7 @@ CASE_FILE_PATH_CHECKS = [
 ]
 
 VCF_FILE_PATH_CHECKS = FILE_TYPE_MAP.keys()
+OMICS_FILE_PATH_CHECKS = OMICS_FILE_TYPE_MAP.keys()
 
 GENOME_BUILDS = ["37", "38"]
 TRACKS = ["rare", "cancer"]
@@ -151,6 +154,25 @@ class Mitodel(BaseModel):
     discordant: Optional[int] = None
     normal: Optional[int] = None
     ratioppk: Optional[float] = None
+
+
+class OmicsFiles(BaseModel):
+    """Represents multiple kinds of omics files, e.g. RNA expression outliers for aberrant splicing
+    and aberrant expression."""
+
+    fraser: Optional[str] = None
+    fraser_research: Optional[str] = None
+    outrider: Optional[str] = None
+    outrider_research: Optional[str] = None
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "OmicsFiles":
+        """Make sure that VCF file exists on disk."""
+        for item in OMICS_FILE_PATH_CHECKS:
+            item_path: str = values.get(item)
+            if item_path:
+                values[item] = _resource_abs_path(item_path)
+        return values
 
 
 class REViewer(BaseModel):
@@ -392,6 +414,7 @@ class CaseLoader(BaseModel):
     madeline_info: Optional[str] = Field(None, alias="madeline")
     multiqc: Optional[str] = None
     multiqc_rna: Optional[str] = None
+    omics_files: Optional[OmicsFiles] = None
     owner: Optional[str] = None
     peddy_ped: Optional[str] = None  # Soon to be deprecated
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated

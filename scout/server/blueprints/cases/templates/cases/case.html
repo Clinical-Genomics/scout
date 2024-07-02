@@ -258,6 +258,9 @@
         {% if case.vcf_files.vcf_fusion %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical fusion variants</a>
         {% endif %}
+        {% if case.has_outliers %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical WTS outliers</a>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -88,3 +88,34 @@ FILE_TYPE_MAP = {
         "load_priority": 50,
     },
 }
+
+OMICS_FILE_TYPE_MAP = {
+    "fraser": {
+        "format": "tsv",
+        "analysis_type": "wts",
+        "category": "outlier",
+        "sub_category": "splicing",
+        "variant_type": "clinical",
+    },
+    "outrider": {
+        "format": "tsv",
+        "analysis_type": "wts",
+        "category": "outlier",
+        "sub_category": "expression",
+        "variant_type": "clinical",
+    },
+    "fraser_research": {
+        "format": "tsv",
+        "analysis_type": "wts",
+        "category": "outlier",
+        "sub_category": "splicing",
+        "variant_type": "research",
+    },
+    "outrider_research": {
+        "format": "tsv",
+        "analysis_type": "wts",
+        "category": "outlier",
+        "sub_category": "expression",
+        "variant_type": "research",
+    },
+}

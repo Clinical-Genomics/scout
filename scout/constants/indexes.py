@@ -29,6 +29,34 @@ INDEXES = {
             name="build_hgnc_symbol",
         ),
     ],
+    "omics_variant": [
+        IndexModel(
+            # Clear text variant id index
+            [
+                ("omics_variant_id", ASCENDING),
+            ],
+            name="omics_variant_id",
+        ),
+        IndexModel(
+            # Index for searching across cases for a change in given genes
+            [
+                ("hgnc_ids", ASCENDING),
+                ("sub_category", ASCENDING),
+                ("variant_type", ASCENDING),
+            ],
+            name="hgnc_ids_sub_category_variant_type",
+        ),
+        IndexModel(
+            # Filterish index
+            [
+                ("case_id", ASCENDING),
+                ("variant_type", ASCENDING),
+                ("sub_category", ASCENDING),
+                ("hgnc_ids", ASCENDING),
+            ],
+            name="case_id_variant_type_sub_category_hgnc_ids",
+        ),
+    ],
     "variant": [
         IndexModel(
             [

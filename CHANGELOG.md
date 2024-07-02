@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Support for loading and storing OMICS data
+- Parse DROP Fraser and Outrider TSVs
+- Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Unfreeze werkzeug again
 

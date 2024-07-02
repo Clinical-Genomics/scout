@@ -30,3 +30,7 @@ CLINICAL_FILTER_BASE_MEI = {
     "functional_annotations": SEVERE_SO_TERMS_SV,
     "swegen_freq": "0.02",
 }
+
+CLINICAL_FILTER_BASE_OUTLIER = {
+    "variant_type": "clinical",
+}

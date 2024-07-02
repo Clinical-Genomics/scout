@@ -91,7 +91,15 @@ def remote_static():
 @alignviewers_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/igv-splice-junctions", methods=["GET"]
 )
-def sashimi_igv(institute_id, case_name, variant_id=None):
+@alignviewers_bp.route(
+    "/<institute_id>/<case_name>/outliers/<omics_variant_id>/igv-splice-junctions", methods=["GET"]
+)
+def sashimi_igv(
+    institute_id: str,
+    case_name: str,
+    variant_id: Optional[str] = None,
+    omics_variant_id: Optional[str] = None,
+):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
@@ -99,7 +107,7 @@ def sashimi_igv(institute_id, case_name, variant_id=None):
         store, institute_id, case_name
     )  # This function takes care of checking if user is authorized to see resource
 
-    display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
+    display_obj = controllers.make_sashimi_tracks(case_obj, variant_id, omics_variant_id)
     controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_sashimi_viewer.html", **display_obj))

@@ -51,12 +51,12 @@ def setup_scout(
 
     WARNING: If the instance is populated all collections will be deleted
 
-    Build insert a institute and an admin user.
-    There are multiple sources of information that is used by scout and that needs to exist for
-    scout to work proper.
+    Build and insert an institute and an admin user.
 
+    Multiple sources of information that are used by scout need to exist for
+    scout to work properly.
     Genes:
-         Scout uses HGNC as the source for gene identifiers en ensembl as source for coordinates.
+         Scout uses HGNC as the source for gene identifiers and ENSEMBL as source for coordinates.
          Additional information of disease connections for genes if fetched from OMIM.
          Link between hpo terms and genes is fetched from HPO
          For more details check the documentation.

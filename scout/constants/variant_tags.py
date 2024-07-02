@@ -37,6 +37,8 @@ FEATURE_TYPES = (
 
 SV_TYPES = ("ins", "del", "dup", "cnv", "inv", "bnd")
 
+OUTLIER_TYPES = ("splicing", "expression")
+
 GENETIC_MODELS = (
     ("AR_hom", "Autosomal Recessive Homozygote"),
     ("AR_hom_dn", "Autosomal Recessive Homozygote De Novo"),
@@ -519,4 +521,5 @@ VARIANTS_TARGET_FROM_CATEGORY = {
     "snv": "variants.variants",
     "str": "variants.str_variants",
     "fusion": "variants.fusion_variants",
+    "outlier": "omics_variants.outliers",
 }
