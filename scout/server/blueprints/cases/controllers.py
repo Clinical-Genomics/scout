@@ -452,6 +452,7 @@ def case(
         "hide_matching": hide_matching,
     }
 
+    flash("DEBUG panels {}".format(case_obj["panels"]))
     return data
 
 
@@ -514,8 +515,12 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
         panel_info["removed"] = (
             latest_panel.get("hidden", False) if latest_panel is not None else False
         )
-        if panel_info["removed"]:
-            flash(f"Setting panel removed for panel '{panel_name}'.")
+        if "removed" in panel_info:
+            flash(
+                "Setting panel removed for panel {} to {}.".format(
+                    panel_name, panel_info["removed"]
+                )
+            )
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
