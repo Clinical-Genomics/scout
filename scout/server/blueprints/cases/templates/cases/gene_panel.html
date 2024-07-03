@@ -41,47 +41,31 @@
         </tbody>
       </table>
     </div>
-    <div class="card-body">
-      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-        <div class="row">
-          <label>Change default gene panels</label>
-        </div>
-        <div class="row">
-          <div class="col-8">
-            <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
-              {% for panel in case.panels %}
-                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button class="btn btn-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    {{ change_default_panels(case, institute) }}
+
   </div>
 {% endmacro %}
 
 {% macro change_default_panels(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Change default gene panels</div>
-    <div class="card-body">
-      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-        <div class="row">
-          <div class="col-xs-4">
-            <select name="panel_ids" class="form-control" multiple>
-              {% for panel in case.panels %}
-                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-xs-4">
-            <button class="btn btn-secondary form-control">Save</button>
-          </div>
+  <div class="card-body">
+    <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+      <div class="row">
+        <label>Change default gene panels</label>
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
+            {% for panel in case.panels|sort(attribute='display_name')  %}
+              <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+            {% endfor %}
+          </select>
         </div>
-      </form>
-    </div>
+        <div class="col-4">
+          <button class="btn btn-secondary form-control">Save</button>
+        </div>
+      </div>
+    </form>
   </div>
 {% endmacro %}
 

@@ -63,7 +63,7 @@ JSON_HEADERS = {
 
 COVERAGE_REPORT_TIMEOUT = 20
 
-PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1}
+PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1, "hidden": 1}
 
 
 def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
