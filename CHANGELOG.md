@@ -9,7 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search SVs across all cases, in given genes
 ### Changed
 - Unfreeze werkzeug again
-
+### Fixed
+- Sort "select default panels" dropdown menu options on case page
+- Show gene panel removed status on case page
 
 ## [4.84]
 ### Changed
