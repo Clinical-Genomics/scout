@@ -64,6 +64,7 @@ JSON_HEADERS = {
 COVERAGE_REPORT_TIMEOUT = 20
 
 PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1}
+PANEL_HIDDEN_PROJECTION = {"version": 1, "display_name": 1, "hidden": 1}
 
 
 def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
@@ -339,6 +340,8 @@ def case(
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
+    _set_panel_removed(store, case_obj)
+
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
     ):
@@ -479,6 +482,18 @@ def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> li
     return list(default_genes_set.intersection(limit_genes_set))
 
 
+def _set_panel_removed(store: MongoAdapter, case_obj: dict) -> list:
+    """Flag panel on list removed if the latest panel version is marked hidden."""
+
+    for panel_info in case_obj.get("panels", []):
+        latest_panel = store.gene_panel(
+            panel_info["panel_name"], projection=PANEL_HIDDEN_PROJECTION
+        )
+        panel_info["removed"] = (
+            latest_panel.get("hidden", False) if latest_panel is not None else False
+        )
+
+
 def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
     """Get unique genes on case default panels.
 
@@ -510,7 +525,6 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
             projection=PANEL_PROJECTION,
         )
         latest_panel = store.gene_panel(panel_name, projection=PANEL_PROJECTION)
-        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
