@@ -338,7 +338,7 @@ def case(
     case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
-    flash("DEBUG panels ".format(case_obj["panels"]))
+    flash("DEBUG panels {}".format(case_obj["panels"]))
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
