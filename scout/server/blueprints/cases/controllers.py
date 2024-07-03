@@ -510,7 +510,11 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
             projection=PANEL_PROJECTION,
         )
         latest_panel = store.gene_panel(panel_name, projection=PANEL_PROJECTION)
-        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
+        panel_info["removed"] = (
+            latest_panel.get("hidden", False) if latest_panel is not None else False
+        )
+        if panel_info["removed"]:
+            flash(f"Setting panel removed for panel '{panel_name}'.")
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
