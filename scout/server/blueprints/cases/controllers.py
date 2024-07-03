@@ -63,7 +63,8 @@ JSON_HEADERS = {
 
 COVERAGE_REPORT_TIMEOUT = 20
 
-PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1, "hidden": 1}
+PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1}
+PANEL_HIDDEN_PROJECTION = {"version": 1, "display_name": 1, "hidden": 1}
 
 
 def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
@@ -338,7 +339,8 @@ def case(
     case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
-    flash("DEBUG panels {}".format(case_obj["panels"]))
+
+    _set_panel_removed(store, case_obj)
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
@@ -452,7 +454,6 @@ def case(
         "hide_matching": hide_matching,
     }
 
-    flash("DEBUG panels {}".format(case_obj["panels"]))
     return data
 
 
@@ -479,6 +480,18 @@ def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> li
     limit_genes_set = set(limit_genes)
 
     return list(default_genes_set.intersection(limit_genes_set))
+
+
+def _set_panel_removed(store: MongoAdapter, case_obj: dict) -> list:
+    """Flag panel on list removed if the latest panel version is marked hidden."""
+
+    for panel_info in case_obj.get("panels", []):
+        latest_panel = store.gene_panel(
+            panel_info["panel_name"], projection=PANEL_HIDDEN_PROJECTION
+        )
+        panel_info["removed"] = (
+            latest_panel.get("hidden", False) if latest_panel is not None else False
+        )
 
 
 def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
@@ -512,15 +525,6 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
             projection=PANEL_PROJECTION,
         )
         latest_panel = store.gene_panel(panel_name, projection=PANEL_PROJECTION)
-        panel_info["removed"] = (
-            latest_panel.get("hidden", False) if latest_panel is not None else False
-        )
-        if "removed" in panel_info:
-            flash(
-                "Setting panel removed for panel {} to {}.".format(
-                    panel_name, panel_info["removed"]
-                )
-            )
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
