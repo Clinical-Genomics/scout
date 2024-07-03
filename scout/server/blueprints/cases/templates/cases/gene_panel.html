@@ -9,7 +9,7 @@
         <thead class="table-light thead">
           <tr style="cursor: pointer; white-space: nowrap">
             <th>Panel <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by gene panel name"></i></th>
-            <th >Default <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by default panel"></i></th>
+            <th>Default <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by if panel is default"></i></th>
             <th>Version <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by panel version"></i></th>
             <th>Genes <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by number of genes"></i></th>
           </tr>
@@ -20,10 +20,10 @@
               <td>
                 <a {% if panel.is_default %} class="text-white" {% endif %} href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
                   {{ panel.display_name|truncate(30, True) }}
-                  {% if panel.removed %}
-                    <span class="badge bg-danger">Removed</span>
-                  {% endif %}
                 </a>
+                {% if panel.removed %}
+                  <span class="badge bg-danger">Removed</span>
+                {% endif %}
               </td>
               <td >
                 {% if panel.is_default %}
@@ -35,53 +35,37 @@
             </tr>
           {% else %}
             <tr>
-              <td colspan="5">No panels linked to case</td>
+              <td colspan="4">No panels linked to case</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    <div class="card-body">
-      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-        <div class="row">
-          <label>Change default gene panels</label>
-        </div>
-        <div class="row">
-          <div class="col-8">
-            <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
-              {% for panel in case.panels %}
-                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button class="btn btn-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    {{ change_default_panels(case, institute) }}
+
   </div>
 {% endmacro %}
 
 {% macro change_default_panels(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Change default gene panels</div>
-    <div class="card-body">
-      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-        <div class="row">
-          <div class="col-xs-4">
-            <select name="panel_ids" class="form-control" multiple>
-              {% for panel in case.panels %}
-                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-xs-4">
-            <button class="btn btn-secondary form-control">Save</button>
-          </div>
+  <div class="card-body">
+    <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+      <div class="row">
+        <label>Change default gene panels</label>
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
+            {% for panel in case.panels|sort(attribute='display_name')  %}
+              <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+            {% endfor %}
+          </select>
         </div>
-      </form>
-    </div>
+        <div class="col-4">
+          <button class="btn btn-secondary form-control">Save</button>
+        </div>
+      </div>
+    </form>
   </div>
 {% endmacro %}
 
