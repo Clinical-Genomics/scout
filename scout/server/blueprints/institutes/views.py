@@ -2,16 +2,7 @@
 import json
 import logging
 
-from flask import (
-    Blueprint,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Blueprint, flash, jsonify, redirect, render_template, request
 from flask_login import current_user
 from pymongo import DESCENDING
 
