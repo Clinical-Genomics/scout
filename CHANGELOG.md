@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Unfreeze werkzeug again
+- Show "(Removed)" after removed panels in dropdown 
 ### Fixed
 - Sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
