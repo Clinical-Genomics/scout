@@ -1,6 +1,7 @@
 import logging
 import re
 from datetime import datetime, timedelta
+from typing import Optional, Union
 
 from scout.constants import (
     CLINSIG_MAP,
@@ -76,7 +77,11 @@ class QueryHandler(object):
         return variants_query
 
     def build_variant_query(
-        self, query=None, institute_ids=[], category="snv", variant_type=["clinical"]
+        self,
+        query: Optional[dict] = None,
+        institute_ids: Optional[list] = [],
+        category: Optional[Union[str, list]] = "snv",
+        variant_type: Optional[list] = ["clinical"],
     ):
         """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
@@ -93,7 +98,7 @@ class QueryHandler(object):
         Args:
             query(dict): A query dictionary for the database, from a query form.
             institute_ids: a list of institute _ids
-            category(str): 'snv', 'sv', 'str' 'cancer_sv' or 'cancer'
+            category(str): 'snv', 'sv', 'str' 'cancer_sv' or 'cancer' OR a LIST(str) of the same
             variant_type(str): 'clinical' or 'research'
 
         Possible query dict keys:
@@ -112,7 +117,9 @@ class QueryHandler(object):
 
         mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
         mongo_variant_query["variant_type"] = {"$in": variant_type}
-        mongo_variant_query["category"] = category
+        mongo_variant_query["category"] = (
+            {"$in": category} if isinstance(category, list) else category
+        )
 
         select_cases = None
         select_case_obj = None

@@ -38,13 +38,13 @@
     <table class="table table-bordered table-hover">
 <thead>
         <tr>
+          <th scope="col">Var</th>
           <th scope="col">Case : Score</th>
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
           <th scope="col">Region</th>
           <th scope="col">Function</th>
-          <th scope="col">HGVS</th>
         </tr>
 </thead>
 <tbody>
@@ -55,6 +55,7 @@
         <tr>
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
+            <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
             <td class="align-middle">{{ gene_cell(variant) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
@@ -68,7 +69,7 @@
                 <div>{{ annotation }}</div>
               {% endfor %}
             </td>
-            <td class="align-middle"> {{ (variant.hgvs or '')|url_decode  }}</td>
+
           </tr>
         {% endfor %}
         {% if form.hgnc_symbols.data == [] %}
@@ -92,12 +93,14 @@
 </form>
 {% endmacro %}
 
+
+{% macro pretty_link_no_gene(variant) %}
+  {{ (variant.hgvs or '')|url_decode }}
+
+{% endmacro %}
+
 {% macro cell_rank(variant) %}
-    <a
-       href="{{ url_for('variant.variant', institute_id=variant.institute,
-            case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-      {{ variant.case_display_name}}
-    </a>
+   {{ variant.case_display_name }}
     :
     <span class="badge bg-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
@@ -123,29 +126,33 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col col-md-3">
-          <label class="control-label">Rank Score ></label>
+        <div class="col col-md-1">
+          <label class="control-label">Rank Score</label>
           <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
         </div>
-        <div class="col col-md-3">
+        <div class="col col-md-2">
           {{ form.variant_type.label(class="control-label") }}
           {{ form.variant_type(class="form-control", class="selectpicker", data_style="btn-secondary") }}
         </div>
+        <div class="col col-md-2">
+          {{ form.category.label(class="control-label") }}
+          {{ form.category(class="form-control", class="selectpicker", data_style="btn-secondary") }}
+        </div>
       </div>
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-6">
           {{ form.phenotype_terms.label(class="control-label") }}
           {{ form.phenotype_terms(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.phenotype_groups.label(class="control-label") }}
           {{ form.phenotype_groups(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.cohorts.label(class="control-label") }}
           {{ form.cohorts(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.similar_case.label(class="control-label") }}
           {{ form.similar_case(class="form-control") }}
         </div>
