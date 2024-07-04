@@ -134,7 +134,7 @@ def gene_variants(institute_id):
             form.variant_type.data = ["clinical"]
         variant_type = form.data.get("variant_type")
 
-        category = form.data.get("category") or "snv"
+        category = form.data.get("category") or ["snv", "sv"]
 
         update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 

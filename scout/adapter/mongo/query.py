@@ -117,6 +117,9 @@ class QueryHandler(object):
 
         mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
         mongo_variant_query["variant_type"] = {"$in": variant_type}
+
+        if not category:
+            category = "snv"
         mongo_variant_query["category"] = (
             {"$in": category} if isinstance(category, list) else category
         )
