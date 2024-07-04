@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Unfreeze werkzeug again
+- Show "(Removed)" after removed panels in dropdown 
 ### Fixed
 - Sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
