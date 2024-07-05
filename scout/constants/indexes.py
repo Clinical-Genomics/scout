@@ -45,17 +45,7 @@ INDEXES = {
                 ("variant_type", ASCENDING),
             ],
             name="hgncsymbol_rankscore_category_varianttype",
-            partialFilterExpression={"rank_score": {"$gt": 5}, "category": "snv"},
-        ),
-        IndexModel(
-            [
-                ("hgnc_symbols", ASCENDING),
-                ("rank_score", DESCENDING),
-                ("category", ASCENDING),
-                ("variant_type", ASCENDING),
-            ],
-            name="sv_hgncsymbol_rankscore_category_varianttype",
-            partialFilterExpression={"rank_score": {"$gt": 5}, "category": "sv"},
+            partialFilterExpression={"rank_score": {"$gte": 5}},
         ),
         IndexModel(
             [
