@@ -24,6 +24,7 @@ def parse_hgnc_line(line, header):
     hgnc_gene["hgnc_symbol"] = hgnc_symbol
     hgnc_gene["hgnc_id"] = int(raw_info["hgnc_id"].split(":")[-1])
     hgnc_gene["description"] = raw_info["name"]
+    hgnc_gene["location"] = raw_info["location"]  # cytoband
 
     # We want to have the current symbol as an alias
     aliases = set([hgnc_symbol, hgnc_symbol.upper()])
