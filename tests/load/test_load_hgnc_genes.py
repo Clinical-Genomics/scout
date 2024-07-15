@@ -65,7 +65,7 @@ def test_load_hgnc_genes_no_omim(
     assert adapter.hgnc_gene(gene_info["hgnc_id"])
 
 
-def test_set_gene_coordinates():
+def test_set_missing_gene_coordinates():
     """Test function that sets coordinates for genes without ensembl_gene_id."""
 
     # GIVEN a gene with blank ensembl_gene_id key:

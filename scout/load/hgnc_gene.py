@@ -17,7 +17,7 @@ from scout.utils.scout_requests import (
 LOG = logging.getLogger(__name__)
 
 
-def set_gene_coordinates(gene_data: dict, cytoband_coords: Dict[str, dict]):
+def set_missing_gene_coordinates(gene_data: dict, cytoband_coords: Dict[str, dict]):
     """Attempt at collecting gene coordinates from cytoband for genes missing Ensembl ID."""
 
     if gene_data.get("ensembl_gene_id") not in [
@@ -103,7 +103,7 @@ def load_hgnc_genes(
 
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
-            set_gene_coordinates(gene_data=gene_data, cytoband_coords=cytoband_coords)
+            set_missing_gene_coordinates(gene_data=gene_data, cytoband_coords=cytoband_coords)
 
             if not gene_data.get("chromosome"):
                 without_coords += 1
