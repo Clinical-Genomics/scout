@@ -126,7 +126,6 @@
           {% endif %}
           </span>
         {% endfor %}
-
       {% endif %}
       {% for user in case.assignees %}
         <span class="badge bg-secondary">{{ user.name }}</span>
@@ -300,7 +299,6 @@
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
-
   </script>
 {% endblock %}
 
