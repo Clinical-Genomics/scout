@@ -9,11 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
 ### Changed
 - Unfreeze werkzeug again
-- Show "(Removed)" after removed panels in dropdown 
+- Show "(Removed)" after removed panels in dropdown and make them optionally visible to non-admins or non-maintainers
 ### Fixed
 - Sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
-
 
 ## [4.84]
 ### Changed
