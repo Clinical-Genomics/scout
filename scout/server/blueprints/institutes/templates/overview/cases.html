@@ -114,15 +114,13 @@
   <tr class="{% if case.status == 'solved' %}causative{% endif %}">
     <td>
       <a class="me-2"
-         {% if case.individuals|length == 1 %}
-            aria-hidden="true" data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}"
-         {% endif %}
+         {% if case.individuals|length == 1 %} data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}" {% endif %}
          href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
         {% for sample in case.individuals %}
-          <span class="badge {{'bg-danger' if sample.phenotype == 2 else 'bg-primary'}}" style="margin:-3px !important;" aria-hidden="true" data-bs-toggle="tooltip" title="{{sample.display_name}}">
+          <span class="badge {{'bg-danger' if sample.phenotype == 2 else 'bg-primary'}}" style="margin:-3px !important;" data-bs-toggle="tooltip" title="{{sample.display_name}}">
           {% if case.track == "cancer" %}
             <span class="fa fa-vial"></span>
           {% else %} <!-- rare disease case -->
