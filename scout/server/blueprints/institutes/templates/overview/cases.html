@@ -113,7 +113,11 @@
 {% macro case_row(case) %}
   <tr class="{% if case.status == 'solved' %}causative{% endif %}">
     <td>
-      <a class="me-2" href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
+      <a class="me-2"
+         {% if case.individuals|length == 1 %}
+            aria-hidden="true" data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}"
+         {% endif %}
+         href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
