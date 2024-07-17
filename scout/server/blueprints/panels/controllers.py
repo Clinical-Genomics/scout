@@ -16,6 +16,12 @@ LOG = logging.getLogger(__name__)
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
 
 
+def panel_write_granted(panel_obj, user) -> bool:
+    return any(
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer", [])]
+    )
+
+
 def panel_decode_lines(panel_file):
     """Returns a provided gene panel file as single lines
     Accepts:

@@ -52,7 +52,6 @@ def panels():
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string. This is done with autocompletion
         # therefor only one(1) hgnc_id will be received from the form.
-        hgnc_symbols = []
         search_string = escape(request.form.get("search_for"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
@@ -88,10 +87,13 @@ def panels():
 
     panel_groups = []
     for institute_obj in institutes:
-        institute_panels = (
-            panel_obj
-            for panel_obj in store.latest_panels(institute_obj["_id"], include_hidden=True)
-        )
+        institute_panels = []
+        for panel in store.latest_panels(institute_obj["_id"], include_hidden=True):
+            panel["writable"] = (
+                "" if controllers.panel_write_granted(panel, current_user) else "disabled"
+            )
+            institute_panels.append(panel)
+
         panel_groups.append((institute_obj, institute_panels))
     return dict(
         panel_groups=panel_groups,
