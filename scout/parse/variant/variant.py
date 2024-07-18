@@ -260,11 +260,9 @@ def parse_variant(
 
 def get_highest_revel_score(parsed_transcripts: List[dict]) -> Optional[float]:
     """Retrieve the highest REVEL_score value from parsed variant transcripts."""
-    LOG.warning("HERE BITCHES")
     tx_revel_scores: List(float) = [
         tx.get("revel_raw_score") for tx in parsed_transcripts if tx.get("revel_raw_score") != None
     ]
-    LOG.error(tx_revel_scores)
     if tx_revel_scores:
         return max(tx_revel_scores)
 
