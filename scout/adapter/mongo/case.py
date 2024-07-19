@@ -87,7 +87,6 @@ class CaseHandler(object):
             institute_id(str): institute to search cases for
         """
         hpo_terms = []
-        order = None
         CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
         if query_field == "similar_case":
             case_obj = self.case(
@@ -111,13 +110,9 @@ class CaseHandler(object):
             return
 
         similar_case_ids = []
-        order = []
         for i in similar_cases:
             similar_case_ids.append(i[0])
-            order.append(i[1])
         query["_id"] = {"$in": similar_case_ids}
-
-        return order
 
     def _set_genes_of_interest_query(
         self, query: Dict[str, Any], query_field: str, query_value: str
@@ -530,9 +525,6 @@ class CaseHandler(object):
 
         if yield_query:
             return query
-
-        if order:
-            return self.case_collection.find(query, projection)
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
