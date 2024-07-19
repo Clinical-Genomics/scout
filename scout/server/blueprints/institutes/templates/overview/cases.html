@@ -358,7 +358,7 @@
     advSearchBlock.hide();
     $('#advanced_search').removeAttr('checked');
   }
-  let advBlockCheckbox = $('#advanced_search'),
+  let advBlockCheckbox = $('#advanced_search');
   advBlockCheckbox.on('click', function() {
     if($(this).is(':checked')) {
       advSearchBlock.show();
