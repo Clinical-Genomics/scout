@@ -22,12 +22,12 @@
 
 
 {% macro search_form() %}
-<form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
+<form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="POST" accept-charset="utf-8">
     {{ form.hidden_tag() }}
     <div class="row">
         <div class="col-md-3 mb-3">
-            {{ form.case_individual.label(class="form-label") }}
-            {{ form.case_individual(class="form-control", placeholder="example:18201") }}
+            {{ form.case.label(class="form-label") }}
+            {{ form.case(class="form-control", placeholder="example:18201") }}
         </div>
         <div class="col-md-2 mb-3">
             {{ form.search_limit.label(class="form-label") }}
@@ -67,12 +67,12 @@
     <div id="advancesSearchOptions">
       <div class="row">
           <div class="col-md-4 mb-3">
-              {{ form.phenotypes.label(class="form-label") }}
-              {{ form.phenotypes(class="form-control", placeholder="example:HP:0001298, HP:0001250,..") }}
+              {{ form.exact_pheno.label(class="form-label") }}
+              {{ form.exact_pheno(class="form-control", placeholder="example:HP:0001298, HP:0001250,..") }}
           </div>
           <div class="col-md-4 mb-3">
-              {{ form.diagnoses.label(class="form-label") }}
-              {{ form.diagnoses(class="form-control", placeholder="example:OMIM:125310, ORPHA:585,..") }}
+              {{ form.exact_dia.label(class="form-label") }}
+              {{ form.exact_dia(class="form-control", placeholder="example:OMIM:125310, ORPHA:585,..") }}
           </div>
       </div>
       <div class="row">
@@ -81,8 +81,8 @@
               {{ form.synopsis(class="form-control", placeholder="example:epilepsy") }}
           </div>
           <div class="col-md-4 mb-3">
-              {{ form.gene_panel.label(class="form-label") }}
-              {{ form.gene_panel(class="form-control", placeholder="example:NMD") }}
+              {{ form.panel.label(class="form-label") }}
+              {{ form.panel(class="form-control", placeholder="example:NMD") }}
           </div>
           <div class="col-md-4 mb-3">
               {{ form.status.label(class="form-label") }}
@@ -91,16 +91,16 @@
       </div>
       <div class="row">
           <div class="col-md-4 mb-3">
-              {{ form.tag.label(class="form-label") }}
-              {{ form.tag(class="form-control", placeholder="example:medical") }}
+              {{ form.tags.label(class="form-label") }}
+              {{ form.tags(class="form-control", placeholder="example:medical") }}
           </div>
           <div class="col-md-4 mb-3">
               {{ form.track.label(class="form-label") }}
               {{ form.track(class="form-control", placeholder="rare or cancer") }}
           </div>
           <div class="col-md-4 mb-3">
-              {{ form.pheno_grop.label(class="form-label") }}
-              {{ form.pheno_grop(class="form-control", placeholder="example:HP0001166") }}
+              {{ form.pheno_group.label(class="form-label") }}
+              {{ form.pheno_group(class="form-control", placeholder="example:HP0001166") }}
           </div>
       </div>
       <div class="row">
@@ -119,16 +119,16 @@
       </div>
       <div class="row">
           <div class="col-md-4 mb-3">
-              {{ form.pinned_gene.label(class="form-label") }}
-              {{ form.pinned_gene(class="form-control", placeholder="example:POT1") }}
+              {{ form.pinned.label(class="form-label") }}
+              {{ form.pinned(class="form-control", placeholder="example:POT1") }}
           </div>
           <div class="col-md-4 mb-3">
-              {{ form.causative_gene.label(class="form-label") }}
-              {{ form.causative_gene(class="form-control", placeholder="example:POT1") }}
+              {{ form.causative.label(class="form-label") }}
+              {{ form.causative(class="form-control", placeholder="example:POT1") }}
           </div>
           <div class="col-md-4 mb-3">
-              {{ form.assigned_user.label(class="form-label") }}
-              {{ form.assigned_user(class="form-control", placeholder="John Doe") }}
+              {{ form.user.label(class="form-label") }}
+              {{ form.user(class="form-control", placeholder="John Doe") }}
           </div>
       </div>
     </div> <!--End of advancedSearchOptions div -->

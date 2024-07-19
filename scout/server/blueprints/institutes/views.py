@@ -62,7 +62,6 @@ def api_cases(institute_id):
 @templated("overview/cases.html")
 def cases(institute_id):
     """Display a list of cases for an institute."""
-    flash(request.form)
     return controllers.cases(store, request, institute_id)
 
 
