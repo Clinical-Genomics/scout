@@ -18,6 +18,7 @@ from scout.utils.algorithms import ui_score
 from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
+EXISTS = "$exists"
 
 
 class CaseHandler(object):
@@ -178,7 +179,6 @@ class CaseHandler(object):
             query["phenotype_terms.phenotype_id"] = {
                 "$in": list(query_value.replace(" ", "").split(","))
             }
-            return
 
     def _set_diagnosis_query(self, query: Dict[str, Any], query_value: str):
         """Set diagnosis query based on query term.
@@ -198,7 +198,6 @@ class CaseHandler(object):
                 {"diagnosis_phenotypes.disease_id": {"$in": omim_terms}},
                 {"diagnosis_phenotypes": {"$in": omim_terms}},
             ]
-            return
 
     def _set_synopsis_query(self, query: Dict[str, Any], query_value: str):
         """Set query to search in the free text synopsis for query_value."""
@@ -244,7 +243,7 @@ class CaseHandler(object):
                 else:
                     query["$or"] = [
                         {"phenotype_groups": {"$size": 0}},
-                        {"phenotype_groups": {"$exists": False}},
+                        {"phenotype_groups": {EXISTS: False}},
                     ]
             if query_field == "cohort":
                 query["cohorts"] = query_value
@@ -406,14 +405,14 @@ class CaseHandler(object):
             query=query,
             condition=skip_assigned,
             set_key="assignees",
-            set_value={"$exists": False},
+            set_value={EXISTS: False},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=has_causatives,
             set_key="causatives",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
@@ -449,28 +448,28 @@ class CaseHandler(object):
             query=query,
             condition=is_research,
             set_key="is_research",
-            set_value={"$exists": True, "$eq": True},
+            set_value={EXISTS: True, "$eq": True},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=phenotype_terms,
             set_key="phenotype_terms",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=pinned,
             set_key="suspects",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=cohort,
             set_key="cohorts",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
@@ -528,7 +527,7 @@ class CaseHandler(object):
         Returns:
             list of case _ids
         """
-        EXISTS_NOT_NULL = {"$exists": True, "$nin": [None, ""]}
+        EXISTS_NOT_NULL = {EXISTS: True, "$nin": [None, ""]}
         query = {
             "owner": owner,
             "$or": [
