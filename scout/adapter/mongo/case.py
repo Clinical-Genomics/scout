@@ -286,6 +286,7 @@ class CaseHandler(object):
             query_field = name_query.split(":")[0]
             query_value = name_query[name_query.index(":") + 1 :].strip()
             set_case_item_query(query=query, query_field=query_field, query_value=query_value)
+            return
 
         # POST request form from more advanced case search from caseS page
         for query_field in [

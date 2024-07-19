@@ -436,7 +436,7 @@ def cases(store, request, institute_id):
     name_query = request.form
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
 
-    data["form"] = populate_case_filter_form(request.args)
+    data["form"] = CaseFilterForm(request.form)
 
     ALL_CASES_PROJECTION = {
         "analysis_date": 1,
@@ -535,20 +535,6 @@ def cases(store, request, institute_id):
     data["limit"] = limit
 
     return data
-
-
-def populate_case_filter_form(params):
-    """Populate filter form with params previosly submitted by user
-
-    Args:
-        params(werkzeug.datastructures.ImmutableMultiDict)
-
-    Returns:
-        form(scout.server.blueprints.cases.forms.CaseFilterForm)
-    """
-    form = CaseFilterForm(params)
-    # form.search_type.default = params.get("search_type")
-    return form
 
 
 def _get_unevaluated_variants_for_case(
