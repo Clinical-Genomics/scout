@@ -238,18 +238,17 @@ class CaseHandler(object):
                 query["track"] = query_value
 
             if query_field == "pheno_group":
-                if query_value != "":
-                    query["phenotype_groups.phenotype_id"] = query_value
+                query["phenotype_groups.phenotype_id"] = query_value
 
             if query_field == "cohort":
                 query["cohorts"] = query_value
 
-            if query_value != "" and query_field in ["similar_case", "similar_pheno"]:
+            if query_field in ["similar_case", "similar_pheno"]:
                 self._set_similar_phenotype_query(
                     query, query_field, query_value, owner or collaborator
                 )
 
-            if query_value != "" and query_field in ["pinned", "causative"]:
+            if query_field in ["pinned", "causative"]:
                 self._set_genes_of_interest_query(query, query_field, query_value)
 
             if query_field == "user":
