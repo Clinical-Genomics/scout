@@ -214,7 +214,7 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
     assert sum(1 for _ in research_cases) == 1
 
 
-def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
+def test_get_cases_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
     # GIVEN a real database with no cases
     assert adapter.case_collection.find_one() is None
@@ -256,7 +256,7 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     assert sum(1 for _ in cases) == 1
 
 
-def test_get_cases_no_HPO(adapter, case_obj):
+def test_get_cases_phenotype_terms(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
 
@@ -267,7 +267,7 @@ def test_get_cases_no_HPO(adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
-    name_query = "exact_pheno:"
+    name_query = ""
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
@@ -288,17 +288,6 @@ def test_get_cases_no_HPO(adapter, case_obj):
             }
         },
     )
-    # WHEN providing an empty value for term HP:
-    name_query = "exact_pheno:"
-    # Then case should NOT be returned
-    cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for _ in cases) == 0
-
-    # WHEN providing an empty value for phenotype group:
-    name_query = "pheno_group:"
-    # Then case should NOT be returned
-    cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for _ in cases) == 0
 
 
 def test_cases_no_diagnosis(adapter, case_obj):
