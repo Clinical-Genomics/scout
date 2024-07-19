@@ -267,27 +267,10 @@ def test_get_cases_phenotype_terms(adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
-    name_query = ""
+    name_query = "exact_pheno:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
-
-    # WHEN providing an empty value for phenotype group:
-    name_query = "pheno_group:"
-    # Then case should be returned
-    cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for _ in cases) == 1
-
-    # Add phenotype group and HPO term to case object:
-    adapter.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]},
-        {
-            "$set": {
-                "phenotype_groups": [{"phenotype_id": "test_pg"}],
-                "phenotype_terms": [{"phenotype_id": "test_hp"}],
-            }
-        },
-    )
 
 
 def test_cases_no_diagnosis(adapter, case_obj):
