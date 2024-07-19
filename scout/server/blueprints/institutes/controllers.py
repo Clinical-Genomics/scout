@@ -560,7 +560,7 @@ def populate_case_filter_form(params):
         form(scout.server.blueprints.cases.forms.CaseFilterForm)
     """
     form = CaseFilterForm(params)
-    form.search_type.default = params.get("search_type")
+    # form.search_type.default = params.get("search_type")
     return form
 
 
