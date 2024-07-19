@@ -389,7 +389,6 @@ class CaseHandler(object):
                 query[set_key] = set_value
 
         query = query or {}
-        order = None
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None

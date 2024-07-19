@@ -353,12 +353,12 @@
   <script>
 
   // Show/hide advanced search options
-  advSearchBlock = $('#advancesSearchOptions');
+  let advSearchBlock = $('#advancesSearchOptions');
   window.onload = function(){
     advSearchBlock.hide();
     $('#advanced_search').removeAttr('checked');
   }
-  advBlockCheckbox = $('#advanced_search'),
+  let advBlockCheckbox = $('#advanced_search'),
   advBlockCheckbox.on('click', function() {
     if($(this).is(':checked')) {
       advSearchBlock.show();
