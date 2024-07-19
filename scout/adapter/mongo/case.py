@@ -112,7 +112,7 @@ class CaseHandler(object):
         similar_case_ids = []
         for i in similar_cases:
             similar_case_ids.append(i[0])
-        query["_id"] = {"$in": similar_case_ids}
+        self.update_case_id_query(query, similar_case_ids)
 
     def _set_genes_of_interest_query(
         self, query: Dict[str, Any], query_field: str, query_value: str
@@ -154,7 +154,7 @@ class CaseHandler(object):
             ]
         )
         case_ids = [case["_id"] for case in cases_with_gene_doc]
-        query["_id"] = {"$in": case_ids}
+        self.update_case_id_query(query, case_ids)
 
     def _set_case_name_query(self, query: Dict[str, Any], query_value: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
@@ -180,11 +180,6 @@ class CaseHandler(object):
             }
             return
 
-        query["$or"] = [
-            {"phenotype_terms": {"$size": 0}},
-            {"phenotype_terms": {"$exists": False}},
-        ]
-
     def _set_diagnosis_query(self, query: Dict[str, Any], query_value: str):
         """Set diagnosis query based on query term.
         The user might have provided multiple query terms.
@@ -204,11 +199,6 @@ class CaseHandler(object):
                 {"diagnosis_phenotypes": {"$in": omim_terms}},
             ]
             return
-
-        query["$or"] = [
-            {"diagnosis_phenotypes": {"$size": 0}},
-            {"diagnosis_phenotypes": {"$exists": False}},
-        ]
 
     def _set_synopsis_query(self, query: Dict[str, Any], query_value: str):
         """Set query to search in the free text synopsis for query_value."""
@@ -307,7 +297,7 @@ class CaseHandler(object):
                     query=query, query_field=query_field, query_value=query_value.strip()
                 )
 
-    def _update_case_id_query(self, query, id_list):
+    def update_case_id_query(self, query, id_list):
         """Update a case query ["_id"]["$in"] values using an additional list of case _ids
 
         Args:
@@ -513,18 +503,20 @@ class CaseHandler(object):
 
         if verification_pending:  # Filter for cases with Sanger verification pending
             sanger_pending_cases = self.verification_missing_cases(owner)
-            self._update_case_id_query(query, sanger_pending_cases)
+            self.update_case_id_query(query, sanger_pending_cases)
 
         if has_clinvar_submission:
             clinvar_subm_cases = self.clinvar_cases(collaborator or owner)
-            self._update_case_id_query(query, clinvar_subm_cases)
+            self.update_case_id_query(query, clinvar_subm_cases)
 
         if has_rna_data:
             cases_with_rna = self.rna_cases(collaborator or owner)
-            self._update_case_id_query(query, cases_with_rna)
+            self.update_case_id_query(query, cases_with_rna)
 
         if yield_query:
             return query
+
+        LOG.warning(query)
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
