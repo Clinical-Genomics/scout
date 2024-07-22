@@ -207,7 +207,7 @@ class CaseHandler(object):
         else:
             query["synopsis"] = ""
 
-    def _populate_case_query(
+    def populate_case_query(
         self, query: dict, name_query: Union[str, ImmutableMultiDict], owner=None, collaborator=None
     ):
         """Parses and adds query parameters provided by users in cases search filter."""
@@ -471,7 +471,7 @@ class CaseHandler(object):
 
         if name_query:
             # Case search filter form query
-            self._populate_case_query(query, name_query, owner, collaborator)
+            self.populate_case_query(query, name_query, owner, collaborator)
 
         if within_days:
             query["_id"] = {

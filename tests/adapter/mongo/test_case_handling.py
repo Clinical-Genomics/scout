@@ -4,6 +4,7 @@ import logging
 
 import pymongo
 import pytest
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import REV_ACMG_MAP
 from scout.exceptions import IntegrityError
@@ -139,7 +140,7 @@ def test_get_case(adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
     logger.info("Testing to get case")
 
-    ## WHEN retreiving an existing case from the database
+    ## WHEN retrieving an existing case from the database
     result = adapter.case(case_id=case_obj["_id"])
     ## THEN we should get the correct case
     assert result["owner"] == case_obj["owner"]
@@ -149,7 +150,7 @@ def test_get_cases(adapter, case_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    ## WHEN retreiving an existing case from the database
+    ## WHEN retrieving an existing case from the database
     result = adapter.cases()
     ## THEN we should get the correct case
     assert sum(1 for _ in result) == 1
@@ -183,13 +184,13 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter.update_status(institute_obj, case_obj, user_obj, "active", "blank")
 
     # WHEN querying for active cases,
-    name_query = "status:active"
+    name_query = ImmutableMultiDict({"status": "active"})
     # THEN a case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
 
     # BUT WHEN querying for inactive cases
-    name_query = "status:inactive"
+    name_query = ImmutableMultiDict({"status": "inactive"})
     # THEN no case should be returned.
     inactive_cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in inactive_cases) == 0
@@ -209,7 +210,7 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
     ## THEN assert that the case was inserted
     assert adapter.case_collection.find_one()
 
-    # THEN searching for reasearch cases should return one case
+    # THEN searching for research cases should return one case
     research_cases = adapter.cases(owner=case_obj["owner"], is_research=True)
     assert sum(1 for _ in research_cases) == 1
 
@@ -223,12 +224,12 @@ def test_get_cases_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
     assert sum(1 for _ in adapter.case_collection.find()) == 1
 
-    # WHEN providing an empty value for synopsis:
+    # WHEN providing a synopsis string not found in case synopsis:
     assert case_obj["synopsis"] == ""
-    name_query = "synopsis:"
-    # Then case should be returned
+    name_query = ImmutableMultiDict({"synopsis": "seizures"})
+    # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for _ in cases) == 1
+    assert sum(1 for _ in cases) == 0
 
     # After adding synopsis to case
     link = "synopsislink"
@@ -241,34 +242,28 @@ def test_get_cases_synopsis(real_adapter, case_obj, institute_obj, user_obj):
         content=synopsis,
     )
 
-    # WHEN providing an empty value for synopsis:
-    assert case_obj["synopsis"] == ""
-    name_query = "synopsis:"
-    # Then case should NOT be returned
-    cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for _ in cases) == 0
-
-    # but if a term contained in case synopsis is provided in name query:
-    name_query = "synopsis:seizures"
-
     # Then updated case should be returned
     cases = adapter.cases(collaborator=updated_case["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
 
 
 def test_get_cases_phenotype_terms(adapter, case_obj):
+
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
+    # assert case_obj["phenotype_groups"]
+    assert not case_obj["phenotype_terms"]
 
-    # GIVEN a case obj that has neither phenotype groups or phenotype terms
-    case_obj.pop("phenotype_groups", None)
-    case_obj.pop("phenotype_terms", None)
+    # GIVEN an HPO phenotype:
+    hpo_term = "HP:0002315"
 
+    # GIVEN a case obj that has that phenotype
+    case_obj["phenotype_terms"] = [{"phenotype_id": hpo_term, "feature": "headache"}]
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN providing an empty value for term HP:
-    name_query = "exact_pheno:"
-    # Then case should be returned
+    # WHEN providing the term in the query
+    name_query = ImmutableMultiDict({"exact_pheno": ",".join([hpo_term])})
+    # THEN case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
 
