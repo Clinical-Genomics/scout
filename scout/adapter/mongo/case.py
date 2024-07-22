@@ -161,11 +161,12 @@ class CaseHandler(object):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
 
         case_name_regex = {"$regex": re.escape(query_value)}
-        query["$or"] = [
+        or_options = [
             {"display_name": case_name_regex},
             {"individuals.display_name": case_name_regex},
             {"_id": case_name_regex},
         ]
+        self.update_case_query_or_options(query=query, or_options=or_options)
 
     def _set_case_phenotype_query(self, query: Dict[str, Any], query_value: str):
         """Set case query based on phenotype terms.
@@ -194,10 +195,13 @@ class CaseHandler(object):
         """
         if query_value != "":
             omim_terms = list(query_value.replace(" ", "").split(","))
-            query["$or"] = [
+
+            or_options = [
                 {"diagnosis_phenotypes.disease_id": {"$in": omim_terms}},
                 {"diagnosis_phenotypes": {"$in": omim_terms}},
             ]
+
+            self.update_case_query_or_options(query=query, or_options=or_options)
 
     def _set_synopsis_query(self, query: Dict[str, Any], query_value: str):
         """Set query to search in the free text synopsis for query_value."""
@@ -206,6 +210,13 @@ class CaseHandler(object):
             query["$text"] = {"$search": re.escape(query_value)}
         else:
             query["synopsis"] = ""
+
+    def update_case_query_or_options(self, query: dict, or_options: List[dict]):
+        """Populates the available options in the query $and field"""
+        if or_options and query.get("$or"):
+            query["$or"] += or_options
+        elif or_options:
+            query["$or"] = or_options
 
     def populate_case_query(
         self, query: dict, name_query: Union[str, ImmutableMultiDict], owner=None, collaborator=None

@@ -156,6 +156,38 @@ def test_get_cases(adapter, case_obj):
     assert sum(1 for _ in result) == 1
 
 
+def test_populate_case_query(adapter):
+    """Test creating a case query using an advanced search containing multiple parameters."""
+
+    query = {}
+    # GIVEN an advanced case search with multiple parameters:
+    name_query = ImmutableMultiDict(
+        {
+            "tags": "medical",
+            "status": "active",
+            "panel": "cardio",
+            "cohort": "test_cohort",
+            "synopsis": "fever",
+            "track": "rare",
+            "exact_pheno": "HP:0002315",
+            "pheno_group": "HP:0002567",
+            "case": "654",
+            "exact_dia": "OMIM:607745",
+        }
+    )
+    # THEN the query should be updated with multiple search terms:
+    adapter.populate_case_query(query=query, name_query=name_query)
+    assert query["tags"] == "medical"
+    assert query["status"] == "active"
+    assert query["panels"] == {"$elemMatch": {"is_default": True, "panel_name": "cardio"}}
+    assert query["cohorts"] == "test_cohort"
+    assert query["$text"] == {"$search": "fever"}
+    assert query["track"] == "rare"
+    assert query["phenotype_terms.phenotype_id"] == {"$in": ["HP:0002315"]}
+    assert query["phenotype_groups.phenotype_id"] == "HP:0002567"
+    assert query["$or"]  # Contains condition for case 'case' and 'exact_dia' options
+
+
 def test_cases_by_status(adapter, case_obj, institute_obj):
     """Test filtering cases by prioritized status."""
 
