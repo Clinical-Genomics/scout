@@ -157,6 +157,8 @@ def test_get_cases(adapter, case_obj):
 
 
 def test_cases_by_status(adapter, case_obj, institute_obj):
+    """Test filtering cases by prioritized status."""
+
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     # WHEN inserting a prioritized case
@@ -171,6 +173,8 @@ def test_cases_by_status(adapter, case_obj, institute_obj):
 
 
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
+    """Test filtering cases by active status."""
+
     adapter = real_adapter
 
     ## GIVEN a real database with no cases
@@ -197,6 +201,8 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
 
 
 def test_get_research_case(real_adapter, case_obj, institute_obj):
+    """Test filtering cases by research available."""
+
     adapter = real_adapter
 
     # GIVEN a real database with no cases
@@ -216,6 +222,8 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
 
 
 def test_get_cases_synopsis(real_adapter, case_obj, institute_obj, user_obj):
+    """Test filtering cases by synopsis."""
+
     adapter = real_adapter
     # GIVEN a real database with no cases
     assert adapter.case_collection.find_one() is None
@@ -248,6 +256,7 @@ def test_get_cases_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
 
 def test_get_cases_phenotype_terms(adapter, case_obj):
+    """Test filtering cases by phenotype."""
 
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
@@ -255,42 +264,66 @@ def test_get_cases_phenotype_terms(adapter, case_obj):
     assert not case_obj["phenotype_terms"]
 
     # GIVEN an HPO phenotype:
-    hpo_term = "HP:0002315"
+    HPO_TERM = "HP:0002315"
 
     # GIVEN a case obj that has that phenotype
-    case_obj["phenotype_terms"] = [{"phenotype_id": hpo_term, "feature": "headache"}]
+    case_obj["phenotype_terms"] = [{"phenotype_id": HPO_TERM, "feature": "headache"}]
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing the term in the query
-    name_query = ImmutableMultiDict({"exact_pheno": ",".join([hpo_term])})
+    name_query = ImmutableMultiDict({"exact_pheno": ",".join([HPO_TERM])})
     # THEN case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for _ in cases) == 1
 
 
-def test_cases_no_diagnosis(adapter, case_obj):
-    """Test filtering cases by empty diagnosis field"""
+def test_cases_diagnosis(adapter, case_obj):
+    """Test filtering cases by diagnosis field."""
 
-    # GIVEN a case without any diagnosis:
-    assert "diagnosis_phenotypes" not in case_obj
+    # GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
+    # assert case_obj["phenotype_groups"]
+    assert not case_obj["phenotype_terms"]
+
+    # GIVEN an OMIM diagnosis
+    OMIM_TERM = "OMIM:607745"
+
+    # GIVEN a case obj that has that phenotype
+    case_obj["diagnosis_phenotypes"] = [
+        {
+            "disease_nr": 607745,
+            "disease_id": "OMIM:607745",
+            "description": "Seizures, benign familial infantile, 3",
+        }
+    ]
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN cases are filtered using OMIM terms with empty value
-    name_query = "exact_dia:"
+    # WHEN providing the term in the query
+    name_query = ImmutableMultiDict({"exact_dia": ",".join([OMIM_TERM])})
+    # THEN case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    # THEN a case should be returned
     assert sum(1 for _ in cases) == 1
 
 
-def test_get_cases_no_assignees(real_adapter, case_obj):
-    adapter = real_adapter
+def test_get_cases_assignee(adapter, case_obj, user_obj):
+    """Test filtering cases by diagnosis assignee."""
+
+    # GIVEN an existing user in database:
+    adapter.user_collection.insert_one(user_obj)
+
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
+
+    # GIVEN a case with an assignee:
+    case_obj["assignees"] = user_obj["email"]
     adapter.case_collection.insert_one(case_obj)
-    # WHEN retreiving an existing case from the database
-    result = adapter.cases(name_query="user:john")
-    # THEN we should get the correct case
-    assert sum(1 for _ in result) == 0
+
+    # WHEN looking for cases with that assignee:
+    name_query = ImmutableMultiDict({"user": user_obj["name"]})
+
+    cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
+    # THEN case should be returned
+    assert sum(1 for _ in cases) == 1
 
 
 def test_get_cases_display_name(real_adapter, case_obj):
