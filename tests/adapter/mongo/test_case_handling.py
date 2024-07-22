@@ -346,12 +346,14 @@ def test_get_cases_display_name(real_adapter, case_obj):
 
 
 def test_get_cases_existing_individual(real_adapter, case_obj):
+    """Test filtering cases by individuals display names."""
     adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="case:NA1288")
+    # WHEN retrieving cases by partial individual name
+    name_query = ImmutableMultiDict({"case": "NA1288"})
+    result = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     # THEN we should get the correct case
     assert sum(1 for _ in result) == 1
 
