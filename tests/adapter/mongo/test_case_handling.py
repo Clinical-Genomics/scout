@@ -313,7 +313,7 @@ def test_cases_diagnosis(adapter, case_obj):
 
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
-    assert not case_obj["diagnosis_phenotypes"]
+    assert "diagnosis_phenotypes" not in case_obj
 
     # GIVEN an OMIM diagnosis
     OMIM_TERM = "OMIM:607745"
