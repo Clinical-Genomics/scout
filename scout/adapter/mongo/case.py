@@ -511,8 +511,6 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        LOG.warning(query)
-
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
     def rna_cases(self, owner):

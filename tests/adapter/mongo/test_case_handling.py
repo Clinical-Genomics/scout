@@ -292,7 +292,6 @@ def test_get_cases_phenotype_terms(adapter, case_obj):
 
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
-    # assert case_obj["phenotype_groups"]
     assert not case_obj["phenotype_terms"]
 
     # GIVEN an HPO phenotype:
@@ -314,8 +313,7 @@ def test_cases_diagnosis(adapter, case_obj):
 
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
-    # assert case_obj["phenotype_groups"]
-    assert not case_obj["phenotype_terms"]
+    assert not case_obj["diagnosis_phenotypes"]
 
     # GIVEN an OMIM diagnosis
     OMIM_TERM = "OMIM:607745"
