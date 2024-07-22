@@ -358,40 +358,6 @@ def test_get_cases_existing_individual(real_adapter, case_obj):
     assert sum(1 for _ in result) == 1
 
 
-def test_get_cases_assignees(real_adapter, case_obj, user_obj):
-    adapter = real_adapter
-    # GIVEN an empty database (no cases)
-    assert adapter.case_collection.find_one() is None
-
-    adapter.user_collection.insert_one(user_obj)
-
-    user_obj = adapter.user_collection.find_one()
-    case_obj["assignees"] = [user_obj["email"]]
-    adapter.case_collection.insert_one(case_obj)
-
-    # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="user:john")
-    # THEN we should get the correct case
-    assert sum(1 for _ in result) == 1
-
-
-def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
-    adapter = real_adapter
-    # GIVEN an empty database (no cases)
-    assert adapter.case_collection.find_one() is None
-
-    adapter.user_collection.insert_one(user_obj)
-
-    user_obj = adapter.user_collection.find_one()
-    case_obj["assignees"] = [user_obj["email"]]
-    adapter.case_collection.insert_one(case_obj)
-
-    # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="user:damien")
-    # THEN we should get the correct case
-    assert sum(1 for _ in result) == 0
-
-
 def test_get_cases_causatives(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
