@@ -6,12 +6,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
 - Support for loading and storing OMICS data
 - Parse DROP Fraser and Outrider TSVs
 - Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Unfreeze werkzeug again
-- Show "(Removed)" after removed panels in dropdown 
+- Show "(Removed)" after removed panels in dropdown
+- The REVEL score is collected as the maximum REVEL score from all of the variant's transcripts
+- Parse GNOMAD POPMAX values only if they are numerical when loading variants
 ### Fixed
 - Sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
