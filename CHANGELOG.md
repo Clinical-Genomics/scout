@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
-
+- `fa-remove` icon replaced by `fa-times` because it's no longer visible
 
 ## [4.84]
 ### Changed
