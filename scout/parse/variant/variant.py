@@ -231,10 +231,7 @@ def parse_variant(
         parsed_variant["revel_score"] = parsed_transcripts[0].get(
             "revel_rankscore"
         )  # This is actually the value of REVEL_rankscore
-
-        parsed_variant["revel"] = parsed_transcripts[0].get(
-            "revel_raw_score"
-        )  # This is actually the value of REVEL_score
+        parsed_variant["revel"] = get_highest_revel_score(parsed_transcripts)
 
     ###################### Add conservation ######################
     parsed_variant["conservation"] = parse_conservations(variant, parsed_transcripts)
@@ -259,6 +256,15 @@ def parse_variant(
 
     remove_nonetype(parsed_variant)
     return parsed_variant
+
+
+def get_highest_revel_score(parsed_transcripts: List[dict]) -> Optional[float]:
+    """Retrieve the highest REVEL_score value from parsed variant transcripts."""
+    tx_revel_scores: List(float) = [
+        tx.get("revel_raw_score") for tx in parsed_transcripts if tx.get("revel_raw_score") != None
+    ]
+    if tx_revel_scores:
+        return max(tx_revel_scores)
 
 
 def get_genmod_key(case):

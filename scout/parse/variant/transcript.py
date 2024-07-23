@@ -324,7 +324,7 @@ def set_variant_frequencies(transcript, entry):
                 continue
 
             value = entry[key]
-            if not value or value == ".":
+            if not value or value == "." or value.isalpha():
                 continue
 
             if key in THOUSAND_GENOMES_CSQ_KEYS:
