@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Advanced cases search to narrow down results using more than one search parameter
+
 ## [4.85]
 ### Added
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
-- Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Unfreeze werkzeug again
 - Show "(Removed)" after removed panels in dropdown
