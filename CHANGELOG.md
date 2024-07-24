@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.85]
 ### Added
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
 - Support for loading and storing OMICS data
@@ -16,9 +16,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - The REVEL score is collected as the maximum REVEL score from all of the variant's transcripts
 - Parse GNOMAD POPMAX values only if they are numerical when loading variants
 ### Fixed
-- Sort "select default panels" dropdown menu options on case page
+- Alphabetically sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
-- `fa-remove` icon replaced by `fa-times` because it's no longer visible
+- Fixed visibility of the following buttons: remove assignee, remove pinned/causative, remove comment, remove case from group
 
 ## [4.84]
 ### Changed
