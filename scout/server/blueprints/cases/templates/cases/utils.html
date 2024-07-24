@@ -714,7 +714,6 @@
     <tr>
       <td class="d-flex align-items-center"><strong>{{ audit.subject }} ({{audit_query.variant_type if audit_query.variant_type else "type unavailable -"}} {{ audit_query.category if audit_query.category else "category unavailable"}})</strong>&nbspwas marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.
       {% if edit is true %}
-        {{audit}}
         <a href="{{ url_for('variants.unaudit_filter', audit_id=audit._id) }}" class="btn btn-link btn-sm" type="submit" data-bs-toggle='tooltip' title="Un-audit filter"><i class="fa fa-times text-danger"></i></a>
       {% endif %}
       </td>
