@@ -124,12 +124,10 @@
       {% if audits | count_cursor > 0 %}
         <div class="card panel-default" >
           <div class="ms-3 me-3">
-            {{ filter_audits(audits, "true") }}
+            {{ filter_audits(audits, true) }}
           </div>
         </div>
       {% endif %}
-
-
 
       <div class="card panel-default" >
         <div class="row">

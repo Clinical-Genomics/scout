@@ -105,6 +105,34 @@ class FilterHandler(object):
 
         return filter_id
 
+    def unadit_filter(self, audit_id: ObjectId, user_obj: dict):
+        """Removes an audit filter event with a new un-audit filter event."""
+
+        audit_event: Optional[dict] = self.event_collection.find_one({"_id": ObjectId(audit_id)})
+        if audit_event is None:
+            return
+        institute_obj: Optional[dict] = self.institute(institute_id=audit_event.get("institute"))
+        case_obj: Optional[dict] = self.case(case_id=audit_event.get("case"))
+        if None in [institute_obj, case_obj]:
+            LOG.error(
+                f"An error occurred un-auditing filter: institute or case missing for audit event {audit_id}."
+            )
+
+        # Create un-audit event
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=audit_event["link"],
+            category="case",
+            verb="filter_unadit",
+            subject=audit_event["subject"],
+            level="global",
+        )
+
+        # Remove audit event
+        self.event_collection.delete_one({"_id": ObjectId(audit_id)})
+
     def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.
         Audit filter leaves a voluntary log trail to answer questions like "did I really check for recessive variants"

@@ -1529,7 +1529,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
     else:
-        flash(request_form)  ############ <----------------- Remove this afterwards
         form = persistent_filter_actions(
             store,
             institute_obj,

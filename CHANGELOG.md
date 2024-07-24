@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ## Added
-- Possibility to Un-audit filters
+- Possibility to un-audit previously audited filters
 
 ## [4.85]
 ### Added
