@@ -6,12 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.85]
 ### Added
+- Make removed panel optionally visible to non-admin or non maintainers
+
+## [4.85]
+### Added
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
 ### Changed
 - Unfreeze werkzeug again
-- Show "(Removed)" after removed panels in dropdown and make them optionally visible to non-admins or non-maintainers
+- Show "(Removed)" after removed panels in dropdown
 - The REVEL score is collected as the maximum REVEL score from all of the variant's transcripts
 - Parse GNOMAD POPMAX values only if they are numerical when loading variants
+- Show "(Removed)" after removed panels in dropdown
 ### Fixed
 - Alphabetically sort "select default panels" dropdown menu options on case page
 - Show gene panel removed status on case page
