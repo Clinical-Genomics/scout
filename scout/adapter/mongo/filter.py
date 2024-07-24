@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 from bson.objectid import ObjectId
 from flask import url_for
