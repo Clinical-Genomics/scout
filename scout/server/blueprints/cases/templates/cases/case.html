@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal, filter_audits %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
@@ -120,6 +120,16 @@
       </div>
 
       {{ matching_variants() }}
+
+      {% if audits | count_cursor > 0 %}
+        <div class="card panel-default" >
+          <div class="ms-3 me-3">
+            {{ filter_audits(audits, "true") }}
+          </div>
+        </div>
+      {% endif %}
+
+
 
       <div class="card panel-default" >
         <div class="row">
