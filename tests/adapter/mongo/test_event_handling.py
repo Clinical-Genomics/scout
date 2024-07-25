@@ -601,7 +601,7 @@ def test_filter_lock(adapter, institute_obj, case_obj, user_obj, filter_obj):
     assert filters[0].get("lock") is False
 
 
-def test_filter_audit(adapter, institute_obj, case_obj, user_obj, filter_obj):
+def test_filter_audit_unadit(adapter, institute_obj, case_obj, user_obj, filter_obj):
     # GIVEN a case, institute and user in a store
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -625,6 +625,17 @@ def test_filter_audit(adapter, institute_obj, case_obj, user_obj, filter_obj):
     # THEN another event has been logged for the audit
     n_events_after = sum(1 for _ in adapter.event_collection.find())
     assert n_events_after > n_events_before
+    audit_event = adapter.event_collection.find_one({"verb": "filter_audit"})
+    assert audit_event
+
+    # WHEN a user un-audits the filter
+    adapter.unadit_filter(audit_id=audit_event["_id"], user_obj=user_obj)
+
+    # THEN audit event should disappear
+    assert adapter.event_collection.find_one({"verb": "filter_audit"}) is None
+
+    # And un-audit event should be found instead
+    assert adapter.event_collection.find_one({"verb": "filter_unadit"})
 
 
 def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, testpanel_obj):
