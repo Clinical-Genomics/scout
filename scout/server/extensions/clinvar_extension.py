@@ -2,7 +2,7 @@ import json
 import logging
 
 import requests
-from flask import current_app, flash
+from flask import flash
 
 from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
 
