@@ -75,7 +75,7 @@ class ClinVarApi:
             return self.submit_service, resp.status_code, resp
 
         except Exception as ex:
-            return None, ex
+            return self.submit_service, None, ex
 
     def show_submission_status(self, submission_id: str, api_key=None):
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
