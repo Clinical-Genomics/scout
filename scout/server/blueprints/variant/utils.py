@@ -661,10 +661,10 @@ def callers(variant_obj):
 def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) -> None:
     """Add associated gene panels to each gene in variant object"""
 
-    geneid_gene = {
+    geneid_gene: Dict[int, dict] = {
         gene["hgnc_id"]: gene for gene in variant_obj.get("genes", [])
     }  # This has max 30 elements for SVs
-    geneids = variant_obj.get("hgnc_ids", [])  # This can be a long list, n > 30 for SVs
+    geneids: List[int] = variant_obj.get("hgnc_ids", [])  # This can be a long list, n > 30 for SVs
 
     for hgnc_id in geneids:
         matching_panels = []
