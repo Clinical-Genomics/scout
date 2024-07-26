@@ -2,7 +2,7 @@ import json
 import logging
 
 import requests
-from flask import flash
+from flask import current_app, flash
 
 from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
 
@@ -15,9 +15,9 @@ class ClinVarApi:
     the ClinVar submission schema (https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/) and if valid, can be directly submitted to ClinVar.
     """
 
-    def __init__(self):
+    def init_app(self, app):
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.submit_service = CLINVAR_API_URL
+        self.submit_service = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL
 
     def set_header(self, api_key) -> dict:
         """Creates a header to be submitted a in a POST rquest to the CLinVar API
@@ -72,7 +72,7 @@ class ClinVarApi:
         }
         try:
             resp = requests.post(self.submit_service, data=json.dumps(data), headers=header)
-            return resp.status_code, resp
+            return self.submit_service, resp.status_code, resp
 
         except Exception as ex:
             return None, ex
@@ -81,6 +81,6 @@ class ClinVarApi:
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
 
         header: dict = self.set_header(api_key)
-        actions_url = f"{CLINVAR_API_URL}{submission_id}/actions/"
+        actions_url = f"{self.submit_service}{submission_id}/actions/"
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
         flash(f"Response from ClinVar: {actions_resp.json()}", "primary")

@@ -98,6 +98,7 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.mail.init_app(app)
+    extensions.clinvar_api.init_app(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):
         extensions.chanjo_report.init_app(app)

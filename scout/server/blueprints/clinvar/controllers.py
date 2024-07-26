@@ -442,11 +442,14 @@ def send_api_submission(institute_id, submission_id, key):
     if clinvar_id:  # Check if submission object has already an associated ClinVar ID
         conversion_res["submissionName"] = clinvar_id
 
-    code, submit_res = clinvar_api.submit_json(conversion_res, key)
+    service_url, code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
     if code in [200, 201]:
         clinvar_id = submit_res.json().get("id")
-        flash(f"Submission saved successfully with ID: {clinvar_id}", "success")
+        flash(
+            f"Submission sent to API URL '{service_url}'. Saved successfully with ID: {clinvar_id}",
+            "success",
+        )
 
         # Update ClinVar submission ID with the ID returned from ClinVar
         store.update_clinvar_id(
@@ -459,7 +462,10 @@ def send_api_submission(institute_id, submission_id, key):
         )
 
     else:
-        flash(str(submit_res.json()), "warning")
+        flash(
+            f"Submission sent to API URL '{service_url}'. Returned the following error: {str(submit_res.json())}",
+            "warning",
+        )
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):

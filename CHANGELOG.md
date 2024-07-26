@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
+
 ## [4.85]
 ### Added
 - Load also genes which are missing Ensembl gene ID (72 in both builds), including immunoglobulins and fragile sites
