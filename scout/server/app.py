@@ -7,7 +7,7 @@ from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
-from flask import Flask, current_app, redirect, request, url_for
+from flask import Flask, redirect, request, url_for
 from flask_cors import CORS
 from flask_login import current_user
 from markdown import markdown as python_markdown
