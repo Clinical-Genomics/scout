@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display samples' name (tooltip) and affected status directly on caseS page
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 
 ## [4.85]
