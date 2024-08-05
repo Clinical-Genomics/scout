@@ -180,19 +180,21 @@
 {% macro case_row(case) %}
   <tr class="{% if case.status == 'solved' %}causative{% endif %}">
     <td>
-      <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
+      <a class="me-2"
+         {% if case.individuals|length == 1 %} data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}" {% endif %}
+         href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-      <span class="badge bg-primary">
-        {% for item in case.individuals %}
+        {% for sample in case.individuals %}
+          <span class="badge {{'bg-danger' if sample.phenotype == 2 else 'bg-primary'}}" style="margin:-3px !important;" data-bs-toggle="tooltip" title="{{sample.display_name}}">
           {% if case.track == "cancer" %}
             <span class="fa fa-vial"></span>
           {% else %} <!-- rare disease case -->
             <span class="fa fa-user"></span>
           {% endif %}
+          </span>
         {% endfor %}
-      </span>
       {% endif %}
       {% for user in case.assignees %}
         <span class="badge bg-secondary">{{ user.name }}</span>

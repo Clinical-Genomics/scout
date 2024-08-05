@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display samples' name (tooltip) and affected status directly on caseS page
 - Advanced cases search to narrow down results using more than one search parameter
 
 ## [4.85]
