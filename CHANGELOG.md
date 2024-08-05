@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display samples' name (tooltip) and affected status directly on caseS page
 - `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
 
 ## [4.85]
