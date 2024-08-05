@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/components.html" import gene_cell, frequency_cell_general %}
+{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell, variant_region_anno_cell %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
@@ -39,12 +39,12 @@
 <thead>
         <tr>
           <th scope="col">Case : Score</th>
+          <th scope="col">Var</th>
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
           <th scope="col">Region</th>
           <th scope="col">Function</th>
-          <th scope="col">HGVS</th>
         </tr>
 </thead>
 <tbody>
@@ -55,20 +55,12 @@
         <tr>
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
-            <td class="align-middle">{{ gene_cell(variant) }}</td>
+            <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
+            <td class="align-middle">{{ variant_gene_symbols_cell(variant) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
-            <td class="align-middle">
-              {% for annotation in variant.region_annotations %}
-                <div>{{ annotation }}</div>
-              {% endfor %}
-            </td>
-            <td class="align-middle">
-              {% for annotation in variant.functional_annotations %}
-                <div>{{ annotation }}</div>
-              {% endfor %}
-            </td>
-            <td class="align-middle"> {{ (variant.hgvs or '')|url_decode  }}</td>
+            <td class="align-middle">{{ variant_region_anno_cell(variant) }}</td>
+            <td class="align-middle">{{ variant_funct_anno_cell(variant) }}</td>
           </tr>
         {% endfor %}
         {% if form.hgnc_symbols.data == [] %}
@@ -80,7 +72,10 @@
         {% elif variants == [] %}
         <tr>
           <td colspan=7>
-            No variants matching your query in genes: {{form.hgnc_symbols.data|join(", ")}}
+            No variants matching your query in genes: {{form.hgnc_symbols.data|join(", ")}}.
+            {% if "research" not in form.variant_type.data %}
+              Consider a lower rank score threshold or including research variants.
+            {% endif %}
           </td>
         </tr>
         {% endif %}
@@ -92,12 +87,26 @@
 </form>
 {% endmacro %}
 
-{% macro cell_rank(variant) %}
-    <a
-       href="{{ url_for('variant.variant', institute_id=variant.institute,
+
+{% macro pretty_link_no_gene(variant) %}
+  {% if variant.category == "sv" %}
+    <a href="{{ url_for('variant.sv_variant', institute_id=variant.institute,
             case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-      {{ variant.case_display_name}}
-    </a>
+       {% if hgvs in variant %}
+        {{ variant.hgvs }}
+       {% else %}
+        {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
+       {% endif %}
+  {% else %}
+    <a href="{{ url_for('variant.variant', institute_id=variant.institute,
+            case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
+    {{ (variant.hgvs or '')|url_decode }}
+  {% endif %}
+  </a>
+{% endmacro %}
+
+{% macro cell_rank(variant) %}
+   {{ variant.case_display_name }}
     :
     <span class="badge bg-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
@@ -123,29 +132,33 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col col-md-3">
-          <label class="control-label">Rank Score ></label>
+        <div class="col col-md-1">
+          <label class="control-label" for="rank_score">Rank Score</label>
           <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
         </div>
-        <div class="col col-md-3">
+        <div class="col col-md-2">
           {{ form.variant_type.label(class="control-label") }}
           {{ form.variant_type(class="form-control", class="selectpicker", data_style="btn-secondary") }}
         </div>
+        <div class="col col-md-2">
+          {{ form.category.label(class="control-label") }}
+          {{ form.category(class="form-control", class="selectpicker", data_style="btn-secondary") }}
+        </div>
       </div>
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-6">
           {{ form.phenotype_terms.label(class="control-label") }}
           {{ form.phenotype_terms(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.phenotype_groups.label(class="control-label") }}
           {{ form.phenotype_groups(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.cohorts.label(class="control-label") }}
           {{ form.cohorts(class="form-control") }}
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           {{ form.similar_case.label(class="control-label") }}
           {{ form.similar_case(class="form-control") }}
         </div>
