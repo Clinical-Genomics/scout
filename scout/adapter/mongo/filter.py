@@ -109,7 +109,9 @@ class FilterHandler(object):
     def unaudit_filter(self, audit_id: ObjectId, user_obj: dict):
         """Removes an audit filter event with a new un-audit filter event."""
 
-        audit_event: Optional[dict] = self.event_collection.find_one({"_id": ObjectId(audit_id)})
+        FILTER_SEARCH = {"_id": ObjectId(audit_id), "verb": "filter_audit"}
+
+        audit_event: Optional[dict] = self.event_collection.find_one(FILTER_SEARCH)
         if audit_event is None:
             return
         institute_obj: Optional[dict] = self.institute(institute_id=audit_event.get("institute"))
@@ -132,7 +134,7 @@ class FilterHandler(object):
         )
 
         # Remove audit event
-        self.event_collection.delete_one({"_id": ObjectId(audit_id)})
+        self.event_collection.delete_one(FILTER_SEARCH)
 
     def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.
