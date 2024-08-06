@@ -100,7 +100,7 @@
             <div class="col-3">Show tracks:</div>
             <div class="col-6">
               <select name="user_tracks" class="selectpicker" data-width="90%" data-style="btn-secondary" multiple>
-                {% for track in igv_tracks %}
+                {% for track in igv_tracks|sort %}
                   <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
                   <option value="{{ track }}" {{ "selected" if current_user.igv_tracks and track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
                 {% endfor %}
