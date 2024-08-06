@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
 - `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
-
+### Changed
+- Updated igv.js to v3.0.1
 
 ## [4.85]
 ### Added
