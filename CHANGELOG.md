@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
+### Changed
+- Updated igv.js to v3.0.1
+
 
 ## [4.85]
 ### Added
