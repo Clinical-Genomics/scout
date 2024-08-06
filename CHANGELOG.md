@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display omics variants - wts outliers (Fraser, Outrider)
 ### Changed
 - Updated igv.js to v3.0.1
+- Alphabetically sort IGV track available for custom selection
 
 ## [4.85]
 ### Added
