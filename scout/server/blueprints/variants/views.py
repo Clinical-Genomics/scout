@@ -770,7 +770,7 @@ def toggle_show_dismiss_block():
 @variants_bp.route("/variants/un-audit_filter", methods=["GET"])
 def unaudit_filter():
     """Un-audit an audited filter."""
-    store.unadit_filter(
+    store.unaudit_filter(
         audit_id=request.args.get("audit_id"), user_obj=store.user(current_user.email)
     )
     return redirect(request.referrer)
