@@ -115,7 +115,7 @@ class FilterHandler(object):
         if audit_event is None:
             return
         if audit_event.get("user_id") != user_obj["email"]:
-            flash(f"You can't un-audit a filter audited by another user.", "warning")
+            flash("You can't un-audit a filter audited by another user.", "warning")
             return
         institute_obj: Optional[dict] = self.institute(institute_id=audit_event.get("institute"))
         case_obj: Optional[dict] = self.case(case_id=audit_event.get("case"))
