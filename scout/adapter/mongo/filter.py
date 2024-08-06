@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from bson.objectid import ObjectId
-from flask import url_for
+from flask import flash, url_for
 from pymongo.cursor import CursorType
 from werkzeug.datastructures import MultiDict
 
@@ -114,12 +114,16 @@ class FilterHandler(object):
         audit_event: Optional[dict] = self.event_collection.find_one(FILTER_SEARCH)
         if audit_event is None:
             return
+        if audit_event.get("user_id") != user_obj["email"]:
+            flash(f"You can't un-audit a filter audited by another user.", "warning")
+            return
         institute_obj: Optional[dict] = self.institute(institute_id=audit_event.get("institute"))
         case_obj: Optional[dict] = self.case(case_id=audit_event.get("case"))
         if None in [institute_obj, case_obj]:
             LOG.error(
                 f"An error occurred un-auditing filter: institute or case missing for audit event {audit_id}."
             )
+            return
 
         # Create un-audit event
         self.create_event(
