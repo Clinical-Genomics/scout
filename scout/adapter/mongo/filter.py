@@ -106,7 +106,7 @@ class FilterHandler(object):
 
         return filter_id
 
-    def unadit_filter(self, audit_id: ObjectId, user_obj: dict):
+    def unaudit_filter(self, audit_id: ObjectId, user_obj: dict):
         """Removes an audit filter event with a new un-audit filter event."""
 
         audit_event: Optional[dict] = self.event_collection.find_one({"_id": ObjectId(audit_id)})
