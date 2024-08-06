@@ -126,7 +126,7 @@ class FilterHandler(object):
             user=user_obj,
             link=audit_event["link"],
             category="case",
-            verb="filter_unadit",
+            verb="filter_unaudit",
             subject=audit_event["subject"],
             level="global",
         )
