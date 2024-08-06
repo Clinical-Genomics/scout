@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
 ### Changed
 - Updated igv.js to v3.0.1
+- Alphabetically sort IGV track available for custom selection
 
 ## [4.85]
 ### Added
