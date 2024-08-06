@@ -629,13 +629,13 @@ def test_filter_audit_unaudit(adapter, institute_obj, case_obj, user_obj, filter
     assert audit_event
 
     # WHEN a user un-audits the filter
-    adapter.unadit_filter(audit_id=audit_event["_id"], user_obj=user_obj)
+    adapter.unaudit_filter(audit_id=audit_event["_id"], user_obj=user_obj)
 
     # THEN audit event should disappear
     assert adapter.event_collection.find_one({"verb": "filter_audit"}) is None
 
     # And un-audit event should be found instead
-    assert adapter.event_collection.find_one({"verb": "filter_unadit"})
+    assert adapter.event_collection.find_one({"verb": "filter_unaudit"})
 
 
 def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, testpanel_obj):
