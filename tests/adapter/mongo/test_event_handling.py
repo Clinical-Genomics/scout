@@ -601,7 +601,7 @@ def test_filter_lock(adapter, institute_obj, case_obj, user_obj, filter_obj):
     assert filters[0].get("lock") is False
 
 
-def test_filter_audit_unadit(adapter, institute_obj, case_obj, user_obj, filter_obj):
+def test_filter_audit_unaudit(adapter, institute_obj, case_obj, user_obj, filter_obj):
     # GIVEN a case, institute and user in a store
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
