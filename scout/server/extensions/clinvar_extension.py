@@ -17,7 +17,7 @@ class ClinVarApi:
 
     def init_app(self, app):
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.submit_service = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL
+        self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
 
     def set_header(self, api_key) -> dict:
         """Creates a header to be submitted a in a POST rquest to the CLinVar API
