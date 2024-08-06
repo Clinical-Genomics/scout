@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Updated igv.js to v3.0.1
+- Alphabetically sort IGV track available for custom selection
 
 ## [4.85]
 ### Added
