@@ -28,12 +28,11 @@ class OmicsVariantLoader(BaseModel):
     institute: str
     build: str = "38"
     variant_type: str = "clinical"
-    category: str = "outlier"
-    sub_category: str = "splicing"
+    category: str  # eg "outlier"
+    sub_category: str  # eg "splicing"
     date: datetime = datetime.now()
     display_name: str
     omics_variant_id: str
-    # omics variant id hash (including clinical/research)?
 
     # DROP Fraser and Outrider outlier TSVs
 
@@ -59,43 +58,82 @@ class OmicsVariantLoader(BaseModel):
     width: Optional[int] = None
     strand: Optional[str] = None
 
-    pValue: Optional[float]
+    pValue: Optional[float] = Field(alias="pValue", serialization_alias="p_value", default=None)
 
     # Fraser specific
     type: Optional[str] = None
-    psiValue: Optional[float] = None
-    deltaPsi: Optional[float] = None
+    psi_value: Optional[float] = Field(
+        alias="psiValue", serialization_alias="psi_value", default=None
+    )
+    delta_psi: Optional[float] = Field(
+        alias="deltaPsi", serialization_alias="delta_psi", default=None
+    )
     counts: Optional[int] = None
-    totalCounts: Optional[int] = None
-    meanCounts: Optional[float] = None
-    meanTotalCounts: Optional[float] = None
-    nonsplitCounts: Optional[int] = None
-    nonsplitProportion: Optional[float] = None
-    nonsplitProportion_99quantile: Optional[float] = None
-    annotatedJunction: Optional[str] = None
-    pValueGene: Optional[float] = None
-    padjustGene: Optional[float] = None
-    PAIRED_END: Optional[str] = None
-    isExternal: Optional[bool] = None
-    potentialImpact: Optional[str] = None
-    causesFrameshift: Optional[str] = None
-    UTR_overlap: Optional[str] = None
-    blacklist: Optional[bool] = None
+    total_counts: Optional[int] = Field(
+        alias="totalCounts", serialization_alias="total_counts", default=None
+    )
+    mean_counts: Optional[float] = Field(
+        alias="meanCounts", serialization_alias="mean_counts", default=None
+    )
+    mean_total_counts: Optional[float] = Field(
+        alias="meanTotalCounts", serialization_alias="mean_total_counts", default=None
+    )
+    nonsplit_counts: Optional[int] = Field(
+        alias="nonsplitCounts", serialization_alias="nonsplit_counts", default=None
+    )
+    nonsplit_proportion: Optional[float] = Field(
+        alias="nonsplitProportion", serialization_alias="nonsplit_proportion", default=None
+    )
+    nonsplit_proportion_99quantile: Optional[float] = Field(
+        alias="nonsplitProportion_99quantile",
+        serialization_alias="nonsplit_proportion_99quantile",
+        default=None,
+    )
+    annotated_junction: Optional[str] = Field(
+        alias="annotatedJunction", serialization_alias="annotated_junction", default=None
+    )
+    p_value_gene: Optional[float] = Field(
+        alias="pValueGene", serialization_alias="p_value_gene", default=None
+    )
+    p_adjust_gene: Optional[float] = Field(
+        alias="padjustGene", serialization_alias="p_adjust_gene", default=None
+    )
+    paired_end: Optional[str] = Field(
+        alias="PAIRED_END", serialization_alias="paired_end", default=None
+    )
+    is_external: Optional[bool] = Field(
+        alias="isExternal", serialization_alias="is_external", default=None
+    )
+    potential_impact: Optional[str] = Field(
+        alias="potentialImpact", serialization_alias="potential_impact", default=None
+    )
+    causes_frameshift: Optional[str] = Field(
+        alias="causesFrameshift", serialization_alias="causes_frameshift", default=None
+    )
+    utr_overlap: Optional[str] = Field(
+        alias="UTR_overlap", serialization_alias="utr_overlap", default=None
+    )
 
     # Outrider specific
     padjust: Optional[float] = None
-    zScore: Optional[float] = None
+    zscore: Optional[float] = Field(alias="zScore", serialization_alias="zscore", default=None)
     l2fc: Optional[float] = None
     rawcounts: Optional[int] = None
     normcounts: Optional[float] = None
     meanCorrected: Optional[float] = None
     theta: Optional[float] = None
     aberrant: Optional[bool] = None
-    aberrantBySample: Optional[float] = None
-    aberrantByGene: Optional[float] = None
+    aberrant_by_sample: Optional[float] = Field(
+        alias="aberrantBySample", serialization_alias="aberrant_by_sample", default=None
+    )
+    aberrant_by_gene: Optional[float] = Field(
+        alias="aberrantByGene", serialization_alias="aberrant_by_gene", default=None
+    )
     padj_rank: Optional[float] = None
-    FDR_set: Optional[str] = None
-    foldChange: Optional[float] = None
+    fdr_set: Optional[str] = Field(alias="FDR_set", serialization_alias="fdr_set", default=None)
+    fold_change: Optional[float] = Field(
+        alias="foldChange", serialization_alias="fold_change", default=None
+    )
 
     @field_validator("chromosome")
     def strip_chr(cls, chrom: str) -> str:

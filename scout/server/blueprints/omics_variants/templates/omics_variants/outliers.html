@@ -56,22 +56,19 @@
       <table class="table table-hover table-bordered" style="table-layout: fixed">
         <thead class="thead table-light">
               <tr>
-                <th title="Variant display name">Outlier</th>
-                <th style="width:7%" title="Sub-category">Type</th>
                 <th style="width:14%" title="HGNC symbols">Gene</th>
-                <th title="Functional annotation">Func. annotation</th>
+                <th style="width:7%" title="Sub-category">Type</th>
                 <th style="width:7%" title="Value - delta Psi or l2fc ">Value</th>
+                <th title="Functional annotation">Func. annotation</th>
                 <th style="width:7%" title="P-value">P-value</th>
                 <th style="width:10%" title="Individual">Ind</th>
                 <th style="width:3%" title="Chromosome">Chr</th>
                 <th title="Position">Pos</th>
               </tr>
         </thead>
-          <tbody>
-            {% for variant in variants %}
-              <tr>
-              <td>{{ variant.display_name|truncate(36,True) }}</td>
-              <td>{{ variant.sub_category }}</td>
+        <tbody>
+          {% for variant in variants %}
+            <tr>
               <td class="text-end">
                 <div class="d-flex flex-row justify-content-between align-items-baseline">
                 {% if variant.genes %}
@@ -95,21 +92,21 @@
                 {% endif %}
                 </div>
               </td>
-              <td>
-                {%  if variant.sub_category == "splicing" %}
-                  {{ variant.potentialImpact }} - fs {{ variant.causesFrameshift }}
-                {% endif %}
-              </td>
+              <td>{{ variant.sub_category }}</td>
               <td class="text-end"> {%  if variant.sub_category == "splicing" %}
                   <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
-                  {{ variant.deltaPsi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a>
+                  {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
                 {% else %}
                   <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change - click to see OUTRIDER vignette for details.'>
-                {{ variant.l2fc }}&nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a>
+                  {{ variant.l2fc }}&nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
                 {% endif %}
-                </a>
               </td>
-              <td class="text-end">{{ '%.3e' % variant.pValue }}</td>
+              <td>
+                {% if variant.sub_category == "splicing" %}
+                  {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
+                {% endif %}
+              </td>
+              <td class="text-end">{{ '%.3e' % variant.p_value }}</td>
               <td>{{ case.individuals.0.display_name }}</td>
               <td class="text-end">{{ variant.chromosome }}</td>
                 <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>

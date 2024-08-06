@@ -896,7 +896,6 @@ class VariantHandler(VariantLoader):
         results = list(self.variant_collection.aggregate(pipeline))
 
         omics_results = list(self.omics_variant_collection.aggregate(pipeline))
-        LOG.debug("case has outliers %s", omics_results)
         results.extend(omics_results)
 
         variants_by_type = {}
