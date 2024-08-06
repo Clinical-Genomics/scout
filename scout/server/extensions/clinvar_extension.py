@@ -4,7 +4,7 @@ import logging
 import requests
 from flask import flash
 
-from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT, PRECLINVAR_URL
 
 LOG = logging.getLogger(__name__)
 
