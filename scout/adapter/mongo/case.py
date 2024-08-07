@@ -11,7 +11,7 @@ from bson import ObjectId
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION
+from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -835,6 +835,21 @@ class CaseHandler(object):
             if key in old_case:
                 new_case[key] = old_case[key]
 
+    def _load_omics_variants(self, case_obj: dict, build: str, update: bool = False):
+        """Load omics variants. The OMICS FILE type dict contains all we need to
+        determine how to load variants (type, category etc)."""
+
+        for omics_file in OMICS_FILE_TYPE_MAP.keys():
+            if not case_obj["omics_files"].get(omics_file):
+                LOG.debug("didn't find %s for case, skipping", omics_file)
+                continue
+
+            if update:
+                LOG.debug("deleting %s omics variants for case", omics_file)
+                self.delete_omics_variants(case_id=case_obj["_id"], file_type=omics_file)
+
+            self.load_omics_variants(case_obj=case_obj, build=build, file_type=omics_file)
+
     def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
         """Load a case into the database
 
@@ -930,6 +945,8 @@ class CaseHandler(object):
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
+
+        self._load_omics_variants(case_obj, build=genome_build, update=update)
 
         if existing_case:
             self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
@@ -1050,6 +1067,7 @@ class CaseHandler(object):
                 "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                 "genome_build": case_obj.get("genome_build", "37"),
                 "has_meivariants": case_obj.get("has_meivariants"),
+                "has_outliers": case_obj.get("has_outliers"),
                 "has_strvariants": case_obj.get("has_strvariants"),
                 "has_svvariants": case_obj.get("has_svvariants"),
                 "individuals": case_obj["individuals"],
@@ -1058,6 +1076,7 @@ class CaseHandler(object):
                 "mme_submission": case_obj.get("mme_submission"),
                 "multiqc": case_obj.get("multiqc"),
                 "multiqc_rna": case_obj.get("multiqc_rna"),
+                "omics_files": case_obj.get("omics_files"),
                 "panels": case_obj.get("panels", []),
                 "phenotype_groups": case_obj.get("phenotype_groups"),
                 "phenotype_terms": case_obj.get("phenotype_terms"),

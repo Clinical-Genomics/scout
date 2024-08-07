@@ -269,7 +269,8 @@ def case_has_mt_alignments(case_obj: dict):
 
 
 def case_has_rna_tracks(case_obj: Dict) -> bool:
-    """Returns True if one of more individuals of the case contain RNA-seq data
+    """Returns True if one or more individuals of the case contain RNA-seq data
+    Add this info to the case obj dict.
 
     Args:
         case_obj(dict)
@@ -277,10 +278,12 @@ def case_has_rna_tracks(case_obj: Dict) -> bool:
         True or False (bool)
     """
     # Display junctions track if available for any of the individuals
+    case_obj["has_rna_tracks"] = False
     for ind in case_obj.get("individuals", []):
         # RNA can have three different aln track files
         for path_name in ["splice_junctions_bed", "rna_coverage_bigwig", "rna_alignment_path"]:
             if _check_path_name(ind, path_name):
+                case_obj["has_rna_tracks"] = True
                 return True
     return False
 
