@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated wokeignore to avoid unfixable warning
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
+- Splice junction merged track height offset in IGV.js
+- Splice junction initiation crash with empty variant obj
 
 
 ## [4.85]
