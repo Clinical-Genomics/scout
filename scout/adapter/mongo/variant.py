@@ -206,7 +206,7 @@ class VariantHandler(VariantLoader):
 
         return result
 
-    def count_variants(self, case_id, query, variant_ids, category):
+    def count_variants(self, case_id, query, variant_ids, category, build="37"):
         """Returns number of variants
 
         Arguments:
@@ -219,7 +219,9 @@ class VariantHandler(VariantLoader):
              integer
         """
 
-        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        query = self.build_query(
+            case_id, query=query, variant_ids=variant_ids, category=category, build=build
+        )
         return self.variant_collection.count_documents(query)
 
     def variant_update_field(self, variant_id: str, field_name: str, field_value: Any) -> dict:
@@ -237,6 +239,7 @@ class VariantHandler(VariantLoader):
         case_id=None,
         simple_id=None,
         variant_type="clinical",
+        projection=None,
     ):
         """Returns the specified variant.
 
@@ -264,7 +267,7 @@ class VariantHandler(VariantLoader):
             # search with a unique id
             query["_id"] = document_id
 
-        variant_obj = self.variant_collection.find_one(query)
+        variant_obj = self.variant_collection.find_one(query, projection=projection)
         if not variant_obj:
             return variant_obj
         case_obj = self.case(
@@ -890,7 +893,10 @@ class VariantHandler(VariantLoader):
             }
         }
         pipeline = [match, group]
-        results = self.variant_collection.aggregate(pipeline)
+        results = list(self.variant_collection.aggregate(pipeline))
+
+        omics_results = list(self.omics_variant_collection.aggregate(pipeline))
+        results.extend(omics_results)
 
         variants_by_type = {}
         for item in results:
