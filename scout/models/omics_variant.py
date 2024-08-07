@@ -58,7 +58,7 @@ class OmicsVariantLoader(BaseModel):
     width: Optional[int] = None
     strand: Optional[str] = None
 
-    pValue: Optional[float] = Field(alias="pValue", serialization_alias="p_value", default=None)
+    p_value: Optional[float] = Field(alias="pValue", serialization_alias="p_value", default=None)
 
     # Fraser specific
     type: Optional[str] = None
