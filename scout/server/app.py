@@ -25,6 +25,7 @@ from .blueprints import (
     institutes,
     login,
     managed_variants,
+    omics_variants,
     panels,
     phenomodels,
     phenotypes,
@@ -178,6 +179,7 @@ def register_blueprints(app):
     app.register_blueprint(diagnoses.omim_bp)
     app.register_blueprint(institutes.overview)
     app.register_blueprint(managed_variants.managed_variants_bp)
+    app.register_blueprint(omics_variants.omics_variants_bp)
 
 
 def register_filters(app):
