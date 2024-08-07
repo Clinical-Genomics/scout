@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
-from typing import Dict
+from typing import Dict, Optional
 
 from flask import flash, session
 from flask_login import current_user
@@ -51,33 +51,39 @@ def set_session_tracks(display_obj: dict):
     session["igv_tracks"] = session_tracks
 
 
-def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
+def make_igv_tracks(
+    case_obj: dict,
+    variant_id: str,
+    chrom: Optional[str] = None,
+    start: Optional[int] = None,
+    stop: Optional[int] = None,
+) -> dict:
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
     Args:
-        institute_id(str): institute _id
+        institute_id: institute _id
         case_obj(scout.models.Case)
-        variant_id(str): _id of a variant
-        chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
-        start(int/None): start of the genomic interval to be displayed
-        stop(int/None): stop of the genomic interval to be displayed
+        variant_id: _id of a variant
+        chrom: requested chromosome [1-22], X, Y, [M-MT]
+        start: start of the genomic interval to be displayed
+        stop: stop of the genomic interval to be displayed
 
     Returns:
-        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+        display_obj: A display object containing case name, list of genes, locus and tracks
     """
     display_obj = {}
     variant_obj = store.variant(document_id=variant_id)
 
+    chromosome = "All"
     if variant_obj:
         # Set display locus
         start = start or variant_obj["position"]
         stop = stop or variant_obj["end"]
+        chrom = chrom or variant_obj.get("chromosome")
 
-        chromosome = chrom or variant_obj.get("chromosome")
-        chromosome = chromosome.replace("MT", "M")
+    if all([start, stop, chrom]):
+        chromosome = chrom.replace("MT", "M")
         display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
-    else:
-        chromosome = "All"
 
     # Set genome build for displaying alignments:
     if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
@@ -115,20 +121,25 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     return display_obj
 
 
-def make_sashimi_tracks(case_obj, variant_id=None):
+def make_sashimi_tracks(
+    case_obj: dict, variant_id: Optional[str] = None, omics_variant_id: Optional[str] = None
+):
     """Create a dictionary containing the required tracks for a splice junction plot
+    If either a regular variant_id or an omics variant id is passed, set display to a particular locus.
+    Otherwise defaults to whole genome "All" view.
 
-    Args:
-        case_obj(scout.models.Case)
-        variant_id(str) _id of a variant
     Returns:
-        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+        display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
     build = "38"  # This feature is only available for RNA tracks in build 38
 
     locus = "All"
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
+    if omics_variant_id:
+        variant_obj = store.omics_variant(variant_id=omics_variant_id)
+
+    if variant_obj:
         locus = make_locus_from_variant(variant_obj, case_obj, build)
 
     display_obj = {"locus": locus, "tracks": []}

@@ -45,11 +45,12 @@ from .disease_parsing import (
     MIMNR_PATTERN,
     OMIM_STATUS_MAP,
 )
-from .file_types import FILE_TYPE_MAP
+from .file_types import FILE_TYPE_MAP, OMICS_FILE_TYPE_MAP
 from .filters import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_MEI,
+    CLINICAL_FILTER_BASE_OUTLIER,
     CLINICAL_FILTER_BASE_SV,
 )
 from .gene_tags import (
@@ -88,6 +89,7 @@ from .variant_tags import (
     GENETIC_MODELS_PALETTE,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
+    OUTLIER_TYPES,
     SPIDEX_HUMAN,
     SPIDEX_LEVELS,
     SV_TYPES,

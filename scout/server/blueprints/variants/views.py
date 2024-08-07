@@ -137,7 +137,9 @@ def variants(institute_id, case_name):
     variants_query = store.variants(
         case_obj["_id"], query=form.data, category=category, build=genome_build
     )
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -236,7 +238,7 @@ def str_variants(institute_id, case_name):
         ]
     )
 
-    result_size = store.count_variants(case_obj["_id"], query, None, category)
+    result_size = store.count_variants(case_obj["_id"], query, None, category, build=genome_build)
 
     if request.form.get("export"):
         return controllers.download_str_variants(case_obj, variants_query)
@@ -312,7 +314,9 @@ def sv_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
 
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     # if variants should be exported
     if request.form.get("export"):
@@ -406,7 +410,9 @@ def mei_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
 
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     # if variants should be exported
     if request.form.get("export"):
@@ -515,7 +521,9 @@ def cancer_variants(institute_id, case_name):
     variants_query = store.variants(
         case_obj["_id"], category="cancer", query=form.data, build=genome_build
     )
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -596,7 +604,9 @@ def cancer_sv_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
 
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     # if variants should be exported
     if request.form.get("export"):
@@ -681,7 +691,9 @@ def fusion_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
 
-    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
 
     # if variants should be exported
     if request.form.get("export"):
