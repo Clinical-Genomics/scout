@@ -125,6 +125,10 @@ vcf_snv_research: scout/demo/643594.research.vcf.gz
 vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 vcf_mei_research: scout/demo/643594.research.mei.vcf.gz
 
+omics_files:
+    fraser: scout/demo/drop/fraser_top_hits_clinical.tsv
+    outrider: scout/demo/drop/outrider_top_hits_clinical.tsv
+
 smn_tsv: scout/demo/643594.solo.smn.tsv
 
 madeline: scout/demo/madeline.xml

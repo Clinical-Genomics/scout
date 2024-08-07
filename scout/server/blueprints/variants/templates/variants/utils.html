@@ -30,13 +30,17 @@
 
     var the_form = document.forms['filters_form'];
 
-    document.getElementById('hide_dismissed').onchange = function() {
+    var hide_dismissed = document.getElementById('hide_dismissed');
+    if (hide_dismissed) {
+      hide_dismissed.onchange = function() {
       the_form.submit();
-    };
+    }}
 
-    document.getElementById('show_unaffected').onchange = function() {
+    var show_unaffected =document.getElementById('show_unaffected');
+    if (show_unaffected) {
+      show_unaffected.onchange = function() {
       the_form.submit();
-    };
+    }}
 
     function resetPage(){
       document.getElementById('page').value = "1";
