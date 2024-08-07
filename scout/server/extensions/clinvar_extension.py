@@ -71,16 +71,16 @@ class ClinVarApi:
             "actions": [{"type": "AddData", "targetDb": "clinvar", "data": {"content": json_data}}]
         }
         try:
-            resp = requests.post(self.submit_service, data=json.dumps(data), headers=header)
-            return self.submit_service, resp.status_code, resp
+            resp = requests.post(self.submit_service_url, data=json.dumps(data), headers=header)
+            return self.submit_service_url, resp.status_code, resp
 
         except Exception as ex:
-            return self.submit_service, None, ex
+            return self.submit_service_url, None, ex
 
     def show_submission_status(self, submission_id: str, api_key=None):
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
 
         header: dict = self.set_header(api_key)
-        actions_url = f"{self.submit_service}{submission_id}/actions/"
+        actions_url = f"{self.submit_service_url}{submission_id}/actions/"
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
         flash(f"Response from ClinVar: {actions_resp.json()}", "primary")
