@@ -79,6 +79,7 @@
                                     type: 'wig',
                                     format: "bigwig",
                                     url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
+                                    height: 500,
                                   },
                                   {
                                     type: 'spliceJunctions',
@@ -88,7 +89,8 @@
                                     labelUniqueReadCount: true,
                                     url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
                                     indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
-                                    minUniquelyMappedReads: 1
+                                    minUniquelyMappedReads: 1,
+                                    height: 500,
                                   },
                                 ]
                               }, // end of sashimi track with data

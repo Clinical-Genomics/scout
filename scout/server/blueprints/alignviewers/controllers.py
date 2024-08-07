@@ -134,6 +134,8 @@ def make_sashimi_tracks(
     build = "38"  # This feature is only available for RNA tracks in build 38
 
     locus = "All"
+    variant_obj = None
+
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
     if omics_variant_id:
