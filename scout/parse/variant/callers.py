@@ -22,6 +22,7 @@ def parse_callers(variant, category="snv"):
     """
     relevant_callers = CALLERS[category]
     callers = {caller["id"]: None for caller in relevant_callers}
+    callers_keys = set(callers.keys())
 
     other_info = variant.INFO.get("FOUND_IN")
     svdb_origin = variant.INFO.get("svdb_origin")
@@ -30,10 +31,12 @@ def parse_callers(variant, category="snv"):
     if other_info:
         for info in other_info.split(","):
             called_by = info.split("|")[0]
-            callers[called_by] = "Pass"
+            if called_by in callers_keys:
+                callers[called_by] = "Pass"
     elif svdb_origin:
         for called_by in svdb_origin.split("|"):
-            callers[called_by] = "Pass"
+            if called_by in callers_keys:
+                callers[called_by] = "Pass"
     elif raw_info:
         info = raw_info.split("-")
         for call in info:
@@ -47,7 +50,7 @@ def parse_callers(variant, category="snv"):
                 for caller in callers:
                     if caller in call:
                         callers[caller] = "Filtered"
-            elif call in set(callers.keys()):
+            elif call in callers_keys:
                 callers[call] = "Pass"
 
     if raw_info or svdb_origin or other_info:
