@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alphabetically sort IGV track available for custom selection
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
+- Splice junction merged track height offset in IGV.js
 
 ## [4.85]
 ### Added
