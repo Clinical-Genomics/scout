@@ -10,13 +10,7 @@ from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
-from scout.constants import (
-    CASE_SEARCH_TERMS,
-    CASE_STATUSES,
-    DATE_DAY_FORMATTER,
-    ID_PROJECTION,
-    PHENOTYPE_GROUPS,
-)
+from scout.constants import CASE_STATUSES, DATE_DAY_FORMATTER, ID_PROJECTION, PHENOTYPE_GROUPS
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
@@ -435,20 +429,14 @@ def cases(store, request, institute_id):
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
-    data = {"search_terms": CASE_SEARCH_TERMS}
+    data = {}
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
-    name_query = None
-    if request.args.get("search_term"):
-        name_query = "".join(
-            [
-                request.args.get("search_type"),
-                request.args["search_term"].strip(),
-            ]
-        )
-    data["name_query"] = name_query
+
+    name_query = request.form
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
-    data["form"] = populate_case_filter_form(request.args)
+
+    data["form"] = CaseFilterForm(request.form)
 
     ALL_CASES_PROJECTION = {
         "analysis_date": 1,
@@ -479,7 +467,6 @@ def cases(store, request, institute_id):
     # local function to add info to case obj
     def populate_case_obj(case_obj):
         analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(["mixed"])
@@ -523,11 +510,11 @@ def cases(store, request, institute_id):
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
-        skip_assigned=request.args.get("skip_assigned"),
-        is_research=request.args.get("is_research"),
-        has_rna_data=request.args.get("has_rna"),
-        verification_pending=request.args.get("validation_ordered"),
-        has_clinvar_submission=request.args.get("clinvar_submitted"),
+        skip_assigned=request.form.get("skip_assigned"),
+        is_research=request.form.get("is_research"),
+        has_rna_data=request.form.get("has_rna"),
+        verification_pending=request.form.get("validation_ordered"),
+        has_clinvar_submission=request.form.get("clinvar_submitted"),
         projection=ALL_CASES_PROJECTION,
     )
     all_cases = _sort_cases(data, request, all_cases)
@@ -548,20 +535,6 @@ def cases(store, request, institute_id):
     data["limit"] = limit
 
     return data
-
-
-def populate_case_filter_form(params):
-    """Populate filter form with params previosly submitted by user
-
-    Args:
-        params(werkzeug.datastructures.ImmutableMultiDict)
-
-    Returns:
-        form(scout.server.blueprints.cases.forms.CaseFilterForm)
-    """
-    form = CaseFilterForm(params)
-    form.search_type.default = params.get("search_type")
-    return form
 
 
 def _get_unevaluated_variants_for_case(
