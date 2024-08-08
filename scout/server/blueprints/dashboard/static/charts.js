@@ -15,12 +15,16 @@ function analysisTypeData(analysis_types) {
     "bkgColors": {
       "WES": "#46bfbd",
       "WGS": "#fdb45c",
-      "PANEL": "#44449B"
+      "PANEL": "#44449B",
+			"PANEL-UMI": "#949fb1",
+			"WTS": "#f7464A"
     },
     "hoverColors": {
       "WES": "#5ad3d1",
       "WGS": "#ffc870",
-      "PANEL": "#353578"
+      "PANEL": "#353578",
+			"PANEL-UMI": "#a8b3c5",
+			"WTS": "#ff5a5e"
     }
   };
   var bkg = [];
