@@ -452,6 +452,9 @@ def case(
         "gens_info": gens.connection_settings(case_obj.get("genome_build")),
         "display_rerunner": rerunner.connection_settings.get("display", False),
         "hide_matching": hide_matching,
+        "audits": store.case_events_by_verb(
+            category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
+        ),
     }
 
     return data

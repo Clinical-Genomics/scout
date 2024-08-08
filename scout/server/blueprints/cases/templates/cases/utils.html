@@ -698,3 +698,26 @@
     <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="Sex is not confirmed."></span>
   {% endif %}
 {% endmacro %}
+
+{% macro filter_audits(audits, edit=none) %}
+<table id="audit-table" class="table table-sm" style="background-color: transparent">
+  <thead>
+    <tr>
+      <th>Filters marked audited for case</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% set audit_query = namespace() %}
+  {% for audit in audits %}
+  {% set audit_query = audit.link|url_args %}
+    <tr>
+      <td class="d-flex align-items-center"><strong>{{ audit.subject }} ({{audit_query.variant_type if audit_query.variant_type else "type unavailable -"}} {{ audit_query.category if audit_query.category else "category unavailable"}})</strong>&nbspwas marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.
+      {% if edit is true %}
+        <a href="{{ url_for('variants.unaudit_filter', audit_id=audit._id) }}" class="btn btn-link btn-sm" type="submit" data-bs-toggle='tooltip' title="Un-audit filter"><i class="fa fa-times text-danger"></i></a>
+      {% endif %}
+      </td>
+    </tr>
+  {%  endfor %}
+  </tbody>
+</table>
+{% endmacro %}

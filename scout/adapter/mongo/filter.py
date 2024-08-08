@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 from bson.objectid import ObjectId
-from flask import url_for
+from flask import flash, url_for
 from pymongo.cursor import CursorType
 from werkzeug.datastructures import MultiDict
 
@@ -104,6 +105,40 @@ class FilterHandler(object):
         )
 
         return filter_id
+
+    def unaudit_filter(self, audit_id: ObjectId, user_obj: dict):
+        """Removes an audit filter event with a new un-audit filter event."""
+
+        FILTER_SEARCH = {"_id": ObjectId(audit_id), "verb": "filter_audit"}
+
+        audit_event: Optional[dict] = self.event_collection.find_one(FILTER_SEARCH)
+        if audit_event is None:
+            return
+        if audit_event.get("user_id") != user_obj["email"]:
+            flash("You can't un-audit a filter audited by another user.", "warning")
+            return
+        institute_obj: Optional[dict] = self.institute(institute_id=audit_event.get("institute"))
+        case_obj: Optional[dict] = self.case(case_id=audit_event.get("case"))
+        if None in [institute_obj, case_obj]:
+            LOG.error(
+                f"An error occurred un-auditing filter: institute or case missing for audit event {audit_id}."
+            )
+            return
+
+        # Create un-audit event
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=audit_event["link"],
+            category="case",
+            verb="filter_unaudit",
+            subject=audit_event["subject"],
+            level="global",
+        )
+
+        # Remove audit event
+        self.event_collection.delete_one(FILTER_SEARCH)
 
     def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.

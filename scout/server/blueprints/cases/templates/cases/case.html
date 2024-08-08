@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal, filter_audits %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
@@ -119,7 +119,15 @@
         </div>
       </div>
 
+      <div class="row ms-1">
       {{ matching_variants() }}
+
+      {% if audits | count_cursor > 0 %}
+        <div class="card panel-default col-4 ms-5 me-1">
+            {{ filter_audits(audits, true) }}
+        </div>
+      {% endif %}
+      </div>
 
       <div class="card panel-default" >
         <div class="row">
@@ -540,9 +548,9 @@
 {% endmacro %}
 
 {% macro matching_variants() %}
-<div class="card mt-3">
-  <div class="row mt-0 ms-3">
-    <div class="col-sm-12 col-md-12">
+<div class="card mt-3 col-7">
+  <div class="mt-0">
+    <div class="col-md-7">
       <div data-bs-toggle='tooltip' class="panel-heading" title="Check if there are any variants in this case
         marked as causative in another case for this institute, or are on the managed variants list.">
         <strong>
@@ -557,27 +565,27 @@
     {% if hide_matching == false %}
       {% if other_causatives|length > 0 %}
         <div class="row mt-0 ms-3">
-          <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
+          <div class="col-md-7">{{ matching_causatives(other_causatives, institute, case) }}</div>
         </div>
       {% endif %}
       {% if default_other_causatives|length > 0%}
         <div class="row mt-0 ms-3">
-          <div class="col-xs-12 col-md-12">{{ matching_causatives(default_other_causatives, institute, case, default=True) }}</div>
+          <div class="col-md-7">{{ matching_causatives(default_other_causatives, institute, case, default=True) }}</div>
         </div>
       {% endif %}
       {% if managed_variants|length > 0%}
         <div class="row mt-0 ms-3">
-          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
+          <div class="col-md-7">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
         </div>
       {% endif %}
       {% if default_managed_variants|length > 0%}
         <div class="row mt-0 ms-3">
-          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(default_managed_variants, institute, case, default=True) }}</div>
+          <div class="col-md-7">{{ matching_managed_variants(default_managed_variants, institute, case, default=True) }}</div>
         </div>
       {% endif %}
       {% if other_causatives|length == 0 and default_other_causatives|length == 0 and managed_variants|length == 0 and default_managed_variants|length == 0%}
         <div class="row mt-0 ms-3">
-          <div class="col-sm-12 col-md-12">No matching causatives or managed variants found</div>
+          <div class="col-md-7">No matching causatives or managed variants found</div>
         </div>
       {% endif %}
     {% endif %}
