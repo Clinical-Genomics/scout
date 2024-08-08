@@ -143,43 +143,47 @@ function casesDetailed(overview, all_cases) {
         data: overview.map(function (overview) {
           return overview.count * 100 / all_cases;
         }),
+				label: "Case percentage",
         backgroundColor: bkg,
         hoverBackgroundColor: hover
       }]
     },
     options: {
 			indexAxis: 'y',
-      tooltips: {
-        callbacks: {
-          label: function label(tooltipItems) {
-            return Math.round(Number(tooltipItems.value) * all_cases / 100);
-          }
-        }
-      },
-      scales: {
-        xAxes: [{
-          ticks: {
-            min: 0,
-            max: 100,
-            callback: function callback(value) {
-              return value + "%";
-            }
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Case percentage",
-            fontSize: 20
-          }
-        }],
-        yAxes: [{
-          ticks: {
-            fontSize: 20
-          }
-        }]
-      },
-      legend: {
-        display: false
-      }
+			tooltips: {
+				callbacks: {
+					label: function label(tooltipItems) {
+						return Math.round(Number(tooltipItems.value) * all_cases / 100);
+					}
+				}
+			},
+			scales: {
+				x: {
+					ticks: {
+						min: 0,
+						max: 100,
+						callback: function callback(value) {
+							return value + "%";
+						}
+					},
+					title: {
+						display: true,
+						text: "Case percentage",
+						font: 20
+					}
+				},
+				y: {
+					ticks: {
+						fontSize: 20
+					}
+				}
+			},
+			plugins:
+				{
+					legend: {
+						display: false
+					}
+				}
     }
   };
   return chart_data;
