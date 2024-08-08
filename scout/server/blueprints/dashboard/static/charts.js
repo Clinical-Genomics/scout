@@ -132,7 +132,7 @@ function casesDetailed(overview, all_cases) {
     bkg.push(bkgColors[index]);
   });
   var chart_data = {
-    type: "horizontalBar",
+    type: "bar",
     data: {
       labels: labels,
       datasets: [{
@@ -144,6 +144,7 @@ function casesDetailed(overview, all_cases) {
       }]
     },
     options: {
+			indexAxis: 'y',
       tooltips: {
         callbacks: {
           label: function label(tooltipItems) {
