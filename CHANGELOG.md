@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for loading and storing OMICS data
 - Parse DROP Fraser and Outrider TSVs
 - Display omics variants - wts outliers (Fraser, Outrider)
+- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
@@ -21,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction merged track height offset in IGV.js
 - Splice junction initiation crash with empty variant obj
 - Splice junction variant routing for cases with WTS but without outlier data
+
 
 ## [4.85]
 ### Added
