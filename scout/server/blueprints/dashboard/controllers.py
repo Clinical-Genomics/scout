@@ -139,6 +139,31 @@ def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
             "count": general_sliced_info["cohort_cases"],
             "percent": general_sliced_info["cohort_cases"] / total_sliced_cases,
         },
+        {
+            "title": "Case status tag",
+            "count": general_sliced_info["tagged_cases"],
+            "percent": general_sliced_info["tagged_cases"] / total_sliced_cases,
+        },
+        {
+            "title": "Provisional status tag",
+            "count": general_sliced_info["provisional_cases"],
+            "percent": general_sliced_info["provisional_cases"] / total_sliced_cases,
+        },
+        {
+            "title": "Diagnostic status tag",
+            "count": general_sliced_info["diagnostic_cases"],
+            "percent": general_sliced_info["diagnostic_cases"] / total_sliced_cases,
+        },
+        {
+            "title": "Carrier status tag",
+            "count": general_sliced_info["carrier_cases"],
+            "percent": general_sliced_info["carrier_cases"] / total_sliced_cases,
+        },
+        {
+            "title": "Incidental status tag",
+            "count": general_sliced_info["incidental_cases"],
+            "percent": general_sliced_info["incidental_cases"] / total_sliced_cases,
+        },
     ]
 
     data["overview"] = overview
@@ -168,15 +193,26 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         "suspects": 1,
         "cohorts": 1,
         "individuals": 1,
+        "tags": 1,
     }
     cases = adapter.cases(
         owner=institute_id, name_query=name_query, projection=CASE_GENERAL_INFO_PROJECTION
     )
 
-    phenotype_cases = 0
-    causative_cases = 0
-    pinned_cases = 0
-    cohort_cases = 0
+    case_counter_keys = [
+        "phenotype",
+        "causative",
+        "pinned",
+        "cohort",
+        "tagged",
+        "provisional",
+        "diagnostic",
+        "incidental",
+        "carrier",
+    ]
+    case_counter = {}
+    for counter in case_counter_keys:
+        case_counter[counter] = 0
 
     pedigree = {
         1: {"title": "Single", "count": 0},
@@ -191,13 +227,20 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     for total_cases, case in enumerate(cases, 1):
         case_ids.add(case["_id"])
         if case.get("phenotype_terms"):
-            phenotype_cases += 1
+            case_counter["phenotype"] += 1
         if case.get("causatives"):
-            causative_cases += 1
+            case_counter["causative"] += 1
         if case.get("suspects"):
-            pinned_cases += 1
+            case_counter["pinned"] += 1
         if case.get("cohorts"):
-            cohort_cases += 1
+            case_counter["cohort"] += 1
+        if case.get("tags"):
+            case_counter["tagged"] += 1
+            stat_tags = ["provisional", "diagnostic", "incidental", "carrier"]
+            case_tags = case.get("tags")
+            for tag in stat_tags:
+                if tag in case_tags:
+                    case_counter[tag] += 1
 
         nr_individuals = len(case.get("individuals", []))
         if nr_individuals == 0:
@@ -208,12 +251,10 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
             pedigree[nr_individuals]["count"] += 1
 
     general["total_cases"] = total_cases
-    general["phenotype_cases"] = phenotype_cases
-    general["causative_cases"] = causative_cases
-    general["pinned_cases"] = pinned_cases
-    general["cohort_cases"] = cohort_cases
     general["pedigree"] = pedigree
     general["case_ids"] = case_ids
+    for counter in case_counter_keys:
+        general[counter + "_cases"] = case_counter[counter]
 
     return general
 
