@@ -11,8 +11,14 @@ EXAC_KEYS = ["EXACAF"]
 EXAC_MAX_KEYS = ["ExAC_MAX_AF", "EXAC_MAX_AF"]
 
 # gnomAD has both SNV and SV
-GNOMAD_INFO_KEYS = ["GNOMADAF", "GNOMAD_AF", "gnomADg_AF", "gnomad_svAF"]
-GNOMAD_INFO_MAX_KEYS = ["gnomADg_AF_POPMAX", "GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
+GNOMAD_INFO_KEYS = ["GNOMADAF", "GNOMAD_AF", "gnomADg_AF", "gnomad_svAF", "gnomad_af"]
+GNOMAD_INFO_MAX_KEYS = [
+    "gnomADg_AF_POPMAX",
+    "GNOMADAF_popmax",
+    "GNOMADAF_POPMAX",
+    "GNOMADAF_MAX",
+    "gnomad_popmax_af",
+]
 
 # SV
 CLINGEN_BENIGN_KEYS = [
