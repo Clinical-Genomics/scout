@@ -14,11 +14,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display omics variants - wts outliers (Fraser, Outrider)
 - Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
 - Make removed panel optionally visible to non-admin or non maintainers
-- Parse CoLoRSsb frequencies annotated in the variant INFO field with the `colorsdb_af` key
+- Parse CoLoRSdb frequencies annotated in the variant INFO field with the `colorsdb_af` key
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
 - Updated wokeignore to avoid unfixable warning
+- Update Chart.js to v4.4.3
 - Load only mei variants hitting demo panel genes in scout demo instance
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
