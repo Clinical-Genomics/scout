@@ -75,6 +75,7 @@ def parse_frequencies(variant, transcripts):
     # These are SV-specific frequencies
     update_frequency_from_vcf(frequencies, variant, ["left_1000GAF"], "thousand_g_left")
     update_frequency_from_vcf(frequencies, variant, ["right_1000GAF"], "thousand_g_right")
+    update_frequency_from_vcf(frequencies, variant, ["colorsdb_af"], "colorsdb_af")
 
     # Search transcripts CSQ if not found in VCF INFO
     if not frequencies:
@@ -123,6 +124,7 @@ def parse_sv_frequencies(variant: cyvcf2.Variant) -> Dict:
     update_sv_frequency_from_vcf(sv_frequencies, variant, SWEGEN_KEYS, "swegen")
     update_sv_frequency_from_vcf(sv_frequencies, variant, DECIPHER_KEYS, "decipher")
     update_sv_frequency_from_vcf(sv_frequencies, variant, CG_KEYS, "clingen_mip")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, ["colorsdb_af"], "colorsdb_af")
 
     return sv_frequencies
 
