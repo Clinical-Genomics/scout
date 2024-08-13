@@ -182,3 +182,16 @@ def test_parse_sv_frequencies_ngi(cyvcf2_variant):
 
     # THEN assert that the last frequency is returned
     assert frequencies["clingen_ngi"] == float(variant.INFO["clingen_ngi"])
+
+
+def test_parse_colorsdb(cyvcf2_variant):
+    """Make sure CoLoRSdb AF is parsed correctly from variants.."""
+    variant = cyvcf2_variant
+    # GIVEN a variant with CoLoRSdb AF in the INFO field
+    variant.INFO["colorsdb_af"] = "0.4982"
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant, [])
+
+    # THEN assert that CoLoRSdb frequency is collected
+    assert frequencies["colorsdb_af"] == float(variant.INFO["colorsdb_af"])
