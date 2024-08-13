@@ -16,13 +16,7 @@ LOG = logging.getLogger(__name__)
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
 
 
-def shall_display_panel(panel_obj, user):
-    """Check if panel shall be displayed based on display status and user previleges."""
-    is_visible = not panel_obj.get("hidden", False)
-    return is_visible or panel_write_granted(panel_obj, user)
-
-
-def panel_write_granted(panel_obj, user):
+def panel_write_granted(panel_obj, user) -> bool:
     return any(
         ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer", [])]
     )
