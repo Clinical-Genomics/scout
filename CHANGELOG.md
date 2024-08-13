@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display omics variants - wts outliers (Fraser, Outrider)
 - Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
 - Make removed panel optionally visible to non-admin or non maintainers
-- Parse CoLoRSsb frequencies annotated in the variant INFO field with the `colorsdb_af` key
+- Parse CoLoRSdb frequencies annotated in the variant INFO field with the `colorsdb_af` key
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction merged track height offset in IGV.js
 - Splice junction initiation crash with empty variant obj
 - Splice junction variant routing for cases with WTS but without outlier data
+- Variant links to ExAC, now pointing to gnomAD, since the ExAC browser is no longer available
 
 ## [4.85]
 ### Added
