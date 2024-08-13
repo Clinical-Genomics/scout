@@ -333,6 +333,14 @@ def predictions(genes):
     return data
 
 
+def set_colorsdb_freq(variant_obj: dict, freqs: dict) -> None:
+    """Add CoLoRS DB frequencies to variants, if available."""
+    COLORSDB_KEY = "colorsdb_af"
+    if variant_obj.get(COLORSDB_KEY) is None:
+        return
+    freqs[COLORSDB_KEY] = {"display_name": "CoLoRSdb", "link": None}
+
+
 def frequencies(variant_obj):
     """Add frequencies in the correct way for the template
 
@@ -433,6 +441,7 @@ def frequencies(variant_obj):
                 "link": variant_obj.get("gnomad_link"),
             },
         }
+    set_colorsdb_freq(variant_obj, freqs)
     frequency_list = []
     for freq_key in freqs:
         display_name = freqs[freq_key]["display_name"]
