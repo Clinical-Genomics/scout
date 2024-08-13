@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from scout.adapter import MongoAdapter
 from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
@@ -333,7 +333,7 @@ def predictions(genes):
     return data
 
 
-def frequencies(variant_obj):
+def frequencies(variant_obj: dict) -> list[Tuple]:
     """Convert raw annotations to a more visual format with frequencies.
 
     Args:
