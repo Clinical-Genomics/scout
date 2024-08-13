@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display omics variants - wts outliers (Fraser, Outrider)
 - Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
 - Make removed panel optionally visible to non-admin or non maintainers
+- Parse CoLoRSsb frequencies annotated in the variant INFO field with the `colorsdb_af` key
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Updated igv.js to v3.0.1
