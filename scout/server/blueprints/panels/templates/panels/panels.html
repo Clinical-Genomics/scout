@@ -150,7 +150,7 @@
         <table class="table table-striped" id="panelTable" style="table-layout: fixed;">
         <thead>
           <tr>
-            <th>Name</th>
+            <th style="width: 30%">Name</th>
             <th>Version</th>
             <th>Number of genes</th>
             <th>History</th>
@@ -163,8 +163,11 @@
           <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
             <td>
               <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
+              {% if current_user.email in panel.maintainer %}
+                <span class="badge bg-dark" data-bs-toggle="tooltip" title="You are a maintainer of this panel"><span class="fa fa-tools"></span></span>
+              {% endif %}
               {% if panel.hidden %}
-                <span class="badge bg-danger">Removed</span>
+                <span class="badge bg-danger" data-bs-toggle="tooltip" title="This panel was removed">Removed</span>
               {% endif %}
             </td>
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
@@ -174,10 +177,10 @@
             <td>
               {% if panel.hidden %}
                 <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
-                  <button id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
+                  <button {{panel.writable}} id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
                 </form>
               {% else %}
-              <button id="{{panel._id}}" type="button" data-bs-toggle="modal" data-bs-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
+              <button {{panel.writable}} id="{{panel._id}}" type="button" data-bs-toggle="modal" data-bs-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
               {% endif %}
             </td>
           </tr>
@@ -268,6 +271,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
+
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
