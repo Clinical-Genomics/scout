@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse DROP Fraser and Outrider TSVs
 - Display omics variants - wts outliers (Fraser, Outrider)
 - Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
+- Make removed panel optionally visible to non-admin or non maintainers
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
