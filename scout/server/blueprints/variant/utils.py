@@ -333,131 +333,72 @@ def predictions(genes):
     return data
 
 
-def set_colorsdb_freq(variant_obj: dict, freqs: dict) -> None:
-    """Add CoLoRS DB frequencies to variants, if available."""
-    COLORSDB_KEY = "colorsdb_af"
-    if variant_obj.get(COLORSDB_KEY) is None:
-        return
-    freqs[COLORSDB_KEY] = {"display_name": "CoLoRSdb", "link": None}
-
-
 def frequencies(variant_obj):
-    """Add frequencies in the correct way for the template
-
-    This function converts the raw annotations to something better to visualize.
-    GnomAD is mandatory and will always be shown.
+    """Convert raw annotations to a more visual format with frequencies.
 
     Args:
         variant_obj(scout.models.Variant)
 
     Returns:
-        frequencies(list(tuple)): A list of frequencies to display
+        list of tuple: A list of frequencies to display.
     """
     is_mitochondrial_variant = variant_obj.get("chromosome") == "MT"
+    category = variant_obj["category"]
 
-    if variant_obj["category"] == "sv":
-        freqs = {
-            "gnomad_frequency": {
-                "display_name": "GnomAD",
-                "link": variant_obj.get("gnomad_sv_link"),
-            },
-            "clingen_cgh_benign": {
-                "display_name": "ClinGen CGH (benign)",
-                "link": None,
-            },
-            "clingen_cgh_pathogenic": {
-                "display_name": "ClinGen CGH (pathogenic)",
-                "link": None,
-            },
-            "clingen_ngi": {"display_name": "ClinGen NGI", "link": None},
-            "clingen_mip": {"display_name": "ClinGen MIP", "link": None},
-            "swegen": {"display_name": "SweGen", "link": None},
-            "decipher": {"display_name": "Decipher", "link": None},
-            "thousand_genomes_frequency": {"display_name": "1000G", "link": None},
-            "thousand_genomes_frequency_left": {
-                "display_name": "1000G(left)",
-                "link": None,
-            },
-            "thousand_genomes_frequency_right": {
-                "display_name": "1000G(right)",
-                "link": None,
-            },
-        }
-    elif variant_obj["category"] == "mei":
-        freqs = {
-            "swegen_alu": {
-                "display_name": "SweGen ALU",
-                "link": None,
-            },
-            "swegen_herv": {
-                "display_name": "SweGen HERV",
-                "link": None,
-            },
-            "swegen_l1": {
-                "display_name": "SweGen L1",
-                "link": None,
-            },
-            "swegen_sva": {
-                "display_name": "SweGen SVA",
-                "link": None,
-            },
-            "swegen_mei_max": {
-                "display_name": "SweGen MEI(max)",
-                "link": None,
-            },
-        }
-    else:
-        freqs = {
-            "gnomad_frequency": {
-                "display_name": "GnomAD",
-                "link": variant_obj.get("gnomad_link"),
-            },
-            "thousand_genomes_frequency": {
-                "display_name": "1000G",
-                "link": variant_obj.get("thousandg_link"),
-            },
-            "max_thousand_genomes_frequency": {
-                "display_name": "1000G(max)",
-                "link": variant_obj.get("thousandg_link"),
-            },
-            "exac_frequency": {
-                "display_name": "ExAC",
-                "link": variant_obj.get("exac_link"),
-            },
-            "max_exac_frequency": {
-                "display_name": "ExAC(max)",
-                "link": variant_obj.get("exac_link"),
-            },
-            "swegen": {
-                "display_name": "SweGen",
-                "link": variant_obj.get("swegen_link"),
-            },
-            "gnomad_mt_homoplasmic_frequency": {
-                "display_name": "GnomAD MT, homoplasmic",
-                "link": variant_obj.get("gnomad_link"),
-            },
-            "gnomad_mt_heteroplasmic_frequency": {
-                "display_name": "GnomAD MT, heteroplasmic",
-                "link": variant_obj.get("gnomad_link"),
-            },
-        }
-    set_colorsdb_freq(variant_obj, freqs)
+    # Define frequency mappings for each category
+    frequency_mappings = {
+        "sv": {
+            "gnomad_frequency": ("GnomAD", variant_obj.get("gnomad_sv_link")),
+            "clingen_cgh_benign": ("ClinGen CGH (benign)", None),
+            "clingen_cgh_pathogenic": ("ClinGen CGH (pathogenic)", None),
+            "clingen_ngi": ("ClinGen NGI", None),
+            "clingen_mip": ("ClinGen MIP", None),
+            "swegen": ("SweGen", None),
+            "decipher": ("Decipher", None),
+            "thousand_genomes_frequency": ("1000G", None),
+            "thousand_genomes_frequency_left": ("1000G(left)", None),
+            "thousand_genomes_frequency_right": ("1000G(right)", None),
+            "colorsdb_af": ("CoLoRSdb", None),
+        },
+        "mei": {
+            "swegen_alu": ("SweGen ALU", None),
+            "swegen_herv": ("SweGen HERV", None),
+            "swegen_l1": ("SweGen L1", None),
+            "swegen_sva": ("SweGen SVA", None),
+            "swegen_mei_max": ("SweGen MEI(max)", None),
+        },
+        "snv": {
+            "gnomad_frequency": ("GnomAD", variant_obj.get("gnomad_link")),
+            "thousand_genomes_frequency": ("1000G", variant_obj.get("thousandg_link")),
+            "max_thousand_genomes_frequency": ("1000G(max)", variant_obj.get("thousandg_link")),
+            "exac_frequency": ("ExAC", variant_obj.get("exac_link")),
+            "max_exac_frequency": ("ExAC(max)", variant_obj.get("exac_link")),
+            "swegen": ("SweGen", variant_obj.get("swegen_link")),
+            "gnomad_mt_homoplasmic_frequency": (
+                "GnomAD MT, homoplasmic",
+                variant_obj.get("gnomad_link"),
+            ),
+            "gnomad_mt_heteroplasmic_frequency": (
+                "GnomAD MT, heteroplasmic",
+                variant_obj.get("gnomad_link"),
+            ),
+            "colorsdb_af": ("CoLoRSdb", None),
+        },
+    }
+
+    # Select the appropriate frequency dictionary
+    freqs = frequency_mappings.get(category, frequency_mappings["snv"])
+
     frequency_list = []
-    for freq_key in freqs:
-        display_name = freqs[freq_key]["display_name"]
+    for freq_key, (display_name, link) in freqs.items():
         value = variant_obj.get(freq_key)
-        link = freqs[freq_key]["link"]
-        # Always add gnomad for non-mitochondrial variants
+
         if freq_key == "gnomad_frequency":
             if is_mitochondrial_variant:
                 continue
-            # If gnomad not found search for exac
-            if not value:
-                value = variant_obj.get("exac_frequency")
-            value = value or "NA"
+            value = value or variant_obj.get("exac_frequency") or "NA"
 
-        # Always add gnomad MT frequencies for mitochondrial variants
-        elif freq_key.startswith("gnomad_mt_") and is_mitochondrial_variant:
+        if freq_key.startswith("gnomad_mt_") and is_mitochondrial_variant:
             value = value or "NA"
 
         if value:
