@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for loading and storing OMICS data
 - Parse DROP Fraser and Outrider TSVs
 - Display omics variants - wts outliers (Fraser, Outrider)
+- Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
 - Possibility to un-audit previously audited filters
 ### Changed
 - Updated igv.js to v3.0.1
