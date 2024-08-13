@@ -138,7 +138,6 @@ def parse_mei_frequencies(variant: cyvcf2.Variant) -> Dict:
     update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_HERV_KEYS, "swegen_herv")
     update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_L1_KEYS, "swegen_l1")
     update_sv_frequency_from_vcf(mei_frequencies, variant, SWEGEN_SVA_KEYS, "swegen_sva")
-    update_sv_frequency_from_vcf(mei_frequencies, variant, ["colorsdb_af"], "colorsdb_af")
 
     if any(mei_frequencies.values()):
         max_mei_frequency = max(mei_frequencies.values())
