@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
 - Updated wokeignore to avoid unfixable warning
+- Update Chart.js to v4.4.3
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
 - Splice junction merged track height offset in IGV.js
