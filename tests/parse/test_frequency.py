@@ -142,6 +142,34 @@ def test_parse_gnomad_popmax(cyvcf2_variant):
     assert frequencies["gnomad_max"] == float(variant.INFO["GNOMADAF_popmax"])
 
 
+def test_parse_gnomad_echtvar(cyvcf2_variant):
+    """Make sure GNOMAD AF is parsed correctly from variants annotated with echtvar."""
+    variant = cyvcf2_variant
+
+    # GIVEN a variant dict with a certain gnomad_af allele frequency
+    variant.INFO["gnomad_af"] = "0.117036"
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant, [])
+
+    # THEN assert that gnomad frequency is collected
+    assert frequencies["gnomad"] == float(variant.INFO["gnomad_af"])
+
+
+def test_parse_gnomad_popmax_echtvar(cyvcf2_variant):
+    """Make sure GNOMAD POPMAX AF is parsed correctly from variants annotated with echtvar."""
+    variant = cyvcf2_variant
+
+    # GIVEN a variant dict with a certain gnomad_af allele frequency
+    variant.INFO["gnomad_popmax_af"] = "0.831118"
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant, [])
+
+    # THEN assert that gnomad_max frequency is collected
+    assert frequencies["gnomad_max"] == float(variant.INFO["gnomad_popmax_af"])
+
+
 def test_parse_sv_frequencies_ngi(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN a variant dict with a differenct frequencies
