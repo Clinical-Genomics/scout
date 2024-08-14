@@ -12,7 +12,7 @@ coloredlogs
 query_phenomizer
 Flask-Babel>=3
 livereload
-tornado<6.3
+tornado >=6.4.1
 python-dateutil
 pymongo
 pathlib
