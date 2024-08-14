@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.86]
 ### Added
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
