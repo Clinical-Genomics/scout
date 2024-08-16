@@ -489,7 +489,7 @@ def test_sv_cancer_variants(app, institute_obj, cancer_case_obj):
 
 
 def test_filter_export_cancer_variants(app, institute_obj, case_obj):
-    """Test the variant export functionaliy in cancer_variants page"""
+    """Test the variant export functionality in cancer_variants page"""
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
