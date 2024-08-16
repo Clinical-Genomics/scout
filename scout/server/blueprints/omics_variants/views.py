@@ -1,5 +1,3 @@
-import logging
-
 from flask import Blueprint, flash, request
 from flask_login import current_user
 from markupsafe import Markup
@@ -18,8 +16,6 @@ from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-
-LOG = logging.getLogger(__name__)
 
 omics_variants_bp = Blueprint(
     "omics_variants",

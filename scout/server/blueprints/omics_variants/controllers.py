@@ -1,5 +1,3 @@
-import logging
-
 from flask import Response
 from pymongo.cursor import CursorType
 from werkzeug.datastructures import Headers
@@ -9,8 +7,6 @@ from scout.constants import EXPORTED_VARIANTS_LIMIT
 from scout.server.blueprints.variant.utils import update_variant_case_panels
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, case_has_rna_tracks
-
-LOG = logging.getLogger(__name__)
 
 
 def outliers(
