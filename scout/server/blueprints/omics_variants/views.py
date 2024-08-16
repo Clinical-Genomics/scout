@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, request
+from flask import Blueprint, flash, request
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -19,7 +19,7 @@ from scout.server.utils import institute_and_case, templated
 
 from . import controllers
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 omics_variants_bp = Blueprint(
     "omics_variants",
@@ -85,6 +85,9 @@ def outliers(institute_id, case_name):
     variants_query = store.omics_variants(
         case_obj["_id"], query=form.data, category=category, build=genome_build
     )
+
+    if request.form.get("export"):
+        return controllers.download_omics_variants(case_obj, variants_query)
 
     result_size = store.count_omics_variants(
         case_id=case_obj["_id"], query=form.data, category=category, build=genome_build
