@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, request
+from flask import Blueprint, request
 from flask_login import current_user
 from markupsafe import Markup
 
