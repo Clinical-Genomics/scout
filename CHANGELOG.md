@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction merged track height offset in IGV.js
 - Splice junction initiation crash with empty variant obj
 - Splice junction variant routing for cases with WTS but without outlier data
+- Variant links to ExAC, now pointing to gnomAD, since the ExAC browser is no longer available
 
 ## [4.85]
 ### Added
