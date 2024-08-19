@@ -72,7 +72,7 @@ def download_omics_variants(case_obj: dict, variant_objs: CursorType):
         "Gene",
         "Gene annotation",
         "Category",
-        "sub-category",
+        "Sub-category",
         "Potential impact",
         "Value",
         "P-value",
