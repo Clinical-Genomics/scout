@@ -71,7 +71,7 @@ def download_omics_variants(case_obj: dict, variant_objs: CursorType):
     DOCUMENT_HEADER = [
         "Gene",
         "Gene annotation",
-        "category",
+        "Category",
         "sub-category",
         "Potential impact",
         "Value",
