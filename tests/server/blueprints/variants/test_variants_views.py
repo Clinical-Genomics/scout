@@ -262,9 +262,7 @@ def test_str_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_fusion_variants(
-    app, institute_obj, fusion_case_obj, fusion_variant_objs, one_fusion_variant
-):
+def test_fusion_variants(app, institute_obj, fusion_case_obj, fusion_variant_objs):
     """Test the page that displays a list of RNA fusion variants."""
 
     # GIVEN an initialized app
@@ -489,7 +487,7 @@ def test_sv_cancer_variants(app, institute_obj, cancer_case_obj):
 
 
 def test_filter_export_cancer_variants(app, institute_obj, case_obj):
-    """Test the variant export functionaliy in cancer_variants page"""
+    """Test the variant export functionality in cancer_variants page"""
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
