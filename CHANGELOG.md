@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse GNOMAD `gnomad_af` and `gnomad_popmax_af` keys from variants annotated with `echtvar`
 - Make removed panel optionally visible to non-admin or non maintainers
 - Parse CoLoRSsb frequencies annotated in the variant INFO field with the `colorsdb_af` key
+- Download -omics variants using the `Filter and export button`
 - Possibility to un-audit previously audited filters
 ### Changed
 - Updated igv.js to v3.0.1
