@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make removed panel optionally visible to non-admin or non maintainers
 - Parse CoLoRSdb frequencies annotated in the variant INFO field with the `colorsdb_af` key
 - Download -omics variants using the `Filter and export button`
+- Clickable COSMIC links on IGV tracks
 - Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Updated igv.js to v3.0.1
