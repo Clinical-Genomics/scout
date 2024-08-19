@@ -11,7 +11,7 @@ Flask-Mail
 coloredlogs
 query_phenomizer
 Flask-Babel>=3
-livereload
+livereload>=2.7
 tornado >=6.4.1
 python-dateutil
 pymongo
