@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alphabetically sort IGV track available for custom selection
 - Updated wokeignore to avoid unfixable warning
 - Update Chart.js to v4.4.3
+- Use tornado library version >= 6.4.1
 - Load only mei variants hitting demo panel genes in scout demo instance
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
