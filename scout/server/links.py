@@ -563,9 +563,9 @@ def decipher_link(variant_obj, build=37):
 def exac_link(variant_obj):
     """Compose link to ExAC website for a variant position."""
     url_template = (
-        "https://exac.broadinstitute.org/variant/"
+        "https://gnomad.broadinstitute.org/variant/"
         "{this[chromosome]}-{this[position]}-{this[reference]}"
-        "-{this[alternative]}"
+        "-{this[alternative]}?dataset=exac"
     )
     return url_template.format(this=variant_obj)
 
