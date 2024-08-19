@@ -74,7 +74,8 @@ def download_omics_variants(case_obj: dict, variant_objs: CursorType):
         "Category",
         "Sub-category",
         "Potential impact",
-        "Value",
+        "Delta PSI",
+        "L2FC",
         "P-value",
         "Fold-change",
         "Samples/Individuals",
@@ -91,18 +92,20 @@ def download_omics_variants(case_obj: dict, variant_objs: CursorType):
         sub_category = variant["sub_category"]
 
         if sub_category == "splicing":
-            value = variant["delta_psi"]
+            delta_psi = variant["delta_psi"]
+            l2fc = "N/A"
             potential_impact = f"{variant['potential_impact']} - fs {variant['causes_frameshift']}"
             fold_change = "N/A"
         else:
-            value = variant["l2fc"]
+            delta_psi = "N/A"
+            l2fc = variant["l2fc"]
             potential_impact = "N/A"
             fold_change = variant["fold_change"]
         p_value = "%.3e" % variant["p_value"]
         samples = f'"{", ".join([sample["display_name"] for sample in variant.get("samples")])}"'
         position = f"{variant['chromosome']}:{variant['position']}-{variant['end']}"
 
-        variant_line = f"{variant_genes},{gene_anno},{category},{sub_category},{potential_impact},{value},{p_value},{fold_change},{samples},{position}"
+        variant_line = f"{variant_genes},{gene_anno},{category},{sub_category},{potential_impact},{delta_psi},{l2fc},{p_value},{fold_change},{samples},{position}"
         export_lines.append(variant_line)
 
     headers = Headers()
