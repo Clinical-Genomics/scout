@@ -18,6 +18,28 @@
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
 
+    <style>
+        .styled-table {
+            font-size: 0.9em;
+            font-family: sans-serif;
+        }
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+    </style>
+
     <!-- jQuery JS -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript"
@@ -154,44 +176,39 @@
               };
       igv.createBrowser(div, options)
       .then(function (browser) {
-          browser.on('trackclick', function (track, popoverData) {
+            browser.on('trackclick', (track, popoverData) => {
 
-              var markup = "<table>";
+                let markup = '<table class="styled-table">'
 
-              // Don't show a pop-over when there's no data.
-              if (!popoverData || !popoverData.length) {
-                  return false;
-              }
+                // Don't show a pop-over when there's no data.
+                if (!popoverData || !popoverData.length) {
+                    return false;
+                }
 
-              popoverData.forEach(function (nameValue) {
-
-              if (nameValue.name) {
-
-                  var value = nameValue.value;
-                  for (var key in outLinks) {
-                    if (nameValue.value.toString().startsWith(key) && nameValue.name.toLowerCase() === 'name') {
-                      value = '<a href="' + outLinks[key] + value + '" target="_blank" rel="noopener noreferrer">' + nameValue.value + '</a>';
+                for (const nameValue of popoverData) {
+                    if (nameValue.name) {
+                        var value = nameValue.value;
+                        for (var key in outLinks) {
+                          if (nameValue.value.toString().startsWith(key) && nameValue.name.toLowerCase() === 'name') {
+                            value = '<a href="' + outLinks[key] + value + '" target="_blank" rel="noopener noreferrer">' + nameValue.value + '</a>';
+                          }
+                        }
+                        markup += "<tr><td>" + nameValue.name + "</td><td>" + value + "</td></tr>";
                     }
-                  }
+                    else {
+                        // not a name/value pair
+                        markup += "<tr><td>" + nameValue.toString() + "</td></tr>";
+                    }
 
-                  markup += "<tr><td class=\"igv-popover-td\">"
-                          + "<div class=\"igv-popover-name-value\">"
-                          + "<span class=\"igv-popover-name\">" + nameValue.name + "</span>&nbsp;"
-                          + "<span class=\"igv-popover-value\">" + value + "</span>"
-                          + "</div>" + "</td></tr>";
-                  }
-                  else {
-                      // not a name/value pair
-                      markup += "<tr><td>" + nameValue.toString() + "</td></tr>";
-                  }
-                });
+                }
 
                 markup += "</table>";
 
-              // By returning a string from the trackclick handler we're asking IGV to use our custom HTML in its pop-over.
-              return markup;
-          });
+                // By returning a string from the trackclick handler we're asking IGV to use our custom HTML in its pop-over.
+                return markup;
+            });
       });
+
   });
 </script>
 
