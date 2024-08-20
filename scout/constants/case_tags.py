@@ -117,6 +117,7 @@ VERBS_MAP = {
     "dismiss_variant": "dismissed variant for",
     "filter_audit": "marked case audited with filter",
     "filter_stash": "stored a filter for",
+    "filter_unaudit": "un-audited a filter for",
     "manual_rank": "updated manual rank for",
     "mark_causative": "marked causative for",
     "mark_partial_causative": "mark partial causative for",
