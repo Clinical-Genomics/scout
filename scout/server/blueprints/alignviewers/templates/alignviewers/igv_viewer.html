@@ -14,10 +14,6 @@
     <link rel="stylesheet" type="text/css"
           href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
 
-    <!-- Font Awesome CSS -->
-    <link rel="stylesheet" type="text/css"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
-
     <!-- jQuery JS -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript"
@@ -156,7 +152,7 @@
       .then(function (browser) {
           browser.on('trackclick', function (track, popoverData) {
 
-              var markup = "<table>";
+              var markup = "<table class=\"igv-popover-table\">";
 
               // Don't show a pop-over when there's no data.
               if (!popoverData || !popoverData.length) {
@@ -175,10 +171,9 @@
                   }
 
                   markup += "<tr><td class=\"igv-popover-td\">"
-                          + "<div class=\"igv-popover-name-value\">"
                           + "<span class=\"igv-popover-name\">" + nameValue.name + "</span>&nbsp;"
                           + "<span class=\"igv-popover-value\">" + value + "</span>"
-                          + "</div>" + "</td></tr>";
+                          + "</td></tr>";
                   }
                   else {
                       // not a name/value pair
