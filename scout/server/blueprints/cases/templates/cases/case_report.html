@@ -1,4 +1,4 @@
-{% from "cases/utils.html" import variant_transcripts %}
+{% from "cases/utils.html" import variant_transcripts, filter_audits %}
 {% from "utils.html" import comments_table, variant_related_comments_table %}
 {% from "variants/components.html" import fusion_variants_header, default_fusion_variant_cells %}
 
@@ -266,22 +266,7 @@
         {% if audits | count_cursor > 0 %}
         <tr>
           <td colspan=2>
-            <table id="audit-table" class="table table-sm" style="background-color: transparent">
-              <thead>
-                <tr>
-                  <th>Filters marked audited for case</th>
-                </tr>
-              </thead>
-              <tbody>
-                 {% set audit_query = namespace() %}
-                 {% for audit in audits %}
-                  {% set audit_query = audit.link|url_args %}
-                  <tr>
-                    <td><strong>{{ audit.subject }} ({{audit_query.variant_type if audit_query.variant_type else "type unavailable -"}} {{ audit_query.category if audit_query.category else "category unavailable"}})</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
-                  </tr>
-                 {%  endfor %}
-              </tbody>
-            </table>
+            {{filter_audits(audits)}}
           </td>
         </tr>
         {% endif %}
