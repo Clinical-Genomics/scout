@@ -777,3 +777,12 @@ def toggle_show_dismiss_block():
     """Endpoint to toggle the show dismiss block session variable."""
     session["show_dismiss_block"] = not session.get("show_dismiss_block")
     return f"Toggled to {session['show_dismiss_block']}"
+
+
+@variants_bp.route("/variants/un-audit_filter", methods=["GET"])
+def unaudit_filter():
+    """Un-audit an audited filter."""
+    store.unaudit_filter(
+        audit_id=request.args.get("audit_id"), user_obj=store.user(current_user.email)
+    )
+    return redirect(request.referrer)

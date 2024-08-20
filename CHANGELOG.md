@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse CoLoRSdb frequencies annotated in the variant INFO field with the `colorsdb_af` key
 - Download -omics variants using the `Filter and export button`
 - Clickable COSMIC links on IGV tracks
+- Possibility to un-audit previously audited filters
 - Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Updated igv.js to v3.0.1
