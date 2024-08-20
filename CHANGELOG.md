@@ -18,7 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Download -omics variants using the `Filter and export button`
 - Clickable COSMIC links on IGV tracks
 - Possibility to un-audit previously audited filters
-- Apply css style to custom IGV track tables
+- Re-apply css style to custom IGV track tables
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
