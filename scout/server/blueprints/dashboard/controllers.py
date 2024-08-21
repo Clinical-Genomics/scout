@@ -3,7 +3,7 @@ import logging
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
 
-from scout.constants import CASE_SEARCH_TERMS
+from scout.constants import CASE_SEARCH_TERMS, CASE_TAGS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
@@ -144,27 +144,16 @@ def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
             "count": general_sliced_info["tagged_cases"],
             "percent": general_sliced_info["tagged_cases"] / total_sliced_cases,
         },
-        {
-            "title": "Provisional status tag",
-            "count": general_sliced_info["provisional_cases"],
-            "percent": general_sliced_info["provisional_cases"] / total_sliced_cases,
-        },
-        {
-            "title": "Diagnostic status tag",
-            "count": general_sliced_info["diagnostic_cases"],
-            "percent": general_sliced_info["diagnostic_cases"] / total_sliced_cases,
-        },
-        {
-            "title": "Carrier status tag",
-            "count": general_sliced_info["carrier_cases"],
-            "percent": general_sliced_info["carrier_cases"] / total_sliced_cases,
-        },
-        {
-            "title": "Incidental status tag",
-            "count": general_sliced_info["incidental_cases"],
-            "percent": general_sliced_info["incidental_cases"] / total_sliced_cases,
-        },
     ]
+
+    for stats_tag in CASE_TAGS.keys():
+        overview.append(
+            {
+                "title": CASE_TAGS[stats_tag]["label"] + " status tag",
+                "count": general_sliced_info[stats_tag + "_cases"],
+                "percent": general_sliced_info[stats_tag + "_cases"] / total_sliced_cases,
+            }
+        )
 
     data["overview"] = overview
 
@@ -173,6 +162,11 @@ def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
 
 def get_general_case_info(adapter, institute_id=None, slice_query=None):
     """Return general information about cases
+
+    Count e.g. cases with each kind of case tag, as well as cases that have phenotype, causatives or pinned variants
+    marked or are part of cohorts.
+
+    Gather pedigree information - single, duo, trio or many individuals in case.
 
     Args:
         adapter(adapter.MongoAdapter)
@@ -205,11 +199,9 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         "pinned",
         "cohort",
         "tagged",
-        "provisional",
-        "diagnostic",
-        "incidental",
-        "carrier",
     ]
+    case_counter_keys.extend(CASE_TAGS.keys())
+
     case_counter = {}
     for counter in case_counter_keys:
         case_counter[counter] = 0
@@ -236,11 +228,9 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
             case_counter["cohort"] += 1
         if case.get("tags"):
             case_counter["tagged"] += 1
-            stat_tags = ["provisional", "diagnostic", "incidental", "carrier"]
             case_tags = case.get("tags")
-            for tag in stat_tags:
-                if tag in case_tags:
-                    case_counter[tag] += 1
+            for tag in case_tags:
+                case_counter[tag] += 1
 
         nr_individuals = len(case.get("individuals", []))
         if nr_individuals == 0:
