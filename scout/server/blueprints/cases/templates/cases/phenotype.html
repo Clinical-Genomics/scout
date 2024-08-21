@@ -236,8 +236,13 @@
       <!-- Display and remove added HPO terms -->
       <div class="mt-3">
          {% if "phenotype_terms" in case and case.phenotype_terms|length > 0 %}
+           <div class="col-12 form-check form-switch">
+              <input type="checkbox" class="form-check-input" id="checkAllPhenotypes" onChange="dynamicPhenotypeCheck(this)" name="checkAllPhenotypes">
+              <label for="checkAllPhenotypes" class="form-check-label">Select all phenotypes</label>
+            </div>
+
            {% for hpo_term in case.phenotype_terms %}
-             <div class="col-12 ms-3"> {{ hpo_item(hpo_term, case) }}</div>
+             <div class="col-12 ms-3"> {{ hpo_item(hpo_term, case) }} </div>
            {% endfor %}
          {% else %}
            <span class="text-mute">No phenotypes added yet</span>
