@@ -785,7 +785,6 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
 });
 
 function dynamicPhenotypeCheck(source){
-  console.log(source.name);
   var checkboxes = document.getElementsByName('hpo_id');
   for(var i=0, n=checkboxes.length;i<n;i++) {
     checkboxes[i].checked = source.checked;
