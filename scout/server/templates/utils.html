@@ -12,7 +12,7 @@
       	<td>
       	  <small>
       	    <strong> {{ comment.user_name }} </strong>
-      	    on {{ comment.created_at.strftime('%d-%m-%Y %H:%M') }}
+      	    on {{ comment.created_at.strftime('%y-%m-%d %H:%M') }}
       	    {% if comment.level == 'global' %}
                     <span class='badge bg-info text-white'>GLOBAL</span>
             {% endif %}
@@ -134,7 +134,7 @@
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
               <small>
                 <strong>{{ comment.user_name }}</strong>
-                on {{ comment.created_at.strftime('%d-%m-%Y %H:%M') }}
+                on {{ comment.created_at.strftime('%y-%m-%d %H:%M') }}
                 {% if comment.level == 'global' %}
                   <span class="badge bg-info">GLOBAL</span>
                 {% endif %}
@@ -208,7 +208,7 @@
             ({{ event.hpo_term }})
           {%- endif %}
           {%-if event.individuals %}, individuals: {{event.individuals|join(', ')}}{% endif %}
-          at <span class="timestamp">{{ event.created_at.strftime('%d-%m-%Y %H:%M') }}</span>
+          at <span class="timestamp">{{ event.created_at.strftime('%y-%m-%d %H:%M') }}</span>
         </li>
       {% else %}
         <li class="list-group-item">No activity yet</li>
