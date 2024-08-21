@@ -242,7 +242,7 @@
             </div>
 
            {% for hpo_term in case.phenotype_terms %}
-             <div class="col-12 ms-3"> {{ hpo_item(hpo_term, case) }} </div>
+             <div class="col-12"> {{ hpo_item(hpo_term, case) }} </div>
            {% endfor %}
          {% else %}
            <span class="text-mute">No phenotypes added yet</span>
