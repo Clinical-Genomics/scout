@@ -81,7 +81,7 @@ function casesType(cases) {
   var bkg = [];
   var hover = [];
   labels.forEach(function (item, index) {
-    bkg.push(bkgColors[index]);
+		bkg.push(bkgColors[index]);
     hover.push(hoverColors[index]);
   });
   var chart_data = {
@@ -133,7 +133,8 @@ function casesDetailed(overview, all_cases) {
   var bkg = [];
   var hover = [];
   labels.forEach(function (item, index) {
-    bkg.push(bkgColors[index]);
+		ncol = bkgColors.length;
+    bkg.push(bkgColors[index % ncol]);
   });
   var chart_data = {
     type: "bar",
