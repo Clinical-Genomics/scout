@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use tornado library version >= 6.4.1
 - Fewer variants in the MEI demo file
 - Switch to FontAwesome v.6 instead of using icons v.5 + kit with icons v.6
+- Show time (hours and minutes) additionally to date on comments and activity panel
 ### Fixed
 - Only add expected caller keys to variant (FOUND_IN or SVDB_ORIGIN)
 - Splice junction merged track height offset in IGV.js
