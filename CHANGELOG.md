@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clickable COSMIC links on IGV tracks
 - Possibility to un-audit previously audited filters
 - Reverted table style and removed font awesome style from IGV template
+- Case status tags displayed on dashboard case overview
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Updated igv.js to v3.0.1
