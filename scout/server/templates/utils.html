@@ -208,7 +208,7 @@
             ({{ event.hpo_term }})
           {%- endif %}
           {%-if event.individuals %}, individuals: {{event.individuals|join(', ')}}{% endif %}
-          at <span class="timestamp">{{ event.created_at.date() }}</span>
+          at <span class="timestamp">{{ event.created_at.strftime('%y-%m-%d %H:%M') }}</span>
         </li>
       {% else %}
         <li class="list-group-item">No activity yet</li>
