@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Option to configure RNA build on case load (default '38')
 ### Fixed
 - Loading and updating PanelApp panels, including PanelApp green
 
@@ -24,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to un-audit previously audited filters
 - Reverted table style and removed font awesome style from IGV template
 - Case status tags displayed on dashboard case overview
-- Option to configure RNA build on case load (default '38')
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection

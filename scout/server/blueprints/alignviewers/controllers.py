@@ -132,13 +132,6 @@ def make_sashimi_tracks(
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
 
-    chrom = chrom or variant_obj.get("chromosome")
-    chromosome = chrom.replace("MT", "M")
-    if "38" in str(case_obj.get("rna_genome_build", "38")) or chromosome == "M":
-        build = "38"
-    else:
-        build = "37"
-
     locus = "All"
     variant_obj = None
 
@@ -146,6 +139,15 @@ def make_sashimi_tracks(
         variant_obj = store.variant(document_id=variant_id)
     if omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
+
+    build = "38"
+    if variant_obj:
+        chrom = variant_obj.get("chromosome")
+        chromosome = chrom.replace("MT", "M")
+        if "38" in str(case_obj.get("rna_genome_build", "38")) or chromosome == "M":
+            build = "38"
+        else:
+            build = "37"
 
     if variant_obj:
         locus = make_locus_from_variant(variant_obj, case_obj, build)
