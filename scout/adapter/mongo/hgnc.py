@@ -7,6 +7,11 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
+HGNC_ENSEMBL_MAPPING_QUERY = {
+    "ensembl_id": {"$exists": True, "$ne": None},
+    "hgnc": {"$exists": True, "$ne": None},
+}
+HGNC_ENSEMBL_MAPPING_PROJECTION = {"ensembl_id": 1, "hgnc_id": 1}
 
 
 class GeneHandler(object):
@@ -364,9 +369,10 @@ class GeneHandler(object):
         Returns:
             mapping(dict): {"ENSG00000121410": 5, ...}
         """
-        pipeline = [{"$group": {"_id": {"ensembl_id": "$ensembl_id", "hgnc_id": "$hgnc_id"}}}]
-        result = self.hgnc_collection.aggregate(pipeline)
-        mapping = {res["_id"]["ensembl_id"]: res["_id"]["hgnc_id"] for res in result}
+        result = self.hgnc_collection.find(
+            HGNC_ENSEMBL_MAPPING_QUERY, HGNC_ENSEMBL_MAPPING_PROJECTION
+        )
+        mapping = {res["ensembl_id"]: res["hgnc_id"] for res in result}
         return mapping
 
     def hgnc_symbol_ensembl_id_mapping(self) -> Dict[str, str]:
@@ -375,18 +381,10 @@ class GeneHandler(object):
         Returns:
            mapping(dict): {"A1BG": "ENSG00000121410".}
         """
-        pipeline = [
-            {
-                "$group": {
-                    "_id": {
-                        "hgnc_symbol": "$hgnc_symbol",
-                        "ensembl_id": "$ensembl_id",
-                    }
-                }
-            }
-        ]
-        result = self.hgnc_collection.aggregate(pipeline)
-        mapping = {res["_id"]["hgnc_symbol"]: res["_id"]["ensembl_id"] for res in result}
+        result = self.hgnc_collection.find(
+            HGNC_ENSEMBL_MAPPING_QUERY, HGNC_ENSEMBL_MAPPING_PROJECTION
+        )
+        mapping = {res["hgnc_symbol"]: res["ensembl_id"] for res in result}
         return mapping
 
     def ensembl_genes(self, build=None, add_transcripts=False, id_transcripts=False):
