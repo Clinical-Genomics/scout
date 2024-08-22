@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.86]
 ### Added
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
@@ -38,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant links to ExAC, now pointing to gnomAD, since the ExAC browser is no longer available
 - Style of HPO terms assigned to a case, now one phenotype per line
 - RNA sashimi view rendering should work also if the gene track is user disabled
+- Respect IGV tracks chosen by user in variant IGV settings
 
 ## [4.85]
 ### Added
