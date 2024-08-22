@@ -117,27 +117,33 @@ def _panelapp_panel_ids() -> List[str]:
     return [panel_info["Panel_Id"] for panel_info in json_lines.get("result", [])]
 
 
-def _parse_panelapp_panel(adapter, panel_id, institute, confidence):
+def _parse_panelapp_panel(
+    panel_id: str,
+    institute: str,
+    confidence: str,
+    ensembl_id_to_hgnc_id_map: Dict[str, int],
+    hgnc_symbol_to_ensembl_id_map: Dict[str, str],
+):
     """fetch and parse lines from a PanelApp panel, given its ID
 
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_id(str): The panel app panel id
         confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
+        ensembl_to_hgnc_map: dict[str, int]
+        hgnc_to_ensembl_map: [int, str]
+
 
     Returns:
         parsed_panel(dict). Example:
             {'version': 3.3, 'date': datetime.datetime(2023, 1, 31, 16, 43, 37, 521719), 'display_name': 'Diabetes - neonatal onset - [GREEN]', 'institute': 'cust000', 'panel_type': 'clinical', 'genes': [list of genes], 'panel_id': '55a9041e22c1fc6711b0c6c0'}
 
     """
-    ensembl_gene_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
-    hgnc_symbol_ensembl_gene_map: Dict[str, str] = adapter.hgnc_symbol_ensembl_id_mapping()
-
     json_lines = fetch_resource(PANELAPP_BASE_URL.format("get_panel") + panel_id, json=True)
     parsed_panel = parse_panel_app_panel(
         panel_info=json_lines["result"],
-        ensembl_gene_hgnc_id_map=ensembl_gene_hgnc_id_map,
-        hgnc_symbol_ensembl_gene_map=hgnc_symbol_ensembl_gene_map,
+        ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+        hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
         institute=institute,
         confidence=confidence,
     )
@@ -166,8 +172,17 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
         LOG.info("Fetching all panel app panels")
         panel_ids: List[str] = _panelapp_panel_ids()
 
+    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
+    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
+
     for _ in panel_ids:
-        parsed_panel = _parse_panelapp_panel(adapter, _, institute, confidence)
+        parsed_panel = _parse_panelapp_panel(
+            panel_id=_,
+            institute=institute,
+            confidence=confidence,
+            ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+            hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
+        )
 
         if len(parsed_panel["genes"]) == 0:
             LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
@@ -201,9 +216,19 @@ def load_panelapp_green_panel(adapter, institute, force):
     }
     genes = set()  # avoid duplicate genes from different panels
     # Loop over all PanelApp panels
+
+    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
+    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
+
     for _ in panel_ids:
         # And collect their green genes
-        parsed_panel = _parse_panelapp_panel(adapter, _, institute, "green")
+        parsed_panel = _parse_panelapp_panel(
+            panel_id=_,
+            institute=institute,
+            confidence="green",
+            ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+            hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
+        )
         genes.update({(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")})
 
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
