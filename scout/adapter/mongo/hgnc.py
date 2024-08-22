@@ -7,6 +7,7 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
+QUERY_FIELD_EXISTS = {"$exists": True, "$ne": None}
 
 
 class GeneHandler(object):
@@ -365,8 +366,8 @@ class GeneHandler(object):
             mapping(dict): {"ENSG00000121410": 5, ...}
         """
         query = {
-            "ensembl_id": {"$exists": True, "$ne": None},
-            "hgnc_id": {"$exists": True, "$ne": None},
+            "ensembl_id": QUERY_FIELD_EXISTS,
+            "hgnc_id": QUERY_FIELD_EXISTS,
         }
         project = {"ensembl_id": 1, "hgnc_id": 1}
         result = self.hgnc_collection.find(query, project)
@@ -380,8 +381,8 @@ class GeneHandler(object):
            mapping(dict): {"A1BG": "ENSG00000121410".}
         """
         query = {
-            "ensembl_id": {"$exists": True, "$ne": None},
-            "hgnc_symbol": {"$exists": True, "$ne": None},
+            "ensembl_id": QUERY_FIELD_EXISTS,
+            "hgnc_symbol": QUERY_FIELD_EXISTS,
         }
         project = {"ensembl_id": 1, "hgnc_symbol": 1}
         result = self.hgnc_collection.find(query, project)
