@@ -409,6 +409,7 @@ class CaseLoader(BaseModel):
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
     genome_build: str
+    rna_genome_build: Optional[str] = "38"
     individuals: Union[List[SampleLoader]] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")
@@ -495,6 +496,20 @@ class CaseLoader(BaseModel):
         if isinstance(synopsis, List):
             synopsis = ". ".join(synopsis)
         return synopsis
+
+    @model_validator(mode="before")
+    @classmethod
+    def format_build(cls, values) -> "CaseLoader":
+        """Format the RNA genome build collected from RNA_human_genome_build key, so it will be saved as either '37' or '38'."""
+        str_build = str(values.get("RNA_human_genome_build", "38"))
+        if "37" in str_build:
+            str_build = "37"
+        elif "38" in str_build:
+            str_build = "38"
+        if str_build not in GENOME_BUILDS:
+            raise ValueError("RNA genome build must be either '37' or '38'.")
+        values["rna_genome_build"] = str_build
+        return values
 
     @model_validator(mode="before")
     @classmethod

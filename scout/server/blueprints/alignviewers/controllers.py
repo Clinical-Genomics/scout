@@ -131,7 +131,10 @@ def make_sashimi_tracks(
     Returns:
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
-    build = "38"  # This feature is only available for RNA tracks in build 38
+    if "38" in str(case_obj.get("rna_genome_build", "38")) or chromosome == "M":
+        build = "38"
+    else:
+        build = "37"
 
     locus = "All"
     variant_obj = None
