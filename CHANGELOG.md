@@ -6,6 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
+
+## [4.86]
+### Added
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
 - `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
@@ -20,7 +24,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to un-audit previously audited filters
 - Reverted table style and removed font awesome style from IGV template
 - Case status tags displayed on dashboard case overview
-- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
@@ -39,7 +42,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style of HPO terms assigned to a case, now one phenotype per line
 - RNA sashimi view rendering should work also if the gene track is user disabled
 - Respect IGV tracks chosen by user in variant IGV settings
-
 
 ## [4.85]
 ### Added
