@@ -12,7 +12,7 @@ from scout.server.utils import case_append_alignments, find_index
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
-CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
+DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
 def check_session_tracks(resource):
@@ -247,9 +247,9 @@ def set_common_tracks(display_obj, build):
     # Set up IGV tracks that are common for all cases:
     display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
 
-    # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
+    # if user settings for igv tracks exist -> use these settings, otherwise display default tracks ---> Genes, ClinVar and ClinVar CNVs
     custom_tracks_names = (
-        user_obj.get("igv_tracks") if "igv_tracks" in user_obj else CUSTOM_TRACK_NAMES
+        user_obj.get("igv_tracks") if "igv_tracks" in user_obj else DEFAULT_TRACK_NAMES
     )
 
     display_obj["custom_tracks"] = []
@@ -315,14 +315,15 @@ def set_config_custom_tracks(display_obj: dict, build: str):
     user_obj = store.user(email=current_user.email)
     custom_tracks_names = user_obj.get("igv_tracks")
 
+    LOG.error(custom_tracks_names)
+
     config_custom_tracks = []
 
     if hasattr(config_igv_tracks, "tracks"):
         build_tracks = config_igv_tracks.tracks.get(build, [])
         for track in build_tracks:
             # Do not display track if user doesn't want to see it
-            if custom_tracks_names and track["name"] not in custom_tracks_names:
-                continue
-            config_custom_tracks.append(track)
+            if "igv_tracks" not in user_obj or track["name"] in user_obj.get("igv_tracks"):
+                config_custom_tracks.append(track)
     if config_custom_tracks:
         display_obj["config_custom_tracks"] = config_custom_tracks
