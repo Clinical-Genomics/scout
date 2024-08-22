@@ -36,7 +36,6 @@
             return allTracks[i];
           }
         }
-        return false
     }
     var geneTrack = getGeneTrack({{custom_tracks|safe}});
 
@@ -95,7 +94,7 @@
                                   },
                                 ]
                               }, // end of sashimi track with data
-                              {% if geneTrack %}
+                              {% if custom_tracks|selectattr("name","equalto", "Genes")|list|length > 0 %}
                                 { // genes track
                                   name: geneTrack.name,
                                   type: geneTrack.type,
