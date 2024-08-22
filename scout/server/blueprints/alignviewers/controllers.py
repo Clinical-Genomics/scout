@@ -131,6 +131,9 @@ def make_sashimi_tracks(
     Returns:
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
+
+    chrom = chrom or variant_obj.get("chromosome")
+    chromosome = chrom.replace("MT", "M")
     if "38" in str(case_obj.get("rna_genome_build", "38")) or chromosome == "M":
         build = "38"
     else:
