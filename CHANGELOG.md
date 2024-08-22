@@ -5,12 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Fixed
-- Loading and updating PanelApp panels, including PanelApp green
-
-## [4.86]
 ### Added
 - Advanced cases search to narrow down results using more than one search parameter
+### Fixed
+- Loading and updating PanelApp panels, including PanelApp green
 
 ## [4.86]
 ### Added
