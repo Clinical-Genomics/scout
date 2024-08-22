@@ -313,9 +313,6 @@ def set_config_custom_tracks(display_obj: dict, build: str):
     """Set up custom public or private tracks stored in a cloud bucket or locally. These tracks were those specified in the Scout config file.
     Respect user's preferences."""
     user_obj = store.user(email=current_user.email)
-    custom_tracks_names = user_obj.get("igv_tracks")
-
-    LOG.error(custom_tracks_names)
 
     config_custom_tracks = []
 
