@@ -94,20 +94,22 @@
                                   },
                                 ]
                               }, // end of sashimi track with data
-                              { // genes track
-                                name: geneTrack.name,
-                                type: geneTrack.type,
-                                format: geneTrack.format,
-                                sourceType: geneTrack.sourceType,
-                                url: geneTrack.url,
-                                indexURL: geneTrack.indexURL,
-                                displayMode: geneTrack.displayMode,
-                                visibilityWindow: 300000000,
-                                height: 100,
-                                searchable: true,
-                                order: {{counter.loop}},
-                                infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
-                              }, // end of genes track
+                              {% if custom_tracks|selectattr("name","equalto", "Genes")|list|length > 0 %}
+                                { // genes track
+                                  name: geneTrack.name,
+                                  type: geneTrack.type,
+                                  format: geneTrack.format,
+                                  sourceType: geneTrack.sourceType,
+                                  url: geneTrack.url,
+                                  indexURL: geneTrack.indexURL,
+                                  displayMode: geneTrack.displayMode,
+                                  visibilityWindow: 300000000,
+                                  height: 100,
+                                  searchable: true,
+                                  order: {{counter.loop}},
+                                  infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
+                                }, // end of genes track
+                              {% endif %}
                             {% endif %}
                         {% endfor %}
                     ] // end of tracks
