@@ -47,6 +47,7 @@ def update_tracks_settings():
     # update user in database with custom tracks info
     user_obj["igv_tracks"] = selected_tracks
     store.update_user(user_obj)
+    setattr(current_user, "igv_tracks", selected_tracks)
     return redirect(request.referrer)
 
 
