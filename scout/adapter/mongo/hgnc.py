@@ -371,7 +371,6 @@ class GeneHandler(object):
         project = {"ensembl_id": 1, "hgnc_id": 1}
         result = self.hgnc_collection.find(query, project)
         mapping = {res["ensembl_id"]: res["hgnc_id"] for res in result}
-        LOG.warning(mapping)
         return mapping
 
     def hgnc_symbol_ensembl_id_mapping(self) -> Dict[str, str]:
@@ -387,7 +386,6 @@ class GeneHandler(object):
         project = {"ensembl_id": 1, "hgnc_symbol": 1}
         result = self.hgnc_collection.find(query, project)
         mapping = {res["hgnc_symbol"]: res["ensembl_id"] for res in result}
-        LOG.error(mapping)
         return mapping
 
     def ensembl_genes(self, build=None, add_transcripts=False, id_transcripts=False):
