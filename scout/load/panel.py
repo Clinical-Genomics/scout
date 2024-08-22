@@ -12,7 +12,6 @@ from typing import Dict, List
 from click import Abort
 from flask.cli import current_app
 
-from scout.adapter import MongoAdapter
 from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_mim_files, fetch_resource
