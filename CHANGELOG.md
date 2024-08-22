@@ -5,12 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Fixed
-- Loading and updating PanelApp panels, including PanelApp green
-
-## [4.86]
 ### Added
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
+### Fixed
+- Loading and updating PanelApp panels, including PanelApp green
 
 ## [4.86]
 ### Added
