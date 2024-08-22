@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction variant routing for cases with WTS but without outlier data
 - Variant links to ExAC, now pointing to gnomAD, since the ExAC browser is no longer available
 - Style of HPO terms assigned to a case, now one phenotype per line
+- Respect IGV tracks chosen by user in variant IGV settings
 
 ## [4.85]
 ### Added
