@@ -6,6 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Advanced cases search to narrow down results using more than one search parameter
+
+## [4.86]
+### Added
 - Display samples' name (tooltip) and affected status directly on caseS page
 - Search SVs across all cases, in given genes
 - `CLINVAR_API_URL` param can be specified in app settings to override the URL used to send ClinVar submissions to. Intended for testing.
@@ -20,7 +24,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to un-audit previously audited filters
 - Reverted table style and removed font awesome style from IGV template
 - Case status tags displayed on dashboard case overview
-- Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Updated igv.js to v3.0.1
 - Alphabetically sort IGV track available for custom selection
