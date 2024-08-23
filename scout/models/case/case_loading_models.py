@@ -501,7 +501,7 @@ class CaseLoader(BaseModel):
     @classmethod
     def format_build(cls, values) -> "CaseLoader":
         """Format the RNA genome build collected from RNA_human_genome_build key, so it will be saved as either '37' or '38'."""
-        str_build = str(values.get("RNA_human_genome_build", "38"))
+        str_build = str(values.get("rna_human_genome_build", "38"))
         if "37" in str_build:
             str_build = "37"
         elif "38" in str_build:
