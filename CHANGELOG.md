@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
+
+## [4.86.1]
 ### Fixed
 - Loading and updating PanelApp panels, including PanelApp green
 
