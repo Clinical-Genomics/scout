@@ -462,7 +462,7 @@ def test_load_case_int_genome_build(scout_config, key):
         assert parse_case_config(scout_config)
 
 
-@pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
+@pytest.mark.parametrize("key", ["genome_build", "human_genome_build", "rna_human_genome_build"])
 def test_load_case_str_genome_build(scout_config, key):
     """Test loading a case with a genome build as string: '37' or '38´."""
 
