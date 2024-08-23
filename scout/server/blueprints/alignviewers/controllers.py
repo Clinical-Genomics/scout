@@ -141,10 +141,8 @@ def make_sashimi_tracks(
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
 
     build = "38"
-    if variant_obj:
-        chromosome = variant_obj.get("chromosome").replace("MT", "M")
-        if "37" in str(case_obj.get("rna_genome_build")):
-            build = "37"
+    if "37" in str(case_obj.get("rna_genome_build", "38")):
+        build = "37"
 
     if variant_obj:
         locus = make_locus_from_variant(variant_obj, case_obj, build)
@@ -183,7 +181,6 @@ def make_merged_splice_track(ind: dict) -> dict:
     Returns:
         track: dict with merged track data for igv configuration
     """
-
     coverage_wig = ind["rna_coverage_bigwig"]
     splicej_bed = ind["splice_junctions_bed"]
     splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
