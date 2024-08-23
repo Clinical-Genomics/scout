@@ -142,11 +142,8 @@ def make_sashimi_tracks(
 
     build = "38"
     if variant_obj:
-        chrom = variant_obj.get("chromosome")
-        chromosome = chrom.replace("MT", "M")
-        if "38" in str(case_obj.get("rna_genome_build", "38")) or chromosome == "M":
-            build = "38"
-        else:
+        chromosome = variant_obj.get("chromosome").replace("MT", "M")
+        if "37" in str(case_obj.get("rna_genome_build")):
             build = "37"
 
     if variant_obj:
@@ -159,19 +156,7 @@ def make_sashimi_tracks(
     # Populate tracks for each individual with splice junction track data
     for ind in case_obj.get("individuals", []):
         if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
-            coverage_wig = ind["rna_coverage_bigwig"]
-            splicej_bed = ind["splice_junctions_bed"]
-            splicej_bed_index = (
-                f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
-            )
-            if splicej_bed_index is None:
-                flash(f"Missing bed file index for individual {ind['display_name']}")
-            track = {
-                "name": ind["display_name"],
-                "coverage_wig": coverage_wig,
-                "splicej_bed": splicej_bed,
-                "splicej_bed_index": splicej_bed_index,
-            }
+            track = make_merged_splice_track(ind)
             display_obj["tracks"].append(track)
         if ind.get("rna_alignment_path"):
             rna_aln = ind["rna_alignment_path"]
@@ -186,6 +171,31 @@ def make_sashimi_tracks(
     display_obj["case"] = case_obj["display_name"]
 
     return display_obj
+
+
+def make_merged_splice_track(ind: dict) -> dict:
+    """
+    Retrieve individual splice track component and store in a dict for use when generating an IGV.js config.
+
+    Args:
+        ind: dict individual (sample)
+
+    Returns:
+        track: dict with merged track data for igv configuration
+    """
+
+    coverage_wig = ind["rna_coverage_bigwig"]
+    splicej_bed = ind["splice_junctions_bed"]
+    splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+    if splicej_bed_index is None:
+        flash(f"Missing bed file index for individual {ind['display_name']}")
+    track = {
+        "name": ind["display_name"],
+        "coverage_wig": coverage_wig,
+        "splicej_bed": splicej_bed,
+        "splicej_bed_index": splicej_bed_index,
+    }
+    return track
 
 
 def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
