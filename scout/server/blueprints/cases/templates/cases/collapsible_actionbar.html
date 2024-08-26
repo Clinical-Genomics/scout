@@ -201,7 +201,7 @@
 {% if has_rna_tracks %}
   <div href="#" class="bg-dark list-group-item d-inline-block text-white">
     <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Only available in build GRCh38" class="btn btn-xs form-control btn-secondary">R<span class="menu-collapsed">NA splicing</span></button>
+      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Available in build GRCh{{ case.rna_genome_build or '38' }}" class="btn btn-xs form-control btn-secondary">R<span class="menu-collapsed">NA splicing</span></button>
     </form>
   </div>
 {% endif %}

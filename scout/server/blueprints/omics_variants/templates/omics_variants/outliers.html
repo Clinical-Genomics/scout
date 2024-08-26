@@ -113,7 +113,7 @@
               <td class="text-end">{{ variant.chromosome }}</td>
                 <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
                 {% if case.has_rna_tracks %}
-                  {{ splice_junctions_button(institute._id, case.display_name, None, variant.omics_variant_id) }}
+                  {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
                 {% endif %}
               </tr>
             {% else %}
