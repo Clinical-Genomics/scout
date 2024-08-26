@@ -70,27 +70,29 @@
           {% for variant in variants %}
             <tr>
               <td class="text-end">
-                <div class="d-flex flex-row justify-content-between align-items-baseline">
+                <div class="d-flex flex-row justify-content-between">
                 {% if variant.genes %}
                   {{ gene_cell(variant) }}
                 {% else %}
                   {{ variant.gene_name_orig }}
                 {% endif %}
-                {% if case.vcf_files.vcf_snv %}
-                  <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
-                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                  <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-                  <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button>
-                </form>
-                {% endif %}
-                {% if case.vcf_files.vcf_sv %}
-                  <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}">
-                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                  <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-                  <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button>
-                </form>
-                {% endif %}
-                </div>
+                  <div class="d-flex justify-content-center">
+                  {% if case.vcf_files.vcf_snv %}
+                    <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+                    <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
+                    </form>
+                  {% endif %}
+                  {% if case.vcf_files.vcf_sv %}
+                    <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}">
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+                    <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
+                  </form>
+                  {% endif %}
+                    </div>
+                 </div>
               </td>
               <td>{{ variant.sub_category }}</td>
               <td class="text-end"> {%  if variant.sub_category == "splicing" %}

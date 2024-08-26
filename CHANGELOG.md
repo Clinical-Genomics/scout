@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Style of "SNVs" and "SVs" buttons on WTS Outliers page
+
 ## [4.86.1]
 ### Fixed
 - Loading and updating PanelApp panels, including PanelApp green
