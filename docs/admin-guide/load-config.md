@@ -43,6 +43,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **RNAfusion_inspector_research** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing all detected fusions.
 - **RNAfusion_report** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing only clinical fusions (a subset of all detected fusions).
 - **RNAfusion_report_research** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing all detected fusions.
+- **rna_human_genome_build** _String_ Version of reference genome used for RNA components of build. "37" or "38", default "38".
 - **samples** _List_ List of samples included in the case:
     - **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
     - **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
