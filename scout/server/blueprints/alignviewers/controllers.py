@@ -83,7 +83,7 @@ def make_igv_tracks(
 
     if all([start, stop, chrom]):
         chromosome = chrom.replace("MT", "M")
-        display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
+        display_obj["locus"] = "{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set genome build for displaying alignments:
     if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
