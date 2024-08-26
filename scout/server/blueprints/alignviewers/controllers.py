@@ -81,15 +81,18 @@ def make_igv_tracks(
         stop = stop or variant_obj["end"]
         chrom = chrom or variant_obj.get("chromosome")
 
-    if all([start, stop, chrom]):
-        chromosome = chrom
-        display_obj["locus"] = "{0}:{1}-{2}".format(chromosome, start, stop)
-
     # Set genome build for displaying alignments:
     if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "MT":
         build = "38"
     else:
         build = "37"
+
+    if all([start, stop, chrom]):
+        chromosome = chrom
+        if build == "37" or chromosome == "MT":
+            display_obj["locus"] = "{0}:{1}-{2}".format(chromosome, start, stop)
+        else:
+            display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
     set_common_tracks(display_obj, build)
