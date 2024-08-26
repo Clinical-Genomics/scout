@@ -82,11 +82,11 @@ def make_igv_tracks(
         chrom = chrom or variant_obj.get("chromosome")
 
     if all([start, stop, chrom]):
-        chromosome = chrom.replace("MT", "M")
+        chromosome = chrom
         display_obj["locus"] = "{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set genome build for displaying alignments:
-    if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
+    if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "MT":
         build = "38"
     else:
         build = "37"
@@ -110,7 +110,7 @@ def make_igv_tracks(
     set_sample_tracks(display_obj, grouped_cases, chromosome)
 
     # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
-    if chrom != "M":
+    if chrom != "MT":
         set_case_specific_tracks(display_obj, case_obj)
 
     # Set up custom cloud public tracks, if available
