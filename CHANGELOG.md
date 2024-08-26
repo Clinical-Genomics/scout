@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Option to configure RNA build on case load (default '38')
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
+### Fixed
+- Style of "SNVs" and "SVs" buttons on WTS Outliers page
 
 ## [4.86.1]
 ### Fixed
