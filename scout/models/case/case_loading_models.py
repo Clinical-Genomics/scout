@@ -409,6 +409,7 @@ class CaseLoader(BaseModel):
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
     genome_build: str
+    rna_genome_build: Optional[str] = "38"
     individuals: Union[List[SampleLoader]] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")
@@ -499,15 +500,17 @@ class CaseLoader(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def format_build(cls, values) -> "CaseLoader":
-        """Format the genome build collected from genome_build or human_genome_build keys, so it will be saved as either '37' or '38'."""
-        str_build = str(values.get("genome_build") or values.get("human_genome_build", ""))
-        if "37" in str_build:
-            str_build = "37"
-        elif "38" in str_build:
-            str_build = "38"
-        if str_build not in GENOME_BUILDS:
-            raise ValueError("Genome build must be either '37' or '38'.")
-        values["genome_build"] = str_build
+        """Format the RNA genome build collected from RNA_human_genome_build key."""
+        rna_str_build = str(values.get("rna_human_genome_build", "38"))
+        values["rna_genome_build"] = _get_str_build(rna_str_build)
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def format_rna_build(cls, values) -> "CaseLoader":
+        """Format the genome build collected from genome_build or human_genome_build keys."""
+        dna_str_build = str(values.get("genome_build") or values.get("human_genome_build", ""))
+        values["genome_build"] = _get_str_build(dna_str_build)
         return values
 
     @field_validator("individuals", mode="after")
@@ -567,3 +570,14 @@ class CaseLoader(BaseModel):
                 raise ValueError("Case owner is missing.")
             values["collaborators"] = [values["owner"]]
         return values
+
+
+def _get_str_build(str_build):
+    """Get genome build, as either '37' or '38'."""
+    if "37" in str_build:
+        str_build = "37"
+    elif "38" in str_build:
+        str_build = "38"
+    if str_build not in GENOME_BUILDS:
+        raise ValueError("Genome build must be either '37' or '38'.")
+    return str_build

@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Option to configure RNA build on case load (default '38')
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 
 ## [4.86.1]

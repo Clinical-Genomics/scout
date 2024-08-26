@@ -211,6 +211,8 @@ def build_case(case_data, adapter):
 
     case_obj["genome_build"] = genome_build
 
+    case_obj["rna_genome_build"] = case_data.get("rna_genome_build", "38")
+
     if case_data.get("rank_model_version"):
         case_obj["rank_model_version"] = str(case_data["rank_model_version"])
 
