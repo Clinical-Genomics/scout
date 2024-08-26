@@ -46,7 +46,7 @@
                 // Example of fully specifying a reference GRCh38. Scout is supporting only this for now
                 reference:
                     {
-                        id: "hg38",
+                        id: "{{ reference_track.id }}",
                         fastaURL: "{{ reference_track.fastaURL }}",
                         indexURL: "{{ reference_track.indexURL }}",
                         cytobandURL: "{{ reference_track.cytobandURL }}"
