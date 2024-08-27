@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.87]
 ### Added
 - Option to configure RNA build on case load (default '38')
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style of "SNVs" and "SVs" buttons on WTS Outliers page
 - Chromosome alias files for igv.js
 - Genes track displayed also when RNA alignments are present without splice junctions track on igv browser
+- Genes track displayed again when splice junction tracks are present
 
 ## [4.86.1]
 ### Fixed
