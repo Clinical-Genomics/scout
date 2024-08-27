@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Tooltip on RNA alignments now shows RNA genome build version
+- Updated igv.js to v3.0.4
 ### Fixed
 - Style of "SNVs" and "SVs" buttons on WTS Outliers page
 - Chromosome alias files for igv.js
