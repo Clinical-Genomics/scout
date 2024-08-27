@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style of "SNVs" and "SVs" buttons on WTS Outliers page
 - Chromosome alias files for igv.js
 - Genes track displayed also when RNA alignments are present without splice junctions track on igv browser
+- Genes track displayed again when splice junction tracks are present
 
 ## [4.86.1]
 ### Fixed
