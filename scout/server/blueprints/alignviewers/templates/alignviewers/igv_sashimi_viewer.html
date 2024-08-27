@@ -94,8 +94,9 @@
                                     height: 500,
                                   },
                                 ]
-                              }, // end of sashimi track with data
-                              {% if custom_tracks|selectattr("name","equalto", "Genes")|list|length > 0 %}
+                              }
+                            {% endif %}
+                            {% if custom_tracks|selectattr("name","equalto", "Genes")|list|length > 0 %}
                                 { // genes track
                                   name: geneTrack.name,
                                   type: geneTrack.type,
@@ -110,9 +111,8 @@
                                   order: {{counter.loop}},
                                   infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
                                 }, // end of genes track
-                              {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                             {% endif %}
+                       {% endfor %}
                     ] // end of tracks
             };
         var igvDiv = document.getElementById("igvDiv");
