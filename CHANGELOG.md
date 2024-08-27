@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tooltip on RNA alignments now shows RNA genome build version
 ### Fixed
 - Style of "SNVs" and "SVs" buttons on WTS Outliers page
+- Chromosome alias files for igv.js
 
 ## [4.86.1]
 ### Fixed
