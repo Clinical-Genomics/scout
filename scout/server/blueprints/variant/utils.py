@@ -612,12 +612,19 @@ def callers(variant_obj):
 def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) -> None:
     """Add associated gene panels to each gene in variant object"""
 
-    genes = variant_obj.get("genes", [])
+    geneid_gene: Dict[int, dict] = {
+        gene["hgnc_id"]: gene for gene in variant_obj.get("genes", [])
+    }  # This has max 30 elements for SVs
+    geneids: List[int] = variant_obj.get("hgnc_ids", [])  # This can be a long list, n > 30 for SVs
 
-    for gene in genes:
-        hgnc_id = gene["hgnc_id"]
+    for hgnc_id in geneids:
         matching_panels = []
         for panel in case_obj.get("latest_panels", []):
             if hgnc_id in panel["hgnc_ids"]:
                 matching_panels.append(panel["panel_name"])
-        gene["associated_gene_panels"] = matching_panels
+        if hgnc_id not in geneid_gene:
+            geneid_gene[hgnc_id] = {"hgnc_id": hgnc_id, "associated_gene_panels": matching_panels}
+        else:
+            geneid_gene[hgnc_id]["associated_gene_panels"] = matching_panels
+
+    variant_obj["genes"] = list(geneid_gene.values())
