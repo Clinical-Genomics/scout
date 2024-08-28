@@ -467,7 +467,7 @@
         {% if gene.common %}
           {{ gene.common.hgnc_symbol }}
         {% else %}
-          {% set no_symbol_genes_counter.value = count.value + 1 %}
+          {% set no_symbol_genes_counter.value = no_symbol_genes_counter.value + 1 %}
         {% endif %}
       {% endif %}
     {% endfor %}
