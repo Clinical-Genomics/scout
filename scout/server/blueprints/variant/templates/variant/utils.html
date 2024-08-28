@@ -480,7 +480,7 @@
       {% if no_symbol_genes.ids|length <= 3 %}
         + {{ no_symbol_genes.ids|join(", ") }}
       {% elif no_symbol_genes.ids|length > 3 %}
-        + {{ no_symbol_genes.ids|length }} genes
+        + other {{ no_symbol_genes.ids|length }} genes
       {% endif %}
       "
     {% endif %}
