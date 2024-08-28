@@ -467,13 +467,21 @@
         {% if panel['panel_name'] in gene['associated_gene_panels'] %}
           {% if gene.common %}
             {{ gene.common.hgnc_symbol }}
+            {% set symbol_genes_counter.value = symbol_genes_counter.value +1 %}
           {% else %}
             {% do no_symbol_genes.ids.append(gene.hgnc_id)  %}
           {% endif %}
         {% endif %}
       {% endfor %}
 
-      {{no_symbol_genes.ids|join(", ")}}
+      {% if symbol_genes_counter.value == 0 %}
+        No genes with associated symbols
+      {% endif %}
+      {% if no_symbol_genes.ids|length <= 5 %}
+        + {{ no_symbol_genes.ids|join(", ") }}
+      {% elif no_symbol_genes.ids %}
+        + {{ no_symbol_genes.ids|length }} gene
+      {% endif %}
       "
     {% endif %}
   >{{ panel.panel_name }}</a>&nbsp;&nbsp;
