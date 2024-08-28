@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
+
 ## [4.87]
 ### Added
 - Option to configure RNA build on case load (default '38')
-- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Changed
 - Tooltip on RNA alignments now shows RNA genome build version
 - Updated igv.js to v3.0.4
