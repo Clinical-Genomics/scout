@@ -485,8 +485,6 @@
             {% endif %}
           {% endfor %}
         {% endfor %}
-
-        + {{ no_symbol_genes.ids|join(", ") }}
       {% elif no_symbol_genes.ids|length > 3 %}
         + other {{ no_symbol_genes.ids|length }} genes
       {% endif %}
