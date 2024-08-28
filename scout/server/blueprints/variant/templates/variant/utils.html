@@ -478,6 +478,14 @@
         No genes with associated symbol
       {% endif %}
       {% if no_symbol_genes.ids|length > 0 and no_symbol_genes.ids|length <= 3 %}
+        {% for gene_id in no_symbol_genes.ids %}
+          {% for panel_gene in panel.genes %}
+            {% if gene_id == panel_gene.panel_gene %}
+              {{ panel_gene.symbol + "&nbsp;" }}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
         + {{ no_symbol_genes.ids|join(", ") }}
       {% elif no_symbol_genes.ids|length > 3 %}
         + other {{ no_symbol_genes.ids|length }} genes
