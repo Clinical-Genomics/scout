@@ -477,10 +477,10 @@
       {% if symbol_genes_counter.value == 0 %}
         No genes with associated symbols
       {% endif %}
-      {% if no_symbol_genes.ids|length <= 5 %}
+      {% if no_symbol_genes.ids|length <= 3 %}
         + {{ no_symbol_genes.ids|join(", ") }}
-      {% elif no_symbol_genes.ids %}
-        + {{ no_symbol_genes.ids|length }} gene
+      {% elif no_symbol_genes.ids| > 3 %}
+        + {{ no_symbol_genes.ids|length }} genes
       {% endif %}
       "
     {% endif %}
