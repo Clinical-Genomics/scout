@@ -448,6 +448,7 @@
 {% macro gene_panels(variant) %}
 <strong>Gene panels:</strong><br>
 {% for panel in variant.case_panels|sort(attribute='panel_name', case_sensitive=False)|rejectattr('removed') %}
+  {% set symbol_genes_counter = namespace(value=0) %}
   {% set no_symbol_genes_counter = namespace(value=0) %}
   <a
     href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}"
@@ -466,12 +467,19 @@
       {% if panel['panel_name'] in gene['associated_gene_panels'] %}
         {% if gene.common %}
           {{ gene.common.hgnc_symbol }}
+          {% set symbol_genes_counter.value = symbol_genes_counter.value + 1 %}
         {% else %}
           {% set no_symbol_genes_counter.value = no_symbol_genes_counter.value + 1 %}
         {% endif %}
       {% endif %}
     {% endfor %}
-    {% if no_symbol_genes_counter.value > 0 %}&nbsp; + {{no_symbol_genes_counter.value}} other genes {% endif %}
+    {}
+    {% if no_symbol_genes_counter.value > 0 %}
+      {% if symbol_genes_counter.value == 0 %}
+        {{no_symbol_genes_counter.value}} &nbsp genes
+      {% else %}
+        &nbsp + {{no_symbol_genes_counter.value}} other genes {% endif %}
+      {% endif %}
     "
     {% endif %}
   >{{ panel.panel_name }}</a>&nbsp;&nbsp;
