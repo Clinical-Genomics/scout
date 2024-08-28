@@ -473,15 +473,14 @@
         {% endif %}
       {% endif %}
     {% endfor %}
-    {}
     {% if no_symbol_genes_counter.value > 0 %}
       {% if symbol_genes_counter.value == 0 %}
         {{no_symbol_genes_counter.value}} &nbsp genes
       {% else %}
         &nbsp + {{no_symbol_genes_counter.value}} other genes {% endif %}
       {% endif %}
-    "
     {% endif %}
+    "
   >{{ panel.panel_name }}</a>&nbsp;&nbsp;
 {% endfor %}
 {% endmacro %}
