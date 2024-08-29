@@ -21,9 +21,6 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--outrider", help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be loaded"
 )
-@click.option(
-    "--rna-genome-build", help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be loaded"
-)
 @click.option("--vcf", type=click.Path(exists=True), help="Path to clinical VCF file to be added")
 @click.option(
     "--vcf-sv",
