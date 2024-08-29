@@ -17,51 +17,63 @@ LOG = logging.getLogger(__name__)
     "--institute", "-i", help="Case institute ID (case display name should also be provided)"
 )
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
-@click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be added")
+@click.option("--fraser", help="Path to clinical WTS OMICS outlier FRASER TSV file to be loaded")
+@click.option(
+    "--outrider", help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be loaded"
+)
+@click.option(
+    "--rna-genome-build", help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be loaded"
+)
+@click.option("--vcf", type=click.Path(exists=True), help="Path to clinical VCF file to be added")
 @click.option(
     "--vcf-sv",
     type=click.Path(exists=True),
     help="path to clinical SV VCF file to be added",
 )
 @click.option(
+    "--vcf-str",
+    type=click.Path(exists=True),
+    help="Path to clinical STR VCF file to be added",
+)
+@click.option(
     "--vcf-cancer",
     type=click.Path(exists=True),
-    help="path to clinical cancer VCF file to be added",
+    help="Path to clinical cancer VCF file to be added",
 )
 @click.option(
     "--vcf-cancer-sv",
     type=click.Path(exists=True),
-    help="path to clinical cancer structural VCF file to be added",
+    help="Path to clinical cancer structural VCF file to be added",
 )
 @click.option(
     "--vcf-research",
     type=click.Path(exists=True),
-    help="path to research VCF file to be added",
+    help="Path to research VCF file to be added",
 )
 @click.option(
     "--vcf-sv-research",
     type=click.Path(exists=True),
-    help="path to research VCF with SV variants to be added",
+    help="Path to research VCF with SV variants to be added",
 )
 @click.option(
     "--vcf-cancer-research",
     type=click.Path(exists=True),
-    help="path to research VCF with cancer variants to be added",
+    help="Path to research VCF with cancer variants to be added",
 )
 @click.option(
     "--vcf-cancer-sv-research",
     type=click.Path(exists=True),
-    help="path to research VCF with cancer structural variants to be added",
+    help="Path to research VCF with cancer structural variants to be added",
 )
 @click.option(
     "--vcf-mei",
     type=click.Path(exists=True),
-    help="path to clinical mei variants to be added",
+    help="Path to clinical mei variants to be added",
 )
 @click.option(
     "--vcf-mei-research",
     type=click.Path(exists=True),
-    help="path to research mei variants to be added",
+    help="Path to research mei variants to be added",
 )
 @click.option(
     "--reupload-sv",
@@ -77,8 +89,11 @@ def case(
     case_name,
     institute,
     collaborator,
+    fraser,
+    outrider,
     vcf,
     vcf_sv,
+    vcf_str,
     vcf_cancer,
     vcf_cancer_sv,
     vcf_research,
@@ -122,6 +137,7 @@ def case(
     for key_name, key in [
         ("vcf_snv", vcf),
         ("vcf_sv", vcf_sv),
+        ("vcf_str", vcf_str),
         ("vcf_cancer", vcf_cancer),
         ("vcf_cancer_sv", vcf_cancer_sv),
         ("vcf_research", vcf_research),
@@ -135,6 +151,16 @@ def case(
             continue
         LOG.info(f"Updating '{key_name}' to {key}")
         case_obj["vcf_files"][key_name] = key
+        case_changed = True
+
+    for key_name, key in [
+        ("fraser", fraser),
+        ("outrider", outrider),
+    ]:
+        if key is None:
+            continue
+        LOG.info(f"Updating '{key_name}' to {key}")
+        case_obj["omics_files"][key_name] = key
         case_changed = True
 
     if case_changed:

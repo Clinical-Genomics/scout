@@ -1006,6 +1006,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - mme_submission: If case was submitted to MatchMaker Exchange
             - multiqc: If there's an updated multiqc report location
+            - omics_files: If there are updated OMICS files
             - panels: The new gene panels are added
             - pipeline_version: path to the pipeline executable version report file
             - rank_model_version: If there is a new rank model
