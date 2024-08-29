@@ -32,6 +32,9 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **madeline** _String_ Path to a madeline pedigree file in XML format.
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
 - **multiqc_rna** _String_ Path to a [nf-core/rnafusion multiqc][rna-multiqc] report with arbitrary information.
+- **omics_files** _List_
+  - **fraser**: _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
+  - **outrider**: _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
@@ -133,13 +136,15 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 
 [arriba]: https://arriba.readthedocs.io/en/latest/
 [d4_file]: https://github.com/38/d4-format
+[drop]: https://github.com/gagneurlab/drop
 [multiqc]: https://github.com/ewels/multiqc
+[peddy]: https://github.com/brentp/peddy
 [rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
 [rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
 [rnafusion-report]: https://nf-co.re/rnafusion/output#fusion-report
-[peddy]: https://github.com/brentp/peddy
 [rhocall]: https://github.com/dnil/rhocall
 [srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service
 [tiddit]: https://github.com/SciLifeLab/TIDDIT
+[tomte]: https://github.com/genomic-medicine-sweden/tomte
 [upd]: https://github.com/bjhall/upd
 [yaml]: https://yaml.org
