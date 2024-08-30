@@ -137,6 +137,13 @@ class OmicsVariantLoader(BaseModel):
         alias="foldChange", serialization_alias="fold_change", default=None
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def empty_str_to_none(cls, values):
+        if isinstance(values, dict):
+            return {k: (None if v == "" else v) for k, v in values.items()}
+        return values
+
     @field_validator("chromosome")
     def strip_chr(cls, chrom: str) -> str:
         """We store chromosome names without a chr prefix internally."""
