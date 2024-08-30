@@ -41,15 +41,17 @@ class OmicsVariantLoader(BaseModel):
     sampleID: str
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
-    hgnc_ids: Optional[List[int]] = Field(alias="hgnc_id", serialization_alias="hgnc_ids")
+    hgnc_ids: Optional[List[int]] = Field(alias="hgncId", serialization_alias="hgnc_ids")
     geneID: Optional[str]
 
     hgnc_symbols: Optional[List[str]] = Field(
         alias="hgncSymbol", serialization_alias="hgnc_symbols"
     )
-    gene_name_orig: Optional[str]
+    gene_name_orig: Optional[str] = Field(
+        alias="geneNameOrig", serialization_alias="gene_name_orig"
+    )
 
-    gene_type: Optional[str]
+    gene_type: Optional[str] = Field(alias="geneType", serialization_alias="gene_type")
 
     # coordinates if applicable
     chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
@@ -85,7 +87,7 @@ class OmicsVariantLoader(BaseModel):
         alias="nonsplitProportion", serialization_alias="nonsplit_proportion", default=None
     )
     nonsplit_proportion_99quantile: Optional[float] = Field(
-        alias="nonsplitProportion_99quantile",
+        alias="nonsplitproportion99quantile",
         serialization_alias="nonsplit_proportion_99quantile",
         default=None,
     )
@@ -99,7 +101,7 @@ class OmicsVariantLoader(BaseModel):
         alias="padjustGene", serialization_alias="p_adjust_gene", default=None
     )
     paired_end: Optional[str] = Field(
-        alias="PAIRED_END", serialization_alias="paired_end", default=None
+        alias="pairedEnd", serialization_alias="paired_end", default=None
     )
     is_external: Optional[bool] = Field(
         alias="isExternal", serialization_alias="is_external", default=None
@@ -111,7 +113,7 @@ class OmicsVariantLoader(BaseModel):
         alias="causesFrameshift", serialization_alias="causes_frameshift", default=None
     )
     utr_overlap: Optional[str] = Field(
-        alias="UTR_overlap", serialization_alias="utr_overlap", default=None
+        alias="utrOverlap", serialization_alias="utr_overlap", default=None
     )
 
     # Outrider specific
