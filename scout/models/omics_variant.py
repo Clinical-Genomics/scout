@@ -164,8 +164,8 @@ class OmicsVariantLoader(BaseModel):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
         Convert to a list with a single member in omics_variants for storage."""
 
-        if "hgnc_id" in values:
-            values["hgnc_id"] = [int(values.get("hgnc_id"))]
+        if "hgncId" in values:
+            values["hgncId"] = [int(values.get("hgncId"))]
 
         if "hgncSymbol" in values:
             values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
