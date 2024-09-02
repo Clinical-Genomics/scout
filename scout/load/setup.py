@@ -158,8 +158,9 @@ def setup_scout(
         # Create a map from ensembl ids to gene objects
         ensembl_genes = {}
         for gene_obj in hgnc_genes:
-            ensembl_id = gene_obj["ensembl_id"]
-            ensembl_genes[ensembl_id] = gene_obj
+            ensembl_id = gene_obj.get("ensembl_id")
+            if ensembl_id:
+                ensembl_genes[ensembl_id] = gene_obj
 
         # Load transcripts
         tx_path = "transcripts{}_path".format(build)

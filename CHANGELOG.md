@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Broken `scout setup database` command
 - Tomte DROP column names have been updated
 
 ## [4.87.1]
