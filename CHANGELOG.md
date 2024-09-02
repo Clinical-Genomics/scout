@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Groken `scout setup database` command
+- Broken `scout setup database` command
 
 ## [4.87.1]
 ### Fixed
