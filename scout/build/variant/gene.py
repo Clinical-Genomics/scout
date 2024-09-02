@@ -54,7 +54,7 @@ def build_gene(gene, hgncid_to_gene=None):
     if hgnc_gene:
         # Set the hgnc symbol etc to the one internally in Scout
         gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-        if "ensembl_id" in gene_obj:
+        if "ensembl_id" in hgnc_gene:
             gene_obj["ensembl_id"] = hgnc_gene["ensembl_id"]
         gene_obj["description"] = hgnc_gene["description"]
 
