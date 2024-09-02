@@ -7,7 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Broken `scout setup database` command
+- Update demo VCF header, adding missing keys found on variants
 - Options for specifically updating OMICS files (fraser, outrider) on a case
+
 
 ## [4.87.1]
 ### Fixed
