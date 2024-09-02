@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 ### Fixed
 - Broken `scout setup database` command
+- Update demo VCF header, adding missing keys found on variants
 
 ## [4.87.1]
 ### Fixed
