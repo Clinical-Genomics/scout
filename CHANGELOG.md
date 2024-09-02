@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Broken `scout setup database` command
 - Update demo VCF header
 
 ## [4.87.1]
