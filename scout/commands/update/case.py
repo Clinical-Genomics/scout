@@ -77,6 +77,11 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Remove all SVs and re upload from existing files",
 )
+@click.option(
+    "--reupload-outliers",
+    is_flag=True,
+    help="Remove all outliers and re upload from existing files",
+)
 @click.option("--rankscore-treshold", help="Set a new rank score treshold if desired")
 @click.option("--sv-rankmodel-version", help="Update the SV rank model version")
 @click.pass_context
@@ -99,6 +104,7 @@ def case(
     vcf_cancer_sv_research,
     vcf_mei,
     vcf_mei_research,
+    reupload_outliers,
     reupload_sv,
     rankscore_treshold,
     sv_rankmodel_version,
@@ -158,11 +164,16 @@ def case(
             continue
         LOG.info(f"Updating '{key_name}' to {key}")
         case_obj["omics_files"][key_name] = key
+        case_obj["has_outliers"] = True
         case_changed = True
 
     if case_changed:
         institute_obj = store.institute(case_obj["owner"])
         store.update_case_cli(case_obj, institute_obj)
+
+    if reupload_outliers:
+        for file_type in ["fraser", "outrider"]:
+            store.load_omics_variants(case_obj, file_type, update=True)
 
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
@@ -171,7 +182,7 @@ def case(
             updates["sv_rank_model_version"] = str(sv_rankmodel_version)
         if vcf_sv:
             updates["vcf_files.vcf_sv"] = vcf_sv
-        if vcf_sv:
+        if vcf_sv_research:
             updates["vcf_files.vcf_sv_research"] = vcf_sv_research
 
         updated_case = store.case_collection.find_one_and_update(
