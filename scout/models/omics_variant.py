@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -38,18 +38,28 @@ class OmicsVariantLoader(BaseModel):
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
     # In the db object, this will be replaced with a "samples" array of individual dict.
-    sampleID: str
+    sample_id: str = Field(
+        alias=AliasChoices("sample_id", "sampleID"), serialization_alias="sample_id"
+    )
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
-    hgnc_ids: Optional[List[int]] = Field(alias="hgnc_id", serialization_alias="hgnc_ids")
-    geneID: Optional[str]
+    hgnc_ids: Optional[List[int]] = Field(alias="hgncId", serialization_alias="hgnc_ids")
+    ensembl_gene_id: Optional[str] = Field(
+        alias="geneID", serialization_alias="ensembl_gene_id", default=None
+    )
 
     hgnc_symbols: Optional[List[str]] = Field(
         alias="hgncSymbol", serialization_alias="hgnc_symbols"
     )
-    gene_name_orig: Optional[str]
+    gene_name_orig: Optional[str] = Field(
+        alias=AliasChoices("geneNameOrig", "gene_name_orig"),
+        serialization_alias="gene_name_orig",
+        default=None,
+    )
 
-    gene_type: Optional[str]
+    gene_type: Optional[str] = Field(
+        alias=AliasChoices("gene_type", "geneType"), serialization_alias="gene_type", default=None
+    )
 
     # coordinates if applicable
     chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
@@ -85,7 +95,7 @@ class OmicsVariantLoader(BaseModel):
         alias="nonsplitProportion", serialization_alias="nonsplit_proportion", default=None
     )
     nonsplit_proportion_99quantile: Optional[float] = Field(
-        alias="nonsplitProportion_99quantile",
+        alias="nonsplitproportion99quantile",
         serialization_alias="nonsplit_proportion_99quantile",
         default=None,
     )
@@ -99,7 +109,7 @@ class OmicsVariantLoader(BaseModel):
         alias="padjustGene", serialization_alias="p_adjust_gene", default=None
     )
     paired_end: Optional[str] = Field(
-        alias="PAIRED_END", serialization_alias="paired_end", default=None
+        alias="pairedEnd", serialization_alias="paired_end", default=None
     )
     is_external: Optional[bool] = Field(
         alias="isExternal", serialization_alias="is_external", default=None
@@ -111,16 +121,22 @@ class OmicsVariantLoader(BaseModel):
         alias="causesFrameshift", serialization_alias="causes_frameshift", default=None
     )
     utr_overlap: Optional[str] = Field(
-        alias="UTR_overlap", serialization_alias="utr_overlap", default=None
+        alias="utrOverlap", serialization_alias="utr_overlap", default=None
     )
 
     # Outrider specific
     padjust: Optional[float] = None
     zscore: Optional[float] = Field(alias="zScore", serialization_alias="zscore", default=None)
     l2fc: Optional[float] = None
-    rawcounts: Optional[int] = None
-    normcounts: Optional[float] = None
-    meanCorrected: Optional[float] = None
+    raw_counts: Optional[int] = Field(
+        alias="rawcounts", serialization_alias="raw_counts", default=None
+    )
+    norm_counts: Optional[float] = Field(
+        alias="normcounts", serialization_alias="norm_counts", default=None
+    )
+    mean_corrected: Optional[float] = Field(
+        alias="meanCorrected", serialization_alias="mean_corrected", default=None
+    )
     theta: Optional[float] = None
     aberrant: Optional[bool] = None
     aberrant_by_sample: Optional[float] = Field(
@@ -134,6 +150,13 @@ class OmicsVariantLoader(BaseModel):
     fold_change: Optional[float] = Field(
         alias="foldChange", serialization_alias="fold_change", default=None
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def empty_str_to_none(cls, values):
+        if isinstance(values, dict):
+            return {k: (None if v == "" else v) for k, v in values.items()}
+        return values
 
     @field_validator("chromosome")
     def strip_chr(cls, chrom: str) -> str:
@@ -162,8 +185,10 @@ class OmicsVariantLoader(BaseModel):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
         Convert to a list with a single member in omics_variants for storage."""
 
-        if "hgnc_id" in values:
-            values["hgnc_id"] = [int(values.get("hgnc_id"))]
+        if "hgncId" in values:
+            values["hgncId"] = [int(values.get("hgncId"))]
+        elif "hgnc_id" in values:
+            values["hgncId"] = [int(values.get("hgnc_id"))]
 
         if "hgncSymbol" in values:
             values["hgncSymbol"] = [str(values.get("hgncSymbol"))]

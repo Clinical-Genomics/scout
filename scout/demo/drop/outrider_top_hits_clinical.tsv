@@ -1,4 +1,4 @@
-hgnc_id	seqnames	start	end	strand	geneID	hgncSymbol	gene_type	gene_name_orig	sampleID	pValue	padjust	zScore	l2fc	rawcounts	normcounts	meanCorrected	theta	aberrant	AberrantBySample	AberrantByGene	padj_rank	FDR_set	foldChange
+hgncId	seqnames	start	end	strand	geneID	hgncSymbol	geneType	geneNameOrig	sampleID	pValue	padjust	zScore	l2fc	rawcounts	normcounts	meanCorrected	theta	aberrant	aberrantbysample	aberrantbygene	padjRank	FDRset	foldChange
 25415	chr4	88257620	88284769	-	ENSG00000163644.15	PPM1K	protein_coding	PPM1K	ADM1059A2	0.0016124374690447165	1.0	-5.92	-0.9	27	317.46	601.46	139.77	False	4.0	0.0	6110.0	transcriptome-wide	0.54
 10019	chr6	3063824	3115187	+	ENSG00000137275.16	RIPK1	protein_coding	RIPK1	ADM1059A2	0.0009997468998232232	1.0	6.33	0.53	104	1891.09	1308.4	547.35	False	4.0	0.0	6110.0	transcriptome-wide	1.44
 4827	chr11	5225464	5229395	-	ENSG00000244734.4	HBB	protein_coding	HBB	ADM1059A2	3.417496739472308e-25	4.169327890311004e-20	-12.61	-10.14	61	2625.42	3016434.64	9.21	True	4.0	1.0	1.0	transcriptome-wide	0.0
