@@ -36,7 +36,8 @@ class OmicsVariantHandler:
     def set_samples(self, case_obj: dict, omics_model: dict):
         """Internal member function to connect individuals.
         OMICS variants do not have a genotype as such.
-        Select individuals that match on sample_id (as when we are loading a pure RNA case eg)
+        Select individuals that match on rna_sample_id if these are provided.
+        For a fallback, match on sample id (as when we are loading a pure RNA case eg),
         or fall back to assigning the variants to an individual with affected status to have them display
         on variantS queries.
         ."""
@@ -51,10 +52,11 @@ class OmicsVariantHandler:
                 sample_id = ind["rna_sample_id"]
                 display_name = ind["display_name"]
 
-        for ind in case_obj.get("individuals"):
-            if omics_model["sample_id"] == ind.get("individual_id"):
-                sample_id = ind["individual_id"]
-                display_name = ind["display_name"]
+        if not sample_id:
+            for ind in case_obj.get("individuals"):
+                if omics_model["sample_id"] == ind.get("individual_id"):
+                    sample_id = ind["individual_id"]
+                    display_name = ind["display_name"]
 
         if not sample_id:
             for ind in case_obj.get("individuals"):
