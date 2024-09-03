@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- RNA sample ID can be provided in case load config if different from sample_id
 ### Fixed
 - Broken `scout setup database` command
 - Update demo VCF header, adding missing keys found on variants
