@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.87.2]
 ### Fixed
 - Broken `scout setup database` command
 - Update demo VCF header, adding missing keys found on variants
