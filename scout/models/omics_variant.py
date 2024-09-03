@@ -38,11 +38,11 @@ class OmicsVariantLoader(BaseModel):
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
     # In the db object, this will be replaced with a "samples" array of individual dict.
-    sampleID: str
+    sample_id: str = Field(alias="sampleID", serialization_alias="sample_id")
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
     hgnc_ids: Optional[List[int]] = Field(alias="hgncId", serialization_alias="hgnc_ids")
-    geneID: Optional[str]
+    ensembl_gene_id: Optional[str] = Field(alias="geneID", serialization_alias="ensembl_gene_id")
 
     hgnc_symbols: Optional[List[str]] = Field(
         alias="hgncSymbol", serialization_alias="hgnc_symbols"
@@ -120,9 +120,15 @@ class OmicsVariantLoader(BaseModel):
     padjust: Optional[float] = None
     zscore: Optional[float] = Field(alias="zScore", serialization_alias="zscore", default=None)
     l2fc: Optional[float] = None
-    rawcounts: Optional[int] = None
-    normcounts: Optional[float] = None
-    meanCorrected: Optional[float] = None
+    raw_counts: Optional[int] = Field(
+        alias="rawcounts", serialization_alias="raw_counts", default=None
+    )
+    norm_counts: Optional[float] = Field(
+        alias="normcounts", serialization_alias="norm_counts", default=None
+    )
+    mean_corrected: Optional[float] = Field(
+        alias="meanCorrected", serialization_alias="mean_corrected", default=None
+    )
     theta: Optional[float] = None
     aberrant: Optional[bool] = None
     aberrant_by_sample: Optional[float] = Field(
