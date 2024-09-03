@@ -179,6 +179,8 @@ class OmicsVariantLoader(BaseModel):
 
         if "hgncId" in values:
             values["hgncId"] = [int(values.get("hgncId"))]
+        elif "hgnc_id" in values:
+            values["hgncId"] = [int(values.get("hgnc_id"))]
 
         if "hgncSymbol" in values:
             values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
