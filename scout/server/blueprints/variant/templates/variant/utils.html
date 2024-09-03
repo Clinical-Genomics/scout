@@ -449,7 +449,7 @@
 <strong>Gene panels:</strong><br>
 {% for panel in variant.case_panels|sort(attribute='panel_name', case_sensitive=False)|rejectattr('removed') %}
   {% set symbol_genes_counter = namespace(value=0) %}
-  {% set no_symbol_genes = namespace(ids=[]) %}
+  {% set nosymbol_genes_counter = namespace(value=0) %}
   <a
     href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}"
     {#
@@ -463,31 +463,30 @@
       data-bs-html="true"
       data-bs-trigger="hover click"
       data-bs-content="
-      {% for gene in variant.genes %}
-        {% if panel['panel_name'] in gene['associated_gene_panels'] %}
-          {% if gene.common %}
-            {{ gene.common.hgnc_symbol }}
-            {% set symbol_genes_counter.value = symbol_genes_counter.value +1 %}
-          {% else %}
-            {% do no_symbol_genes.ids.append(gene.hgnc_id)  %}
-          {% endif %}
-        {% endif %}
-      {% endfor %}
 
-      {% if symbol_genes_counter.value == 0 %}
-        No genes with associated symbol
-      {% endif %}
-      {% if no_symbol_genes.ids|length > 0 and no_symbol_genes.ids|length <= 3 %}
-        {% for gene_id in no_symbol_genes.ids %}
-          {% for panel_gene in panel.genes %}
-            {% if gene_id == panel_gene.panel_gene %}
-              {{ panel_gene.symbol + "&nbsp;" }}
+        {% for gene in variant.genes %}
+          {% if panel['panel_name'] in gene['associated_gene_panels'] %}
+            {% if symbol_genes_counter.value <= 30 %}
+              {% if gene.common %}
+                {{ gene.common.hgnc_symbol }}
+              {% else %}
+                {% for panel_gene in panel.genes %}
+                  {% if gene.hgnc_id in panel_gene.hgnc_id %}
+                    {{ panel_gene.symbol + "&nbsp;" }}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {% set symbol_genes_counter.value = symbol_genes_counter.value +1 %}
+            {% else %}
+              {% set nosymbol_genes_counter.value = nosymbol_genes_counter.value +1 %}
             {% endif %}
-          {% endfor %}
+          {% endif %}
         {% endfor %}
-      {% elif no_symbol_genes.ids|length > 3 %}
-        + other {{ no_symbol_genes.ids|length }} genes
-      {% endif %}
+
+        {% if nosymbol_genes_counter.value %}
+         + {{nosymbol_genes_counter.value}} other genes
+        {% endif %}
+
       "
     {% endif %}
   >{{ panel.panel_name }}</a>&nbsp;&nbsp;
