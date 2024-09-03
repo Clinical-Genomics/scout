@@ -47,6 +47,11 @@ class OmicsVariantHandler:
         display_name = None
 
         for ind in case_obj.get("individuals"):
+            if omics_model["sample_id"] == ind.get("rna_sample_id"):
+                sample_id = ind["rna_sample_id"]
+                display_name = ind["display_name"]
+
+        for ind in case_obj.get("individuals"):
             if omics_model["sample_id"] == ind.get("individual_id"):
                 sample_id = ind["individual_id"]
                 display_name = ind["display_name"]
