@@ -367,6 +367,10 @@
         {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
       </div>
       {% endif %}
+      {% if 'colorsdb_af' in variant %}
+        <strong>CoLoRSdb</strong>:
+        {{ variant.colorsdb_af|human_decimal if variant.colorsdb_af }}
+      {% endif %}
     </div>
   ">
   <div>
