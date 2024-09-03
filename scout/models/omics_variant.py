@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 LOG = logging.getLogger(__name__)
 
@@ -38,20 +38,28 @@ class OmicsVariantLoader(BaseModel):
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
     # In the db object, this will be replaced with a "samples" array of individual dict.
-    sample_id: str = Field(alias="sampleID", serialization_alias="sample_id")
+    sample_id: str = Field(
+        alias=AliasChoices("sample_id", "sampleID"), serialization_alias="sample_id"
+    )
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
     hgnc_ids: Optional[List[int]] = Field(alias="hgncId", serialization_alias="hgnc_ids")
-    ensembl_gene_id: Optional[str] = Field(alias="geneID", serialization_alias="ensembl_gene_id")
+    ensembl_gene_id: Optional[str] = Field(
+        alias="geneID", serialization_alias="ensembl_gene_id", default=None
+    )
 
     hgnc_symbols: Optional[List[str]] = Field(
         alias="hgncSymbol", serialization_alias="hgnc_symbols"
     )
     gene_name_orig: Optional[str] = Field(
-        alias="geneNameOrig", serialization_alias="gene_name_orig"
+        alias=AliasChoices("geneNameOrig", "gene_name_orig"),
+        serialization_alias="gene_name_orig",
+        default=None,
     )
 
-    gene_type: Optional[str] = Field(alias="geneType", serialization_alias="gene_type")
+    gene_type: Optional[str] = Field(
+        alias=AliasChoices("gene_type", "geneType"), serialization_alias="gene_type", default=None
+    )
 
     # coordinates if applicable
     chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
