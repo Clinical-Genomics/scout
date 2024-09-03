@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken `scout setup database` command
 - Update demo VCF header, adding missing keys found on variants
 - Broken upload to Codecov step in Tests & Coverage GitHub action
+- Tomte DROP column names have been updated
 
 ## [4.87.1]
 ### Fixed
