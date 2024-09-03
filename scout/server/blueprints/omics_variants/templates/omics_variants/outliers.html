@@ -109,7 +109,12 @@
                 {% endif %}
               </td>
               <td class="text-end">{{ '%.3e' % variant.p_value }}</td>
-              <td>{{ case.individuals.0.display_name }}</td>
+              <td>{% for sample in variant.samples %}
+                  {% if sample.genotype_call != "./." %}
+                    <div>{{ sample.display_name }}</div>
+                  {% endif %}
+                {% endfor %}
+              </td>
               <td class="text-end">{{ variant.chromosome }}</td>
                 <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
                 {% if case.has_rna_tracks %}
