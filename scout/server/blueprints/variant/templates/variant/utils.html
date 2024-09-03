@@ -471,7 +471,7 @@
                 {{ gene.common.hgnc_symbol }}
               {% else %}
                 {% for panel_gene in panel.genes %}
-                  {% if gene.hgnc_id in panel_gene.hgnc_id %}
+                  {% if gene.hgnc_id == panel_gene.hgnc_id %}
                     {{ panel_gene.symbol + "&nbsp;" }}
                   {% endif %}
                 {% endfor %}
