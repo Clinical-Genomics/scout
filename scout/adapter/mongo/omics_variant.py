@@ -33,10 +33,10 @@ class OmicsVariantHandler:
 
         LOG.info("%s variants deleted", result.deleted_count)
 
-    def get_matching_rna_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
-        """Select individual that matches omics model sample on rna_sample_id if these are provided."""
+    def get_matching_omics_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
+        """Select individual that matches omics model sample on omics_sample_id if these are provided."""
         for ind in case_obj.get("individuals"):
-            if omics_model["sample_id"] == ind.get("rna_sample_id"):
+            if omics_model["sample_id"] == ind.get("omics_sample_id"):
                 return ind
 
     def get_matching_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
@@ -66,7 +66,7 @@ class OmicsVariantHandler:
     def set_samples(self, case_obj: dict, omics_model: dict):
         """Internal member function to connect individuals for a single OMICS variant.
         OMICS variants do not have a genotype as such.
-        Select individuals that match on rna_sample_id if these are provided.
+        Select individuals that match on omics_sample_id if these are provided.
         For a fallback, match on sample id (as when we are loading a pure RNA case eg),
         or fall back to assigning the variants to an individual with affected status to have them display
         on variantS queries.
@@ -75,14 +75,14 @@ class OmicsVariantHandler:
         samples = []
 
         match = (
-            self.get_matching_rna_sample_id(case_obj, omics_model)
+            self.get_matching_omics_sample_id(case_obj, omics_model)
             or self.get_matching_sample_id(case_obj, omics_model)
             or self._get_affected_individual(case_obj)
             or self._get_first_individual(case_obj)
         )
 
         sample = {
-            "sample_id": match.get("rna_sample_id", match["individual_id"]),
+            "sample_id": match.get("omics_sample_id", match["individual_id"]),
             "display_name": match["display_name"],
             "genotype_call": "./1",
         }

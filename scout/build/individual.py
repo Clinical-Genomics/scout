@@ -107,7 +107,7 @@ def build_individual(ind: dict) -> dict:
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
     ind_obj["chromograph_images"] = ind.get("chromograph_images")
     ind_obj["reviewer"] = ind.get("reviewer")
-    ind_obj["rna_sample_id"] = ind.get("rna_sample_id")
+    ind_obj["omics_sample_id"] = ind.get("omics_sample_id")
     ind_obj["mitodel"] = ind.get("mitodel")
     ind_obj["mitodel_file"] = ind.get("mitodel_file")
 

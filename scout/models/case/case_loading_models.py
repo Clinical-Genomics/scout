@@ -221,7 +221,7 @@ class SampleLoader(BaseModel):
     rhocall_wig: Optional[str] = None
     rna_alignment_path: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
-    rna_sample_id: Optional[str] = None
+    omics_sample_id: Optional[str] = None
     sample_name: Optional[str] = None
     sex: Literal["unknown", "female", "male"]
     smn1_cn: Optional[int] = None
