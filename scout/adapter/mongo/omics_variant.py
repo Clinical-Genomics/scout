@@ -61,8 +61,6 @@ class OmicsVariantHandler:
         Fall back to assigning the variants to any one individual to have them display
         on variantS queries.
         """
-        match = {}
-
         return case_obj.get("individuals")[0]
 
     def set_samples(self, case_obj: dict, omics_model: dict):
