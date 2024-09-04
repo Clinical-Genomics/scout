@@ -63,7 +63,6 @@ class OmicsVariantHandler:
         on variantS queries.
         """
         match = {}
-
         for ind in case_obj.get("individuals"):
             if ind.get("phenotype") in [2, "affected"]:
                 match["sample_id"] = ind["individual_id"]
@@ -71,7 +70,7 @@ class OmicsVariantHandler:
                 return match
         return match
 
-    def _get_fist_individual(self, case_obj: dict) -> dict:
+    def _get_first_individual(self, case_obj: dict) -> dict:
         """
         Fall back to assigning the variants to any one individual to have them display
         on variantS queries.
