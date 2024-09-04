@@ -33,8 +33,59 @@ class OmicsVariantHandler:
 
         LOG.info("%s variants deleted", result.deleted_count)
 
+    def get_matching_rna_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
+        """Select individual that matches omics model sample on rna_sample_id if these are provided."""
+
+        match = {}
+        for ind in case_obj.get("individuals"):
+            if omics_model["sample_id"] == ind.get("rna_sample_id"):
+                match["sample_id"] = ind["rna_sample_id"]
+                match["display_name"] = ind["display_name"]
+                return match
+        return match
+
+    def get_matching_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
+        """
+        Select individual that matches omics model on sample id (as when we are loading a pure RNA case eg).
+        """
+
+        match = {}
+        for ind in case_obj.get("individuals"):
+            if omics_model["sample_id"] == ind.get("individual_id"):
+                match["sample_id"] = ind["individual_id"]
+                match["display_name"] = ind["display_name"]
+                return match
+        return match
+
+    def _get_affected_individual(self, case_obj: dict) -> dict:
+        """
+        Fall back to assigning the variants to an individual with affected status to have them display
+        on variantS queries.
+        """
+        match = {}
+
+        for ind in case_obj.get("individuals"):
+            if ind.get("phenotype") in [2, "affected"]:
+                match["sample_id"] = ind["individual_id"]
+                match["display_name"] = ind["display_name"]
+                return match
+        return match
+
+    def _get_fist_individual(self, case_obj: dict) -> dict:
+        """
+        Fall back to assigning the variants to any one individual to have them display
+        on variantS queries.
+        """
+        match = {}
+
+        for ind in case_obj.get("individuals"):
+            match["sample_id"] = ind["individual_id"]
+            match["display_name"] = ind["display_name"]
+            return match
+        return match
+
     def set_samples(self, case_obj: dict, omics_model: dict):
-        """Internal member function to connect individuals.
+        """Internal member function to connect individuals for a single OMICS variant.
         OMICS variants do not have a genotype as such.
         Select individuals that match on rna_sample_id if these are provided.
         For a fallback, match on sample id (as when we are loading a pure RNA case eg),
@@ -44,30 +95,16 @@ class OmicsVariantHandler:
 
         samples = []
 
-        sample_id = None
-        display_name = None
-
-        for ind in case_obj.get("individuals"):
-            if omics_model["sample_id"] == ind.get("rna_sample_id"):
-                sample_id = ind["rna_sample_id"]
-                display_name = ind["display_name"]
-
-        if not sample_id:
-            for ind in case_obj.get("individuals"):
-                if omics_model["sample_id"] == ind.get("individual_id"):
-                    sample_id = ind["individual_id"]
-                    display_name = ind["display_name"]
-
-        if not sample_id:
-            for ind in case_obj.get("individuals"):
-                if ind.get("phenotype") in [2, "affected"]:
-                    sample_id = ind["individual_id"]
-                    display_name = ind["display_name"]
-                    break
+        match = (
+            self.get_matching_rna_sample_id(case_obj, omics_model)
+            or self.get_matching_sample_id(case_obj, omics_model)
+            or _get_affected_individual(case_obj)
+            or _get_first_individual(case_obj)
+        )
 
         sample = {
-            "sample_id": sample_id,
-            "display_name": display_name,
+            "sample_id": match["sample_id"],
+            "display_name": match["display_name"],
             "genotype_call": "./1",
         }
         samples.append(sample)
