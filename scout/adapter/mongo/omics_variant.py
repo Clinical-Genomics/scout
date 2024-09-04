@@ -77,10 +77,9 @@ class OmicsVariantHandler:
         """
         match = {}
 
-        for ind in case_obj.get("individuals"):
-            match["sample_id"] = ind["individual_id"]
-            match["display_name"] = ind["display_name"]
-            return match
+        ind = case_obj.get("individuals")[0]
+        match["sample_id"] = ind["individual_id"]
+        match["display_name"] = ind["display_name"]
         return match
 
     def set_samples(self, case_obj: dict, omics_model: dict):
