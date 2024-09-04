@@ -35,40 +35,26 @@ class OmicsVariantHandler:
 
     def get_matching_rna_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
         """Select individual that matches omics model sample on rna_sample_id if these are provided."""
-
-        match = {}
         for ind in case_obj.get("individuals"):
             if omics_model["sample_id"] == ind.get("rna_sample_id"):
-                match["sample_id"] = ind["rna_sample_id"]
-                match["display_name"] = ind["display_name"]
-                return match
-        return match
+                return ind
 
     def get_matching_sample_id(self, case_obj: dict, omics_model: dict) -> dict:
         """
         Select individual that matches omics model on sample id (as when we are loading a pure RNA case eg).
         """
-
-        match = {}
         for ind in case_obj.get("individuals"):
             if omics_model["sample_id"] == ind.get("individual_id"):
-                match["sample_id"] = ind["individual_id"]
-                match["display_name"] = ind["display_name"]
-                return match
-        return match
+                return ind
 
     def _get_affected_individual(self, case_obj: dict) -> dict:
         """
         Fall back to assigning the variants to an individual with affected status to have them display
         on variantS queries.
         """
-        match = {}
         for ind in case_obj.get("individuals"):
             if ind.get("phenotype") in [2, "affected"]:
-                match["sample_id"] = ind["individual_id"]
-                match["display_name"] = ind["display_name"]
-                return match
-        return match
+                return ind
 
     def _get_first_individual(self, case_obj: dict) -> dict:
         """
@@ -77,10 +63,7 @@ class OmicsVariantHandler:
         """
         match = {}
 
-        ind = case_obj.get("individuals")[0]
-        match["sample_id"] = ind["individual_id"]
-        match["display_name"] = ind["display_name"]
-        return match
+        return case_obj.get("individuals")[0]
 
     def set_samples(self, case_obj: dict, omics_model: dict):
         """Internal member function to connect individuals for a single OMICS variant.
@@ -101,7 +84,7 @@ class OmicsVariantHandler:
         )
 
         sample = {
-            "sample_id": match["sample_id"],
+            "sample_id": match.get("rna_sample_id", match["individual_id"]),
             "display_name": match["display_name"],
             "genotype_call": "./1",
         }
