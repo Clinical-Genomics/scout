@@ -6,14 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Options for specifically updating OMICS files (fraser, outrider) on a case
 - Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 - Added CoLoRSdb frequency to Pop Freq column on variantS page
+- RNA sample ID can be provided in case load config if different from sample_id
+- Options for specifically updating OMICS variants (fraser, outrider) on a case
 ### Fixed
 - Broken `scout setup database` command
 - Update demo VCF header, adding missing keys found on variants
 - Broken upload to Codecov step in Tests & Coverage GitHub action
-- Tomte DROP column names have been updated
+- Tomte DROP column names have been updated (backwards compatibility preserved for main fields)
+- WTS outlierS view to display correct individual IDs for cases with multiple individuals
 
 ## [4.87.1]
 ### Fixed
