@@ -98,8 +98,8 @@ class OmicsVariantHandler:
         match = (
             self.get_matching_rna_sample_id(case_obj, omics_model)
             or self.get_matching_sample_id(case_obj, omics_model)
-            or _get_affected_individual(case_obj)
-            or _get_first_individual(case_obj)
+            or self._get_affected_individual(case_obj)
+            or self._get_first_individual(case_obj)
         )
 
         sample = {
