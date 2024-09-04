@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update demo VCF header, adding missing keys found on variants
 - Broken upload to Codecov step in Tests & Coverage GitHub action
 - Tomte DROP column names have been updated
+- Reverted igv.js to v.2.15.11
 
 ## [4.87.1]
 ### Fixed
