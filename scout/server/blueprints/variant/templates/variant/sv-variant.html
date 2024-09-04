@@ -2,7 +2,7 @@
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
 {% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, variant_scripts %}
-{% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel, custom_annotations %}
+{% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel, custom_annotations, gene_panels %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
@@ -189,10 +189,7 @@
         {% endif %}
 
         <div class="list-group-item">
-          <strong>Gene panels:</strong><br>
-          {% for panel_id in variant.panels|sort(case_sensitive=False) %}
-            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
-          {% endfor %}
+          {{ gene_panels(variant) }}
         </div>
         <div class="list-group mt-3">
           <div>

@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Added CoLoRSdb frequency to Pop Freq column on variantS page
+- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 - RNA sample ID can be provided in case load config if different from sample_id
 ### Fixed
 - Broken `scout setup database` command
