@@ -535,6 +535,8 @@ class CaseHandler(object):
                 {"RNAfusion_report_research": EXISTS_NOT_NULL},
                 {"RNAfusion_inspector": EXISTS_NOT_NULL},
                 {"RNAfusion_inspector_research": EXISTS_NOT_NULL},
+                {"omics_files.fraser": EXISTS_NOT_NULL},
+                {"omics_files.outrider": EXISTS_NOT_NULL},
             ],
         }
         return [case["_id"] for case in self.case_collection.find(query)]
