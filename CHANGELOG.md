@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken upload to Codecov step in Tests & Coverage GitHub action
 - Tomte DROP column names have been updated (backwards compatibility preserved for main fields)
 - WTS outlierS view to display correct individual IDs for cases with multiple individuals
+- WTS outlierS not displayed on WTS outlierS view
 
 ## [4.87.1]
 ### Fixed

@@ -231,14 +231,6 @@ class OmicsVariantLoader(BaseModel):
         )
         return values
 
-    @model_validator(mode="before")
-    def set_sample_display_name(cls, values) -> "OmicsVariantLoader":
-        """Set a display name."""
-        values["display_name"] = values.get(
-            "display_name", values.get("sample_name", values.get("individual_id"))
-        )
-        return values
-
 
 def get_qualification(values: dict) -> str:
     """Get qualification string for ID and display name.
