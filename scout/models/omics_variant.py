@@ -234,9 +234,7 @@ class OmicsVariantLoader(BaseModel):
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "OmicsVariantLoader":
         """Set a display name."""
-        values["display_name"] = values.get(
-            "display_name", values.get("sample_name", values.get("individual_id"))
-        )
+        values["display_name"] = values.get("sample_id", values.get("sampleID"))
         return values
 
 
