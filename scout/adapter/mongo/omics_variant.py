@@ -82,7 +82,7 @@ class OmicsVariantHandler:
         )
 
         sample = {
-            "sample_id": match.get("omics_sample_id", match["individual_id"]),
+            "sample_id": match["individual_id"],
             "display_name": match["display_name"],
             "genotype_call": "./1",
         }
