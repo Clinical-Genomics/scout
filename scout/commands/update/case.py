@@ -17,11 +17,24 @@ LOG = logging.getLogger(__name__)
     "--institute", "-i", help="Case institute ID (case display name should also be provided)"
 )
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
-@click.option("--fraser", help="Path to clinical WTS OMICS outlier FRASER TSV file to be loaded")
 @click.option(
-    "--outrider", help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be loaded"
+    "--fraser",
+    help="Path to clinical WTS OMICS outlier FRASER TSV file to be added - NB variants are NOT loaded",
 )
-@click.option("--vcf", type=click.Path(exists=True), help="Path to clinical VCF file to be added")
+@click.option(
+    "--outrider",
+    help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
+)
+@click.option(
+    "--rna-genome-build",
+    type=click.Choice(["37", "38"]),
+    help="RNA human genome build - should match RNA alignment files and IGV tracks",
+)
+@click.option(
+    "--vcf",
+    type=click.Path(exists=True),
+    help="Path to clinical VCF file to be added - NB variants are NOT loaded",
+)
 @click.option(
     "--vcf-sv",
     type=click.Path(exists=True),
@@ -30,22 +43,22 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--vcf-str",
     type=click.Path(exists=True),
-    help="Path to clinical STR VCF file to be added",
+    help="Path to clinical STR VCF file to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer",
     type=click.Path(exists=True),
-    help="Path to clinical cancer VCF file to be added",
+    help="Path to clinical cancer VCF file to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer-sv",
     type=click.Path(exists=True),
-    help="Path to clinical cancer structural VCF file to be added",
+    help="Path to clinical cancer structural VCF file to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-research",
     type=click.Path(exists=True),
-    help="Path to research VCF file to be added",
+    help="Path to research VCF file to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-sv-research",
@@ -55,32 +68,27 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--vcf-cancer-research",
     type=click.Path(exists=True),
-    help="Path to research VCF with cancer variants to be added",
+    help="Path to research VCF with cancer variants to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer-sv-research",
     type=click.Path(exists=True),
-    help="Path to research VCF with cancer structural variants to be added",
+    help="Path to research VCF with cancer structural variants to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-mei",
     type=click.Path(exists=True),
-    help="Path to clinical mei variants to be added",
+    help="Path to clinical mei variants to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--vcf-mei-research",
     type=click.Path(exists=True),
-    help="Path to research mei variants to be added",
+    help="Path to research mei variants to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--reupload-sv",
     is_flag=True,
     help="Remove all SVs and re upload from existing files",
-)
-@click.option(
-    "--reupload-outliers",
-    is_flag=True,
-    help="Remove all outliers and re upload from existing files",
 )
 @click.option("--rankscore-treshold", help="Set a new rank score treshold if desired")
 @click.option("--sv-rankmodel-version", help="Update the SV rank model version")
@@ -104,9 +112,9 @@ def case(
     vcf_cancer_sv_research,
     vcf_mei,
     vcf_mei_research,
-    reupload_outliers,
     reupload_sv,
     rankscore_treshold,
+    rna_genome_build,
     sv_rankmodel_version,
 ):
     """
@@ -167,13 +175,13 @@ def case(
         case_obj["has_outliers"] = True
         case_changed = True
 
+    if rna_genome_build:
+        case_obj["rna_genome_build"] = rna_genome_build
+        case_changed = True
+
     if case_changed:
         institute_obj = store.institute(case_obj["owner"])
         store.update_case_cli(case_obj, institute_obj)
-
-    if reupload_outliers:
-        for file_type in ["fraser", "outrider"]:
-            store.load_omics_variants(case_obj, file_type, update=True)
 
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)
