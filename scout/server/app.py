@@ -80,7 +80,6 @@ def create_app(config_file=None, config=None):
 
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
-
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
@@ -112,7 +111,7 @@ def create_app(config_file=None, config=None):
 
         @app.before_request
         def log_users_activity():
-            """Log users' navigation to file, if specified in the app setting.s"""
+            """Log users' navigation to file, if specified in the app settings."""
 
             if any(
                 sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
