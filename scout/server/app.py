@@ -59,7 +59,7 @@ def set_activity_log(app):
 
 
 @app.before_request
-def before_request_func():
+def log_users_activity():
     """Log users' navigation to file, if specified in the app setting.s"""
     if USERS_LOGGER_PATH_PARAM not in app.config:
         return
@@ -67,7 +67,8 @@ def before_request_func():
         sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
     ):  # LOG only navigation on main pages
         return
-    LOG.info(" - ".join([current_user.email, request.path]))
+    user = current_user.email if current_user.is_authenticated else "anonymous"
+    LOG.info(" - ".join([user, request.path]))
 
 
 def create_app(config_file=None, config=None):
