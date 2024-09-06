@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Patch update igv.js to 3.0.5
+
 ## [4.88]
 ### Added
 - Added CoLoRSdb frequency to Pop Freq column on variantS page
