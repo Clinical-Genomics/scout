@@ -213,10 +213,9 @@ class CaseHandler(object):
 
     def update_case_query_or_options(self, query: dict, or_options: List[dict]):
         """Populates the available options in the query $and field"""
-        if or_options and query.get("$or"):
-            query["$or"] += or_options
-        elif or_options:
-            query["$or"] = or_options
+        if not or_options:
+            return
+        query.setdefault("$or", []).extend(or_options)
 
     def populate_case_query(
         self, query: dict, name_query: Union[str, ImmutableMultiDict], owner=None, collaborator=None
