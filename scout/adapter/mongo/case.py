@@ -246,35 +246,55 @@ class CaseHandler(object):
             if handler:
                 handler(query, query_value)
 
-        def set_panel_query(q, v):
-            q.update({"panels": {"$elemMatch": {"panel_name": v, "is_default": True}}})
+        def set_panel_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update(
+                {"panels": {"$elemMatch": {"panel_name": query_value, "is_default": True}}}
+            )
 
-        def set_status_query(q, v):
-            q.update({"status": v})
+        def set_status_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"status": query_value})
 
-        def set_tags_query(q, v):
-            q.update({"tags": v.lower()})
+        def set_tags_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"tags": query_value.lower()})
 
-        def set_track_query(q, v):
-            q.update({"track": v})
+        def set_track_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"track": query_value})
 
-        def set_pheno_group_query(q, v):
-            q.update({"phenotype_groups.phenotype_id": v})
+        def set_pheno_group_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"phenotype_groups.phenotype_id": query_value})
 
-        def set_cohort_query(q, v):
-            q.update({"cohorts": v})
+        def set_cohort_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"cohorts": query_value})
 
-        def set_similar_case_query(q, v):
-            self._set_similar_phenotype_query(q, "similar_case", v, owner or collaborator)
+        def set_similar_case_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_similar_phenotype_query(
+                query, "similar_case", query_value, owner or collaborator
+            )
 
-        def set_similar_pheno_query(q, v):
-            self._set_similar_phenotype_query(q, "similar_pheno", v, owner or collaborator)
+        def set_similar_pheno_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_similar_phenotype_query(
+                query, "similar_pheno", query_value, owner or collaborator
+            )
 
-        def set_pinned_gene_query(q, v):
-            self._set_genes_of_interest_query(query=q, query_field="pinned", query_value=v)
+        def set_pinned_gene_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_genes_of_interest_query(
+                query=query, query_field="pinned", query_value=query_value
+            )
 
-        def set_causative_gene_query(q, v):
-            self._set_genes_of_interest_query(query=q, query_field="causative", query_value=v)
+        def set_causative_gene_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_genes_of_interest_query(
+                query=query, query_field="causative", query_value=query_value
+            )
 
         def set_user_query(query: dict, query_value: str):
             # Handling the 'user' field query separately
