@@ -35,12 +35,44 @@ from .blueprints import (
 )
 
 LOG = logging.getLogger(__name__)
+USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
+SUB_URL_IGNORE_LIST = [
+    "static",
+    "ideograms",
+    "custom_images",
+    "autozygous_images",
+    "coverage_images",
+    "upd_regions_images",
+    "favicon",
+]  # When logging messages before any request, ignore any URL containing these substrings
+
+app = Flask(__name__)
+
+
+def set_activity_log(app):
+    """Log users' activity to a file, if specified in the scout config."""
+    if USERS_LOGGER_PATH_PARAM not in app.config:
+        return
+    handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
+    handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+    LOG.addHandler(handler)
+
+
+@app.before_request
+def before_request_func():
+    """Log users' navigation to file, if specified in the app setting.s"""
+    if USERS_LOGGER_PATH_PARAM not in app.config:
+        return
+    if any(
+        sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
+    ):  # LOG only navigation on main pages
+        return
+    LOG.info(" - ".join([current_user.email, request.path]))
 
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
 
-    app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
 
@@ -62,6 +94,7 @@ def create_app(config_file=None, config=None):
 
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
+    set_activity_log(app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)

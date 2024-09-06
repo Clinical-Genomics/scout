@@ -151,3 +151,6 @@ SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 # BIONANO_ACCESS = "https://bionano-access.scilifelab.se"
 # BIONANO_USERNAME = "USERNAME"
 # BIONANO_PASSWORD = "PASSWORD"
+
+# Path to users' activity log file
+# USERS_ACTIVITY_LOG_PATH = "users_activity.log"

@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- LOG users' activity to file by specifying `USERS_ACTIVITY_LOG_PATH` parameter in app config
 ### Fixed
 - Patch update igv.js to 3.0.5
 
