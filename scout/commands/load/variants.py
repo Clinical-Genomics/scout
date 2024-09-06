@@ -21,6 +21,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("--mei", is_flag=True, help="Upload clinical MEI variants")
 @click.option("--mei-research", is_flag=True, help="Upload research MEI variants")
+@click.option("--outlier", is_flag=True, help="Upload clinical OMICS outlier variants")
 @click.option("--sv", is_flag=True, help="Upload clinical structural variants")
 @click.option("--sv-research", is_flag=True, help="Upload research structural variants")
 @click.option("--snv", is_flag=True, help="Upload clinical SNV variants")
@@ -53,6 +54,7 @@ def variants(
     cancer_sv_research,
     mei,
     mei_research,
+    outlier,
     sv,
     sv_research,
     snv,
@@ -106,6 +108,14 @@ def variants(
         {"category": "snv", "variant_type": "clinical", "upload": snv},
         {"category": "snv", "variant_type": "research", "upload": snv_research},
         {"category": "str", "variant_type": "clinical", "upload": str_clinical},
+    ]
+
+    omics_variants = [
+        {
+            "category": "outlier",
+            "variant_type": "clinical",
+            "upload": outlier,
+        },
     ]
 
     gene_obj = None
