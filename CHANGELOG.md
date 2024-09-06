@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Advanced cases search to narrow down results using more than one search parameter
+
 ## [4.88]
 ### Added
 - Added CoLoRSdb frequency to Pop Freq column on variantS page
@@ -23,7 +27,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.87]
 ### Added
-- Advanced cases search to narrow down results using more than one search parameter
 - Option to configure RNA build on case load (default '38')
 ### Changed
 - Tooltip on RNA alignments now shows RNA genome build version
