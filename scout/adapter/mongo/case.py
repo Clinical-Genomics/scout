@@ -113,7 +113,7 @@ class CaseHandler(object):
         similar_case_ids = []
         for i in similar_cases:
             similar_case_ids.append(i[0])
-        self.update_case_id_query(query, similar_case_ids)
+        self._update_case_id_query(query, similar_case_ids)
 
     def _set_genes_of_interest_query(
         self, query: Dict[str, Any], query_field: str, query_value: str
@@ -155,7 +155,7 @@ class CaseHandler(object):
             ]
         )
         case_ids = [case["_id"] for case in cases_with_gene_doc]
-        self.update_case_id_query(query, case_ids)
+        self._update_case_id_query(query, case_ids)
 
     def _set_case_name_query(self, query: Dict[str, Any], query_value: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
@@ -316,7 +316,7 @@ class CaseHandler(object):
                         query=query, query_field=query_field, query_value=query_value.strip()
                     )
 
-    def update_case_id_query(self, query, id_list):
+    def _update_case_id_query(self, query, id_list):
         """Update a case query ["_id"]["$in"] values using an additional list of case _ids
 
         Args:
@@ -521,15 +521,15 @@ class CaseHandler(object):
 
         if verification_pending:  # Filter for cases with Sanger verification pending
             sanger_pending_cases = self.verification_missing_cases(owner)
-            self.update_case_id_query(query, sanger_pending_cases)
+            self._update_case_id_query(query, sanger_pending_cases)
 
         if has_clinvar_submission:
             clinvar_subm_cases = self.clinvar_cases(collaborator or owner)
-            self.update_case_id_query(query, clinvar_subm_cases)
+            self._update_case_id_query(query, clinvar_subm_cases)
 
         if has_rna_data:
             cases_with_rna = self.rna_cases(collaborator or owner)
-            self.update_case_id_query(query, cases_with_rna)
+            self._update_case_id_query(query, cases_with_rna)
 
         if yield_query:
             return query
