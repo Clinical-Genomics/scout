@@ -51,6 +51,18 @@
         </div> <!-- end of div class row -->
 
         <div class="row">
+          <!-- FIXME: Is col-md-8 make sense (probably no) -->
+          <!-- FIXME: What is the rel="noopener" ? -->
+           <!-- FIXME: Go over remaining parts of the outliers.html form + button -->
+           <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+             <span class="col-md-8">
+               <button type="submit" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="SNV variants">SNV variants</button>
+               <button type="submit" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="SNV variants">SV variants</button>
+             </span>
+           </form>
+        </div>
+
+        <div class="row">
           <div class="col-sm-12">{{activity_panel(events)}}</div>
         </div>
 
