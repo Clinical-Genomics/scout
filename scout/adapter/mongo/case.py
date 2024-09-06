@@ -230,20 +230,14 @@ class CaseHandler(object):
                 "exact_pheno": self._set_case_phenotype_query,
                 "exact_dia": self._set_diagnosis_query,
                 "synopsis": self._set_synopsis_query,
-                "panel": lambda q, v: q.update(
-                    {"panels": {"$elemMatch": {"panel_name": v, "is_default": True}}}
-                ),
-                "status": lambda q, v: q.update({"status": v}),
-                "tags": lambda q, v: q.update({"tags": v.lower()}),
-                "track": lambda q, v: q.update({"track": v}),
-                "pheno_group": lambda q, v: q.update({"phenotype_groups.phenotype_id": v}),
-                "cohort": lambda q, v: q.update({"cohorts": v}),
-                "similar_case": lambda q, v: self._set_similar_phenotype_query(
-                    q, "similar_case", v, owner or collaborator
-                ),
-                "similar_pheno": lambda q, v: self._set_similar_phenotype_query(
-                    q, "similar_pheno", v, owner or collaborator
-                ),
+                "panel": set_panel_query,
+                "status": set_status_query,
+                "tags": set_tags_query,
+                "track": set_track_query,
+                "pheno_group": set_pheno_group_query,
+                "cohort": set_cohort_query,
+                "similar_case": set_similar_case_query,
+                "similar_pheno": set_similar_pheno_query,
                 "pinned": self._set_genes_of_interest_query,
                 "causative": self._set_genes_of_interest_query,
                 "user": set_user_query,
@@ -252,6 +246,30 @@ class CaseHandler(object):
             handler = handlers.get(query_field)
             if handler:
                 handler(query, query_value)
+
+        def set_panel_query(q, v):
+            q.update({"panels": {"$elemMatch": {"panel_name": v, "is_default": True}}})
+
+        def set_status_query(q, v):
+            q.update({"status": v})
+
+        def set_tags_query(q, v):
+            q.update({"tags": v.lower()})
+
+        def set_track_query(q, v):
+            q.update({"track": v})
+
+        def set_pheno_group_query(q, v):
+            q.update({"phenotype_groups.phenotype_id": v})
+
+        def set_cohort_query(q, v):
+            q.update({"cohorts": v})
+
+        def set_similar_case_query(q, v):
+            self._set_similar_phenotype_query(q, "similar_case", v, owner or collaborator)
+
+        def set_similar_pheno_query(q, v):
+            self._set_similar_phenotype_query(q, "similar_pheno", v, owner or collaborator)
 
         def set_user_query(query: dict, query_value: str):
             # Handling the 'user' field query separately
