@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Advanced cases search to narrow down results using more than one search parameter
+### Fixed
+- Patch update igv.js to 3.0.5
 
 ## [4.88]
 ### Added
