@@ -152,5 +152,5 @@ SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 # BIONANO_USERNAME = "USERNAME"
 # BIONANO_PASSWORD = "PASSWORD"
 
-# Path to users' activity log file
+# Uncomment and customise to log users' activity to file
 # USERS_ACTIVITY_LOG_PATH = "users_activity.log"
