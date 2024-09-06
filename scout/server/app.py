@@ -49,8 +49,7 @@ SUB_URL_IGNORE_LIST = [
 
 def set_activity_log(app):
     """Log users' activity to a file, if specified in the scout config."""
-    if USERS_LOGGER_PATH_PARAM not in app.config:
-        return
+
     handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
     handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
     LOG.addHandler(handler)
@@ -81,7 +80,7 @@ def create_app(config_file=None, config=None):
 
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
-    set_activity_log(app)
+
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
@@ -108,17 +107,19 @@ def create_app(config_file=None, config=None):
                 login_url = url_for("public.index", next=next_url)
                 return redirect(login_url)
 
-    @app.before_request
-    def log_users_activity():
-        """Log users' navigation to file, if specified in the app setting.s"""
-        if USERS_LOGGER_PATH_PARAM not in app.config:
-            return
-        if any(
-            sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
-        ):  # LOG only navigation on main pages
-            return
-        user = current_user.email if current_user.is_authenticated else "anonymous"
-        LOG.info(" - ".join([user, request.path]))
+    if USERS_LOGGER_PATH_PARAM in app.config:
+        set_activity_log(app)
+
+        @app.before_request
+        def log_users_activity():
+            """Log users' navigation to file, if specified in the app setting.s"""
+
+            if any(
+                sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
+            ):  # LOG only navigation on main pages
+                return
+            user = current_user.email if current_user.is_authenticated else "anonymous"
+            LOG.info(" - ".join([user, request.path]))
 
     return app
 
