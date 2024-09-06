@@ -238,8 +238,8 @@ class CaseHandler(object):
                 "cohort": set_cohort_query,
                 "similar_case": set_similar_case_query,
                 "similar_pheno": set_similar_pheno_query,
-                "pinned": self._set_genes_of_interest_query,
-                "causative": self._set_genes_of_interest_query,
+                "pinned": set_pinned_gene_query,
+                "causative": set_causative_gene_query,
                 "user": set_user_query,
             }
 
@@ -270,6 +270,12 @@ class CaseHandler(object):
 
         def set_similar_pheno_query(q, v):
             self._set_similar_phenotype_query(q, "similar_pheno", v, owner or collaborator)
+
+        def set_pinned_gene_query(q, v):
+            self._set_genes_of_interest_query(query=q, query_field="pinned", query_value=v)
+
+        def set_causative_gene_query(q, v):
+            self._set_genes_of_interest_query(query=q, query_field="causative", query_value=v)
 
         def set_user_query(query: dict, query_value: str):
             # Handling the 'user' field query separately
