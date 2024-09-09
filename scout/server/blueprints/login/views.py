@@ -50,6 +50,15 @@ def login():
     if "next" in request.args:
         session["next_url"] = request.args["next"]
 
+    if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
+        if request.form.get("consent_checkbox") is None:
+            flash(
+                "Logging user data is a requirement for using this portal and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
+                "warning",
+            )
+            return redirect(url_for("public.index"))
+        session["consent_given"] = True
+
     user_id = None
     user_mail = None
 
@@ -77,15 +86,6 @@ def login():
     elif request.form.get("email"):  # log in against Scout database
         user_mail = request.form["email"]
         LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
-
-    if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if request.form.get("consent_checkbox") is None:
-            flash(
-                "Logging user data is a requirement for using this portal and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
-                "warning",
-            )
-            return redirect(url_for("public.index"))
-        session["consent_given"] = True
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
