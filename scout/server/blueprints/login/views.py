@@ -47,7 +47,6 @@ def load_user(user_id):
 @public_endpoint
 def login():
     """Login a user if they have access."""
-    LOG.error(f"IN LOGIN! ---->{request.form.__dict__}")
     if "next" in request.args:
         session["next_url"] = request.args["next"]
 
@@ -55,7 +54,6 @@ def login():
     user_mail = None
 
     if current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER")):
-        LOG.error("LDAP Login!")
         ldap_authorized = controllers.ldap_authorized(
             request.form.get("ldap_user"), request.form.get("ldap_password")
         )
@@ -70,7 +68,6 @@ def login():
             user_mail = session["email"]
             session.pop("email", None)
         else:
-            LOG.error("Google Login!")
             redirect_uri = url_for(".authorized", _external=True)
             try:
                 return oauth_client.google.authorize_redirect(redirect_uri)
@@ -78,7 +75,6 @@ def login():
                 flash("An error has occurred while logging in user using Google OAuth")
 
     elif request.form.get("email"):  # log in against Scout database
-        LOG.error("HERE BITCHES")
         user_mail = request.form["email"]
         LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
 
