@@ -11,7 +11,8 @@ def test_unathorized_login(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # WHEN trying tp access scout with the email of an non-existing user
     with app.test_client() as client:
-        resp = client.get(url_for("login.login", email="fakey_user@email.com"))
+        form_data = {"email": "fakey_user@email.com"}
+        resp = client.post(url_for("login.login"), data=form_data)
 
         # THEN response should redirect to user authentication form (index page)
         assert resp.status_code == 302
@@ -25,7 +26,8 @@ def test_authorized_login(app, user_obj):
     # GIVEN an initialized app
     # WHEN trying to access scout with the email of an existing user
     with app.test_client() as client:
-        resp = client.get(url_for("login.login", email=user_obj["email"]))
+        form_data = {"email": user_obj["email"]}
+        resp = client.post(url_for("login.login"), data=form_data)
 
         # THEN response should redirect to user institutes
         assert resp.status_code == 302
@@ -50,7 +52,7 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
     with ldap_app.test_client() as client:
         # When submitting LDAP username and password
         form_data = {"username": "test_user", "password": "test_password"}
-        resp = client.post(url_for("login.login", **form_data))
+        resp = client.post(url_for("login.login"), data=form_data)
 
         # THEN current user should be authenticated
         assert current_user.is_authenticated
