@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
+
+## [4.88.1]
 ### Fixed
 - Patch update igv.js to 3.0.5
 
