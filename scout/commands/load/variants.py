@@ -37,7 +37,6 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--rank-treshold",
     default=5,
-    deprecated=True,
     help="Specify the rank score threshold. Deprecation warning: this parameter will change name in a later release.",
     show_default=True,
 )
@@ -188,6 +187,7 @@ def variants(
             except Exception as e:
                 LOG.warning(e)
                 raise click.Abort()
+
         return i
 
     def load_omics_variant_files(case_obj: dict, omics_files: List[Dict]) -> int:
@@ -242,7 +242,7 @@ def variants(
                     LOG.warning(e)
                     raise click.Abort()
 
-            return i
+        return i
 
     i = load_variant_files(case_obj, files, rank_treshold, force)
     i += load_omics_variant_files(
