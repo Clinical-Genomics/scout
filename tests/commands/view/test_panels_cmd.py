@@ -13,7 +13,7 @@ def test_view_panes(mock_app):
     result = runner.invoke(cli, ["view", "panels"])
     assert result.exit_code == 0
     # a panel should be found
-    assert "panel1\t1.0\t263" in result.output
+    assert "panel1\t1.0\t265" in result.output
 
     # Provide an non-existing institute argument
     result = runner.invoke(cli, ["view", "panels", "-i", "cust666"])
@@ -23,4 +23,4 @@ def test_view_panes(mock_app):
     # Provide the right institute argument
     result = runner.invoke(cli, ["view", "panels", "-i", "cust000"])
     # a panel should be found
-    assert "panel1\t1.0\t263" in result.output
+    assert "panel1\t1.0\t265" in result.output
