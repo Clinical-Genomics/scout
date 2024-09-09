@@ -5,7 +5,7 @@ from flask_login import current_user
 from scout.server.extensions import ldap_manager, store
 
 
-def test_unathorized_login(app, institute_obj, case_obj):
+def test_unathorized_login(app, institute_obj):
     """Test failed authentication against scout database"""
 
     # GIVEN an initialized app
