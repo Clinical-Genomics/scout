@@ -45,8 +45,9 @@
               <button type="submit" class="btn btn-primary form-control text-white">Login</button>
             </div>
           </div>
-          <!-- Consent Banner -->
-          {% if config.USERS_ACTIVITY_LOG_PATH %}
+        {% endif %}
+        <!-- Consent Banner -->
+        {% if config.USERS_ACTIVITY_LOG_PATH %}
           <div class="row mt-3 ms-0" style="background-color: #f9edbe; text-align: center; padding: 20px;">
             <p>To ensure security and improve functionality, we log user activity, including interactions and navigation. This helps us enhance performance and maintain platform safety.
               By checking the box, you agree that your activity will be logged, which is required to use this portal and log in.</p>
@@ -54,9 +55,8 @@
                 <input type="checkbox" name="consent_checkbox"> I agree to my activity being logged
               </label>
           </div>
-          {% endif %}
-        </form>
-      {% endif %}
+        {% endif %}
+    </form>
     {% endif %}
   </div>
   <div class="container bg-light rounded-3 py-4">
