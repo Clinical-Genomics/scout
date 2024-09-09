@@ -4,16 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Options for selectively updating OMICS variants (fraser, outrider) on a case
+
 ## [4.88.1]
 ### Fixed
 - Patch update igv.js to 3.0.5
 
 ## [4.88]
 ### Added
-- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 - Added CoLoRSdb frequency to Pop Freq column on variantS page
+- Hovertip to gene panel names with associated genes in SV variant view, when variant covers more than one gene
 - RNA sample ID can be provided in case load config if different from sample_id
-- Options for specifically updating OMICS variants (fraser, outrider) on a case
 ### Fixed
 - Broken `scout setup database` command
 - Update demo VCF header, adding missing keys found on variants
