@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, List, Optional
 
 import click
 from flask.cli import with_appcontext
@@ -110,7 +111,7 @@ def variants(
         {"category": "str", "variant_type": "clinical", "upload": str_clinical},
     ]
 
-    omics_variants = [
+    omics_files = [
         {
             "category": "outlier",
             "variant_type": "clinical",
@@ -135,50 +136,112 @@ def variants(
     if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id, institute_id))
 
-    i = 0
-    for file_type in files:
-        variant_type = file_type["variant_type"]
-        category = file_type["category"]
+    def load_variant_files(
+        case_obj: dict, files: List[Dict], rank_threshold: int, force: bool
+    ) -> int:
+        """Load variants from indicated VCF files. Keep count of files used for logging blank commands."""
+        i = 0
+        for file_type in files:
+            variant_type = file_type["variant_type"]
+            category = file_type["category"]
 
-        if not file_type["upload"]:
-            continue
+            if not file_type["upload"]:
+                continue
 
-        i += 1
-        if variant_type == "research":
-            if not (force or case_obj["research_requested"]):
-                LOG.warning("research not requested, use '--force'")
-                raise click.Abort()
+            i += 1
+            if variant_type == "research":
+                if not (force or case_obj["research_requested"]):
+                    LOG.warning("research not requested, use '--force'")
+                    raise click.Abort()
 
-        LOG.info("Delete {0} {1} variants for case {2}".format(variant_type, category, case_id))
-
-        adapter.delete_variants(
-            case_id=case_obj["_id"], variant_type=variant_type, category=category
-        )
-
-        LOG.info("Load {0} {1} variants for case {2}".format(variant_type, category, case_id))
-
-        try:
-            adapter.load_variants(
-                case_obj=case_obj,
-                variant_type=variant_type,
-                category=category,
-                rank_threshold=rank_treshold,
-                chrom=chrom,
-                start=start,
-                end=end,
-                gene_obj=gene_obj,
-                build=case_obj["genome_build"],
+            LOG.info(
+                "Delete {0} {1} variants for case {2}".format(
+                    variant_type, category, case_obj["_id"]
+                )
             )
-            # Update case variants count
-            adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
 
-        except Exception as e:
-            LOG.warning(e)
-            raise click.Abort()
+            adapter.delete_variants(
+                case_id=case_obj["_id"], variant_type=variant_type, category=category
+            )
+
+            LOG.info(
+                "Load {0} {1} variants for case {2}".format(variant_type, category, case_obj["_id"])
+            )
+
+            try:
+                adapter.load_variants(
+                    case_obj=case_obj,
+                    variant_type=variant_type,
+                    category=category,
+                    rank_threshold=rank_treshold,
+                    chrom=chrom,
+                    start=start,
+                    end=end,
+                    gene_obj=gene_obj,w
+                    build=case_obj["genome_build"],
+                )
+                # Update case variants count
+                adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
+
+            except Exception as e:
+                LOG.warning(e)
+                raise click.Abort()
+        return i
+
+    def load_omics_variant_files(
+        case_obj: dict, omics_files: List[Dict], rank_threshold: int, force: bool
+    ) -> int:
+        """Load variants from indicated VCF files. Keep count of files used for logging blank commands."""
+        i = 0
+        for file_type in omics_files:
+            variant_type = file_type["variant_type"]
+            category = file_type["category"]
+
+            if not file_type["upload"]:
+                continue
+
+            i += 1
+            LOG.info(
+                "Delete {0} {1} OMICS variants for case {2}".format(
+                    variant_type, category, case_obj["_id"]
+                )
+            )
+
+            for omics_file_type = omics_files_with_type(variant_type, category):
+
+                adapter.delete_omics_variants(
+                    case_id=case_obj["_id"], file_type=omics_file_type
+                )
+
+                LOG.info(
+                    "Load {0} {1} variants for case {2}".format(variant_type, category, case_obj["_id"])
+                )
+
+                try:
+                    adapter.load_omics_variants(
+                        case_obj=case_obj,
+                        variant_type=variant_type,
+                        category=category,
+                        rank_threshold=rank_treshold,
+                        chrom=chrom,
+                        start=start,
+                        end=end,
+                        gene_obj=gene_obj,
+                        build=case_obj["genome_build"],
+                    )
+                    # Update case variants count
+                    adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
+
+            except Exception as e:
+                LOG.warning(e)
+                raise click.Abort()
+        return i
+
+    i = load_variant_files(case_obj, files, rank_treshold, force)
+    i += load_omics_variant_files(case_obj, omics_files)
 
     if i == 0:
         LOG.info("No files where specified to upload variants from")
-        return
 
     # update Sanger status for the new inserted variants
     sanger_updated = adapter.update_case_sanger_variants(
