@@ -23,7 +23,7 @@ is performed in contrast to clinical testing or screening.
 
 ## Variant category
 
-A variant belongs to a category, and is displayed in distinct variantS and variant views accordingly. Categories include "sv", "mei", "str", "cancer", "cancer_sv".
+A variant belongs to a category, and is displayed in distinct variantS and variant views accordingly. Categories include "snv", "sv", "mei", "str", "cancer" and "cancer_sv".
 Variants of different category are loaded from different VCF files.
 
 ## OMICS variants
@@ -33,12 +33,18 @@ These are displayed in a different view, similar to the DNA variants.
 
 ## Loading variants for a preexisting case without a load config
 
+Note that the files have to be linked with the case - if they are not use `scout update case`.
+
 ```bash
 scout update case -n case_name -i institue --vcf-str /my_pipeline/my_case/my_case.str.vcf.gz
 scout load variants --str-clinical
 ```
 
 ## Loading OMICS variants for a preexisting case without a load config
+
+Note that the files have to be linked with the case - if they are not use `scout update case`.
+If the sample IDs in your OMICS files do not correspond to your DNA sample IDs, and they are not provided in the
+case config, use `scout update individual` to set the `omics_sample_id` for each of the individuals.
 
 ```bash
 scout update individual -c case_id -n individual_display_name omics_sample_id my_rna_sample_id
