@@ -7,9 +7,9 @@ from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
-from flask import Flask, redirect, request, url_for
+from flask import Flask, flash, redirect, request, session, url_for
 from flask_cors import CORS
-from flask_login import current_user
+from flask_login import current_user, logout_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
 
@@ -79,6 +79,8 @@ def create_app(config_file=None, config=None):
     app.json.sort_keys = False
 
     current_log_level = LOG.getEffectiveLevel()
+    if USERS_LOGGER_PATH_PARAM in app.config:
+        set_activity_log(app)
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)
@@ -106,13 +108,15 @@ def create_app(config_file=None, config=None):
                 login_url = url_for("public.index", next=next_url)
                 return redirect(login_url)
 
-    if USERS_LOGGER_PATH_PARAM in app.config:
-        set_activity_log(app)
+        if USERS_LOGGER_PATH_PARAM in app.config:
+            if current_user.is_authenticated and session.get("consent_given") is None:
+                logout_user()
+                session.pop("email", None)
+                session.pop("name", None)
+                session.pop("locale", None)
+                return redirect(url_for("public.index"))
 
-        @app.before_request
-        def log_users_activity():
-            """Log users' navigation to file, if specified in the app settings."""
-
+            # Log users' navigation to file, if specified in the app settings
             if any(
                 sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
             ):  # LOG only navigation on main pages

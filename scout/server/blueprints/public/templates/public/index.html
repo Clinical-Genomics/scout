@@ -46,6 +46,15 @@
               <button type="submit" class="btn btn-primary form-control text-white">Login</button>
             </div>
           </div>
+          <!-- Consent Banner -->
+          {% if config.USERS_ACTIVITY_LOG_PATH%}
+          <div class="row mt-3" style="background-color: #f9edbe; text-align: center; padding: 20px;">
+            <p>We use cookies to save your activity to a log file. Do you consent to this?</p>
+              <label>
+                <input type="checkbox" name="consent_checkbox"> I agree to my activity being logged
+              </label>
+          </div>
+          {% endif %}
         </form>
       {% endif %}
     {% endif %}
