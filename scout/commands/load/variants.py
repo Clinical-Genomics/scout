@@ -174,7 +174,7 @@ def variants(
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
-                    rank_threshold=rank_treshold,
+                    rank_threshold=rank_threshold,
                     chrom=chrom,
                     start=start,
                     end=end,
