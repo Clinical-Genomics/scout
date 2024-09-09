@@ -51,15 +51,20 @@
         </div> <!-- end of div class row -->
 
         <div class="row">
-          <!-- FIXME: Is col-md-8 make sense (probably no) -->
-          <!-- FIXME: What is the rel="noopener" ? -->
-           <!-- FIXME: Go over remaining parts of the outliers.html form + button -->
-           <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
-             <span class="col-md-8">
-               <button type="submit" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="SNV variants">SNV variants</button>
-               <button type="submit" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="SNV variants">SV variants</button>
-             </span>
-           </form>
+          {% if case.vcf_files.vcf_snv %}
+          <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
+            <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+            <span><button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
+          </form>
+          {% endif %}
+          {% if case.vcf_files.vcf_sv %}
+          <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}">
+            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
+            <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+            <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SVs</button></span>
+          </form>
+          {% endif %}
         </div>
 
         <div class="row">
