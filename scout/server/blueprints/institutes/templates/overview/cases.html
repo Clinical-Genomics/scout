@@ -22,8 +22,18 @@
 
 
 {% macro search_form() %}
+
+<!-- Collect advanced search key/values -->
+{% set search = {} %}
+{% for field in form._fields %}
+  {% if field not in ["search", "csrf_token", "advanced_search"] and form._fields[field].data %}
+    {% do search.update({field: form._fields[field].data}) %}
+  {% endif %}
+{% endfor %}
+
 <form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="POST" accept-charset="utf-8">
     {{ form.hidden_tag() }}
+
     <div class="row">
         <div class="col-md-3 mb-3">
             {{ form.case.label(class="form-label") }}
@@ -136,6 +146,9 @@
       </div>
     </div> <!--End of advancedSearchOptions div -->
   </form>
+<div>
+  The following search criteria were used: {{search}}
+</div>
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
@@ -359,11 +372,14 @@
 
   // Show/hide advanced search options
   let advSearchBlock = $('#advancesSearchOptions');
-  window.onload = function(){
-    advSearchBlock.hide();
-    $('#advanced_search').removeAttr('checked');
-  }
+
   let advBlockCheckbox = $('#advanced_search');
+
+  window.onload = function(){
+    if(!advBlockCheckbox.is(':checked'))
+    advSearchBlock.hide();
+  }
+
   advBlockCheckbox.on('click', function() {
     if($(this).is(':checked')) {
       advSearchBlock.show();
