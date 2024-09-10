@@ -71,6 +71,17 @@ def test_load_variants(mock_app, case_obj):
     assert result.exit_code == 0
 
 
+def test_load_omics_variants(mock_app, case_obj):
+    """Testing the load variants cli command"""
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # Test CLI by uploading SNV variants for a case
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--outlier"])
+    assert result.exit_code == 0
+
+
 def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
     """Testing loading again variants after rerun"""
 
