@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-md-3 mb-3">
             {{ form.case.label(class="form-label") }}
-            {{ form.case(class="form-control", placeholder="example:18201") }}
+            {{ form.case(class="form-control", placeholder="example:18201", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
         </div>
         <div class="col-md-2 mb-3">
             {{ form.search_limit.label(class="form-label") }}
