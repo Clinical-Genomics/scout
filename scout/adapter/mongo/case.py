@@ -1016,6 +1016,7 @@ class CaseHandler(object):
             - reference_info: path to the pipeline reference version report file
             - rerun_requested: Is set to False since that is probably what happened
             - research_requested: Boolean, if research variants where requested for this case
+            - rna_genome_build: If there is a new RNA genome build ("37" or "38")
             - RNAfusion_inspector: path to the RNA fusion inspector report
             - RNAfusion_inspector_research: path to the research RNA fusion inspector report
             - RNAfusion_report: path to the RNA fusion report
@@ -1088,6 +1089,7 @@ class CaseHandler(object):
                 "rerun_requested": case_obj.get("rerun_requested", False),
                 "research_requested": case_obj.get("research_requested", False),
                 "reference_info": case_obj.get("reference_info"),
+                "rna_genome_build": case_obj.get("rna_genome_build"),
                 "RNAfusion_inspector": case_obj.get("RNAfusion_inspector"),
                 "RNAfusion_inspector_research": case_obj.get("RNAfusion_inspector_research"),
                 "RNAfusion_report": case_obj.get("RNAfusion_report"),

@@ -144,6 +144,26 @@ def test_update_case_vcf_path(mock_app, case_obj, omics_key, custom_temp_file):
     assert res["omics_files"][omics_key] == omics_path
 
 
+def test_update_case_rna_genome_build(mock_app, case_obj):
+    """Test the CLI function that updates the case document with a separate RNA genome build."""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+    rna_build = "37"
+    result = runner.invoke(
+        cli, ["update", "case", case_obj["_id"], "--rna-genome-build", rna_build]
+    )
+
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
+    assert "INFO Case updated" in result.output
+
+    res = store.case_collection.find_one({"_id": case_obj["_id"]})
+    ## THEN assert that the file is set correct
+    assert res["rna_genome_build"] == rna_build
+
+
 def test_update_case_reupload_sv_research(mock_app, case_obj, sv_clinical_file):
     """Tests the CLI that updates a case"""
 
