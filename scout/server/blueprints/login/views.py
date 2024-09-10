@@ -51,7 +51,7 @@ def login():
         session["next_url"] = request.args["next"]
 
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if request.form.get("consent_checkbox") is None:
+        if request.form.get("consent_checkbox") is None or "consent_given" not in session:
             flash(
                 "Logging user data is a requirement for using this portal and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
                 "warning",
@@ -106,6 +106,7 @@ def login():
 @public_endpoint
 def authorized():
     """Google auth callback function"""
+
     token = oauth_client.google.authorize_access_token()
     google_user = oauth_client.google.parse_id_token(token, None)
     session["email"] = google_user.get("email").lower()
