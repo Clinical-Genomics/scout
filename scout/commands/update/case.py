@@ -171,6 +171,10 @@ def case(
         if key is None:
             continue
         LOG.info(f"Updating '{key_name}' to {key}")
+
+        if "omics_files" not in case_obj or case_obj["omics_files"] is None:
+            case_obj["omics_files"] = {}
+
         case_obj["omics_files"][key_name] = key
         case_obj["has_outliers"] = True
         case_changed = True
