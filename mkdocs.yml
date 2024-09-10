@@ -63,6 +63,7 @@ nav:
       - Creating a new institute: 'admin-guide/loading-institutes.md'
       - Load config: 'admin-guide/load-config.md'
       - Loading/updating a case: 'admin-guide/loading-case.md'
+      - Updating a case without a new config: './updating-case.md'
       - Updating case individuals tracks: 'admin-guide/updating-individuals.md'
       - Loading variants: 'admin-guide/loading-variants.md'
       - Gene definitions: 'admin-guide/genes.md'
