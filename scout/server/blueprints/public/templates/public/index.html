@@ -22,7 +22,7 @@
     {% else %}
       <form class="row" method="POST" action="{{ url_for('login.login') }}">
         {% if config.GOOGLE %}
-          <button name="googleLogin" class="btn btn-primary btn-lg text-white" href="{{ url_for('login.login') }}" role="submit">
+          <button name="googleLogin" class="btn btn-primary btn-lg text-white" href="{{ url_for('login.login') }}" type="submit">
             Login with Google
           </button>
         {% elif config.LDAP_HOST or config.LDAP_SERVER %}
