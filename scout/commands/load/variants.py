@@ -207,11 +207,11 @@ def variants(
                 )
             )
 
-            adapter.delete_omics_variants(
-                case_id=case_obj["_id"], file_type=variant_type, category=category
+            adapter.delete_omics_variants_by_category(
+                case_id=case_obj["_id"], variant_type=variant_type, category=category
             )
 
-            for file_type, omics_file_type in OMICS_FILE_TYPE_MAP:
+            for file_type, omics_file_type in OMICS_FILE_TYPE_MAP.items():
                 if (
                     omics_file_type["variant_type"] != variant_type
                     or omics_file_type["category"] != category
@@ -225,7 +225,7 @@ def variants(
                     )
                 )
 
-                build = case_obj["rna_genome_build"] or case_obj["genome_build"]
+                build = case_obj.get("rna_genome_build", case_obj.get("genome_build", "38"))
 
                 try:
                     adapter.load_omics_variants(
