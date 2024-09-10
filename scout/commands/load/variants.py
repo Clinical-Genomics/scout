@@ -37,7 +37,7 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--rank-treshold",
     default=5,
-    help="Specify the rank score threshold. Deprecation warning: this parameter will change name in a later release.",
+    help="Specify the rank score threshold. Deprecation warning: this parameter name will change in a later release.",
     show_default=True,
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
