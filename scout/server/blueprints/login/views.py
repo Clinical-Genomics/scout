@@ -51,7 +51,7 @@ def login():
         session["next_url"] = request.args["next"]
 
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if request.form.get("consent_checkbox") is None or "consent_given" not in session:
+        if request.form.get("consent_checkbox") is None and "consent_given" not in session:
             flash(
                 "Logging user data is a requirement for using this portal and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
                 "warning",
