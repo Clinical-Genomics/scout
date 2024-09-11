@@ -43,20 +43,25 @@ SUB_URL_IGNORE_LIST = [
     "autozygous_images",
     "coverage_images",
     "upd_regions_images",
-    "favicon",
-    "Closing connection",
-    "GET /",
+    "favicon" "GET /",
+    "Closing",
+    "Enable",
 ]  # When logging messages before any request, ignore any URL containing these substrings
+
+
+class ActivityLogFilter(logging.Filter):
+    """When monitoring users activity, log only navigation on main pages."""
+
+    def filter(self, record):
+        return any(sub_url in record.getMessage() for sub_url in SUB_URL_IGNORE_LIST) is False
 
 
 def set_activity_log(app):
     """Log users' activity to a file, if specified in the scout config."""
     if USERS_LOGGER_PATH_PARAM not in app.config:
         return
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
-    app.logger.handlers.extend(gunicorn_logger.handlers)
+    app.logger.setLevel("INFO")
+    app.logger.addFilter(ActivityLogFilter())
     file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
     file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
     LOG.addHandler(file_handler)
@@ -119,12 +124,8 @@ def create_app(config_file=None, config=None):
         """Log users' navigation to file, if specified in the app setting.s"""
         if USERS_LOGGER_PATH_PARAM not in app.config:
             return
-        if any(
-            sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
-        ):  # LOG only navigation on main pages
-            return
         user = current_user.email if current_user.is_authenticated else "anonymous"
-        LOG.debug(" - ".join([user, request.path]))
+        LOG.info(" - ".join([user, request.path]))
 
     return app
 
