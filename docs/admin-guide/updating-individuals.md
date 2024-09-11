@@ -37,6 +37,7 @@ And the tracks that can be updated are the following:
 
 Additional sample descriptors:
 - subject_id
+- omics_sample_id
 
 Additional non-track individual data
 - bionano_access
@@ -89,13 +90,17 @@ A link to the splice junction view is present on variants pages of cases with at
 
 ## Sample identifiers
 
-| key name      | key value                                                 |
-|:--------------|:----------------------------------------------------------|
-| subject_id    | Individual id for matching multiomics data and statistics |
+| key name        | key value                                                 |
+|:----------------|:----------------------------------------------------------|
+| subject_id      | Individual id for matching multiomics data and statistics |
+| omics_sample_id | Individual id for matching multiomics data and statistics |
 
 Subject ids are unique identifiers (eg as produced by a hospital LIMS) denoting individuals, who may have multiple samples in Scout.
 Useful for individual level statistics and connecting multiomics data or multiple analyses and cases including the same individual, potentially
 with different samples.
+
+Omics sample ids can also be directly set. These correspond to the sample ids found in OMICS variant files, and directly identify the individual to whom the OMICS sample belongs.
+Useful for e.g. loading a combined DNA and RNA case.
 
 ## Additional individual data - structured dictionary input
 

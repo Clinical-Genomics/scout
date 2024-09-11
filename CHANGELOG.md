@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
+- Options for selectively updating OMICS variants (fraser, outrider) on a case
+### Changed
+- Documentation for OMICS variants and updating a case
 
 ## [4.88.1]
 ### Fixed
