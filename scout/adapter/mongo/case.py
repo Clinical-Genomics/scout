@@ -40,7 +40,7 @@ class CaseHandler(object):
         set_1 = set()
         if len(phenotype_terms) == 0:
             LOG.warning("No phenotype terms provided, please provide ar least one HPO term")
-            return None
+            return []
         # Add all ancestors of all terms
         for term in phenotype_terms:
             hpo_term = self.hpo_term(term)
