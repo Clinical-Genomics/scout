@@ -43,7 +43,8 @@ SUB_URL_IGNORE_LIST = [
     "autozygous_images",
     "coverage_images",
     "upd_regions_images",
-    "favicon" "GET /",
+    "favicon",
+    "GET /",
     "Closing",
     "Enable",
 ]  # When logging messages before any request, ignore any URL containing these substrings
