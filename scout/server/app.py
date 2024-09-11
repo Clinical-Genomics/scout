@@ -47,6 +47,8 @@ SUB_URL_IGNORE_LIST = [
     "GET /",
     "Closing",
     "Enable",
+    "enabled",
+    "Collecting IGV tracks",
 ]  # When logging messages before any request, ignore any URL containing these substrings
 
 
