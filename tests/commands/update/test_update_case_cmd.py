@@ -74,6 +74,7 @@ def test_update_case_change_collaborator(mock_app, case_obj):
     "vcf_key",
     [
         "vcf_snv",
+        "vcf_str",
         "vcf_sv",
         "vcf_cancer",
         "vcf_cancer_sv",
@@ -110,6 +111,57 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
     res = store.case_collection.find_one({"_id": case_obj["_id"]})
     ## THEN assert that the file is set correct
     assert res["vcf_files"][vcf_key] == vcf_path
+
+
+@pytest.mark.parametrize(
+    "omics_key",
+    [
+        "fraser",
+        "outrider",
+    ],
+)
+def test_update_case_vcf_path(mock_app, case_obj, omics_key, custom_temp_file):
+    """Test the CLI function that updates the case document with paths to different variant types."""
+
+    # GIVEN a new VCF variant path to save in case document
+    omics_path = str(custom_temp_file(".tsv"))
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+    ## WHEN updating the VCF path of a specific variant type
+    file_type_option = "--"
+    file_type_option += omics_key.replace("_", "-")
+    result = runner.invoke(cli, ["update", "case", case_obj["_id"], file_type_option, omics_path])
+
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+
+    ## THEN assert the information is communicated
+    assert "INFO Case updated" in result.output
+
+    res = store.case_collection.find_one({"_id": case_obj["_id"]})
+    ## THEN assert that the file is set correct
+    assert res["omics_files"][omics_key] == omics_path
+
+
+def test_update_case_rna_genome_build(mock_app, case_obj):
+    """Test the CLI function that updates the case document with a separate RNA genome build."""
+
+    ## GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+    rna_build = "37"
+    result = runner.invoke(
+        cli, ["update", "case", case_obj["_id"], "--rna-genome-build", rna_build]
+    )
+
+    ## THEN assert it exits without problems
+    assert result.exit_code == 0
+    ## THEN assert the information is communicated
+    assert "INFO Case updated" in result.output
+
+    res = store.case_collection.find_one({"_id": case_obj["_id"]})
+    ## THEN assert that the file is set correct
+    assert res["rna_genome_build"] == rna_build
 
 
 def test_update_case_reupload_sv_research(mock_app, case_obj, sv_clinical_file):
