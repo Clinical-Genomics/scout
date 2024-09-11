@@ -10,6 +10,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Loading a case](./loading-case.md)
   * [Load Config File](./load-config.md)
   * [Updating case individuals tracks](./updating-individuals.md)
+  * [Updating a case](./updating-case.md)
   * [Genes, transcripts and exons](./genes.md)
   * [HPO terms](./hpo.md)
   * [Annotations](./annotations.md)
