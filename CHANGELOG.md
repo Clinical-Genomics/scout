@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
 ### Changed
 - Documentation for OMICS variants and updating a case
+### Fixed
+- Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 
 ## [4.88.1]
 ### Fixed
