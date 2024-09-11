@@ -53,7 +53,8 @@ SUB_URL_IGNORE_LIST = [
 
 
 class ActivityLogFilter(logging.Filter):
-    """When monitoring users activity, log only navigation on main pages."""
+    """When monitoring users activity, log only navigation on main pages.
+    - Do not log messages that contain the substrings specified in SUB_URL_IGNORE_LIST"""
 
     def filter(self, record):
         return any(sub_url in record.getMessage() for sub_url in SUB_URL_IGNORE_LIST) is False
