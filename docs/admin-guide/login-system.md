@@ -1,8 +1,8 @@
 # Setting up a user login system
 
 Scout currently supports 3 types of login systems:
-  - [Google authentication via OpenID Connect](#Google-OpenID-Connect-login-system)
-  - [LDAP authentication](#Login-using-Lightweight-Directory-Access-Protocol)
+  - [Google authentication via OpenID Connect](#google-openid-connect-login-system)
+  - [LDAP authentication](#login-using-lightweight-directory-access-protocol)
   - [Simple authentication using userid](#simple-login-with-userid)
 
 **Login systems are mutually exclusive so when you choose a system, it will become be the only way all users will have access to the Scout app.**
