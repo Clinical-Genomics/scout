@@ -7,9 +7,9 @@ from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
-from flask import Flask, redirect, request, session, url_for
+from flask import Flask, redirect, request, url_for
 from flask_cors import CORS
-from flask_login import current_user, logout_user
+from flask_login import current_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
 
@@ -49,10 +49,15 @@ SUB_URL_IGNORE_LIST = [
 
 def set_activity_log(app):
     """Log users' activity to a file, if specified in the scout config."""
-
-    handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-    LOG.addHandler(handler)
+    if USERS_LOGGER_PATH_PARAM not in app.config:
+        return
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.handlers.extend(gunicorn_logger.handlers)
+    file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+    LOG.addHandler(file_handler)
 
 
 def create_app(config_file=None, config=None):
@@ -79,9 +84,8 @@ def create_app(config_file=None, config=None):
     app.json.sort_keys = False
 
     current_log_level = LOG.getEffectiveLevel()
-    if USERS_LOGGER_PATH_PARAM in app.config:
-        set_activity_log(app)
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
+    set_activity_log(app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
@@ -108,21 +112,17 @@ def create_app(config_file=None, config=None):
                 login_url = url_for("public.index", next=next_url)
                 return redirect(login_url)
 
-        if USERS_LOGGER_PATH_PARAM in app.config:
-            if current_user.is_authenticated and session.get("consent_given") is None:
-                logout_user()
-                session.pop("email", None)
-                session.pop("name", None)
-                session.pop("locale", None)
-                return redirect(url_for("public.index"))
-
-            # Log users' navigation to file, if specified in the app settings
-            if any(
-                sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
-            ):  # LOG only navigation on main pages
-                return
-            user = current_user.email if current_user.is_authenticated else "anonymous"
-            LOG.info(" - ".join([user, request.path]))
+    @app.before_request
+    def log_users_activity():
+        """Log users' navigation to file, if specified in the app setting.s"""
+        if USERS_LOGGER_PATH_PARAM not in app.config:
+            return
+        if any(
+            sub_url in request.path for sub_url in SUB_URL_IGNORE_LIST
+        ):  # LOG only navigation on main pages
+            return
+        user = current_user.email if current_user.is_authenticated else "anonymous"
+        LOG.info(" - ".join([user, request.path]))
 
     return app
 
