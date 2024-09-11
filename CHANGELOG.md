@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Documentation for OMICS variants and updating a case
+### Fixed
+- Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 
 ## [4.88.1]
 ### Fixed
