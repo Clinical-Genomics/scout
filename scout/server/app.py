@@ -49,7 +49,7 @@ SUB_URL_IGNORE_LIST = [
     "Enable",
     "enabled",
     "Collecting IGV tracks",
-]  # When logging messages before any request, ignore any URL containing these substrings
+]  # Substrings used when filtering messages to show if users activity log is on
 
 
 class ActivityLogFilter(logging.Filter):
