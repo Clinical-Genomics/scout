@@ -44,6 +44,8 @@ SUB_URL_IGNORE_LIST = [
     "coverage_images",
     "upd_regions_images",
     "favicon",
+    "Closing connection",
+    "GET /",
 ]  # When logging messages before any request, ignore any URL containing these substrings
 
 
@@ -122,7 +124,7 @@ def create_app(config_file=None, config=None):
         ):  # LOG only navigation on main pages
             return
         user = current_user.email if current_user.is_authenticated else "anonymous"
-        LOG.info(" - ".join([user, request.path]))
+        LOG.debug(" - ".join([user, request.path]))
 
     return app
 
