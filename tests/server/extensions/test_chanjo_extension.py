@@ -2,6 +2,7 @@ import requests
 from scout.server.extensions import chanjo_report
 from flask import Blueprint
 
+
 def test_chanjo_mt_coverage_stats(app, monkeypatch):
     """Test the function that sends requests to Chanjo to get MT vs autosomal coverage stats"""
 
