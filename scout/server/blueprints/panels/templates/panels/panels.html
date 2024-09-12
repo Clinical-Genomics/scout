@@ -170,7 +170,7 @@
                 <span class="badge bg-danger" data-bs-toggle="tooltip" title="This panel was removed">Removed</span>
               {% endif %}
             </td>
-            <td>{{ panel.version }} ({{panel._id.generation_time.strftime('%Y-%m-%d')}} {% if panel.hidden {%} deleted:{{ panel.date.date()}} {% endif%})</td>
+            <td>{{ panel.version }} ({{panel._id.generation_time.strftime('%Y-%m-%d')}} {% if panel.hidden %} deleted:{{ panel.date.date()}} {% endif %})</td>
             <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length}}</span></td>
             <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#paneldiv_{{panel._id}}" aria-expanded="false" aria-controls="paneldiv_{{panel._id}}" class="btn btn-primary btn-xs"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
             <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pen-square"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
