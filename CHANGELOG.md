@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
-- Stricter check of ID of newly created gene panels to prevent file downloading vulnerability
+- Stricter check of ID of gene panels to prevent file downloading vulnerability
 
 ## [4.88.1]
 ### Fixed
