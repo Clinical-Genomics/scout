@@ -5,7 +5,8 @@
 import json
 import logging
 
-from flask import current_app, request
+import requests
+from flask import current_app, request, url_for
 from flask_babel import Babel
 from markupsafe import Markup
 
