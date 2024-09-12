@@ -76,7 +76,7 @@
       </li>
       <li class="list-group-item">
         <label for="date">Date</label>
-        <span class="float-end" id="date">{{ panel.date.date() }}</span>
+        <span class="float-end" id="date">{{panel._id.generation_time.strftime('%Y-%m-%d')}} {% if panel.hidden %} deleted:{{ panel.date.date()}} {% endif %}</span>
       </li>
       <li class="list-group-item">
           <label for="mainainer">Maintainers</label>
