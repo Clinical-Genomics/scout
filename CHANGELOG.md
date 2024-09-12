@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for OMICS variants and updating a case
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
+- Stricter check of ID of newly created gene panels to prevent file downloading vulnerability
 
 ## [4.88.1]
 ### Fixed
