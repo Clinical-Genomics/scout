@@ -1,7 +1,7 @@
 """Tests for the cases controllers"""
 
 import responses
-from flask import Blueprint, Flask, url_for
+from flask import Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
     case,
