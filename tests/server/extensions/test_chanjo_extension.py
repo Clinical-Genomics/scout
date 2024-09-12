@@ -11,6 +11,7 @@ def test_chanjo_mt_coverage_stats(app, monkeypatch):
 
     @bp.route("/chanjo_endpoint", methods=["POST"])
     def json_chrom_coverage():
+        """This is the mocker function"""
         pass
 
     app.register_blueprint(bp)
