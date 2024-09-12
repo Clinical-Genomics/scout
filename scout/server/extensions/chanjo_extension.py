@@ -2,6 +2,7 @@
     Generate coverage reports using chanjo and chanjo-report. Documentation under -> `docs/admin-guide/chanjo_coverage_integration.md`
 """
 
+import json
 import logging
 
 from flask import current_app, request
@@ -9,6 +10,7 @@ from flask_babel import Babel
 from markupsafe import Markup
 
 LOG = logging.getLogger(__name__)
+REF_CHROM_MT_STATS = "14"
 
 
 class ChanjoReport:
@@ -57,3 +59,43 @@ class ChanjoReport:
         app.register_blueprint(report_bp, url_prefix="/reports")
         app.config["chanjo_report"] = True
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
+
+    def mt_coverage_stats(self, individuals: dict) -> dict:
+        """Send a request to chanjo endpoint to retrieve MT vs autosome coverage stats
+
+        Args:
+            individuals(dict): case_obj["individuals"] object
+
+        Returns:
+            coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
+        """
+        coverage_stats = {}
+        ind_ids = []
+        for ind in individuals:
+            ind_ids.append(ind["individual_id"])
+
+        # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
+        cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
+        # Prepare request data to calculate mean MT coverage
+        data = dict(sample_ids=",".join(ind_ids), chrom="MT")
+        # Send POST request with data to chanjo endpoint
+        resp = requests.post(cov_calc_url, json=data)
+        mt_cov_data = json.loads(resp.text)
+
+        # Change request data to calculate mean autosomal coverage
+        data["chrom"] = REF_CHROM_MT_STATS
+        # Send POST request with data to chanjo endpoint
+        resp = requests.post(cov_calc_url, json=data)
+        ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
+
+        for ind in ind_ids:
+            if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
+                continue
+            coverage_info = dict(
+                mt_coverage=round(mt_cov_data[ind], 2),
+                autosome_cov=round(ref_cov_data[ind], 2),
+                mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
+            )
+            coverage_stats[ind] = coverage_info
+
+        return coverage_stats

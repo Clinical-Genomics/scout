@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import itertools
-import json
 import logging
 import os
 from typing import Dict, List, Set
@@ -41,7 +40,15 @@ from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
+from scout.server.extensions import (
+    ChanjoReport,
+    RerunnerError,
+    bionano_access,
+    gens,
+    matchmaker,
+    rerunner,
+    store,
+)
 from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
@@ -701,48 +708,6 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     return data
 
 
-def mt_coverage_stats(individuals, ref_chrom="14") -> dict:
-    """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
-
-    Args:
-        individuals(dict): case_obj["individuals"] object
-        ref_chrom(str): reference chromosome (1-22)
-
-    Returns:
-        coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
-    """
-    coverage_stats = {}
-    ind_ids = []
-    for ind in individuals:
-        ind_ids.append(ind["individual_id"])
-
-    # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
-    cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
-    # Prepare request data to calculate mean MT coverage
-    data = dict(sample_ids=",".join(ind_ids), chrom="MT")
-    # Send POST request with data to chanjo endpoint
-    resp = requests.post(cov_calc_url, json=data)
-    mt_cov_data = json.loads(resp.text)
-
-    # Change request data to calculate mean autosomal coverage
-    data["chrom"] = str(ref_chrom)  # convert to string if an int is provided
-    # Send POST request with data to chanjo endpoint
-    resp = requests.post(cov_calc_url, json=data)
-    ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
-
-    for ind in ind_ids:
-        if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
-            continue
-        coverage_info = dict(
-            mt_coverage=round(mt_cov_data[ind], 2),
-            autosome_cov=round(ref_cov_data[ind], 2),
-            mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
-        )
-        coverage_stats[ind] = coverage_info
-
-    return coverage_stats
-
-
 def mt_excel_files(store, case_obj, temp_excel_dir):
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format. Create mt excel files, one for each sample,
@@ -762,7 +727,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     coverage_stats = None
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
     if current_app.config.get("chanjo_report"):
-        coverage_stats = mt_coverage_stats(samples)
+        coverage_stats = ChanjoReport.mt_coverage_stats(samples)
+
+    LOG.warning(coverage_stats)
 
     query = {"chrom": "MT"}
     mt_variants = list(
