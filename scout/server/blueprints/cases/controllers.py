@@ -41,9 +41,9 @@ from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, pars
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import (
-    ChanjoReport,
     RerunnerError,
     bionano_access,
+    chanjo_report,
     gens,
     matchmaker,
     rerunner,
@@ -727,7 +727,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     coverage_stats = None
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
     if current_app.config.get("chanjo_report"):
-        coverage_stats = ChanjoReport.mt_coverage_stats(samples)
+        coverage_stats = chanjo_report.mt_coverage_stats(individuals=samples)
 
     query = {"chrom": "MT"}
     mt_variants = list(
