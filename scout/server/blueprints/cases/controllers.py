@@ -729,8 +729,6 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     if current_app.config.get("chanjo_report"):
         coverage_stats = ChanjoReport.mt_coverage_stats(samples)
 
-    LOG.warning(coverage_stats)
-
     query = {"chrom": "MT"}
     mt_variants = list(
         store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
