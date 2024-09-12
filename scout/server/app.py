@@ -118,10 +118,7 @@ def create_app(config_file=None, config=None):
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
-                # combine visited URL (convert byte string query string to unicode!)
-                next_url = "{}?{}".format(request.path, request.query_string.decode())
-                login_url = url_for("public.index", next=next_url)
-                return redirect(login_url)
+                return redirect(url_for("public.index"))
 
     @app.before_request
     def log_users_activity():
