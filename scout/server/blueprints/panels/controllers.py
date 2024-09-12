@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
 import logging
+import re
 
 from flask import flash, redirect
 from flask_login import current_user
@@ -309,9 +310,11 @@ def downloaded_panel_name(panel_obj, format) -> str:
     Returns:
         a string describing the panel
     """
+    sanitized_panel_id = re.sub(r"[^a-zA-Z_\-]+", "", panel_obj["panel_name"])
+
     return "_".join(
         [
-            panel_obj["panel_name"],
+            sanitized_panel_id,
             str(panel_obj["version"]),
             dt.datetime.now().strftime(DATE_DAY_FORMATTER),
             f"scout.{format}",
