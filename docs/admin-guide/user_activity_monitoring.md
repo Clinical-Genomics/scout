@@ -2,7 +2,7 @@
 
 To ensure security and improve functionality, Scout provides the ability to log user activities, including interactions and navigation. This feature helps enhance platform performance and maintain security.
 
-By default, user activity logging is **disabled**. However, system administrators can enable this feature by uncommenting the `USERS_ACTIVITY_LOG_PATH` parameter in the `config.py` file.
+By default, user activity logging is **disabled**. However, system administrators can enable this feature by setting the `USERS_ACTIVITY_LOG_PATH` parameter in the `config.py` file.
 
 ### Log File Configuration
 
