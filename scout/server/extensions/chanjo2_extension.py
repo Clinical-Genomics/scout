@@ -5,7 +5,7 @@ import requests
 from flask import current_app
 
 REF_CHROM = "14"
-MT_CHROM = "MT"
+MT_CHROM = "M"
 LOG = logging.getLogger(__name__)
 
 
@@ -34,8 +34,6 @@ class Chanjo2Client:
             chrom_cov_query["chromosome"] = MT_CHROM
             resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
 
-            # DEBUG WHATEVER I'm GETTING FROM CHANJO"
-            LOG.warning(f"HERE------------------->{resp.json()}")
             mt_cov = resp.json().get("mean_coverage")
 
             coverage_info = dict(
