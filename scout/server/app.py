@@ -36,7 +36,7 @@ from .blueprints import (
 
 LOG = logging.getLogger(__name__)
 USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
-SUB_URL_IGNORE_LIST = [
+ACTIVITY_LOG_IGNORE_TRIGGERS = [
     "static",
     "ideograms",
     "custom_images",
@@ -54,10 +54,12 @@ SUB_URL_IGNORE_LIST = [
 
 class ActivityLogFilter(logging.Filter):
     """When monitoring users activity, log only navigation on main pages.
-    - Do not log messages that contain the substrings specified in SUB_URL_IGNORE_LIST"""
+    - Do not log messages that contain the substrings specified in ACTIVITY_LOG_IGNORE_TRIGGERS"""
 
     def filter(self, record):
-        return any(sub_url in record.getMessage() for sub_url in SUB_URL_IGNORE_LIST) is False
+        return (
+            any(sub_url in record.getMessage() for sub_url in ACTIVITY_LOG_IGNORE_TRIGGERS) is False
+        )
 
 
 def set_activity_log(app):
