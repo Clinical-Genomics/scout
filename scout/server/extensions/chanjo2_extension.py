@@ -15,7 +15,6 @@ class Chanjo2Client:
     def mt_coverage_stats(self, individuals: dict) -> Dict[str, dict]:
         """Sends a POST requests to the chanjo2 coverage/d4/interval to collect stats for the MT case report."""
 
-        LOG.warning("HERE BITCHES")
         chanjo2_chrom_cov_ulr: str = "/".join(
             [current_app.config.get("CHANJO2_URL"), "coverage/d4/interval"]
         )
