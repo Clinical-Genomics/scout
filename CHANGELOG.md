@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
+- `Mean MT coverage`, `Mean chrom 14 coverage` and `Estimated mtDNA copy number` on MT coverage file will be obtained from chanjo2 if d4 files are associated to cases's individuals/samples
 ### Changed
 - Documentation for OMICS variants and updating a case
 - Include both creation and last modification dates in gene panels pages
