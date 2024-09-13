@@ -3,7 +3,7 @@ import responses
 from scout.server.app import create_app
 from scout.server.extensions import chanjo2
 
-CHANJO2_BASE_URL = "http://chanjo2.se"
+CHANJO2_BASE_URL = "https://chanjo2.se"
 
 
 @responses.activate
