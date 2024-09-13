@@ -3,7 +3,6 @@
 """
 
 import datetime
-import json
 import logging
 
 from werkzeug.datastructures import Headers
