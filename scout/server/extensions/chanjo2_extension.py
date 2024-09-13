@@ -33,6 +33,9 @@ class Chanjo2Client:
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = MT_CHROM
             resp = requests.post(chanjo2_chrom_cov_ulr, json=chrom_cov_query)
+
+            # DEBUG WHATEVER I'm GETTING FROM CHANJO"
+            LOG.warning(f"HERE------------------->{resp.json()}")
             mt_cov = resp.json().get("mean_coverage")
 
             coverage_info = dict(
