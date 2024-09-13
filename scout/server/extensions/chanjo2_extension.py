@@ -15,8 +15,8 @@ class Chanjo2Client:
     def mt_coverage_stats(self, individuals: dict) -> Dict[str, dict]:
         """Sends a POST requests to the chanjo2 coverage/d4/interval to collect stats for the MT case report."""
 
-        chanjo2_chrom_cov_ulr: str = "/".join(
-            [current_app.config.get("CHANJO2_URL"), "coverage/d4/interval"]
+        chanjo2_chrom_cov_url: str = "/".join(
+            [current_app.config.get("CHANJO2_URL"), "coverage/d4/interval/"]
         )
         coverage_stats = {}
         for ind in individuals:
@@ -27,12 +27,12 @@ class Chanjo2Client:
 
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
-            resp = requests.post(chanjo2_chrom_cov_ulr, json=chrom_cov_query)
+            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
             autosome_cov = resp.json().get("mean_coverage")
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = MT_CHROM
-            resp = requests.post(chanjo2_chrom_cov_ulr, json=chrom_cov_query)
+            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
 
             # DEBUG WHATEVER I'm GETTING FROM CHANJO"
             LOG.warning(f"HERE------------------->{resp.json()}")

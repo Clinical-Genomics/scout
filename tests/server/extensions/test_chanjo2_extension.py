@@ -16,7 +16,7 @@ def test_chanjo2_mt_coverage_stats(case_obj):
 
     # GIVEN a patched chanjo2 instance
     # GIVEN a mocked Beacon server dataset add endpoint
-    url = f"{CHANJO2_BASE_URL}/coverage/d4/interval"
+    url = f"{CHANJO2_BASE_URL}/coverage/d4/interval/"
     responses.add(
         responses.POST,
         url,
