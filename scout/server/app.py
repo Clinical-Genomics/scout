@@ -35,6 +35,42 @@ from .blueprints import (
 )
 
 LOG = logging.getLogger(__name__)
+USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
+ACTIVITY_LOG_IGNORE_TRIGGERS = [
+    "static",
+    "ideograms",
+    "custom_images",
+    "autozygous_images",
+    "coverage_images",
+    "upd_regions_images",
+    "favicon",
+    "GET /",
+    "Closing",
+    "Enable",
+    "enabled",
+    "Collecting IGV tracks",
+]  # Substrings used when filtering messages to show if users activity log is on
+
+
+class ActivityLogFilter(logging.Filter):
+    """When monitoring users activity, log only navigation on main pages.
+    - Do not log messages that contain the substrings specified in ACTIVITY_LOG_IGNORE_TRIGGERS"""
+
+    def filter(self, record):
+        return (
+            any(sub_url in record.getMessage() for sub_url in ACTIVITY_LOG_IGNORE_TRIGGERS) is False
+        )
+
+
+def set_activity_log(app):
+    """Log users' activity to a file, if specified in the scout config."""
+    if USERS_LOGGER_PATH_PARAM not in app.config:
+        return
+    app.logger.setLevel("INFO")
+    app.logger.addFilter(ActivityLogFilter())
+    file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+    LOG.addHandler(file_handler)
 
 
 def create_app(config_file=None, config=None):
@@ -62,6 +98,7 @@ def create_app(config_file=None, config=None):
 
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
+    set_activity_log(app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
@@ -84,6 +121,14 @@ def create_app(config_file=None, config=None):
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
                 return redirect(url_for("public.index"))
+
+    @app.before_request
+    def log_users_activity():
+        """Log users' navigation to file, if specified in the app setting.s"""
+        if USERS_LOGGER_PATH_PARAM not in app.config:
+            return
+        user = current_user.email if current_user.is_authenticated else "anonymous"
+        LOG.info(" - ".join([user, request.path]))
 
     return app
 
