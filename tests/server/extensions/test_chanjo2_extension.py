@@ -24,7 +24,7 @@ def test_chanjo2_mt_coverage_stats(case_obj):
         status=200,
     )
 
-    # WHEN app is created
+    # WHEN app is created and contains the CHANJO2_URL param
     test_app = create_app(config=dict(TESTING=True, CHANJO2_URL=CHANJO2_BASE_URL))
 
     with test_app.app_context():
