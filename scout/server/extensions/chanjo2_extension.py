@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 import requests
@@ -5,6 +6,7 @@ from flask import current_app
 
 REF_CHROM = "14"
 MT_CHROM = "MT"
+LOG = logging.getLogger(__name__)
 
 
 class Chanjo2Client:
@@ -13,6 +15,7 @@ class Chanjo2Client:
     def mt_coverage_stats(self, individuals: dict) -> Dict[str, dict]:
         """Sends a POST requests to the chanjo2 coverage/d4/interval to collect stats for the MT case report."""
 
+        LOG.warning("HERE BITCHES")
         chanjo2_chrom_cov_ulr: str = "/".join(
             [current_app.config.get("CHANJO2_URL"), "coverage/d4/interval"]
         )
@@ -21,7 +24,7 @@ class Chanjo2Client:
 
             if not ind.get("d4_file"):
                 continue
-            chrom_cov_query = {"coverage_file_path": ind["coverage_file_path"]}
+            chrom_cov_query = {"coverage_file_path": ind["d4_file"]}
 
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
