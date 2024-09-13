@@ -55,6 +55,7 @@ nav:
       - Intro: 'admin-guide/README.md'
       - Setup: 'admin-guide/setup-scout.md'
       - Login system: 'admin-guide/login-system.md'
+      - Logging users' activity: 'admin-guide/user_activity_monitoring.md'
       - Deploying Scout in containers:
           - Dockerfile and docker-compose: 'admin-guide/containers/container-deploy.md'
           - Deploying using Kubernetes: 'admin-guide/containers/kubernetes.md'

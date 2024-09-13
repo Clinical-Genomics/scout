@@ -48,13 +48,19 @@ def load_user(user_id):
 def login():
     """Login a user if they have access."""
 
+    if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
+        if request.form.get("consent_checkbox") is None and "consent_given" not in session:
+            flash(
+                "Logging user activity is a requirement for using this site and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
+                "warning",
+            )
+            return redirect(url_for("public.index"))
+        session["consent_given"] = True
+
     user_id = None
     user_mail = None
 
-    if (
-        current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER"))
-        and request.method == "POST"
-    ):
+    if current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER")):
         ldap_authorized = controllers.ldap_authorized(
             request.form.get("ldap_user"), request.form.get("ldap_password")
         )
@@ -64,20 +70,19 @@ def login():
             flash("User not authorized by LDAP server", "warning")
             return redirect(url_for("public.index"))
 
-    if current_app.config.get("GOOGLE"):
+    elif current_app.config.get("GOOGLE"):
         if session.get("email"):
             user_mail = session["email"]
             session.pop("email", None)
         else:
-            LOG.info("Google Login!")
             redirect_uri = url_for(".authorized", _external=True)
             try:
                 return oauth_client.google.authorize_redirect(redirect_uri)
             except Exception as ex:
                 flash("An error has occurred while logging in user using Google OAuth")
 
-    if request.args.get("email"):  # log in against Scout database
-        user_mail = request.args.get("email")
+    elif request.form.get("email"):  # log in against Scout database
+        user_mail = request.form["email"]
         LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
 
     user_obj = store.user(email=user_mail, user_id=user_id)
@@ -99,6 +104,7 @@ def login():
 @public_endpoint
 def authorized():
     """Google auth callback function"""
+
     token = oauth_client.google.authorize_access_token()
     google_user = oauth_client.google.parse_id_token(token, None)
     session["email"] = google_user.get("email").lower()
@@ -114,6 +120,7 @@ def logout():
     session.pop("email", None)
     session.pop("name", None)
     session.pop("locale", None)
+    session.pop("consent_given", None)
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 

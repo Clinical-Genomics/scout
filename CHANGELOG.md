@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
+- Log users' activity to file by specifying `USERS_ACTIVITY_LOG_PATH` parameter in app config
 - Advanced cases search to narrow down results using more than one search parameter
 ### Changed
 - Documentation for OMICS variants and updating a case
