@@ -995,11 +995,22 @@ def _load_variants(database):
     return adapter
 
 
+def _load_omics_variants(adapter):
+    """Returns an adapter populated with OMICS variants."""
+    # GIVEN an adapter with at least one populated case
+    case_obj = adapter.case_collection.find_one()
+    # THEN load OMICS variants
+    for file_type in ["fraser", "outrider"]:
+        adapter.load_omics_variants(case_obj, file_type, "37")
+    return adapter
+
+
 @pytest.fixture(scope="function")
 def variant_database(populated_database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
 
+    _load_omics_variants(populated_database)
     return _load_variants(populated_database)
 
 
@@ -1008,6 +1019,7 @@ def real_variant_database(real_populated_database):
     """Returns an adapter to a real database populated with user, institute, case
     and variants"""
 
+    _load_omics_variants(real_populated_database)
     return _load_variants(real_populated_database)
 
 
