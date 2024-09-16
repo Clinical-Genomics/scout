@@ -15,7 +15,7 @@ def test_chanjo2_mt_coverage_stats(case_obj):
         assert ind["d4_file"]
 
     # GIVEN a patched chanjo2 instance
-    # GIVEN a mocked Beacon server dataset add endpoint
+    # GIVEN a mocked Chanjo2 server dataset add endpoint
     url = f"{CHANJO2_BASE_URL}/coverage/d4/interval/"
     responses.add(
         responses.POST,
