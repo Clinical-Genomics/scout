@@ -125,7 +125,9 @@ def make_sashimi_tracks(
     case_obj: dict, variant_id: Optional[str] = None, omics_variant_id: Optional[str] = None
 ):
     """Create a dictionary containing the required tracks for a splice junction plot
-    If either a regular variant_id or an omics variant id is passed, set display to a particular locus.
+    If a regular variant_id is passed, set display to a particular gene locus.
+    If an omics_variant_id is passed, set display to a window surrounding the variant, which can be a
+    gene or an affected region.
     Otherwise defaults to whole genome "All" view.
 
     Returns:
@@ -133,18 +135,16 @@ def make_sashimi_tracks(
     """
 
     locus = "All"
-    variant_obj = None
-
-    if variant_id:
-        variant_obj = store.variant(document_id=variant_id)
-    if omics_variant_id:
-        variant_obj = store.omics_variant(variant_id=omics_variant_id)
 
     build = "38"
     if "37" in str(case_obj.get("rna_genome_build", "38")):
         build = "37"
 
-    if variant_obj:
+    if variant_id:
+        variant_obj = store.variant(document_id=variant_id)
+        locus = make_locus_from_gene(variant_obj, case_obj, build)
+    if omics_variant_id:
+        variant_obj = store.omics_variant(variant_id=omics_variant_id)
         locus = make_locus_from_variant(variant_obj, case_obj, build)
 
     display_obj = {"locus": locus, "tracks": []}
@@ -195,17 +195,16 @@ def make_merged_splice_track(ind: dict) -> dict:
     return track
 
 
-def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
-    """Given a variant obj, construct a locus string across any gene touched for IGV to display.
-
-    Initialize locus coordinates with variant coordinates so it won't crash if variant gene(s) no longer exist in database.
+def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tuple:
+    """
     Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
     Use original coordinates only if genome build was already 38 or liftover didn't work.
-    Collect locus coordinates. Take into account that variant can hit multiple genes.
-    The returned locus will so span all genes the variant falls into.
+    Collect locus coordinates.
     """
-    locus_start_coords = []
-    locus_end_coords = []
+    MIN_LOCUS_SIZE_OFFSET = 100
+
+    locus_start_coord = variant_obj.get("position")
+    locus_end_coord = variant_obj.get("end")
 
     if build not in str(case_obj.get("genome_build")):
         client = EnsemblRestApiClient()
@@ -218,13 +217,37 @@ def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> st
         if mapped_coords:
             mapped_start = mapped_coords[0]["mapped"].get("start")
             mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
-            locus_start_coords.append(mapped_start)
-            locus_end_coords.append(mapped_end)
+            locus_start_coord = mapped_start
+            locus_end_coord = mapped_end
 
-    if not locus_start_coords:
-        locus_start_coords.append(variant_obj.get("position"))
-    if not locus_end_coords:
-        locus_end_coords.append(variant_obj.get("end"))
+    variant_size_offset = (variant_obj.get("end") - variant_obj.get("position")) / 10
+    if variant_size_offset < (MIN_LOCUS_SIZE_OFFSET * 2):
+        variant_size_offset = MIN_LOCUS_SIZE_OFFSET
+    locus_start_coord -= variant_size_offset
+    locus_end_coord += variant_size_offset
+
+    return (variant_obj["chromosome"], locus_start_coord, locus_end_coord)
+
+
+def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
+    """Given a variant obj, construct a locus string across variant plus a percent size offset around the variant."""
+
+    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
+    return f"{chrom}:{locus_start}-{locus_end}"
+
+
+def make_locus_from_gene(variant_obj: Dict, case_obj: Dict, build: str) -> str:
+    """Given a variant obj, construct a locus string across any gene touched for IGV to display.
+    Initialize locus coordinates with variant coordinates so it won't crash if variant gene(s) no longer exist in database.
+    Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
+    Use original coordinates only if genome build was already 38 or liftover didn't work.
+    Collect locus coordinates. Take into account that variant can hit multiple genes.
+    The returned locus will so span all genes the variant falls into.
+    """
+
+    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
+    locus_start_coords = [locus_start]
+    locus_end_coords = [locus_end]
 
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
     for gene_id in variant_genes_ids:
@@ -237,7 +260,7 @@ def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> st
     locus_start = min(locus_start_coords)
     locus_end = max(locus_end_coords)
 
-    return f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"
+    return f"{chrom}:{locus_start}-{locus_end}"
 
 
 def set_tracks(name, file_list):

@@ -141,6 +141,28 @@ def test_igv_authorized(app, user_obj, case_obj, variant_obj):
 
         # THEN the response should be a valid HTML page
         assert resp.status_code == 200
-        # AND when the reponse is closed case IGV tracks should be removed from session
+        # AND when the response is closed case IGV tracks should be removed from session
         resp.close()
         assert session.get("igv_tracks") is None
+
+
+def test_sashimi_igv(app, user_obj, case_obj, variant_obj):
+    """Test view requests and produces igv alignments, when the user has access to the case"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user is logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN the igv endpoint is invoked with the right parameters
+        resp = client.get(
+            url_for(
+                "alignviewers.sashimi_igv",
+                institute_id=case_obj["owner"],
+                case_name=case_obj["display_name"],
+                variant_id=variant_obj["_id"],
+            )
+        )
+
+        # THEN the response should be a valid HTML page
+        assert resp.status_code == 200

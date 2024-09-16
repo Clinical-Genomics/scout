@@ -123,3 +123,19 @@ def set_case_specific_tracks():
     controllers.set_case_specific_tracks(display_obj, form_data)
     assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
     assert display_obj["tiddit_coverage_wig"] == form_data["tiddit_coverage_wig"]
+
+
+def test_make_omics_locus(app, case_obj):
+    """Test making loci for IGV viewing for OMICS variants."""
+
+    # GIVEN an OMICS variants
+    omics_variant = store.omics_variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
+    # GIVEN that the OMICS variant is the same buid as the case (liftover not triggered)
+    build = case_obj["genome_build"]
+    omics_variant["build"] = build
+
+    # WHEN asking for a locus for the OMICS variant
+    locus_str = controllers.make_locus_from_variant(omics_variant, case_obj, build)
+    # THEN a locus is returned on the right chromosome
+    assert omics_variant["chromosome"] in locus_str
