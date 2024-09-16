@@ -730,7 +730,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
 
-    # Check if coverage and MY copy number stats are available via chanjo2 or chanjo
+    # Check if coverage and MT copy number stats are available via chanjo2 or chanjo
     if case_obj.get("chanjo2_coverage"):
         coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(individuals=samples)
     elif case_obj.get("chanjo_coverage"):
