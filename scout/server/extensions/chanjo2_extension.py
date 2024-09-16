@@ -5,7 +5,7 @@ import requests
 from flask import current_app
 
 REF_CHROM = "14"
-MT_CHROM = "M"
+MT_CHROM = "MT"
 LOG = logging.getLogger(__name__)
 
 
