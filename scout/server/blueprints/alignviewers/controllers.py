@@ -197,7 +197,7 @@ def make_merged_splice_track(ind: dict) -> dict:
     return track
 
 
-def find_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tuple:
+def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tuple:
     """
     Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
     Use original coordinates only if genome build was already 38 or liftover didn't work.
@@ -236,7 +236,7 @@ def find_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tu
 def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     """Given a variant obj, construct a locus string across variant plus a percent size offset around the variant."""
 
-    (chrom, locus_start, locus_end) = find_locus_from_variant(variant_obj, case_obj, build)
+    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
     return f"{chrom}:{locus_start}-{locus_end}"
 
 
@@ -249,7 +249,7 @@ def make_locus_from_gene(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     The returned locus will so span all genes the variant falls into.
     """
 
-    (chrom, locus_start, locus_end) = find_locus_from_variant(variant_obj, case_obj, build)
+    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
     locus_start_coords = [locus_start]
     locus_end_coords = [locus_end]
 
