@@ -63,7 +63,7 @@ def create_app(config_file=None, config=None):
 
     app.json.sort_keys = False
 
-    init_log(LOG, app=app)
+    init_log(log=LOG, app=app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
