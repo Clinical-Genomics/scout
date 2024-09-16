@@ -133,9 +133,9 @@ def test_make_omics_locus(app, case_obj):
 
     # GIVEN that the OMICS variant is the same buid as the case (liftover not triggered)
     build = case_obj["genome_build"]
-    omics_variant_obj["build"] = build
+    omics_variant["build"] = build
 
     # WHEN asking for a locus for the OMICS variant
     locus_str = controllers.make_locus_from_variant(omics_variant, case_obj, build)
     # THEN a locus is returned on the right chromosome
-    assert omics_variant_obj["chromosome"] in locus_str
+    assert omics_variant["chromosome"] in locus_str
