@@ -30,6 +30,18 @@ class ActivityLogFilter(logging.Filter):
         )
 
 
+def set_activity_log(log: logging.Logger, app: Flask):
+    """Log users' activity to a file, if specified in the scout config."""
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.handlers.extend(gunicorn_logger.handlers)
+    app.logger.addFilter(ActivityLogFilter())
+    file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+    log.addHandler(file_handler)
+
+
 def init_log(log: logging.Logger, app: Flask):
     """Initializes the log file in the proper format."""
 
@@ -37,11 +49,4 @@ def init_log(log: logging.Logger, app: Flask):
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
 
     if USERS_LOGGER_PATH_PARAM in app.config:
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        app.logger.handlers = gunicorn_logger.handlers
-        app.logger.setLevel(gunicorn_logger.level)
-        app.logger.handlers.extend(gunicorn_logger.handlers)
-        app.logger.addFilter(ActivityLogFilter())
-        file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
-        file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-        log.addHandler(file_handler)
+        set_activity_log(log=log, app=app)
