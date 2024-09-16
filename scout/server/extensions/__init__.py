@@ -10,6 +10,7 @@ from scout.utils.track_resources import AlignTrackHandler
 
 from .beacon_extension import Beacon
 from .bionano_extension import BioNanoAccessAPI
+from .chanjo2_extension import Chanjo2Client
 from .chanjo_extension import ChanjoReport
 from .clinvar_extension import ClinVarApi
 from .gens_extension import GensViewer
@@ -37,3 +38,4 @@ beacon = Beacon()
 config_igv_tracks = AlignTrackHandler()
 bionano_access = BioNanoAccessAPI()
 chanjo_report = ChanjoReport()
+chanjo2 = Chanjo2Client()
