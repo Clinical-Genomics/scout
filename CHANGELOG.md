@@ -15,13 +15,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include both creation and last modification dates in gene panels pages
 - Moved code to collect MT copy number stats for the MT report to the chanjo extension
 - On the gene panelS page, show expanded gene panel version list in one column only
+- Refactored logging module
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
 - Stricter check of ID of gene panels to prevent file downloading vulnerability
 - Removed link to the retired SPANR service. SPIDEX scores are still parsed and displayed if available from variant annotation.
 - Omics variant view test coverage
-- Refactored logging module
 
 ## [4.88.1]
 ### Fixed
