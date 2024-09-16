@@ -1210,6 +1210,8 @@ def one_cancer_variant(request, cancer_snv_file):
     variant = next(variant_parser)
     return variant
 
+def one_omics_variant(omics_file):
+
 
 @pytest.fixture(scope="function")
 def parsed_cancer_variant(request, cancer_variants, one_cancer_variant, cancer_case_obj):
@@ -1225,7 +1227,6 @@ def parsed_cancer_variant(request, cancer_variants, one_cancer_variant, cancer_c
 
     return variant_dict
 
-
 @pytest.fixture(scope="function")
 def cancer_variant_obj(request, parsed_cancer_variant):
     LOG.info("Return one cancer variant obj")
@@ -1234,6 +1235,20 @@ def cancer_variant_obj(request, parsed_cancer_variant):
     variant = build_variant(parsed_cancer_variant, institute_id=institute_id)
     return variant
 
+
+@pytest.fixture(scope="function")
+def parsed_omics_variant(one_omics_variant, case_obj):
+
+
+
+@pytest.fixture(scope="function")
+def omics_variant_obj(parsed_omics_variant):
+    LOG.info("Return one OMICS variant obj")
+
+    institute_id = "cust000"
+
+    variant = build_variant(parsed_omics_variant, institute_id=institute_id)
+    return variant
 
 @pytest.fixture(scope="function")
 def one_variant_customannotation(request, customannotation_snv_file):

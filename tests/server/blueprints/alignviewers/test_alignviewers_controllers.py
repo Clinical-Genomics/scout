@@ -123,3 +123,7 @@ def set_case_specific_tracks():
     controllers.set_case_specific_tracks(display_obj, form_data)
     assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
     assert display_obj["tiddit_coverage_wig"] == form_data["tiddit_coverage_wig"]
+
+
+def test_make_omics_locus(app, case_obj, omics_variant_obj):
+    omics_variant_obj[""]

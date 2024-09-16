@@ -205,6 +205,9 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tup
     """
     MIN_LOCUS_SIZE_OFFSET = 100
 
+    locus_start_coord = variant_obj.get("position")
+    locus_end_coord = variant_obj.get("end")
+
     if build not in str(case_obj.get("genome_build")):
         client = EnsemblRestApiClient()
         mapped_coords = client.liftover(
@@ -218,11 +221,6 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tup
             mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
             locus_start_coord = mapped_start
             locus_end_coord = mapped_end
-
-    if not locus_start_coord:
-        locus_start_coord = variant_obj.get("position")
-    if not locus_end_coord:
-        locus_end_coord = variant_obj.get("end")
 
     variant_size_offset = (variant_obj.get("end") - variant_obj.get("position")) / 10
     if variant_size_offset < (MIN_LOCUS_SIZE_OFFSET * 2):
