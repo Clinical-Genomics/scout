@@ -140,7 +140,6 @@ def make_sashimi_tracks(
     if "37" in str(case_obj.get("rna_genome_build", "38")):
         build = "37"
 
-
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
         locus = make_locus_from_gene(variant_obj, case_obj, build)
