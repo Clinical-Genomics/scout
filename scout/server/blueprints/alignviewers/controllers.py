@@ -125,7 +125,7 @@ def make_sashimi_tracks(
     case_obj: dict, variant_id: Optional[str] = None, omics_variant_id: Optional[str] = None
 ):
     """Create a dictionary containing the required tracks for a splice junction plot
-    If either a regular variant_id set display to a particular gene locus.
+    If a regular variant_id is passed, set display to a particular gene locus.
     If an omics variant id is passed, set display to a window surrounding the variant, which can be a
     gene or an affected region.
     Otherwise defaults to whole genome "All" view.
