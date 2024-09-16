@@ -217,16 +217,18 @@ def find_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tu
             mapped_start = mapped_coords[0]["mapped"].get("start")
             mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
             locus_start_coord = mapped_start
-            locus_end_coords = mapped_end
-
-    variant_size_offset = (variant_obj.get("end") - variant_obj.get("position")) / 10
-    if variant_size_offset < MIN_LOCUS_SIZE_OFFSET:
-        variant_size_offset = MIN_LOCUS_SIZE_OFFSET
+            locus_end_coord = mapped_end
 
     if not locus_start_coord:
-        locus_start_coord = variant_obj.get("position") - variant_size_offset
+        locus_start_coord = variant_obj.get("position")
     if not locus_end_coord:
-        locus_end_coord = variant_obj.get("end") + variant_size_offset
+        locus_end_coord = variant_obj.get("end")
+
+    variant_size_offset = (variant_obj.get("end") - variant_obj.get("position")) / 10
+    if variant_size_offset < (MIN_LOCUS_SIZE_OFFSET * 2):
+        variant_size_offset = MIN_LOCUS_SIZE_OFFSET
+    locus_start_coord -= variant_size_offset
+    locus_end_coord += variant_size_offset
 
     return (variant_obj["chromosome"], locus_start_coord, locus_end_coord)
 
