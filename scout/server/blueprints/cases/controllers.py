@@ -43,6 +43,7 @@ from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import (
     RerunnerError,
     bionano_access,
+    chanjo2,
     chanjo_report,
     gens,
     matchmaker,
@@ -725,9 +726,15 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     samples = case_obj.get("individuals")
     coverage_stats = None
-    # if chanjo connection is established, include MT vs AUTOSOME coverage stats
-    if current_app.config.get("chanjo_report"):
-        coverage_stats = chanjo_report.mt_coverage_stats(individuals=samples)
+
+    case_has_chanjo_coverage(case_obj)
+    case_has_chanjo2_coverage(case_obj)
+
+    # Check if coverage and MT copy number stats are available via chanjo2 or chanjo
+    if case_obj.get("chanjo2_coverage"):
+        coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(individuals=samples)
+    elif case_obj.get("chanjo_coverage"):
+        coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(individuals=samples)
 
     query = {"chrom": "MT"}
     mt_variants = list(
