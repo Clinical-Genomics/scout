@@ -20,6 +20,7 @@ from scout.constants import (
     CASE_TAGS,
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
+    INHERITANCE_PALETTE,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -700,6 +701,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
 
+    data["inherit_palette"] = INHERITANCE_PALETTE
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
