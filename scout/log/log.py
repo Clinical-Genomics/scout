@@ -36,7 +36,7 @@ def set_activity_log(log: logging.Logger, app: Flask):
     app.logger.addFilter(ActivityLogFilter())
     file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
     file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-    LOG.addHandler(file_handler)
+    log.addHandler(file_handler)
 
 
 def init_log(log: logging.Logger, app: Flask):
