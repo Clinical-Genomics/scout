@@ -1,7 +1,7 @@
 import re
 
-MIMNR_PATTERN = re.compile("[0-9]{6,6}")
-ENTRY_PATTERN = re.compile("\([1,2,3,4]\)")
+MIMNR_PATTERN = re.compile(r"[0-9]{6,6}")
+ENTRY_PATTERN = re.compile(r"\([1-4]\)")
 
 DISEASE_INHERITANCE_TERMS = [
     "Autosomal recessive",
