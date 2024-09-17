@@ -35,7 +35,6 @@ def set_activity_log(log: logging.Logger, app: Flask):
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    app.logger.handlers.extend(gunicorn_logger.handlers)
     app.logger.addFilter(ActivityLogFilter())
     file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
     file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
