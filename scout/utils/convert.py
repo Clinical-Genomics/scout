@@ -53,7 +53,7 @@ def amino_acid_residue_change_3_to_1(protein_sequence_name):
     if protein_sequence_name is None:
         return None
 
-    p = re.compile("p.([A-Za-z]+)(\d+)([A-Za-z]+)")
+    p = re.compile(r"p\.([A-Za-z]+)(\d+)([A-Za-z]+)")
     m = p.match(protein_sequence_name)
     if m is None:
         return None
