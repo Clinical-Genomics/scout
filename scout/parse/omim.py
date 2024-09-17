@@ -49,7 +49,7 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
         i = 0
         splitted_info = phenotype_info.split(",")
         for i, text in enumerate(splitted_info):
-            # Everything before ([1,2,3])
+            # Everything before ([1,2,3,4])
             # We check if we are in the part where the mim number exists
             match = ENTRY_PATTERN.search(text)
             if not match:
@@ -75,7 +75,7 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
             {
                 "mim_number": disease_mim,
                 "inheritance": inheritance,
-                "description": disease_description.strip("?\{\}"),
+                "description": disease_description.strip(r"?{}"),
                 "status": disease_status,
             }
         )

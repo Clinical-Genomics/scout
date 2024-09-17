@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Stricter check of ID of gene panels to prevent file downloading vulnerability
 - Removed link to the retired SPANR service. SPIDEX scores are still parsed and displayed if available from variant annotation.
 - Omics variant view test coverage
+- String pattern escape warnings
 
 ## [4.88.1]
 ### Fixed
