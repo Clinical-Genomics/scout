@@ -819,6 +819,15 @@ def alamut_gene_link(
         url_template(str): link to Alamut browser
     """
 
+    def get_gene_canonical_tx(gene: dict) -> str:
+        """Returns the canonical transcript of a gene."""
+        if gene.get("canonical_transcript"):
+            return gene["canonical_transcript"]
+
+        for tx in gene.get("transcripts"):
+            if tx.get("is_canonical"):
+                return tx["transcript_id"]
+
     if current_app.config.get("HIDE_ALAMUT_LINK"):
         return False
 
@@ -828,7 +837,7 @@ def alamut_gene_link(
     (search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
 
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={canonical_transcript}{build_str}:"
         "{hgvs_identifier}"
     )
 
@@ -845,7 +854,7 @@ def alamut_gene_link(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
         alamut_inst_arg=alamut_inst_arg,
-        this=gene_obj,
+        canonical_transcript=get_gene_canonical_tx(gene=gene_obj),
         build_str=build_str,
         hgvs_identifier=quote(hgvs_raw),
     )
