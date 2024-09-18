@@ -12,11 +12,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Mean MT coverage`, `Mean chrom 14 coverage` and `Estimated mtDNA copy number` on MT coverage file from chanjo2 if available
 ### Changed
 - Documentation for OMICS variants and updating a case
-- Include both creation and last modification dates in gene panels pages
+- Include both creation and deletion dates in gene panels pages
 - Moved code to collect MT copy number stats for the MT report to the chanjo extension
 - On the gene panelS page, show expanded gene panel version list in one column only
 - IGV.js WTS loci default to zoom to a region around a variant instead of whole gene
 - Refactored logging module
+- Case general report no longer shows ORPHA inheritance models. OMIM models are shown colored.
 - Removed the `clinsig_comment` field corresponding to the ClinVar field "Comment on clinical significance", as it's no longer used.
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
@@ -25,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed link to the retired SPANR service. SPIDEX scores are still parsed and displayed if available from variant annotation.
 - Omics variant view test coverage
 - String pattern escape warnings
+- Code creating Alamut links for variant genes without canonical_transcript set
 
 ## [4.88.1]
 ### Fixed
