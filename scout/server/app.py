@@ -6,12 +6,13 @@ from datetime import timedelta
 from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
-import coloredlogs
 from flask import Flask, redirect, request, url_for
 from flask_cors import CORS
 from flask_login import current_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
+
+from scout.log import init_log
 
 from . import extensions
 from .blueprints import (
@@ -35,42 +36,8 @@ from .blueprints import (
 )
 
 LOG = logging.getLogger(__name__)
+
 USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
-ACTIVITY_LOG_IGNORE_TRIGGERS = [
-    "static",
-    "ideograms",
-    "custom_images",
-    "autozygous_images",
-    "coverage_images",
-    "upd_regions_images",
-    "favicon",
-    "GET /",
-    "Closing",
-    "Enable",
-    "enabled",
-    "Collecting IGV tracks",
-]  # Substrings used when filtering messages to show if users activity log is on
-
-
-class ActivityLogFilter(logging.Filter):
-    """When monitoring users activity, log only navigation on main pages.
-    - Do not log messages that contain the substrings specified in ACTIVITY_LOG_IGNORE_TRIGGERS"""
-
-    def filter(self, record):
-        return (
-            any(sub_url in record.getMessage() for sub_url in ACTIVITY_LOG_IGNORE_TRIGGERS) is False
-        )
-
-
-def set_activity_log(app):
-    """Log users' activity to a file, if specified in the scout config."""
-    if USERS_LOGGER_PATH_PARAM not in app.config:
-        return
-    app.logger.setLevel("INFO")
-    app.logger.addFilter(ActivityLogFilter())
-    file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
-    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-    LOG.addHandler(file_handler)
 
 
 def create_app(config_file=None, config=None):
@@ -96,9 +63,7 @@ def create_app(config_file=None, config=None):
 
     app.json.sort_keys = False
 
-    current_log_level = LOG.getEffectiveLevel()
-    coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
-    set_activity_log(app)
+    init_log(log=LOG, app=app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
