@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed link to the retired SPANR service. SPIDEX scores are still parsed and displayed if available from variant annotation.
 - Omics variant view test coverage
 - String pattern escape warnings
+- Code creating Alamut links for variant genes without canonical_transcript set
 
 ## [4.88.1]
 ### Fixed
