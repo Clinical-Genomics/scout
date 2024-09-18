@@ -32,7 +32,6 @@ CLINVAR_HEADER = {
     "condition_comment": "Condition comment",
     "explanation_for_multiple_conditions": "Explanation for multiple conditions",
     "clinsig": "Germline classification",
-    "clinsig_comment": "Comment on classification",
     "last_evaluated": "Date last evaluated",
     "variant_comment": "Comment on variant",
     "inheritance_mode": "Mode of inheritance",

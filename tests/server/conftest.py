@@ -595,7 +595,6 @@ def clinvar_form(request):
             "assertion_method_cit_id": "25741868",
             "variations_ids": "rs116916706",
             "clinsig": "Likely pathogenic, low penetrance",
-            "clinsig_comment": "test clinsig comment",
             "clinsig_cit": "test clinsig cit",
             "condition_comment": "test condition comment",
             "include_ind": ["NA12882"],

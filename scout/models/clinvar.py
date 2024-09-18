@@ -38,7 +38,6 @@ clinvar_variant = {
     "alt": str,
     "variations_ids": str,  # example: "rs116916706"
     "clinsig": str,  # example: "Pathogenic"
-    "clinsig_comment": str,
     "clinsig_cit": str,
     "inheritance_mode": str,
     "last_evaluated": date,
