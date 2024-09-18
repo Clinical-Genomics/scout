@@ -1,62 +1,49 @@
 import logging
-import os
-import sys
+
+import coloredlogs
+from flask.app import Flask
+
+USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
+ACTIVITY_LOG_IGNORE_TRIGGERS = [
+    "static",
+    "ideograms",
+    "custom_images",
+    "autozygous_images",
+    "coverage_images",
+    "upd_regions_images",
+    "favicon",
+    "GET /",
+    "Closing",
+    "Enable",
+    "enabled",
+    "Collecting IGV tracks",
+]  # Substrings used when filtering messages to show if users activity log is on
 
 
-def init_log(logger, filename=None, loglevel=None):
-    """
-    Initializes the log file in the proper format.
+class ActivityLogFilter(logging.Filter):
+    """When monitoring users activity, log only navigation on main pages.
+    - Do not log messages that contain the substrings specified in ACTIVITY_LOG_IGNORE_TRIGGERS"""
 
-    Arguments:
-
-        filename (str): Path to a file. Or None if logging is to
-                         be disabled.
-        loglevel (str): Determines the level of the log output.
-    """
-    template = "[%(asctime)s] %(levelname)-8s: %(name)-25s: %(message)s"
-    formatter = logging.Formatter(template)
-
-    if loglevel:
-        logger.setLevel(getattr(logging, loglevel))
-
-    # We will always print warnings and higher to stderr
-    console = logging.StreamHandler()
-    console.setLevel("WARNING")
-    console.setFormatter(formatter)
-
-    if filename:
-        file_handler = logging.FileHandler(filename, encoding="utf-8")
-        if loglevel:
-            file_handler.setLevel(getattr(logging, loglevel))
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-    # If no logfile is provided we print all log messages that the user has
-    # defined to stderr
-    else:
-        if loglevel:
-            console.setLevel(getattr(logging, loglevel))
-
-    logger.addHandler(console)
+    def filter(self, record):
+        return (
+            any(sub_url in record.getMessage() for sub_url in ACTIVITY_LOG_IGNORE_TRIGGERS) is False
+        )
 
 
-def get_log_stream(logger):
-    """
-    Returns a stream to the root log file.
-    If there is no logfile return the stderr log stream
+def set_activity_log(log: logging.Logger, app: Flask):
+    """Log users' activity to a file, if specified in the scout config."""
+    app.logger.setLevel("INFO")
+    app.logger.addFilter(ActivityLogFilter())
+    file_handler = logging.FileHandler(app.config[USERS_LOGGER_PATH_PARAM])
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+    log.addHandler(file_handler)
 
-    Returns:
-        A stream to the root log file or stderr stream.
-    """
 
-    file_stream = None
-    log_stream = None
-    for handler in logger.handlers:
-        if isinstance(handler, logging.FileHandler):
-            file_stream = handler.stream
-        else:
-            log_stream = handler.stream
+def init_log(log: logging.Logger, app: Flask):
+    """Initializes the log file in the proper format."""
 
-    if file_stream:
-        return file_stream
+    current_log_level = log.getEffectiveLevel()
+    coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
 
-    return log_stream
+    if USERS_LOGGER_PATH_PARAM in app.config:
+        set_activity_log(log=log, app=app)
