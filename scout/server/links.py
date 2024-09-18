@@ -854,7 +854,7 @@ def alamut_gene_link(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
         alamut_inst_arg=alamut_inst_arg,
-        canonical_treanscript=get_gene_canonical_tx(gene=gene_obj),
+        canonical_transcript=get_gene_canonical_tx(gene=gene_obj),
         build_str=build_str,
         hgvs_identifier=quote(hgvs_raw),
     )
