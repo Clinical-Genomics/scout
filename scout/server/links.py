@@ -837,7 +837,7 @@ def alamut_gene_link(
     (search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
 
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={canonical_treanscript}{build_str}:"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={canonical_transcript}{build_str}:"
         "{hgvs_identifier}"
     )
 
