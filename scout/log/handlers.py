@@ -3,7 +3,7 @@ import logging.handlers
 
 
 class TlsSMTPHandler(logging.handlers.SMTPHandler):
-    """Used by the aop to send emails."""
+    """Used by the app to send emails."""
 
     def emit(self, record):
         """Emit a record.
