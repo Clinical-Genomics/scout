@@ -820,7 +820,7 @@ def alamut_gene_link(
     """
 
     def get_gene_canonical_tx(gene: dict) -> str:
-        """Returns the canonical transcript of a gen.e"""
+        """Returns the canonical transcript of a gene."""
         if gene.get("canonical_transcript"):
             return gene["canonical_transcript"]
 
