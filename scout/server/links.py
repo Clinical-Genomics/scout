@@ -825,7 +825,7 @@ def alamut_gene_link(
             return gene["canonical_transcript"]
 
         for tx in gene.get("transcripts"):
-            if tx["is_canonical"]:
+            if tx.get("is_canonical"):
                 return tx["transcript_id"]
 
     if current_app.config.get("HIDE_ALAMUT_LINK"):
