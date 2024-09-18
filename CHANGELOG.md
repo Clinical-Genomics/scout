@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On the gene panelS page, show expanded gene panel version list in one column only
 - IGV.js WTS loci default to zoom to a region around a variant instead of whole gene
 - Refactored logging module
+- Case general report no longer shows ORPHA inheritance models. OMIM models are shown colored.
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
