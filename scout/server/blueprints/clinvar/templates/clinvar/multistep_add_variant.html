@@ -209,14 +209,20 @@
                 <legend class="text-dark">Germline Classification</legend>
                 <h3 class="fs-subtitle">Represents a variant-level classification for a disease, rather than an interpretation of the clinical significance of a variant for a specific patient.</h3>
 
+                {% set scout_classif = variant_data.var_obj.classification|replace("_"," ") if variant_data.var_obj.classification else "n.a." %}
+
                 <div class="row">
                   <div class="col-4">
                     <span class="text-dark">Classification in Scout:</span><br>
-                    <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper if variant_data.var_obj.classification else "n.a."}}</span>
+                    <span class="badge bg-secondary">{{ scout_classif|upper }}</span>
                   </div>
                   <div class="col-8">
                     {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                    {{variant_data.var_form.clinsig(class="form-control, btn-secondary")}}
+                    <select name="clinsig" class="form-control, btn-secondary">
+                      {% for classif, classif_value in variant_data.var_form.clinsig.choices %}
+                        <option value="{{classif_value}}" {% if classif==scout_classif|capitalize %} selected {% endif %}>{{classif}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
                 <br><br><br>
