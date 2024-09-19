@@ -150,14 +150,12 @@ INDEXES = {
             [("collaborators", ASCENDING), ("status", ASCENDING), ("updated_at", ASCENDING)],
             name="collaborators_status_updated_at",
         ),
-        IndexModel([("owner", ASCENDING), ("display_name", ASCENDING)], name="owner_display_name"),
         IndexModel(
-            [("individuals.subject_id", ASCENDING), ("owner", ASCENDING)],
-            name="individuals_subject_id_owner",
-        ),
-        IndexModel(
-            [("individuals.display_name", ASCENDING), ("owner", ASCENDING)],
-            name="individuals_display_name_owner",
+            [
+                ("owner", ASCENDING),
+                ("display_name", ASCENDING),
+            ],
+            name="owner_display_name",
         ),
     ],
     "managed_variant": [
