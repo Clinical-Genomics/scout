@@ -164,6 +164,7 @@ class CaseHandler(object):
         or_options = [
             {"display_name": case_name_regex},
             {"individuals.display_name": case_name_regex},
+            {"individuals.subject_id": case_name_regex},
             {"_id": case_name_regex},
         ]
         self.update_case_query_or_options(query=query, or_options=or_options)
