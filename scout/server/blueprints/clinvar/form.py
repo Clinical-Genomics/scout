@@ -55,7 +55,7 @@ class ClinVarVariantForm(FlaskForm):
     clinsig = SelectField(
         "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS[:5]]
     )
-    clinsig_comment = TextAreaField("Comment on clinical significance")
+    clinsig_comment = TextAreaField("Comment on classification")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     last_evaluated = DateField("Date evaluated")
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
