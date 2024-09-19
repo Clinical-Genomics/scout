@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Omics variant view test coverage
 - String pattern escape warnings
 - Code creating Alamut links for variant genes without canonical_transcript set
+- Variant delete button in ClinVar submissions page
 
 ## [4.88.1]
 ### Fixed
