@@ -167,6 +167,7 @@ class CaseHandler(object):
         query["$or"] = [
             {"display_name": case_name_regex},
             {"individuals.display_name": case_name_regex},
+            {"individuals.subject_id": case_name_regex},
             {"_id": case_name_regex},
         ]
 
