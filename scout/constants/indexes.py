@@ -145,7 +145,7 @@ INDEXES = {
     "case": [
         IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text"),
         IndexModel([("causatives", ASCENDING)], name="causatives"),
-        IndexModel([("suspects", ASCENDING)], name="suspects")
+        IndexModel([("suspects", ASCENDING)], name="suspects"),
         IndexModel(
             [("collaborators", ASCENDING), ("status", ASCENDING), ("updated_at", ASCENDING)],
             name="collaborators_status_updated_at",
