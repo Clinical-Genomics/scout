@@ -160,7 +160,7 @@
                   <td>{{subm_variant.clinsig}}</td>
                   <td>{{subm_variant.added_by or "N/A"}}</td>
                   <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
-                    <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash fa-lg" aria-hidden="true"></span></button></td>
+                    <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button></td>
                   </form>
                 </tr>
                 <tr>
@@ -217,7 +217,7 @@
                     <td>{{var_key_name[case.linking_id]|truncate(25,true,'..')}}</td>
                     <td>{{case.allele_origin}}</td>
                     <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
-                      <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash fa-lg" aria-hidden="true"></span></button></td>
+                      <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button></td>
                     </form>
                   </tr>
                   <tr>
