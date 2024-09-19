@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
 - Log users' activity to file by specifying `USERS_ACTIVITY_LOG_PATH` parameter in app config
 - `Mean MT coverage`, `Mean chrom 14 coverage` and `Estimated mtDNA copy number` on MT coverage file from chanjo2 if available
+- In ClinVar multistep form, preselect ACMG criteria according to the variant's ACMG classification, if available
 ### Changed
 - Documentation for OMICS variants and updating a case
 - Include both creation and deletion dates in gene panels pages
