@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - IGV.js WTS loci default to zoom to a region around a variant instead of whole gene
 - Refactored logging module
 - Case general report no longer shows ORPHA inheritance models. OMIM models are shown colored.
+- Chromosome alias tab files used in the igv.js browser, which now contain the alias for chromosome "M"
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
