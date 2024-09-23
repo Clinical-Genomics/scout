@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case general report no longer shows ORPHA inheritance models. OMIM models are shown colored.
 - Chromosome alias tab files used in the igv.js browser, which now contain the alias for chromosome "M"
 - Renamed "Comment on clinical significance" to "Comment on classification" in ClinVar multistep form
+- Enable Gens CN button also for non-wgs cancer track cases
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
