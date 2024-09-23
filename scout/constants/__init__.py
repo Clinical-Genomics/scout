@@ -214,6 +214,7 @@ CALLERS = {
         {"id": "cnvpytor", "name": "CNVpytor"},
         {"id": "delly", "name": "Delly"},
         {"id": "gatk", "name": "GATK"},
+        {"id": "hificnv", "name": "HiFiCNV"},
         {"id": "manta", "name": "Manta"},
         {"id": "severus", "name": "Severus"},
         {"id": "sniffles", "name": "Sniffles"},
