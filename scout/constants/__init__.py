@@ -183,17 +183,17 @@ PAR_COORDINATES = {
 
 CALLERS = {
     "snv": [
-        {"id": "gatk", "name": "GATK"},
-        {"id": "freebayes", "name": "Freebayes"},
-        {"id": "samtools", "name": "SAMtools"},
         {"id": "bcftools", "name": "Bcftools"},
         {"id": "deepvariant", "name": "DeepVariant"},
+        {"id": "freebayes", "name": "Freebayes"},
+        {"id": "gatk", "name": "GATK"},
+        {"id": "samtools", "name": "SAMtools"},
     ],
     "cancer": [
+        {"id": "freebayes", "name": "Freebayes"},
+        {"id": "gatk", "name": "GATK"},
         {"id": "mutect", "name": "MuTect"},
         {"id": "pindel", "name": "Pindel"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "freebayes", "name": "Freebayes"},
         {"id": "tnscope", "name": "TNScope"},
         {"id": "tnscope_umi", "name": "TNscope_UMI"},
         {"id": "vardict", "name": "VarDict"},
