@@ -226,8 +226,8 @@ CALLERS = {
     ],
     "fusion": [
         {"id": "arriba", "name": "Arriba"},
-        {"id": "starfusion", "name": "STARfusion"},
         {"id": "fusioncatcher", "name": "FusionCatcher"},
+        {"id": "starfusion", "name": "STARfusion"},
     ],
 }
 
