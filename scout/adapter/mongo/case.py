@@ -505,7 +505,7 @@ class CaseHandler(object):
         if name_query and query_field in ["similar_case", "similar_pheno"]:
             result_order: list = query["_id"]["$in"]
             results = self.case_collection.find(query, projection)
-            # Return the result in order of ascending phenotype order (the same order or the _ids provided in the query)
+            # Return the result in order of ascending phenotype similarity (the same order or the _ids provided in the query)
             return sorted(list(results), key=lambda res: result_order.index(res["_id"]))
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
