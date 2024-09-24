@@ -144,7 +144,7 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row bd-highlight mt-1">
         <div>
-          <span class="menu-collapsed">{{report_key|replace("_"," ")|title}}</span>
+          <span class="menu-collapsed">{{report_key|replace("_"," ")|title|upper_na}}</span>
         </div>
         {% if case.get(report_key) is existing %}
           <div>

@@ -31,6 +31,11 @@ CUSTOM_CASE_REPORTS = {
         "format": "HTML",
         "pdf_export": False,
     },
+    "rna_delivery_report": {
+        "key_name": "rna_delivery_report",
+        "format": "HTML",
+        "pdf_export": True,
+    },
 }
 
 CASE_REPORT_VARIANT_TYPES = {
