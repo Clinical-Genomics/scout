@@ -78,42 +78,42 @@ class CaseHandler(object):
         query_value: str,
         institute_id: str,
     ):
-        """Adds query parameters when search is performed by case or phenotype similarity
-
-        Args:
-            query(dict): cases search query
-            query_field(str) example:"status"
-            query_value(str) example:"active"
-            name_query(dict) args provided by users in cases filter search
-            institute_id(str): institute to search cases for
-        """
+        """Adds query parameters when search is performed by case or phenotype similarity."""
         hpo_terms = []
         CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
+
         if query_field == "similar_case":
-            case_obj = self.case(
-                display_name=query_value,
-                institute_id=institute_id,
-                projection=CASE_SIMILAR_PROJECTION,
-            )
+            temp_query_or = {
+                "$or": [
+                    {"display_name": query_value},
+                    {"individuals.display_name": query_value},
+                    {"individuals.subject_id": query_value},
+                    {"_id": query_value},
+                ]
+            }
+            temp_query = {"$and": [{"owner": institute_id}, temp_query_or]}
+            case_obj = self.case_collection.find_one(temp_query, CASE_SIMILAR_PROJECTION)
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
                 return
 
             for term in case_obj.get("phenotype_terms", []):
                 hpo_terms.append(term.get("phenotype_id"))
+
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
         else:  # similar HPO terms
             hpo_terms = list(query_value.replace(" ", "").split(","))
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
 
-        if len(similar_cases) == 0:  # No cases similar to given phenotype
-            query["_id"] = {"$in": []}  # No result should be returned by query
-            return
-
-        similar_case_ids = []
-        for i in similar_cases:
-            similar_case_ids.append(i[0])
-        self._update_case_id_query(query, similar_case_ids)
+        similar_case_ids = [
+            similar_case[0] for similar_case in similar_cases
+        ]  # These are sorted by the most similar to the least
+        self._update_case_id_query(
+            query, similar_case_ids
+        )  # This might mess up the order of the _ids
+        query["_id"]["$in"] = sorted(
+            query["_id"]["$in"], key=lambda idx: similar_case_ids.index(idx)
+        )  # Sort them again by similarity
 
     def _set_genes_of_interest_query(
         self, query: Dict[str, Any], query_field: str, query_value: str
@@ -325,11 +325,11 @@ class CaseHandler(object):
                 "track",
                 "pheno_group",
                 "cohort",
-                "similar_case",
-                "similar_pheno",
                 "pinned",
                 "causative",
                 "user",
+                "similar_case",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
+                "similar_pheno",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
             ]:
                 query_value = name_query.get(query_field)
                 if query_value not in ["", None]:
@@ -349,6 +349,7 @@ class CaseHandler(object):
             query["_id"]["$in"] = list(
                 set(preselected_ids).intersection(set(id_list))
             )  # limit also by case _ids present in id_list
+
         else:  # use id_list for filtering
             query["_id"] = {"$in": id_list}
 
@@ -555,7 +556,24 @@ class CaseHandler(object):
         if yield_query:
             return query
 
+        LOG.error(query)
+        if name_query and self.is_pheno_similarity_query(name_query):
+            LOG.warning("HELLO BITCHES")
+            result_order: list = query["_id"]["$in"]
+            results = self.case_collection.find(query, projection)
+            # Return the result in order of descending phenotype similarity (the same order or the _ids provided in the query)
+            return sorted(list(results), key=lambda res: result_order.index(res["_id"]))
+
         return self.case_collection.find(query, projection).sort("updated_at", -1)
+
+    def is_pheno_similarity_query(self, name_query: Union[str, ImmutableMultiDict]) -> bool:
+        """Return True if the user query contains 'similar_case' or 'similar_pheno' fields."""
+        similar_pheno_keys = ["similar_case", "similar_pheno"]
+
+        if isinstance(name_query, str):
+            return any(key in name_query for key in similar_pheno_keys)
+
+        return any(name_query.get(key) not in [None, ""] for key in similar_pheno_keys)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
