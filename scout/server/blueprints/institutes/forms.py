@@ -157,11 +157,25 @@ class GeneVariantFiltersForm(FlaskForm):
 
 
 class CaseFilterForm(FlaskForm):
-    """Takes care of cases filtering in cases page"""
+    """Takes care of cases filtering on cases page"""
 
-    search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
-    search_term = StringField("Search cases", default="")
+    case = StringField("Case or Individual name", [validators.Optional()])
+    exact_pheno = StringField("HPO terms, comma-separated", [validators.Optional()])
+    exact_dia = StringField("Disease terms, comma-separated", [validators.Optional()])
+    synopsis = StringField("Synopsis", [validators.Optional()])
+    panel = StringField("Gene panel name", [validators.Optional()])
+    status = StringField("Case status", [validators.Optional()])
+    tags = StringField("Case tag", [validators.Optional()])
+    track = StringField("Case track", [validators.Optional()])
+    pheno_group = StringField("Phenotype group", [validators.Optional()])
+    cohort = StringField("Cohort", [validators.Optional()])
+    similar_case = StringField("Similar case", [validators.Optional()])
+    similar_pheno = StringField("Similar phenotype", [validators.Optional()])
+    pinned = StringField("Pinned gene", [validators.Optional()])
+    causative = StringField("Causative gene", [validators.Optional()])
+    user = StringField("Assigned user", [validators.Optional()])
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
+    advanced_search = BooleanField("Advanced search options")
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
     clinvar_submitted = BooleanField("Has ClinVar submissions")

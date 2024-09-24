@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Mean MT coverage`, `Mean chrom 14 coverage` and `Estimated mtDNA copy number` on MT coverage file from chanjo2 if available
 - In ClinVar multistep form, preselect ACMG criteria according to the variant's ACMG classification, if available
 - Subject id search from caseS page (supporting multiple sample types e.g.) - adding indexes to speed up caseS queries
+- Advanced cases search to narrow down results using more than one search parameter
 - Coverage report available for any case with samples containing d4 files, even if case has no associated gene panels (i.e. cancer cases)
 ### Changed
 - Documentation for OMICS variants and updating a case

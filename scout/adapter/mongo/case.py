@@ -4,10 +4,11 @@ import logging
 import operator
 import re
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import pymongo
 from bson import ObjectId
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
 from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
@@ -17,6 +18,7 @@ from scout.utils.algorithms import ui_score
 from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
+EXISTS = "$exists"
 
 
 class CaseHandler(object):
@@ -73,28 +75,20 @@ class CaseHandler(object):
         self,
         query: Dict[str, Any],
         query_field: str,
-        query_term: str,
+        query_value: str,
         institute_id: str,
     ):
-        """Adds query parameters when search is performed by case or phenotype similarity
-
-        Args:
-            query(dict): cases search query
-            query_field(str) example:"status"
-            query_term(str) example:"active"
-            name_query(dict) args provided by users in cases filter search
-            institute_id(str): institute to search cases for
-        """
+        """Adds query parameters when search is performed by case or phenotype similarity."""
         hpo_terms = []
         CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
 
         if query_field == "similar_case":
             temp_query_or = {
                 "$or": [
-                    {"display_name": query_term},
-                    {"individuals.display_name": query_term},
-                    {"individuals.subject_id": query_term},
-                    {"_id": query_term},
+                    {"display_name": query_value},
+                    {"individuals.display_name": query_value},
+                    {"individuals.subject_id": query_value},
+                    {"_id": query_value},
                 ]
             }
             temp_query = {"$and": [{"owner": institute_id}, temp_query_or]}
@@ -108,13 +102,21 @@ class CaseHandler(object):
 
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
         else:  # similar HPO terms
-            hpo_terms = list(query_term.replace(" ", "").split(","))
+            hpo_terms = list(query_value.replace(" ", "").split(","))
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
 
-        query["_id"] = {"$in": [similar_case[0] for similar_case in similar_cases]}
+        similar_case_ids = [
+            similar_case[0] for similar_case in similar_cases
+        ]  # These are sorted by the most similar to the least
+        self._update_case_id_query(
+            query, similar_case_ids
+        )  # This might mess up the order of the _ids
+        query["_id"]["$in"] = sorted(
+            query["_id"]["$in"], key=lambda idx: similar_case_ids.index(idx)
+        )  # Sort them again by similarity
 
     def _set_genes_of_interest_query(
-        self, query: Dict[str, Any], query_field: str, query_term: str
+        self, query: Dict[str, Any], query_field: str, query_value: str
     ):
         """Adds query parameters when search is aimed at retrieving cases with a certain pinned or causative gene
 
@@ -123,11 +125,11 @@ class CaseHandler(object):
         Args:
             query(dict): cases search query
             query_field(str) "pinned" or "causative"
-            query_term(str) example:"POT1"
+            query_value(str) example:"POT1"
         """
-        hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
+        hgnc_id = self.hgnc_id(hgnc_symbol=query_value)
         if hgnc_id is None:
-            LOG.debug(f"No gene with the HGNC symbol {query_term} found.")
+            LOG.debug(f"No gene with the HGNC symbol {query_value} found.")
             query["_id"] = {"$in": []}  # No result should be returned by query
             return
 
@@ -153,20 +155,21 @@ class CaseHandler(object):
             ]
         )
         case_ids = [case["_id"] for case in cases_with_gene_doc]
-        query["_id"] = {"$in": case_ids}
+        self._update_case_id_query(query, case_ids)
 
-    def _set_case_name_query(self, query: Dict[str, Any], query_term: str):
+    def _set_case_name_query(self, query: Dict[str, Any], query_value: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
 
-        case_name_regex = {"$regex": re.escape(query_term)}
-        query["$or"] = [
+        case_name_regex = {"$regex": re.escape(query_value)}
+        or_options = [
             {"display_name": case_name_regex},
             {"individuals.display_name": case_name_regex},
             {"individuals.subject_id": case_name_regex},
             {"_id": case_name_regex},
         ]
+        self.update_case_query_or_options(query=query, or_options=or_options)
 
-    def _set_case_phenotype_query(self, query: Dict[str, Any], query_term: str):
+    def _set_case_phenotype_query(self, query: Dict[str, Any], query_value: str):
         """Set case query based on phenotype terms.
 
         The user may have provided multiple query (HPO) terms.
@@ -174,18 +177,12 @@ class CaseHandler(object):
         If the no query term is given (the phenotype query string is empty), instead query for cases
         that lack HPO terms.
         """
-        if query_term != "":
+        if query_value != "":
             query["phenotype_terms.phenotype_id"] = {
-                "$in": list(query_term.replace(" ", "").split(","))
+                "$in": list(query_value.replace(" ", "").split(","))
             }
-            return
 
-        query["$or"] = [
-            {"phenotype_terms": {"$size": 0}},
-            {"phenotype_terms": {"$exists": False}},
-        ]
-
-    def _set_diagnosis_query(self, query: Dict[str, Any], query_term: str):
+    def _set_diagnosis_query(self, query: Dict[str, Any], query_value: str):
         """Set diagnosis query based on query term.
         The user might have provided multiple query terms.
 
@@ -197,85 +194,148 @@ class CaseHandler(object):
 
         The query should be set to check for cases with no HPO terms if the query term is empty.
         """
-        if query_term != "":
-            omim_terms = list(query_term.replace(" ", "").split(","))
-            query["$or"] = [
+        if query_value != "":
+            omim_terms = list(query_value.replace(" ", "").split(","))
+
+            or_options = [
                 {"diagnosis_phenotypes.disease_id": {"$in": omim_terms}},
                 {"diagnosis_phenotypes": {"$in": omim_terms}},
             ]
-            return
 
-        query["$or"] = [
-            {"diagnosis_phenotypes": {"$size": 0}},
-            {"diagnosis_phenotypes": {"$exists": False}},
-        ]
+            self.update_case_query_or_options(query=query, or_options=or_options)
 
-    def _set_synopsis_query(self, query: Dict[str, Any], query_term: str):
-        """Set query to search in the free text synopsis for query_term."""
+    def _set_synopsis_query(self, query: Dict[str, Any], query_value: str):
+        """Set query to search in the free text synopsis for query_value."""
 
-        if query_term != "":
-            query["$text"] = {"$search": re.escape(query_term)}
+        if query_value != "":
+            query["$text"] = {"$search": re.escape(query_value)}
         else:
             query["synopsis"] = ""
 
-    def _populate_name_query(
-        self,
-        query: Dict[str, Any],
-        query_field: str,
-        query_term: str,
-        owner: dict = None,
-        collaborator: dict = None,
+    def update_case_query_or_options(self, query: dict, or_options: List[dict]):
+        """Populates the available options in the query $and field"""
+        if not or_options:
+            return
+        query.setdefault("$or", []).extend(or_options)
+
+    def populate_case_query(
+        self, query: dict, name_query: Union[str, ImmutableMultiDict], owner=None, collaborator=None
     ):
         """Parses and adds query parameters provided by users in cases search filter."""
 
-        if query_field == "case" and query_term != "":
-            self._set_case_name_query(query, query_term)
+        def set_case_item_query(query: dict, query_field: str, query_value: str):
+            # Mapping query fields to their corresponding handling functions
+            handlers = {
+                "case": self._set_case_name_query,
+                "exact_pheno": self._set_case_phenotype_query,
+                "exact_dia": self._set_diagnosis_query,
+                "synopsis": self._set_synopsis_query,
+                "panel": set_panel_query,
+                "status": set_status_query,
+                "tags": set_tags_query,
+                "track": set_track_query,
+                "pheno_group": set_pheno_group_query,
+                "cohort": set_cohort_query,
+                "similar_case": set_similar_case_query,
+                "similar_pheno": set_similar_pheno_query,
+                "pinned": set_pinned_gene_query,
+                "causative": set_causative_gene_query,
+                "user": set_user_query,
+            }
 
-        if query_field == "exact_pheno":
-            self._set_case_phenotype_query(query, query_term)
+            handler = handlers.get(query_field)
+            if handler:
+                handler(query, query_value)
 
-        if query_field == "exact_dia":
-            self._set_diagnosis_query(query, query_term)
+        def set_panel_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update(
+                {"panels": {"$elemMatch": {"panel_name": query_value, "is_default": True}}}
+            )
 
-        if query_field == "synopsis":
-            self._set_synopsis_query(query, query_term)
+        def set_status_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"status": query_value})
 
-        if query_field == "panel":
-            query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
+        def set_tags_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"tags": query_value.lower()})
 
-        if query_field == "status":
-            query["status"] = query_term
+        def set_track_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"track": query_value})
 
-        if query_field == "tags":
-            query["tags"] = query_term.lower()
+        def set_pheno_group_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"phenotype_groups.phenotype_id": query_value})
 
-        if query_field == "track":
-            query["track"] = query_term
+        def set_cohort_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            query.update({"cohorts": query_value})
 
-        if query_field == "pheno_group":
-            if query_term != "":
-                query["phenotype_groups.phenotype_id"] = query_term
-            else:
-                query["$or"] = [
-                    {"phenotype_groups": {"$size": 0}},
-                    {"phenotype_groups": {"$exists": False}},
-                ]
-        if query_field == "cohort":
-            query["cohorts"] = query_term
+        def set_similar_case_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_similar_phenotype_query(
+                query, "similar_case", query_value, owner or collaborator
+            )
 
-        if query_term != "" and query_field in ["similar_case", "similar_pheno"]:
-            self._set_similar_phenotype_query(query, query_field, query_term, owner or collaborator)
+        def set_similar_pheno_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_similar_phenotype_query(
+                query, "similar_pheno", query_value, owner or collaborator
+            )
 
-        if query_term != "" and query_field in ["pinned", "causative"]:
-            self._set_genes_of_interest_query(query, query_field, query_term)
+        def set_pinned_gene_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_genes_of_interest_query(
+                query=query, query_field="pinned", query_value=query_value
+            )
 
-        if query_field == "user":
-            query_terms = query_term.split(" ")
+        def set_causative_gene_query(query: dict, query_value: str):
+            """Updates the query with a certain value."""
+            self._set_genes_of_interest_query(
+                query=query, query_field="causative", query_value=query_value
+            )
+
+        def set_user_query(query: dict, query_value: str):
+            # Handling the 'user' field query separately
+            query_terms = query_value.split(" ")
             user_query = {
                 "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["_id"] for user in users]}
+
+        if isinstance(name_query, str):
+            # Example: status -> Comes from a GET request from dashboard cases
+            query_field, query_value = name_query.split(":", 1)
+            set_case_item_query(
+                query=query, query_field=query_field.strip(), query_value=query_value.strip()
+            )
+        else:
+            # POST request form from more advanced case search from cases page
+            for query_field in [
+                "case",
+                "exact_pheno",
+                "exact_dia",
+                "synopsis",
+                "panel",
+                "status",
+                "tags",
+                "track",
+                "pheno_group",
+                "cohort",
+                "pinned",
+                "causative",
+                "user",
+                "similar_case",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
+                "similar_pheno",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
+            ]:
+                query_value = name_query.get(query_field)
+                if query_value not in ["", None]:
+                    set_case_item_query(
+                        query=query, query_field=query_field, query_value=query_value.strip()
+                    )
 
     def _update_case_id_query(self, query, id_list):
         """Update a case query ["_id"]["$in"] values using an additional list of case _ids
@@ -289,6 +349,7 @@ class CaseHandler(object):
             query["_id"]["$in"] = list(
                 set(preselected_ids).intersection(set(id_list))
             )  # limit also by case _ids present in id_list
+
         else:  # use id_list for filtering
             query["_id"] = {"$in": id_list}
 
@@ -386,14 +447,14 @@ class CaseHandler(object):
             query=query,
             condition=skip_assigned,
             set_key="assignees",
-            set_value={"$exists": False},
+            set_value={EXISTS: False},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=has_causatives,
             set_key="causatives",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
@@ -429,28 +490,28 @@ class CaseHandler(object):
             query=query,
             condition=is_research,
             set_key="is_research",
-            set_value={"$exists": True, "$eq": True},
+            set_value={EXISTS: True, "$eq": True},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=phenotype_terms,
             set_key="phenotype_terms",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=pinned,
             set_key="suspects",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
             query=query,
             condition=cohort,
             set_key="cohorts",
-            set_value={"$exists": True, "$ne": []},
+            set_value={EXISTS: True, "$ne": []},
         )
 
         _conditional_set_query_value(
@@ -465,15 +526,8 @@ class CaseHandler(object):
         )
 
         if name_query:
-            query_field = name_query.split(":")[0]  # example:status
-            query_term = name_query[name_query.index(":") + 1 :].strip()
-            self._populate_name_query(
-                query=query,
-                query_field=query_field,
-                query_term=query_term,
-                owner=owner,
-                collaborator=collaborator,
-            )
+            # Case search filter form query
+            self.populate_case_query(query, name_query, owner, collaborator)
 
         if within_days:
             query["_id"] = {
@@ -502,13 +556,22 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        if name_query and query_field in ["similar_case", "similar_pheno"]:
+        if name_query and self.is_pheno_similarity_query(name_query):
             result_order: list = query["_id"]["$in"]
             results = self.case_collection.find(query, projection)
             # Return the result in order of descending phenotype similarity (the same order or the _ids provided in the query)
             return sorted(list(results), key=lambda res: result_order.index(res["_id"]))
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
+
+    def is_pheno_similarity_query(self, name_query: Union[str, ImmutableMultiDict]) -> bool:
+        """Return True if the user query contains 'similar_case' or 'similar_pheno' fields."""
+        similar_pheno_keys = ["similar_case", "similar_pheno"]
+
+        if isinstance(name_query, str):
+            return any(key in name_query for key in similar_pheno_keys)
+
+        return any(name_query.get(key) not in [None, ""] for key in similar_pheno_keys)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
@@ -519,7 +582,7 @@ class CaseHandler(object):
         Returns:
             list of case _ids
         """
-        EXISTS_NOT_NULL = {"$exists": True, "$nin": [None, ""]}
+        EXISTS_NOT_NULL = {EXISTS: True, "$nin": [None, ""]}
         query = {
             "owner": owner,
             "$or": [
