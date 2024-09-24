@@ -556,9 +556,7 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        LOG.error(query)
         if name_query and self.is_pheno_similarity_query(name_query):
-            LOG.warning("HELLO BITCHES")
             result_order: list = query["_id"]["$in"]
             results = self.case_collection.find(query, projection)
             # Return the result in order of descending phenotype similarity (the same order or the _ids provided in the query)
