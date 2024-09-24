@@ -22,50 +22,133 @@
 
 
 {% macro search_form() %}
-<form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
-    <div class="row d-flex align-items-end">
-      <div class="col-3">
-        {{ form.search_type.label(class="control-label") }}
-        {{ form.search_type(class="form-control") }}
-      </div>
-      <div class="col-3">
-          <label class="control-label" for="search_term">Search cases</label>
-          <input class="form-control" id="search_term" name="search_term" value="{{form.search_term.data if form.search_term.data}}" placeholder="example:18201" type="text" pattern="[^\\\<\>\?\!\=\/]*" title="Characters \<>?!=/ are not allowed">
-      </div>
-      <div class="col-1">
-        {{ form.search(class="btn btn-primary form-control") }}
-      </div>
-      <div class="col-1">
-        {{ form.search_limit.label(class="control-label") }}
-        {{ form.search_limit(class="form-control") }}
-      </div>
 
-      <div class="col-2">
-        <div class="form-check">
-          {{ form.skip_assigned(class="form-check-input") }}
-          {{ form.skip_assigned.label(class="form-check-label") }}
+<!-- Collect advanced search key/values -->
+{% set search = {} %}
+{% for field in form._fields %}
+  {% if field not in ["search", "csrf_token", "advanced_search"] and form._fields[field].data %}
+    {% do search.update({field: form._fields[field].data}) %}
+  {% endif %}
+{% endfor %}
+
+<form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="POST" accept-charset="utf-8">
+    {{ form.hidden_tag() }}
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            {{ form.case.label(class="form-label") }}
+            {{ form.case(class="form-control", placeholder="example:18201", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
         </div>
-        <div class="form-check">
-          {{ form.is_research(class="form-check-input") }}
-          {{ form.is_research.label(class="form-check-label") }}
+        <div class="col-md-1 mb-3">
+            {{ form.search_limit.label(class="form-label") }}
+            {{ form.search_limit(class="form-control") }}
         </div>
-        <div class="form-check">
-          {{ form.has_rna(class="form-check-input") }}
-          {{ form.has_rna.label(class="form-check-label") }}
+        <div class="d-grid btn-sm mb-3 col-md-2 mx-auto">
+          {{ form.search(class="btn btn-lg btn-primary mt-4") }}
         </div>
-      </div>
-      <div class="col-2">
-        <div class="form-check">
-          {{ form.clinvar_submitted(class="form-check-input") }}
-          {{ form.clinvar_submitted.label(class="form-check-label") }}
+        <div class="d-grid btn-sm mb-3 col-md-2 mx-auto">
+          <a href="{{ url_for('overview.cases', institute_id=institute._id) }}" class="btn btn-lg btn-secondary mt-4 text-white" role="button">Reset search</a>
         </div>
-        <div class="form-check">
-          {{ form.validation_ordered(class="form-check-input") }}
-          {{ form.validation_ordered.label(class="form-check-label") }}
+        <div class="col-md-3 mb-3 form-check align-self-center mt-3 ms-3" data-bs-toggle="tooltip" title="Using multiple search criteria will narrow down your results as returned cases will contain all your searched conditions.">
+          {{ form.advanced_search(class="form-check-input") }}
+          {{ form.advanced_search.label(class="form-check-label") }}
         </div>
-      </div>
     </div>
+    <div class="row">
+        <div class="col-md-2 mb-3 form-check ms-3">
+            {{ form.skip_assigned(class="form-check-input") }}
+            {{ form.skip_assigned.label(class="form-check-label") }}
+        </div>
+        <div class="col-md-2 mb-3 form-check">
+            {{ form.is_research(class="form-check-input") }}
+            {{ form.is_research.label(class="form-check-label") }}
+        </div>
+        <div class="col-md-2 mb-3 form-check">
+            {{ form.clinvar_submitted(class="form-check-input") }}
+            {{ form.clinvar_submitted.label(class="form-check-label") }}
+        </div>
+        <div class="col-md-2 mb-3 form-check">
+            {{ form.has_rna(class="form-check-input") }}
+            {{ form.has_rna.label(class="form-check-label") }}
+        </div>
+        <div class="col-md-2 mb-3 form-check">
+            {{ form.validation_ordered(class="form-check-input") }}
+            {{ form.validation_ordered.label(class="form-check-label") }}
+        </div>
+    </div>
+    <!-- This div contains the advances search options -->
+    <div id="advancesSearchOptions">
+      <div class="row">
+          <div class="col-md-4 mb-3">
+              {{ form.exact_pheno.label(class="form-label") }}
+              {{ form.exact_pheno(class="form-control", placeholder="example:HP:0001298, HP:0001250,..", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.exact_dia.label(class="form-label") }}
+              {{ form.exact_dia(class="form-control", placeholder="example:OMIM:125310, ORPHA:585,..", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-4 mb-3">
+              {{ form.synopsis.label(class="form-label") }}
+              {{ form.synopsis(class="form-control", placeholder="example:epilepsy", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.panel.label(class="form-label") }}
+              {{ form.panel(class="form-control", placeholder="example:NMD", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.status.label(class="form-label") }}
+              {{ form.status(class="form-control", placeholder="example:active", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-4 mb-3">
+              {{ form.tags.label(class="form-label") }}
+              {{ form.tags(class="form-control", placeholder="example:medical", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.track.label(class="form-label") }}
+              {{ form.track(class="form-control", placeholder="rare or cancer", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.pheno_group.label(class="form-label") }}
+              {{ form.pheno_group(class="form-control", placeholder="example:HP:0001166", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-4 mb-3">
+              {{ form.cohort.label(class="form-label") }}
+              {{ form.cohort(class="form-control", placeholder="example:pedhep", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.similar_case.label(class="form-label") }}
+              {{ form.similar_case(class="form-control", placeholder="example:18201", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.similar_pheno.label(class="form-label") }}
+              {{ form.similar_pheno(class="form-control", placeholder="example:HP:0001298, HP:0001250,..", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-4 mb-3">
+              {{ form.pinned.label(class="form-label") }}
+              {{ form.pinned(class="form-control", placeholder="example:POT1", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.causative.label(class="form-label") }}
+              {{ form.causative(class="form-control", placeholder="example:POT1", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+          <div class="col-md-4 mb-3">
+              {{ form.user.label(class="form-label") }}
+              {{ form.user(class="form-control", placeholder="John Doe", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
+          </div>
+      </div>
+    </div> <!--End of advancedSearchOptions div -->
   </form>
+<div>
+  <span class="text-muted">The following search criteria were used: {{search}}</span>
+</div>
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
@@ -286,16 +369,24 @@
   {{ super() }}
   <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
   <script>
-  var caseSearchTerms = {{ search_terms|safe }};
-  var searchTerm = document.getElementById('search_term'); // Case search term label
-  var sel = document.getElementById('search_type'); // Case search term select
-  document.getElementById("search_type").onchange = function() {
-    // Change case search term placeholder
-    selectedKey = sel.options[sel.selectedIndex].value.slice(0, -1);
-    searchTerm.placeholder=caseSearchTerms[selectedKey]["placeholder"];
-    // Reset search
-    searchTerm.value="";
-  };
+
+  // Show/hide advanced search options
+  let advSearchBlock = $('#advancesSearchOptions');
+
+  let advBlockCheckbox = $('#advanced_search');
+
+  window.onload = function(){
+    if(!advBlockCheckbox.is(':checked'))
+    advSearchBlock.hide();
+  }
+
+  advBlockCheckbox.on('click', function() {
+    if($(this).is(':checked')) {
+      advSearchBlock.show();
+    } else {
+      advSearchBlock.hide();
+    }
+  })
 
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
