@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - String pattern escape warnings
 - Code creating Alamut links for variant genes without canonical_transcript set
 - Variant delete button in ClinVar submissions page
+- Broken search cases by case similarity
 
 ## [4.88.1]
 ### Fixed
