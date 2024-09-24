@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Mean MT coverage`, `Mean chrom 14 coverage` and `Estimated mtDNA copy number` on MT coverage file from chanjo2 if available
 - In ClinVar multistep form, preselect ACMG criteria according to the variant's ACMG classification, if available
 - Subject id search from caseS page (supporting multiple sample types e.g.) - adding indexes to speed up caseS queries
+- Coverage report available also for cases with d4 files and no associated gene panels
 ### Changed
 - Documentation for OMICS variants and updating a case
 - Include both creation and deletion dates in gene panels pages
@@ -22,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case general report no longer shows ORPHA inheritance models. OMIM models are shown colored.
 - Chromosome alias tab files used in the igv.js browser, which now contain the alias for chromosome "M"
 - Renamed "Comment on clinical significance" to "Comment on classification" in ClinVar multistep form
-- Enable Gens CN button also for non-wgs cancer track cases
+- Enable Gens CN button also for non-wgs cancer track case
 ### Fixed
 - Broken heading anchors in the documentation (`admin-guide/login-system.md` and `admin-guide/setup-scout.md` files)
 - Avoid open login redirect attacks by always redirecting to cases page upon user login
