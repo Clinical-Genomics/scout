@@ -79,6 +79,7 @@ from .phenotype import (
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .so_terms import SEVERE_SO_TERMS, SEVERE_SO_TERMS_SV, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
+    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CONSEQUENCE,
@@ -181,55 +182,6 @@ PAR_COORDINATES = {
     },
 }
 
-CALLERS = {
-    "snv": [
-        {"id": "bcftools", "name": "Bcftools"},
-        {"id": "deepvariant", "name": "DeepVariant"},
-        {"id": "freebayes", "name": "Freebayes"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "samtools", "name": "SAMtools"},
-    ],
-    "cancer": [
-        {"id": "freebayes", "name": "Freebayes"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "mutect", "name": "MuTect"},
-        {"id": "pindel", "name": "Pindel"},
-        {"id": "tnscope", "name": "TNScope"},
-        {"id": "tnscope_umi", "name": "TNscope_UMI"},
-        {"id": "vardict", "name": "VarDict"},
-    ],
-    "cancer_sv": [
-        {"id": "ascat", "name": "ASCAT"},
-        {"id": "cnvkit", "name": "CNVkit"},
-        {"id": "dellysv", "name": "DellySV"},
-        {"id": "dellycnv", "name": "DellyCNV"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "igh_dux4", "name": "IGH-DUX4 detection"},
-        {"id": "manta", "name": "Manta"},
-        {"id": "tiddit", "name": "TIDDIT"},
-    ],
-    "mei": [{"id": "retroseq", "name": "RetroSeq"}],
-    "sv": [
-        {"id": "cnvnator", "name": "CNVnator"},
-        {"id": "cnvpytor", "name": "CNVpytor"},
-        {"id": "delly", "name": "Delly"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "hificnv", "name": "HiFiCNV"},
-        {"id": "manta", "name": "Manta"},
-        {"id": "severus", "name": "Severus"},
-        {"id": "sniffles", "name": "Sniffles"},
-        {"id": "tiddit", "name": "TIDDIT"},
-    ],
-    "str": [
-        {"id": "expansionhunter", "name": "ExpansionHunter"},
-        {"id": "trgt", "name": "TRGT"},
-    ],
-    "fusion": [
-        {"id": "arriba", "name": "Arriba"},
-        {"id": "fusioncatcher", "name": "FusionCatcher"},
-        {"id": "starfusion", "name": "STARfusion"},
-    ],
-}
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
 CHR_PATTERN = re.compile(r"(chr)?(.*)", re.IGNORECASE)
