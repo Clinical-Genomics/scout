@@ -38,7 +38,7 @@ class CaseHandler(object):
         set_1 = set()
         if len(phenotype_terms) == 0:
             LOG.warning("No phenotype terms provided, please provide ar least one HPO term")
-            return None
+            return []
         # Add all ancestors of all terms
         for term in phenotype_terms:
             hpo_term = self.hpo_term(term)
@@ -86,37 +86,32 @@ class CaseHandler(object):
             institute_id(str): institute to search cases for
         """
         hpo_terms = []
-        order = None
         CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
+
         if query_field == "similar_case":
-            case_obj = self.case(
-                display_name=query_term,
-                institute_id=institute_id,
-                projection=CASE_SIMILAR_PROJECTION,
-            )
+            temp_query_or = {
+                "$or": [
+                    {"display_name": query_term},
+                    {"individuals.display_name": query_term},
+                    {"individuals.subject_id": query_term},
+                    {"_id": query_term},
+                ]
+            }
+            temp_query = {"$and": [{"owner": institute_id}, temp_query_or]}
+            case_obj = self.case_collection.find_one(temp_query, CASE_SIMILAR_PROJECTION)
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
                 return
 
             for term in case_obj.get("phenotype_terms", []):
                 hpo_terms.append(term.get("phenotype_id"))
+
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
         else:  # similar HPO terms
             hpo_terms = list(query_term.replace(" ", "").split(","))
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
 
-        if len(similar_cases) == 0:  # No cases similar to given phenotype
-            query["_id"] = {"$in": []}  # No result should be returned by query
-            return
-
-        similar_case_ids = []
-        order = []
-        for i in similar_cases:
-            similar_case_ids.append(i[0])
-            order.append(i[1])
-        query["_id"] = {"$in": similar_case_ids}
-
-        return order
+        query["_id"] = {"$in": [similar_case[0] for similar_case in similar_cases]}
 
     def _set_genes_of_interest_query(
         self, query: Dict[str, Any], query_field: str, query_term: str
@@ -223,18 +218,15 @@ class CaseHandler(object):
         else:
             query["synopsis"] = ""
 
-    def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
-        """Parses and adds query parameters provided by users in cases search filter.
-
-        Args:
-            query(dict): cases search query
-            name_query(dict): args provided by users in cases filter search
-            owner(dict): an institute id
-            collaborator(dict): an institute id
-        """
-        order = None
-        query_field = name_query.split(":")[0]  # example:status
-        query_term = name_query[name_query.index(":") + 1 :].strip()
+    def _populate_name_query(
+        self,
+        query: Dict[str, Any],
+        query_field: str,
+        query_term: str,
+        owner: dict = None,
+        collaborator: dict = None,
+    ):
+        """Parses and adds query parameters provided by users in cases search filter."""
 
         if query_field == "case" and query_term != "":
             self._set_case_name_query(query, query_term)
@@ -272,9 +264,7 @@ class CaseHandler(object):
             query["cohorts"] = query_term
 
         if query_term != "" and query_field in ["similar_case", "similar_pheno"]:
-            order = self._set_similar_phenotype_query(
-                query, query_field, query_term, owner or collaborator
-            )
+            self._set_similar_phenotype_query(query, query_field, query_term, owner or collaborator)
 
         if query_term != "" and query_field in ["pinned", "causative"]:
             self._set_genes_of_interest_query(query, query_field, query_term)
@@ -286,8 +276,6 @@ class CaseHandler(object):
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["_id"] for user in users]}
-
-        return order
 
     def _update_case_id_query(self, query, id_list):
         """Update a case query ["_id"]["$in"] values using an additional list of case _ids
@@ -381,7 +369,6 @@ class CaseHandler(object):
                 query[set_key] = set_value
 
         query = query or {}
-        order = None
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None
@@ -478,8 +465,15 @@ class CaseHandler(object):
         )
 
         if name_query:
-            # Case search filter form query
-            order = self._populate_name_query(query, name_query, owner, collaborator)
+            query_field = name_query.split(":")[0]  # example:status
+            query_term = name_query[name_query.index(":") + 1 :].strip()
+            self._populate_name_query(
+                query=query,
+                query_field=query_field,
+                query_term=query_term,
+                owner=owner,
+                collaborator=collaborator,
+            )
 
         if within_days:
             query["_id"] = {
@@ -508,8 +502,11 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        if order:
-            return self.case_collection.find(query, projection)
+        if name_query and query_field in ["similar_case", "similar_pheno"]:
+            result_order: list = query["_id"]["$in"]
+            results = self.case_collection.find(query, projection)
+            # Return the result in order of descending phenotype similarity (the same order or the _ids provided in the query)
+            return sorted(list(results), key=lambda res: result_order.index(res["_id"]))
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
