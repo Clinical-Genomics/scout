@@ -107,20 +107,6 @@
       </div>
     {% endif %}
 
-    <!-- Delivery reports for old analyses -->
-    {% if case.analyses %}
-      {% for analysis in case.analyses %}
-        {% if analysis.delivery_report %}
-          {{ analysis_report( institute._id, case, analysis ) }}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-
-    <!-- Custom case reports as in constants.CUSTOM_CASE_REPORTS -->
-    {% for _, report_data in report_types.items() %}
-      {{ custom_case_report(institute, case, report_data) }}
-    {% endfor %}
-
     <!-- Display mtDNA report for non-cancer cases -->
     {% if case.mtdna_report %}
     <div href="#" class="bg-dark list-group-item text-white">
@@ -135,6 +121,19 @@
     </div>
     {% endif %}
 
+    <!-- Delivery reports for old analyses -->
+    {% if case.analyses %}
+      {% for analysis in case.analyses %}
+        {% if analysis.delivery_report %}
+          {{ analysis_report( institute._id, case, analysis ) }}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    <!-- Custom case reports as in constants.CUSTOM_CASE_REPORTS -->
+    {% for _, report_data in report_types.items() %}
+      {{ custom_case_report(institute, case, report_data) }}
+    {% endfor %}
 </div>
 <!-- end reports macro -->
 {% endmacro %}
