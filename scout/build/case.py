@@ -289,6 +289,7 @@ def build_case(case_data, adapter):
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["omics_files"] = case_data.get("omics_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
+    case_obj["rna_delivery_report"] = case_data.get("rna_delivery_report")
 
     _populate_pipeline_info(case_obj, case_data)
 

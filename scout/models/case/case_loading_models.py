@@ -58,6 +58,7 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_inspector_research",
     "RNAfusion_report",
     "RNAfusion_report_research",
+    "rna_delivery_report",
 ]
 
 VCF_FILE_PATH_CHECKS = FILE_TYPE_MAP.keys()
@@ -431,6 +432,7 @@ class CaseLoader(BaseModel):
     RNAfusion_inspector_research: Optional[str] = None
     RNAfusion_report: Optional[str] = None
     RNAfusion_report_research: Optional[str] = None
+    rna_delivery_report: Optional[str] = None
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Optional[Union[List[str], str]] = None
