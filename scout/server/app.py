@@ -2,6 +2,7 @@
 
 import logging
 import os
+import re
 from datetime import timedelta
 from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
@@ -252,6 +253,14 @@ def register_filters(app):
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId
+
+    @app.template_filter()
+    def upper_na(string):
+        """
+        Uppercase ocurences of "dna" and "rna" for nice display.
+        """
+
+        return re.sub(r"[Dd][Nn][Aa]", r"DNA", re.sub(r"[Rr][Nn][Aa]", r"RNA", string))
 
     @app.template_filter()
     def count_cursor(pymongo_cursor):

@@ -1082,6 +1082,7 @@ class CaseHandler(object):
             - RNAfusion_inspector_research: path to the research RNA fusion inspector report
             - RNAfusion_report: path to the RNA fusion report
             - RNAfusion_report_research: path to the research RNA fusion report
+            - rna_delivery_report: path to the RNA delivery report
             - smn_tsv: path to static SMN TSV file
             - status: case status
             - sv_rank_model_version: If there is a new sv rank model
@@ -1155,6 +1156,7 @@ class CaseHandler(object):
                 "RNAfusion_inspector_research": case_obj.get("RNAfusion_inspector_research"),
                 "RNAfusion_report": case_obj.get("RNAfusion_report"),
                 "RNAfusion_report_research": case_obj.get("RNAfusion_report_research"),
+                "rna_delivery_report": case_obj.get("rna_delivery_report"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
@@ -1203,6 +1205,7 @@ class CaseHandler(object):
             "RNAfusion_inspector_research",
             "RNAfusion_report",
             "RNAfusion_report_research",
+            "rna_delivery_report",
             "smn_tsv",
             "sv_rank_model_version",
         ]:
