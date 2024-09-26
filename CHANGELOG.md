@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.89]
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
