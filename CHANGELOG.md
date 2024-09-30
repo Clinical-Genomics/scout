@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- coloring on inheritance patterns on general case report
+
 ## [4.89]
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
