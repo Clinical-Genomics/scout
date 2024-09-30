@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- coloring on inheritance patterns on general case report
+- Coloring and SV inheritance patterns on general case report
 
 ## [4.89]
 ### Added
