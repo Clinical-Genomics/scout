@@ -424,6 +424,19 @@ def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
                 break
 
         if hgnc_id_info:
-            yield {"hgnc_id": hgnc_id_info["true"], "hgnc_symbol": hgnc_symbol}
+            if hgnc_id_info["true"]:
+                hgnc_id = hgnc_id_info["true"]
+            elif hgnc_id_info["ids"] and len(hgnc_id_info["ids"]) == 1:
+                hgnc_id = list(hgnc_id_info["ids"])[0]
+                LOG.warning(
+                    "Gene symbol %s does not exist: using an apparently unique alias for hgnc_id %s",
+                    hgnc_symbol,
+                    hgnc_id,
+                )
+            else:
+                LOG.warning(
+                    "Gene symbol %s does not exist, and as an alias it is not unique", hgnc_symbol
+                )
+            yield {"hgnc_id": hgnc_id, "hgnc_symbol": hgnc_symbol}
         else:
             LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
