@@ -42,6 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code creating Alamut links for variant genes without canonical_transcript set
 - Variant delete button in ClinVar submissions page
 - Broken search cases by case similarity
+- Gene alias missing true gene ID when symbol is outdated
 
 ## [4.88.1]
 ### Fixed

@@ -347,15 +347,13 @@ class GeneHandler(object):
 
         for gene in genes:
             hgnc_id = gene["hgnc_id"]
-            hgnc_symbol = gene["hgnc_symbol"]
 
             for alias in gene["aliases"]:
                 if alias not in alias_genes:
                     alias_genes[alias] = {"true": None, "ids": set()}
 
                 alias_genes[alias]["ids"].add(hgnc_id)
-                if alias == hgnc_symbol:
-                    alias_genes[alias]["true"] = hgnc_id
+                alias_genes[alias]["true"] = hgnc_id
 
         return alias_genes
 
