@@ -1264,7 +1264,7 @@
             {{ variant.str_inheritance_mode if variant.str_inheritance_mode else "-" }}
           </td>
           <td>
-            {% if variant.str_source.display %}
+            {% if variant.str_source and variant.str_source.display %}
               <a style="text-decoration:none;" href="{{variant.str_source_link}}" target="_blank" rel="noopener noreferrer">{{ variant.str_source.display }} </a>
             {% else %}
               "-"
