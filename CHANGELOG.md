@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Gene alias missing true HGNC ID when symbol is outdated
 
 ## [4.89.1]
 ### Fixed
@@ -42,7 +45,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code creating Alamut links for variant genes without canonical_transcript set
 - Variant delete button in ClinVar submissions page
 - Broken search cases by case similarity
-- Gene alias missing true gene ID when symbol is outdated
 
 ## [4.88.1]
 ### Fixed
