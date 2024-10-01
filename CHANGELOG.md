@@ -7,7 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ##[unreleased]
 ### Fixed
-- general case report crash when encountering STR variants without "source" tags
+- General case report crash when encountering STR variants without "source" tags
+- Coloring and SV inheritance patterns on general case report
+
 
 ## [4.89]
 ### Added
