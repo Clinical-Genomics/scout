@@ -4,9 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.89.2]
 ## Fixed
-- If OMIM gene panel gene symbols are not uniquely mapping to hgnc_id, allow fallback use of a unique gene alias
+- If OMIM gene panel gene symbols are not mapping to hgnc_id, allow fallback use of a unique gene alias
 
 ## [4.89.1]
 ### Fixed
