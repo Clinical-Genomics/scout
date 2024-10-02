@@ -335,7 +335,7 @@ class GeneHandler(object):
         Returns:
             alias_genes(dict): {<hgnc_alias>: {'true': <hgnc_id>, 'ids': {<hgnc_id_1>, <hgnc_id_2>, ...}}}
         """
-        LOG.debug("Fetching all genes by alias")
+
         # Collect one entry for each alias symbol that exists
         alias_genes = {}
 
