@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from scout.constants import (
     INCOMPLETE_PENETRANCE_MAP,
@@ -383,7 +383,7 @@ def parse_panel_app_panel(
     return gene_panel
 
 
-def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
+def get_omim_panel_genes(genemap2_lines: list, mim2gene_lines: list, alias_genes: dict):
     """Return all genes that should be included in the OMIM-AUTO panel
     Return the hgnc symbols
 
