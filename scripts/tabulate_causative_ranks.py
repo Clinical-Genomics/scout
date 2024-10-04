@@ -73,8 +73,7 @@ def tabulate_causative_panel_rank(
     mongo_config["password"] = password or cli_config.get("password")
     mongo_config["authdb"] = authdb or cli_config.get("authdb") or mongo_config["mongodb"]
     mongo_config["omim_api_key"] = cli_config.get("omim_api_key")
-
-    mongo_config["uri"] = uri or cli_config.get("uri") or mongo_config["uri"]
+    mongo_config["uri"] = uri or cli_config.get("mongo_uri")
 
     LOG.info("Setting database name to %s", mongo_config["mongodb"])
     LOG.debug("Setting host to %s", mongo_config["host"])
