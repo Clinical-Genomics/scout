@@ -88,6 +88,8 @@ def tabulate_causative_panel_rank(
 
     # causative, rank, RANK IN DEFAULT PANEL, rankscore, model version, date, inheritance models, ACMG
 
+    click.echo(f"Case\tDate\tCategory\tVer\tRank score\tRank\tClin rank")
+
     causatives = []
 
     for institute_obj in adapter.institutes():
@@ -129,8 +131,7 @@ def tabulate_causative_panel_rank(
 
             query = clinical_filter_dict
             query["rank_score"] = variant_obj["rank_score"]
-            click.echo(query)
-            result_size = adapter.count_variants(
+            count_higher_gte_rank_score_with_clinical_filter = adapter.count_variants(
                 variant_obj["case_id"],
                 query,
                 None,
@@ -151,8 +152,14 @@ def tabulate_causative_panel_rank(
             }
 
             causatives.append(variant_obj)
+            rank_model_version = case_obj.get("rank_model_version")
+            if variant_obj["category"] == "sv":
+                rank_model_version = f"{case_obj.get('sv_rank_model_version')}"
+
+            analysis_date = case_obj.get("analysis_date")
+
             click.echo(
-                f"{variant_obj['case_obj']['display_name']}\t{variant_obj['variant_rank']}\t{result_size}"
+                f"{variant_obj['case_obj']['display_name']}\t{analysis_date}\t{variant_obj['category']}\t{rank_model_version}\t{variant_obj['rank_score']}\t{variant_obj['variant_rank']}\t{count_higher_gte_rank_score_with_clinical_filter}"
             )
 
 
