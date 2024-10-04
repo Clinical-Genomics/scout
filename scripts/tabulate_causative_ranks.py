@@ -91,7 +91,7 @@ def tabulate_causative_panel_rank(
 
     # causative, rank, RANK IN DEFAULT PANEL, rankscore, model version, date, inheritance models, ACMG
 
-    click.echo(f"Case\tDate\tCategory\tVer\tRank score\tRank\tClin rank")
+    click.echo(f"Case\tDate\tCategory\tVer\tRank score\tRank\tClin rank\tBest rank")
 
     causatives = []
 
@@ -141,7 +141,7 @@ def tabulate_causative_panel_rank(
                 category=variant_obj["category"],
                 build="37",
             )
-            best_rank = variant_obj["rank_score"]
+            best_rank = variant_obj["variant_rank"]
             if count_higher_gte_rank_score_with_clinical_filter == 0:
                 count_higher_gte_rank_score_with_clinical_filter = "NA"
             else:
