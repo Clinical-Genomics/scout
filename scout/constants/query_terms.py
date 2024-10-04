@@ -61,4 +61,5 @@ SECONDARY_CRITERIA = [
     "junction_reads",
     "split_reads",
     "fusion_caller",
+    "rank_score",
 ]

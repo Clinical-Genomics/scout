@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Variants query backend allows rank_score filtering
+- Added script to tabulate causatives clinical filter rank
+
+## [4.89.2]
 ## Fixed
 - If OMIM gene panel gene symbols are not uniquely mapping to hgnc_id, allow fallback use of a unique gene alias
 

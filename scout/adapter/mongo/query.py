@@ -691,6 +691,15 @@ class QueryHandler(object):
 
                 mongo_secondary_query.append(revel_query)
 
+            if criterion == "rank_score":
+                rank_score_query = {
+                    "$or": [
+                        {"rank_score": {"$gte": float(query["rank_score"])}},
+                        {"rank_score": {"$exists": False}},
+                    ]
+                }
+                mongo_secondary_query.append(rank_score_query)
+
             if criterion == "cadd_score":
                 cadd = query["cadd_score"]
                 cadd_query = {"cadd_score": {"$gt": float(cadd)}}
