@@ -91,7 +91,7 @@ def tabulate_causative_panel_rank(
 
     # causative, rank, RANK IN DEFAULT PANEL, rankscore, model version, date, inheritance models, ACMG
 
-    click.echo(f"Case\tDate\tCategory\tVer\tRank score\tRank\tClin rank\tBest rank")
+    click.echo(f"Case\tDate\tCategory\tPanels\tVer\tRank score\tRank\tClin rank\tBest rank")
 
     causatives = []
 
@@ -167,7 +167,7 @@ def tabulate_causative_panel_rank(
             analysis_date = case_obj.get("analysis_date")
 
             click.echo(
-                f"{variant_obj['case_obj']['display_name']}\t{analysis_date}\t{variant_obj['category']}\t{rank_model_version}\t{variant_obj['rank_score']}\t{variant_obj['variant_rank']}\t{count_higher_gte_rank_score_with_clinical_filter}\t{best_rank}"
+                f"{variant_obj['case_obj']['display_name']}\t{analysis_date}\t{clinical_filter_panels}\t{variant_obj['category']}\t{rank_model_version}\t{variant_obj['rank_score']}\t{variant_obj['variant_rank']}\t{count_higher_gte_rank_score_with_clinical_filter}\t{best_rank}"
             )
 
 
