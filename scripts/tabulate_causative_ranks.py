@@ -141,6 +141,11 @@ def tabulate_causative_panel_rank(
                 category=variant_obj["category"],
                 build="37",
             )
+            best_rank = variant_obj["rank_score"]
+            if count_higher_gte_rank_score_with_clinical_filter == 0:
+                count_higher_gte_rank_score_with_clinical_filter = "NA"
+            else:
+                best_rank = min(best_rank, count_higher_gte_rank_score_with_clinical_filter)
 
             # decorate variant
             variant_genes = variant_obj.get("genes", [])
@@ -162,7 +167,7 @@ def tabulate_causative_panel_rank(
             analysis_date = case_obj.get("analysis_date")
 
             click.echo(
-                f"{variant_obj['case_obj']['display_name']}\t{analysis_date}\t{variant_obj['category']}\t{rank_model_version}\t{variant_obj['rank_score']}\t{variant_obj['variant_rank']}\t{count_higher_gte_rank_score_with_clinical_filter}"
+                f"{variant_obj['case_obj']['display_name']}\t{analysis_date}\t{variant_obj['category']}\t{rank_model_version}\t{variant_obj['rank_score']}\t{variant_obj['variant_rank']}\t{count_higher_gte_rank_score_with_clinical_filter}\t{best_rank}"
             )
 
 
