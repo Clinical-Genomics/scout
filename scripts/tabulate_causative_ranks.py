@@ -40,6 +40,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
+@click.option("--uri")
 @click.option(
     "-c",
     "--config",
@@ -49,7 +50,7 @@ LOG = logging.getLogger(__name__)
 @click.version_option(__version__)
 @click.pass_context
 def tabulate_causative_panel_rank(
-    context, mongodb, username, password, authdb, host, port, loglevel, config
+    context, mongodb, username, password, authdb, host, port, loglevel, config, uri
 ):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
@@ -73,9 +74,12 @@ def tabulate_causative_panel_rank(
     mongo_config["authdb"] = authdb or cli_config.get("authdb") or mongo_config["mongodb"]
     mongo_config["omim_api_key"] = cli_config.get("omim_api_key")
 
+    mongo_config["uri"] = uri or cli_config.get("uri") or mongo_config["uri"]
+
     LOG.info("Setting database name to %s", mongo_config["mongodb"])
     LOG.debug("Setting host to %s", mongo_config["host"])
     LOG.debug("Setting port to %s", mongo_config["port"])
+    LOG.debug("Setting uri to %s", mongo_config["uri"])
 
     # Connection validity will be checked in adapter.client
     client = get_connection(**mongo_config)
