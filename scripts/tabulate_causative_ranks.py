@@ -95,8 +95,11 @@ def tabulate_causative_panel_rank(
 
     causatives = []
 
-    for institute_obj in adapter.institutes():
-        for variant_obj in adapter.institute_causatives(institute_obj=institute_obj):
+    institutes = list(adapter.institutes())
+
+    for institute_obj in institutes:
+        inst_causatives = list(adapter.institute_causatives(institute_obj=institute_obj))
+        for variant_obj in inst_causatives:
 
             if variant_obj["category"] not in ["sv", "snv"]:
                 continue
