@@ -107,21 +107,21 @@
       {% if case and case.chanjo2_coverage and panel.genes %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report (chanjo2)</label>
-          <span class="float-end">
+          <span class="float-end" style="cursor: pointer;">
           {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'report', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 report-->
           </span>
         </li>
         <li class="list-group-item">
           <label for="coverage_report">Coverage overview (chanjo2)</label>
-          <span class="float-end">
+          <span class="float-end" style="cursor: pointer;">
           {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'overview', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 genes overview -->
           </span>
         </li>
         {% if "38" in case.genome_build %}
           <li class="list-group-item">
           <label for="coverage_report">MANE coverage overview (chanjo2)</label>
-          <span class="float-end">
-          {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'mane_overview', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 genes overview -->
+          <span class="float-end" style="cursor: pointer;">
+          {{ chanjo2_report_form(panel.institute, case, panel.name_and_version, 'mane_overview', panel.genes|map(attribute='hgnc_id')|join(','), case.display_name) }} <!--chanjo2 MANE overview -->
           </span>
         </li>
         {% endif %}
