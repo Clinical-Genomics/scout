@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- IGV buttons for SMN CN page
 ### Changed
 - Variants query backend allows rank_score filtering
 - Added script to tabulate causatives clinical filter rank

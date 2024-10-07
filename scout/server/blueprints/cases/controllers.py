@@ -282,6 +282,8 @@ def sma_case(store, institute_obj, case_obj):
 
     _populate_case_individuals(case_obj)
 
+    case_has_alignments(case_obj)
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
