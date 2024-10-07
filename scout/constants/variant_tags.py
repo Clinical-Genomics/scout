@@ -523,3 +523,58 @@ VARIANTS_TARGET_FROM_CATEGORY = {
     "fusion": "variants.fusion_variants",
     "outlier": "omics_variants.outliers",
 }
+
+_FREEBAYES = {"id": "freebayes", "name": "Freebayes"}
+_GATK = {"id": "gatk", "name": "GATK"}
+_MANTA = {"id": "manta", "name": "Manta"}
+_TIDDIT = {"id": "tiddit", "name": "TIDDIT"}
+
+CALLERS = {
+    "snv": [
+        {"id": "bcftools", "name": "Bcftools"},
+        {"id": "deepvariant", "name": "DeepVariant"},
+        _FREEBAYES,
+        _GATK,
+        {"id": "samtools", "name": "SAMtools"},
+    ],
+    "cancer": [
+        _FREEBAYES,
+        _GATK,
+        {"id": "mutect", "name": "MuTect"},
+        {"id": "pindel", "name": "Pindel"},
+        {"id": "tnscope", "name": "TNScope"},
+        {"id": "tnscope_umi", "name": "TNscope_UMI"},
+        {"id": "vardict", "name": "VarDict"},
+    ],
+    "cancer_sv": [
+        {"id": "ascat", "name": "ASCAT"},
+        {"id": "cnvkit", "name": "CNVkit"},
+        {"id": "dellysv", "name": "DellySV"},
+        {"id": "dellycnv", "name": "DellyCNV"},
+        _GATK,
+        {"id": "igh_dux4", "name": "IGH-DUX4 detection"},
+        _MANTA,
+        _TIDDIT,
+    ],
+    "mei": [{"id": "retroseq", "name": "RetroSeq"}],
+    "sv": [
+        {"id": "cnvnator", "name": "CNVnator"},
+        {"id": "cnvpytor", "name": "CNVpytor"},
+        {"id": "delly", "name": "Delly"},
+        _GATK,
+        {"id": "hificnv", "name": "HiFiCNV"},
+        _MANTA,
+        {"id": "severus", "name": "Severus"},
+        {"id": "sniffles", "name": "Sniffles"},
+        _TIDDIT,
+    ],
+    "str": [
+        {"id": "expansionhunter", "name": "ExpansionHunter"},
+        {"id": "trgt", "name": "TRGT"},
+    ],
+    "fusion": [
+        {"id": "arriba", "name": "Arriba"},
+        {"id": "fusioncatcher", "name": "FusionCatcher"},
+        {"id": "starfusion", "name": "STARfusion"},
+    ],
+}
