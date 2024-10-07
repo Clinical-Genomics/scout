@@ -7,6 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Added
 - Link to chanjo2 MANE coverage overview on case page and panel page
+=======
+### Changed
+- Variants query backend allows rank_score filtering
+- Added script to tabulate causatives clinical filter rank
 
 ## [4.89.2]
 ## Fixed
