@@ -42,7 +42,6 @@
             <tr>
               <th>Gene</th>
               <th>ORPHA Phenotype</th>
-              <th>Inheritance model</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +61,6 @@
                             {{ disease_term.description }}
                           </a>
                       </td>
-                      <td>{{ disease_term.inheritance|join(', ') }}</td>
                     </tr>
                   {% endif %}
                 {% endfor %}
