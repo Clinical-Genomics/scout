@@ -14,9 +14,6 @@ from scout.adapter.client import get_connection
 from scout.adapter.mongo import MongoAdapter
 from scout.constants import CLINICAL_FILTER_BASE, CLINICAL_FILTER_BASE_SV
 
-# Controller
-from scout.server.blueprints.institutes.controllers import decorate_institute_variant
-
 try:
     from scoutconfig import *
 except ImportError:
@@ -52,7 +49,10 @@ LOG = logging.getLogger(__name__)
 def tabulate_causative_panel_rank(
     context, mongodb, username, password, authdb, host, port, loglevel, config, uri
 ):
-    """scout: manage interactions with a scout instance."""
+    """Establish interaction with a scout instance to tabulate the
+    rank score, rank and clinical filter within panel rank for all variants marked causative.
+    Write these to stdout via Click.
+    """
     coloredlogs.install(level=loglevel)
 
     LOG.info("Running scout version %s", __version__)
@@ -91,7 +91,7 @@ def tabulate_causative_panel_rank(
 
     # causative, rank, RANK IN DEFAULT PANEL, rankscore, model version, date, inheritance models, ACMG
 
-    click.echo(f"Case\tOwner\tDate\tCategory\tPanels\tVer\tRank score\tRank\tClin rank\tBest rank")
+    click.echo(f"Case\tOwner\tDate\tPanels\tCategory\tVer\tRank score\tRank\tClin rank\tBest rank")
 
     causatives = []
 
