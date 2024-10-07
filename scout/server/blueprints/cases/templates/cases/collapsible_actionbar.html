@@ -93,13 +93,21 @@
           {{ chanjo2_report_form(institute, case, case.panel_names|join(', '), 'report', case.default_genes|join(','), "<span class='fa fa-link'></span>"|safe ) }} <!--chanjo2 report-->
         </div>
       </div>
+      {% if "38" in case.genome_build %}
+        <div href="#" class="bg-dark list-group-item text-white">
+          <div class="d-flex flex-row flex-fill bd-highlight">
+            <span class="menu-collapsed">MANE Coverage (chanjo2)</span>
+            {{ chanjo2_report_form(institute, case, case.panel_names|join(', '), 'mane_overview', case.default_genes|join(','), "<span class='fa fa-link'></span>"|safe ) }} <!--chanjo2 MANE overview-->
+          </div>
+        </div>
+      {% endif %}
     {% endif %}
     {% if case.chanjo_coverage %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed">Coverage</span>
             <form method="POST" id="coverage_html" target="_blank" rel="noopener" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
-              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"/>
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <span class="fa fa-link"></span></a>
             </form>
