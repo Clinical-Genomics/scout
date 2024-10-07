@@ -1099,7 +1099,9 @@
               <td>
                 <ul>
                 {% for disease_term in gene.disease_terms %}
-                   <li class="d-flex align-items-baseline"><span class="badge bg-secondary m-1">{{ disease_term._id}}</span>&nbsp;<span>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</span></li>
+                   <li class="d-flex align-items-baseline"><span class="badge bg-secondary m-1">{{ disease_term._id}}</span>&nbsp;<span>{{ disease_term.description }}&nbsp;{% if disease_term.source != 'ORPHA' and disease_term.inheritance %}
+                      {% for model in disease_term.inheritance %} {{ inheritance_badge(model,inherit_palette) }}{% endfor %}
+                   {% endif %}</span></li>
                 {% endfor %}
                 </ul>
               </td>
@@ -1140,7 +1142,7 @@
     {{ variant_phenotypes(variant) }}
   </div>
   <div class="card-body">
-    <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent; margin-left:-.3rem;>
+    <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent; margin-left:-.3rem;">
       <thead>
         <tr class="table-secondary">
           <th>Variant type</th>
@@ -1262,7 +1264,7 @@
             {{ variant.str_inheritance_mode if variant.str_inheritance_mode else "-" }}
           </td>
           <td>
-            {% if variant.str_source.display %}
+            {% if variant.str_source and variant.str_source.display %}
               <a style="text-decoration:none;" href="{{variant.str_source_link}}" target="_blank" rel="noopener noreferrer">{{ variant.str_source.display }} </a>
             {% else %}
               "-"

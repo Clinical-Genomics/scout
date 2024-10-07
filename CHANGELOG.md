@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Variants query backend allows rank_score filtering
+- Added script to tabulate causatives clinical filter rank
+
+
+## [4.89.2]
+## Fixed
+- If OMIM gene panel gene symbols are not mapping to hgnc_id, allow fallback use of a unique gene alias
+
+## [4.89.1]
+### Fixed
+- General case report crash when encountering STR variants without `source` tags
+- Coloring and SV inheritance patterns on general case report
+
+## [4.89]
 ### Added
 - Button on SMN CN page to search variants within SMN1 and SMN2 genes
 - Options for selectively updating OMICS variants (fraser, outrider) on a case
