@@ -79,6 +79,7 @@ from .phenotype import (
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .so_terms import SEVERE_SO_TERMS, SEVERE_SO_TERMS_SV, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
+    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CONSEQUENCE,
@@ -181,50 +182,6 @@ PAR_COORDINATES = {
     },
 }
 
-CALLERS = {
-    "snv": [
-        {"id": "gatk", "name": "GATK"},
-        {"id": "freebayes", "name": "Freebayes"},
-        {"id": "samtools", "name": "SAMtools"},
-        {"id": "bcftools", "name": "Bcftools"},
-        {"id": "deepvariant", "name": "DeepVariant"},
-    ],
-    "cancer": [
-        {"id": "mutect", "name": "MuTect"},
-        {"id": "pindel", "name": "Pindel"},
-        {"id": "gatk", "name": "GATK"},
-        {"id": "freebayes", "name": "Freebayes"},
-        {"id": "tnscope", "name": "TNScope"},
-        {"id": "tnscope_umi", "name": "TNscope_UMI"},
-        {"id": "vardict", "name": "VarDict"},
-    ],
-    "cancer_sv": [
-        {"id": "gatk", "name": "GATK"},
-        {"id": "manta", "name": "Manta"},
-        {"id": "dellysv", "name": "DellySV"},
-        {"id": "cnvkit", "name": "CNVkit"},
-        {"id": "ascat", "name": "ASCAT"},
-        {"id": "dellycnv", "name": "DellyCNV"},
-        {"id": "tiddit", "name": "TIDDIT"},
-        {"id": "igh_dux4", "name": "IGH-DUX4 detection"},
-    ],
-    "mei": [{"id": "retroseq", "name": "RetroSeq"}],
-    "sv": [
-        {"id": "gatk", "name": "GATK"},
-        {"id": "cnvnator", "name": "CNVnator"},
-        {"id": "cnvpytor", "name": "CNVpytor"},
-        {"id": "delly", "name": "Delly"},
-        {"id": "sniffles", "name": "Sniffles"},
-        {"id": "tiddit", "name": "TIDDIT"},
-        {"id": "manta", "name": "Manta"},
-    ],
-    "str": [{"id": "expansionhunter", "name": "ExpansionHunter"}],
-    "fusion": [
-        {"id": "arriba", "name": "Arriba"},
-        {"id": "starfusion", "name": "STARfusion"},
-        {"id": "fusioncatcher", "name": "FusionCatcher"},
-    ],
-}
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
 CHR_PATTERN = re.compile(r"(chr)?(.*)", re.IGNORECASE)

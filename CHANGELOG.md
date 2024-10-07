@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Variants query backend allows rank_score filtering
 - Added script to tabulate causatives clinical filter rank
-
+- Do not display inheritance models associated to ORPHA terms on variant page
 
 ## [4.89.2]
 ## Fixed
@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Advanced cases search to narrow down results using more than one search parameter
 - Coverage report available for any case with samples containing d4 files, even if case has no associated gene panels
 - RNA delivery reports
+- Two new LRS SV callers (hificnv, severus)
 ### Changed
 - Documentation for OMICS variants and updating a case
 - Include both creation and deletion dates in gene panels pages
@@ -53,6 +54,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code creating Alamut links for variant genes without canonical_transcript set
 - Variant delete button in ClinVar submissions page
 - Broken search cases by case similarity
+- Missing caller tag for TRGT
 
 ## [4.88.1]
 ### Fixed
