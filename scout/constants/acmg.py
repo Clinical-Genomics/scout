@@ -47,7 +47,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Null variant",
                             "description": "Null variant (nonsense, frameshift, canonical +/- 2 bp splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.",
-                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" target="_blank">AutoPVS1</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" target="_blank">AutoPVS1</a>, or for RNA <a href="https://www.clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/" target="_blank">Walker et al</a>.',
                         },
                     )
                 ]
@@ -60,7 +60,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                     (
                         "PS1",
                         {
-                            "short": "Known pathogenic aa (HQ)",
+                            "short": "Known pathogenic aa",
                             "description": "Same amino acid change as a previously established pathogenic variant regardless of nucleotide change",
                         },
                     ),
@@ -69,12 +69,13 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "De novo (confirmed)",
                             "description": "De novo (both maternity and paternity confirmed) in a patient with the disease and no family history",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI de novo</a>.',
                         },
                     ),
                     (
                         "PS3",
                         {
-                            "short": "Functional damage (HQ)",
+                            "short": "Functional damage",
                             "description": "Well-established in vitro or in vivo functional studies supportive of a damaging effect on the gene or gene product, and the evidence is strong",
                         },
                     ),
@@ -113,7 +114,8 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         "PM3",
                         {
                             "short": "In trans pathogenic & AR",
-                            "description": "For recessive disorders, detected in trans with a pathogenic variant.",
+                            "description": "For recessive disorders, detected in trans with a pathogenic variant",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3717/svi_proposal_for_pm3_criterion_-_version_1.pdf" target="_blank">SVI in <i>trans</i></a>.',
                         },
                     ),
                     (
@@ -126,8 +128,8 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                     (
                         "PM5",
                         {
-                            "short": "Similar to known pathogenic aa (HQ)",
-                            "description": "Novel missense change at an amino acid residue where a different missense change determined to be pathogenic has been seen before,  the amino acids have similar properties and the evidence is strong",
+                            "short": "Similar to known pathogenic aa",
+                            "description": "Novel missense change at an amino acid residue where a different missense change determined to be pathogenic has been seen before, the amino acids have similar properties and the evidence is strong",
                         },
                     ),
                     (
@@ -135,6 +137,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "De novo (unconfirmed)",
                             "description": "Assumed de novo, but without confirmation of paternity and maternity",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI de novo</a>.',
                         },
                     ),
                 ]
@@ -147,7 +150,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                     (
                         "PP1",
                         {
-                            "short": "Cosegregation (WQ)",
+                            "short": "Cosegregation",
                             "description": "Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease, and the evidence is weak",
                         },
                     ),
@@ -155,14 +158,14 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         "PP2",
                         {
                             "short": "Missense: important",
-                            "description": "Missense variant in a gene that has a low rate of benign missense variation and in which missense variants are a common mechanism of disease.",
+                            "description": "Missense variant in a gene that has a low rate of benign missense variation and in which missense variants are a common mechanism of disease",
                         },
                     ),
                     (
                         "PP3",
                         {
                             "short": "Predicted pathogenic",
-                            "description": "Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc.)",
+                            "description": "Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc)",
                         },
                     ),
                     (
@@ -222,14 +225,14 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                     (
                         "BS3",
                         {
-                            "short": "No functional damage (HQ)",
+                            "short": "No functional damage",
                             "description": "Well-established in vitro or in vivo functional studies show no damaging effect on protein function or splicing, and the evidence is strong",
                         },
                     ),
                     (
                         "BS4",
                         {
-                            "short": "Non-segregation (HQ)",
+                            "short": "Non-segregation",
                             "description": "Lack of segregation in affected members of a family, and the evidence is strong",
                         },
                     ),
