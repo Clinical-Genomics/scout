@@ -320,7 +320,7 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
         point_classification = "likely_benign"
     elif points <= 5:
         point_classification = "uncertain_significance"
-        temperature = TEMPERATURE_STRINGS[point_classification]
+        temperature = TEMPERATURE_STRINGS[points]
     elif points <= 9:
         point_classification = "likely_pathogenic"
     elif points >= 10:
