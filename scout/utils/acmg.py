@@ -1,4 +1,7 @@
 # coding=UTF-8
+from typing import Optional
+
+
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Pathogenic is fullfilled
 
@@ -266,7 +269,7 @@ def get_acmg(acmg_terms: set) -> str:
     return prediction
 
 
-def get_acmg_temperature(acmg_terms: set) -> tuple:
+def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     """
     Use the algorithm described in Tavtigian 2020 to classifiy variants.
 
@@ -293,7 +296,7 @@ def get_acmg_temperature(acmg_terms: set) -> tuple:
     TEMPERATURE_STRINGS = ["Ice cold", "Cold", "Cold", "Tepid", "Warm", "Hot"]
 
     if not acmg_terms:
-        return None
+        return {}
 
     (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
 
@@ -323,4 +326,8 @@ def get_acmg_temperature(acmg_terms: set) -> tuple:
     elif points >= 10:
         point_classification = "pathogenic"
 
-    return (points, temperature, point_classification)
+    return {
+        "points": points,
+        "temperature": temperature,
+        "point_classification": point_classification,
+    }
