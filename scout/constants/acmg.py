@@ -67,9 +67,9 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                     (
                         "PS2",
                         {
-                            "short": "De novo (confirmed)",
+                            "short": "<i>De novo</i> (confirmed)",
                             "description": "De novo (both maternity and paternity confirmed) in a patient with the disease and no family history",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI de novo</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI <i>de novo</i></a>.',
                         },
                     ),
                     (
@@ -135,9 +135,9 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                     (
                         "PM6",
                         {
-                            "short": "De novo (unconfirmed)",
+                            "short": "<i>De novo</i> (unconfirmed)",
                             "description": "Assumed de novo, but without confirmation of paternity and maternity",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI de novo</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI <i>de novo</i></a>.',
                         },
                     ),
                 ]
