@@ -77,6 +77,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Functional damage",
                             "description": "Well-established in vitro or in vivo functional studies supportive of a damaging effect on the gene or gene product, and the evidence is strong",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" target="_blank">Brnich 2019</a>.',
                         },
                     ),
                     (
@@ -152,6 +153,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Cosegregation",
                             "description": "Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease, and the evidence is weak",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
                         },
                     ),
                     (
@@ -166,6 +168,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Predicted pathogenic",
                             "description": "Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc)",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/" target="_blank">Pejaver et al</a>',
                         },
                     ),
                     (
@@ -173,6 +176,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Phenotype: single gene",
                             "description": "Patient's phenotype or family history is highly specific for a disease with a single genetic etiology",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
                         },
                     ),
                     (
@@ -180,6 +184,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Reported pathogenic, evidence unavailable",
                             "description": "Reputable source recently reports variant as pathogenic, but the evidence is not available to the laboratory to perform an independent evaluation",
+                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" target="_blank">Biesecker et al 2018</a>.',
                         },
                     ),
                 ]
@@ -197,8 +202,9 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                     (
                         "BA1",
                         {
-                            "short": "Frequency >=hi_freq_cutoff",
-                            "description": "Allele frequency is >=hi_freq_cutoff in ESP, 1000G or ExAC",
+                            "short": "Frequency >=0.05",
+                            "description": "Allele frequency is >=0.05 in a general continental population dataset",
+                            "documentation": 'For clarification and exceptions see <a href="https://clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/" target="_blank">Ghosh et al</a>',
                         },
                     )
                 ]
@@ -227,6 +233,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "No functional damage",
                             "description": "Well-established in vitro or in vivo functional studies show no damaging effect on protein function or splicing, and the evidence is strong",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" target="_blank">Brnich 2019</a>.',
                         },
                     ),
                     (
@@ -234,6 +241,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "Non-segregation",
                             "description": "Lack of segregation in affected members of a family, and the evidence is strong",
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
                         },
                     ),
                 ]
@@ -283,6 +291,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "Reported benign, evidence unavailable",
                             "description": "Reputable source recently reports variant as benign, but the evidence is not available to the laboratory to perform an independent evaluation",
+                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" target="_blank">Biesecker et al</a>.',
                         },
                     ),
                     (
