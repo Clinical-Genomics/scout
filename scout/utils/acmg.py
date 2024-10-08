@@ -223,7 +223,7 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
     return (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms)
 
 
-def get_acmg(acmg_terms: set) -> str:
+def get_acmg(acmg_terms: set) -> Optional[str]:
     """Use the algorithm described in ACMG paper to get a ACMG calssification
 
 
