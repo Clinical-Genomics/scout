@@ -32,7 +32,7 @@
           {% if evaluation %}
              <h4>
               {{ evaluation.classification.label }}
-              <span class="badge bg-info">{{ evaluation.classification.short }}</span>
+              <span class="badge bg-info">{{ evaluation.classification.short|safe }}</span>
             </h4>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
             {% if edit %}
@@ -72,9 +72,9 @@
                   {% endif %}
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description }}">
+                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
                         <span class="badge bg-info me-1">{{ criterion_code }}</span>
-                        {{ criterion.short }}
+                        {{ criterion.short|safe}}
                       </div>
                       <div class="form-check form-switch">
                         <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false}}>
