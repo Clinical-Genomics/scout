@@ -26,7 +26,7 @@ from scout.server.blueprints.variant.verification_controllers import (
 )
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
-from scout.utils.acmg import get_acmg
+from scout.utils.acmg import get_acmg, get_acmg_temperature
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -347,7 +347,15 @@ def acmg():
     """Calculate an ACMG classification from submitted criteria."""
     criteria = request.args.getlist("criterion")
     classification = get_acmg(criteria)
-    return jsonify(dict(classification=classification))
+    (points, temperature, point_classification) = get_acmg_temperature(criteria)
+    return jsonify(
+        dict(
+            classification=classification,
+            points=points,
+            temperature=temperature,
+            point_classification=point_classification,
+        )
+    )
 
 
 @variant_bp.route(

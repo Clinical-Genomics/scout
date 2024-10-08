@@ -157,38 +157,31 @@ def is_likely_benign(bs_terms, bp_terms):
     return False
 
 
-def get_acmg(acmg_terms):
-    """Use the algorithm described in ACMG paper to get a ACMG calssification
-
-    Modifying strength of a term is possible by adding a string describing its new level: "PP1_Strong" or
-    "PVS1_Moderate".
-
-    If no terms return None
-
-    Args:
-        acmg_terms(set(str)): A collection of prediction terms
-
-    Returns:
-        prediction(str): in ['uncertain_significance','benign','likely_benign',
-                             'likely_pathogenic','pathogenic']
-
+def get_acmg_criteria(acmg_terms: set) -> tuple:
     """
-    if not acmg_terms:
-        return None
-    prediction = "uncertain_significance"
-    # This variable indicates if Pathogenecity Very Strong exists
+    Given a set of ACMG evidence criteria terms, that may be strength modified with suffixes.
+    For each term,
+        first, Strength modified criteria suffixes should count towards their modified score.
+        then, we need to see if we match any of the two stand-alone terms. If so, set their respective booleans.
+        finally, check remaining prefixes if no suffix match or stand-alone criteria match
+
+    Return a tuple with
+        pvs: This variable indicates if Pathogenicity Very Strong exists
+        ps_terms: Collection of terms with Pathogenicity Strong
+        pm_terms: Collection of terms with Pathogenicity moderate
+        pp_terms: Collection of terms with Pathogenicity supporting
+        ba: This variable indicates if Benign impact stand-alone exists
+        bs_terms: Collection of terms with Benign evidence Strong
+        bp_terms: Collection of terms with supporting Benign evidence
+    """
+
     pvs = False
-    # Collection of terms with Pathogenecity Strong
     ps_terms = []
-    # Collection of terms with Pathogenecity moderate
     pm_terms = []
-    # Collection of terms with Pathogenecity supporting
     pp_terms = []
-    # This variable indicates if Benign impact stand-alone exists
+
     ba = False
-    # Collection of terms with Benign evidence Strong
     bs_terms = []
-    # Collection of terms with supporting Benign evidence
     bp_terms = []
 
     suffix_map = {
@@ -214,18 +207,44 @@ def get_acmg(acmg_terms):
                         break
                 break
         else:
-            # Do we match any of the two standalone terms
             if term.startswith("PVS"):
                 pvs = True
             elif term.startswith("BA"):
                 ba = True
-            else:  # Check remaining prefixes if no suffix match or standalone criteria match
+            else:
                 for prefix, term_list in prefix_map.items():
                     if term.startswith(prefix):
                         term_list.append(term)
                         break
 
-    # We need to start by checking for Pathogenecity
+    return (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms)
+
+
+def get_acmg(acmg_terms: set) -> str:
+    """Use the algorithm described in ACMG paper to get a ACMG calssification
+
+
+    Modifying strength of a term is possible by adding a string describing its new level: "PP1_Strong" or
+    "PVS1_Moderate".
+
+    If no terms return None
+
+    Args:
+        acmg_terms(set(str)): A collection of prediction terms
+
+    Returns:
+        prediction(str): in ['uncertain_significance','benign','likely_benign',
+                             'likely_pathogenic','pathogenic']
+
+    """
+    if not acmg_terms:
+        return None
+
+    (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
+
+    prediction = "uncertain_significance"
+
+    # We need to start by checking for Pathogenicity
     pathogenic = is_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     likely_pathogenic = is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     benign = is_benign(ba, bs_terms)
@@ -245,3 +264,63 @@ def get_acmg(acmg_terms):
             prediction = "likely_benign"
 
     return prediction
+
+
+def get_acmg_temperature(acmg_terms: set) -> tuple:
+    """
+    Use the algorithm described in Tavtigian 2020 to classifiy variants.
+
+    PVS 8 points, S 4, M 2, P 1.
+    This gives:
+
+    P > 10
+    LP 6 < p < 9
+    VUS 0 < p < 5
+    LB -1 < p < -6
+    B < -7
+
+    If no terms return None
+
+    Args:
+        acmg_terms(set(str)): A collection of prediction terms
+
+    Returns:
+        dict:
+            temperature:
+        (points, temperature, point_classification)
+
+    """
+    TEMPERATURE_STRINGS = ["Ice cold", "Cold", "Cold", "Tepid", "Warm", "Hot"]
+
+    if not acmg_terms:
+        return None
+
+    (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
+
+    if ba:
+        points = -8
+    else:
+        points = (
+            8 * pvs
+            + 4 * len(ps_terms)
+            + 2 * len(pm_terms)
+            + len(pp_terms)
+            - 4 * len(bs_terms)
+            - len(bp_terms)
+        )
+
+    temperature = "NA"
+
+    if points <= -7:
+        point_classification = "benign"
+    elif points <= -1:
+        point_classification = "likely_benign"
+    elif points <= 5:
+        point_classification = "uncertain_significance"
+        temperature = TEMPERATURE_STRINGS[point_classification]
+    elif points <= 9:
+        point_classification = "likely_pathogenic"
+    elif points >= 10:
+        point_classification = "pathogenic"
+
+    return (points, temperature, point_classification)
