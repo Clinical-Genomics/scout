@@ -77,7 +77,7 @@
                         {{ criterion.short|safe}}
                       </div>
                       <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false}}>
+                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
                         <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
@@ -88,7 +88,7 @@
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
                           {% for level in "Strong", "Moderate", "Supporting" %}
                             {% if(level != evidence) %}
-                              <option id="{{criterion_code}}-{{level}}" value="{{level}}" {% if modifier == level %}selected{% endif%}>{{ level }}</option>
+                              <option id="{{ criterion_code }}-{{ level }}" value="{{ level }}" {% if modifier == level %}selected{% endif %}>{{ level }}</option>
                             {% endif %}
                           {% endfor %}
                         </select>
