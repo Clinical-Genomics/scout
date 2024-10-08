@@ -348,7 +348,7 @@ def acmg():
     criteria = request.args.getlist("criterion")
     classification = get_acmg(criteria)
     acmg_bayesian = get_acmg_temperature(criteria)
-    return jsonify({classification: classification, **acmg_bayesian})
+    return jsonify({"classification": classification, **acmg_bayesian})
 
 
 @variant_bp.route(
