@@ -82,7 +82,7 @@
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
-                      {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe}}</span></div>{% endif %}
+                      {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe }}</span></div>{% endif %}
                       <div class="row">
                         <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
