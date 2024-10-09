@@ -1,6 +1,8 @@
 # coding=UTF-8
 from typing import Optional
 
+from scout.constants import ACMG_COMPLETE_MAP
+
 
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Pathogenic is fullfilled
@@ -293,7 +295,14 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
         (points, temperature, point_classification)
 
     """
-    TEMPERATURE_STRINGS = ["Ice cold", "Cold", "Cold", "Tepid", "Warm", "Hot"]
+    TEMPERATURE_STRINGS = {
+        0: {"label": "Ice cold", "color": "success", "icon": "fa-icicles"},
+        1: {"label": "Cold", "color": "info", "icon": "fa-snowman"},
+        2: {"label": "Cold", "color": "info", "icon": "fa-snowflake"},
+        3: {"label": "Tepid", "color": "yellow", "icon": "fa-temperature-half"},
+        4: {"label": "Warm", "color": "warning", "icon": "fa-mug-hot"},
+        5: {"label": "Hot", "color": "red", "icon": "fa-pepper-hot"},
+    }
 
     if not acmg_terms:
         return {}
@@ -316,18 +325,29 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
 
     if points <= -7:
         point_classification = "benign"
+        temperature_class = "success"
     elif points <= -1:
         point_classification = "likely_benign"
     elif points <= 5:
         point_classification = "uncertain_significance"
-        temperature = TEMPERATURE_STRINGS[points]
     elif points <= 9:
         point_classification = "likely_pathogenic"
     elif points >= 10:
         point_classification = "pathogenic"
 
+    temperature_class = ACMG_COMPLETE_MAP[point_classification].get("color")
+    temperature = ACMG_COMPLETE_MAP[point_classification].get("label")
+    temperature_icon = ""
+
+    if point_classification == "uncertain_significance":
+        temperature_class = TEMPERATURE_STRINGS[points].get("color")
+        temperature = TEMPERATURE_STRINGS[points].get("label")
+        temperature_icon = TEMPERATURE_STRINGS[points].get("icon")
+
     return {
         "points": points,
         "temperature": temperature,
-        "point_classification": point_classification,
+        "temperature_class": temperature_class,
+        "temperature_icon": temperature_icon,
+        "point_classification": ACMG_COMPLETE_MAP[point_classification].get("short"),
     }
