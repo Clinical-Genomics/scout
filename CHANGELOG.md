@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Added
 - Link to chanjo2 MANE coverage overview on case page and panel page
+- More SVI recommendation links on the ACMG page
 - ACMG Bayesian foundation point scale after Tavtigian for variant heat profile
 ### Changed
 - Variants query backend allows rank_score filtering
