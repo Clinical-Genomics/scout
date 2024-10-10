@@ -113,6 +113,16 @@ def export_panels(adapter, panels, versions=None, build="37"):
         yield gene_line
 
 
+def set_export_fields(panels: list[str]) -> list[tuple]:
+    """Set the field that should be exported for one panel or a list of panels."""
+
+    if len(panels) == 1:
+        return EXPORT_PANEL_FIELDS
+
+    # if more than one panel is exported (from the CLI) - export only HGNC and symbol
+    return EXPORT_PANEL_FIELDS[:2]
+
+
 def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float = None):
     """Export the genes of a gene panel
 
@@ -127,23 +137,27 @@ def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float 
     if version and len(panels) > 1:
         raise SyntaxError("Version only possible with one panel")
 
-    headers = []
+    # Dictionary with hgnc ids as keys and panel gene information as value.
+    panel_geneobjs = dict()
 
     for panel_id in panels:
         panel_obj = adapter.gene_panel(panel_id, version=version)
         if not panel_obj:
             LOG.warning("Panel %s could not be found", panel_id)
             continue
+        for gene_obj in panel_obj["genes"]:
+            panel_geneobjs[gene_obj["hgnc_id"]] = gene_obj
 
-    headers.append("\t".join(fields[0] for fields in EXPORT_PANEL_FIELDS))
+    if not panel_geneobjs:
+        return
 
-    for header in headers:
-        yield header
+    header = []
+    header.append("\t".join(fields[0] for fields in EXPORT_PANEL_FIELDS))
+    yield from header
 
     for gene_obj in panel_obj.get("genes", []):
-
         gene_line_fields = []
-        for _, gene_key in EXPORT_PANEL_FIELDS:
+        for _, gene_key in set_export_fields(panels=panels):
             gene_value = gene_obj.get(gene_key, "")
             if isinstance(gene_value, list):
                 gene_value = ",".join(gene_value)
