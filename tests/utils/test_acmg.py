@@ -1,5 +1,6 @@
 from scout.utils.acmg import (
     get_acmg,
+    get_acmg_conflicts,
     is_benign,
     is_likely_benign,
     is_likely_pathogenic,
@@ -433,3 +434,9 @@ def test_acmg_benign_moderate():
     acmg_terms = {"BP1_Moderate", "BS1"}
     res = get_acmg(acmg_terms)
     assert res == "likely_benign"
+
+
+def test_acmg_conflicts():
+    acmg_terms = {"PVS1", "PM4"}
+    conflicts = get_acmg_conflicts()
+    assert len(conflicts) == 1
