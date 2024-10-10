@@ -1,5 +1,6 @@
 from scout.utils.acmg import (
     get_acmg,
+    get_acmg_temperature,
     is_benign,
     is_likely_benign,
     is_likely_pathogenic,
@@ -417,3 +418,11 @@ def test_acmg_modifier_on_both_benign_and_pathogenic():
     acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
+
+
+def test_acmg_temperature():
+    acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 4
+    assert res["label"] == "Warm"
+    assert res["point_classification"] == "uncertain_significance"
