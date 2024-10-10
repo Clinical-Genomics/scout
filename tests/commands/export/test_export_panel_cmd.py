@@ -40,9 +40,8 @@ def test_export_panel(mock_app):
 
     # The CLI command shoud return gene panel
     assert result.exit_code == 0
-    # assert result.output == "N"
 
-    empty_cols: int = "\t" * (len(EXPORT_PANEL_FIELDS) - 2)  # not including hgnc and symbol fields
+    empty_cols: int = "\t" * (len(EXPORT_PANEL_FIELDS) - 2)
 
     assert f"2397\tCRYBB1{empty_cols}\n9394\tPICK1{empty_cols}" in result.output
 
