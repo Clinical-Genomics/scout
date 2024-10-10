@@ -393,7 +393,9 @@ def gene_edit(panel_id, hgnc_id):
     form.disease_associated_transcripts.choices = tx_choices(hgnc_id, panel_obj)
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
-        info_data: dict = {k: v for k, v in form.data.copy().items() if v}
+        info_data: dict = {
+            k: v for k, v in form.data.copy().items() if v
+        }  # Update only fields edited by user
         info_data.pop("csrf_token", None)
 
         if info_data.get("custom_inheritance_models", ""):
