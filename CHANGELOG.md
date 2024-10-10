@@ -5,14 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Added
+### Added
 - Link to chanjo2 MANE coverage overview on case page and panel page
 - More SVI recommendation links on the ACMG page
+- IGV buttons for SMN CN page
 ### Changed
 - Variants query backend allows rank_score filtering
 - Added script to tabulate causatives clinical filter rank
 - Do not display inheritance models associated to ORPHA terms on variant page
-- From gene panel page, when exporting a panel to .txt or .pdf, export all fields instead of the first columns only
+- Make BA1 fully stand-alone to Benign prediction
+### Fixed
+- Extract all fields correctly when exporting a panel to file from gene panel page
 
 ## [4.89.2]
 ## Fixed

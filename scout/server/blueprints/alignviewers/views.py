@@ -127,6 +127,9 @@ def sashimi_igv(
 @alignviewers_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
 )  # from SV variant page, where you have to pass breakpoints coordinates
+@alignviewers_bp.route(
+    "/<institute_id>/<case_name>/<chrom>/<start>/<stop>/igv", methods=["GET"]
+)  # from SMN variant page
 def igv(
     institute_id: str,
     case_name: str,
