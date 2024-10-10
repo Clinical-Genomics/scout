@@ -379,7 +379,7 @@ def test_is_benign_2():
 
 
 def test_get_acmg_no_terms():
-    acmg_terms = {}
+    acmg_terms = set()
     res = get_acmg(acmg_terms)
     assert res is None
 
@@ -429,7 +429,11 @@ def test_acmg_modifier_on_both_benign_and_pathogenic():
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
-
+def test_acmg_benign_moderate():
+    acmg_terms = {"BP1_Moderate", "BS1"}
+    res = get_acmg(acmg_terms)
+    assert res == "likely_benign"
+    
 def test_acmg_temperature():
     acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
     res = get_acmg_temperature(acmg_terms)

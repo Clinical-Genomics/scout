@@ -210,6 +210,8 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
                     if term.startswith(prefix):
                         term_list.append(term)
                         break
+                else:
+                    continue
                 break
         else:
             if term.startswith("PVS"):
