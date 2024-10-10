@@ -297,7 +297,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                     (
                         "BP7",
                         {
-                            "short": "(not in use)",
+                            "short": "Synonymous, no splice impact",
                             "description": "A synonymous variant for which splicing prediction algorithms predict no impact to the splice consensus sequence nor the creation of a new splice site",
                         },
                     ),
@@ -306,3 +306,46 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
         ),
     ]
 )
+
+ACMG_POTENTIAL_CONFLICTS = [
+    (
+        "PVS1",
+        "PM4",
+        "Use of PVS1 and PM4 together risks double-counting evidence (Tayoun et al 2019).",
+    ),
+    (
+        "PVS1",
+        "PM1",
+        "Use of PVS1 and PM1 together is not recommended (Durkie et al 2024).",
+    ),
+    (
+        "PVS1",
+        "PP2",
+        "Use of PVS1 and PP2 together is not recommended (Durkie et al 2024).",
+    ),
+    (
+        "PS1",
+        "PP3",
+        "Use of PS1 and PP3 together risks double-counting evidence (Tayoun et al 2019).",
+    ),
+    (
+        "PS1",
+        "PP5",
+        "Use of PS1 and PP5 together conflicts with original definition (Richards et al 2015).",
+    ),
+    (
+        "PS1",
+        "PM4",
+        "Use of PS1 and PM4 together is not recommended (Durkie et al 2024).",
+    ),
+    (
+        "PVS1",
+        "PS3",
+        "Note that for RNA PS3 should only be taken with PVS1 for well established functional assays, not splicing alone (Walker 2023).",
+    ),
+    (
+        "PM1",
+        "PP2",
+        "Avoid double-counting evidence for constraints in both PM1 and PP2 (Durkie et al 2024).",
+    ),
+]
