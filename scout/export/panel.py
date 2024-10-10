@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import List
 
+from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS, CHROMOSOMES
+from scout.constants.panels import EXPORT_PANEL_FIELDS
 
 LOG = logging.getLogger(__name__)
 
@@ -14,7 +17,6 @@ def export_panels(adapter, panels, versions=None, build="37"):
     Args:
         adapter(scout.adapter.MongoAdapter)
         panels(iterable(str)): Iterable with panel ids
-        bed(bool): If lines should be bed formated
     """
     if versions and (len(versions) != len(panels)):
         raise SyntaxError("If version specify for each panel")
@@ -111,30 +113,21 @@ def export_panels(adapter, panels, versions=None, build="37"):
         yield gene_line
 
 
-def export_gene_panels(adapter, panels, version=None):
+def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float = None):
     """Export the genes of a gene panel
 
     Takes a list of gene panel names and return the lines of the gene panels.
     Unlike export_panels this function only export the genes and extra information,
     not the coordinates.
 
-    Args:
-        adapter(MongoAdapter)
-        panels(list(str))
-        version(float): Version number, only works when one panel
-
     Yields:
         gene panel lines
     """
+
     if version and len(panels) > 1:
         raise SyntaxError("Version only possible with one panel")
 
-    bed_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}"
-
     headers = []
-
-    # Dictionary with hgnc ids as keys and panel gene information as value.
-    panel_geneobjs = dict()
 
     for panel_id in panels:
         panel_obj = adapter.gene_panel(panel_id, version=version)
@@ -142,28 +135,20 @@ def export_gene_panels(adapter, panels, version=None):
             LOG.warning("Panel %s could not be found", panel_id)
             continue
 
-        for gene_obj in panel_obj["genes"]:
-            panel_geneobjs[gene_obj["hgnc_id"]] = gene_obj
-
-    if len(panel_geneobjs) == 0:
-        return
-
-    headers.append(
-        "#hgnc_id\thgnc_symbol\tdisease_associated_transcripts\t"
-        "reduced_penetrance\tmosaicism\tdatabase_entry_version"
-    )
+    headers.append("\t".join(fields[0] for fields in EXPORT_PANEL_FIELDS))
 
     for header in headers:
         yield header
 
-    for hgnc_id in panel_geneobjs:
-        gene_obj = panel_geneobjs[hgnc_id]
-        gene_line = bed_string.format(
-            gene_obj["hgnc_id"],
-            gene_obj["symbol"],
-            ",".join(gene_obj.get("disease_associated_transcripts", [])),
-            gene_obj.get("reduced_penetrance", ""),
-            gene_obj.get("mosaicism", ""),
-            gene_obj.get("database_entry_version", ""),
-        )
-        yield gene_line
+    for gene_obj in panel_obj.get("genes", []):
+
+        gene_line_fields = []
+        for _, gene_key in EXPORT_PANEL_FIELDS:
+            gene_value = gene_obj.get(gene_key, "")
+            if isinstance(gene_value, list):
+                gene_value = ",".join(gene_value)
+            if isinstance(gene_value, bool) or isinstance(gene_value, int):
+                gene_value = str(gene_value)
+            gene_line_fields.append(gene_value)
+
+        yield "\t".join(gene_line_fields)
