@@ -47,9 +47,7 @@ def api_panels(panel_name):
     """
     json_out = controllers.get_panels(store, panel_name)
 
-    return Response(
-        json.dumps(json_out, default=jsonconverter), mimetype="application/json"
-    )
+    return Response(json.dumps(json_out, default=jsonconverter), mimetype="application/json")
 
 
 @panels_bp.route("/panels", methods=["GET", "POST"])
@@ -69,8 +67,7 @@ def panels():
             hgnc_id = hgnc_symbols.pop()
         except ValueError:
             flash(
-                "Provided gene info could not be parsed! "
-                "Please allow autocompletion to finish.",
+                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
         panels_found = store.search_panels_hgnc_id(hgnc_id)
@@ -88,9 +85,9 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(
-            institute_id=institute["_id"], include_hidden=True
-        ).distinct("panel_name")
+        for name in store.gene_panels(institute_id=institute["_id"], include_hidden=True).distinct(
+            "panel_name"
+        )
     ]
     panel_versions = {}
     for name in panel_names:
@@ -102,9 +99,7 @@ def panels():
         institute_panels = []
         for panel in store.latest_panels(institute_obj["_id"], include_hidden=True):
             panel["writable"] = (
-                ""
-                if controllers.panel_write_granted(panel, current_user)
-                else "disabled"
+                "" if controllers.panel_write_granted(panel, current_user) else "disabled"
             )
             institute_panels.append(panel)
 
@@ -161,14 +156,10 @@ def panel(panel_id):
         if action == "add":
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
             if panel_gene:
-                flash(
-                    "gene already in panel: {}".format(panel_gene["symbol"]), "warning"
-                )
+                flash("gene already in panel: {}".format(panel_gene["symbol"]), "warning")
             else:
                 # ask user to fill-in more information about the gene
-                return redirect(
-                    url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id)
-                )
+                return redirect(url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id))
         elif action == "delete":
             LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
@@ -183,9 +174,7 @@ def panel(panel_id):
         panel_name = panel_obj["panel_name"]
         latest_panel = store.gene_panel(panel_name)
         if panel_obj["version"] < latest_panel["version"]:
-            extra_genes, missing_genes = check_outdated_gene_panel(
-                panel_obj, latest_panel
-            )
+            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
             if extra_genes or missing_genes:
                 case_obj["outdated_panels"][panel_name] = {
                     "missing_genes": missing_genes,
@@ -385,9 +374,7 @@ def tx_choices(hgnc_id, panel_obj):
         if gene_obj:
             for transcript in gene_obj.get("disease_associated_transcripts", []):
                 if (transcript, transcript) not in transcript_choices:
-                    transcript_choices.append(
-                        (transcript, f"{transcript} (previous choice)")
-                    )
+                    transcript_choices.append((transcript, f"{transcript} (previous choice)"))
     return transcript_choices
 
 
@@ -418,9 +405,7 @@ def gene_edit(panel_id, hgnc_id):
 
     if panel_gene:
         custom_models = [
-            model
-            for model in panel_gene.get("custom_inheritance_models", [])
-            if model != ""
+            model for model in panel_gene.get("custom_inheritance_models", []) if model != ""
         ]
         if custom_models:
             form.custom_inheritance_models.data = ", ".join(
