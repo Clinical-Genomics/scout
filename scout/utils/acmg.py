@@ -226,11 +226,12 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
 
 
 def get_acmg(acmg_terms: set) -> Optional[str]:
-    """Use the algorithm described in ACMG paper to get a ACMG calssification
-
+    """Use the algorithm described in ACMG paper (Richards 2015) to get a ACMG classification
 
     Modifying strength of a term is possible by adding a string describing its new level: "PP1_Strong" or
     "PVS1_Moderate".
+
+    BA is considered fully Stand Alone.
 
     If no terms return None
 
@@ -247,9 +248,11 @@ def get_acmg(acmg_terms: set) -> Optional[str]:
 
     (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
 
+    if ba:
+        return "benign"
+
     prediction = "uncertain_significance"
 
-    # We need to start by checking for Pathogenicity
     pathogenic = is_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     likely_pathogenic = is_likely_pathogenic(pvs, ps_terms, pm_terms, pp_terms)
     benign = is_benign(ba, bs_terms)
