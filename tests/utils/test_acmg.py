@@ -438,5 +438,5 @@ def test_acmg_benign_moderate():
 
 def test_acmg_conflicts():
     acmg_terms = {"PVS1", "PM4"}
-    conflicts = get_acmg_conflicts()
+    conflicts = get_acmg_conflicts(acmg_terms)
     assert len(conflicts) == 1
