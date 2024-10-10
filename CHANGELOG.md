@@ -13,8 +13,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants query backend allows rank_score filtering
 - Added script to tabulate causatives clinical filter rank
 - Do not display inheritance models associated to ORPHA terms on variant page
-###
+### Fixed
 - Make BA1 fully stand-alone to Benign prediction
+- Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
 
 ## [4.89.2]
 ## Fixed
