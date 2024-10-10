@@ -296,12 +296,14 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
 
     """
     TEMPERATURE_STRINGS = {
+        -1: {"label": "B/LB", "color": "success", "icon": "fa-times"},
         0: {"label": "Ice cold", "color": "success", "icon": "fa-icicles"},
         1: {"label": "Cold", "color": "info", "icon": "fa-snowman"},
         2: {"label": "Cold", "color": "info", "icon": "fa-snowflake"},
         3: {"label": "Tepid", "color": "yellow", "icon": "fa-temperature-half"},
         4: {"label": "Warm", "color": "warning", "icon": "fa-mug-hot"},
         5: {"label": "Hot", "color": "red", "icon": "fa-pepper-hot"},
+        6: {"label": "LP/P", "color": "red", "icon": "fa-stethoscope"},
     }
 
     if not acmg_terms:
@@ -321,23 +323,23 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
             - len(bp_terms)
         )
 
-    temperature = "NA"
-
     if points <= -7:
         point_classification = "benign"
-        temperature_class = "success"
+        temperature_icon = TEMPERATURE_STRINGS[-1].get("icon")
     elif points <= -1:
         point_classification = "likely_benign"
+        temperature_icon = TEMPERATURE_STRINGS[-1].get("icon")
     elif points <= 5:
         point_classification = "uncertain_significance"
     elif points <= 9:
         point_classification = "likely_pathogenic"
+        temperature_icon = TEMPERATURE_STRINGS[6].get("icon")
     elif points >= 10:
         point_classification = "pathogenic"
+        temperature_icon = TEMPERATURE_STRINGS[6].get("icon")
 
     temperature_class = ACMG_COMPLETE_MAP[point_classification].get("color")
     temperature = ACMG_COMPLETE_MAP[point_classification].get("label")
-    temperature_icon = ""
 
     if point_classification == "uncertain_significance":
         temperature_class = TEMPERATURE_STRINGS[points].get("color")
