@@ -231,7 +231,9 @@ def get_acmg(acmg_terms):
     benign = is_benign(ba, bs_terms)
     likely_benign = is_likely_benign(bs_terms, bp_terms)
 
-    if pathogenic or likely_pathogenic:
+    if ba:
+        prediction = "benign"
+    elif pathogenic or likely_pathogenic:
         if benign or likely_benign:
             prediction = "uncertain_significance"
         elif pathogenic:
