@@ -75,9 +75,6 @@ def make_igv_tracks(
     variant_obj = store.variant(document_id=variant_id)
 
     chromosome = "All"
-
-    LOG.debug(f"obj {variant_obj} - {chrom}:{start}-{stop}")
-
     if variant_obj:
         # Set display locus
         start = start or variant_obj["position"]
