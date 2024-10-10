@@ -297,13 +297,13 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     """
     TEMPERATURE_STRINGS = {
         -1: {"label": "B/LB", "color": "success", "icon": "fa-times"},
-        0: {"label": "Ice cold", "color": "success", "icon": "fa-icicles"},
+        0: {"label": "Ice cold", "color": "info", "icon": "fa-icicles"},
         1: {"label": "Cold", "color": "info", "icon": "fa-snowman"},
         2: {"label": "Cold", "color": "info", "icon": "fa-snowflake"},
         3: {"label": "Tepid", "color": "yellow", "icon": "fa-temperature-half"},
         4: {"label": "Warm", "color": "warning", "icon": "fa-mug-hot"},
         5: {"label": "Hot", "color": "red", "icon": "fa-pepper-hot"},
-        6: {"label": "LP/P", "color": "red", "icon": "fa-stethoscope"},
+        6: {"label": "LP/P", "color": "danger", "icon": "fa-stethoscope"},
     }
 
     if not acmg_terms:

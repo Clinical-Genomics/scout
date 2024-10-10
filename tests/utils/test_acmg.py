@@ -379,50 +379,50 @@ def test_is_benign_2():
 
 
 def test_get_acmg_no_terms():
-    acmg_terms = []
+    acmg_terms = {}
     res = get_acmg(acmg_terms)
     assert res is None
 
 
 def test_get_acmg_pathogenic():
-    acmg_terms = ["PVS1", "PS1"]
+    acmg_terms = {"PVS1", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
-    acmg_terms = ["PVS1", "PS1", "BS1"]
+    acmg_terms = {"PVS1", "PS1", "BS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
 
 def test_get_acmg_modifier():
-    acmg_terms = ["PVS1", "PS1"]
+    acmg_terms = {"PVS1", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
-    acmg_terms = ["PVS1_Moderate", "PS1"]
+    acmg_terms = {"PVS1_Moderate", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "likely_pathogenic"
 
 
 def test_get_acmg_uncertain():
-    acmg_terms = ["PVS1"]
+    acmg_terms = {"PVS1"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
-    acmg_terms = ["PVS1", "PS1", "BA1"]
+    acmg_terms = {"PVS1", "PS1", "BA1"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
 
 def test_acmg_modifier_on_both_benign_and_pathogenic():
-    acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
+    acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
 
 def test_acmg_temperature():
-    acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
+    acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
     res = get_acmg_temperature(acmg_terms)
     assert res["points"] == 4
-    assert res["label"] == "Warm"
-    assert res["point_classification"] == "uncertain_significance"
+    assert res["temperature"] == "Warm"
+    assert res["point_classification"] == "VUS"
