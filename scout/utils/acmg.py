@@ -212,6 +212,8 @@ def get_acmg(acmg_terms):
                     if term.startswith(prefix):
                         term_list.append(term)
                         break
+                else:
+                    continue
                 break
         else:
             # Do we match any of the two standalone terms
