@@ -437,8 +437,20 @@ def test_acmg_benign_moderate():
 
 
 def test_acmg_temperature():
+    acmg_terms = {"PVS1", "PS1", "PP1", "BS1", "BS2"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 5
+    assert res["temperature"] == "Hot"
+    assert res["point_classification"] == "VUS"
+
     acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
     res = get_acmg_temperature(acmg_terms)
     assert res["points"] == 4
     assert res["temperature"] == "Warm"
+    assert res["point_classification"] == "VUS"
+
+    acmg_terms = {"PVS1", "BS2", "BP1"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 3
+    assert res["temperature"] == "Tepid"
     assert res["point_classification"] == "VUS"
