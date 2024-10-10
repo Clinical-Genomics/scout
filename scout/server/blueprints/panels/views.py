@@ -3,16 +3,7 @@ import datetime
 import json
 import logging
 
-from flask import (
-    Blueprint,
-    Response,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    url_for,
-)
+from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
 from markupsafe import escape
 
