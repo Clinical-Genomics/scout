@@ -155,7 +155,8 @@ def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float 
     header.append("\t".join(fields[0] for fields in EXPORT_PANEL_FIELDS))
     yield from header
 
-    for gene_obj in panel_obj.get("genes", []):
+    for hgnc_id in panel_geneobjs:
+        gene_obj = panel_geneobjs[hgnc_id]
         gene_line_fields = []
         for _, gene_key in set_export_fields(panels=panels):
             gene_value = gene_obj.get(gene_key, "")
