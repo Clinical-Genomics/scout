@@ -145,8 +145,7 @@ def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float 
         if not panel_obj:
             LOG.warning("Panel %s could not be found", panel_id)
             continue
-        for gene_obj in panel_obj["genes"]:
-            panel_geneobjs[gene_obj["hgnc_id"]] = gene_obj
+        panel_geneobjs.update({gene["hgnc_id"]: gene for gene in panel_obj.get("genes", [])})
 
     if not panel_geneobjs:
         return
@@ -155,15 +154,13 @@ def export_gene_panels(adapter: MongoAdapter, panels: List[str], version: float 
     header.append("\t".join(fields[0] for fields in EXPORT_PANEL_FIELDS))
     yield from header
 
-    for hgnc_id in panel_geneobjs:
-        gene_obj = panel_geneobjs[hgnc_id]
-        gene_line_fields = []
-        for _, gene_key in set_export_fields(panels=panels):
-            gene_value = gene_obj.get(gene_key, "")
-            if isinstance(gene_value, list):
-                gene_value = ",".join(gene_value)
-            if isinstance(gene_value, bool) or isinstance(gene_value, int):
-                gene_value = str(gene_value)
-            gene_line_fields.append(gene_value)
-
+    for gene_obj in panel_geneobjs.values():
+        gene_line_fields = [
+            (
+                ",".join(gene_obj.get(gene_key, ""))
+                if isinstance(gene_obj.get(gene_key), list)
+                else str(gene_obj.get(gene_key, ""))
+            )
+            for _, gene_key in set_export_fields(panels=panels)
+        ]
         yield "\t".join(gene_line_fields)
