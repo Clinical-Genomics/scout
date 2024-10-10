@@ -146,6 +146,33 @@ CHROMOSOMES_38 = AUTOSOMES + ["X", "Y", "M"]
 # Maps chromosomes to integers
 CHROMOSOME_INTEGERS = {chrom: i + 1 for i, chrom in enumerate(CHROMOSOMES)}
 
+GENOME_REGION = {
+    "37": {
+        "smn1": {
+            "chrom": 5,
+            "start": 70247713,
+            "end": 70247832,
+        },
+        "smn2": {
+            "chrom": 5,
+            "start": 69372279,
+            "end": 69372427,
+        },
+    },
+    "38": {
+        "smn1": {
+            "chrom": 5,
+            "start": 70951877,
+            "end": 70952014,
+        },
+        "smn2": {
+            "chrom": 5,
+            "start": 70076451,
+            "end": 70076603,
+        },
+    },
+}
+
 
 PAR_COORDINATES = {
     "37": {

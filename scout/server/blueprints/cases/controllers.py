@@ -20,6 +20,7 @@ from scout.constants import (
     CASE_TAGS,
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
+    GENOME_REGION,
     INHERITANCE_PALETTE,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
@@ -282,11 +283,14 @@ def sma_case(store, institute_obj, case_obj):
 
     _populate_case_individuals(case_obj)
 
+    case_has_alignments(case_obj)
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "events": _get_events(store, institute_obj, case_obj),
+        "region": GENOME_REGION[case_obj.get("genome_build", "38")],
     }
     return data
 
