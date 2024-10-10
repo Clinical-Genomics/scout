@@ -261,9 +261,7 @@ def get_acmg_conflicts(acmg_terms: set) -> list:
 
     conflicts = []
     for t1, t2, reference in ACMG_POTENTIAL_CONFLICTS:
-        if t1 not in acmg_terms:
-            continue
-        if t2 in acmg_terms:
+        if t1 in acmg_terms and t2 in acmg_terms:
             conflicts.append(reference)
 
     return conflicts

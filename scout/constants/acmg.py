@@ -324,14 +324,9 @@ ACMG_POTENTIAL_CONFLICTS = [
         "Use of PVS1 and PP2 together is not recommended (Durkie et al 2024).",
     ),
     (
-        "PS1",
-        "PP3",
-        "Use of PS1 and PP3 together risks double-counting evidence (Tayoun et al 2019).",
-    ),
-    (
-        "PS1",
-        "PP5",
-        "Use of PS1 and PP5 together conflicts with original definition (Richards et al 2015).",
+        "PVS1",
+        "PS3",
+        "Note that for RNA PS3 should only be taken with PVS1 for well established functional assays, not splicing alone (Walker 2023).",
     ),
     (
         "PS1",
@@ -339,9 +334,19 @@ ACMG_POTENTIAL_CONFLICTS = [
         "Use of PS1 and PM4 together is not recommended (Durkie et al 2024).",
     ),
     (
-        "PVS1",
-        "PS3",
-        "Note that for RNA PS3 should only be taken with PVS1 for well established functional assays, not splicing alone (Walker 2023).",
+        "PS1",
+        "PM5",
+        "Use of PS1 and PM5 together conflicts with original definition (Richards et al 2015).",
+    ),
+    (
+        "PS1",
+        "PP3",
+        "Use of PS1 and PP3 together risks double-counting evidence (Tayoun et al 2019).",
+    ),
+    (
+        "PS2",
+        "PM6",
+        "Use of PS2 and PM6 together conflicts with original definition (Richards et al 2015).",
     ),
     (
         "PM1",
