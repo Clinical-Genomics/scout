@@ -167,7 +167,7 @@
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
                     <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
                   </form>
-                  <a class="btn btn-secondary btn-xs ms-1" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                  <a class="btn btn-secondary text-white btn-xs ms-1" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
                 {% endif %}
               </td>
               <td>
