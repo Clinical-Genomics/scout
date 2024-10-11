@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
+from scout.constants.panels import EXPORT_PANEL_FIELDS
 from scout.server.extensions import store
 
 
@@ -39,7 +40,10 @@ def test_export_panel(mock_app):
 
     # The CLI command shoud return gene panel
     assert result.exit_code == 0
-    assert "2397\tCRYBB1\t\t\t\t\n9394\tPICK1\t\t\t\t\n" in result.output
+
+    empty_cols: int = "\t" * (len(EXPORT_PANEL_FIELDS) - 2)
+
+    assert f"2397\tCRYBB1{empty_cols}\n9394\tPICK1{empty_cols}" in result.output
 
     # Pass a valid panel name, valid version, bed file format option
     result = runner.invoke(
