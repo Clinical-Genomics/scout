@@ -14,8 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added script to tabulate causatives clinical filter rank
 - Do not display inheritance models associated to ORPHA terms on variant page
 - Moved edit and delete buttons close to gene names on gene panel page and other aesthetical fixes
-- VariantS page functional annotation and region annotation columns merged
-- VariantS page (SNV) gene cell shows OMIM inheritance pattern badges also without hover
+- SNV VariantS page functional annotation and region annotation columns merged
+- VariantS pages (not cancer) gene cells show OMIM inheritance pattern badges also without hover
 - STR variantS page to show STR inheritance model without hover (fallback to OMIM for non-Stranger annotation)
 - VariantS page local observation badges have counts visible also without hover
 ### Fixed
