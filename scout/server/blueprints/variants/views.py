@@ -632,6 +632,7 @@ def cancer_sv_variants(institute_id, case_name):
         expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
+        inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
