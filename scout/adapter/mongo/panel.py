@@ -507,8 +507,12 @@ class PanelHandler:
                 continue
 
             if action == "edit":
-                gene["info"] = current_update["info"]
-                LOG.warning(gene)
+                # reset all fields except hgnc and symbol:
+                for key in EXPORT_PANEL_FIELDS[2:]:
+                    gene.pop(key[1], None)
+                # And update keys with the pending changes
+                for key, value in current_update["info"].items():
+                    gene[key] = value
                 new_genes.append(gene)
 
         new_panel["genes"] = new_genes
