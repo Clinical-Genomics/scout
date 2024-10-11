@@ -1,10 +1,7 @@
 from scout.utils.acmg import (
     get_acmg,
-<<<<<<< HEAD
-    get_acmg_temperature,
-=======
     get_acmg_conflicts,
->>>>>>> 040862aec (Fix #4906 - warn on potentially conflicting ACMG terms. (#4932))
+    get_acmg_temperature,
     is_benign,
     is_likely_benign,
     is_likely_pathogenic,

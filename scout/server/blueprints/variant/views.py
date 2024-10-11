@@ -26,7 +26,11 @@ from scout.server.blueprints.variant.verification_controllers import (
 )
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
+<<<<<<< HEAD
 from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
+=======
+from scout.utils.acmg import get_acmg, get_acmg_conflicts
+>>>>>>> main
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -351,7 +355,6 @@ def acmg():
     acmg_bayesian = get_acmg_temperature(criteria)
     acmg_conflicts = get_acmg_conflicts(criteria)
     return jsonify({"classification": classification, "conflicts": acmg_conflicts, **acmg_bayesian})
-
 
 @variant_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/<order>",

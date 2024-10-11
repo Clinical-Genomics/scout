@@ -1,5 +1,6 @@
 # coding=UTF-8
 
+
 from typing import Optional
 
 from scout.constants import ACMG_COMPLETE_MAP
