@@ -62,7 +62,6 @@
               <th style="width:4%" title="Pop Freq">Pop Freq</th>
               <th style="width:6%" title="Observed database matches">Observed</th>
               <th style="width:5%" title="CADD score">CADD</th>
-              <th style="width:8%" title="Gene region annotation">Gene annotation</th>
               <th style="width:17%" title="Functional annotation">Func. annotation</th>
               <th style="width:17%" title="Inheritance models">Inheritance model</th>
               <th style="width:8%" title="Overlapping">Overlapping</th>
@@ -86,26 +85,19 @@
                     {{ mark_heteroplasmic_mt(case.individuals, variant.samples) }}
                   {% endif %}
 		            </td>
-                <td>{{ gene_cell(variant) }}</td>
+                <td>{{ gene_cell(variant, inherit_palette) }}</td>
                 <td class="text-start">{{ frequency_cell_general(variant) }}</td>
                 <td class="text-start">{{ observed_cell_general(variant) }}</td>
                 <td class="text-end">{{ cell_cadd(variant) }}</td>
                 <td>
-                  {% for annotation in variant.region_annotations %}
-                    <div>{{ annotation }}</div>
-                  {% endfor %}
-                </td>
-                <td>
-                  {% for annotation in variant.functional_annotations %}
-                    <div>{{ annotation }}</div>
-                  {% endfor %}
+                  {{ functional_annotation_cell(variant) }}
                 </td>
                 <td>{{ cell_models(variant) }}</td>
                 <td>{{ overlapping_cell(variant) }}</td>
               </tr>
             {% else %}
               <tr>
-                <td colspan="10">
+                <td colspan="9">
                   No matching variants
                 </td>
               </tr>
@@ -120,6 +112,19 @@
     {{ pagination_footer(more_variants, page) }}
   </div>
 {% endblock %}
+
+{% macro functional_annotation_cell(variant) %}
+<div data-bs-toggle="tooltip" data-bs-html="true" title="
+  <div>
+    {% for annotation in variant.region_annotations %}
+          {{ annotation }}</br>
+    {% endfor %}
+  </div>">
+  {% for annotation in variant.functional_annotations %}
+      <div>{{ annotation }}</div>
+  {% endfor %}
+</div>
+{% endmacro %}
 
 {% macro cell_cadd(variant) %}
   <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
