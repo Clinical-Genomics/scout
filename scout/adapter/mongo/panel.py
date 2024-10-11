@@ -245,8 +245,6 @@ class PanelHandler:
         for panel in res:
             return panel
 
-        LOG.warning("Gene panel not found")
-
         return None
 
     def gene_panels(self, panel_id=None, institute_id=None, version=None, include_hidden=False):
