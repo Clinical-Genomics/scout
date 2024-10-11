@@ -146,21 +146,30 @@
       <table class="table table-bordered" aria-label="Included genes">
         <thead class="table-light thead">
           <tr>
+            <th></th>
             <th>Gene</th>
             <th>HGNC ID</th>
-            <th>Transcripts</th>
+            <th>Disease-associated transcripts</th>
             <th>Reduced penetrance</th>
             <th>Mosaicism</th>
             <th>Entry version</th>
             <th>Manual inheritance (pre-set terms)</th>
             <th>Manual inheritance (free text terms)</th>
             <th>Comment</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {% for gene in panel.genes|sort(attribute='symbol') %}
             <tr>
+              <td>
+                {% if not panel.is_archived %}
+                  <form class="float-start" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+                    <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
+                    <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
+                  </form>
+                  <a class="btn btn-secondary text-white btn-xs ms-1" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                {% endif %}
+              </td>
               <td>
                 <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.symbol }}
@@ -175,15 +184,6 @@
               <td>{{ gene.inheritance_models|join(', ') }}</td>
               <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
               <td>{{ gene.comment }}</td>
-              <td>
-                {% if not panel.is_archived %}
-                  <a class="btn btn-secondary btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
-                  <form class="float-end" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-                    <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
-                    <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
-                  </form>
-                {% endif %}
-              </td>
             </tr>
           {% endfor %}
         </tbody>
