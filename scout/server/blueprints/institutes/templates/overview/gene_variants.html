@@ -56,7 +56,7 @@
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
-            <td class="align-middle">{{ variant_gene_symbols_cell(variant) }}</td>
+            <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
             <td class="align-middle">{{ variant_region_anno_cell(variant) }}</td>

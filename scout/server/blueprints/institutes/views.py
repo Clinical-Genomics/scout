@@ -6,7 +6,14 @@ from flask import Blueprint, flash, jsonify, redirect, render_template, request
 from flask_login import current_user
 from pymongo import DESCENDING
 
-from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CALLERS,
+    INHERITANCE_PALETTE,
+    VERBS_ICONS_MAP,
+    VERBS_MAP,
+)
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
@@ -168,7 +175,14 @@ def gene_variants(institute_id):
             store, results, result_size, page
         )  # decorated variant results, max 50 in a page
 
-    return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)
+    return dict(
+        institute=institute_obj,
+        form=form,
+        inherit_palette=INHERITANCE_PALETTE,
+        page=page,
+        result_size=result_size,
+        **data,
+    )
 
 
 # MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
