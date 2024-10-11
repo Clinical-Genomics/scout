@@ -14,6 +14,7 @@ from scout.build import build_panel
 from scout.exceptions import IntegrityError
 from scout.parse.panel import get_omim_panel_genes
 from scout.utils.date import get_date
+from scout.constants.panels import EXPORT_PANEL_FIELDS
 
 LOG = logging.getLogger(__name__)
 
@@ -462,12 +463,8 @@ class PanelHandler:
         )
         return updated_panel
 
-    def apply_pending(self, panel_obj, version):
+    def apply_pending(self, panel_obj: dict, version: float) -> str:
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
-
-        Args:
-            panel_obj(dict): panel in database to update
-            version(double): panel version to update
 
         Returns:
             inserted_id(str): id of updated panel or the new one
@@ -477,15 +474,6 @@ class PanelHandler:
         new_panel = deepcopy(panel_obj)
         new_panel["pending"] = []
         new_panel["date"] = dt.datetime.now()
-        info_fields = [
-            "disease_associated_transcripts",
-            "inheritance_models",
-            "custom_inheritance_models",
-            "reduced_penetrance",
-            "mosaicism",
-            "database_entry_version",
-            "comment",
-        ]
         new_genes = []
 
         for update in panel_obj.get("pending", []):
@@ -495,12 +483,13 @@ class PanelHandler:
             if update["action"] != "add":
                 updates[hgnc_id] = update
                 continue
+
             info = update.get("info", {})
             gene_obj = {"hgnc_id": hgnc_id, "symbol": update["symbol"]}
 
-            for field in info_fields:
-                if field in info:
-                    gene_obj[field] = info[field]
+            for field in info:
+                gene_obj[field] = info[field]
+
             new_genes.append(gene_obj)
 
         for gene in panel_obj.get("genes", []):
@@ -512,22 +501,19 @@ class PanelHandler:
 
             current_update = updates[hgnc_id]
             action = current_update["action"]
-            info = current_update["info"]
 
             # If action is delete we do not add the gene to new genes
             if action == "delete":
                 continue
 
             if action == "edit":
-                for field in info_fields:
-                    if field in info:
-                        gene[field] = info[field]
+                for key, value in current_update["info"].items():
+                    gene[key] = value
                 new_genes.append(gene)
 
         new_panel["genes"] = new_genes
         new_panel["version"] = float(version)
 
-        inserted_id = None
         # if the same version of the panel should be updated
         if new_panel["version"] == panel_obj["version"]:
             # replace panel_obj with new_panel
