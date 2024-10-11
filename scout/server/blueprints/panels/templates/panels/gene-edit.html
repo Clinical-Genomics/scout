@@ -28,13 +28,13 @@
               </select>
             </div>
             <div class="col-md-4">
+              {{ form.reduced_penetrance() }}
               {{ form.reduced_penetrance.label(class="control-label") }}
               (OMIM: {{ 'Yes' if gene.incomplete_penetrance else 'unknown' }})
-              <div>{{ form.reduced_penetrance() }}</div>
             </div>
             <div class="col-md-4">
+              {{ form.mosaicism() }}
               {{ form.mosaicism.label(class="control-label") }}
-              <div>{{ form.mosaicism() }}</div>
             </div>
           </div>
           <div class="row">
