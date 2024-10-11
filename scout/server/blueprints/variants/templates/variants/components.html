@@ -1,6 +1,6 @@
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 
-{% macro variant_gene_symbols_cell(variant) %}
+{% macro variant_gene_symbols_cell(variant, inherit_palette) %}
   <div class="d-flex justify-content-between align-items-center">
     <div>
       {% if variant.hgnc_symbols|length >= 5 %}
@@ -18,7 +18,30 @@
           {% if variant.hgnc_symbols %}
             <span class="badge bg-secondary mr-3 text-white">{{ variant.hgnc_symbols|length }}</span>
           {% endif %}
-          <span class="text-body">{{variant.hgnc_symbols|sort|join(", ")}}</span>
+          {% for gene in variant.genes %}
+            <a data-bs-toggle="tooltip" data-bs-html="true" title="
+            <div>
+              <div>
+                <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+              </div>
+              {% if gene.inheritance %}
+                <div>
+                  <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+                </div>
+              {% endif %}
+              {% if gene.phenotypes %}
+                <div><strong>OMIM disease</strong>
+                {% for disease in gene.phenotypes %}
+                  <div>
+                      {{ disease.description }}
+                  </div>
+                {% endfor %}
+                </div>
+              {% endif %}
+            </div>"
+              href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+              {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }}{% endfor %}</a>
+          {% endfor %}
         </div>
       {% endif %}
     </div>
