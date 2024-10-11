@@ -1,5 +1,4 @@
 # coding=UTF-8
-from flask import flash
 
 from scout.constants.acmg import ACMG_POTENTIAL_CONFLICTS
 
