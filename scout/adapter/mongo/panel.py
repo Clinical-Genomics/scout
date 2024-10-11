@@ -470,71 +470,47 @@ class PanelHandler:
             inserted_id(str): id of updated panel or the new one
         """
 
-        updates = {}
         new_panel = deepcopy(panel_obj)
         new_panel["pending"] = []
         new_panel["date"] = dt.datetime.now()
         new_genes = []
 
-        for update in panel_obj.get("pending", []):
-            hgnc_id = update["hgnc_id"]
+        # Process 'add' actions and gather updates
+        updates = {u["hgnc_id"]: u for u in panel_obj.get("pending", []) if u["action"] != "add"}
+        new_genes += [
+            {"hgnc_id": u["hgnc_id"], "symbol": u["symbol"], **u.get("info", {})}
+            for u in panel_obj.get("pending", [])
+            if u["action"] == "add"
+        ]
 
-            # If action is add we create a new gene object
-            if update["action"] != "add":
-                updates[hgnc_id] = update
-                continue
-
-            info = update.get("info", {})
-            gene_obj = {"hgnc_id": hgnc_id, "symbol": update["symbol"]}
-
-            for field in info:
-                gene_obj[field] = info[field]
-
-            new_genes.append(gene_obj)
-
+        # Process existing genes
         for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
+            update = updates.get(hgnc_id)
 
-            if hgnc_id not in updates:
+            if not update:  # No update, keep the gene
                 new_genes.append(gene)
-                continue
-
-            current_update = updates[hgnc_id]
-            action = current_update["action"]
-
-            # If action is delete we do not add the gene to new genes
-            if action == "delete":
-                continue
-
-            if action == "edit":
-                # reset all fields except hgnc and symbol:
+            elif update["action"] == "edit":  # Edit gene fields
                 for key in EXPORT_PANEL_FIELDS[2:]:
-                    gene.pop(key[1], None)
-                # And update keys with the pending changes
-                for key, value in current_update["info"].items():
-                    gene[key] = value
+                    gene.pop(key[1], None)  # Reset all fields except hgnc and symbol
+                gene.update(update["info"])
                 new_genes.append(gene)
+            # Skip 'delete' actions
 
         new_panel["genes"] = new_genes
         new_panel["version"] = float(version)
 
-        # if the same version of the panel should be updated
-        if new_panel["version"] == panel_obj["version"]:
-            # replace panel_obj with new_panel
+        # Update same version or create new version
+        LOG.warning(f"version is {version} -- type: {type(version)}")
+        if version == panel_obj["version"]:
             result = self.panel_collection.find_one_and_replace(
-                {"_id": panel_obj["_id"]},
-                new_panel,
-                return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER
             )
             inserted_id = result["_id"]
-        else:  # create a new version of the same panel
+        else:
             new_panel.pop("_id")
-
-            # archive the old panel
             panel_obj["is_archived"] = True
             self.update_panel(panel_obj=panel_obj, date_obj=panel_obj["date"])
-
-            # insert the new panel
             inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
 
         return inserted_id
