@@ -15,7 +15,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not display inheritance models associated to ORPHA terms on variant page
 - Moved edit and delete buttons close to gene names on gene panel page and other aesthetical fixes
 - VariantS page functional annotation and region annotation columns merged
-- VariantS page gene cell shows OMIM inheritance pattern badges also without hover
+- VariantS page (SNV) gene cell shows OMIM inheritance pattern badges also without hover
+- STR variantS page to show STR inheritance model without hover (fallback to OMIM for non-Stranger annotation)
 - VariantS page local observation badges have counts visible also without hover
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
