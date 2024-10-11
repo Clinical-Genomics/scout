@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
+- Extract all fields correctly when exporting a panel to file from gene panel page
 - Custom updates to a gene in a panel
 
 ## [4.89.2]
