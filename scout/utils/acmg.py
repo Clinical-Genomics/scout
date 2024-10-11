@@ -1,7 +1,9 @@
 # coding=UTF-8
+
 from typing import Optional
 
 from scout.constants import ACMG_COMPLETE_MAP
+from scout.constants.acmg import ACMG_POTENTIAL_CONFLICTS
 
 
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
@@ -358,3 +360,14 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
         "temperature_icon": temperature_icon,
         "point_classification": ACMG_COMPLETE_MAP[point_classification].get("short"),
     }
+
+
+def get_acmg_conflicts(acmg_terms: set) -> list:
+    """Check potential conflict paris, return list of reference strings."""
+
+    conflicts = []
+    for t1, t2, reference in ACMG_POTENTIAL_CONFLICTS:
+        if t1 in acmg_terms and t2 in acmg_terms:
+            conflicts.append(reference)
+
+    return conflicts
