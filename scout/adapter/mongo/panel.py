@@ -11,10 +11,10 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from scout.build import build_panel
+from scout.constants.panels import EXPORT_PANEL_FIELDS
 from scout.exceptions import IntegrityError
 from scout.parse.panel import get_omim_panel_genes
 from scout.utils.date import get_date
-from scout.constants.panels import EXPORT_PANEL_FIELDS
 
 LOG = logging.getLogger(__name__)
 
