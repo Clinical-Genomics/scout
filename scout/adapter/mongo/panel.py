@@ -507,8 +507,8 @@ class PanelHandler:
                 continue
 
             if action == "edit":
-                for key, value in current_update["info"].items():
-                    gene[key] = value
+                gene["info"] = current_update["info"]
+                LOG.warning(gene)
                 new_genes.append(gene)
 
         new_panel["genes"] = new_genes
