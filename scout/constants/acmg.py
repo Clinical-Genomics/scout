@@ -297,7 +297,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                     (
                         "BP7",
                         {
-                            "short": "Synonymous, no splice impact",
+                            "short": "Synonymous, no impact on splicing",
                             "description": "A synonymous variant for which splicing prediction algorithms predict no impact to the splice consensus sequence nor the creation of a new splice site",
                         },
                     ),
