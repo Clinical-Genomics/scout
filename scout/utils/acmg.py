@@ -1,4 +1,8 @@
 # coding=UTF-8
+
+from scout.constants.acmg import ACMG_POTENTIAL_CONFLICTS
+
+
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
     """Check if the criterias for Pathogenic is fullfilled
 
@@ -249,3 +253,14 @@ def get_acmg(acmg_terms):
             prediction = "likely_benign"
 
     return prediction
+
+
+def get_acmg_conflicts(acmg_terms: set) -> list:
+    """Check potential conflict paris, return list of reference strings."""
+
+    conflicts = []
+    for t1, t2, reference in ACMG_POTENTIAL_CONFLICTS:
+        if t1 in acmg_terms and t2 in acmg_terms:
+            conflicts.append(reference)
+
+    return conflicts
