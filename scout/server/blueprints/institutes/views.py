@@ -70,11 +70,12 @@ def verified(institute_id):
     verified_vars = controllers.verified_vars(institute_id)
     verified_stats = controllers.verified_stats(institute_id, verified_vars)
     return dict(
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+        callers=CALLERS,
+        inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         verified=verified_vars,
         verified_stats=verified_stats,
-        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
-        callers=CALLERS,
     )
 
 
@@ -83,10 +84,11 @@ def verified(institute_id):
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     return dict(
-        institute=institute_obj,
-        causatives=controllers.causatives(institute_obj, request),
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
         callers=CALLERS,
+        causatives=controllers.causatives(institute_obj, request),
+        institute=institute_obj,
+        inherit_palette=INHERITANCE_PALETTE,
     )
 
 
