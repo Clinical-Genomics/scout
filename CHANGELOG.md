@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
 - Extract all fields correctly when exporting a panel to file from gene panel page
 - Custom updates to a gene in a panel
+- Gene panel PDF export
 
 ## [4.89.2]
 ## Fixed
