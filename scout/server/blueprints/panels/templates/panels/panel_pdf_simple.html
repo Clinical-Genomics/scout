@@ -18,25 +18,25 @@
   <div class="card-body">
     <table class="table table-sm">
       <tr>
-        <td>Updated:<span>{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
+        <td>Updated:{{ panel.date.strftime('%Y-%m-%d') }}</td>
       </tr>
       <tr>
-        <td>Number of genes:<span>{{ panel.genes|length }}</span></td>
+        <td>Number of genes:{{ panel.genes|length }}</td>
       </tr>
       <tr>
-        <td>Institute: <span>{{ panel.institute.display_name }}</span></td>
+        <td>Institute:{{ panel.institute.display_name }}</td>
       </tr>
       <tr>
         <td>Panel archived:
           {% if panel.is_archived %}
-            <span>True</span>
+            True
           {% else %}
-            <span>False</span>
+            False
           {% endif %}
         </td>
       </tr>
       <tr>
-        <td>Panel database ID: <span>{{ panel._id }}</span></td>
+        <td>Panel database ID: {{ panel._id }}</td>
       </tr>
       <tr>
         <td>Maintainers: {{ panel.maintainer|join(", ") }}</td>
