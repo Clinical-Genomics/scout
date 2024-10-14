@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import mei_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Mobile Element Insertion variants
@@ -65,7 +65,6 @@ onsubmit="return validateForm()">
               <th style="width:9%">Start loc</th>
               <th>Frequency</th>
               <th>Gene(s)</th>
-              <th>Region</th>
               <th>Function</th>
             </tr>
           </thead>
@@ -110,9 +109,6 @@ onsubmit="return validateForm()">
     </td>
     <td>
       {{ variant_gene_symbols_cell(variant, inherit_palette) }}
-    </td>
-    <td style="word-wrap:break-word;">
-      {{ variant_region_anno_cell(variant) }}
     </td>
     <td style="word-wrap:break-word;">
       {{ variant_funct_anno_cell(variant) }}

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -56,18 +56,17 @@
       <table id="variantsTable" class="table table-hover table-bordered" aria-label="Somatic SV variants table">
         <thead class="thead table-light">
           <tr>
-            <th style="width:3%"></th>
+            <th style="width:2%"></th>
             <th style="width:9%">Index</th>
             <th>Type</th>
-            <th>Chr</th>
+            <th style="width:5%">Chr</th>
             <th>Start</th>
             <th>End</th>
             <th>Length</th>
             <th>Pop Freq</th>
             <th>Observed</th>
-            <th>Gene(s)</th>
-            <th>Region</th>
-            <th style="width:12%">Function</th>
+            <th style="width:12%">Gene(s)</th>
+            <th style="width:16%">Function</th>
             <th style="width:9%" data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
             <th style="width:6%" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
           </tr>
@@ -77,7 +76,7 @@
             {{ variant_row(variant) }}
           {% else %}
             <tr>
-                <td colspan="10">No matching variants</td>
+                <td colspan="13">No matching variants</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -115,9 +114,6 @@
     <td>{{observed_cell_general(variant)}}</td>
     <td>
       {{ variant_gene_symbols_cell(variant, inherit_palette) }}
-    </td>
-    <td>
-      {{ variant_region_anno_cell(variant) }}
     </td>
     <td>
       {{ variant_funct_anno_cell(variant) }}
