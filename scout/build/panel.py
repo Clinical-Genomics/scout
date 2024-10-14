@@ -53,17 +53,6 @@ def build_gene(gene_info: dict, adapter) -> dict:
     if gene_info.get("inheritance_models"):
         gene_obj["inheritance_models"] = gene_info["inheritance_models"]
 
-        """
-        custom_models = []
-        for model in gene_info["inheritance_models"]:
-            if model not in VALID_MODELS:
-                custom_models.append(model)
-                continue
-            gene_obj["inheritance_models"].append(model)
-            lc_model = model.lower()  # example ad = True
-            gene_obj[lc_model] = True
-        """
-
     if gene_info.get("custom_inheritance_models"):
         gene_obj["custom_inheritance_models"] = [
             model.upper()
