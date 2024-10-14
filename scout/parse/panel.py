@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from scout.constants import (
     INCOMPLETE_PENETRANCE_MAP,
@@ -85,25 +85,20 @@ def get_hgnc_identifier(gene_info, id_type="hgnc_id"):
     return None
 
 
-def parse_gene(gene_info):
-    """Parse a gene line with information from a panel file
+def parse_gene(gene_info: dict) -> dict:
+    """Parse a gene line with information from a panel file"""
 
-    Args:
-        gene_info(dict): dictionary with gene info
+    def get_alias_keys_value(alias_keys: list[str]) -> List[str]:
+        """The same field (a list of strings) has been named with many keys over the years. Collect the list of strings associated to these alias keys."""
+        values_list = []
+        for alias_key in alias_keys:
+            if not alias_key in gene_info:
+                continue
+            for item in gene_info[alias_key].strip('"').split(","):
+                if item:
+                    values_list.append(item.strip())
+        return values_list
 
-    Returns:
-        gene(dict): A dictionary with the gene information
-            {
-            'hgnc_id': int,
-            'hgnc_symbol': str,
-            'disease_associated_transcripts': list(str),
-            'inheritance_models': list(str),
-            'mosaicism': bool,
-            'reduced_penetrance': bool,
-            'database_entry_version': str,
-            }
-
-    """
     gene = {}
 
     hgnc_id = get_hgnc_identifier(gene_info, id_type="hgnc_id")
@@ -118,39 +113,34 @@ def parse_gene(gene_info):
     gene["hgnc_symbol"] = get_hgnc_identifier(gene_info, id_type="hgnc_symbol")
     gene["identifier"] = hgnc_id or gene["hgnc_symbol"]
 
-    # Disease associated transcripts is a ','-separated list of
-    # manually curated transcripts
-    transcripts = ""
-    for field in PANEL_GENE_INFO_TRANSCRIPTS:
-        if field not in gene_info:
-            continue
-        transcripts = gene_info[field].strip('"')
+    transcript_values: Optional[List[str]] = get_alias_keys_value(
+        alias_keys=PANEL_GENE_INFO_TRANSCRIPTS
+    )
+    if transcript_values:
+        gene["transcripts"] = transcript_values
 
-    gene["transcripts"] = [
-        transcript.strip() for transcript in transcripts.split(",") if transcript
-    ]
+    inheritance_models_values: Optional[List[str]] = get_alias_keys_value(
+        alias_keys=PANEL_GENE_INFO_MODELS
+    )
+    if inheritance_models_values:
+        gene["inheritance_models"] = inheritance_models_values
 
-    # Genetic disease models is a ','-separated list of manually curated
-    # inheritance patterns that are followed for a gene
-    models = ""
-    for field in PANEL_GENE_INFO_MODELS:
-        if field not in gene_info:
-            continue
-        models = gene_info[field].strip().strip('"')
+    custom_inheritance_models_values: Optional[List[str]] = get_alias_keys_value(
+        alias_keys=["custom_inheritance_models"]
+    )
+    if custom_inheritance_models_values:
+        gene["custom_inheritance_models"] = custom_inheritance_models_values
 
-    # Collect whichever model provided by the user.
-    # Then populate inheritance_models and custom_inheritance_models on gene build step
-    gene["inheritance_models"] = [model.strip() for model in models.split(",") if model != ""]
+    for bool_key in ["mosaicism", "reduced_penetrance"]:
+        bool_value = bool(gene_info.get(bool_key))
+        if bool_value:
+            gene[bool_key] = bool_value
 
-    # If a gene is known to be associated with mosaicism this is annotated
-    gene["mosaicism"] = bool(gene_info.get("mosaicism"))
+    for key in ["database_entry_version", "comment"]:
+        value = gene_info.get(key)
+        if value:
+            gene[key] = value
 
-    # If a gene is known to have reduced penetrance this is annotated
-    gene["reduced_penetrance"] = bool(gene_info.get("reduced_penetrance"))
-
-    # The database entry version is a way to track when a a gene was added or
-    # modified, optional
-    gene["database_entry_version"] = gene_info.get("database_entry_version")
     return gene
 
 

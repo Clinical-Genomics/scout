@@ -1,46 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import datetime as datetime
 
 from scout.constants import VALID_MODELS
-from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
 
-def build_gene(gene_info, adapter):
-    """Build a panel_gene object
+def build_gene(gene_info: dict, adapter) -> dict:
+    """Build a panel_gene object"""
 
-    Args:
-        gene_info(dict)
-
-    Returns:
-        gene_obj(dict)
-
-        panel_gene = dict(
-            hgnc_id = int, # required
-            symbol = str,
-
-            disease_associated_transcripts = list, # list of strings that represent refseq transcripts
-            reduced_penetrance = bool,
-            mosaicism = bool,
-            database_entry_version = str,
-            comment = str, # panel level gene comment str
-
-            ar = bool,
-            ad = bool,
-            mt = bool,
-            xr = bool,
-            xd = bool,
-            x = bool,
-            y = bool,
-        )
-
-    """
     symbol = gene_info.get("hgnc_symbol")
     try:
         # A gene has to have a hgnc id
-        hgnc_id = gene_info["hgnc_id"]
+        hgnc_id = gene_info.get("hgnc_id")
         if not hgnc_id:
             raise KeyError()
     except KeyError as err:
@@ -79,7 +51,9 @@ def build_gene(gene_info, adapter):
             gene_obj[gene_member_variable_bool] = True
 
     if gene_info.get("inheritance_models"):
-        gene_obj["inheritance_models"] = []
+        gene_obj["inheritance_models"] = gene_info["inheritance_models"]
+
+        """
         custom_models = []
         for model in gene_info["inheritance_models"]:
             if model not in VALID_MODELS:
@@ -88,7 +62,14 @@ def build_gene(gene_info, adapter):
             gene_obj["inheritance_models"].append(model)
             lc_model = model.lower()  # example ad = True
             gene_obj[lc_model] = True
-        gene_obj["custom_inheritance_models"] = custom_models
+        """
+
+    if gene_info.get("custom_inheritance_models"):
+        gene_obj["custom_inheritance_models"] = [
+            model.upper()
+            for model in gene_info["custom_inheritance_models"]
+            if model.upper() in VALID_MODELS
+        ]
 
     return gene_obj
 
