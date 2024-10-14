@@ -514,14 +514,14 @@ MOSAICISM_OPTIONS = {
 }
 
 VARIANTS_TARGET_FROM_CATEGORY = {
-    "sv": "variants.sv_variants",
     "cancer": "variants.cancer_variants",
     "cancer_sv": "variants.cancer_sv_variants",
+    "fusion": "variants.fusion_variants",
     "mei": "variants.mei_variants",
+    "outlier": "omics_variants.outliers",
     "snv": "variants.variants",
     "str": "variants.str_variants",
-    "fusion": "variants.fusion_variants",
-    "outlier": "omics_variants.outliers",
+    "sv": "variants.sv_variants",
 }
 
 _FREEBAYES = {"id": "freebayes", "name": "Freebayes"}
