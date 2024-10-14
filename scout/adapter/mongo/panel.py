@@ -11,6 +11,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 from scout.build import build_panel
+from scout.constants.panels import EXPORT_PANEL_FIELDS
 from scout.exceptions import IntegrityError
 from scout.parse.panel import get_omim_panel_genes
 from scout.utils.date import get_date
@@ -462,89 +463,53 @@ class PanelHandler:
         )
         return updated_panel
 
-    def apply_pending(self, panel_obj, version):
+    def apply_pending(self, panel_obj: dict, version: float) -> str:
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
-
-        Args:
-            panel_obj(dict): panel in database to update
-            version(double): panel version to update
 
         Returns:
             inserted_id(str): id of updated panel or the new one
         """
 
-        updates = {}
         new_panel = deepcopy(panel_obj)
         new_panel["pending"] = []
         new_panel["date"] = dt.datetime.now()
-        info_fields = [
-            "disease_associated_transcripts",
-            "inheritance_models",
-            "custom_inheritance_models",
-            "reduced_penetrance",
-            "mosaicism",
-            "database_entry_version",
-            "comment",
-        ]
         new_genes = []
 
-        for update in panel_obj.get("pending", []):
-            hgnc_id = update["hgnc_id"]
+        # Process 'add' actions and gather updates
+        updates = {u["hgnc_id"]: u for u in panel_obj.get("pending", []) if u["action"] != "add"}
+        new_genes += [
+            {"hgnc_id": u["hgnc_id"], "symbol": u["symbol"], **u.get("info", {})}
+            for u in panel_obj.get("pending", [])
+            if u["action"] == "add"
+        ]
 
-            # If action is add we create a new gene object
-            if update["action"] != "add":
-                updates[hgnc_id] = update
-                continue
-            info = update.get("info", {})
-            gene_obj = {"hgnc_id": hgnc_id, "symbol": update["symbol"]}
-
-            for field in info_fields:
-                if field in info:
-                    gene_obj[field] = info[field]
-            new_genes.append(gene_obj)
-
+        # Process existing genes
         for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
+            update = updates.get(hgnc_id)
 
-            if hgnc_id not in updates:
+            if not update:  # No update, keep the gene
                 new_genes.append(gene)
-                continue
-
-            current_update = updates[hgnc_id]
-            action = current_update["action"]
-            info = current_update["info"]
-
-            # If action is delete we do not add the gene to new genes
-            if action == "delete":
-                continue
-
-            if action == "edit":
-                for field in info_fields:
-                    if field in info:
-                        gene[field] = info[field]
+            elif update["action"] == "edit":  # Edit gene fields
+                for key in EXPORT_PANEL_FIELDS[2:]:
+                    gene.pop(key[1], None)  # Reset all fields except hgnc and symbol
+                gene.update(update["info"])
                 new_genes.append(gene)
+            # Skip 'delete' actions
 
         new_panel["genes"] = new_genes
         new_panel["version"] = float(version)
 
-        inserted_id = None
-        # if the same version of the panel should be updated
-        if new_panel["version"] == panel_obj["version"]:
-            # replace panel_obj with new_panel
+        # Update same version or create new version
+        if version == panel_obj["version"]:
             result = self.panel_collection.find_one_and_replace(
-                {"_id": panel_obj["_id"]},
-                new_panel,
-                return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER
             )
             inserted_id = result["_id"]
-        else:  # create a new version of the same panel
+        else:
             new_panel.pop("_id")
-
-            # archive the old panel
             panel_obj["is_archived"] = True
             self.update_panel(panel_obj=panel_obj, date_obj=panel_obj["date"])
-
-            # insert the new panel
             inserted_id = self.panel_collection.insert_one(new_panel).inserted_id
 
         return inserted_id

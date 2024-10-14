@@ -384,12 +384,14 @@ def gene_edit(panel_id, hgnc_id):
     form.disease_associated_transcripts.choices = tx_choices(hgnc_id, panel_obj)
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
-        info_data = form.data.copy()
-        if "csrf_token" in info_data:
-            del info_data["csrf_token"]
-        if info_data["custom_inheritance_models"] != "":
-            info_data["custom_inheritance_models"] = info_data["custom_inheritance_models"].split(
-                ","
+        info_data: dict = {
+            k: v for k, v in form.data.copy().items() if v
+        }  # Update only fields edited by user
+        info_data.pop("csrf_token", None)
+
+        if info_data.get("custom_inheritance_models", ""):
+            info_data["custom_inheritance_models"] = (
+                info_data["custom_inheritance_models"].replace(" ", "").split(",")
             )
         store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for(".panel", panel_id=panel_id))
@@ -416,4 +418,5 @@ def gene_edit(panel_id, hgnc_id):
                 panel_value = panel_gene.get(field_key)
                 if panel_value is not None:
                     form_field.process_data(panel_value)
+
     return dict(panel=panel_obj, form=form, gene=hgnc_gene, panel_gene=panel_gene)
