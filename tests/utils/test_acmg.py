@@ -1,6 +1,7 @@
 from scout.utils.acmg import (
     get_acmg,
     get_acmg_conflicts,
+    get_acmg_temperature,
     is_benign,
     is_likely_benign,
     is_likely_pathogenic,
@@ -385,47 +386,47 @@ def test_get_acmg_no_terms():
 
 
 def test_get_acmg_pathogenic():
-    acmg_terms = ["PVS1", "PS1"]
+    acmg_terms = {"PVS1", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
-    acmg_terms = ["PVS1", "PS1", "BS1"]
+    acmg_terms = {"PVS1", "PS1", "BS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
 
 def test_get_acmg_modifier():
-    acmg_terms = ["PVS1", "PS1"]
+    acmg_terms = {"PVS1", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "pathogenic"
 
-    acmg_terms = ["PVS1_Moderate", "PS1"]
+    acmg_terms = {"PVS1_Moderate", "PS1"}
     res = get_acmg(acmg_terms)
     assert res == "likely_pathogenic"
 
 
 def test_get_acmg_uncertain():
-    acmg_terms = ["PVS1"]
+    acmg_terms = {"PVS1"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
-    acmg_terms = ["PVS1", "PS1", "BS1", "BS2"]
+    acmg_terms = {"PVS1", "PS1", "BS1", "BS2"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
 
 def test_get_acmg_stand_alone_benign():
-    acmg_terms = ["PVS1", "PS1", "BA1"]
+    acmg_terms = {"PVS1", "PS1", "BA1"}
     res = get_acmg(acmg_terms)
     assert res == "benign"
 
-    bs_terms = ["BA1", "BS1", "BP1"]
+    acmg_terms = {"BA1", "BS1", "BP1"}
     res = get_acmg(acmg_terms)
     assert res == "benign"
 
 
 def test_acmg_modifier_on_both_benign_and_pathogenic():
-    acmg_terms = ["PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"]
+    acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
     res = get_acmg(acmg_terms)
     assert res == "uncertain_significance"
 
@@ -440,3 +441,23 @@ def test_acmg_conflicts():
     acmg_terms = {"PVS1", "PM4"}
     conflicts = get_acmg_conflicts(acmg_terms)
     assert len(conflicts) == 1
+
+
+def test_acmg_temperature():
+    acmg_terms = {"PVS1", "PS1", "PP1", "BS1", "BS2"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 5
+    assert res["temperature"] == "Hot"
+    assert res["point_classification"] == "VUS"
+
+    acmg_terms = {"PS3_Moderate", "PP1_Moderate", "PP3", "BS1_Supporting"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 4
+    assert res["temperature"] == "Warm"
+    assert res["point_classification"] == "VUS"
+
+    acmg_terms = {"PVS1", "BS2", "BP1"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 3
+    assert res["temperature"] == "Tepid"
+    assert res["point_classification"] == "VUS"

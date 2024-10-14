@@ -103,24 +103,20 @@
       </div>
     <!-- classification preview in the footer-->
       <div class="mt-3 fixed-bottom bg-light border">
-        <div class="text-center">
+        <div class="row">
+          <div class="col-3" style="font-size:1.5em">
+            <a href="https://clinicalgenome.org/docs/modeling-the-acmg-amp-variant-classification-gudielines-as-a-bayesian-classification-framework/" data-bs-toggle="tooltip" title="Classification based on the Bayesian score model in Tavtigian et al." rel="noopener noreferrer" target="_blank"><span id="temperature_span" class="badge"></span></a>
+          </div>
+          <div class="col-6 text-center">
           {% for option in ACMG_OPTIONS %}
-            <a id="acmg-{{ option.code }}" class="btn acmg-preview">{{ option.label }}</a>
+            <a id="acmg-{{ option.code }}" href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf" class="btn acmg-preview" data-bs-toggle="tooltip" title="Suggested classification based on Richards et al 2015.">{{ option.label }}</a>
           {% endfor %}
+          </div>
         </div>
       </div>
     </form>
   </div>
 {% endblock %}
-
-{% macro preview() %}
-  <div class="card panel-default">
-    <div class="card-body">
-      <span class="text-muted">Classification</span>
-      <h5>Likely Pathogenic</h5>
-    </div>
-  </div>
-{% endmacro %}
 
 {% block scripts %}
   {{ super() }}
@@ -173,10 +169,13 @@
         // add new selection
         $('#acmg-' + data.classification).addClass('btn-primary');
 
+        var temperature_span = document.getElementById("temperature_span");
+        temperature_span.innerHTML = 'Score ' + data.points + ' <span class="fa ' + data.temperature_icon + '"></span> ' + data.temperature + ' (' + data.point_classification + ')'
+        temperature_span.className = 'badge bg-' + data.temperature_class
+
         // Update any classification conflicts
         var conflicts_div = document.getElementById("conflicts_div");
         conflicts_div.innerHTML = data.conflicts.join("<br>");
-
       });
     }
   </script>
