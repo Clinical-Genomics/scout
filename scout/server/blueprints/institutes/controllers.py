@@ -736,7 +736,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
 def filters(store, institute_id):
     """Retrieve all filters for an institute"""
     filters = []
-    categories = ["cancer", "snv", "str", "sv"]
+    categories = ["cancer", "cancer_sv", "fusion", "mei", "outlier", "snv", "str", "sv"]
     for category in categories:
         category_filters = store.filters(institute_id, category)
         filters.extend(category_filters)
