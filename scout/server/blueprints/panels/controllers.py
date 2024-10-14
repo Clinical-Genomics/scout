@@ -324,9 +324,9 @@ def downloaded_panel_name(panel_obj, format) -> str:
 
 def panel_data(store, panel_obj):
     """Preprocess a panel of genes."""
+
     panel_obj["institute"] = store.institute(panel_obj["institute"])
-    full_name = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
-    panel_obj["name_and_version"] = full_name
+    panel_obj["name_and_version"] = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
 
     return dict(panel=panel_obj)
 

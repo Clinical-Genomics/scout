@@ -18,25 +18,28 @@
   <div class="card-body">
     <table class="table table-sm">
       <tr>
-        <td>Updated:<span class="badge bg-secondary rounded-pill text-white">{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
+        <td>Updated:{{ panel.date.strftime('%Y-%m-%d') }}</td>
       </tr>
       <tr>
-        <td>Number of genes:<span class="badge bg-secondary rounded-pill text-white">{{ panel.genes|length }}</span></td>
+        <td>Number of genes:{{ panel.genes|length }}</td>
       </tr>
       <tr>
-        <td>Institute: <span class="badge bg-secondary rounded-pill text-white">{{ panel.institute.display_name }}</span></td>
+        <td>Institute:{{ panel.institute.display_name }}</td>
       </tr>
       <tr>
         <td>Panel archived:
           {% if panel.is_archived %}
-            <span class="badge bg-danger rounded-pill">True</span>
+            True
           {% else %}
-            <span class="badge bg-secondary rounded-pill text-white">False</span>
+            False
           {% endif %}
         </td>
       </tr>
       <tr>
-        <td>Panel database ID: <span class="badge bg-secondary rounded-pill text-white">{{ panel._id }}</span></td>
+        <td>Panel database ID: {{ panel._id }}</td>
+      </tr>
+      <tr>
+        <td>Maintainers: {{ panel.maintainer|join(", ") }}</td>
       </tr>
     </table>
   </div>
@@ -45,27 +48,31 @@
   <div>
     <table class="table table-sm">
       <tr>
-        <td></td>
-        <td>HGNC id</td>
-        <td>Gene name</td>
-        <td>Disease associated transcripts</td>
-        <td>Reduced penetrance</td>
-        <td>Mosaicism</td>
-        <td>Entry version</td>
-        <td>Inheritance</td>
+        <th></th>
+        <th>Gene</th>
+        <th>HGNC ID</th>
+        <th>Disease-associated transcripts</th>
+        <th>Reduced penetrance</th>
+        <th>Mosaicism</th>
+        <th>Entry version</th>
+        <th>Manual inheritance (pre-set terms)</th>
+        <th>Manual inheritance (free text terms)</th>
+        <th>Comment</th>
       </tr>
       {% for gene in panel.genes|sort(attribute='symbol') %}
         <tr>
           <td>{{loop.index}}</td>
-          <td>
-            <a style="text-decoration:none;" href="https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={{gene.hgnc_id}}" target="_blank">{{gene.hgnc_id}}</a>
-          </td>
           <td>{{ gene.symbol }}</td>
+          <td>
+            <a style="text-decoration:none;" href="https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:{{gene.hgnc_id}}" target="_blank">{{gene.hgnc_id}}</a>
+          </td>
           <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
           <td>{{ 'Reduced penetrance' if gene.reduced_penetrance }}</td>
-          <td>{{ 'Mosaicism' if gene.mosaicism}}</td>
-          <td><span class="badge bg-secondary">{{ gene.database_entry_version }}</span></td>
+          <td>{{ 'Mosaicism' if gene.mosaicism }}</td>
+          <td>{{ gene.database_entry_version }}</td>
           <td>{{ gene.inheritance_models|join(', ') }}</td>
+          <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
+          <td>{{ gene.comment }}</td>
         </tr>
       {% endfor %}
     </table>
