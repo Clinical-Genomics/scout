@@ -127,7 +127,8 @@
   <div class="d-flex justify-content-between align-items-center">
     <div data-bs-toggle="tooltip" data-bs-html="true" title="<div class='text-start'>
       {% if variant.functional_annotations|length >= 5 %}
-        {% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}
+        Regional annotations<br>
+        {% if variant.missing_data %}[first 30 genes]{% endif %}
         {% for annotation in variant.region_annotations|sort %}
           {{ annotation }}<br>
         {% endfor %}
