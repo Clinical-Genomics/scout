@@ -2,6 +2,7 @@
 import logging
 
 from scout.constants import VALID_MODELS
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
