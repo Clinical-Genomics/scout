@@ -208,7 +208,9 @@
           </a>
       {% endif %}
     {% else %}
+      {% set panel_count = variant.case_panels|rejectattr('removed')|list|count %}
       {% for gene in variant.genes %}
+        <div>
         <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
@@ -231,10 +233,7 @@
         </div>"
           href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
         {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }}{% endfor %}</a>
-      {% endfor %}
-
-      {% set panel_count = variant.case_panels|rejectattr('removed')|list|count %}
-      {% if panel_count > 0 %}
+        {% if panel_count > 0 %}
           <a
             class="badge bg-secondary text-white"
             data-bs-toggle="popover"
@@ -245,7 +244,10 @@
               {% endfor %}"
             title="Overlapping gene panels">{{panel_count}}
           </a>
-      {% endif %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
     {% endif %}
   </div>
 {% endmacro %}
