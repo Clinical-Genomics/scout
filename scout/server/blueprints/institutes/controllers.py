@@ -10,7 +10,13 @@ from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
-from scout.constants import CASE_STATUSES, DATE_DAY_FORMATTER, ID_PROJECTION, PHENOTYPE_GROUPS
+from scout.constants import (
+    CASE_STATUSES,
+    DATE_DAY_FORMATTER,
+    ID_PROJECTION,
+    PHENOTYPE_GROUPS,
+    VARIANTS_TARGET_FROM_CATEGORY,
+)
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
@@ -736,7 +742,8 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
 def filters(store, institute_id):
     """Retrieve all filters for an institute"""
     filters = []
-    categories = ["cancer", "snv", "str", "sv"]
+
+    categories = VARIANTS_TARGET_FROM_CATEGORY.keys()
     for category in categories:
         category_filters = store.filters(institute_id, category)
         filters.extend(category_filters)
