@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extract all fields correctly when exporting a panel to file from gene panel page
 - Custom updates to a gene in a panel
 - Gene panel PDF export, including gene links
+- Cancer SV, Fusion, MEI and Outlier filters are shown on the Institute Filters overview
 
 ## [4.89.2]
 ## Fixed
