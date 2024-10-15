@@ -2,9 +2,9 @@
 import datetime as dt
 import logging
 import re
-from typing import List
+from typing import List, Optional
 
-from flask import flash, redirect
+from flask import flash, redirect, response
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
@@ -48,7 +48,7 @@ def panel_decode_lines(panel_file):
     return lines
 
 
-def create_new_panel(store: MongoAdapter, request: LocalProxy, lines: List[str]) -> str:
+def create_new_panel(store: MongoAdapter, request: LocalProxy, lines: List[str]) -> Optional[str]:
     """Create a new gene panel with the data provided using the form
     Returns:
         new_panel_id(str): the _id a newly created panel
@@ -104,7 +104,7 @@ def update_existing_panel(store, request, lines):
         )
 
 
-def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> str:
+def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[str, Response]:
     """Process a user request to create a new gene panel
 
     Returns:
