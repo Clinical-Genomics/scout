@@ -155,8 +155,13 @@
           <div class="card">
             <div class="card-header" id="heading_{{match_obj.match_oid}}">
               <h2 class="mb-0">
-                <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#div_{{match_obj.match_oid}}" aria-expanded="false" aria-controls="collapseTwo">
+                <button class="btn btn-link collapsed" type="button" {% if match_obj.patients|length == 0 %} disabled {% endif %} data-bs-toggle="collapse" data-bs-target="#div_{{match_obj.match_oid}}" aria-expanded="false" aria-controls="collapseTwo">
                   Match {{match_obj.match_date.strftime('%Y-%m-%d %H:%M')}}
+                  {% if match_obj.patients %}
+                    <span class="badge rounded-pill bg-success ms-3">matches: {{match_obj.patients|length}}</span>
+                  {% else %}
+                    <span class="badge rounded-pill bg-secondary ms-3">No matches available</span>
+                  {% endif %}
                 </button>
               </h2>
             </div>

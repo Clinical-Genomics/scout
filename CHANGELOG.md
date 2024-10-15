@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - VariantS pages (not cancer) gene cells show OMIM inheritance pattern badges also without hover
 - STR variantS page to show STR inheritance model without hover (fallback to OMIM for non-Stranger annotation)
 - VariantS page local observation badges have counts visible also without hover
+- On Matchmaker page, show number of matches together with matching attempt date
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
@@ -28,7 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel PDF export, including gene links
 - Cancer SV, Fusion, MEI and Outlier filters are shown on the Institute Filters overview
 - CaseS advanced search limit
-- Visibility of Matchmaker Exchange matches on dark model
+- Visibility of Matchmaker Exchange matches on dark mode
 
 ## [4.89.2]
 ## Fixed
