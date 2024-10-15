@@ -86,60 +86,51 @@ def get_hgnc_identifier(gene_info, id_type="hgnc_id"):
 
 
 def parse_gene(gene_info: dict) -> dict:
-    """Parse a gene line with information from a panel file"""
+    """Parse a gene line with information from a panel file."""
 
     def get_alias_keys_value(alias_keys: list[str]) -> List[str]:
-        """The same field (a list of strings) has been named with many keys over the years. Collect the list of strings associated to these alias keys."""
-        values_list = []
-        for alias_key in alias_keys:
-            if not alias_key in gene_info:
-                continue
-            for item in gene_info[alias_key].strip('"').split(","):
-                if item:
-                    values_list.append(item.strip())
-        return values_list
+        """Collect list of strings from the alias keys present in gene_info."""
+        return [
+            item.strip()
+            for alias_key in alias_keys
+            if alias_key in gene_info
+            for item in gene_info[alias_key].strip('"').split(",")
+            if item
+        ]
 
     gene = {}
 
+    # Parse hgnc_id and handle errors
     hgnc_id = get_hgnc_identifier(gene_info, id_type="hgnc_id")
     if hgnc_id is not None:
         try:
             hgnc_id = int(hgnc_id)
         except ValueError:
-            raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
+            raise SyntaxError(f"Invalid hgnc id: {hgnc_id}")
 
     gene["hgnc_id"] = hgnc_id
-
     gene["hgnc_symbol"] = get_hgnc_identifier(gene_info, id_type="hgnc_symbol")
     gene["identifier"] = hgnc_id or gene["hgnc_symbol"]
 
-    transcript_values: Optional[List[str]] = get_alias_keys_value(
-        alias_keys=PANEL_GENE_INFO_TRANSCRIPTS
+    # Add list values from alias keys
+    gene.update(
+        {
+            "disease_associated_transcripts": get_alias_keys_value(PANEL_GENE_INFO_TRANSCRIPTS),
+            "inheritance_models": get_alias_keys_value(PANEL_GENE_INFO_MODELS),
+            "custom_inheritance_models": get_alias_keys_value(["custom_inheritance_models"]),
+        }
     )
-    if transcript_values:
-        gene["disease_associated_transcripts"] = transcript_values
 
-    inheritance_models_values: Optional[List[str]] = get_alias_keys_value(
-        alias_keys=PANEL_GENE_INFO_MODELS
+    # Remove empty keys
+    gene = {k: v for k, v in gene.items() if v}
+
+    # Add boolean flags if they are True
+    gene.update({key: True for key in ["mosaicism", "reduced_penetrance"] if gene_info.get(key)})
+
+    # Add optional fields
+    gene.update(
+        {key: gene_info[key] for key in ["database_entry_version", "comment"] if gene_info.get(key)}
     )
-    if inheritance_models_values:
-        gene["inheritance_models"] = inheritance_models_values
-
-    custom_inheritance_models_values: Optional[List[str]] = get_alias_keys_value(
-        alias_keys=["custom_inheritance_models"]
-    )
-    if custom_inheritance_models_values:
-        gene["custom_inheritance_models"] = custom_inheritance_models_values
-
-    for bool_key in ["mosaicism", "reduced_penetrance"]:
-        bool_value = bool(gene_info.get(bool_key))
-        if bool_value:
-            gene[bool_key] = bool_value
-
-    for key in ["database_entry_version", "comment"]:
-        value = gene_info.get(key)
-        if value:
-            gene[key] = value
 
     return gene
 
