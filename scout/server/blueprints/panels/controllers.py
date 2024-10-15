@@ -2,9 +2,9 @@
 import datetime as dt
 import logging
 import re
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from flask import flash, redirect, response
+from flask import Response, flash, redirect
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
