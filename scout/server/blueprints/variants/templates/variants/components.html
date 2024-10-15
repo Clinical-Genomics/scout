@@ -1,4 +1,6 @@
-{% macro variant_gene_symbols_cell(variant) %}
+{% from "variant/gene_disease_relations.html" import inheritance_badge %}
+
+{% macro variant_gene_symbols_cell(variant, inherit_palette) %}
   <div class="d-flex justify-content-between align-items-center">
     <div>
       {% if variant.hgnc_symbols|length >= 5 %}
@@ -16,7 +18,30 @@
           {% if variant.hgnc_symbols %}
             <span class="badge bg-secondary mr-3 text-white">{{ variant.hgnc_symbols|length }}</span>
           {% endif %}
-          <span class="text-body">{{variant.hgnc_symbols|sort|join(", ")}}</span>
+          {% for gene in variant.genes %}
+            <a data-bs-toggle="tooltip" data-bs-html="true" title="
+            <div>
+              <div>
+                <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+              </div>
+              {% if gene.inheritance %}
+                <div>
+                  <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+                </div>
+              {% endif %}
+              {% if gene.phenotypes %}
+                <div><strong>OMIM disease</strong>
+                {% for disease in gene.phenotypes %}
+                  <div>
+                      {{ disease.description }}
+                  </div>
+                {% endfor %}
+                </div>
+              {% endif %}
+            </div>"
+              href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+              {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }}{% endfor %}</a>
+          {% endfor %}
         </div>
       {% endif %}
     </div>
@@ -38,8 +63,8 @@
       <th id="frame_status" style="width:8%" title="Frame status of the fusion">Frame Status</th>
       <th id="transcripts" style="width:8%" title="Transcript ID">Transcript ID</th>
       <th id="exons" style="width:4%" title="Exon Number">Exon Number</th>
-      <th id="brealpoints" style="width:4%" title="Breakpoints">Breakpoints</th>
-      <th id="oriantation" style="width:4%" title="Orientation">Orientation</th>
+      <th id="breakpoints" style="width:4%" title="Breakpoints">Breakpoints</th>
+      <th id="orientation" style="width:4%" title="Orientation">Orientation</th>
     </tr>
   </thead>
 {% endmacro %}
@@ -100,10 +125,20 @@
 
 {% macro variant_funct_anno_cell(variant) %}
   <div class="d-flex justify-content-between align-items-center">
-    <div>
-      {% if variant.category == "fusion" %}
-        {{ variant.frame_status|lower if variant.frame_status else "-" }}
+    <div data-bs-toggle="tooltip" data-bs-html="true" title="<div class='text-start'>
+      {% if variant.functional_annotations|length >= 5 %}
+        Regional annotations<br>
+        {% if variant.missing_data %}[first 30 genes]{% endif %}
+        {% for annotation in variant.region_annotations|sort %}
+          {{ annotation }}<br>
+        {% endfor %}
       {% else %}
+        {{ variant.region_annotations|sort|join(', ') }}
+      {% endif %}
+    </div>">
+    {% if variant.category == "fusion" %}
+      {{ variant.frame_status|lower if variant.frame_status else "-" }}
+    {% else %}
         {% if variant.functional_annotations|length >= 5 %}
           <a class="mr-3" data-bs-toggle="collapse" href="#_functanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
           <div class="collapse" id="_functanno_{{variant._id}}">
@@ -123,26 +158,8 @@
   </div>
 {% endmacro %}
 
-{% macro variant_region_anno_cell(variant) %}
-  <div class="d-flex justify-content-between align-items-center">
-    <div>
-      {% if variant.functional_annotations|length >= 5 %}
-        <a class="mr-3" data-bs-toggle="collapse" href="#_regionanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
-        <div class="collapse" id="_regionanno_{{variant._id}}">
-          {% for annotation in variant.region_annotations|sort %}
-            {{ annotation }}<br>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div>
-          {{ variant.region_annotations|sort|join(", ") }}
-        </div>
-      {% endif %}
-    </div>
-  </div>
-{% endmacro %}
 
-{% macro gene_cell(variant) %}
+{% macro gene_cell(variant, inherit_palette) %}
   <div class="align-items-center">
     {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
       <a data-bs-toggle="tooltip" data-bs-html="true" title="
@@ -191,7 +208,9 @@
           </a>
       {% endif %}
     {% else %}
+      {% set panel_count = variant.case_panels|rejectattr('removed')|list|count %}
       {% for gene in variant.genes %}
+        <div>
         <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
@@ -213,12 +232,8 @@
           {% endif %}
         </div>"
           href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-        </a>
-      {% endfor %}
-
-
-      {% set panel_count = variant.case_panels|rejectattr('removed')|list|count %}
-      {% if panel_count > 0 %}
+        {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }}{% endfor %}</a>
+        {% if panel_count > 0 %}
           <a
             class="badge bg-secondary text-white"
             data-bs-toggle="popover"
@@ -229,7 +244,10 @@
               {% endfor %}"
             title="Overlapping gene panels">{{panel_count}}
           </a>
-      {% endif %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
     {% endif %}
   </div>
 {% endmacro %}
@@ -272,21 +290,20 @@
   ">
   {% if variant.clinsig_human %}
     <span class="badge bg-secondary">ClinVar</span>
-    <br>
   {% endif%}
   {% if variant.cosmic_ids %}
     <span class="badge bg-secondary">COSMIC</span>
-    <br>
+
   {% endif %}
   {% if variant.mitomap_associated_diseases %}
     <span class="badge bg-secondary">MITOMAP</span>
-    <br>
   {% endif %}
   {% if variant.clingen_cgh_pathogenic %}
-    <span class="badge bg-secondary">CGH Pathogenic</span><br>
+    <span class="badge bg-secondary">CGH Pathogenic</span>
   {% endif %}
   {% if variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old %}
-    <span class="badge bg-secondary">Local</span>
+    <span class="badge bg-secondary">Local {% if variant.category in ['snv', 'sv'] %}<span class="badge bg-dark text-white">
+          {{ variant.local_obs_old or 0 }}</span>{% endif %}</span>
     <br>
   {% endif %}
   </div>

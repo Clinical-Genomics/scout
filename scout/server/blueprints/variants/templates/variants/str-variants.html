@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general %}
 {% from "variant/buttons.html" import reviewer_button%}
-
+{% from "variant/gene_disease_relations.html" import inheritance_badge %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -239,6 +240,11 @@
   {% for gene in variant.genes %} {{ gene.symbol }} {% endfor %} {% endif %}
   </a>
   {% for gene in variant.genes %}
+      {% if variant.str_disease %}
+          {{ inheritance_badge(variant.str_inheritance_mode,inherit_palette) }}
+      {% else %}
+        {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }} {% endfor %}
+      {% endif %}
     <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">S</a></span>
     <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">G</a></span>
   {% endfor %}

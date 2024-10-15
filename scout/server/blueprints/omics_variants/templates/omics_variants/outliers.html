@@ -72,7 +72,7 @@
               <td class="text-end">
                 <div class="d-flex flex-row justify-content-between">
                 {% if variant.genes %}
-                  {{ gene_cell(variant) }}
+                  {{ gene_cell(variant, inherit_palette) }}
                 {% else %}
                   {{ variant.gene_name_orig }}
                 {% endif %}

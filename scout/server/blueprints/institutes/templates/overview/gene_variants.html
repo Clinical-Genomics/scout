@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell, variant_region_anno_cell %}
+{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
@@ -43,7 +43,6 @@
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
-          <th scope="col">Region</th>
           <th scope="col">Function</th>
         </tr>
 </thead>
@@ -56,16 +55,15 @@
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
-            <td class="align-middle">{{ variant_gene_symbols_cell(variant) }}</td>
+            <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
-            <td class="align-middle">{{ variant_region_anno_cell(variant) }}</td>
             <td class="align-middle">{{ variant_funct_anno_cell(variant) }}</td>
           </tr>
         {% endfor %}
         {% if form.hgnc_symbols.data == [] %}
         <tr>
-          <td colspan=7>
+          <td colspan=6>
             No variants to display
           </td>
         </tr>
