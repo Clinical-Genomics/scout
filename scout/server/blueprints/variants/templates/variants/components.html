@@ -302,7 +302,7 @@
     <span class="badge bg-secondary">CGH Pathogenic</span>
   {% endif %}
   {% if variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old %}
-    <span class="badge bg-secondary position-relative">Local{% if variant.category in ['snv', 'sv'] %}<span class="badge bg-info text-dark rounded-pill position-absolute top-0 start-100 translate-middle">
+    <span class="badge bg-secondary position-relative">Local{% if variant.category in ['snv', 'sv'] %}<span class="badge bg-info text-body rounded-pill position-absolute top-0 start-100 translate-middle">
           {{ variant.local_obs_old or 0 }}</span>{% endif %}</span>
     <br>
   {% endif %}
