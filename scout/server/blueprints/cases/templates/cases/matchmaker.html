@@ -177,14 +177,14 @@
                     {% for match_result in match_obj.patients %}
                        <tr class="{{ loop.cycle('odd', 'even') }}">
                          <td style="width: 5%" class="border-bottom-0"><span class="badge bg-primary rounded-pill">{{match_result.score.patient|round(4)}}</td>
-                         <td style="width: 10%">{{match_result.node.label}}</td>
-                         <td style="width: 15%">
+                         <td style="width: 10%" class="text-body">{{match_result.node.label}}</td>
+                         <td style="width: 15%" class="text-body">
                            {% if "http" in match_result.patient_id %}
                             <a href="{{match_result.patient_id}}" target="_blank">link</a>
                            {% else %}
                             <strong>{{match_result.patient_id}}</strong></td>
                            {% endif %}
-                         <td style="width: 20%" class="text-break">
+                         <td style="width: 20%" class="text-break text-body">
                            {{match_result.patient.contact.name}}<br>
                            {% if "http" in match_result.patient.contact.href %}
                             <a href="{{match_result.patient.contact.href}}" target="_blank">contact link</a>
