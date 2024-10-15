@@ -311,7 +311,7 @@
 {% endmacro %}
 
 
-{% macro variant_list_content(institute, variants, acmg_map, callers) %}
+{% macro variant_list_content(institute, variants, acmg_map, callers, inherit_palette) %}
 <div class="card mt-3">
   <div class="card-body overflow-auto">
     <table id="variants_table" class="table display table-sm">
@@ -348,7 +348,7 @@
               {% if variant.category == "fusion" %}
                 {{ fusion_variant_gene_symbols_cell(variant) }}
               {% else %}
-                {{ variant_gene_symbols_cell(variant) }}
+                {{ variant_gene_symbols_cell(variant, inherit_palette) }}
               {% endif %}
             </td>
             <td><!-- Variant link -->
