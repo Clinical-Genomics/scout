@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.90]
 ### Added
 - Link to chanjo2 MANE coverage overview on case page and panel page
 - More SVI recommendation links on the ACMG page
