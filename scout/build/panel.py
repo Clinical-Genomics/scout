@@ -24,6 +24,7 @@ def build_gene(gene_info: dict, adapter) -> dict:
     hgnc_gene = adapter.hgnc_gene_caption(
         hgnc_identifier=hgnc_id, build="37"
     ) or adapter.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
+
     if hgnc_gene is None:
         raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
 
