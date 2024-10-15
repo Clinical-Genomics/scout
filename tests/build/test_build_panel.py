@@ -13,7 +13,7 @@ def test_build_panel_gene(adapter, test_gene):
     ## GIVEN some gene info
     gene_info = {
         "hgnc_id": test_gene["hgnc_id"],
-        "transcripts": ["NM_003140", "NM_003140"],
+        "disease_associated_transcripts": ["NM_003140", "NM_003140"],
         "inheritance_models": ["AR", "AD"],
         "custom_inheritance_models": ["AR"],
         "reduced_penetrance": True,

@@ -117,7 +117,7 @@ def parse_gene(gene_info: dict) -> dict:
         alias_keys=PANEL_GENE_INFO_TRANSCRIPTS
     )
     if transcript_values:
-        gene["transcripts"] = transcript_values
+        gene["disease_associated_transcripts"] = transcript_values
 
     inheritance_models_values: Optional[List[str]] = get_alias_keys_value(
         alias_keys=PANEL_GENE_INFO_MODELS
