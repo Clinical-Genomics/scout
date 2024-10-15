@@ -10,34 +10,6 @@
 .even {
    background: #d1d5db;
 }
-.accordion .card {
-  margin-bottom: 5px;
-}
-.table-bordered td, .table-bordered th {
-  padding: 8px 5px; /* Less padding */
-}
-.accordion .btn {
-  font-size: 1rem; /* Reduce button text size */
-}
-.match-summary {
-  display: flex;
-  flex-wrap: wrap;
-}
-.match-summary div {
-  flex: 1; /* Distribute evenly */
-  margin-right: 10px;
-}
-.badge {
-  font-size: 0.9rem; /* Reduce badge size */
-}
-.gene-info {
-  margin-left: 10px;
-  display: flex;
-  flex-wrap: wrap;
-}
-.gene-info ul {
-  margin: 5px;
-}
 </style>
 {% endblock %}
 
@@ -170,74 +142,122 @@
 
 {% macro show_matches(type) %}
 <!-- show matches of the selected type from the most recent -->
-<div class="m-3 mt-3">
-  {% set matching_patients = [] %}
+{% set matching_patients = [] %}
+  <div class="m-3 mt-3">
   {% for patient, match_objs in matches.items() %}
-    <h4> Showing {{type}} matches for patient {{ patient.split('.')[1] }}:</h4>
-    {% for match_obj in match_objs if match_obj.match_type == type %}
-      {% do matching_patients.append(match_obj.patient_id) %}
-      <div class="accordion" id="accordionExample">
-        <div class="card">
-          <div class="card-header">
-            <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#div_{{match_obj.match_oid}}">
-              Match {{match_obj.match_date.strftime('%Y-%m-%d %H:%M')}}
-              {% if match_obj.patients %}
-                <span class="badge rounded-pill bg-success">{{match_obj.patients|length}} matches</span>
-              {% else %}
-                No matches available
-              {% endif %}
-            </button>
-          </div>
-          <div id="div_{{match_obj.match_oid}}" class="collapse">
-            <div class="card-body">
-              <div class="match-summary">
-                <div>Score: <span class="badge bg-primary">{{match_obj.score.patient | round(4)}}</span></div>
-                <div>Node: <strong>{{ match_obj.node.label }}</strong></div>
-                <div>ID: <strong>{{ match_obj.patient_id }}</strong></div>
-                <div>Contact: {{ match_obj.patient.contact.name }}</div>
-              </div>
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Phenotypes</th>
-                    <th>Diagnoses</th>
-                    <th>Gene/Variants</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for match_result in match_obj.patients %}
+    <div class="panel-group">
+    {% set p_name = patient.split('.') %}
+    <h4> Showing {{type}} matches for patient {{ p_name[1] }}:</h4>
+    {% for match_obj in match_objs %}
+      {% if match_obj.match_type == type %}
+        {% do matching_patients.append(match_obj.patient_id) %}
+        <div class="accordion" id="accordionExample">
+          <div class="card">
+            <div class="card-header" id="heading_{{match_obj.match_oid}}">
+              <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#div_{{match_obj.match_oid}}" aria-expanded="false" aria-controls="collapseTwo">
+                  Match {{match_obj.match_date.strftime('%Y-%m-%d %H:%M')}}
+                  {% if match_obj.patients %}
+                    <span class="badge rounded-pill bg-success">matches: {{match_obj.patients|length}}</span>
+                  {% else %}
+                    No matches available
+                  {% endif %}
+                </button>
+              </h2>
+            </div>
+            <div id="div_{{match_obj.match_oid}}" class="collapse" aria-labelledby="heading_{{match_obj.match_oid}}" data-parent="#accordionExample">
+              <div class="card-body">
+                <table class="table table-bordered">
+                  <thead class="table-secondary">
                     <tr>
-                      <td>
-                        {% for feature in match_result.patient.features %}
-                          <span class="badge bg-info">{{feature.label}} ({{feature.id}})</span>
-                        {% endfor %}
-                      </td>
-                      <td>
-                        {% for omim in match_result.patient.disorders %}
-                          <a href="http://omim.org/entry/{{omim.id[4:]}}" target="_blank">{{omim.id}}</a>
-                        {% endfor %}
-                      </td>
-                      <td class="gene-info">
-                        {% for g_feat in match_result.patient.genomicFeatures %}
-                          <ul>
-                            <li><strong>{{ g_feat.gene._geneName }}</strong></li>
-                            <li>Variant: {{ g_feat.variant or '-' }}</li>
-                          </ul>
-                        {% endfor %}
-                      </td>
+                      <th scope="col" style="width: 5%">Score</th>
+                      <th scope="col" style="width: 10%">Node</th>
+                      <th scope="col" style="width: 15%">ID</th>
+                      <th scope="col" style="width: 20%">Contact</th>
+                      <th scope="col" style="width: 35%">Phenotypes</th>
+                      <th scope="col" style="width: 15%">Diagnoses</th>
                     </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody class="table-secondary">
+                    {% for match_result in match_obj.patients %}
+                       <tr class="{{ loop.cycle('odd', 'even') }}">
+                         <td style="width: 5%" class="border-bottom-0"><span class="badge bg-primary rounded-pill">{{match_result.score.patient|round(4)}}</td>
+                         <td style="width: 10%" class="text-body"><strong>{{match_result.node.label}}</strong></td>
+                         <td style="width: 15%" class="text-body">
+                           {% if "http" in match_result.patient_id %}
+                            <a href="{{match_result.patient_id}}" target="_blank">link</a>
+                           {% else %}
+                            <strong>{{match_result.patient_id}}</strong></td>
+                           {% endif %}
+                         <td style="width: 20%" class="text-break text-body">
+                           {{match_result.patient.contact.name}}<br>
+                           {% if "http" in match_result.patient.contact.href %}
+                            <a href="{{match_result.patient.contact.href}}" target="_blank">contact link</a>
+                           {% else %}
+                            {{match_result.patient.contact.href}}
+                           {% endif %}
+                           {% if match_result.patient.contact.institution %}
+                             <br>{{match_result.patient.contact.institution}}
+                           {% endif %}
+                           {% if match_result.patient.contact.email %}
+                             <br>{{match_result.patient.contact.email|replace("mailto:","")}}
+                           {% endif %}
+                         </td>
+                         <td style="width: 35%" class="text-body">
+                           {% for feature in match_result.patient.features %}
+                             <span data-bs-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge bg-info">{{feature.label}}({{feature.id}})</span>
+                           {% else %}
+                           <p class="text-center">-</p>
+                           {% endfor %}
+                         </td>
+                         <td style="width: 15%">
+                           {% for omim in match_result.patient.disorders %}
+                             <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+                               <span class="badge badge-sm bg-secondary">{{omim.id}}</span>
+                             </a>
+                           {% else %}
+                           <p class="text-center">-</p>
+                           {% endfor %}
+                         </td>
+                       </tr>
+                       <!-- Display candidate genes for matches -->
+                       {% if match_result.patient.genomicFeatures%}
+                         <tr class="{{ loop.cycle('odd', 'even') }}">
+                           <td class="border-top-0"></td>
+                           <td style="width: 20%" class="text-body"><strong>Gene/Variants:</strong></td>
+                           <td colspan="5">
+                              {% for g_feat in match_result.patient.genomicFeatures %}
+                                <div style="display: flex;" class="text-body">
+                                  <div style="margin-left: 20px;"><strong>{{loop.index}}</strong></div>
+                                  <ul>
+                                    <li><strong>{{ g_feat.gene._geneName}}</strong>
+                                    <a class="text-white" target="_blank" href="https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{g_feat.gene.id}}">
+                                      <span class="badge badge-sm bg-secondary">{{g_feat.gene.id}}</span>
+                                    </a></li>
+                                    <li><strong>Variant: </strong>{{g_feat.variant|replace("'", "") or '-'}}</li>
+                                    <li><strong>Type: </strong>{{g_feat.type|replace("'", "") or '-'}}</li>
+                                    <li><strong>zygosity: </strong>{{g_feat.zygosity or '-'}}</li>
+                                  </ul>
+                                </div>
+                              {% endfor %}
+                            </td>
+                         </tr>
+                        {% endif %}
+                    {% endfor %} <!-- end of for patient in match_obj.patients -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    {% endfor %}
+        <br>
+      {% endif %} <!-- end of if match_obj.match_type == type -->
+    {% endfor %} <!-- end of for match_obj in match_objs -->
     {% if not matching_patients %}
-      No matches available for this patient.
-    {% endif %}
-  {% endfor %}
+      <br><br>No matches available for this patient.
+    {% endif %} <!-- end of if not matching_patients -->
+    </div>
+  {% endfor %} <!--end of for patient, match_objs in matches.items() -->
 </div>
 {% endmacro %}
 
