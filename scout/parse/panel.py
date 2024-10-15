@@ -125,11 +125,21 @@ def parse_gene(gene_info: dict) -> dict:
     gene = {k: v for k, v in gene.items() if v}
 
     # Add boolean flags if they are True
-    gene.update({key: True for key in ["mosaicism", "reduced_penetrance"] if gene_info.get(key)})
+    gene.update(
+        {
+            key: True
+            for key in ["mosaicism", "reduced_penetrance"]
+            if gene_info.get(key) and gene_info.get(key) != ""
+        }
+    )
 
     # Add optional fields
     gene.update(
-        {key: gene_info[key] for key in ["database_entry_version", "comment"] if gene_info.get(key)}
+        {
+            key: gene_info[key]
+            for key in ["database_entry_version", "comment"]
+            if gene_info.get(key) and gene_info.get(key) != ""
+        }
     )
 
     return gene
