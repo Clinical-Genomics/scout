@@ -8,7 +8,38 @@
 {{ super() }}
 <style>
 .even {
-   background: #d1d5db;
+   background: #f1f5f9;
+}
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.card-body {
+  padding: 10px;
+}
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+}
+.breadcrumb-item strong {
+  color: #4a5568;
+}
+.badge-info {
+  background-color: #3182ce;
+}
+.badge-secondary {
+  background-color: #6b7280;
+}
+.badge-primary {
+  background-color: #2563eb;
+}
+.nav-tabs .nav-link {
+  color: #4a5568;
+  font-weight: bold;
+}
+.nav-tabs .nav-link.active {
+  background-color: #2563eb;
+  color: #fff;
 }
 </style>
 {% endblock %}
@@ -35,30 +66,39 @@
 
 {% block content_main %}
 {% set panel = panel or 1|int %}
-<div class="container-float">
-  <div class="card">
+<div class="container-fluid">
+  <div class="card mt-3">
     <div class="card-body">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">Submitted: <strong>{{case.mme_submission.created_at.strftime('%Y-%m-%d %H:%M')}}</strong></li>
-          <li class="breadcrumb-item">Last updated: <strong>{{case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M')}}</strong></li>
+          <li class="breadcrumb-item">Submitted: <strong>{{ case.mme_submission.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></li>
+          <li class="breadcrumb-item">Last updated: <strong>{{ case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M') }}</strong></li>
         </ol>
       </nav>
+
+      <!-- Tab navigation -->
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div(1)"><h4>Patient overview <i class="fa fa-id-card" aria-hidden="true"></i></h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div(2)"><h4>Global matches <i class="fa fa-globe" aria-hidden="true"></i></h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div(3)"><h4>Local matches <i class="fa fa-hospital" aria-hidden="true"></i></h4></a></li>
+        <li class="nav-item">
+          <a class="nav-link {% if panel == 1 %}active{% endif %}" href="#" data-bs-toggle="tab" onclick="hide_div(1)">
+            <h4>Patient Overview <i class="fa fa-id-card"></i></h4>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if panel == 2 %}active{% endif %}" href="#" data-bs-toggle="tab" onclick="hide_div(2)">
+            <h4>Global Matches <i class="fa fa-globe"></i></h4>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if panel == 3 %}active{% endif %}" href="#" data-bs-toggle="tab" onclick="hide_div(3)">
+            <h4>Local Matches <i class="fa fa-hospital"></i></h4>
+          </a>
+        </li>
       </ul>
-      <div class="tab-content" id="tabs">
-        <div class="tab-pane" id="1">
-          {{ patient_data() }}
-        </div>
-        <div class="tab-pane" id="2">
-          {{ show_matches('external') }}
-        </div>
-        <div class="tab-pane" id="3">
-          {{ show_matches('internal') }}
-        </div>
+
+      <div class="tab-content mt-3" id="tabs">
+        <div class="tab-pane" id="1">{{ patient_data() }}</div>
+        <div class="tab-pane" id="2">{{ show_matches('external') }}</div>
+        <div class="tab-pane" id="3">{{ show_matches('internal') }}</div>
       </div>
     </div>
   </div>
@@ -157,6 +197,11 @@
               <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#div_{{match_obj.match_oid}}" aria-expanded="false" aria-controls="collapseTwo">
                   Match {{match_obj.match_date.strftime('%Y-%m-%d %H:%M')}}
+                  {% if match_obj.patients %}
+                    <span class="badge rounded-pill bg-success">{{match_obj.patients|length}} matches</span>
+                  {% else %}
+                    No matches available
+                  {% endif %}
                 </button>
               </h2>
             </div>

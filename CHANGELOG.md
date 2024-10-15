@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added script to tabulate causatives clinical filter rank
 - Do not display inheritance models associated to ORPHA terms on variant page
 - Moved edit and delete buttons close to gene names on gene panel page and other aesthetical fixes
+- On Matchmaker page, alongside the date of the matching attempt, show also the number of returned matches
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
@@ -24,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel PDF export, including gene links
 - Cancer SV, Fusion, MEI and Outlier filters are shown on the Institute Filters overview
 - CaseS advanced search limit
-- Visibility of Matchmaker Exchange matches on dark model
+- Visibility of Matchmaker Exchange matches on dark mode
 
 ## [4.89.2]
 ## Fixed
