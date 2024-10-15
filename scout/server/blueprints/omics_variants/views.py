@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from flask_login import current_user
 from markupsafe import Markup
 
+from scout.constants import INHERITANCE_PALETTE
 from scout.server.blueprints.variants.controllers import (
     activate_case,
     case_default_panels,
@@ -97,6 +98,7 @@ def outliers(institute_id, case_name):
         expand_search=get_expand_search(request.form),
         filters=available_filters,
         form=form,
+        inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         page=page,
         result_size=result_size,

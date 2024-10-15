@@ -6,7 +6,14 @@ from flask import Blueprint, flash, jsonify, redirect, render_template, request
 from flask_login import current_user
 from pymongo import DESCENDING
 
-from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CALLERS,
+    INHERITANCE_PALETTE,
+    VERBS_ICONS_MAP,
+    VERBS_MAP,
+)
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
@@ -63,11 +70,12 @@ def verified(institute_id):
     verified_vars = controllers.verified_vars(institute_id)
     verified_stats = controllers.verified_stats(institute_id, verified_vars)
     return dict(
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+        callers=CALLERS,
+        inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         verified=verified_vars,
         verified_stats=verified_stats,
-        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
-        callers=CALLERS,
     )
 
 
@@ -76,10 +84,11 @@ def verified(institute_id):
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     return dict(
-        institute=institute_obj,
-        causatives=controllers.causatives(institute_obj, request),
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
         callers=CALLERS,
+        causatives=controllers.causatives(institute_obj, request),
+        institute=institute_obj,
+        inherit_palette=INHERITANCE_PALETTE,
     )
 
 
@@ -168,7 +177,14 @@ def gene_variants(institute_id):
             store, results, result_size, page
         )  # decorated variant results, max 50 in a page
 
-    return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)
+    return dict(
+        institute=institute_obj,
+        form=form,
+        inherit_palette=INHERITANCE_PALETTE,
+        page=page,
+        result_size=result_size,
+        **data,
+    )
 
 
 # MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
