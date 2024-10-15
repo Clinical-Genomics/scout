@@ -440,7 +440,7 @@ def cases(store, request, institute_id):
     data["institute"] = institute_obj
 
     name_query = request.form
-    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
+    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
 
     data["form"] = CaseFilterForm(request.form)
 
