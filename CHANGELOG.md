@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel PDF export, including gene links
 - Cancer SV, Fusion, MEI and Outlier filters are shown on the Institute Filters overview
 - CaseS advanced search limit
+- Visibility of Matchmaker Exchange matches on dark model
 
 ## [4.89.2]
 ## Fixed

@@ -177,14 +177,14 @@
                     {% for match_result in match_obj.patients %}
                        <tr class="{{ loop.cycle('odd', 'even') }}">
                          <td style="width: 5%" class="border-bottom-0"><span class="badge bg-primary rounded-pill">{{match_result.score.patient|round(4)}}</td>
-                         <td style="width: 10%">{{match_result.node.label}}</td>
-                         <td style="width: 15%">
+                         <td style="width: 10%" class="text-body"><strong>{{match_result.node.label}}</strong></td>
+                         <td style="width: 15%" class="text-body">
                            {% if "http" in match_result.patient_id %}
                             <a href="{{match_result.patient_id}}" target="_blank">link</a>
                            {% else %}
                             <strong>{{match_result.patient_id}}</strong></td>
                            {% endif %}
-                         <td style="width: 20%" class="text-break">
+                         <td style="width: 20%" class="text-break text-body">
                            {{match_result.patient.contact.name}}<br>
                            {% if "http" in match_result.patient.contact.href %}
                             <a href="{{match_result.patient.contact.href}}" target="_blank">contact link</a>
@@ -198,7 +198,7 @@
                              <br>{{match_result.patient.contact.email|replace("mailto:","")}}
                            {% endif %}
                          </td>
-                         <td style="width: 35%">
+                         <td style="width: 35%" class="text-body">
                            {% for feature in match_result.patient.features %}
                              <span data-bs-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge bg-info">{{feature.label}}({{feature.id}})</span>
                            {% else %}
@@ -219,10 +219,10 @@
                        {% if match_result.patient.genomicFeatures%}
                          <tr class="{{ loop.cycle('odd', 'even') }}">
                            <td class="border-top-0"></td>
-                           <td style="width: 20%"><strong>Gene/Variants:</strong></td>
+                           <td style="width: 20%" class="text-body"><strong>Gene/Variants:</strong></td>
                            <td colspan="5">
                               {% for g_feat in match_result.patient.genomicFeatures %}
-                                <div style="display: flex;">
+                                <div style="display: flex;" class="text-body">
                                   <div style="margin-left: 20px;"><strong>{{loop.index}}</strong></div>
                                   <ul>
                                     <li><strong>{{ g_feat.gene._geneName}}</strong>
