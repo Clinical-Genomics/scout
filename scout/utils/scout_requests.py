@@ -134,7 +134,7 @@ def fetch_resource(url, json=False):
     """
     if url.startswith("ftp"):
         # requests do not handle ftp
-        response = urllib.request.urlopen(url, timeout=TIMEOUT) #nosec
+        response = urllib.request.urlopen(url, timeout=TIMEOUT)  # nosec
         if isinstance(response, Exception):
             raise response
         data = response.read().decode("utf-8")
