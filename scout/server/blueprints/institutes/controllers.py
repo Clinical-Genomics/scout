@@ -675,7 +675,7 @@ def export_gene_variants(
         variant_line.append(variant.get("display_name"))  # Position
         variant_line.append(str(variant.get("rank_score", "")))  # Score
         variant_genes = [
-            gene.get("hgnc_symbol", gene.get("hgnc_id")) for gene in variant.get("genes", [])
+            gene.get("hgnc_symbol", str(gene.get("hgnc_id"))) for gene in variant.get("genes", [])
         ]
         variant_line.append(" | ".join(variant_genes))  # Genes
 
