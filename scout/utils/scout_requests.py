@@ -309,7 +309,7 @@ def fetch_orpha_files() -> Dict:
 
 def fetch_hgnc() -> List[str]:
     """Fetch the hgnc genes names file from
-       https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt
+    https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt
     """
 
     url = "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt"
