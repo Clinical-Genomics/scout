@@ -50,6 +50,7 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
                 comment.append(panel_gene_comment)
 
         manual_inheritance.update(gene_info.get("inheritance_models", []))
+        manual_inheritance.update(gene_info.get("custom_inheritance_models", []))
 
     panel_specific["disease_associated_transcripts"] = list(disease_associated)
     panel_specific["disease_associated_no_version"] = disease_associated_no_version
