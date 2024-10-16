@@ -315,7 +315,7 @@ def fetch_hgnc():
         hgnc_gene_lines(list(str))
     """
     file_name = "hgnc_complete_set.txt"
-    url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
+    url = "ftp.ebi.ac.uk/pub/databases/genenames/out_of_date_hgnc/tsv/{0}".format(file_name)
     LOG.info("Fetching HGNC genes from %s", url)
 
     hgnc_lines = fetch_resource(url)
