@@ -3,7 +3,7 @@
 import logging
 import urllib.request
 import zlib
-from typing import Dict
+from typing import Dict, List
 from urllib.error import HTTPError
 
 import requests
