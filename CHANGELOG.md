@@ -30,7 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer SV, Fusion, MEI and Outlier filters are shown on the Institute Filters overview
 - CaseS advanced search limit
 - Visibility of Matchmaker Exchange matches on dark mode
-- Downloading on gene names from `https://ftp.ebi.ac.uk/pub/databases/genenames`
+- Downloading on gene names from EBI
 
 ## [4.89.2]
 ## Fixed
