@@ -34,7 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - When creating a new gene panel from file, all gene fields are saved, including comments and manual inheritance models
 - Downloading on gene names from EBI
 - Links to gene panels on variant page, summary panel
-- Downloading gene variants when are genes missing HGNC symbol
+- Exporting gene variants when one or more variants' genes are missing HGNC symbol
 
 ## [4.89.2]
 ## Fixed
