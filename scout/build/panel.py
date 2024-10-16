@@ -1,94 +1,58 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import datetime as datetime
 
-from scout.constants import VALID_MODELS
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
 
-def build_gene(gene_info, adapter):
-    """Build a panel_gene object
+def build_gene(gene_info: dict, adapter) -> dict:
+    """Build a panel_gene object."""
 
-    Args:
-        gene_info(dict)
-
-    Returns:
-        gene_obj(dict)
-
-        panel_gene = dict(
-            hgnc_id = int, # required
-            symbol = str,
-
-            disease_associated_transcripts = list, # list of strings that represent refseq transcripts
-            reduced_penetrance = bool,
-            mosaicism = bool,
-            database_entry_version = str,
-            comment = str, # panel level gene comment str
-
-            ar = bool,
-            ad = bool,
-            mt = bool,
-            xr = bool,
-            xd = bool,
-            x = bool,
-            y = bool,
-        )
-
-    """
     symbol = gene_info.get("hgnc_symbol")
-    try:
-        # A gene has to have a hgnc id
-        hgnc_id = gene_info["hgnc_id"]
-        if not hgnc_id:
-            raise KeyError()
-    except KeyError as err:
-        raise KeyError(
-            "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol)
-        )
+    hgnc_id = gene_info.get("hgnc_id")
 
+    # Validate presence of hgnc_id
+    if not hgnc_id:
+        raise KeyError(f"Gene {symbol} is missing hgnc id. Panel genes must have hgnc_id.")
+
+    # Try fetching gene information from either build "37" or "38"
     hgnc_gene = adapter.hgnc_gene_caption(
         hgnc_identifier=hgnc_id, build="37"
     ) or adapter.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
+
     if hgnc_gene is None:
-        raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
+        raise IntegrityError(f"hgnc_id {hgnc_id} is not in the gene database!")
 
-    gene_obj = dict(hgnc_id=hgnc_id)
+    gene_obj = {"hgnc_id": hgnc_id, "symbol": hgnc_gene["hgnc_symbol"]}
 
-    gene_obj["symbol"] = hgnc_gene["hgnc_symbol"]
+    # Log warnings if symbols do not match
     if symbol != gene_obj["symbol"]:
-        LOG.warning(
-            "Symbol in database does not correspond to symbol in panel file for gene %s",
-            hgnc_id,
-        )
-        LOG.warning(
-            "Using symbol %s for gene %s, instead of %s"
-            % (hgnc_gene["hgnc_symbol"], hgnc_id, symbol)
-        )
+        LOG.warning(f"Symbol in database does not match symbol in panel file for gene {hgnc_id}")
+        LOG.warning(f"Using symbol {gene_obj['symbol']} for gene {hgnc_id} instead of {symbol}")
 
-    if gene_info.get("transcripts"):
-        gene_obj["disease_associated_transcripts"] = gene_info["transcripts"]
+    # Add optional gene information
+    gene_obj.update(
+        {
+            key: gene_info[key]
+            for key in ["disease_associated_transcripts", "comment", "database_entry_version"]
+            if key in gene_info
+        }
+    )
 
-    for gene_member_variable_str in ["comment", "database_entry_version"]:
-        if gene_info.get(gene_member_variable_str):
-            gene_obj[gene_member_variable_str] = gene_info[gene_member_variable_str]
+    # Add boolean flags
+    gene_obj.update(
+        {key: True for key in ["reduced_penetrance", "mosaicism"] if gene_info.get(key)}
+    )
 
-    for gene_member_variable_bool in ["reduced_penetrance", "mosaicism"]:
-        if gene_info.get(gene_member_variable_bool):
-            gene_obj[gene_member_variable_bool] = True
+    # Handle inheritance models
+    if "inheritance_models" in gene_info:
+        gene_obj["inheritance_models"] = gene_info["inheritance_models"]
 
-    if gene_info.get("inheritance_models"):
-        gene_obj["inheritance_models"] = []
-        custom_models = []
-        for model in gene_info["inheritance_models"]:
-            if model not in VALID_MODELS:
-                custom_models.append(model)
-                continue
-            gene_obj["inheritance_models"].append(model)
-            lc_model = model.lower()  # example ad = True
-            gene_obj[lc_model] = True
-        gene_obj["custom_inheritance_models"] = custom_models
+    if "custom_inheritance_models" in gene_info:
+        gene_obj["custom_inheritance_models"] = [
+            model for model in gene_info["custom_inheritance_models"]
+        ]
 
     return gene_obj
 
