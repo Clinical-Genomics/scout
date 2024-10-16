@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of Matchmaker Exchange matches on dark mode
 - When creating a new gene panel from file, all gene fields are saved, including comments and manual inheritance models
 - Downloading on gene names from EBI
+- Links to gene panels on variant page, summary panel
 
 ## [4.89.2]
 ## Fixed
