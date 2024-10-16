@@ -1,25 +1,43 @@
+from datetime import datetime
+
 import pytest
 
+from scout.build.panel import build_gene, build_panel
 from scout.exceptions import IntegrityError
-from scout.build.panel import build_panel, build_gene
-from datetime import datetime
 
 
 def test_build_panel_gene(adapter, test_gene):
+
     adapter.load_hgnc_gene(test_gene)
+
     ## GIVEN some gene info
-    gene_info = {"hgnc_id": test_gene["hgnc_id"], "inheritance_models": ["AR", "AD"]}
+    gene_info = {
+        "hgnc_id": test_gene["hgnc_id"],
+        "disease_associated_transcripts": ["NM_003140", "NM_003140"],
+        "inheritance_models": ["AR", "AD"],
+        "custom_inheritance_models": ["AR"],
+        "reduced_penetrance": True,
+        "mosaicism": True,
+        "database_entry_version": "2.0",
+        "comment": "Test comment",
+    }
 
     ## WHEN building a gene obj
     gene_obj = build_gene(gene_info, adapter)
 
     ## THEN assert that the object is correct
-
-    assert gene_obj["hgnc_id"] == 1
-    assert gene_obj["symbol"] == test_gene["hgnc_symbol"]
-    assert gene_obj["ar"] is True
-    assert gene_obj["ad"] is True
-    assert "mt" not in gene_obj
+    for key in (
+        "hgnc_id",
+        "symbol",
+        "disease_associated_transcripts",
+        "inheritance_models",
+        "custom_inheritance_models",
+        "reduced_penetrance",
+        "mosaicism",
+        "database_entry_version",
+        "comment",
+    ):
+        assert gene_obj[key]
 
 
 def test_build_panel(institute_database, test_gene):

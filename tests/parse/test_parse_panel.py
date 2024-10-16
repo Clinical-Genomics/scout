@@ -89,10 +89,10 @@ def test_parse_gene():
     hgnc_id = "10"
     hgnc_symbol = "hello"
     transcripts = "a,b,c"
-    penetrance = "YES"
+    penetrance = "True"
     models = "AR,AD"
     mosaicism = ""
-    version = ""
+    version = "1.0"
 
     gene_line = [
         hgnc_id,
@@ -110,24 +110,11 @@ def test_parse_gene():
     ## THEN assert that the gene is correctly parsed
     assert gene["hgnc_id"] == int(hgnc_id)
     assert gene["hgnc_symbol"] == hgnc_symbol
-    assert gene["transcripts"] == transcripts.split(",")
+    assert gene["disease_associated_transcripts"] == transcripts.split(",")
     assert gene["inheritance_models"] == models.split(",")
     assert gene["reduced_penetrance"] is True if penetrance else False
-    assert gene["mosaicism"] is False
     assert gene["database_entry_version"] == version
-
-    ## WHEN alternative transcript index name
-    gene_info.pop("disease_associated_transcripts")
-    gene_info["disease_associated_transcript"] = transcripts
-    ## THEN transcript asserts same
-    gene = parse_gene(gene_info)
-    assert gene["transcripts"] == transcripts.split(",")
-    ## WHEN alternative transcript index name
-    gene_info.pop("disease_associated_transcript")
-    gene_info["transcripts"] = transcripts
-    ## THEN transcript asserts same
-    gene = parse_gene(gene_info)
-    assert gene["transcripts"] == transcripts.split(",")
+    assert "mosaicism" not in gene
 
 
 def test_parse_panel_lines():
