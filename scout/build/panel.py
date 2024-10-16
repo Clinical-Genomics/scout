@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import VALID_MODELS
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
@@ -52,9 +51,7 @@ def build_gene(gene_info: dict, adapter) -> dict:
 
     if "custom_inheritance_models" in gene_info:
         gene_obj["custom_inheritance_models"] = [
-            model.upper()
-            for model in gene_info["custom_inheritance_models"]
-            if model.upper() in VALID_MODELS
+            model for model in gene_info["custom_inheritance_models"]
         ]
 
     return gene_obj

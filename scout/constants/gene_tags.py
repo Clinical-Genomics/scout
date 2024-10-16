@@ -29,8 +29,6 @@ INHERITANCE_PALETTE = {
     "other": {"bgcolor": "bg-light", "text_color": "text-dark"},
 }
 
-VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
-
 INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
 
 MODELS_MAP = {
