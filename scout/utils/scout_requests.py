@@ -3,7 +3,7 @@
 import logging
 import urllib.request
 import zlib
-from typing import Dict
+from typing import Dict, List
 from urllib.error import HTTPError
 
 import requests
@@ -134,7 +134,7 @@ def fetch_resource(url, json=False):
     """
     if url.startswith("ftp"):
         # requests do not handle ftp
-        response = urllib.request.urlopen(url, timeout=TIMEOUT)
+        response = urllib.request.urlopen(url, timeout=TIMEOUT)  # nosec
         if isinstance(response, Exception):
             raise response
         data = response.read().decode("utf-8")
@@ -307,20 +307,15 @@ def fetch_orpha_files() -> Dict:
     return orpha_files
 
 
-def fetch_hgnc():
-    """Fetch the hgnc genes file from
-        ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt
-
-    Returns:
-        hgnc_gene_lines(list(str))
+def fetch_hgnc() -> List[str]:
+    """Fetch the hgnc genes names file from
+    https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt
     """
-    file_name = "hgnc_complete_set.txt"
-    url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
+
+    url = "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt"
     LOG.info("Fetching HGNC genes from %s", url)
 
-    hgnc_lines = fetch_resource(url)
-
-    return hgnc_lines
+    return fetch_resource(url)
 
 
 def fetch_constraint():
