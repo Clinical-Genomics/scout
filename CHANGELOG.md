@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STR variantS page to show STR inheritance model without hover (fallback to OMIM for non-Stranger annotation)
 - VariantS page local observation badges have counts visible also without hover
 - On Matchmaker page, show number of matches together with matching attempt date
+- Display all custom inheritance models, both standard and non-standard, as gathered from the gene panel information on the variant page
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
