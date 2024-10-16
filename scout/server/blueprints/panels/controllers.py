@@ -2,10 +2,13 @@
 import datetime as dt
 import logging
 import re
+from typing import List, Optional, Union
 
-from flask import flash, redirect
+from flask import Response, flash, redirect
 from flask_login import current_user
+from werkzeug.local import LocalProxy
 
+from scout.adapter import MongoAdapter
 from scout.build.panel import build_panel
 from scout.constants import DATE_DAY_FORMATTER
 from scout.parse.panel import parse_genes
@@ -45,14 +48,8 @@ def panel_decode_lines(panel_file):
     return lines
 
 
-def create_new_panel(store, request, lines):
+def create_new_panel(store: MongoAdapter, request: LocalProxy, lines: List[str]) -> Optional[str]:
     """Create a new gene panel with the data provided using the form
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        request(flask.request) request sent by browser form to the /panels endpoint
-        lines(list): list of lines containing gene data
-
     Returns:
         new_panel_id(str): the _id a newly created panel
     """
@@ -107,17 +104,12 @@ def update_existing_panel(store, request, lines):
         )
 
 
-def panel_create_or_update(store, request):
+def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[str, Response]:
     """Process a user request to create a new gene panel
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        request(flask.request) request sent by browser form to the /panels endpoint
 
     Returns:
         redirect_id(str): the ID of the panel to redirect the page to
     """
-    redirect_id = None
     panel_file = request.files["panel_file"]
     lines = panel_decode_lines(panel_file)
 
