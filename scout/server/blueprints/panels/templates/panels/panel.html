@@ -182,7 +182,7 @@
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td>
                 {% if gene.database_entry_version and gene.database_entry_version|string == panel.version|string %}
-                   <span class="badge bg-success rounded-pill" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="This gene has been introduced in the panel starting from version {{gene.database_entry_version}}.">New!</span>
+                   <span class="badge bg-success rounded-pill" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="This gene has been introduced in the panel starting from version {{gene.database_entry_version}}.">new</span>
                 {% endif %}
               </td>
               <td>{{ gene.inheritance_models|join(', ') }}</td>
