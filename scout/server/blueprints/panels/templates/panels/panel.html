@@ -180,7 +180,7 @@
               <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
-              <td>
+              <td class="d-flex justify-content-center">
                 {% if gene.database_entry_version and gene.database_entry_version|string == panel.version|string %}
                    <span class="badge bg-success rounded-pill" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="This gene has been introduced in the panel starting from version {{gene.database_entry_version}}.">new</span>
                 {% endif %}
