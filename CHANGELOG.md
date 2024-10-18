@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
+## [unreleased]
+### Changed
+- On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
+
 ## [4.90.1]
 ### Fixed
 - Parsing Matchmaker Exchange's matches dates
