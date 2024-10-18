@@ -1,6 +1,32 @@
+from datetime import datetime
+
 import pytest
 
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_datetime,
+    parse_matches,
+)
+
+
+def test_parse_datetime_timestamp_milliseconds():
+    """Test parsing matching results date in timestamp milliseconds format."""
+    datetime_int = 1729229925000
+    assert isinstance(parse_datetime(datetime_int), datetime)
+
+
+def test_parse_datetime_timestamp():
+    """Test parsing matching results date in timestamp with no fractions of seconds."""
+    datetime_str = "2023-08-16T01:03:53Z"
+    assert parse_datetime(datetime_str) == datetime(2023, 8, 16, 1, 3, 53)
+
+
+def test_parse_datetime_timestamp_fractional_seconds():
+    """Test parsing matching results date in timestamp with fractions of seconds."""
+    datetime_str = "2023-08-16T01:03:53.123456Z"
+    assert parse_datetime(datetime_str) == datetime(2023, 8, 16, 1, 3, 53, 123456)
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
+from datetime import datetime
+from typing import Union
 
 LOG = logging.getLogger(__name__)
 
@@ -158,6 +159,19 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
     return g_features
 
 
+def parse_datetime(match_date: Union[str, int]) -> datetime:
+    """Converts a date to a datetime. match_date could be either a millisecond timestamp (Patientmatcher < 4.5) or a string (Patientmatcher >= 4.5), including milliseconds or not."""
+    try:
+        date_datetime = datetime.fromtimestamp(match_date / 1000.0)
+    except TypeError:
+        if "." in match_date:
+            date_datetime = datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            date_datetime = datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%SZ")
+
+    return date_datetime
+
+
 def parse_matches(patient_id, match_objs):
     """Parse a list of matchmaker matches objects and returns
        a readable list of matches to display in matchmaker matches view.
@@ -186,11 +200,9 @@ def parse_matches(patient_id, match_objs):
     parsed_matches = []
 
     for match_obj in match_objs:
-        match_date = match_obj["created"]["$date"]
-        try:  # Patientmatcher < 4.5 returns dates in milliseconds
-            mdate = datetime.datetime.fromtimestamp(match_date / 1000.0)
-        except TypeError:  # Patientmatcher >= 4.5 returns dates in isoformat
-            mdate = datetime.datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+        mdate = parse_datetime(match_obj["created"]["$date"])
+
         match_type = "external"
         matching_patients = []
 

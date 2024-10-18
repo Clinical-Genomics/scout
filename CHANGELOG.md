@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.90.1]
+### Fixed
+- Parsing Matchmaker Exchange's matches dates
+
 ## [4.90]
 ### Added
 - Link to chanjo2 MANE coverage overview on case page and panel page
