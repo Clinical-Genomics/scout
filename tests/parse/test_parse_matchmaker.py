@@ -14,7 +14,7 @@ from scout.parse.matchmaker import (
 def test_parse_datetime_timestamp_milliseconds():
     """Test parsing matching results date in timestamp milliseconds format."""
     datetime_int = 1729229925000
-    assert isinstance(datetime_int, datetime)
+    assert isinstance(parse_datetime(datetime_int), datetime)
 
 
 def test_parse_datetime_timestamp():
