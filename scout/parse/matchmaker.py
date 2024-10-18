@@ -160,14 +160,15 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
 
 
 def parse_datetime(match_date: Union[str, int]) -> datetime:
-    """Converts a date to a datetime."""
-    try:  # Patientmatcher < 4.5 returns dates in milliseconds
+    """Converts a date to a datetime. match_date could be either a millisecond timestamp (Patientmatcher < 4.5) or a string (Patientmatcher >= 4.5), including milliseconds or not."""
+    try:
         date_datetime = datetime.fromtimestamp(match_date / 1000.0)
-    except TypeError:  # Patientmatcher >= 4.5 returns dates in isoformat
-        try:  # try parsing date with fractional seconds
+    except TypeError:
+        if "." in match_date:
             date_datetime = datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%S.%fZ")
-        except ValueError:  # do not use fractional seconds
+        else:
             date_datetime = datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%SZ")
+
     return date_datetime
 
 
