@@ -220,7 +220,7 @@ def get_vcf_entry(variant_obj, case_id=None):
         reference,
         alternative,
         variant_obj.get("quality", "."),
-        ";".join(variant_obj.get("filters", [])),
+        ";".join(variant_obj.get("filters", [])) or ".",
         info_field,
     )
 
