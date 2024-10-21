@@ -191,7 +191,7 @@ def get_vcf_entry(variant_obj, case_id=None):
     Returns:
         variant_string(str): string representing variant in vcf format
     """
-    if variant_obj["category"] == "snv":
+    if variant_obj["category"] == "snv" or variant_obj["category"] == "cancer":
         var_type = "TYPE"
     else:
         var_type = "SVTYPE"
@@ -203,12 +203,22 @@ def get_vcf_entry(variant_obj, case_id=None):
         ]
     )
 
+    reference = variant_obj["reference"]
+    if reference == ".":
+        reference = "N"
+
+    alternative = variant_obj["alternative"]
+    if alternative == "." or alternative == variant_obj["sub_category"]:
+        alternative = "N"
+        if variant_obj["category"] == "sv":
+            alternative = f"<{variant_obj['sub_category'].upper()}>"
+
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj["chromosome"],
         variant_obj["position"],
         variant_obj.get("dbsnp_id", "."),
-        variant_obj["reference"],
-        variant_obj["alternative"],
+        reference,
+        alternative,
         variant_obj.get("quality", "."),
         ";".join(variant_obj.get("filters", [])),
         info_field,
