@@ -553,14 +553,16 @@ class CaseLoader(BaseModel):
     def parse_custom_images(cls, custom_images: RawCustomImages) -> ParsedCustomImages:
         """Fixes image path and image data for each custom image in variant_custom_images and case_images."""
 
+        LOG.warning(f"custom_images: {custom_images}")
         custom_images.str_variants_images = set_custom_images(
             images=custom_images.str_variants_images
         )
 
-        for key, images in custom_images.case_images.items():
-            custom_images.case_images[key] = set_custom_images(
-                images=custom_images.case_images[key]
-            )
+        if custom_images.case_images:
+            for key, images in custom_images.case_images.items():
+                custom_images.case_images[key] = set_custom_images(
+                    images=custom_images.case_images[key]
+                )
 
         return custom_images
 
