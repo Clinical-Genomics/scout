@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants VCF export more verbose on SVs
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
+- Tracks missing alignment files are now properly skipped on generating IGV views
+
 
 
 ## [4.90.1]
