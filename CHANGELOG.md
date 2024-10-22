@@ -9,6 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - Names on IGV buttons, including an overview level IGV MT button
+### Fixed
+- Empty custom_images dicts in case load config do not crash
+
 
 ## [4.90.1]
 ### Fixed

@@ -557,10 +557,11 @@ class CaseLoader(BaseModel):
             images=custom_images.str_variants_images
         )
 
-        for key, images in custom_images.case_images.items():
-            custom_images.case_images[key] = set_custom_images(
-                images=custom_images.case_images[key]
-            )
+        if custom_images.case_images:
+            for key, images in custom_images.case_images.items():
+                custom_images.case_images[key] = set_custom_images(
+                    images=custom_images.case_images[key]
+                )
 
         return custom_images
 
