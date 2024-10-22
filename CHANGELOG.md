@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 ### Fixed
+- Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
 
 
