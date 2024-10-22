@@ -347,8 +347,8 @@
     {% endif %}
     </div>
     <div class="col-3">
-    {% if variant.is_mitochondrial and case.mt_bams or case.bam_files %}
-      <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end) }}" target="_blank">IGV viewer</a></span>
+    {% if variant.is_mitochondrial and case.mt_bams %}
+      <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end) }}" target="_blank"><span class="fa fa-magnifying-glass fa-fw me-1"></span>IGV MT</a></span>
     {% else %}
       - BAM file(s) missing
     {% endif %}

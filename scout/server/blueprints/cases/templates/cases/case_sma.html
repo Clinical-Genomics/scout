@@ -30,61 +30,56 @@
   <div class="card col-md-12">
     <h4 class="mt-3">Case: {{case.display_name}}</h4>
     <div class="card-body">
-
       <div class="row">
-            <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
-        </div> <!-- end of div class row -->
-        <div class="row">
-          <div class="col-md-4">
-            {% if case.madeline_info and case.individuals|length > 1 %}
-              {{ pedigree_panel() }}
-            {% else %}
-              <p>No pedigree picture available.</p>
-            {% endif %}
-          </div>
-          <div class="col-md-8">
-            {{ synopsis_panel() }}
-            <div class="panel-default">
-            {{ comments_panel(institute, case, current_user, comments) }}
-            </div>
-          </div>
-        </div> <!-- end of div class row -->
-
-        <span class="d-flex">
-          {% if case.vcf_files.vcf_snv %}
-          <span class="me-3">
-            <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
-              <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
-              <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-              <span><button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
-            </form>
-          </span>
+        <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
+      </div> <!-- end of div class row -->
+      <div class="row">
+        <div class="col-md-4">
+          {% if case.madeline_info and case.individuals|length > 1 %}
+            {{ pedigree_panel() }}
+          {% else %}
+            <p>No pedigree picture available.</p>
           {% endif %}
-          {% if case.vcf_files.vcf_sv %}
+        </div>
+        <div class="col-md-8">
+          {{ synopsis_panel() }}
+          <div class="panel-default">
+          {{ comments_panel(institute, case, current_user, comments) }}
+          </div>
+        </div>
+      </div> <!-- end of div class row -->
+
+      <span class="d-flex">
+        {% if case.vcf_files.vcf_snv %}
+        <span class="me-3">
+          <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
+            <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+            <span><button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
+          </form>
+        </span>
+        {% endif %}
+        {% if case.vcf_files.vcf_sv %}
           <span class="me-3">
             <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}">
               <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
               <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-              <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="Structural variants view filtered for the genes SMN1 and SMN2">SVs</button></span>
+              <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="Structural variants view filtered for the genes SMN1 and SMN2">SVs</button>
             </form>
           </span>
-          {% endif %}
-          {% if case.bam_files %}
-            <span class="me-3"><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn1']['chrom'], start=region['smn1']['start'], stop=region['smn1']['end'] )}}" target="_blank">IGV viewer SMN1</a></span>
-            <span class="me-3"><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn2']['chrom'], start=region['smn2']['start'], stop=region['smn2']['end'] )}}" target="_blank">IGV viewer SMN2</a></span>
-          {% else %}
-            <span class="me-3 text-muted">BAM file(s) missing</span>
-          {% endif %}
-        </div>
+        {% endif %}
 
-        <div class="row">
-          <div class="col-sm-12">{{activity_panel(events)}}</div>
-        </div>
+        <span class="me-3"><a class="btn btn-secondary btn-sm text-white" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip" disabled{% endif %} href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn1']['chrom'], start=region['smn1']['start'], stop=region['smn1']['end'] )}}" target="_blank">IGV DNA SMN1</a></span>
+        <span class="me-3"><a class="btn btn-secondary btn-sm text-white" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip" disabled{% endif %} href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn2']['chrom'], start=region['smn2']['start'], stop=region['smn2']['end'] )}}" target="_blank">IGV DNA SMN2</a></span>
+      </span>
 
-        {{ modal_synopsis() }}
+      <div class="row">
+        <div class="col-sm-12">{{activity_panel(events)}}</div>
+      </div>
+
+      {{ modal_synopsis() }}
     </div> <!-- end of card body -->
   </div> <!-- end of card div-->
-</div>
 </div> <!-- end of div class col -->
 {% endmacro %}
 
