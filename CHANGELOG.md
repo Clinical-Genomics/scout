@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [unreleased]
+### Added
+- WTS outlier position copy button
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 ### Fixed
