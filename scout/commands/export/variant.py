@@ -208,7 +208,7 @@ def get_vcf_entry(variant_obj, case_id=None):
         reference = "N"
 
     alternative = variant_obj["alternative"]
-    if alternative in ["", ".", variant_obj["sub_category"]]:
+    if alternative in ["", ".", "-", variant_obj["sub_category"]]:
         alternative = "N"
         if variant_obj["category"] == "sv":
             alternative = f"<{variant_obj['sub_category'].upper()}>"

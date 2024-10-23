@@ -16,7 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tracks missing alignment files are now properly skipped on generating IGV views
 
 
-
 ## [4.90.1]
 ### Fixed
 - Parsing Matchmaker Exchange's matches dates
