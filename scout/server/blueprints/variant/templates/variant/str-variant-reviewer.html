@@ -2,7 +2,7 @@
 {% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
-{% from "variant/buttons.html" import igv_button, reviewer_button%}
+{% from "variant/buttons.html" import reviewer_button%}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants

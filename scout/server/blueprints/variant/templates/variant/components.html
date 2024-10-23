@@ -68,11 +68,18 @@
 {% macro alignments(institute, case, variant, current_user, config, igv_tracks, has_rna_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
-          {% if variant.chromosome in ["MT","M"] and case.mt_bams or case.bam_files %}
-            <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
-          {% else %}
-            <span class="text-muted">BAM file(s) missing</span>
-          {% endif %}
+
+            <span>
+              <a href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}"
+                target="_blank"
+                role="button"
+                class="btn btn-secondary btn-sm text-white
+                {% if not (variant.chromosome in ["MT","M"] and case.mt_bams) or not case.bam_files %}
+                  disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>
+                {% else %}"><span class="fa fa-magnifying-glass fa-fw me-1"></span>{% endif %}IGV
+                {% if variant.chromosome in ["MT","M"] %}MT{% else %}DNA{% endif %}
+              </a>
+            </span>
           {% if variant.category == "str" %}
             <div class="ms-1">
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
