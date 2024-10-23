@@ -8,6 +8,8 @@ from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 
 from .acmg import ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS, REV_ACMG_MAP
+from .ccv import CCV_COMPLETE_MAP, CCV_CRITERIA, CCV_MAP, CCV_OPTIONS, REV_CCV_MAP
+
 from .case_tags import (
     ANALYSIS_TYPES,
     CANCER_PHENOTYPE_MAP,
