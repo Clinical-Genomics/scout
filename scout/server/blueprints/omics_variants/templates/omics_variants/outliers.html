@@ -5,6 +5,7 @@
 {% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell %}
 {% from "variant/buttons.html" import splice_junctions_button %}
 {% from "variants/utils.html" import filter_script_main, pagination_footer, pagination_hidden_div, stash_filter_buttons, update_stash_filter_button_status%}
+{% from "variant/components.html" import variant_scripts %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} omics outlier variants
@@ -117,6 +118,9 @@
               </td>
               <td class="text-end">{{ variant.chromosome }}</td>
                 <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
+                  <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
+                    style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" title="Copy to clipboard">
+                  </button>
                 {% if case.has_rna_tracks %}
                   {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
                 {% endif %}
@@ -142,6 +146,7 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  {{ variant_scripts() }}
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
