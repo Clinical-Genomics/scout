@@ -43,6 +43,7 @@ CASE_REPORT_VARIANT_TYPES = {
     "partial_causatives_detailed": "partial_causatives",
     "suspects_detailed": "suspects",
     "classified_detailed": "acmg_classification",
+    "classified_ccv_detailed": "ccv_classification",
     "tagged_detailed": "manual_rank",
     "tier_detailed": "cancer_tier",
     "dismissed_detailed": "dismiss_variant",
@@ -105,6 +106,7 @@ CASE_TAGS = {
 
 VERBS_MAP = {
     "acmg": "updated ACMG classification for",
+    "ccv": "updated ClinGen-CGC-VIGG classification for",
     "add_case": "added case",
     "add_cohort": "updated cohort for",
     "add_phenotype": "added HPO term for",
