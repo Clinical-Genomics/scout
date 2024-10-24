@@ -32,6 +32,7 @@ import logging
 from flask import current_app
 
 from .acmg import ACMGHandler
+from .ccv import CCVHandler
 from .case import CaseHandler
 from .case_group import CaseGroupHandler
 from .clinvar import ClinVarHandler
@@ -59,6 +60,7 @@ LOG = logging.getLogger(__name__)
 
 class MongoAdapter(
     ACMGHandler,
+    CCVHandler,
     CaseGroupHandler,
     CaseHandler,
     ClinVarHandler,
@@ -97,6 +99,7 @@ class MongoAdapter(
         """Setup connection to database."""
         self.db = database
         self.acmg_collection = database.acmg
+        self.ccv_collection = database.ccv
         self.case_collection = database.case
         self.case_group_collection = database.case_group
         self.clinvar_collection = database.clinvar
