@@ -4,7 +4,7 @@ from typing import Dict, List
 
 import pymongo
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, REV_ACMG_MAP
+from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, REV_ACMG_MAP, REV_CCV_MAP
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -926,6 +926,49 @@ class VariantEventHandler(object):
             updated_variant = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"acmg_classification": REV_ACMG_MAP[acmg_str]}},
+                return_document=pymongo.ReturnDocument.AFTER,
+            )
+
+        LOG.debug("Variant updated")
+        return updated_variant
+
+
+    def update_ccv(self, institute_obj, case_obj, user_obj, link, variant_obj, ccv_str):
+        """Create an event for updating the ClinGen-CGC-VIGG classification of a variant.
+
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            variant_obj (dict): A variant object
+            ccv_str (str): The new ClinGen-CGC-VIGG classification string
+
+        Returns:
+            updated_variant
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="variant",
+            verb="ccv",
+            variant=variant_obj,
+            subject=variant_obj["display_name"],
+        )
+        LOG.info("Setting ClinGen-CGC-VIGG to {} for: {}".format(ccv_str, variant_obj["display_name"]))
+
+        if ccv_str is None:
+            updated_variant = self.variant_collection.find_one_and_update(
+                {"_id": variant_obj["_id"]},
+                {"$unset": {"ccv_classification": 1}},
+                return_document=pymongo.ReturnDocument.AFTER,
+            )
+        else:
+            updated_variant = self.variant_collection.find_one_and_update(
+                {"_id": variant_obj["_id"]},
+                {"$set": {"ccv_classification": REV_CCV_MAP[ccv_str]}},
                 return_document=pymongo.ReturnDocument.AFTER,
             )
 
