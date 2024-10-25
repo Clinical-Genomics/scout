@@ -71,13 +71,13 @@ class CCVHandler(object):
                 user_name=user_name,
                 institute_id=institute_id,
                 case_id=case_id,
-                classification=classification,
-                criteria=criteria,
+                ccv_classification=classification,
+                ccv_criteria=criteria,
             )
 
             self._load_ccv_evaluation(evaluation_obj)
 
-        # Update the acmg classification for the variant:
+        # Update the ccv classification for the variant:
         self.update_ccv(institute_obj, case_obj, user_obj, link, variant_obj, classification)
         return classification
 

@@ -151,9 +151,9 @@
     <div class="d-flex">
       <span>
         <a href="{{ url_for('variant.ccv_evaluation', evaluation_id=data._id) }}">
-          {{ data.classification.label }}
+          {{ data.ccv_classification.label }}
         </a>
-        <span class="badge bg-info">{{ data.classification.short }}</span>
+        <span class="badge bg-info">{{ data.ccv_classification.short }}</span>
       </span>
       <span>
         {% if not current_variant %}
@@ -219,7 +219,7 @@
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_ccv', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
       </div>
-      {% if evaluations %} <!-- scrollable previous ClinGen-CGC-VICC evaluations div-->
+      {% if ccv_evaluations %} <!-- scrollable previous ClinGen-CGC-VICC evaluations div-->
         <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
           {% for evaluation in ccv_evaluations %}
             {{ ccv_classification_item(variant, evaluation) }}

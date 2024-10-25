@@ -14,12 +14,18 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS
-from scout.server.blueprints.variant.controllers import check_reset_variant_classification
+from scout.constants import CCV_CRITERIA, CCV_MAP, CCV_OPTIONS
+
+from scout.server.blueprints.variant.controllers import check_reset_variant_classification, check_reset_variant_ccv_classification
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import ccv_evaluation as ccv_evaluation_controller
+
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import variant_acmg_post
+from scout.server.blueprints.variant.controllers import variant_ccv as ccv_controller
+from scout.server.blueprints.variant.controllers import variant_ccv_post
 from scout.server.blueprints.variant.verification_controllers import (
     MissingVerificationRecipientError,
     variant_verification,
@@ -27,6 +33,7 @@ from scout.server.blueprints.variant.verification_controllers import (
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
+from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -205,6 +212,38 @@ def variant_acmg(institute_id, case_name, variant_id):
     )
 
 
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>/ccv", methods=["GET", "POST"])
+@templated("variant/ccv.html")
+def variant_acmg(institute_id, case_name, variant_id):
+    """ClinGen-CCG-VICC classification form."""
+    if request.method == "GET":
+        data = ccv_controller(store, institute_id, case_name, variant_id)
+        return data
+
+    criteria = []
+    criteria_terms = request.form.getlist("criteria")
+    for term in criteria_terms:
+        criteria.append(
+            dict(
+                term=term,
+                comment=request.form.get("comment-{}".format(term)),
+                links=[request.form.get("link-{}".format(term))],
+            )
+        )
+    ccv = variant_ccv_post(
+        store, institute_id, case_name, variant_id, current_user.email, criteria
+    )
+    flash("classified as: {}".format(ccv), "info")
+    return redirect(
+        url_for(
+            ".variant",
+            institute_id=institute_id,
+            case_name=case_name,
+            variant_id=variant_id,
+        )
+    )
+
+
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/update", methods=["POST"])
 def variant_update(institute_id, case_name, variant_id):
     """Update user-defined information about a variant: manual rank & ACMG."""
@@ -250,6 +289,7 @@ def variant_update(institute_id, case_name, variant_id):
             flash("Variant tag was updated", "info")
         else:
             flash("Variant tag was reset", "info")
+
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
         acmg_classification = variant_obj.get("acmg_classification")
@@ -267,6 +307,24 @@ def variant_update(institute_id, case_name, variant_id):
             classification=new_acmg,
         )
         flash("updated ACMG classification: {}".format(new_acmg), "info")
+
+    elif request.form.get("ccv_classification"):
+        new_ccv = request.form["ccv_classification"]
+        ccv_classification = variant_obj.get("ccv_classification")
+        # If there already is a classification and the same one is sent again this means that
+        # We want to remove the classification
+        if isinstance(ccv_classification, int) and (new_ccv == CCV_MAP[ccv_classification]):
+            new_ccv = None
+
+        store.submit_ccv_evaluation(
+            variant_obj=variant_obj,
+            user_obj=user_obj,
+            institute_obj=institute_obj,
+            case_obj=case_obj,
+            link=link,
+            classification=new_ccv,
+        )
+        flash("updated ClinGen-CGC-VIGG classification: {}".format(new_ccv), "info")
 
     new_dismiss = request.form.getlist("dismiss_variant")
     if new_dismiss:
@@ -351,6 +409,52 @@ def acmg():
     acmg_bayesian = get_acmg_temperature(criteria)
     acmg_conflicts = get_acmg_conflicts(criteria)
     return jsonify({"classification": classification, "conflicts": acmg_conflicts, **acmg_bayesian})
+
+@variant_bp.route("/ccv_evaluations/<evaluation_id>", methods=["GET", "POST"])
+@templated("variant/ccv.html")
+def evaluation(evaluation_id):
+    """Show, edit or delete an ClinGen-CGC-VIGG evaluation."""
+
+    evaluation_obj = store.get_ccv_evaluation(evaluation_id)
+    if evaluation_obj is None:
+        flash("Evaluation was not found in database", "warning")
+        return redirect(request.referrer)
+    ccv_evaluation_controller(store, evaluation_obj)
+    if request.method == "POST":
+        link = url_for(
+            ".variant",
+            institute_id=evaluation_obj["institute"]["_id"],
+            case_name=evaluation_obj["case"]["display_name"],
+            variant_id=evaluation_obj["variant_specific"],
+        )
+        store.delete_ccv_evaluation(evaluation_obj)
+
+        if check_reset_variant_ccv_classification(store, evaluation_obj, link):
+            flash("Cleared ClinGen-CGC-VIGG classification.", "info")
+
+        return redirect(link)
+
+    return dict(
+        evaluation=evaluation_obj,
+        edit=bool(request.args.get("edit")),
+        institute=evaluation_obj["institute"],
+        case=evaluation_obj["case"],
+        variant=evaluation_obj["variant"],
+        CRITERIA=CCV_CRITERIA,
+        CCV_GOPTIONS=CCV_OPTIONS,
+    )
+
+
+@variant_bp.route("/api/v1/ccv")
+@public_endpoint
+def ccv():
+    """Calculate an ClinGen-CVC-VIGG classification from submitted criteria."""
+    criteria = request.args.getlist("criterion")
+    classification = get_ccv(criteria)
+
+    ccv_bayesian = get_ccv_temperature(criteria)
+    ccv_conflicts = get_ccv_conflicts(criteria)
+    return jsonify({"classification": classification, "conflicts": ccv_conflicts, **ccv_bayesian})
 
 
 @variant_bp.route(
