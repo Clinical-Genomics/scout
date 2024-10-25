@@ -18,7 +18,7 @@ CCV_OPTIONS = [
     {"code": "oncogenic", "short": "O", "label": "oncogenic", "color": "danger"},
     {
         "code": "likely_oncogenic",
-        "short": "OP",
+        "short": "LO",
         "label": "Likely Oncogenic",
         "color": "warning",
     },
@@ -234,11 +234,11 @@ CCV_POTENTIAL_CONFLICTS = [
     (
         "OM3",
         "OM1",
-        "This rule cannot be used if OM1 is applicable (Horak et al 2022).",
+        "This rule cannot be used if OM1 is applicable.",
     ),
     (
         "OM3",
         "OM4",
-        "This rule cannot be used if OM4 is applicable (Horak et al 2022).",
+        "This rule cannot be used if OM4 is applicable.",
     ),
 ]
