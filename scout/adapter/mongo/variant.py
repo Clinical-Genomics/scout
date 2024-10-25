@@ -721,7 +721,7 @@ class VariantHandler(VariantLoader):
     def evaluated_variant_ids_from_events(self, case_id, institute_id):
         """Returns variant ids for variants that have been evaluated
            Return all variants, snvs/indels and svs from case case_id
-            which have an event entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+            which have an event entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
             'cancer_tier', 'mosaic_tags'.
         Args:
             case_id(str)
@@ -731,7 +731,7 @@ class VariantHandler(VariantLoader):
         """
 
         evaluation_verbs = [
-            "acmg",
+            "acmg", "ccv",
             "manual_rank",
             "cancer_tier",
             "dismiss_variant",
@@ -758,7 +758,7 @@ class VariantHandler(VariantLoader):
         """Returns variants that have been evaluated
 
         Return all variants, snvs/indels and svs from case case_id and institute_id
-        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+        which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
         'cancer_tier' or if they are commented.
 
         Return only if the variants still exist and still have the assessment.
@@ -783,6 +783,7 @@ class VariantHandler(VariantLoader):
                 {
                     "$or": [
                         {"acmg_classification": {"$exists": True}},
+                        {"ccv_classification": {"$exists": True}},
                         {"manual_rank": {"$exists": True}},
                         {"cancer_tier": {"$exists": True}},
                         {"dismiss_variant": {"$exists": True}},
