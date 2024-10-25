@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class CCVHandler(object):
-    def submit_evaluation(
+    def submit_ccv_evaluation(
         self,
         variant_obj,
         user_obj,
@@ -75,18 +75,18 @@ class CCVHandler(object):
                 criteria=criteria,
             )
 
-            self._load_evaluation(evaluation_obj)
+            self._load_ccv_evaluation(evaluation_obj)
 
         # Update the acmg classification for the variant:
         self.update_ccv(institute_obj, case_obj, user_obj, link, variant_obj, classification)
         return classification
 
-    def _load_evaluation(self, evaluation_obj):
+    def _load_ccv_evaluation(self, evaluation_obj):
         """Load a evaluation object into the database"""
         res = self.ccv_collection.insert_one(evaluation_obj)
         return res
 
-    def delete_evaluation(self, evaluation_obj):
+    def delete_ccv_evaluation(self, evaluation_obj):
         """Delete an evaluation from the database
 
         Args:
@@ -95,7 +95,7 @@ class CCVHandler(object):
         """
         self.ccv_collection.delete_one({"_id": evaluation_obj["_id"]})
 
-    def get_evaluation(self, evaluation_id):
+    def get_ccv_evaluation(self, evaluation_id):
         """Get a single evaluation from the database
 
         Args:
@@ -104,7 +104,7 @@ class CCVHandler(object):
         """
         return self.ccv_collection.find_one({"_id": ObjectId(evaluation_id)})
 
-    def get_evaluations(self, variant_obj):
+    def get_ccv_evaluations(self, variant_obj):
         """Return all evaluations for a certain variant.
 
         Args:
@@ -117,7 +117,7 @@ class CCVHandler(object):
         res = self.ccv_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
         return res
 
-    def get_evaluations_case_specific(self, document_id):
+    def get_ccv_evaluations_case_specific(self, document_id):
         """Return all evaluations for a certain variant, in a certain case as determined by document id.
 
         Args:
