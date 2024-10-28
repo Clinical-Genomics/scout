@@ -191,7 +191,7 @@ def get_vcf_entry(variant_obj, case_id=None):
     Returns:
         variant_string(str): string representing variant in vcf format
     """
-    if variant_obj["category"] == "snv" or variant_obj["category"] == "cancer":
+    if variant_obj["category"] in ["snv", "cancer"]:
         var_type = "TYPE"
     else:
         var_type = "SVTYPE"
