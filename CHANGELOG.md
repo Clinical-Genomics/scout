@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
+- Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
