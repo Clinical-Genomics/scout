@@ -1,4 +1,5 @@
 from flask import url_for
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.server.blueprints.dashboard.controllers import (
     dashboard_form,
@@ -6,6 +7,7 @@ from scout.server.blueprints.dashboard.controllers import (
     institute_select_choices,
 )
 from scout.server.blueprints.dashboard.forms import DashboardFilterForm
+from scout.server.blueprints.institutes.forms import CaseFilterForm
 
 
 def test_institute_select_choices(user_obj, app):
@@ -35,10 +37,8 @@ def test_dashboard_form(app):
         # A DashboardFilterForm should be created correctly by dashboard_form
         df = dashboard_form(None)
         assert isinstance(df, DashboardFilterForm)
-        assert df.search_type
+        assert isinstance(df, CaseFilterForm)
         assert df.search_institute
-        assert df.search_term
-        assert df.search
 
 
 def test_empty_database(real_adapter):
@@ -83,7 +83,7 @@ def test_one_causative(real_adapter, case_obj):
             assert info["count"] == 0
 
 
-def test_with_slice_query(real_adapter, case_obj):
+def test_with_name_query(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
     adapter.case_collection.insert_one(case_obj)
@@ -92,8 +92,12 @@ def test_with_slice_query(real_adapter, case_obj):
 
     institute_id = case_obj["owner"]
 
-    slice_query = f"case:{case_display_id}"
-    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
+    name_query = ImmutableMultiDict(
+        {
+            "case": case_display_id,
+        }
+    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, cases_form=name_query)
 
     ## THEN assert there is one case in the data
     for group in data["cases"]:
@@ -116,9 +120,13 @@ def test_with_hpo_query(real_adapter, case_obj):
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]
-    slice_query = f"exact_pheno:{phenotype['phenotype_id']}"
+    name_query = ImmutableMultiDict(
+        {
+            "exact_pheno": phenotype["phenotype_id"],
+        }
+    )
 
-    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
+    data = get_dashboard_info(adapter, institute_id=institute_id, cases_form=name_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":
@@ -140,9 +148,13 @@ def test_with_phenotype_group_query(real_adapter, case_obj):
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]
-    slice_query = "pheno_group:HP:0000001"
+    name_query = ImmutableMultiDict(
+        {
+            "pheno_group": "HP:0000001",
+        }
+    )
 
-    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
+    data = get_dashboard_info(adapter, institute_id=institute_id, cases_form=name_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":
