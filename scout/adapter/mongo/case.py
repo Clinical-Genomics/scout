@@ -4,7 +4,7 @@ import logging
 import operator
 import re
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import pymongo
 from bson import ObjectId
