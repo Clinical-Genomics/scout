@@ -46,11 +46,11 @@ def get_ccv_points(ccv_terms: set) -> int:
                 term_list.append(term)
                 break
     points = (
-            8 * ovs_terms
+            8 * len(ovs_terms)
             + 4 * len(os_terms)
-            + 2 * len(os_terms)
+            + 2 * len(om_terms)
             + len(op_terms)
-            - 8 * sbvs_terms
+            - 8 * len(sbvs_terms)
             - 4 * len(sbs_terms)
             -  len(sbp_terms)
         )
@@ -124,11 +124,19 @@ def get_ccv_temperature(ccv_terms: set) -> Optional[dict]:
         3: {"label": "Tepid", "color": "yellow", "icon": "fa-temperature-half"},
         4: {"label": "Warm", "color": "orange", "icon": "fa-mug-hot"},
         5: {"label": "Hot", "color": "red", "icon": "fa-pepper-hot"},
-        6: {"label": "LP/P", "color": "danger", "icon": "fa-stethoscope"},
+        6: {"label": "LO/O", "color": "danger", "icon": "fa-stethoscope"},
     }
 
     if not ccv_terms:
-        return {}
+        points = 0
+        point_classification = "uncertain_significance"
+        return {
+        "points": points,
+        "temperature": TEMPERATURE_STRINGS[points].get("label"),
+        "temperature_class": TEMPERATURE_STRINGS[points].get("color"),
+        "temperature_icon": TEMPERATURE_STRINGS[points].get("icon"),
+        "point_classification": CCV_COMPLETE_MAP[point_classification].get("short"),
+    }
 
     points = get_ccv_points(ccv_terms)
 

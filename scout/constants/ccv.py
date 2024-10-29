@@ -15,7 +15,7 @@ CCV_MAP = OrderedDict(
 REV_CCV_MAP = OrderedDict([(value, key) for key, value in CCV_MAP.items()])
 
 CCV_OPTIONS = [
-    {"code": "oncogenic", "short": "O", "label": "oncogenic", "color": "danger"},
+    {"code": "oncogenic", "short": "O", "label": "Oncogenic", "color": "danger"},
     {
         "code": "likely_oncogenic",
         "short": "LO",
@@ -138,7 +138,6 @@ CCV_CRITERIA["oncogenicity"] = OrderedDict(
                         {
                             "short": "Cancer hotspots: low frequency",
                             "description": "Located in one of the hotspots in cancerhotspots.org and the particular amino acid change count in cancerhotspots.org is below 10",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/" target="_blank">Pejaver et al</a>',
                         },
                     ),
                     (
@@ -219,26 +218,26 @@ CCV_POTENTIAL_CONFLICTS = [
     (
         "OS2",
         "OS1",
-        "If OS1 is applicable, this rule can be used only if functional studies are based on the particular nucleotide change of the variant.",
+        "If OS1 is applicable, OS2 can be used only if functional studies are based on the particular nucleotide change of the variant.",
     ),
     (
         "OS3",
         "OS1",
-        "This rule cannot be used if OS1 is applicable, unless it is possible to observe hotspots on the basis of the particular nucleotide change.",
+        "OS3 cannot be used if OS1 is applicable, unless it is possible to observe hotspots on the basis of the particular nucleotide change.",
     ),
     (
         "OM1",
         "OVS1",
-        "This rule cannot be used if OVS1 is applicable.",
+        "OM1 cannot be used if OVS1 is applicable.",
     ),
     (
         "OM3",
         "OM1",
-        "This rule cannot be used if OM1 is applicable.",
+        "OM3 cannot be used if OM1 is applicable.",
     ),
     (
         "OM3",
         "OM4",
-        "This rule cannot be used if OM4 is applicable.",
+        "OM3 cannot be used if OM4 is applicable.",
     ),
 ]
