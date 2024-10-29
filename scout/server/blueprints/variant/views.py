@@ -214,7 +214,7 @@ def variant_acmg(institute_id, case_name, variant_id):
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/ccv", methods=["GET", "POST"])
 @templated("variant/ccv.html")
-def variant_acmg(institute_id, case_name, variant_id):
+def variant_ccv(institute_id, case_name, variant_id):
     """ClinGen-CCG-VICC classification form."""
     if request.method == "GET":
         data = ccv_controller(store, institute_id, case_name, variant_id)
@@ -412,7 +412,7 @@ def acmg():
 
 @variant_bp.route("/ccv_evaluations/<evaluation_id>", methods=["GET", "POST"])
 @templated("variant/ccv.html")
-def evaluation(evaluation_id):
+def ccv_evaluation(evaluation_id):
     """Show, edit or delete an ClinGen-CGC-VIGG evaluation."""
 
     evaluation_obj = store.get_ccv_evaluation(evaluation_id)
@@ -441,7 +441,7 @@ def evaluation(evaluation_id):
         case=evaluation_obj["case"],
         variant=evaluation_obj["variant"],
         CRITERIA=CCV_CRITERIA,
-        CCV_GOPTIONS=CCV_OPTIONS,
+        CCV_OPTIONS=CCV_OPTIONS,
     )
 
 

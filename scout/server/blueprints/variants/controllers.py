@@ -408,12 +408,12 @@ def get_manual_assessments(variant_obj):
             if assessment_type == "ccv_classification":
                 ccv_classification = variant_obj[assessment_type]
                 if isinstance(ccv_classification, int):
-                    ccv_code = CCV_MAP[classification]
+                    ccv_code = CCV_MAP[ccv_classification]
                     ccv_classification = CCV_COMPLETE_MAP[ccv_code]
 
-                assessment["title"] = "ClinGen-CGC-VIGG: {}".format(classification["label"])
-                assessment["label"] = classification["short"]
-                assessment["display_class"] = classification["color"]
+                assessment["title"] = "ClinGen-CGC-VIGG: {}".format(ccv_classification["label"])
+                assessment["label"] = ccv_classification["short"]
+                assessment["display_class"] = ccv_classification["color"]
 
             if assessment_type == "dismiss_variant":
                 dismiss_variant_options = {
