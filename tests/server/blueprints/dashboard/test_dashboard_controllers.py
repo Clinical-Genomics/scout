@@ -1,13 +1,11 @@
 from flask import url_for
 
 from scout.server.blueprints.dashboard.controllers import (
-    compose_slice_query,
     dashboard_form,
     get_dashboard_info,
     institute_select_choices,
 )
 from scout.server.blueprints.dashboard.forms import DashboardFilterForm
-from scout.server.extensions import store
 
 
 def test_institute_select_choices(user_obj, app):
@@ -41,16 +39,6 @@ def test_dashboard_form(app):
         assert df.search_institute
         assert df.search_term
         assert df.search
-
-
-def test_compose_slice_query(app):
-    """Test function that combines form fields to create filter query"""
-
-    # GIVEN two parameters provided in the dashboard filter form
-    search_type = "case:"
-    search_term = "test_case"
-    slice_query = compose_slice_query(search_type, search_term)
-    assert slice_query == f"{search_type}{search_term}"
 
 
 def test_empty_database(real_adapter):
