@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Cases advanced search on the dashboard page
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
@@ -14,7 +15,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
-
 
 ## [4.90.1]
 ### Fixed
