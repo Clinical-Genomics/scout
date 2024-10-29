@@ -32,7 +32,7 @@
           {% if evaluation %}
              <h4>
               {{ evaluation.ccv_classification.label }}
-              <span class="badge bg-info">{{ evaluation.classification.short|safe }}</span>
+              <span class="badge bg-info">{{ evaluation.ccv_classification.short|safe }}</span>
             </h4>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
             {% if edit %}
@@ -54,11 +54,11 @@
               <ul class="list-group mt-3">
                 <li class="list-group-item">{{ evidence }}</li>
                 {% for criterion_code, criterion in criteria.items() %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).comment %}
-                    {% set comment = evaluation.criteria.get(criterion_code).comment %}
+                  {% if evaluation and evaluation.ccv_criteria.get(criterion_code).comment %}
+                    {% set comment = evaluation.ccv_criteria.get(criterion_code).comment %}
                   {% endif %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).links %}
-                    {% set link = evaluation.criteria.get(criterion_code).links[0] %}
+                  {% if evaluation and evaluation.ccv_criteria.get(criterion_code).links %}
+                    {% set link = evaluation.ccv_criteria.get(criterion_code).links[0] %}
                   {% endif %}
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
@@ -67,21 +67,13 @@
                         {{ criterion.short|safe}}
                       </div>
                       <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
+                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.ccv_criteria }} {{ 'disabled' if evaluation and edit is false }}>
                         <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe }}</span></div>{% endif %}
                       <div class="row">
-                        <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
-                          <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
-                          {% for level in "Strong", "Moderate", "Supporting" %}
-                            {% if(level != evidence) %}
-                              <option id="{{ criterion_code }}-{{ level }}" value="{{ level }}" {% if modifier == level %}selected{% endif %}>{{ level }}</option>
-                            {% endif %}
-                          {% endfor %}
-                        </select>
                       </div>
                       <div class="row">
                         <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
@@ -101,6 +93,9 @@
     <!-- classification preview in the footer-->
       <div class="mt-3 fixed-bottom bg-light border">
         <div class="row">
+          <div class="col-3" style="font-size:1.5em">
+            <a href="https://doi.org/10.1016/j.gim.2022.01.001" data-bs-toggle="tooltip" title="Suggested classification based on Horak et al 2022." rel="noopener noreferrer" target="_blank"><span id="temperature_span" class="badge"></span></a>
+          </div>
           <div class="col-6 text-center">
           {% for option in CCV_OPTIONS %}
             <a id="ccv-{{ option.code }}" href="https://doi.org/10.1016/j.gim.2022.01.001" class="btn ccv-preview" data-bs-toggle="tooltip" title="Suggested classification based on Horak et al 2022.">{{ option.label }}</a>
@@ -149,7 +144,7 @@
         // reset the selection
         $('.ccv-preview').removeClass('btn-primary');
         // add new selection
-        $('#ccv-' + data.ccv_classification).addClass('btn-primary');
+        $('#ccv-' + data.classification).addClass('btn-primary');
 
         var temperature_span = document.getElementById("temperature_span");
         temperature_span.innerHTML = 'Score ' + data.points + ' <span class="fa ' + data.temperature_icon + '"></span> ' + data.temperature + ' (' + data.point_classification + ')'
