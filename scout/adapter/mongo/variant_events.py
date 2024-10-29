@@ -932,7 +932,6 @@ class VariantEventHandler(object):
         LOG.debug("Variant updated")
         return updated_variant
 
-
     def update_ccv(self, institute_obj, case_obj, user_obj, link, variant_obj, ccv_str):
         """Create an event for updating the ClinGen-CGC-VIGG classification of a variant.
 
@@ -957,7 +956,9 @@ class VariantEventHandler(object):
             variant=variant_obj,
             subject=variant_obj["display_name"],
         )
-        LOG.info("Setting ClinGen-CGC-VIGG to {} for: {}".format(ccv_str, variant_obj["display_name"]))
+        LOG.info(
+            "Setting ClinGen-CGC-VIGG to {} for: {}".format(ccv_str, variant_obj["display_name"])
+        )
 
         if ccv_str is None:
             updated_variant = self.variant_collection.find_one_and_update(

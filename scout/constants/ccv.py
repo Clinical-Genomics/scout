@@ -74,7 +74,7 @@ CCV_CRITERIA["oncogenicity"] = OrderedDict(
                         "OS3",
                         {
                             "short": "Cancer hotspot: high frequency",
-                            "description": 'Located in one of the hotspots in cancerhotspots.org with at least 50 samples with a somatic variant at the same amino acid position, and the same amino acid change count in cancerhotspots.org in at least 10 samples.',
+                            "description": "Located in one of the hotspots in cancerhotspots.org with at least 50 samples with a somatic variant at the same amino acid position, and the same amino acid change count in cancerhotspots.org in at least 10 samples.",
                         },
                     ),
                 ]

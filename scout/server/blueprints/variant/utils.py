@@ -480,7 +480,9 @@ def ccv_evaluation(store, evaluation_obj):
     evaluation_obj["ccv_criteria"] = {
         criterion["term"]: criterion for criterion in evaluation_obj["ccv_criteria"]
     }
-    evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(evaluation_obj["ccv_classification"])
+    evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(
+        evaluation_obj["ccv_classification"]
+    )
     return evaluation_obj
 
 

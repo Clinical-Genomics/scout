@@ -30,7 +30,11 @@ def build_ccv_evaluation(
         evaluation_obj(dict): Correctly formatted evaluation object
 
     """
-    LOG.info("Creating ClinGen-CGC-VIGG classification: %s for variant %s", ccv_classification, variant_id)
+    LOG.info(
+        "Creating ClinGen-CGC-VIGG classification: %s for variant %s",
+        ccv_classification,
+        variant_id,
+    )
     ccv_criteria = ccv_criteria or []
     evaluation_obj = dict(
         variant_specific=variant_specific,

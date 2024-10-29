@@ -5,6 +5,7 @@ from typing import Optional
 
 from scout.constants.ccv import CCV_COMPLETE_MAP, CCV_POTENTIAL_CONFLICTS
 
+
 def get_ccv_points(ccv_terms: set) -> int:
     """
     Use the algorithm described in Clingen-CGC-VIGG classification paper (Horak 2022)
@@ -20,7 +21,7 @@ def get_ccv_points(ccv_terms: set) -> int:
     Args:
         ccv_terms(set(str)): A collection of prediction terms
     Returns:
-        points(int):     """
+        points(int):"""
 
     ovs_terms = []
     os_terms = []
@@ -46,14 +47,14 @@ def get_ccv_points(ccv_terms: set) -> int:
                 term_list.append(term)
                 break
     points = (
-            8 * len(ovs_terms)
-            + 4 * len(os_terms)
-            + 2 * len(om_terms)
-            + len(op_terms)
-            - 8 * len(sbvs_terms)
-            - 4 * len(sbs_terms)
-            -  len(sbp_terms)
-        )
+        8 * len(ovs_terms)
+        + 4 * len(os_terms)
+        + 2 * len(om_terms)
+        + len(op_terms)
+        - 8 * len(sbvs_terms)
+        - 4 * len(sbs_terms)
+        - len(sbp_terms)
+    )
     return points
 
 
@@ -78,9 +79,9 @@ def get_ccv(ccv_terms: set) -> Optional[str]:
     """
     if not ccv_terms:
         return None
-    
+
     points = get_ccv_points(ccv_terms)
-    
+
     if points <= -7:
         prediction = "benign"
     elif points <= -1:
@@ -131,12 +132,12 @@ def get_ccv_temperature(ccv_terms: set) -> Optional[dict]:
         points = 0
         point_classification = "uncertain_significance"
         return {
-        "points": points,
-        "temperature": TEMPERATURE_STRINGS[points].get("label"),
-        "temperature_class": TEMPERATURE_STRINGS[points].get("color"),
-        "temperature_icon": TEMPERATURE_STRINGS[points].get("icon"),
-        "point_classification": CCV_COMPLETE_MAP[point_classification].get("short"),
-    }
+            "points": points,
+            "temperature": TEMPERATURE_STRINGS[points].get("label"),
+            "temperature_class": TEMPERATURE_STRINGS[points].get("color"),
+            "temperature_icon": TEMPERATURE_STRINGS[points].get("icon"),
+            "point_classification": CCV_COMPLETE_MAP[point_classification].get("short"),
+        }
 
     points = get_ccv_points(ccv_terms)
 

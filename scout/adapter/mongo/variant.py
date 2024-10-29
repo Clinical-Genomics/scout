@@ -731,7 +731,8 @@ class VariantHandler(VariantLoader):
         """
 
         evaluation_verbs = [
-            "acmg", "ccv",
+            "acmg",
+            "ccv",
             "manual_rank",
             "cancer_tier",
             "dismiss_variant",
