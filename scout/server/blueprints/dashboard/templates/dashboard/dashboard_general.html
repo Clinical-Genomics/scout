@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "overview/utils.html" import cases_search_form %}
 
 {% block top_nav %}
   {{ super() }}
@@ -14,7 +15,7 @@
   <div class="container-float mt-3">
       <!--filter panel -->
       <div>
-        {{ dashboard_search_form() }}
+        {{ cases_search_form(dashboard_form, url_for('dashboard.index'), none) }}
         {% if total_cases == 0 %}
           <div class="alert alert-danger mt-3">Your search didn't return any results!</div>
         {% elif not total_cases %}
