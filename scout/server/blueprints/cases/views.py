@@ -25,6 +25,7 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import DATE_DAY_FORMATTER
 from scout.server.blueprints.variants.controllers import activate_case
@@ -619,7 +620,13 @@ def caselist(institute_id):
     if query is None:
         return abort(500)
 
-    matching_cases = store.cases(owner=institute_id, name_query="case:" + query)
+    name_query = ImmutableMultiDict(
+        {
+            "case": query,
+        }
+    )
+
+    matching_cases = store.cases(owner=institute_id, name_query=name_query)
     display_names = []
     if institute_id:  # called from case page, where institute_id is provided
         display_names = sorted([case["display_name"] for case in matching_cases])
