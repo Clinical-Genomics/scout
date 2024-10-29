@@ -134,29 +134,23 @@
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 
-    // Code taking care of case filtering
-    var caseSearchTerms = {{ search_terms|safe }};
-    var searchTerm = document.getElementById('search_term'); // Case search term label
-    var sel = document.getElementById('search_type'); // Case search term select
-    document.getElementById("search_type").onchange = function() {
-      // Change case search term placeholder
-      selectedKey = sel.options[sel.selectedIndex].value.slice(0, -1);
-      if(selectedKey){
-        searchTerm.placeholder=caseSearchTerms[selectedKey]["placeholder"];
-        searchTerm.disabled = false;
-      }
-      else{
-        searchTerm.disabled = (sel.value == "");
-        searchTerm.placeholder="Search term";
-      }
-      // Reset search
-      searchTerm.value="";
-    };
+    // Show/hide advanced search options
+    let advSearchBlock = $('#advancesSearchOptions');
 
-    $(document).ready(function(){
-      searchTerm.disabled = (sel.value == "");
-    });
+    let advBlockCheckbox = $('#advanced_search');
 
+    window.onload = function(){
+      if(!advBlockCheckbox.is(':checked'))
+      advSearchBlock.hide();
+    }
+
+    advBlockCheckbox.on('click', function() {
+      if($(this).is(':checked')) {
+        advSearchBlock.show();
+      } else {
+        advSearchBlock.hide();
+      }
+    })
 
     {% if cases %}
       //create analysis type chart ===> general stats
