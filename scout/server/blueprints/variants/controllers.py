@@ -14,11 +14,11 @@ from scout.adapter import MongoAdapter
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    CCV_COMPLETE_MAP,
-    CCV_MAP,
     CANCER_EXPORT_HEADER,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
+    CCV_COMPLETE_MAP,
+    CCV_MAP,
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINSIG_MAP,

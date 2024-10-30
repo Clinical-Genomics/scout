@@ -13,15 +13,23 @@ from flask import (
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.constants import ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS
-from scout.constants import CCV_CRITERIA, CCV_MAP, CCV_OPTIONS
+from scout.constants import (
+    ACMG_CRITERIA,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CCV_CRITERIA,
+    CCV_MAP,
+    CCV_OPTIONS
+)
+
 
 from scout.server.blueprints.variant.controllers import (
     check_reset_variant_classification,
     check_reset_variant_ccv_classification,
 )
-from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+
 from scout.server.blueprints.variant.controllers import ccv_evaluation as ccv_evaluation_controller
+from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller

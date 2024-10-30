@@ -32,9 +32,9 @@ import logging
 from flask import current_app
 
 from .acmg import ACMGHandler
-from .ccv import CCVHandler
 from .case import CaseHandler
 from .case_group import CaseGroupHandler
+from .ccv import CCVHandler
 from .clinvar import ClinVarHandler
 from .cytoband import CytobandHandler
 from .disease_terms import DiagnosisHandler
@@ -60,9 +60,9 @@ LOG = logging.getLogger(__name__)
 
 class MongoAdapter(
     ACMGHandler,
-    CCVHandler,
     CaseGroupHandler,
     CaseHandler,
+    CCVHandler,
     ClinVarHandler,
     CytobandHandler,
     DiagnosisHandler,
