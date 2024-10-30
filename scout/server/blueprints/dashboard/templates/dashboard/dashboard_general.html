@@ -15,7 +15,7 @@
   <div class="container-float mt-3">
       <!--filter panel -->
       <div>
-        {{ cases_search_form(dashboard_form, url_for('dashboard.index'), none) }}
+        {{ cases_search_form(dashboard_form, url_for('dashboard.index'), url_for('dashboard.index'), urlnone) }}
         {% if total_cases == 0 %}
           <div class="alert alert-danger mt-3">Your search didn't return any results!</div>
         {% elif not total_cases %}
