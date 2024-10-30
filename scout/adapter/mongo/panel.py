@@ -194,6 +194,7 @@ class PanelHandler:
             LOG.debug("Panel replaced")
             return new_panel["_id"]
         # Else create a new panel document with a given version
+
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
         return result.inserted_id
@@ -273,7 +274,7 @@ class PanelHandler:
                 {"hidden": False},
             ]
 
-        return self.panel_collection.find(query)
+        return self.panel_collection.find(query).sort("version", pymongo.DESCENDING)
 
     def gene_panels_dict(self, panel_names: List[str]) -> Dict[str, Dict]:
         """

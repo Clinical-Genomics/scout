@@ -9,6 +9,7 @@ import math
 from datetime import datetime
 from typing import Dict, List
 
+from bson import Decimal128
 from click import Abort
 from flask.cli import current_app
 
@@ -40,7 +41,7 @@ def load_panel(panel_path, adapter, **kwargs):
     version = kwargs.get("version")
 
     try:
-        # This will parse panel metadata if includeed in panel file
+        # This will parse panel metadata if included in panel file
         panel_info = get_panel_info(
             panel_lines=panel_lines,
             panel_id=kwargs.get("panel_id"),
@@ -54,7 +55,7 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
     if panel_info.get("version"):
-        version = float(panel_info["version"])
+        version = Decimal128(panel_info["version"])
 
     panel_id = panel_info["panel_id"]
     display_name = panel_info["display_name"] or panel_id

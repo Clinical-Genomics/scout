@@ -222,7 +222,7 @@
 {% macro history_view(panel_id, panel_name) %}
   <div id="paneldiv_{{panel_id}}" class="collapse">
     <ul>
-    {% for version in panel_versions[panel_name]|sort(attribute='version', reverse=True) %}
+    {% for version in panel_versions[panel_name] %}
       <li><a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a></li>
     {% endfor %}
     </ul>

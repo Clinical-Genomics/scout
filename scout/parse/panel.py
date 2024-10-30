@@ -254,7 +254,7 @@ def parse_gene_panel(
     gene_panel["panel_id"] = panel_id
     gene_panel["type"] = panel_type
     gene_panel["date"] = kwargs.get("date") or datetime.now()
-    gene_panel["version"] = float(kwargs.get("version") or 1.0)
+    gene_panel["version"] = kwargs.get("version") or 1.0
     gene_panel["display_name"] = kwargs.get("display_name") or panel_id
 
     if not path:

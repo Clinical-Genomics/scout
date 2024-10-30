@@ -1,6 +1,7 @@
 """Code for scout load panel CLI functionality"""
 
 import logging
+from decimal import Decimal
 
 import click
 from flask.cli import current_app, with_appcontext
@@ -21,7 +22,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-d", "--date", help="date of gene panel on format 2017-12-24, default is today.")
 @click.option("-n", "--display-name", help="display name for the panel, optional")
-@click.option("-v", "--version", type=float)
+@click.option("-v", "--version", type=Decimal)
 @click.option(
     "-t",
     "--panel-type",
@@ -91,18 +92,20 @@ def panel(
     if path is None:
         LOG.info("Please provide a panel")
         return
-    try:
-        load_panel(
-            panel_path=path,
-            adapter=adapter,
-            date=date,
-            display_name=display_name,
-            version=version,
-            panel_type=panel_type,
-            panel_id=panel_id,
-            institute=institute,
-            maintainer=maintainer,
-        )
+    # try:
+    load_panel(
+        panel_path=path,
+        adapter=adapter,
+        date=date,
+        display_name=display_name,
+        version=version,
+        panel_type=panel_type,
+        panel_id=panel_id,
+        institute=institute,
+        maintainer=maintainer,
+    )
+    """
     except Exception as err:
         LOG.warning(err)
         raise click.Abort()
+    """

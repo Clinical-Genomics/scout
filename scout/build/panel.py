@@ -101,7 +101,7 @@ def build_panel(panel_info, adapter):
 
     panel_obj["institute"] = panel_info["institute"]
 
-    panel_obj["version"] = float(panel_info["version"])
+    panel_obj["version"] = panel_info["version"]
 
     try:
         panel_obj["date"] = panel_info["date"]
