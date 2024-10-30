@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
