@@ -25,8 +25,8 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from werkzeug.datastructures import ImmutableMultiDict
 from pymongo.errors import OperationFailure
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import DATE_DAY_FORMATTER
 from scout.server.blueprints.variants.controllers import activate_case
