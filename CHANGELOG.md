@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - WTS outlier position copy button
 - Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
+- `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
 - cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
