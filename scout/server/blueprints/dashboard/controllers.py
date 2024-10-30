@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
@@ -61,7 +62,7 @@ def populate_dashboard_data(request: LocalProxy) -> dict:
 
 
 def get_dashboard_info(
-    adapter: MongoAdapter, data: dict = {}, institute_id: str = None, cases_form=None
+    adapter: MongoAdapter, data: dict = None, institute_id: str = None, cases_form=None
 ) -> dict:
     """Append case data stats to data display object"""
 
@@ -71,7 +72,7 @@ def get_dashboard_info(
     )
 
     total_filtered_cases = filtered_cases_info["total_cases"]
-    data["total_cases"] = total_filtered_cases
+    data = {"total_cases": total_filtered_cases}
 
     if total_filtered_cases == 0:
         return data
@@ -214,7 +215,7 @@ def get_case_groups(
     total_cases: int,
     institute_id: str = None,
     name_query: ImmutableMultiDict = None,
-) -> dict:
+) -> List[dict]:
     """Return the information about case groups"""
     # Create a group with all cases in the database
     cases = [{"status": "all", "count": total_cases, "percent": 1}]
@@ -252,7 +253,7 @@ def get_case_groups(
 
 def get_analysis_types(
     adapter: MongoAdapter, institute_id: str = None, name_query: ImmutableMultiDict = None
-) -> int:
+) -> List[dict]:
     """Group cases based on analysis type of the individuals."""
 
     subquery = {}
