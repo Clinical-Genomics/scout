@@ -36,6 +36,7 @@
           {{ form.advanced_search.label(class="form-check-label") }}
         </div>
     </div>
+    {% if institute %} <!-- The following checkboxes will be displayed when the form is used on institute caseS page only, not on the dashboard -->
     <div class="row">
         <div class="col-md-2 mb-3 form-check ms-3">
             {{ form.skip_assigned(class="form-check-input") }}
@@ -58,6 +59,7 @@
             {{ form.validation_ordered.label(class="form-check-label") }}
         </div>
     </div>
+    {% endif %}
     <!-- This div contains the advances search options -->
     <div id="advancesSearchOptions">
       <div class="row">
@@ -133,7 +135,7 @@
 </div>
 {% endmacro %}
 
-{% macro analysis_type(analysis_types) %}
+{% macro analysis_type(analysis_types) %}Sorry
   {% for analysis_type in analysis_types %}
     {% if analysis_type == 'wgs' %}
       {% set badge_class = 'primary' %}
