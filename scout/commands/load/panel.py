@@ -92,20 +92,18 @@ def panel(
     if path is None:
         LOG.info("Please provide a panel")
         return
-    # try:
-    load_panel(
-        panel_path=path,
-        adapter=adapter,
-        date=date,
-        display_name=display_name,
-        version=version,
-        panel_type=panel_type,
-        panel_id=panel_id,
-        institute=institute,
-        maintainer=maintainer,
-    )
-    """
+    try:
+        load_panel(
+            panel_path=path,
+            adapter=adapter,
+            date=date,
+            display_name=display_name,
+            version=version,
+            panel_type=panel_type,
+            panel_id=panel_id,
+            institute=institute,
+            maintainer=maintainer,
+        )
     except Exception as err:
         LOG.warning(err)
         raise click.Abort()
-    """
