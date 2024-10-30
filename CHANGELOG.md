@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
 - Update IGV.js to v3.0.9
+- Managed variants VCF export more verbose on SVs
 - cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
