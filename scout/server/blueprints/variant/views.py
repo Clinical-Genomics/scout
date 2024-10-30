@@ -19,7 +19,7 @@ from scout.constants import (
     ACMG_OPTIONS,
     CCV_CRITERIA,
     CCV_MAP,
-    CCV_OPTIONS
+    CCV_OPTIONS,
 )
 
 
