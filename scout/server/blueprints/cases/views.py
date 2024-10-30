@@ -25,6 +25,7 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
+from pymongo.errors import OperationFailure
 
 from scout.constants import DATE_DAY_FORMATTER
 from scout.server.blueprints.variants.controllers import activate_case
@@ -643,13 +644,16 @@ def hpoterms():
     query = request.args.get("query")
     if query is None:
         return abort(500)
-    terms = sorted(store.hpo_terms(query=query), key=itemgetter("hpo_number"))
-    json_terms = [
-        {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
-        for term in terms[:7]
-    ]
+    try:
+        terms = sorted(store.hpo_terms(query=query), key=itemgetter("hpo_number"))
+        json_terms = [
+            {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
+            for term in terms[:7]
+        ]
 
-    return jsonify(json_terms)
+        return jsonify(json_terms)
+    except OperationFailure as of:
+        return jsonify({"error": of._message})
 
 
 @cases_bp.route("/api/v1/disease-terms")
