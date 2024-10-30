@@ -60,12 +60,14 @@ def populate_dashboard_data(request: LocalProxy) -> dict:
     get_dashboard_info(adapter=store, data=data, institute_id=institute_id, cases_form=request.form)
     return data
 
-
 def get_dashboard_info(
-    adapter: MongoAdapter, data: dict, institute_id: str = None, cases_form=None
+    adapter: MongoAdapter, data: dict = None, institute_id: str = None, cases_form=None
 ) -> dict:
     """Append case data stats to data display object"""
 
+    if not data:
+        data = {}
+        
     # Filter data using eventual filter provided in cases filters form
     filtered_cases_info = get_general_case_info(
         adapter=adapter, institute_id=institute_id, cases_form=cases_form
