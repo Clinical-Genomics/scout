@@ -62,7 +62,7 @@ def populate_dashboard_data(request: LocalProxy) -> dict:
 
 
 def get_dashboard_info(
-    adapter: MongoAdapter, data: dict = None, institute_id: str = None, cases_form=None
+    adapter: MongoAdapter, data: dict, institute_id: str = None, cases_form=None
 ) -> dict:
     """Append case data stats to data display object"""
 
@@ -72,7 +72,7 @@ def get_dashboard_info(
     )
 
     total_filtered_cases = filtered_cases_info["total_cases"]
-    data = {"total_cases": total_filtered_cases}
+    data["total_cases"] = total_filtered_cases
 
     if total_filtered_cases == 0:
         return data
