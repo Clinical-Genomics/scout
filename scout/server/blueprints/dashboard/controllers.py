@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Dict, List
 
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
@@ -136,11 +136,9 @@ def get_dashboard_info(
 
 
 def get_general_case_info(
-    adapter: MongoAdapter, institute_id: str = None, cases_form: ImmutableMultiDict = None
+    adapter, institute_id: str = None, cases_form: ImmutableMultiDict = None
 ) -> dict:
     """Return general information about cases."""
-
-    general = {}
 
     CASE_GENERAL_INFO_PROJECTION = {
         "phenotype_terms": 1,
@@ -150,64 +148,79 @@ def get_general_case_info(
         "individuals": 1,
         "tags": 1,
     }
+
     cases = adapter.cases(
         owner=institute_id, name_query=cases_form, projection=CASE_GENERAL_INFO_PROJECTION
     )
 
-    case_counter_keys = [
-        "phenotype",
-        "causative",
-        "pinned",
-        "cohort",
-        "tagged",
-    ]
-    case_counter_keys.extend(CASE_TAGS.keys())
+    # Initialize counters and structures
+    case_counter_keys = ["phenotype", "causative", "pinned", "cohort", "tagged"] + list(
+        CASE_TAGS.keys()
+    )
+    case_counter = initialize_case_counter(case_counter_keys)
+    pedigree = initialize_pedigree()
 
-    case_counter = {}
-    for counter in case_counter_keys:
-        case_counter[counter] = 0
+    case_ids: Set[str] = set()
+    total_cases = 0
 
-    pedigree = {
+    # Process each case
+    for total_cases, case in enumerate(cases, 1):
+        case_ids.add(case["_id"])
+        update_case_counters(case, case_counter, case_counter_keys)
+        update_pedigree(case, pedigree)
+
+    # Prepare general info dictionary
+    general = {
+        "total_cases": total_cases,
+        "pedigree": pedigree,
+        "case_ids": case_ids,
+        **{f"{key}_cases": count for key, count in case_counter.items()},
+    }
+
+    return general
+
+
+def initialize_case_counter(case_counter_keys) -> Dict[str, int]:
+    """Initialize the case counter dictionary with the given keys set to zero."""
+    return {key: 0 for key in case_counter_keys}
+
+
+def initialize_pedigree() -> Dict:
+    """Initialize the pedigree structure with counts set to zero."""
+    return {
         1: {"title": "Single", "count": 0},
         2: {"title": "Duo", "count": 0},
         3: {"title": "Trio", "count": 0},
         "many": {"title": "Many", "count": 0},
     }
 
-    case_ids = set()
 
-    total_cases = 0
-    for total_cases, case in enumerate(cases, 1):
-        case_ids.add(case["_id"])
-        if case.get("phenotype_terms"):
-            case_counter["phenotype"] += 1
-        if case.get("causatives"):
-            case_counter["causative"] += 1
-        if case.get("suspects"):
-            case_counter["pinned"] += 1
-        if case.get("cohorts"):
-            case_counter["cohort"] += 1
-        if case.get("tags"):
-            case_counter["tagged"] += 1
-            case_tags = case.get("tags")
-            for tag in case_tags:
+def update_case_counters(case: dict, case_counter: Dict[str, int], case_counter_keys):
+    """Update case counter based on the case's attributes."""
+    if case.get("phenotype_terms"):
+        case_counter["phenotype"] += 1
+    if case.get("causatives"):
+        case_counter["causative"] += 1
+    if case.get("suspects"):
+        case_counter["pinned"] += 1
+    if case.get("cohorts"):
+        case_counter["cohort"] += 1
+    if case.get("tags"):
+        case_counter["tagged"] += 1
+        for tag in case.get("tags", []):
+            if tag in case_counter_keys:  # Ensure tag is in the predefined keys
                 case_counter[tag] += 1
 
-        nr_individuals = len(case.get("individuals", []))
-        if nr_individuals == 0:
-            continue
-        if nr_individuals > 3:
-            pedigree["many"]["count"] += 1
-        else:
-            pedigree[nr_individuals]["count"] += 1
 
-    general["total_cases"] = total_cases
-    general["pedigree"] = pedigree
-    general["case_ids"] = case_ids
-    for counter in case_counter_keys:
-        general[counter + "_cases"] = case_counter[counter]
-
-    return general
+def update_pedigree(case: dict, pedigree: Dict):
+    """Update pedigree information based on the number of individuals in the case."""
+    nr_individuals = len(case.get("individuals", []))
+    if nr_individuals == 0:
+        return
+    if nr_individuals > 3:
+        pedigree["many"]["count"] += 1
+    else:
+        pedigree[nr_individuals]["count"] += 1
 
 
 def get_case_groups(
