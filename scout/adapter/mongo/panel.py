@@ -4,6 +4,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
+from decimal import Decimal
 from typing import Dict, List, Optional, Union
 
 import pymongo
@@ -230,7 +231,7 @@ class PanelHandler:
         return res
 
     def gene_panel(
-        self, panel_id: str, version: Optional[str] = None, projection: Optional[Dict] = None
+        self, panel_id: str, version: Union[str, Decimal] = None, projection: Optional[Dict] = None
     ) -> Optional[Dict]:
         """Fetch gene panel.
 

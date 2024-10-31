@@ -9,7 +9,6 @@ import math
 from datetime import datetime
 from typing import Dict, List
 
-from bson import Decimal128
 from click import Abort
 from flask.cli import current_app
 
@@ -30,7 +29,7 @@ def load_panel(panel_path, adapter, **kwargs):
         adapter(scout.adapter.MongoAdapter)
         date(str): date of gene panel on format 2017-12-24
         display_name(str)
-        version(float)
+        version(float or Decimal)
         panel_type(str)
         panel_id(str)
         institute(str)
@@ -55,7 +54,7 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
     if panel_info.get("version"):
-        version = Decimal128(panel_info["version"])
+        version = panel_info["version"]
 
     panel_id = panel_info["panel_id"]
     display_name = panel_info["display_name"] or panel_id
