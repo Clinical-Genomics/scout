@@ -8,7 +8,7 @@ from decimal import Decimal
 from typing import Dict, List, Optional, Union
 
 import pymongo
-from bson import ObjectId
+from bson import Decimal128, ObjectId
 from bson.errors import InvalidId
 
 from scout.build import build_panel
@@ -171,6 +171,9 @@ class PanelHandler:
         """
         panel_name = panel_obj["panel_name"]
         panel_version = panel_obj["version"]
+        if isinstance(panel_version, Decimal):
+            panel_version = Decimal128(panel_version)
+            panel_obj["version"] = panel_version
         display_name = panel_obj.get("display_name", panel_name)
 
         LOG.info("loading panel %s, version %s to database", display_name, panel_version)
@@ -231,7 +234,10 @@ class PanelHandler:
         return res
 
     def gene_panel(
-        self, panel_id: str, version: Union[str, Decimal] = None, projection: Optional[Dict] = None
+        self,
+        panel_id: str,
+        version: Union[str, Decimal, float] = None,
+        projection: Optional[Dict] = None,
     ) -> Optional[Dict]:
         """Fetch gene panel.
 
@@ -239,6 +245,8 @@ class PanelHandler:
         """
         query = {"panel_name": panel_id}
         if version:
+            if isinstance(version, Decimal):
+                version = Decimal128(version)
             LOG.info("Fetch gene panel {0}, version {1} from database".format(panel_id, version))
             query["version"] = version
             return self.panel_collection.find_one(query, projection)

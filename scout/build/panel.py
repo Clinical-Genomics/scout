@@ -101,6 +101,7 @@ def build_panel(panel_info, adapter):
 
     panel_obj["institute"] = panel_info["institute"]
 
+    LOG.error(type(panel_info["version"]))
     panel_obj["version"] = panel_info["version"]
 
     try:
