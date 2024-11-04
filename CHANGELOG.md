@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Option to exclude ClinVar significance items in SNVs filters form
+- Option to exclude ClinVar significance status in SNVs filters form
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
