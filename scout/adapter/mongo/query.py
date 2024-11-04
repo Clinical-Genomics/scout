@@ -421,7 +421,6 @@ class QueryHandler(object):
         trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
-        clnsig_query = {}
 
         for item in query["clinsig"]:
             rank.append(int(item))
@@ -429,38 +428,30 @@ class QueryHandler(object):
             rank.append(CLINSIG_MAP[int(item)])
             str_rank.append(CLINSIG_MAP[int(item)])
 
-        if query.get("clinsig_confident_always_returned") is True:
+        if query.get("clinsig_exclude"):
+            elem_match_value = [
+                {"value": {"$nin": rank}},
+                {"value": {"$not": re.compile("|".join(str_rank))}},
+            ]
+        else:
+            elem_match_value = [
+                {"value": {"$in": rank}},
+                {"value": re.compile("|".join(str_rank))},
+            ]
 
+        if query.get("clinsig_confident_always_returned") is True:
             clnsig_query = {
                 "clnsig": {
                     "$elemMatch": {
                         "$and": [
-                            {
-                                "$or": [
-                                    {"value": {"$in": rank}},
-                                    {"value": re.compile("|".join(str_rank))},
-                                ]
-                            },
+                            {"$or": elem_match_value},
                             {"revstat": re.compile("|".join(trusted_revision_level))},
                         ]
                     }
                 }
             }
         else:
-            LOG.warning("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
-
-            if query.get("clinsig_exclude"):
-                elem_match_or = [
-                    {"value": {"$nin": rank}},
-                    {"value": {"$not": re.compile("|".join(str_rank))}},
-                ]
-            else:
-                elem_match_or = [
-                    {"value": {"$in": rank}},
-                    {"value": re.compile("|".join(str_rank))},
-                ]
-
-            clnsig_query = {"clnsig": {"$elemMatch": {"$or": elem_match_or}}}
+            clnsig_query = {"clnsig": {"$elemMatch": {"$or": elem_match_value}}}
 
         return clnsig_query
 
