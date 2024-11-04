@@ -205,6 +205,7 @@ class QueryHandler(object):
                 'region_annotations': list,
                 'functional_annotations': list,
                 'clinsig': list,
+                'clinsig_exclude': bool,
                 'clinsig_confident_always_returned': boolean,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str or list of str,
@@ -322,11 +323,13 @@ class QueryHandler(object):
         for term in PRIMARY_CRITERIA:
             if query.get(term):
                 primary_terms = True
+                break
 
         # check if any of the secondary criteria was specified in the query:
         for term in SECONDARY_CRITERIA:
             if query.get(term):
                 secondary_terms = True
+                break
 
         if primary_terms is True:
             clinsign_filter = self.clinsig_query(query, mongo_query)
@@ -369,6 +372,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -415,7 +419,6 @@ class QueryHandler(object):
             clinsig_query(dict): a dictionary with clinsig key-values
 
         """
-        LOG.debug("clinsig is a query parameter")
         trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
@@ -446,18 +449,21 @@ class QueryHandler(object):
                 }
             }
         else:
-            LOG.debug("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
+            LOG.warning("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
 
-            clnsig_query = {
-                "clnsig": {
-                    "$elemMatch": {
-                        "$or": [
-                            {"value": {"$in": rank}},
-                            {"value": re.compile("|".join(str_rank))},
-                        ]
-                    }
-                }
-            }
+            if query.get("clinsig_exclude"):
+                elem_match_or = [
+                    {"value": {"$nin": rank}},
+                    {"value": {"$not": re.compile("|".join(str_rank))}},
+                ]
+            else:
+                elem_match_or = [
+                    {"value": {"$in": rank}},
+                    {"value": re.compile("|".join(str_rank))},
+                ]
+
+            clnsig_query = {"clnsig": {"$elemMatch": {"$or": elem_match_or}}}
+
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):

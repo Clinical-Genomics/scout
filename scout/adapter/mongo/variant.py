@@ -174,6 +174,7 @@ class VariantHandler(VariantLoader):
         Returns:
              pymongo.cursor
         """
+
         LOG.debug("Fetching variants from {0}".format(case_id))
 
         if variant_ids:
@@ -192,6 +193,9 @@ class VariantHandler(VariantLoader):
             category=category,
             build=build,
         )
+
+        LOG.error(mongo_query)
+
         sorting = []
         if sort_key == "variant_rank":
             sorting = [("variant_rank", pymongo.ASCENDING)]
