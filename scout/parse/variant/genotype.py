@@ -291,11 +291,12 @@ def get_split_reads(variant, pos):
 
 
 def get_alt_frequency(variant, pos):
-    """ """
-    alt_frequency = float(variant.gt_alt_freqs[pos])
-    if alt_frequency == -1:
-        if "AF" in variant.FORMAT:
-            alt_frequency = float(variant.format("AF")[pos][0])
+    """AF - prioritise caller AF if set"""
+    if "AF" in variant.FORMAT:
+        alt_frequency = float(variant.format("AF")[pos][0])
+    else:
+        alt_frequency = float(variant.gt_alt_freqs[pos])
+
     return alt_frequency
 
 
