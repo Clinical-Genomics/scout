@@ -372,7 +372,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -431,7 +430,6 @@ class QueryHandler(object):
             str_rank.append(CLINSIG_MAP[int(item)])
 
         if query.get("clinsig_confident_always_returned") is True:
-            LOG.debug("add CLINSIG filter with trusted_revision_level")
 
             clnsig_query = {
                 "clnsig": {
