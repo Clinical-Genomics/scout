@@ -7,12 +7,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Option to exclude ClinVar significance items in SNVs filters form
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
 - Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
 - `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
+- Improved tooltips fpr ClinVar filter in SNVs filter form
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
