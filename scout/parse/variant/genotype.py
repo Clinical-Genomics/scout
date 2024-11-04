@@ -291,7 +291,7 @@ def get_split_reads(variant, pos):
 
 
 def get_alt_frequency(variant, pos):
-    """AF - prioritise caller AF if set"""
+    """AF - prioritise caller AF if set in FORMAT (e.g. DeepVariant does an INFO field)"""
     if "AF" in variant.FORMAT:
         alt_frequency = float(variant.format("AF")[pos][0])
     else:

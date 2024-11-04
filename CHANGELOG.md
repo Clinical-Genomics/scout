@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
 - Update IGV.js to v3.0.9
-- Prioritise caller AF if present (especially for cancer multiallelic variants)
+- Prioritise caller AF if present
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
