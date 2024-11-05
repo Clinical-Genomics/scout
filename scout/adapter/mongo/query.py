@@ -332,7 +332,7 @@ class QueryHandler(object):
                 break
 
         if primary_terms is True:
-            clinsign_filter = self.clinsig_query(query, mongo_query)
+            clinsign_filter = self.clinsig_query(query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -361,9 +361,15 @@ class QueryHandler(object):
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
-        elif primary_terms is True:  # clisig is provided without secondary terms query
+        elif primary_terms is True:  # clnsig is provided without secondary terms query
             # use implicit and
-            mongo_query["clnsig"] = clinsign_filter["clnsig"]
+            if query.get("clinsig_exclude"):
+                mongo_query["$or"] = [
+                    {"clnsig": {"$exists": False}},
+                    {"clnsig": {"$not": clinsign_filter["clnsig"]}},
+                ]
+            else:
+                mongo_query["clnsig"] = clinsign_filter["clnsig"]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
@@ -372,6 +378,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -407,17 +414,9 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def clinsig_query(self, query, mongo_query):
-        """Add clinsig filter values to the mongo query object
+    def clinsig_query(self, query: dict) -> dict:
+        """Add clinsig filter values to the mongo query object"""
 
-        Args:
-            query(dict): a dictionary of query filters specified by the users
-            mongo_query(dict): the query that is going to be submitted to the database
-
-        Returns:
-            clinsig_query(dict): a dictionary with clinsig key-values
-
-        """
         trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
@@ -428,30 +427,26 @@ class QueryHandler(object):
             rank.append(CLINSIG_MAP[int(item)])
             str_rank.append(CLINSIG_MAP[int(item)])
 
-        if query.get("clinsig_exclude"):
-            elem_match_value = [
-                {"value": {"$nin": rank}},
-                {"value": {"$not": re.compile("|".join(str_rank))}},
-            ]
-        else:
-            elem_match_value = [
+        elem_match_value = {
+            "$or": [
                 {"value": {"$in": rank}},
                 {"value": re.compile("|".join(str_rank))},
             ]
+        }
 
         if query.get("clinsig_confident_always_returned") is True:
             clnsig_query = {
                 "clnsig": {
                     "$elemMatch": {
                         "$and": [
-                            {"$or": elem_match_value},
+                            elem_match_value,
                             {"revstat": re.compile("|".join(trusted_revision_level))},
                         ]
                     }
                 }
             }
         else:
-            clnsig_query = {"clnsig": {"$elemMatch": {"$or": elem_match_value}}}
+            clnsig_query = {"clnsig": {"$elemMatch": elem_match_value}}
 
         return clnsig_query
 

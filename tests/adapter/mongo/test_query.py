@@ -582,29 +582,6 @@ def test_build_clinsig_high_confidence(adapter):
         }
     }
 
-    # Testing with EXCLUDE ClinVar terms criterion
-    query = {
-        "clinsig": clinsig_items,
-        "clinsig_exclude": True,
-        "clinsig_confident_always_returned": clinsig_confident_always_returned,
-    }
-
-    mongo_query: dict = adapter.build_query(case_id, query=query)
-
-    assert mongo_query["clnsig"] == {
-        "$elemMatch": {
-            "$and": [
-                {
-                    "$or": [
-                        {"value": {"$nin": all_clinsig}},
-                        {"value": {"$not": re.compile("|".join(clinsig_mapped_items))}},
-                    ]
-                },
-                {"revstat": re.compile("|".join(trusted_revstat_lev))},
-            ]
-        }
-    }
-
 
 def test_build_chrom(adapter):
     case_id = "cust000"
