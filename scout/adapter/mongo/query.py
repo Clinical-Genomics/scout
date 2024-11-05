@@ -329,7 +329,7 @@ class QueryHandler(object):
                 secondary_terms = True
 
         if primary_terms is True:
-            clinsign_filter = self.clinsig_query(query, mongo_query)
+            clinsign_filter = self.clinsig_query(query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -404,28 +404,25 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def clinsig_query(self, query, mongo_query):
-        """Add clinsig filter values to the mongo query object
-
-        Args:
-            query(dict): a dictionary of query filters specified by the users
-            mongo_query(dict): the query that is going to be submitted to the database
-
-        Returns:
-            clinsig_query(dict): a dictionary with clinsig key-values
-
-        """
+    def clinsig_query(self, query: dict):
+        """Add clinsig filter values to the mongo query object"""
         LOG.debug("clinsig is a query parameter")
         trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
-        clnsig_query = {}
 
         for item in query["clinsig"]:
             rank.append(int(item))
             # search for human readable clinsig values in newer cases
             rank.append(CLINSIG_MAP[int(item)])
             str_rank.append(CLINSIG_MAP[int(item)])
+
+        elem_match_or = {
+            "$or": [
+                {"value": {"$in": rank}},
+                {"value": re.compile("|".join(str_rank))},
+            ]
+        }
 
         if query.get("clinsig_confident_always_returned") is True:
             LOG.debug("add CLINSIG filter with trusted_revision_level")
@@ -434,12 +431,7 @@ class QueryHandler(object):
                 "clnsig": {
                     "$elemMatch": {
                         "$and": [
-                            {
-                                "$or": [
-                                    {"value": {"$in": rank}},
-                                    {"value": re.compile("|".join(str_rank))},
-                                ]
-                            },
+                            elem_match_or,
                             {"revstat": re.compile("|".join(trusted_revision_level))},
                         ]
                     }
@@ -448,16 +440,7 @@ class QueryHandler(object):
         else:
             LOG.debug("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
 
-            clnsig_query = {
-                "clnsig": {
-                    "$elemMatch": {
-                        "$or": [
-                            {"value": {"$in": rank}},
-                            {"value": re.compile("|".join(str_rank))},
-                        ]
-                    }
-                }
-            }
+            clnsig_query = {"clnsig": {"$elemMatch": elem_match_or}}
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):
