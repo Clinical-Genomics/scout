@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
 - `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
+- Prioritise caller AF if present
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
