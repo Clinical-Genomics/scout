@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
 - `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
+- Prioritise caller AF if present
 - Improved tooltips fpr ClinVar filter in SNVs filter form
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
