@@ -390,10 +390,10 @@ function validateConditions(){
     return false;
   }
 
-  // Make sure that provided conditions are numbers, except when condition type is MeSH
+  // Make sure that provided conditions are numbers, except when condition type is MeSH or Medgen
   var selectedConditionsValues = $('#condition_tags').val();
   for (let i = 0; i < selectedConditionsValues.length; i++) {
-    if (isNaN(selectedConditionsValues[i]) && $('#condition_type').val() != 'MeSH'){
+    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
       alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
       return false;
     }
