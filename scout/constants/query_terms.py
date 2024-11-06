@@ -53,7 +53,6 @@ SECONDARY_CRITERIA = [
     "somatic_score",
     "control_frequency",
     "mvl_tag",
-    "clinvar_tag",
     "cosmic_tag",
     "tumor_frequency",
     "fusion_score",

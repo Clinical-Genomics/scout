@@ -334,6 +334,13 @@ class QueryHandler(object):
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
         # such as a Pathogenic ClinSig.
+
+        """
+        if criterion == "clinvar_tag":
+            mongo_secondary_query.append({"clnsig": {"$exists": True}})
+            mongo_secondary_query.append({"clnsig": {"$ne": None}})
+        """
+
         if secondary_terms is True:
             secondary_filter = self.secondary_query(query, mongo_query)
             # If there are no primary criteria given, all secondary criteria are added as a
@@ -425,8 +432,6 @@ class QueryHandler(object):
         }
 
         if query.get("clinsig_confident_always_returned") is True:
-            LOG.debug("add CLINSIG filter with trusted_revision_level")
-
             clnsig_query = {
                 "clnsig": {
                     "$elemMatch": {
@@ -438,9 +443,12 @@ class QueryHandler(object):
                 }
             }
         else:
-            LOG.debug("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
-
             clnsig_query = {"clnsig": {"$elemMatch": elem_match_or}}
+
+        if query.get("clinvar_tag"):
+            clnsig_query["clnsig"]["$exists"] = True
+            clnsig_query["clnsig"]["$ne"] = None
+
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):
@@ -759,10 +767,6 @@ class QueryHandler(object):
 
             if criterion == "mvl_tag":
                 mongo_secondary_query.append({"mvl_tag": {"$exists": True}})
-
-            if criterion == "clinvar_tag":
-                mongo_secondary_query.append({"clnsig": {"$exists": True}})
-                mongo_secondary_query.append({"clnsig": {"$ne": None}})
 
             if criterion == "cosmic_tag":
                 mongo_secondary_query.append({"cosmic_ids": {"$exists": True}})
