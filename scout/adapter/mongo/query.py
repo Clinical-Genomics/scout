@@ -322,11 +322,13 @@ class QueryHandler(object):
         for term in PRIMARY_CRITERIA:
             if query.get(term):
                 primary_terms = True
+                break
 
         # check if any of the secondary criteria was specified in the query:
         for term in SECONDARY_CRITERIA:
             if query.get(term):
                 secondary_terms = True
+                break
 
         if primary_terms is True:
             clinsign_filter = self.clinsig_query(query)
@@ -397,7 +399,10 @@ class QueryHandler(object):
         for ind in case_inds:
             if ind["phenotype"] in [1, "unaffected"]:  # 1=unaffected, 2=affected
                 continue
-            affected_match = {"sample_id": ind["individual_id"], "genotype_call": gt_query}
+            affected_match = {
+                "sample_id": ind["individual_id"],
+                "genotype_call": gt_query,
+            }
             affected_query["$elemMatch"]["$or"].append(affected_match)
 
         if affected_query["$elemMatch"][
@@ -407,37 +412,36 @@ class QueryHandler(object):
 
     def clinsig_query(self, query: dict):
         """Add clinsig filter values to the mongo query object"""
-        LOG.debug("clinsig is a query parameter")
-        trusted_revision_level = TRUSTED_REVSTAT_LEVEL
-        rank = []
-        str_rank = []
 
-        for item in query["clinsig"]:
-            rank.append(int(item))
-            # search for human readable clinsig values in newer cases
-            rank.append(CLINSIG_MAP[int(item)])
-            str_rank.append(CLINSIG_MAP[int(item)])
+        clnsig_query = {"clnsig": {}}
 
-        elem_match_or = {
-            "$or": [
-                {"value": {"$in": rank}},
-                {"value": re.compile("|".join(str_rank))},
-            ]
-        }
+        if query.get("clinsig"):  # If any CLinVar starts was selected in the form multiselect
+            rank = []
+            str_rank = []
+            for item in query["clinsig"]:
+                rank.append(int(item))
+                # search for human readable clinsig values in newer cases
+                rank.append(CLINSIG_MAP[int(item)])
+                str_rank.append(CLINSIG_MAP[int(item)])
 
-        if query.get("clinsig_confident_always_returned") is True:
-            clnsig_query = {
-                "clnsig": {
+            elem_match_or = {
+                "$or": [
+                    {"value": {"$in": rank}},
+                    {"value": re.compile("|".join(str_rank))},
+                ]
+            }
+
+            if query.get("clinsig_confident_always_returned") is True:
+                clnsig_query["clnsig"] = {
                     "$elemMatch": {
                         "$and": [
                             elem_match_or,
-                            {"revstat": re.compile("|".join(trusted_revision_level))},
+                            {"revstat": re.compile("|".join(TRUSTED_REVSTAT_LEVEL))},
                         ]
                     }
                 }
-            }
-        else:
-            clnsig_query = {"clnsig": {"$elemMatch": elem_match_or}}
+            else:
+                clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
             clnsig_query["clnsig"][EXISTS] = True
