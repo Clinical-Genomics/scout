@@ -415,7 +415,7 @@ class QueryHandler(object):
 
         clnsig_query = {"clnsig": {}}
 
-        if query.get("clinsig"):  # If any CLinVar starts was selected in the form multiselect
+        if query.get("clinsig"):  # If any CLinVar significance was selected in the form multiselect
             rank = []
             str_rank = []
             for item in query["clinsig"]:
