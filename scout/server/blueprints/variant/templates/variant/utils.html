@@ -235,12 +235,18 @@
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </td>
-              <td class="d-flex justify-content-around align-items-center">
-                <a target="_blank" href="{{ transcript.ensembl_link }}">
+              <td class="d-flex align-items-center">
+                <a target="_blank" class="float-start" href="{{ transcript.ensembl_link }}">
                   {{ transcript.transcript_id }}
                 </a>
+                {% if transcript.mane %}
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{transcript.mane}}"><span class="badge bg-success ms-3" title="MANE Select">M</span></a>
+                {% endif %}
+                {% if transcript.mane_plus %}
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{transcript.mane_plus}}"><span class="badge bg-success ms-3" title="MANE Plus Clinical">M+</span></a>
+                {% endif %}
                 {% if transcript.is_canonical %}
-                  <span class="badge bg-info">C</span>
+                  <span class="badge bg-info ms-3">C</span>
                 {% endif %}
               </td>
               <td>
