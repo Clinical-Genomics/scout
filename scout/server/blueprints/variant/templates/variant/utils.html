@@ -250,7 +250,7 @@
                 {% endif %}
               </td>
               <td>
-                {{ transcript.refseq_identifiers|join(',') }}
+                {{ transcript.refseq_identifiers|join(', ') }}
               </td>
               <td>{{ transcript.biotype or '' }}</td>
               <td data-bs-toggle="tooltip" data-bs-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
