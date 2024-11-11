@@ -239,11 +239,13 @@
                 <a target="_blank" class="float-start" href="{{ transcript.ensembl_link }}">
                   {{ transcript.transcript_id }}
                 </a>
-                {% if transcript.mane %}
-                    <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{transcript.mane}}"><span class="badge bg-success ms-3" title="MANE Select">M</span></a>
-                {% endif %}
-                {% if transcript.mane_plus %}
-                    <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{transcript.mane_plus}}"><span class="badge bg-success ms-3" title="MANE Plus Clinical">M+</span></a>
+                {% if transcript.transcript_id in variant.mane_transcripts %}
+                  {% if variant.mane_transcripts[transcript.transcript_id].mane %}
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{variant.mane_transcripts[transcript.transcript_id].mane}}"><span class="badge bg-success ms-3" title="MANE Select">M</span></a>
+                  {% endif %}
+                  {% if variant.mane_transcripts[transcript.transcript_id].mane_plus %}
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{variant.mane_transcripts[transcript.transcript_id].mane_plus}}"><span class="badge bg-success ms-3" title="MANE Plus Clinical">M+</span></a>
+                  {% endif %}
                 {% endif %}
                 {% if transcript.is_canonical %}
                   <span class="badge bg-info ms-3">C</span>
