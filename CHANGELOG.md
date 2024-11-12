@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
 - Prioritise caller AF if present
 - Expand the submissions information section on the ClinVar submissions page to fully display long text entries
+- Jarvik for PP1 added to ACMG modification guidelines
 - Display institute _id + display name on dashboard filters
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
