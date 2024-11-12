@@ -109,7 +109,9 @@
     </td>
     <td>
       {% for name, caller in variant.callers %}
-        {{ name }}: {{ caller }}
+        <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-danger{% else %}bg-secondary{% endif %}">
+          {{ name }}
+        </span>
       {% endfor %}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
