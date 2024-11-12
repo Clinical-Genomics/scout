@@ -22,7 +22,7 @@ def institute_select_choices():
     # Collect only institutes available to the user
     institute_objs = user_institutes(store, current_user)
     for inst in institute_objs:
-        institute_choices.append((inst["_id"], inst["display_name"]))
+        institute_choices.append((inst["_id"], f'{inst["display_name"]} ({inst["_id"]})'))
     return institute_choices
 
 
