@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block %}
+{% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block, callers_cell %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -108,11 +108,7 @@
       {{ variant.sub_category|upper }}
     </td>
     <td>
-      {% for name, caller in variant.callers %}
-        <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-danger{% else %}bg-secondary{% endif %}">
-          {{ name }}
-        </span>
-      {% endfor %}
+      {{ callers_cell(variant.callers) }}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>

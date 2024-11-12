@@ -48,6 +48,15 @@
   </script>
 {% endmacro %}
 
+
+{% macro callers_cell(callers) %}
+  {% for name, caller in callers %}
+      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-danger{% else %}bg-secondary{% endif %}">
+        {{ name }}
+      </span>
+  {% endfor %}
+{% endmacro %}
+
 {% macro mark_heteroplasmic_mt(individuals, samples) %}
   {% for ind in individuals if ind.phenotype == 2 %}
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
