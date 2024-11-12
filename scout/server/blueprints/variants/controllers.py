@@ -1078,6 +1078,13 @@ def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: di
     position = variant["position"]
     change = variant["reference"] + ">" + variant["alternative"]
     variant_line.append(variant.get("rank_score", "N/A"))
+    cat = (
+        variant.get("sub_category")
+        if variant["category"] in ["sv", "cancer_sv"]
+        else variant.get("category")
+    )
+    variant_line.append(cat.upper() if cat else "")
+    variant_line.append("  ".join([f"{name}:{caller}" for name, caller in callers(variant)]))
     variant_line.append(variant["chromosome"])
     variant_line.append(position)
     variant_line.append(change)

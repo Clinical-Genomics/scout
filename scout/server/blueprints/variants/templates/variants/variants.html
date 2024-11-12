@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt, callers_cell %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general  %}
 
 {% block title %}
@@ -55,8 +55,9 @@
          <thead class="thead table-light">
             <tr>
               <th style="width:2%"></th>
-              <th style="width:12%" title="Rank position">Rank</th>
+              <th style="width:5%" title="Rank position">Rank</th>
               <th style="width:5%" title="Rank score">Score</th>
+              <th style="width:7%">Callers</th>
               <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:12%" title="HGNC symbols">Gene</th>
               <th style="width:6%" title="Pop Freq">Pop Freq</th>
@@ -79,6 +80,7 @@
                 <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
                 <td class="text-start">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
                 <td class="text-end">{{ variant.rank_score|int }}</td>
+                <td>{{ callers_cell(variant.callers) }}</td>
                 <td>
                   {{ variant.chromosome }}
                   {% if variant.chromosome in ["MT","M"] %}

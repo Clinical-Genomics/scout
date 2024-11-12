@@ -51,7 +51,7 @@
 
 {% macro callers_cell(callers) %}
   {% for name, caller in callers %}
-      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-danger{% else %}bg-secondary{% endif %}">
+      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
         {{ name }}
       </span>
   {% endfor %}
