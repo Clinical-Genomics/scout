@@ -63,6 +63,7 @@ def tx_overview(variant_obj: dict):
         variant_obj(dict)
     """
     overview_txs = []  # transcripts to be shown in transcripts overview
+    ensembl_txid_mane_transcripts = {}
     if variant_obj.get("genes") is None:
         variant_obj["overview_transcripts"] = []
         return
@@ -89,7 +90,6 @@ def tx_overview(variant_obj: dict):
             ovw_tx["muted_refseq_ids"] = []
 
             for refseq_id in tx.get("refseq_identifiers", []):
-                decorated_tx = None
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
                 elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
@@ -121,12 +121,17 @@ def tx_overview(variant_obj: dict):
             ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
             ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
 
+            ensembl_txid_mane_transcripts[tx.get("transcript_id")] = {
+                "mane": ovw_tx["mane"],
+                "mane_plus": ovw_tx["mane_plus"],
+            }
             overview_txs.append(ovw_tx)
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
     variant_obj["overview_transcripts"] = sorted(
         overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
     )
+    variant_obj["mane_transcripts"] = ensembl_txid_mane_transcripts
 
 
 def get_igv_tracks(build: str = "37") -> set:
