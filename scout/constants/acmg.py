@@ -47,7 +47,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Null variant",
                             "description": "Null variant (nonsense, frameshift, canonical +/- 2 bp splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.",
-                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" target="_blank">AutoPVS1</a>, or for RNA <a href="https://www.clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/" target="_blank">Walker et al</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" rel="noopener noreferrer" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" rel="noopener noreferrer" target="_blank">AutoPVS1</a>, or for RNA <a href="https://www.clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/" target="_blank">Walker et al</a>.',
                         },
                     )
                 ]
@@ -69,7 +69,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "<i>De novo</i> (confirmed)",
                             "description": "De novo (both maternity and paternity confirmed) in a patient with the disease and no family history",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI <i>de novo</i></a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" rel="noopener noreferrer" target="_blank">SVI <i>de novo</i></a>.',
                         },
                     ),
                     (
@@ -77,7 +77,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Functional damage",
                             "description": "Well-established in vitro or in vivo functional studies supportive of a damaging effect on the gene or gene product, and the evidence is strong",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" target="_blank">Brnich 2019</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" rel="noopener noreferrer" target="_blank">Brnich 2019</a>.',
                         },
                     ),
                     (
@@ -85,7 +85,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "In >=4 unrelated patients, not controls",
                             "description": "The prevalence of the variant in affected individuals is significantly increased compared with the prevalence in controls; 4 or more unrelated patients",
-                            "documentation": '<a href="https://www.acgs.uk.com/media/11631/uk-practice-guidelines-for-variant-classification-v4-01-2020.pdf" target="_blank">ACGS (Ellard et al 2020)</a> suggest <a href="https://www.medcalc.org/calc/odds_ratio.php" target="_blank">Odds ratio calculator</a>, '
+                            "documentation": '<a href="https://www.acgs.uk.com/media/11631/uk-practice-guidelines-for-variant-classification-v4-01-2020.pdf" rel="noopener noreferrer" target="_blank">ACGS (Ellard et al 2020)</a> suggest <a href="https://www.medcalc.org/calc/odds_ratio.php" target="_blank">Odds ratio calculator</a>, '
                             "and application with strength modification for fewer unrelated affected individuals or gnomAD controls.",
                         },
                     ),
@@ -108,7 +108,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Not in matched controls",
                             "description": "Absent from controls (or at extremely low frequency if recessive), in ethnically matched population",
-                            "documentation": 'Apply only if variant is expected to be detected in large population datasets - see e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" target="_blank">Harrison et al 2019</a>.',
+                            "documentation": 'Apply only if variant is expected to be detected in large population datasets - see e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" rel="noopener noreferrer" target="_blank">Harrison et al 2019</a>.',
                         },
                     ),
                     (
@@ -116,7 +116,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "In trans pathogenic & AR",
                             "description": "For recessive disorders, detected in trans with a pathogenic variant",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3717/svi_proposal_for_pm3_criterion_-_version_1.pdf" target="_blank">SVI in <i>trans</i></a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3717/svi_proposal_for_pm3_criterion_-_version_1.pdf" rel="noopener noreferrer" target="_blank">SVI in <i>trans</i></a>.',
                         },
                     ),
                     (
@@ -138,7 +138,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "<i>De novo</i> (unconfirmed)",
                             "description": "Assumed de novo, but without confirmation of paternity and maternity",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" target="_blank">SVI <i>de novo</i></a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf" rel="noopener noreferrer" target="_blank">SVI <i>de novo</i></a>.',
                         },
                     ),
                 ]
@@ -153,7 +153,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Cosegregation",
                             "description": "Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease, and the evidence is weak",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
+                            "documentation": 'Strength can be modified <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4908147/" target="_blank" rel="noopener noreferrer">Jarvik 2016</a>, <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" rel="noopener noreferrer" target="_blank">Biesecker et al 2023</a>',
                         },
                     ),
                     (
@@ -168,7 +168,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Predicted pathogenic",
                             "description": "Multiple lines of computational evidence support a deleterious effect on the gene or gene product (conservation, evolutionary, splicing impact, etc)",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/" target="_blank">Pejaver et al</a>',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/" rel="noopener noreferrer" target="_blank">Pejaver et al</a>',
                         },
                     ),
                     (
@@ -176,7 +176,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Phenotype: single gene",
                             "description": "Patient's phenotype or family history is highly specific for a disease with a single genetic etiology",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank" rel="noopener noreferrer">Biesecker et al 2023</a>',
                         },
                     ),
                     (
@@ -184,7 +184,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Reported pathogenic, evidence unavailable",
                             "description": "Reputable source recently reports variant as pathogenic, but the evidence is not available to the laboratory to perform an independent evaluation",
-                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" target="_blank">Biesecker et al 2018</a>.',
+                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" target="_blank" rel="noopener noreferrer">Biesecker et al 2018</a>.',
                         },
                     ),
                 ]
@@ -204,7 +204,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "Frequency >=0.05",
                             "description": "Allele frequency is >=0.05 in a general continental population dataset",
-                            "documentation": 'For clarification and exceptions see <a href="https://clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/" target="_blank">Ghosh et al</a>',
+                            "documentation": 'For clarification and exceptions see <a href="https://clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/" target="_blank" rel="noopener noreferrer">Ghosh et al</a>',
                         },
                     )
                 ]
@@ -233,7 +233,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "No functional damage",
                             "description": "Well-established in vitro or in vivo functional studies show no damaging effect on protein function or splicing, and the evidence is strong",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" target="_blank">Brnich 2019</a>.',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/" rel="noopener noreferrer" target="_blank">Brnich 2019</a>.',
                         },
                     ),
                     (
@@ -241,7 +241,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "Non-segregation",
                             "description": "Lack of segregation in affected members of a family, and the evidence is strong",
-                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank">Biesecker et al 2023</a>',
+                            "documentation": 'Strength can be modified based on <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" target="_blank" rel="noopener noreferrer">Biesecker et al 2023</a>',
                         },
                     ),
                 ]
@@ -291,7 +291,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         {
                             "short": "Reported benign, evidence unavailable",
                             "description": "Reputable source recently reports variant as benign, but the evidence is not available to the laboratory to perform an independent evaluation",
-                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" target="_blank">Biesecker et al</a>.',
+                            "documentation": 'Deprecated by ClinGen SVI <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6709533/" rel="noopener noreferrer" target="_blank">Biesecker et al</a>.',
                         },
                     ),
                     (
