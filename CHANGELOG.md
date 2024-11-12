@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
 - ClinVar form to accept MedGen phenotypes
+- Cancer SV variantS page spinner on variant export
 
 ## [4.90.1]
 ### Fixed
