@@ -57,8 +57,9 @@
         <thead class="thead table-light">
           <tr>
             <th style="width:2%"></th>
-            <th style="width:9%">Index</th>
+            <th style="width:3%">Index</th>
             <th>Type</th>
+            <th style="width:9%">Callers</th>
             <th style="width:5%">Chr</th>
             <th>Start</th>
             <th>End</th>
@@ -103,8 +104,13 @@
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
-      {{ variant.sub_category|upper }}</span>
+    <td>
+      {{ variant.sub_category|upper }}
+    </td>
+    <td>
+      {% for name, caller in variant.callers %}
+        {{ name }}: {{ caller }}
+      {% endfor %}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
