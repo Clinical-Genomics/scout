@@ -153,7 +153,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Cosegregation",
                             "description": "Cosegregation with disease in multiple affected family members in a gene definitively known to cause the disease, and the evidence is weak",
-                            "documentation": 'Strength can be modified <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4908147/" target="_blank" >Jarvik 2016</a>, <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" rel="noopener noreferrer" target="_blank">Biesecker et al 2023</a>',
+                            "documentation": 'Strength can be modified <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4908147/" target="_blank" rel="noopener noreferrer">Jarvik 2016</a>, <a href="https://clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/" rel="noopener noreferrer" target="_blank">Biesecker et al 2023</a>',
                         },
                     ),
                     (
