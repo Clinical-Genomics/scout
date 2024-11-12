@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tracks missing alignment files are now properly skipped on generating IGV views
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
+- STRs variants export
 - Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 
 ## [4.90.1]
