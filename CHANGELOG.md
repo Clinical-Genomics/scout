@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
