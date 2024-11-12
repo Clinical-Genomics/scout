@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Prioritise caller AF if present
 - Expand the submissions information section on the ClinVar submissions page to fully display long text entries
 - Jarvik for PP1 added to ACMG modification guidelines
+- Display institute _id + display name on dashboard filters
 - cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
