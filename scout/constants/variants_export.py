@@ -1,5 +1,7 @@
 EXPORT_HEADER = [
     "Rank_score",
+    "Type",
+    "Callers",
     "Chromosome",
     "Position",
     "Change",
