@@ -28,8 +28,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
 
-
-
 ## [4.90.1]
 ### Fixed
 - Parsing Matchmaker Exchange's matches dates
