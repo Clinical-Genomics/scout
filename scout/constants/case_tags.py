@@ -43,7 +43,7 @@ CASE_REPORT_VARIANT_TYPES = {
     "partial_causatives_detailed": "partial_causatives",
     "suspects_detailed": "suspects",
     "classified_detailed": "acmg_classification",
-    "classified_ccv_detailed": "ccv_classification",
+    "ccv_classified_detailed": "ccv_classification",
     "tagged_detailed": "manual_rank",
     "tier_detailed": "cancer_tier",
     "dismissed_detailed": "dismiss_variant",

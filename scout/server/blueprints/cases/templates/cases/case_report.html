@@ -40,6 +40,11 @@
         <li class="nav-item">
           <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#acmg_variants">ACMG-classified variants</a>
         </li>
+        {% if cancer %}
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#ccv_variants">ClinGen-CGC-VICC-classified variants</a>
+        </li>
+        {% endif %}
         <li class="nav-item">
           <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#manual_ranked_variants">Manual ranked</a>
         </li>
@@ -64,6 +69,7 @@
    {{ causatives_panel()}}
    {{ pinned_panel() }}
    {{ classified_panel() }}
+   {% if cancer %}{{ ccv_classified_panel() }}{% endif %}
    {{ tagged_panel() }}
    {{ commented_panel() }}
    {{ dismissed_panel() }}
@@ -392,6 +398,33 @@
 </div>
 {% endmacro %}
 
+{% macro ccv_classified_panel() %}
+<div class="card border-warning mb-3" style="border-width: 5px; display: block;">
+  <div class="card-header bg-warning text-dark" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+    <a id="ccv_variants"><strong>Other ClinGen-CGC-VICC-classified Variants</strong></a>
+  </div>
+  <div class="card-body">
+    {% set duplicated_variants = [] %}
+    {% if variants.ccv_classified_detailed %}
+      {% for variant in variants.ccv_classified_detailed|sort(attribute='variant_rank') %}
+        {% if variant['_id'] not in printed_vars %}
+          {% do printed_vars.append(variant['_id']) %}
+          {{ variant_content(variant, loop.index) }}
+          <br>
+        {% else %}
+          {% do duplicated_variants.append(variant['_id']) %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      No ClinGen-CGC-VICC-classified variants available for this case
+    {% endif %}
+    {% if variants.ccv_classified_detailed and duplicated_variants|length == variants.ccv_classified_detailed|length %}
+      All ClinGen-CGC-VICC-classified variants are already described in the previous views
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
 {% macro tagged_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-warning text-dark" style="border-top-left-radius: 0; border-top-right-radius: 0;">
@@ -635,6 +668,9 @@
               <th>Inheritance models</th>
             {% endif %}
             <th>ACMG classification</th>
+            {% if cancer %}
+            <th>CCV classification</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -683,6 +719,15 @@
                 -
               {% endif %}
             </td>
+            {% if cancer %}
+            <td>
+              {% if variant.ccv_classification %}
+                <span class="badge rounded-pill bg-{{variant.ccv_classification['color'] if variant.ccv_classification['color'] else 'secondary'}}" title="{{variant.ccv_classification['code']}}">{{variant.ccv_classification['code'] }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            {% endif %}
           </tr>
         </tbody>
       </table>
