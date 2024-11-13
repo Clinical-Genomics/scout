@@ -101,8 +101,8 @@
               {% endif %}
               {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
                  <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ status_modal() }}
-                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal">Submission status enquiry</button></td>
+                   {{ status_modal(subm_obj._id) }}
+                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
                  </form>
               {% endif %}
             </tr>
@@ -246,8 +246,8 @@
 </div>
 {% endmacro %}
 
-{% macro status_modal() %}
-<div class="modal fade" id="statusModal" tabindex="-1">
+{% macro status_modal(subm_id) %}
+<div class="modal fade" id="statusModal_{{subm_id}}" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
