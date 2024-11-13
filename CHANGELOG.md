@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expand the submissions information section on the ClinVar submissions page to fully display long text entries
 - Jarvik for PP1 added to ACMG modification guidelines
 - Display institute _id + display name on dashboard filters
+- ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
 - Names on IGV buttons, including an overview level IGV MT button
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
