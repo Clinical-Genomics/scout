@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
+{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -60,6 +60,7 @@ onsubmit="return validateForm()">
             <th>Rank</th>
             <th>Score</th>
             <th>Type</th>
+            <th>Callers</th>
             <th>Chr</th>
             <th>Start</th>
             <th>End</th>
@@ -102,6 +103,12 @@ onsubmit="return validateForm()">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
     <td class="text-end">{{ variant.rank_score|int }}</td>
+    <td>
+      {{ variant.sub_category|upper }}
+    </td>
+    <td>
+      {{ callers_cell(variant.callers) }}
+    </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.sub_category|upper }}</span></td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
