@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
+- ClinVar submission enquiry status for all submissions after the latest
 
 ## [4.90.1]
 ### Fixed
