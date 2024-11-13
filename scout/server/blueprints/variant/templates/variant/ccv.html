@@ -60,6 +60,9 @@
                   {% if evaluation and evaluation.ccv_criteria.get(criterion_code).links %}
                     {% set link = evaluation.ccv_criteria.get(criterion_code).links[0] %}
                   {% endif %}
+                  {% if evaluation and evaluation.criteria.get(criterion_code).modifier %}
+                    {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
+                  {% endif %}
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
@@ -74,6 +77,14 @@
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe }}</span></div>{% endif %}
                       <div class="row">
+                        <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
+                          <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
+                          {% for level in "Strong", "Moderate", "Supporting" %}
+                            {% if(level != evidence) %}
+                              <option id="{{ criterion_code }}-{{ level }}" value="{{ level }}" {% if modifier == level %}selected{% endif %}>{{ level }}</option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
                       </div>
                       <div class="row">
                         <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
@@ -137,8 +148,21 @@
 
     function update_classification() {
       var criteria = $(':checked').map(function(idx, elem) {
+        const modifiers = ["Strong", "Moderate", "Supporting"];
+        for (possible_modifier of modifiers) {
+          var modifier_option;
+          if(elem.value !== null && elem.value !== '') {
+            modifier_option = document.getElementById(elem.value + '-' + possible_modifier)
+          }
+          if(modifier_option) {
+            if (modifier_option.selected) {
+              return 'criterion=' + elem.value + '_' + possible_modifier
+            }
+          }
+        }
         return 'criterion=' + elem.value
       });
+
 
       $.getJSON('/api/v1/ccv?' + criteria.toArray().join('&'), function(data) {
         // reset the selection

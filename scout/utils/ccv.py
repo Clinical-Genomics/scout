@@ -1,4 +1,6 @@
 # coding=UTF-8
+import logging
+LOG = logging.getLogger(__name__)
 
 
 from typing import Optional
@@ -29,6 +31,7 @@ def get_ccv_points(ccv_terms: set) -> int:
     op_terms = []
     sbvs_terms = []
     sbs_terms = []
+    sbm_terms = []
     sbp_terms = []
 
     prefix_map = {
@@ -38,14 +41,41 @@ def get_ccv_points(ccv_terms: set) -> int:
         "OP": op_terms,
         "SBVS": sbvs_terms,
         "SBS": sbs_terms,
+        "SBM": sbm_terms,
         "SBP": sbp_terms,
     }
 
+    suffix_map = {
+        "_Strong": {"O": os_terms, "SB": sbs_terms},
+        "_Moderate": {"O": om_terms, "SB": sbm_terms},
+        "_Supporting": {"O": op_terms, "SB": sbp_terms},
+    }
+
     for term in ccv_terms:
+        print('Placing term {}'.format(term))
+        for suffix, prefix_dict in suffix_map.items():
+            if term.endswith(suffix):
+                for prefix, term_list in prefix_dict.items():
+                    if term.startswith(prefix):
+                        term_list.append(term)
+                        print('added to (suffix)')
+                        print(suffix)
+                        print(prefix)
+                        break
+                else:
+                    continue
+                break
+        else:
+            for prefix, term_list in prefix_map.items():
+                if term.startswith(prefix):
+                    term_list.append(term)
+                    print('added to {} (prefix)'.format(prefix))
+                    break
+    """    for term in ccv_terms:
         for prefix, term_list in prefix_map.items():
             if term.startswith(prefix):
                 term_list.append(term)
-                break
+                break"""
     points = (
         8 * len(ovs_terms)
         + 4 * len(os_terms)
@@ -53,6 +83,7 @@ def get_ccv_points(ccv_terms: set) -> int:
         + len(op_terms)
         - 8 * len(sbvs_terms)
         - 4 * len(sbs_terms)
+        - 2 * len(sbm_terms)
         - len(sbp_terms)
     )
     return points
