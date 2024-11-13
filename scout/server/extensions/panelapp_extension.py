@@ -1,0 +1,66 @@
+import logging
+from typing import Optional
+
+import requests
+
+API_URL = "https://panelapp.genomicsengland.co.uk/api/v1/panels/"
+
+
+LOG = logging.getLogger(__name__)
+
+
+class PanelAppClient:
+    """Class that retrieves PanelAll green genes using the NHS-NGS/panelapp library."""
+
+    def __init__(self):
+        self.panel_batch = 1
+        self.panel_types = set()
+
+    def get_panel_types(self) -> list:
+        """Returns available panel types, collected from processed panels"""
+        return list(self.panel_types)
+
+    def get_panels(self, page: int, signed_off: bool = False) -> dict:
+        """Return a dictionary {panel_id: Panelapp.Panel} with all panels, signed off or not."""
+
+        panels_url = API_URL
+        if signed_off:
+            panels_url = f"{API_URL}signedoff/?page={page}"
+
+        resp = requests.get(panels_url, headers={"Content-Type": "application/json"})
+        if not resp.ok:
+            resp.raise_for_status()
+            return
+
+        return resp.json()
+
+    def set_panel_types(self, json_panels: dict):
+        """Collect available panel types from a batch of panels and add them to the self.panel_types variable."""
+
+        for panel in json_panels.get("results", []):
+            for type in panel.get("types", []):
+                self.panel_types.add(type["slug"])
+
+    def get_panel_ids(self, signed_off: bool) -> list[int]:
+        """Returns a list of panel ids contained in a json document with gene panels data."""
+
+        panel_ids = []
+
+        def get_panel_ids(json_panels):
+            LOG.info(f"Retrieving IDs from panel batch {self.panel_batch}")
+            for panel in json_panels.get("results", []):
+                panel_ids.append(panel["id"])
+            self.panel_batch += 1
+
+        json_panels: dict = self.get_panels(
+            signed_off=signed_off, page=self.panel_batch
+        )  # first page of results
+        get_panel_ids(json_panels=json_panels)
+        self.set_panel_types(json_panels=json_panels)
+
+        # Iterate over remaining pages of results
+        while json_panels["next"] is not None:
+            json_panels = self.get_panels(signed_off=signed_off, page=self.panel_batch)
+            get_panel_ids(json_panels=json_panels)
+
+        return panel_ids

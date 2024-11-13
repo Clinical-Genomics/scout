@@ -5,14 +5,15 @@ functions to load panels into the database
 """
 
 import logging
-import math
 from datetime import datetime
 from typing import Dict, List
 
 from click import Abort
 from flask.cli import current_app
 
+from scout.adapter import MongoAdapter
 from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
+from scout.server.extensions import panelapp
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_mim_files, fetch_resource
 
@@ -194,16 +195,10 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
             raise err
 
 
-def load_panelapp_green_panel(adapter, institute, force):
-    """Load/Update the panel containing all Panelapp Green genes
+def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool, signed_off: bool):
+    """Load/Update the panel containing all Panelapp Green genes."""
 
-    Args:
-        adapter(scout.adapter.MongoAdapter)
-        institute(str): _id of an institute
-        force(bool): force update panel even if it has fewer genes than previous version
-    """
-    LOG.info("Fetching all panel app panels")
-    panel_ids = _panelapp_panel_ids()
+    LOG.info("Fetching all PanelApp panels")
 
     # check and set panel version
     old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
@@ -215,7 +210,18 @@ def load_panelapp_green_panel(adapter, institute, force):
         "date": datetime.now(),
     }
     genes = set()  # avoid duplicate genes from different panels
-    # Loop over all PanelApp panels
+
+    panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
+    LOG.info(f"Query returned {len(panel_ids)} panels")
+    LOG.info(f"Panels have the following associated types:")
+    for number, type in enumerate(panelapp.get_panel_types()):
+        LOG.info(f"{number}: {type}")
+
+    """
+
+
+
+
 
     ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
     hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
@@ -243,6 +249,7 @@ def load_panelapp_green_panel(adapter, institute, force):
             return
 
     adapter.load_panel(parsed_panel=green_panel, replace=True)
+    """
 
 
 def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):
