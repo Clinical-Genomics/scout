@@ -198,6 +198,10 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
 def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool, signed_off: bool):
     """Load/Update the panel containing all Panelapp Green genes."""
 
+    def parse_types_filter(types_filter) -> List[str]:
+        """Translate panel type input from users to panel type slugs."""
+        int_types_list = types_filter.replace(" ", "").split(",")
+
     LOG.info("Fetching all PanelApp panels")
 
     # check and set panel version
@@ -214,8 +218,13 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
     LOG.info(f"Query returned {len(panel_ids)} panels")
     LOG.info(f"Panels have the following associated types:")
-    for number, type in enumerate(panelapp.get_panel_types()):
+    for number, type in enumerate(panelapp.get_panel_types(), 1):
         LOG.info(f"{number}: {type}")
+    types_filter: str = input(
+        "Please provide a comma-separated list of types you'd like to use to build your panel (Leave blank to use all types):  "
+    )
+    types_filter: List[str] = parse_types_filter(types_filter)
+    LOG.warning(chosen_types)
 
     """
 
