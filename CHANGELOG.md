@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expand the submissions information section on the ClinVar submissions page to fully display long text entries
 - Jarvik for PP1 added to ACMG modification guidelines
 - Display institute _id + display name on dashboard filters
+- ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
 - Increased visibility of variant callers's "Pass" or "Filtered" on SNVs and SV variants pages (both RD and cancer)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
@@ -26,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
+
 
 
 ## [4.90.1]
