@@ -19,7 +19,6 @@ from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_mim_files
 
 LOG = logging.getLogger(__name__)
-PANELAPP_BASE_URL = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
 PANEL_NAME = "PANELAPP-GREEN"
 
 

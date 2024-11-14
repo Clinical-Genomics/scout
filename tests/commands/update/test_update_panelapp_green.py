@@ -6,8 +6,9 @@ import responses
 
 from scout.commands import cli
 from scout.demo import panelapp_panel_path
-from scout.load.panel import PANEL_NAME, PANELAPP_BASE_URL
+from scout.load.panel import PANEL_NAME
 from scout.server.extensions import store
+from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
 DEMO_PANEL = "522"
 PANELAPP_LIST_PANELS_URL = PANELAPP_BASE_URL.format("list_panels")
@@ -47,7 +48,6 @@ def test_update_panelapp_green(mock_app):
     )
 
     # GIVEN a mocked response from PanelApp get_panel endpoint (mock response returns test PanelApp panel from scout/demo folder)
-    data = None
     with open(panelapp_panel_path) as f:
         data = json.load(f)
     responses.add(
