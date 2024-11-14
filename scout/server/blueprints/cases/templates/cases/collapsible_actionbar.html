@@ -197,21 +197,20 @@
       <span class="menu-collapsed">Genome build {{ case.genome_build }}</span>
   </div>
 </div>
-  <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white" {% if not case.bam_files %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-
       <button type="submit" class="btn btn-xs form-control btn-secondary"
         {% if not case.bam_files %}
-          title="Alignment file(s) missing" disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>
+          disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>
         {% else %}><span class="fa fa-magnifying-glass fa-fw me-1"></span>
         {% endif %}
         <span class="menu-collapsed">IGV g</span>D<span class="menu-collapsed">NA</span>
       </button>
     </form>
   </div>
-  <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white" {% if not case.mt_bams %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom='M', start=1, stop=16569) }}" target="_blank" rel="noopener">
-      <button type="submit" class="btn btn-xs form-control btn-secondary" data-bs-toggle="tooltip" {% if not case.mt_bams %}title="Alignment file(s) missing" disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>{% else %}><span class="fa fa-magnifying-glass fa-fw me-1"></span>{% endif %}<span class="menu-collapsed">IGV </span>m<span class="menu-collapsed">tDNA</span></button>
+      <button type="submit" class="btn btn-xs form-control btn-secondary"{% if not case.mt_bams %} disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>{% else %}><span class="fa fa-magnifying-glass fa-fw me-1"></span>{% endif %}<span class="menu-collapsed">IGV </span>m<span class="menu-collapsed">tDNA</span></button>
     </form>
   </div>
   {% if has_rna_tracks %}

@@ -110,7 +110,7 @@
               {% if case.bam_files %}
                 <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank"><span class="fa fa-magnifying-glass fa-fw me-1">IGV gDNA</a>
               {% else %}
-                <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled></span><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA</button>
+                <div data-bs-toggle="tooltip" title="BAM file(s) missing"><button class="btn btn-secondary btn-sm" disabled><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA</button></div>
               {% endif %}
 
             </td>
