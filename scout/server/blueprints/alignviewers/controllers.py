@@ -297,13 +297,13 @@ def set_common_tracks(display_obj, build):
             display_obj["custom_tracks"].append(track)
 
 
-def set_sample_tracks(display_obj, case_groups, chromosome):
+def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
     """Set up individual-specific alignment tracks (bam/cram files)
 
-    Args:
-        display_obj(dict): dictionary containing all tracks info
-        case_groups(list): a list of case dictionaries
-        chromosome(str) [1-22],X,Y,M or "All"
+    Given a dictionary containing all tracks info (display_obj), a list of case group dictionaries
+    A chromosome string argument is used to check if we should look at mt alignment files for MT.
+
+    A missing file is indicated with the string "missing", and no track is made for such entries.
     """
     sample_tracks = []
 
@@ -321,6 +321,8 @@ def set_sample_tracks(display_obj, case_groups, chromosome):
             return
 
         for count, sample in enumerate(case.get("sample_names")):
+            if case[track_items][count] == "missing":
+                continue
             sample_tracks.append(
                 {
                     "name": sample,
