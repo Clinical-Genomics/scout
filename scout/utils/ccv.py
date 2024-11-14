@@ -1,5 +1,6 @@
 # coding=UTF-8
 import logging
+
 LOG = logging.getLogger(__name__)
 
 
@@ -52,13 +53,13 @@ def get_ccv_points(ccv_terms: set) -> int:
     }
 
     for term in ccv_terms:
-        print('Placing term {}'.format(term))
+        print("Placing term {}".format(term))
         for suffix, prefix_dict in suffix_map.items():
             if term.endswith(suffix):
                 for prefix, term_list in prefix_dict.items():
                     if term.startswith(prefix):
                         term_list.append(term)
-                        print('added to (suffix)')
+                        print("added to (suffix)")
                         print(suffix)
                         print(prefix)
                         break
@@ -69,7 +70,7 @@ def get_ccv_points(ccv_terms: set) -> int:
             for prefix, term_list in prefix_map.items():
                 if term.startswith(prefix):
                     term_list.append(term)
-                    print('added to {} (prefix)'.format(prefix))
+                    print("added to {} (prefix)".format(prefix))
                     break
     """    for term in ccv_terms:
         for prefix, term_list in prefix_map.items():
