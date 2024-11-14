@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List
 
-from click import Abort
+from click import Abort, progressbar
 from flask.cli import current_app
 
 from scout.adapter import MongoAdapter
@@ -198,11 +198,12 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
 def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool, signed_off: bool):
     """Load/Update the panel containing all Panelapp Green genes."""
 
-    def parse_types_filter(types_filter) -> List[str]:
+    def parse_types_filter(types_filter: str, available_types: List[str]) -> List[str]:
         """Translate panel type input from users to panel type slugs."""
-        int_types_list = types_filter.replace(" ", "").split(",")
-
-    LOG.info("Fetching all PanelApp panels")
+        if not types_filter:
+            return available_types
+        index_list = [int(typeint) - 1 for typeint in types_filter.replace(" ", "").split(",")]
+        return [available_types[i] for i in index_list]
 
     # check and set panel version
     old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
@@ -215,39 +216,50 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     }
     genes = set()  # avoid duplicate genes from different panels
 
+    LOG.info("Fetching all PanelApp panels")
+
     panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
     LOG.info(f"Query returned {len(panel_ids)} panels")
     LOG.info(f"Panels have the following associated types:")
-    for number, type in enumerate(panelapp.get_panel_types(), 1):
+    available_types: List[str] = panelapp.get_panel_types()
+    for number, type in enumerate(available_types, 1):
         LOG.info(f"{number}: {type}")
     types_filter: str = input(
-        "Please provide a comma-separated list of types you'd like to use to build your panel (Leave blank to use all types):  "
+        "Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use all types):  "
     )
-    types_filter: List[str] = parse_types_filter(types_filter)
-    LOG.warning(chosen_types)
-
-    """
-
-
-
-
+    types_filter: List[str] = parse_types_filter(
+        types_filter=types_filter, available_types=available_types
+    )
+    LOG.info(f"Collecting green genes from panels of type: {types_filter}")
+    green_panel["description"] = (
+        f"This panel contains green genes from {'signed off ' if signed_off else ''}panels of the following types: {', '.join(types_filter)}"
+    )
 
     ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
     hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
 
-    for _ in panel_ids:
-        # And collect their green genes
-        parsed_panel = _parse_panelapp_panel(
-            panel_id=_,
-            institute=institute,
-            confidence="green",
-            ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-            hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
-        )
-        genes.update({(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")})
+    with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
+        for panel_id in panel_ids:
+            panel_dict: dict = panelapp.get_panel(panel_id)
+            panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
+            # Parse panel only if it's of the expect type(s)
+            if not set(types_filter).intersection(panel_type_slugs):
+                continue
+
+            LOG.error(panel_id)
+
+            parsed_panel = parse_panel_app_panel(
+                panel_info=panel_dict,
+                ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+                hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
+                institute=institute,
+                confidence="green",
+            )
+            genes.update(
+                {(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")}
+            )
 
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
-
     # Do not update panel if new version contains less genes and force flag is False
     if old_panel and len(old_panel.get("genes", [])) > len(green_panel["genes"]):
         LOG.warning(
@@ -258,7 +270,6 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
             return
 
     adapter.load_panel(parsed_panel=green_panel, replace=True)
-    """
 
 
 def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):

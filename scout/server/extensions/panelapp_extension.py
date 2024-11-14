@@ -1,10 +1,9 @@
 import logging
-from typing import Optional
+from typing import List
 
 import requests
 
-API_URL = "https://panelapp.genomicsengland.co.uk/api/v1/panels/"
-
+API_PANELS_URL = "https://panelapp.genomicsengland.co.uk/api/v1/panels/"
 
 LOG = logging.getLogger(__name__)
 
@@ -23,9 +22,9 @@ class PanelAppClient:
     def get_panels(self, page: int, signed_off: bool = False) -> dict:
         """Return a dictionary {panel_id: Panelapp.Panel} with all panels, signed off or not."""
 
-        panels_url = API_URL
+        panels_url = f"{API_PANELS_URL}?page={page}"
         if signed_off:
-            panels_url = f"{API_URL}signedoff/?page={page}"
+            panels_url = f"{API_PANELS_URL}signedoff/?page={page}"
 
         resp = requests.get(panels_url, headers={"Content-Type": "application/json"})
         if not resp.ok:
@@ -46,7 +45,7 @@ class PanelAppClient:
 
         panel_ids = []
 
-        def get_panel_ids(json_panels):
+        def get_ids(json_panels):
             LOG.info(f"Retrieving IDs from panel batch {self.panel_batch}")
             for panel in json_panels.get("results", []):
                 panel_ids.append(panel["id"])
@@ -55,12 +54,22 @@ class PanelAppClient:
         json_panels: dict = self.get_panels(
             signed_off=signed_off, page=self.panel_batch
         )  # first page of results
-        get_panel_ids(json_panels=json_panels)
+        get_ids(json_panels=json_panels)
         self.set_panel_types(json_panels=json_panels)
 
         # Iterate over remaining pages of results
         while json_panels["next"] is not None:
             json_panels = self.get_panels(signed_off=signed_off, page=self.panel_batch)
-            get_panel_ids(json_panels=json_panels)
+            get_ids(json_panels=json_panels)
 
         return panel_ids
+
+    def get_panel(self, panel_id: str):
+        """Retrieve a gene_panel. Apply filters on panel type, if available."""
+        panel_url = f"{API_PANELS_URL}{panel_id}"
+        resp = requests.get(panel_url, headers={"Content-Type": "application/json"})
+        if not resp.ok:
+            resp.raise_for_status()
+            return
+
+        return resp.json()

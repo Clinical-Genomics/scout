@@ -275,14 +275,15 @@ def parse_panel_app_gene(
     """Parse a panel app-formatted gene."""
 
     gene_info = {}
-    confidence_level = app_gene["LevelOfConfidence"]
+    confidence_level = app_gene["confidence_level"]
     # Return empty gene if not confident gene
     if confidence_level in PANELAPP_CONFIDENCE_EXCLUDE[confidence]:
         return gene_info
 
-    hgnc_symbol = app_gene["GeneSymbol"]
+    hgnc_symbol = app_gene["gene_symbol"]
 
-    ensembl_ids = app_gene["EnsembleGeneIds"]
+    ensembl_gene = app_gene["ensembl_genes"][0]
+    ensembl_ids = [gene.get()]
 
     if not ensembl_ids:  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
         if hgnc_symbol in hgnc_symbol_ensembl_gene_map:
@@ -346,10 +347,8 @@ def parse_panel_app_panel(
 
     gene_panel = {}
     gene_panel["version"] = float(panel_info["version"])
-    gene_panel["date"] = get_date(panel_info["Created"][:-1], date_format=date_format)
-    gene_panel["display_name"] = " - ".join(
-        [panel_info["SpecificDiseaseName"], f"[{confidence.upper()}]"]
-    )
+    gene_panel["date"] = get_date(panel_info["version_created"][:-1], date_format=date_format)
+    gene_panel["display_name"] = " - ".join([panel_info["name"], f"[{confidence.upper()}]"])
     gene_panel["institute"] = institute
     gene_panel["panel_type"] = panel_type
 
@@ -359,7 +358,7 @@ def parse_panel_app_panel(
 
     nr_excluded = 0
     nr_genes = 0
-    for nr_genes, gene in enumerate(panel_info["Genes"], 1):
+    for nr_genes, gene in enumerate(panel_info["genes"], 1):
         gene_info = parse_panel_app_gene(
             gene, ensembl_gene_hgnc_id_map, hgnc_symbol_ensembl_gene_map, confidence
         )
