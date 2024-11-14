@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Optional
 
 import requests
 
@@ -19,7 +19,7 @@ class PanelAppClient:
         """Returns available panel types, collected from processed panels"""
         return list(self.panel_types)
 
-    def get_panels(self, page: int, signed_off: bool = False) -> dict:
+    def get_panels(self, page: int, signed_off: bool = False) -> Optional[dict]:
         """Return a dictionary {panel_id: Panelapp.Panel} with all panels, signed off or not."""
 
         panels_url = f"{API_PANELS_URL}?page={page}"
@@ -31,6 +31,7 @@ class PanelAppClient:
             resp.raise_for_status()
             return
 
+        LOG.warning(type(resp.json()))
         return resp.json()
 
     def set_panel_types(self, json_panels: dict):

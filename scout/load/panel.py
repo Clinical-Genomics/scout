@@ -200,13 +200,12 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         "version": float(math.floor(old_panel["version"]) + 1) if old_panel else 1.0,
         "date": datetime.now(),
     }
-    genes = set()  # avoid duplicate genes from different panels
 
     LOG.info("Fetching all PanelApp panels")
 
     panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
     LOG.info(f"\n\nQuery returned {len(panel_ids)} panels\n")
-    LOG.info(f"Panels have the following associated types:")
+    LOG.info("Panels have the following associated types:")
     available_types: List[str] = panelapp.get_panel_types()
     for number, type in enumerate(available_types, 1):
         LOG.info(f"{number}: {type}")
