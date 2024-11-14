@@ -330,7 +330,6 @@ def parse_panel_app_panel(
     hgnc_symbol_to_ensembl_id_map: Dict[str, str],
     institute: Optional[str] = "cust000",
     confidence: Optional[str] = "green",
-    panel_type: Optional[str] = "clinical",
 ) -> dict:
     """Parse a PanelApp panel"""
 
@@ -347,7 +346,7 @@ def parse_panel_app_panel(
     gene_panel["date"] = get_date(panel_info["version_created"][:-1], date_format=date_format)
     gene_panel["display_name"] = " - ".join([panel_info["name"], f"[{confidence.upper()}]"])
     gene_panel["institute"] = institute
-    gene_panel["panel_type"] = panel_type
+    gene_panel["panel_type"] = ("clinical",)
 
     LOG.info("Parsing panel %s", gene_panel["display_name"])
 
