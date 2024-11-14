@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## [unreleased]
+## [4.91]
 ### Added
 - MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
 - Export variant type and callers-related info fields when exporting variants from variants pages
