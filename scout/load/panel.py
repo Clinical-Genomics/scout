@@ -5,8 +5,9 @@ functions to load panels into the database
 """
 
 import logging
+import math
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from click import Abort, progressbar
 from flask.cli import current_app
@@ -112,77 +113,62 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
 
-def _panelapp_panel_ids() -> List[str]:
-    """Fetch all PanelApp panel IDs"""
-    json_lines = fetch_resource(PANELAPP_BASE_URL.format("list_panels"), json=True)
-    return [panel_info["Panel_Id"] for panel_info in json_lines.get("result", [])]
+def get_panelapp_genes(
+    adapter: MongoAdapter, institute: str, panel_ids: List[str], types_filter: List[str]
+) -> Set[tuple]:
+    """Parse and collect genes from one or more panelApp panels."""
+
+    genes = set()
+    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
+    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
+
+    with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
+        for panel_id in panel_ids:
+            panel_dict: dict = panelapp.get_panel(panel_id)
+            panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
+            # Parse panel only if it's of the expect type(s)
+            if not set(types_filter).intersection(panel_type_slugs):
+                continue
+
+            parsed_panel = parse_panel_app_panel(
+                panel_info=panel_dict,
+                ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+                hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
+                institute=institute,
+                confidence="green",
+            )
+            genes.update(
+                {(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")}
+            )
+
+    return genes
 
 
-def _parse_panelapp_panel(
-    panel_id: str,
-    institute: str,
-    confidence: str,
-    ensembl_id_to_hgnc_id_map: Dict[str, int],
-    hgnc_symbol_to_ensembl_id_map: Dict[str, str],
+def load_panelapp_panel(
+    adapter: MongoAdapter,
+    panel_id: str = None,
+    institute: str = "cust000",
+    confidence: str = "green",
 ):
-    """fetch and parse lines from a PanelApp panel, given its ID
+    """Load PanelApp panels into scout database."""
 
-    Args:
-        adapter(scout.adapter.MongoAdapter)
-        panel_id(str): The panel app panel id
-        confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
-        ensembl_to_hgnc_map: dict[str, int]
-        hgnc_to_ensembl_map: [int, str]
-
-
-    Returns:
-        parsed_panel(dict). Example:
-            {'version': 3.3, 'date': datetime.datetime(2023, 1, 31, 16, 43, 37, 521719), 'display_name': 'Diabetes - neonatal onset - [GREEN]', 'institute': 'cust000', 'panel_type': 'clinical', 'genes': [list of genes], 'panel_id': '55a9041e22c1fc6711b0c6c0'}
-
-    """
-    json_lines = fetch_resource(PANELAPP_BASE_URL.format("get_panel") + panel_id, json=True)
-    parsed_panel = parse_panel_app_panel(
-        panel_info=json_lines["result"],
-        ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-        hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
-        institute=institute,
-        confidence=confidence,
-    )
-    if confidence != "green":
-        parsed_panel["panel_id"] = "_".join([panel_id, confidence])
-    else:  # This way the old green panels will be overwritten, instead of creating 2 sets of green panels, old and new
-        parsed_panel["panel_id"] = panel_id
-
-    return parsed_panel
-
-
-def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence="green"):
-    """Load PanelApp panels into scout database
-
-    If no panel_id load all PanelApp panels
-
-    Args:
-        adapter(scout.adapter.MongoAdapter)
-        panel_id(str): The panel app panel id
-        institute(str): _id of an institute
-        confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
-    """
     panel_ids = [panel_id]
 
     if not panel_id:
         LOG.info("Fetching all panel app panels")
-        panel_ids: List[str] = _panelapp_panel_ids()
+        panel_ids: List[str] = panelapp.get_panel_ids(signed_off=False)
 
     ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
     hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
 
     for _ in panel_ids:
-        parsed_panel = _parse_panelapp_panel(
-            panel_id=_,
-            institute=institute,
-            confidence=confidence,
+        panel_info: dict = panelapp.get_panel(panel_id)
+        parsed_panel = parse_panel_app_panel(
+            panel_info=panel_info,
             ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
             hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
+            institute=institute,
+            confidence=confidence,
         )
 
         if len(parsed_panel["genes"]) == 0:
@@ -219,7 +205,7 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     LOG.info("Fetching all PanelApp panels")
 
     panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
-    LOG.info(f"Query returned {len(panel_ids)} panels")
+    LOG.info(f"\n\nQuery returned {len(panel_ids)} panels\n")
     LOG.info(f"Panels have the following associated types:")
     available_types: List[str] = panelapp.get_panel_types()
     for number, type in enumerate(available_types, 1):
@@ -234,31 +220,9 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     green_panel["description"] = (
         f"This panel contains green genes from {'signed off ' if signed_off else ''}panels of the following types: {', '.join(types_filter)}"
     )
-
-    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
-    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
-
-    with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
-        for panel_id in panel_ids:
-            panel_dict: dict = panelapp.get_panel(panel_id)
-            panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
-            # Parse panel only if it's of the expect type(s)
-            if not set(types_filter).intersection(panel_type_slugs):
-                continue
-
-            LOG.error(panel_id)
-
-            parsed_panel = parse_panel_app_panel(
-                panel_info=panel_dict,
-                ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-                hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
-                institute=institute,
-                confidence="green",
-            )
-            genes.update(
-                {(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")}
-            )
-
+    genes: Set[tuple] = get_panelapp_genes(
+        adapter=adapter, institute=institute, panel_ids=panel_ids, types_filter=types_filter
+    )
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
     # Do not update panel if new version contains less genes and force flag is False
     if old_panel and len(old_panel.get("genes", [])) > len(green_panel["genes"]):

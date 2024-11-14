@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display institute _id + display name on dashboard filters
 - ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
+- Refactor the loading of PanelApp panels to use the maintained API - Customised PanelApp GREEN panels
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are now properly skipped on generating IGV views
