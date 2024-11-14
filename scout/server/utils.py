@@ -336,6 +336,7 @@ def case_append_alignments(case_obj):
         for setting in unwrap_settings:
             file_path = individual.get(setting["path"])
             if not (file_path and os.path.exists(file_path)):
+                append_safe(case_obj, setting["append_to"], "missing")
                 continue
             append_safe(case_obj, setting["append_to"], file_path)
             if not setting["index"] == "no_index":
