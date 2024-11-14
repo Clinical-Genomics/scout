@@ -637,11 +637,11 @@ def swegen_link(variant_obj):
 def franklin_link(variant_obj, build=37):
     """Compose link to Franklin Variant Frequency Database."""
     url_template = (
-            "https://franklin.genoox.com/clinical-db/variant/snp/chr{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}"
-        )
+        "https://franklin.genoox.com/clinical-db/variant/snp/chr{this[chromosome]}-"
+        "{this[position]}-{this[reference]}-{this[alternative]}"
+    )
     if build == 38:
-        url_template += '-hg38'
+        url_template += "-hg38"
     return url_template.format(this=variant_obj)
 
 
