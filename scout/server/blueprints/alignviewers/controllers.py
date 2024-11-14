@@ -304,7 +304,7 @@ def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
     A chromosome string argument is used to check if we should look at mt alignment files for MT.
 
     A missing file is indicated with the string "missing", and no track is made for such entries.
-   """
+    """
     sample_tracks = []
 
     track_items = "mt_bams" if chromosome == "M" else "bam_files"
