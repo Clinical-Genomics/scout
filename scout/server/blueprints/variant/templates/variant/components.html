@@ -72,9 +72,8 @@
             <span>
               <a href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}"
                 target="_blank"
-                role="button"
                 class="btn btn-secondary btn-sm text-white
-                {% if not (variant.chromosome in ["MT","M"] and case.mt_bams) or not case.bam_files %}
+                {% if not ((variant.chromosome in ["MT","M"] and case.mt_bams) or case.bam_files) %}
                   disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>
                 {% else %}"><span class="fa fa-magnifying-glass fa-fw me-1"></span>{% endif %}IGV
                 {% if variant.chromosome in ["MT","M"] %}MT{% else %}DNA{% endif %}
@@ -92,7 +91,7 @@
           {% endif %}
           {% if variant.alamut_link %}
             <div class="ms-1">
-              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with genome g. coordinate">Alamut g.</a>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with genome g. coordinate">Alamut g.</a>
             </div>
           {% endif %}
           {% for gene in variant.genes %}
@@ -231,7 +230,7 @@
       <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
         Matching tiered:&nbsp;
         {% for tier, tiered_info in matching_tiered.items() %}
-          <a style="padding: 0;" class="btn btn-{{tiered_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          <a style="padding: 0;" class="btn btn-{{tiered_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{tier}}" aria-expanded="false" aria-controls="collapseExample">
             {{tier}} ({{tiered_info.links|length}}x)
           </a>
           <div class="collapse" id="collapse_{{tier}}">
