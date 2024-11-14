@@ -321,15 +321,16 @@ def set_sample_tracks(display_obj, case_groups, chromosome):
             return
 
         for count, sample in enumerate(case.get("sample_names")):
-            sample_tracks.append(
-                {
-                    "name": sample,
-                    "url": case[track_items][count],
-                    "indexURL": case[track_index_items][count],
-                    "format": case[track_items][count].split(".")[-1],  # "bam" or "cram"
-                    "height": 700,
-                }
-            )
+            if sample.get(track_items) and sample.get(track_index_items):
+                sample_tracks.append(
+                    {
+                        "name": sample,
+                        "url": case[track_items][count],
+                        "indexURL": case[track_index_items][count],
+                        "format": case[track_items][count].split(".")[-1],  # "bam" or "cram"
+                        "height": 700,
+                    }
+                )
         display_obj["sample_tracks"] = sample_tracks
 
 

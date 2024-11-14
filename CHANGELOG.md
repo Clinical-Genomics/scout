@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
 - ClinVar submission enquiry status for all submissions after the latest
+- Error while setting igv tracks for cases with individuals missing alignments
 
 ## [4.90.1]
 ### Fixed
