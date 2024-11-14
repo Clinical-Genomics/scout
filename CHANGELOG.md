@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved tooltips for ClinVar filter in SNVs filter form
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
-- Tracks missing alignment files are now properly skipped on generating IGV views
+- Tracks missing alignment files are skipped on generating IGV views
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
