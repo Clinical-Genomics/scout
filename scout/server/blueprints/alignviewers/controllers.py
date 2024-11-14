@@ -321,6 +321,7 @@ def set_sample_tracks(display_obj, case_groups, chromosome):
             return
 
         for count, sample in enumerate(case.get("sample_names")):
+
             sample_tracks.append(
                 {
                     "name": sample,
