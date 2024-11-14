@@ -132,8 +132,8 @@ def get_panelapp_genes(
 
             parsed_panel = parse_panel_app_panel(
                 panel_info=panel_dict,
-                ensembl_gene_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-                hgnc_symbol_ensembl_gene_map=hgnc_symbol_to_ensembl_id_map,
+                ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
+                hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
                 institute=institute,
                 confidence="green",
             )
