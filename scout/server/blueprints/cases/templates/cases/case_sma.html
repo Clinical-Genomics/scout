@@ -69,8 +69,8 @@
           </span>
         {% endif %}
 
-        <span class="me-3"><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn1']['chrom'], start=region['smn1']['start'], stop=region['smn1']['end'] )}}" target="_blank" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip" disabled{% endif %}>IGV DNA SMN1</a></span>
-        <span class="me-3"><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn2']['chrom'], start=region['smn2']['start'], stop=region['smn2']['end'] )}}" target="_blank" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip" disabled{% endif %}>IGV DNA SMN2</a></span>
+        <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn1']['chrom'], start=region['smn1']['start'], stop=region['smn1']['end'] )}}" target="_blank"{% if not case.bam_files %} disabled{% endif %}>IGV DNA SMN1</a></span>
+        <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom=region['smn2']['chrom'], start=region['smn2']['start'], stop=region['smn2']['end'] )}}" target="_blank"{% if not case.bam_files %} disabled{% endif %}>IGV DNA SMN2</a></span>
       </span>
 
       <div class="row">
