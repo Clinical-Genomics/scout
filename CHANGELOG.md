@@ -52,6 +52,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - VariantS page local observation badges have counts visible also without hover
 - On Matchmaker page, show number of matches together with matching attempt date
 - Display all custom inheritance models, both standard and non-standard, as gathered from the gene panel information on the variant page
+- Moved PanelApp-related code to distinct modules/extension
 ### Fixed
 - Make BA1 fully stand-alone to Benign prediction
 - Modifying Benign terms to "Moderate" has no effect under Richards. Ignored completely before, will retain unmodified significance now
