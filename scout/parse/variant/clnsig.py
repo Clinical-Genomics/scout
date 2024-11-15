@@ -6,7 +6,9 @@ import cyvcf2
 LOG = logging.getLogger(__name__)
 
 
-def parse_clnsig(variant: cyvcf2.Variant, transcripts: Optional[dict] = None) -> list(Dict[str, Union[str, int]]):
+def parse_clnsig(
+    variant: cyvcf2.Variant, transcripts: Optional[dict] = None
+) -> list(Dict[str, Union[str, int]]):
     """Get the clnsig information
 
     The clinvar format has changed several times and this function will try to parse all of them.
