@@ -44,10 +44,7 @@ def load_panelapp_panel(
             LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
             continue
 
-        try:
-            adapter.load_panel(parsed_panel=parsed_panel, replace=True)
-        except Exception as err:
-            raise err
+        adapter.load_panel(parsed_panel=parsed_panel, replace=True)
 
 
 def get_panelapp_genes(
