@@ -20,8 +20,7 @@ def parse_clnsig(
     sometimes with CLNVID.
     This function parses also Clinvar annotations performed by VEP (CSQ field, parsed transcripts required)
 
-    Returns:
-        clnsig_accsessions(list(dict)): A list with clnsig accessions
+    Returns a list with clnsig accessions
     """
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
