@@ -12,7 +12,7 @@ class PanelAppClient:
     """Class that retrieves PanelAll green genes using the NHS-NGS/panelapp library."""
 
     def __init__(self):
-        self.panel_batch = 1
+        self.panels_page = 1
         self.panel_types = set()
 
     def get_panel_types(self) -> list:
@@ -34,7 +34,7 @@ class PanelAppClient:
         return resp.json()
 
     def set_panel_types(self, json_panels: dict):
-        """Collect available panel types from a batch of panels and add them to the self.panel_types variable."""
+        """Collect available panel types from a page of panels and add them to the self.panel_types variable."""
 
         for panel in json_panels.get("results", []):
             for type in panel.get("types", []):
@@ -46,20 +46,20 @@ class PanelAppClient:
         panel_ids = []
 
         def get_ids(json_panels):
-            LOG.info(f"Retrieving IDs from panel batch {self.panel_batch}")
+            LOG.info(f"Retrieving IDs from API page {self.panels_page}")
             for panel in json_panels.get("results", []):
                 panel_ids.append(panel["id"])
-            self.panel_batch += 1
+            self.panels_page += 1
 
         json_panels: dict = self.get_panels(
-            signed_off=signed_off, page=self.panel_batch
+            signed_off=signed_off, page=self.panels_page
         )  # first page of results
         get_ids(json_panels=json_panels)
         self.set_panel_types(json_panels=json_panels)
 
         # Iterate over remaining pages of results
         while json_panels["next"] is not None:
-            json_panels = self.get_panels(signed_off=signed_off, page=self.panel_batch)
+            json_panels = self.get_panels(signed_off=signed_off, page=self.panels_page)
             get_ids(json_panels=json_panels)
 
         return panel_ids
