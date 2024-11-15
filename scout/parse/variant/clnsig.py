@@ -100,6 +100,18 @@ def is_pathogenic(variant):
         bool: If variant should be loaded based on clinvar or not
     """
 
+    quick_load_categories = {
+        "pathogenic",
+        "conflicting_"
+    }
+
+    # check if VEP-annotated field contains clinvar pathogenicity info
+    vep_info = variant.INFO.get("CSQ")
+    if vep_info:
+        for category in quick_load_categories:
+            if category in vep_info.lower():
+                return True
+
     load_categories = {
         "pathogenic",
         "likely_pathogenic",
@@ -107,13 +119,6 @@ def is_pathogenic(variant):
         "conflicting_interpretations_of_pathogenicity",
         "conflicting_interpretations",
     }
-
-    # check if VEP-annotated field contains clinvar pathogenicity info
-    vep_info = variant.INFO.get("CSQ")
-    if vep_info:
-        for category in load_categories:
-            if category in vep_info.lower():
-                return True
 
     # Otherwise check if clinvar pathogenicity status is in INFO field
     clnsig_accessions = parse_clnsig(variant)
