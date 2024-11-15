@@ -11,7 +11,7 @@ EXPORT_PANEL_FIELDS = [
 ]
 
 PANELAPP_CONFIDENCE_EXCLUDE = {
-    "green": ["ModerateEvidence", "LowEvidence"],
-    "amber": ["LowEvidence"],
+    "green": ["1", "2"],
+    "amber": ["1"],
     "red": [],
 }
