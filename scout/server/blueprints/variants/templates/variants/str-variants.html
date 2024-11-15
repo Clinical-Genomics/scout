@@ -108,9 +108,9 @@
               {{ variant.position|human_longint|safe }}</span>
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
               {% if case.bam_files %}
-                <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank">IGV viewer</a>
+                <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank"><i class="fa fa-magnifying-glass fa-fw me-1"></i>IGV gDNA</a></span>
               {% else %}
-                <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled>IGV viewer</button>
+                <span data-bs-toggle="tooltip" title="BAM file(s) missing"><button class="btn btn-secondary btn-sm" disabled><i class="fa fa-times-circle fa-fw me-1"></i>IGV gDNA</button></span>
               {% endif %}
 
             </td>
