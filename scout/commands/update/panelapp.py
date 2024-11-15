@@ -45,10 +45,10 @@ def panelapp_green(institute, force, signed_off):
         )
         raise click.Abort()
 
-    # try:
-    load_panelapp_green_panel(
-        adapter=store, institute=institute, force=force, signed_off=signed_off
-    )
-    # except Exception as err:
-    #    LOG.error(err)
-    #    raise click.Abort()
+    try:
+        load_panelapp_green_panel(
+            adapter=store, institute=institute, force=force, signed_off=signed_off
+        )
+    except Exception as err:
+        LOG.error(err)
+        raise click.Abort()
