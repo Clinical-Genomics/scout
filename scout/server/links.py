@@ -636,7 +636,7 @@ def swegen_link(variant_obj):
 
 def franklin_link(variant_obj, case_obj, build=37):
     """Compose link to Franklin Variant Frequency Database."""
-    if case_obj['track'] == 'cancer':
+    if case_obj["track"] == "cancer":
         url_template = (
             "https://franklin.genoox.com/clinical-db/variant/snpTumor/chr{this[chromosome]}-"
             "{this[position]}-{this[reference]}-{this[alternative]}"
