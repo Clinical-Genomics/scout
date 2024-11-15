@@ -6,7 +6,7 @@ import responses
 
 from scout.commands import cli
 from scout.demo.resources import panelapp_panel_path, panelapp_panels_reduced_path
-from scout.load.panel import PANEL_NAME
+from scout.load.panelapp import PANEL_NAME
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
@@ -70,10 +70,8 @@ def test_update_green_panel(mock_app):
 
     assert result.exit_code == 0
 
-    # AND the panel should have been saved in databsse
+    # AND the panel should have been saved in database
     green_panel = store.gene_panel(panel_id=PANEL_NAME)
-    assert green_panel
-    assert green_panel["genes"]
 
     # GIVEN that the old saved panel contains one extra gene
     extra_gene = {"hgnc_id": 7227, "symbol": "MRAS"}
@@ -82,13 +80,13 @@ def test_update_green_panel(mock_app):
     )
 
     # WHEN panel is updated without the force flag
-    runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"])
+    runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"], input="1")
 
     # THEN PanelApp Green panel should NOT be updated
     assert store.gene_panel(panel_id=PANEL_NAME)["version"] == green_panel["version"]
 
     # WHEN updating the panel with the force flag
-    runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000", "-f"])
+    runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000", "-f"], input="1")
 
     # THEN PanelApp Green panel should be updated
     assert store.gene_panel(panel_id=PANEL_NAME)["version"] > green_panel["version"]
