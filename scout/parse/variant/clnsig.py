@@ -103,6 +103,7 @@ def is_pathogenic(variant):
     load_categories = {
         "pathogenic",
         "likely_pathogenic",
+        "conflicting_classifications_of_pathogenicity",
         "conflicting_interpretations_of_pathogenicity",
         "conflicting_interpretations",
     }
@@ -122,7 +123,7 @@ def is_pathogenic(variant):
         if clnsig in load_categories:
             return True
         if isinstance(clnsig, int):
-            if clnsig == 4 or clnsig == 5:
+            if clnsig == 4 or clnsig == 5 or clnsig == 8:
                 return True
 
     return False
