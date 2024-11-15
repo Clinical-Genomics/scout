@@ -1,8 +1,7 @@
 import logging
+from typing import Optional
 
 import cyvcf2
-
-from typing import Optional
 
 LOG = logging.getLogger(__name__)
 
