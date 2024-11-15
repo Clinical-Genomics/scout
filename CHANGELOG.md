@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
 - Export variant type and callers-related info fields when exporting variants from variants pages
+- Cases advanced search on the dashboard page
 - Possibility to use only signed off panels when building the PanelApp GREEN panel
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
@@ -23,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
 - Names on IGV buttons, including an overview level IGV MT button
+- Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 - Refactor the loading of PanelApp panels to use the maintained API - Customised PanelApp GREEN panels
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
@@ -31,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
 - ClinVar submission enquiry status for all submissions after the latest
-
 
 ## [4.90.1]
 ### Fixed

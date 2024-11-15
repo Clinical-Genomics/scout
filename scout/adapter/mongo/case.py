@@ -4,7 +4,7 @@ import logging
 import operator
 import re
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import pymongo
 from bson import ObjectId
@@ -219,7 +219,7 @@ class CaseHandler(object):
         query.setdefault("$or", []).extend(or_options)
 
     def populate_case_query(
-        self, query: dict, name_query: Union[str, ImmutableMultiDict], owner=None, collaborator=None
+        self, query: dict, name_query: ImmutableMultiDict, owner=None, collaborator=None
     ):
         """Parses and adds query parameters provided by users in cases search filter."""
 
@@ -306,36 +306,29 @@ class CaseHandler(object):
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["_id"] for user in users]}
 
-        if isinstance(name_query, str):
-            # Example: status -> Comes from a GET request from dashboard cases
-            query_field, query_value = name_query.split(":", 1)
-            set_case_item_query(
-                query=query, query_field=query_field.strip(), query_value=query_value.strip()
-            )
-        else:
-            # POST request form from more advanced case search from cases page
-            for query_field in [
-                "case",
-                "exact_pheno",
-                "exact_dia",
-                "synopsis",
-                "panel",
-                "status",
-                "tags",
-                "track",
-                "pheno_group",
-                "cohort",
-                "pinned",
-                "causative",
-                "user",
-                "similar_case",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
-                "similar_pheno",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
-            ]:
-                query_value = name_query.get(query_field)
-                if query_value not in ["", None]:
-                    set_case_item_query(
-                        query=query, query_field=query_field, query_value=query_value.strip()
-                    )
+        # POST request form from more advanced case search from cases page
+        for query_field in [
+            "case",
+            "exact_pheno",
+            "exact_dia",
+            "synopsis",
+            "panel",
+            "status",
+            "tags",
+            "track",
+            "pheno_group",
+            "cohort",
+            "pinned",
+            "causative",
+            "user",
+            "similar_case",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
+            "similar_pheno",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
+        ]:
+            query_value = name_query.get(query_field)
+            if query_value not in ["", None]:
+                set_case_item_query(
+                    query=query, query_field=query_field, query_value=query_value.strip()
+                )
 
     def _update_case_id_query(self, query, id_list):
         """Update a case query ["_id"]["$in"] values using an additional list of case _ids
@@ -371,7 +364,7 @@ class CaseHandler(object):
         group: Optional[ObjectId] = None,
         pinned: bool = False,
         cohort: bool = False,
-        name_query: Optional[str] = None,
+        name_query: Optional[ImmutableMultiDict] = None,
         yield_query: bool = False,
         within_days: Optional[int] = None,
         assignee: Optional[str] = None,
@@ -564,13 +557,9 @@ class CaseHandler(object):
 
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
-    def is_pheno_similarity_query(self, name_query: Union[str, ImmutableMultiDict]) -> bool:
+    def is_pheno_similarity_query(self, name_query: ImmutableMultiDict) -> bool:
         """Return True if the user query contains 'similar_case' or 'similar_pheno' fields."""
         similar_pheno_keys = ["similar_case", "similar_pheno"]
-
-        if isinstance(name_query, str):
-            return any(key in name_query for key in similar_pheno_keys)
-
         return any(name_query.get(key) not in [None, ""] for key in similar_pheno_keys)
 
     def rna_cases(self, owner):
