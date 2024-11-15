@@ -72,16 +72,15 @@
         <span data-bs-toggle="tooltip" title="Alignment file(s) missing">
           <a href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}"
              target="_blank"
-              class="btn btn-secondary btn-sm text-white
-              disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV mtDNA
+             class="btn btn-secondary btn-sm text-white disabled" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV mtDNA
           </a>
         </span>
       {% elif not case.bam_files and not variant.is_mitochondrial %}
         <span data-bs-toggle="tooltip" title="Alignment file(s) missing">
           <a href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}"
             target="_blank"
-            class="btn btn-secondary btn-sm text-white
-            disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV DNA
+            class="btn btn-secondary btn-sm text-white disabled"
+            aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA
           </a>
         </span>
       {% else %}
