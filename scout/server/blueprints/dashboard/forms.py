@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField, validators
 
-from scout.constants import CASE_SEARCH_TERMS
-
-CASE_SEARCH_KEY = [("", "")] + [
-    (value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()
-]
+from scout.server.blueprints.institutes.forms import CaseFilterForm
 
 
 class NonValidatingSelectField(SelectField):
@@ -16,12 +11,7 @@ class NonValidatingSelectField(SelectField):
         pass
 
 
-class DashboardFilterForm(FlaskForm):
-    """Takes care of cases filtering in cases page"""
+class DashboardFilterForm(CaseFilterForm):
+    """Takes care of cases filtering on dashboard page"""
 
-    search_type = NonValidatingSelectField(
-        "Search by", [validators.Optional()], choices=CASE_SEARCH_KEY
-    )
     search_institute = NonValidatingSelectField("Institute", choices=[])
-    search_term = StringField("Search term")
-    search = SubmitField(label="Search")

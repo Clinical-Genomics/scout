@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
 - Export variant type and callers-related info fields when exporting variants from variants pages
+- Cases advanced search on the dashboard page
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button
@@ -23,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplify always loading ClinVar CLNSIG P, LP and conflicting annotations slightly
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
 - Names on IGV buttons, including an overview level IGV MT button
+- Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are skipped on generating IGV views
