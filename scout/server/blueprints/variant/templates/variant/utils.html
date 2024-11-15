@@ -363,7 +363,7 @@
               disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV mtDNA
           </a>
         </span>
-      {% elif not case.bam_files %}
+      {% elif not case.bam_files and not variant.is_mitochondrial%}
         <span data-bs-toggle="tooltip" title="Alignment file(s) missing">
           <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end)}}"
             target="_blank"
