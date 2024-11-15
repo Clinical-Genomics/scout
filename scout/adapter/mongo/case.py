@@ -364,7 +364,7 @@ class CaseHandler(object):
         group: Optional[ObjectId] = None,
         pinned: bool = False,
         cohort: bool = False,
-        name_query: Optional[str] = None,
+        name_query: Optional[ImmutableMultiDict] = None,
         yield_query: bool = False,
         within_days: Optional[int] = None,
         assignee: Optional[str] = None,
