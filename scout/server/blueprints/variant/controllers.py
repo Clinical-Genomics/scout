@@ -303,7 +303,7 @@ def variant(
     variant_obj["end_position"] = end_position(variant_obj)
 
     # Add general variant links
-    variant_obj.update(get_variant_links(institute_obj, variant_obj, int(genome_build)))
+    variant_obj.update(get_variant_links(institute_obj, variant_obj, case_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
     if variant_category in ["snv", "cancer", "mei"]:
         # This is to convert a summary of frequencies to a string

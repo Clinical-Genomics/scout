@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Variant link to Franklin in database buttons (different depending on rare or cancer track)
 - MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
 - Export variant type and callers-related info fields when exporting variants from variants pages
 - Cases advanced search on the dashboard page
