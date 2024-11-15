@@ -197,22 +197,37 @@
       <span class="menu-collapsed">Genome build {{ case.genome_build }}</span>
   </div>
 </div>
-<div href="#" class="bg-dark list-group-item d-inline-block text-white">
-  {% if case.bam_files %}
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white"
+    {% if not case.bam_files %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-      <button role="submit" class="btn btn-xs form-control btn-secondary">I<span class="menu-collapsed">GV viewer</span></button>
-    </form>
-  {% else %}
-    <span class="fa fa-times-circle fa-fw me-3"></span><span class="text-muted menu-collapsed">Alignment missing</span>
-  {% endif %}
-</div>
-{% if has_rna_tracks %}
-  <div href="#" class="bg-dark list-group-item d-inline-block text-white">
-    <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Available in build GRCh{{ case.rna_genome_build or '38' }}" class="btn btn-xs form-control btn-secondary">R<span class="menu-collapsed">NA splicing</span></button>
+      <button type="submit" class="btn btn-xs form-control btn-secondary"
+        {% if not case.bam_files %}
+          disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>
+        {% else %}><span class="fa fa-magnifying-glass fa-fw me-1"></span>
+        {% endif %}
+        <span class="menu-collapsed">IGV g</span>D<span class="menu-collapsed">NA</span>
+      </button>
     </form>
   </div>
-{% endif %}
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white"
+    {% if not case.mt_bams %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
+    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom='M', start=1, stop=16569) }}" target="_blank" rel="noopener">
+      <button type="submit" class="btn btn-xs form-control btn-secondary"
+        {% if not case.mt_bams %}
+          disabled="disabled"><span class="fa fa-times-circle fa-fw me-1"></span>
+        {% else %}
+          ><span class="fa fa-magnifying-glass fa-fw me-1"></span>
+        {% endif %}
+      <span class="menu-collapsed">IGV </span>m<span class="menu-collapsed">tDNA</span></button>
+    </form>
+  </div>
+  {% if has_rna_tracks %}
+    <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+      <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
+        <button type="submit" class="btn btn-xs form-control btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Available in build GRCh{{ case.rna_genome_build or '38' }}"><span class="fa fa-magnifying-glass fa-fw me-1"></span><span class="menu-collapsed">IGV </span>R<span class="menu-collapsed">NA</span></button>
+      </form>
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro rank_model(case) %}

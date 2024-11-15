@@ -92,7 +92,7 @@
 <div id="accordion">
   <div class="row">
     <div class="col-4 d-flex align-items-center">
-     <span><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#track_settings" class="text-secondary">Settings DNA <i class="fas fa-cogs text-secondary"></i></a></span>
+     <span><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#track_settings" class="text-secondary"><i class="fas fa-cogs text-secondary me-1"></i>Settings IGV DNA</a></span>
     </div>
     <div id="track_settings" class="col-8 collapse">
       <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
@@ -355,11 +355,31 @@
     {% endif %}
     </div>
     <div class="col-3">
-    {% if variant.is_mitochondrial and case.mt_bams or case.bam_files %}
-      <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end) }}" target="_blank">IGV viewer</a></span>
-    {% else %}
-      - BAM file(s) missing
-    {% endif %}
+      {% if variant.is_mitochondrial and not case.mt_bams %}
+        <span data-bs-toggle="tooltip" title="Alignment file(s) missing">
+          <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end)}}"
+             target="_blank"
+              class="btn btn-secondary btn-sm text-white
+              disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV mtDNA
+          </a>
+        </span>
+      {% elif not case.bam_files and not variant.is_mitochondrial%}
+        <span data-bs-toggle="tooltip" title="Alignment file(s) missing">
+          <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end)}}"
+            target="_blank"
+            class="btn btn-secondary btn-sm text-white
+            disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA
+          </a>
+        </span>
+      {% else %}
+        <span>
+          <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end)}}"
+            target="_blank"
+            class="btn btn-secondary btn-sm text-white"><span class="fa fa-magnifying-glass fa-fw me-1"></span>
+            IGV {% if variant.is_mitochondrial %}mt{% else %}g{% endif %}DNA
+          </a>
+        </span>
+      {% endif %}
     </div>
     <div class="col-1">
       <!--Define build variable to be used in the UCSC link-->
