@@ -5,7 +5,7 @@ import json
 import responses
 
 from scout.commands import cli
-from scout.demo.resources import panelapp_panel_path, panelapp_panels_reduced_path
+from scout.demo import panelapp_panel_path, panelapp_panels_reduced_path
 from scout.load.panelapp import PANEL_NAME
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
