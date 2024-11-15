@@ -10,8 +10,8 @@ from scout.load.panel import PANEL_NAME
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
-DEMO_PANEL = "1208"
-PANELAPP_GET_PANEL_URL = f"API_PANELS_URL{DEMO_PANEL}"
+DEMO_PANEL = "522"
+PANELAPP_GET_PANEL_URL = f"{API_PANELS_URL}{DEMO_PANEL}"
 
 
 def test_update_panelapp_green_non_existing_institute(empty_mock_app):
@@ -32,7 +32,7 @@ def test_update_panelapp_green_non_existing_institute(empty_mock_app):
 
 
 @responses.activate
-def test_update_panelapp_green(mock_app):
+def test_update_green_panel(mock_app):
     """Tests the CLI that creates/updates PANELAPP-GREEN panel in database"""
 
     # GIVEN that no PANELAPP-GREEN panel exists in database:
@@ -41,10 +41,12 @@ def test_update_panelapp_green(mock_app):
     # GIVEN a mocked response from PanelApp list_panels endpoint
     with open(panelapp_panels_reduced_path) as f:
         panels_data = json.load(f)
+
     responses.add(
         responses.GET,
         API_PANELS_URL,
         json=panels_data,
+        match=[responses.matchers.header_matcher({"Content-Type": "application/json"})],
         status=200,
     )
 
@@ -55,14 +57,17 @@ def test_update_panelapp_green(mock_app):
         responses.GET,
         PANELAPP_GET_PANEL_URL,
         json=panel_data,
+        match=[responses.matchers.header_matcher({"Content-Type": "application/json"})],
         status=200,
     )
 
-    # GIVEN an app CLI
+    # GIVEN a cli runner
     runner = mock_app.test_cli_runner()
+    assert runner
 
     # THEN command to create the PANELAPP-GREEN panel should be successful
-    result = runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"])
+    result = runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"], input="1")
+
     assert result.exit_code == 0
 
     # AND the panel should have been saved in databsse

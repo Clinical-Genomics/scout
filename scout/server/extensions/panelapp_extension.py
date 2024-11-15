@@ -31,7 +31,6 @@ class PanelAppClient:
             resp.raise_for_status()
             return
 
-        LOG.warning(type(resp.json()))
         return resp.json()
 
     def set_panel_types(self, json_panels: dict):

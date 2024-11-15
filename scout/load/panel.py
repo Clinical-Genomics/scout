@@ -200,21 +200,21 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         "date": datetime.now(),
     }
 
-    LOG.info("Fetching all PanelApp panels")
+    LOG.error("Fetching all PanelApp panels")
 
     panel_ids = panelapp.get_panel_ids(signed_off=signed_off)
-    LOG.info(f"\n\nQuery returned {len(panel_ids)} panels\n")
-    LOG.info("Panels have the following associated types:")
+    LOG.error(f"\n\nQuery returned {len(panel_ids)} panels\n")
+    LOG.error("Panels have the following associated types:")
     available_types: List[str] = panelapp.get_panel_types()
     for number, type in enumerate(available_types, 1):
-        LOG.info(f"{number}: {type}")
+        LOG.error(f"{number}: {type}")
     types_filter: str = input(
         "Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use all types):  "
     )
     types_filter: List[str] = parse_types_filter(
         types_filter=types_filter, available_types=available_types
     )
-    LOG.info(f"Collecting green genes from panels of type: {types_filter}")
+    LOG.error(f"Collecting green genes from panels of type: {types_filter}")
     green_panel["description"] = (
         f"This panel contains green genes from {'signed off ' if signed_off else ''}panels of the following types: {', '.join(types_filter)}"
     )
