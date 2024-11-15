@@ -436,8 +436,13 @@ def test_get_cases_non_existing_display_name(real_adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    # WHEN retreiving cases by partial display name
-    result = adapter.cases(name_query="case:hello")
+    # WHEN retrieving cases by partial display name
+    name_query = ImmutableMultiDict(
+        {
+            "case": "hello",
+        }
+    )
+    result = adapter.cases(name_query=name_query)
     # THEN we should get the correct case
     assert sum(1 for _ in result) == 0
 
@@ -642,7 +647,11 @@ def test_cases_by_diagnosis(adapter, case_obj, test_omim_database_term):
     }
     adapter.case_collection.insert_one(case_obj)
     # WHEN cases are filtered using OMIM terms containing that term
-    name_query = f"exact_dia:{test_omim_database_term['disease_id']},OMIM:999999"
+    name_query = ImmutableMultiDict(
+        {
+            "disease_id": "OMIM:999999",
+        }
+    )
 
     # WHEN querying for cases with the given OMIM term
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
@@ -716,21 +725,33 @@ def test_get_cases_by_phenotype_name_query(hpo_database, test_hpo_terms, case_ob
     assert sum(1 for _ in adapter.case_collection.find()) == 1
 
     # WHEN querying for a case with one of the test phenotype ids
-    name_query = f"exact_pheno:{test_hpo_terms[0]['phenotype_id']}"
+    name_query = ImmutableMultiDict(
+        {
+            "exact_pheno": test_hpo_terms[0]["phenotype_id"],
+        }
+    )
 
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
     assert len(cases) == 1
 
     # WHEN repeating the same query with a term not on the case included,
-    name_query = "exact_pheno:HP:0000532"
+    name_query = ImmutableMultiDict(
+        {
+            "exact_pheno": "HP:0000532",
+        }
+    )
 
     # THEN no case should be returned
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
     assert len(cases) == 0
 
     # WHEN repeating the same query with a term not on the case included AS WELL AS one on the case
-    name_query = f"exact_pheno:HP:0000532, {test_hpo_terms[0]['phenotype_id']}"
+    name_query = ImmutableMultiDict(
+        {
+            "exact_pheno": f"HP:0000532, {test_hpo_terms[0]['phenotype_id']}",
+        }
+    )
 
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
@@ -766,7 +787,11 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     assert sum(1 for _ in adapter.case_collection.find()) == 2
 
     # WHEN querying for a similar case
-    name_query = f"similar_case:{case_obj['display_name']}"
+    name_query = ImmutableMultiDict(
+        {
+            "similar_case": case_obj["display_name"],
+        }
+    )
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
     assert len(cases) == 1
@@ -783,7 +808,12 @@ def test_get_cases_cohort(real_adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by a cohort name query
-    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    name_query = ImmutableMultiDict(
+        {
+            "cohort": cohort_name,
+        }
+    )
+    result = adapter.cases(name_query=name_query)
     # THEN we should get the case returned
     assert sum(1 for _ in result) == 1
 
@@ -800,7 +830,12 @@ def test_get_cases_tags(real_adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by a tags name query
-    result = adapter.cases(name_query="tags:diagnostic")
+    name_query = ImmutableMultiDict(
+        {
+            "tags": "diagnostic",
+        }
+    )
+    result = adapter.cases(name_query=name_query)
 
     # THEN we should get the case returned
     assert sum(1 for _ in result) == 1
@@ -817,7 +852,12 @@ def test_get_cases_cohort_with_space(real_adapter, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by a cohort name query
-    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    name_query = ImmutableMultiDict(
+        {
+            "cohort": cohort_name,
+        }
+    )
+    result = adapter.cases(name_query=name_query)
     # THEN we should get the case returned
     assert sum(1 for _ in result) == 1
 
