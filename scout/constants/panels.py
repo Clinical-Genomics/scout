@@ -9,3 +9,9 @@ EXPORT_PANEL_FIELDS = [
     ("custom_inheritance_models", "custom_inheritance_models"),
     ("comment", "comment"),
 ]
+
+PANELAPP_CONFIDENCE_EXCLUDE = {
+    "green": ["ModerateEvidence", "LowEvidence"],
+    "amber": ["LowEvidence"],
+    "red": [],
+}
