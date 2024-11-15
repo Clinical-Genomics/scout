@@ -1,8 +1,8 @@
 import logging
-from pprint import pprint as pp
 
 import click
 from flask.cli import with_appcontext
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.server.extensions import store
 
@@ -52,7 +52,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
 
     else:
         if display_name:
-            name_query = f"case:{display_name}"
+            name_query = ImmutableMultiDict({"case": display_name})
         models = adapter.cases(collaborator=institute, name_query=name_query)
         models = [case_obj for case_obj in models]
 

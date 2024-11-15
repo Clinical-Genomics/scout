@@ -1,9 +1,13 @@
 import logging
+from typing import Dict, List, Set
 
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
+from werkzeug.datastructures.structures import ImmutableMultiDict
+from werkzeug.local import LocalProxy
 
-from scout.constants import CASE_SEARCH_TERMS, CASE_TAGS
+from scout.adapter import MongoAdapter
+from scout.constants import CASE_TAGS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
@@ -33,116 +37,90 @@ def dashboard_form(request_form=None):
     return form
 
 
-def compose_slice_query(search_type, search_term):
-    """Extract a filter query given a form search term and search type
+def populate_dashboard_data(request: LocalProxy) -> dict:
+    """Collect data to display on the dashboard page"""
 
-    Args:
-        search_type(str): example -> "case:"
-        search_term(str): example -> "17867"
-
-    Returns:
-        slice_query(str): example case:17867
-    """
-    slice_query = None
-    if search_term and search_type:
-        slice_query = "".join([search_type, search_term])
-
-    return slice_query
-
-
-def populate_dashboard_data(request):
-    """Prepate data display object to be returned to the view
-
-    Args:
-        request(flask.rquest): request received by the view
-
-    Returns:
-        data(dict): data to be diplayed in the template
-    """
-    data = {"dashboard_form": dashboard_form(request.form), "search_terms": CASE_SEARCH_TERMS}
+    data = {"dashboard_form": dashboard_form(request.form)}
     if request.method == "GET":
         return data
 
-    allowed_insititutes = [inst[0] for inst in institute_select_choices()]
+    allowed_institutes = [inst[0] for inst in institute_select_choices()]
 
     institute_id = request.form.get(
-        "search_institute", allowed_insititutes[0]
+        "search_institute", allowed_institutes[0]
     )  # GET request has no institute, select the first option of the select
 
-    if institute_id and institute_id not in allowed_insititutes:
+    if institute_id and institute_id not in allowed_institutes:
         flash("Your user is not allowed to visualize this data", "warning")
         redirect(url_for("dashboard.index"))
 
     if institute_id == "All":
         institute_id = None
 
-    search_term = request.form["search_term"].strip() if request.form.get("search_term") else ""
-    slice_query = compose_slice_query(request.form.get("search_type"), search_term)
-    get_dashboard_info(store, data, institute_id, slice_query)
+    get_dashboard_info(adapter=store, data=data, institute_id=institute_id, cases_form=request.form)
     return data
 
 
-def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
-    """Append case data stats to data display object
-    Args:
-        adapter(adapter.MongoAdapter)
-        data(dict): data dictionary to be passed to template
-        institute_id(str): institute id
-        slice_query(str): example case:55888
+def get_dashboard_info(
+    adapter: MongoAdapter, data: dict = None, institute_id: str = None, cases_form=None
+) -> dict:
+    """Append case data stats to data display object"""
 
-    Returns:
-        data(dict): data to be diplayed in the template
-    """
-    # If a slice_query is present then numbers in "General statistics" and "Case statistics" will
-    # reflect the data available for the query
-    general_sliced_info = get_general_case_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
+    if not data:
+        data = {}
+
+    # Filter data using eventual filter provided in cases filters form
+    filtered_cases_info = get_general_case_info(
+        adapter=adapter, institute_id=institute_id, cases_form=cases_form
     )
 
-    total_sliced_cases = general_sliced_info["total_cases"]
-    data["total_cases"] = total_sliced_cases
+    total_filtered_cases = filtered_cases_info["total_cases"]
+    data["total_cases"] = total_filtered_cases
 
-    if total_sliced_cases == 0:
+    if total_filtered_cases == 0:
         return data
 
     data["pedigree"] = []
-    for ped_info in general_sliced_info["pedigree"].values():
-        ped_info["percent"] = ped_info["count"] / total_sliced_cases
+    for ped_info in filtered_cases_info["pedigree"].values():
+        ped_info["percent"] = ped_info["count"] / total_filtered_cases
         data["pedigree"].append(ped_info)
 
     data["cases"] = get_case_groups(
-        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        adapter=adapter,
+        total_cases=total_filtered_cases,
+        institute_id=institute_id,
+        name_query=cases_form,
     )
 
     data["analysis_types"] = get_analysis_types(
-        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        adapter=adapter, institute_id=institute_id, name_query=cases_form
     )
 
     overview = [
         {
             "title": "Phenotype terms",
-            "count": general_sliced_info["phenotype_cases"],
-            "percent": general_sliced_info["phenotype_cases"] / total_sliced_cases,
+            "count": filtered_cases_info["phenotype_cases"],
+            "percent": filtered_cases_info["phenotype_cases"] / total_filtered_cases,
         },
         {
             "title": "Causative variants",
-            "count": general_sliced_info["causative_cases"],
-            "percent": general_sliced_info["causative_cases"] / total_sliced_cases,
+            "count": filtered_cases_info["causative_cases"],
+            "percent": filtered_cases_info["causative_cases"] / total_filtered_cases,
         },
         {
             "title": "Pinned variants",
-            "count": general_sliced_info["pinned_cases"],
-            "percent": general_sliced_info["pinned_cases"] / total_sliced_cases,
+            "count": filtered_cases_info["pinned_cases"],
+            "percent": filtered_cases_info["pinned_cases"] / total_filtered_cases,
         },
         {
             "title": "Cohort tag",
-            "count": general_sliced_info["cohort_cases"],
-            "percent": general_sliced_info["cohort_cases"] / total_sliced_cases,
+            "count": filtered_cases_info["cohort_cases"],
+            "percent": filtered_cases_info["cohort_cases"] / total_filtered_cases,
         },
         {
             "title": "Case status tag",
-            "count": general_sliced_info["tagged_cases"],
-            "percent": general_sliced_info["tagged_cases"] / total_sliced_cases,
+            "count": filtered_cases_info["tagged_cases"],
+            "percent": filtered_cases_info["tagged_cases"] / total_filtered_cases,
         },
     ]
 
@@ -150,8 +128,8 @@ def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
         overview.append(
             {
                 "title": CASE_TAGS[stats_tag]["label"] + " status tag",
-                "count": general_sliced_info[stats_tag + "_cases"],
-                "percent": general_sliced_info[stats_tag + "_cases"] / total_sliced_cases,
+                "count": filtered_cases_info[stats_tag + "_cases"],
+                "percent": filtered_cases_info[stats_tag + "_cases"] / total_filtered_cases,
             }
         )
 
@@ -160,26 +138,10 @@ def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
     return data
 
 
-def get_general_case_info(adapter, institute_id=None, slice_query=None):
-    """Return general information about cases
-
-    Count e.g. cases with each kind of case tag, as well as cases that have phenotype, causatives or pinned variants
-    marked or are part of cohorts.
-
-    Gather pedigree information - single, duo, trio or many individuals in case.
-
-    Args:
-        adapter(adapter.MongoAdapter)
-        institute_id(str)
-        slice_query(str): Query to filter cases to obtain statistics for.
-
-    Returns:
-        general(dict)
-    """
-    general = {}
-
-    # Potentially sensitive slice queries are assumed allowed if we have got this far
-    name_query = slice_query
+def get_general_case_info(
+    adapter, institute_id: str = None, cases_form: ImmutableMultiDict = None
+) -> dict:
+    """Return general information about cases."""
 
     CASE_GENERAL_INFO_PROJECTION = {
         "phenotype_terms": 1,
@@ -189,77 +151,88 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
         "individuals": 1,
         "tags": 1,
     }
+
     cases = adapter.cases(
-        owner=institute_id, name_query=name_query, projection=CASE_GENERAL_INFO_PROJECTION
+        owner=institute_id, name_query=cases_form, projection=CASE_GENERAL_INFO_PROJECTION
     )
 
-    case_counter_keys = [
-        "phenotype",
-        "causative",
-        "pinned",
-        "cohort",
-        "tagged",
-    ]
-    case_counter_keys.extend(CASE_TAGS.keys())
+    # Initialize counters and structures
+    case_counter_keys = ["phenotype", "causative", "pinned", "cohort", "tagged"] + list(
+        CASE_TAGS.keys()
+    )
+    case_counter = initialize_case_counter(case_counter_keys)
+    pedigree = initialize_pedigree()
 
-    case_counter = {}
-    for counter in case_counter_keys:
-        case_counter[counter] = 0
+    case_ids: Set[str] = set()
+    total_cases = 0
 
-    pedigree = {
+    # Process each case
+    for total_cases, case in enumerate(cases, 1):
+        case_ids.add(case["_id"])
+        update_case_counters(case, case_counter, case_counter_keys)
+        update_pedigree(case, pedigree)
+
+    # Prepare general info dictionary
+    general = {
+        "total_cases": total_cases,
+        "pedigree": pedigree,
+        "case_ids": case_ids,
+        **{f"{key}_cases": count for key, count in case_counter.items()},
+    }
+
+    return general
+
+
+def initialize_case_counter(case_counter_keys) -> Dict[str, int]:
+    """Initialize the case counter dictionary with the given keys set to zero."""
+    return {key: 0 for key in case_counter_keys}
+
+
+def initialize_pedigree() -> Dict:
+    """Initialize the pedigree structure with counts set to zero."""
+    return {
         1: {"title": "Single", "count": 0},
         2: {"title": "Duo", "count": 0},
         3: {"title": "Trio", "count": 0},
         "many": {"title": "Many", "count": 0},
     }
 
-    case_ids = set()
 
-    total_cases = 0
-    for total_cases, case in enumerate(cases, 1):
-        case_ids.add(case["_id"])
-        if case.get("phenotype_terms"):
-            case_counter["phenotype"] += 1
-        if case.get("causatives"):
-            case_counter["causative"] += 1
-        if case.get("suspects"):
-            case_counter["pinned"] += 1
-        if case.get("cohorts"):
-            case_counter["cohort"] += 1
-        if case.get("tags"):
-            case_counter["tagged"] += 1
-            case_tags = case.get("tags")
-            for tag in case_tags:
+def update_case_counters(case: dict, case_counter: Dict[str, int], case_counter_keys):
+    """Update case counter based on the case's attributes."""
+    if case.get("phenotype_terms"):
+        case_counter["phenotype"] += 1
+    if case.get("causatives"):
+        case_counter["causative"] += 1
+    if case.get("suspects"):
+        case_counter["pinned"] += 1
+    if case.get("cohorts"):
+        case_counter["cohort"] += 1
+    if case.get("tags"):
+        case_counter["tagged"] += 1
+        for tag in case.get("tags", []):
+            if tag in case_counter_keys:  # Ensure tag is in the predefined keys
                 case_counter[tag] += 1
 
-        nr_individuals = len(case.get("individuals", []))
-        if nr_individuals == 0:
-            continue
-        if nr_individuals > 3:
-            pedigree["many"]["count"] += 1
-        else:
-            pedigree[nr_individuals]["count"] += 1
 
-    general["total_cases"] = total_cases
-    general["pedigree"] = pedigree
-    general["case_ids"] = case_ids
-    for counter in case_counter_keys:
-        general[counter + "_cases"] = case_counter[counter]
-
-    return general
+def update_pedigree(case: dict, pedigree: Dict):
+    """Update pedigree information based on the number of individuals in the case."""
+    nr_individuals = len(case.get("individuals", []))
+    if nr_individuals == 0:
+        return
+    if nr_individuals > 3:
+        pedigree["many"]["count"] += 1
+    else:
+        pedigree[nr_individuals]["count"] += 1
 
 
-def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
-    """Return the information about case groups
-
-    Args:
-        store(adapter.MongoAdapter)
-        total_cases(int): Total number of cases
-        slice_query(str): Query to filter cases to obtain statistics for.
-
-    Returns:
-        cases(dict):
-    """
+def get_case_groups(
+    adapter: MongoAdapter,
+    total_cases: int,
+    institute_id: str = None,
+    name_query: ImmutableMultiDict = None,
+) -> List[dict]:
+    """Return the information about case groups"""
     # Create a group with all cases in the database
     cases = [{"status": "all", "count": total_cases, "percent": 1}]
     # Group the cases based on their status
@@ -267,12 +240,12 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
     group = {"$group": {"_id": "$status", "count": {"$sum": 1}}}
 
     subquery = {}
-    if institute_id and slice_query:
-        subquery = adapter.cases(owner=institute_id, name_query=slice_query, yield_query=True)
+    if institute_id and name_query:
+        subquery = adapter.cases(owner=institute_id, name_query=name_query, yield_query=True)
     elif institute_id:
         subquery = adapter.cases(owner=institute_id, yield_query=True)
-    elif slice_query:
-        subquery = adapter.cases(name_query=slice_query, yield_query=True)
+    elif name_query:
+        subquery = adapter.cases(name_query=name_query, yield_query=True)
 
     query = {"$match": subquery} if subquery else {}
 
@@ -294,28 +267,18 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
     return cases
 
 
-def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None):
-    """Return information about analysis types.
-        Group cases based on analysis type for the individuals.
-    Args:
-        adapter(adapter.MongoAdapter)
-        total_cases(int): Total number of cases
-        institute_id(str)
-        slice_query(str): Query to filter cases to obtain statistics for.
-    Returns:
-        analysis_types array of hashes with name: analysis_type(str), count: count(int)
-
-    """
-    # Group cases based on analysis type of the individuals
-    query = {}
+def get_analysis_types(
+    adapter: MongoAdapter, institute_id: str = None, name_query: ImmutableMultiDict = None
+) -> List[dict]:
+    """Group cases based on analysis type of the individuals."""
 
     subquery = {}
-    if institute_id and slice_query:
-        subquery = adapter.cases(owner=institute_id, name_query=slice_query, yield_query=True)
+    if institute_id and name_query:
+        subquery = adapter.cases(owner=institute_id, name_query=name_query, yield_query=True)
     elif institute_id:
         subquery = adapter.cases(owner=institute_id, yield_query=True)
-    elif slice_query:
-        subquery = adapter.cases(name_query=slice_query, yield_query=True)
+    elif name_query:
+        subquery = adapter.cases(name_query=name_query, yield_query=True)
 
     query = {"$match": subquery}
 
