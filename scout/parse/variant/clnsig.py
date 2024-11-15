@@ -100,10 +100,7 @@ def is_pathogenic(variant):
         bool: If variant should be loaded based on clinvar or not
     """
 
-    quick_load_categories = {
-        "pathogenic",
-        "conflicting_"
-    }
+    quick_load_categories = {"pathogenic", "conflicting_"}
 
     # check if VEP-annotated field contains clinvar pathogenicity info
     vep_info = variant.INFO.get("CSQ")
