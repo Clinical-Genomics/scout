@@ -30,10 +30,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tracks missing alignment files are skipped on generating IGV views
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
-- STRs variants export
+- STRs variants export (do not allow null estimated variant size and repeat locus ID)
 - ClinVar submission enquiry status for all submissions after the latest
 - Typing error when running commands using python 3.9
-
 
 ## [4.90.1]
 ### Fixed
