@@ -457,7 +457,7 @@ def iarctp53(hgnc_symbol):
 ############# Variant links ####################
 
 
-def get_variant_links(institute_obj: dict, variant_obj: dict, case_obj: dict, build: int = None):
+def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None):
     """Return links for a variant object
 
     Args:
@@ -634,9 +634,9 @@ def swegen_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def franklin_link(variant_obj, case_obj, build=37):
+def franklin_link(variant_obj: dict, build: int = 37):
     """Compose link to Franklin Variant Frequency Database."""
-    if case_obj["track"] == "cancer":
+    if variant_obj["category"] in ["cancer", "cancer_sv"]:
         url_template = (
             "https://franklin.genoox.com/clinical-db/variant/snpTumor/chr{this[chromosome]}-"
             "{this[position]}-{this[reference]}-{this[alternative]}"
