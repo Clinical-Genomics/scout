@@ -61,6 +61,7 @@ class PanelAppClient:
         while json_panels["next"] is not None:
             json_panels = self.get_panels(signed_off=signed_off, page=self.panels_page)
             get_ids(json_panels=json_panels)
+            self.set_panel_types(json_panels=json_panels)
 
         return panel_ids
 
