@@ -17,7 +17,7 @@ class PanelAppClient:
 
     def get_panel_types(self) -> list:
         """Returns available panel types, collected from processed panels"""
-        return list(self.panel_types).sort()
+        return sorted(list(self.panel_types))
 
     def get_panels(self, page: int, signed_off: bool = False) -> Optional[dict]:
         """Return a dictionary {panel_id: Panelapp.Panel} with all panels, signed off or not."""
