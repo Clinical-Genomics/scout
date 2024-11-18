@@ -17,7 +17,7 @@ class PanelAppClient:
 
     def get_panel_types(self) -> list:
         """Returns available panel types, collected from processed panels"""
-        return list(self.panel_types)
+        return list(self.panel_types).sort()
 
     def get_panels(self, page: int, signed_off: bool = False) -> Optional[dict]:
         """Return a dictionary {panel_id: Panelapp.Panel} with all panels, signed off or not."""
@@ -64,7 +64,7 @@ class PanelAppClient:
 
         return panel_ids
 
-    def get_panel(self, panel_id: str):
+    def get_panel(self, panel_id: str) -> dict:
         """Retrieve a gene_panel. Apply filters on panel type, if available."""
         panel_url = f"{API_PANELS_URL}{panel_id}"
         resp = requests.get(panel_url, headers={"Content-Type": "application/json"})
