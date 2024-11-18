@@ -11,9 +11,9 @@ EXPORT_PANEL_FIELDS = [
 ]
 
 PANELAPP_CONFIDENCE_EXCLUDE = {
-    "green": ["1", "2"],
-    "amber": ["1"],
-    "red": [],
+    "green": ["0", "1", "2"],
+    "amber": ["0", "1"],
+    "red": ["0"],
 }
 
 PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS = [
