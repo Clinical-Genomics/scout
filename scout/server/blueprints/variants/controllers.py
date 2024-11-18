@@ -953,7 +953,8 @@ def get_str_mc(variant_obj: dict) -> Union[int, str]:
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
-    if variant_obj["alternative"] == ".":
+    alt_mc = variant_obj["alternative"]
+    if alt_mc == ".":
         return alt_mc
 
     for sample in variant_obj["samples"]:
