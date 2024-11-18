@@ -6,6 +6,7 @@ from typing import Dict, List, Set
 from click import Abort, progressbar
 
 from scout.adapter import MongoAdapter
+from scout.constants.panels import PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
 from scout.parse.panelapp import parse_panelapp_panel
 from scout.server.extensions import panelapp
 
@@ -84,7 +85,7 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     def parse_types_filter(types_filter: str, available_types: List[str]) -> List[str]:
         """Translate panel type input from users to panel type slugs."""
         if not types_filter:
-            return available_types
+            return PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
         index_list = [int(typeint) - 1 for typeint in types_filter.replace(" ", "").split(",")]
         return [available_types[i] for i in index_list]
 
@@ -107,7 +108,7 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     for number, type in enumerate(available_types, 1):
         LOG.info(f"{number}: {type}")
     types_filter: str = input(
-        "Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use all types):  "
+        f"Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use the following types:{PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS}):  "
     )
     types_filter: List[str] = parse_types_filter(
         types_filter=types_filter, available_types=available_types

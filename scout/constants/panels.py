@@ -15,3 +15,13 @@ PANELAPP_CONFIDENCE_EXCLUDE = {
     "amber": ["1"],
     "red": [],
 }
+
+PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS = [
+    "cancer-germline-100k",
+    "clingen-curated-genes",
+    "gms-cancer-germline-virtual",
+    "gms-rare-disease",
+    "gms-rare-disease-virtual",
+    "gms-signed-off",
+    "rare-disease-100k",
+]
