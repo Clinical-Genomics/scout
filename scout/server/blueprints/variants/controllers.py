@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from flask import Response, flash, session, url_for
 from flask_login import current_user
@@ -948,12 +948,11 @@ def parse_variant(
     return variant_obj
 
 
-def get_str_mc(variant_obj: dict) -> Optional[int]:
+def get_str_mc(variant_obj: dict) -> Union[int, str]:
     """Return variant Short Tandem Repeat motif count, either as given by its ALT MC value
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
-    alt_mc = None
     if variant_obj["alternative"] == ".":
         return alt_mc
 
