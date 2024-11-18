@@ -1004,11 +1004,11 @@ def download_str_variants(case_obj, variant_objs):
     for variant in variant_objs.limit(EXPORTED_VARIANTS_LIMIT):
         variant_line = []
         variant_line.append(str(variant.get("variant_rank", "")))  # index
-        variant_line.append(variant.get("str_repid"))  # Repeat locus
+        variant_line.append(variant.get("str_repid", ""))  # Repeat locus
         variant_line.append(
             variant.get("str_display_ru", variant.get("str_ru", ""))
         )  # Reference repeat unit
-        variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
+        variant_line.append(str(get_str_mc(variant)))  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))  # Status
         gt_cell = ""
