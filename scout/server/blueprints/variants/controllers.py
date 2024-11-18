@@ -969,7 +969,7 @@ def get_str_mc(variant_obj: dict) -> Union[int, str]:
         alt_mc = int(alt_num.group())
         return alt_mc
 
-    return None
+    return ""
 
 
 def download_str_variants(case_obj, variant_objs):
