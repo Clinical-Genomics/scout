@@ -107,8 +107,11 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     available_types: List[str] = panelapp.get_panel_types()
     for number, type in enumerate(available_types, 1):
         LOG.info(f"{number}: {type}")
+    preselected_options_idx: List[str] = [
+        str(available_types.index(presel) + 1) for presel in PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
+    ]
     types_filter: str = input(
-        f"Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use the following types:{PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS}):  "
+        f"Please provide a comma-separated list of types you'd like to use to build your panel (leave blank to use the following types:{', '.join(preselected_options_idx)}):  "
     )
     types_filter: List[str] = parse_types_filter(
         types_filter=types_filter, available_types=available_types
