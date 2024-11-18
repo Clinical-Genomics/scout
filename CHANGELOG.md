@@ -32,8 +32,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer SV variantS page spinner on variant export
 - STRs variants export
 - ClinVar submission enquiry status for all submissions after the latest
+- Typing error when running commands using python 3.9
 - Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
-
 
 ## [4.90.1]
 ### Fixed
