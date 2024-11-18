@@ -64,7 +64,7 @@ class PanelAppClient:
 
         return panel_ids
 
-    def get_panel(self, panel_id: str) -> dict:
+    def get_panel(self, panel_id: str) -> Optional[dict]:
         """Retrieve a gene_panel. Apply filters on panel type, if available."""
         panel_url = f"{API_PANELS_URL}{panel_id}"
         resp = requests.get(panel_url, headers={"Content-Type": "application/json"})
