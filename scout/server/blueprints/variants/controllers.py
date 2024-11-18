@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from flask import Response, flash, session, url_for
 from flask_login import current_user
@@ -948,13 +948,13 @@ def parse_variant(
     return variant_obj
 
 
-def get_str_mc(variant_obj: dict) -> Optional[int]:
+def get_str_mc(variant_obj: dict) -> Union[int, str]:
     """Return variant Short Tandem Repeat motif count, either as given by its ALT MC value
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
-    alt_mc = None
-    if variant_obj["alternative"] == ".":
+    alt_mc = variant_obj["alternative"]
+    if alt_mc == ".":
         return alt_mc
 
     for sample in variant_obj["samples"]:
@@ -969,7 +969,7 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
         alt_mc = int(alt_num.group())
         return alt_mc
 
-    return None
+    return ""
 
 
 def download_str_variants(case_obj, variant_objs):
@@ -1004,11 +1004,11 @@ def download_str_variants(case_obj, variant_objs):
     for variant in variant_objs.limit(EXPORTED_VARIANTS_LIMIT):
         variant_line = []
         variant_line.append(str(variant.get("variant_rank", "")))  # index
-        variant_line.append(variant.get("str_repid"))  # Repeat locus
+        variant_line.append(variant.get("str_repid", ""))  # Repeat locus
         variant_line.append(
             variant.get("str_display_ru", variant.get("str_ru", ""))
         )  # Reference repeat unit
-        variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
+        variant_line.append(str(get_str_mc(variant)))  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))  # Status
         gt_cell = ""
