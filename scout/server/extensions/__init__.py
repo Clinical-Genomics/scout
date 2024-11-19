@@ -18,6 +18,7 @@ from .ldap_extension import LdapManager
 from .loqus_extension import LoqusDB
 from .matchmaker_extension import MatchMaker
 from .mongo_extension import MongoDB
+from .panelapp_extension import PanelAppClient
 from .phenopacket_extension import PhenopacketAPI
 from .rerunner_extension import RerunnerError, RerunnerService
 
@@ -39,3 +40,4 @@ config_igv_tracks = AlignTrackHandler()
 bionano_access = BioNanoAccessAPI()
 chanjo_report = ChanjoReport()
 chanjo2 = Chanjo2Client()
+panelapp = PanelAppClient()
