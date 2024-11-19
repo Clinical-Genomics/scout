@@ -5,7 +5,10 @@ BASE_PATH = "scout.demo"
 ###### Paths ######
 # Panel paths
 panel_path = str(files(BASE_PATH).joinpath("panel_1.txt"))
-panelapp_panel_path = str(files(BASE_PATH).joinpath("panelapp_test_panel.json"))
+
+# PanelApp json files
+panelapp_panels_reduced_path = str(files(BASE_PATH).joinpath("panelapp_panels_reduced.json"))
+panelapp_panel_path = str(files(BASE_PATH).joinpath("panelapp_panel.json"))
 
 # Case paths
 ped_path = str(files(BASE_PATH).joinpath("643594.ped"))

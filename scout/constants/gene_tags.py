@@ -84,12 +84,6 @@ UPDATE_GENES_RESOURCES = {
     ],
 }
 
-PANELAPP_CONFIDENCE_EXCLUDE = {
-    "green": ["ModerateEvidence", "LowEvidence"],
-    "amber": ["LowEvidence"],
-    "red": [],
-}
-
 GNOMAD_CONSTRAINT_FILENAME = "gnomad.v4.0.constraint_metrics.tsv"
 
 GENE_CONSTRAINT_LABELS = {
