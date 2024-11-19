@@ -38,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STRs variants page when one or more variants have Swegen mean frequency but lack Short Tandem Repeat motif count
 - ClinVar submission enquiry status for all submissions after the latest
 - Typing error when running commands using python 3.9
+- Refactored and fixed the function creating alignment files (scout.utils.case_append_alignments)
 
 ## [4.90.1]
 ### Fixed
