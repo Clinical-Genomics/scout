@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Names on IGV buttons, including an overview level IGV MT button
 - Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 - Refactor the loading of PanelApp panels to use the maintained API - Customised PanelApp GREEN panels
+- Better layout for Consequence cell on cancer SNVs page
 - Improved tooltips for ClinVar filter in SNVs filter form
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
