@@ -355,7 +355,7 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     return tx_obj
 
 
-##  Transcript links
+# Transcript links
 def refseq(refseq_id):
     link = "http://www.ncbi.nlm.nih.gov/nuccore/{}"
     if not refseq_id:
@@ -480,6 +480,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         swegen_link=swegen_link(variant_obj),
         cosmic_links=cosmic_links(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
+        franklin_link=franklin_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
@@ -630,6 +631,23 @@ def swegen_link(variant_obj):
         "https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
         "{this[position]}-{this[reference]}-{this[alternative]}"
     )
+    return url_template.format(this=variant_obj)
+
+
+def franklin_link(variant_obj: dict, build: int = 37):
+    """Compose link to Franklin Variant Frequency Database."""
+    if variant_obj["category"] in ["cancer", "cancer_sv"]:
+        url_template = (
+            "https://franklin.genoox.com/clinical-db/variant/snpTumor/chr{this[chromosome]}-"
+            "{this[position]}-{this[reference]}-{this[alternative]}"
+        )
+    else:
+        url_template = (
+            "https://franklin.genoox.com/clinical-db/variant/snp/chr{this[chromosome]}-"
+            "{this[position]}-{this[reference]}-{this[alternative]}"
+        )
+    if build == 38:
+        url_template += "-hg38"
     return url_template.format(this=variant_obj)
 
 
