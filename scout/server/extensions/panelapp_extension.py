@@ -14,6 +14,7 @@ class PanelAppClient:
     def __init__(self):
         self.panels_page = 1
         self.panel_types = set()
+        self.panel_ids = []
 
     def get_panel_types(self) -> list:
         """Returns available panel types, collected from processed panels"""
@@ -43,12 +44,10 @@ class PanelAppClient:
     def get_panel_ids(self, signed_off: bool) -> list[int]:
         """Returns a list of panel ids contained in a json document with gene panels data."""
 
-        panel_ids = []
-
         def get_ids(json_panels):
             LOG.info(f"Retrieving IDs from API page {self.panels_page}")
             for panel in json_panels.get("results", []):
-                panel_ids.append(panel["id"])
+                self.panel_ids.append(panel["id"])
             self.panels_page += 1
 
         json_panels: dict = self.get_panels(
@@ -63,7 +62,7 @@ class PanelAppClient:
             get_ids(json_panels=json_panels)
             self.set_panel_types(json_panels=json_panels)
 
-        return panel_ids
+        return self.panel_ids
 
     def get_panel(self, panel_id: str) -> Optional[dict]:
         """Retrieve a gene_panel. Apply filters on panel type, if available."""
