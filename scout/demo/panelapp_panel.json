@@ -1,0 +1,463 @@
+{
+  "id": 522,
+  "hash_id": null,
+  "name": "Familial melanoma",
+  "disease_group": "",
+  "disease_sub_group": "",
+  "status": "public",
+  "version": "2.4",
+  "version_created": "2024-01-09T11:31:08.965539Z",
+  "relevant_disorders": [
+    "R254"
+  ],
+  "stats": {
+    "number_of_genes": 8,
+    "number_of_strs": 0,
+    "number_of_regions": 0
+  },
+  "types": [
+    {
+      "name": "GMS Rare Disease",
+      "slug": "gms-rare-disease",
+      "description": "This panel type is used for GMS panels that are not virtual (i.e. could be a wet lab test)"
+    },
+    {
+      "name": "GMS signed-off",
+      "slug": "gms-signed-off",
+      "description": "This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS."
+    }
+  ],
+  "genes": [
+    {
+      "gene_data": {
+        "alias": [
+          "hucep-6",
+          "KIAA0272",
+          "UCHL2"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:950",
+        "gene_name": "BRCA1 associated protein 1",
+        "omim_gene": [
+          "603089"
+        ],
+        "alias_name": [
+          "ubiquitin carboxy-terminal hydrolase"
+        ],
+        "gene_symbol": "BAP1",
+        "hgnc_symbol": "BAP1",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "3:52435029-52444366",
+              "ensembl_id": "ENSG00000163930"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "3:52401013-52410350",
+              "ensembl_id": "ENSG00000163930"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "1998-09-17"
+      },
+      "entity_type": "gene",
+      "entity_name": "BAP1",
+      "confidence_level": "3",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Green",
+        "NHS GMS",
+        "Expert List"
+      ],
+      "phenotypes": [
+        "Tumor predisposition syndrome 1, OMIM:614327",
+        "{Uveal melanoma, susceptibility to, 2}, OMIM:606661"
+      ],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "PSK-J3"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:1773",
+        "gene_name": "cyclin dependent kinase 4",
+        "omim_gene": [
+          "123829"
+        ],
+        "alias_name": null,
+        "gene_symbol": "CDK4",
+        "hgnc_symbol": "CDK4",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "12:58141510-58149796",
+              "ensembl_id": "ENSG00000135446"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "12:57747727-57756013",
+              "ensembl_id": "ENSG00000135446"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "1993-07-28"
+      },
+      "entity_type": "gene",
+      "entity_name": "CDK4",
+      "confidence_level": "3",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Green",
+        "NHS GMS",
+        "Expert List"
+      ],
+      "phenotypes": [],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "CDK4I",
+          "p16",
+          "INK4a",
+          "MTS1",
+          "CMM2",
+          "ARF",
+          "p19",
+          "p14",
+          "INK4",
+          "p16INK4a",
+          "p19Arf",
+          "p14ARF"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:1787",
+        "gene_name": "cyclin dependent kinase inhibitor 2A",
+        "omim_gene": [
+          "600160"
+        ],
+        "alias_name": null,
+        "gene_symbol": "CDKN2A",
+        "hgnc_symbol": "CDKN2A",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "9:21967751-21995300",
+              "ensembl_id": "ENSG00000147889"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "9:21967753-21995301",
+              "ensembl_id": "ENSG00000147889"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "1994-05-19"
+      },
+      "entity_type": "gene",
+      "entity_name": "CDKN2A",
+      "confidence_level": "3",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Green",
+        "NHS GMS",
+        "Expert List"
+      ],
+      "phenotypes": [
+        "{Melanoma, cutaneous malignant, 2}, OMIM:155601",
+        "{Melanoma and neural system tumor syndrome}, OMIM:155755",
+        "{Melanoma-pancreatic cancer syndrome}, OMIM:606719"
+      ],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "hPot1",
+          "DKFZp586D211"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:17284",
+        "gene_name": "protection of telomeres 1",
+        "omim_gene": [
+          "606478"
+        ],
+        "alias_name": null,
+        "gene_symbol": "POT1",
+        "hgnc_symbol": "POT1",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "7:124462440-124570037",
+              "ensembl_id": "ENSG00000128513"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "7:124822386-124929983",
+              "ensembl_id": "ENSG00000128513"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "2004-08-20"
+      },
+      "entity_type": "gene",
+      "entity_name": "POT1",
+      "confidence_level": "3",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [
+        "24686849",
+        "24686846",
+        "29523635",
+        "30451293",
+        "30586141",
+        "32325837",
+        "32907878"
+      ],
+      "evidence": [
+        "Expert Review Green",
+        "NHS GMS",
+        "Expert List"
+      ],
+      "phenotypes": [
+        "Melanoma, cutaneous malignant, susceptibility to, 10, OMIM:615848"
+      ],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "Ptop",
+          "Pip1",
+          "Tpp1",
+          "Tint1"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:25070",
+        "gene_name": "ACD, shelterin complex subunit and telomerase recruitment factor",
+        "omim_gene": [
+          "609377"
+        ],
+        "alias_name": [
+          "TIN2 interacting protein 1",
+          "POT1 and TIN2 organizing protein"
+        ],
+        "gene_symbol": "ACD",
+        "hgnc_symbol": "ACD",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "16:67691415-67694713",
+              "ensembl_id": "ENSG00000102977"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "16:67657512-67660815",
+              "ensembl_id": "ENSG00000102977"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "2005-01-04"
+      },
+      "entity_type": "gene",
+      "entity_name": "ACD",
+      "confidence_level": "2",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Amber",
+        "NHS GMS"
+      ],
+      "phenotypes": [],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "FAD",
+          "FAD1",
+          "BRCC2",
+          "XRCC11"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:1101",
+        "gene_name": "BRCA2, DNA repair associated",
+        "omim_gene": [
+          "600185"
+        ],
+        "alias_name": [
+          "BRCA1/BRCA2-containing complex, subunit 2"
+        ],
+        "gene_symbol": "BRCA2",
+        "hgnc_symbol": "BRCA2",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "13:32889611-32973805",
+              "ensembl_id": "ENSG00000139618"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "13:32315474-32400266",
+              "ensembl_id": "ENSG00000139618"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "1994-10-17"
+      },
+      "entity_type": "gene",
+      "entity_name": "BRCA2",
+      "confidence_level": "2",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Amber",
+        "NHS GMS"
+      ],
+      "phenotypes": [],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "RAP1"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:19246",
+        "gene_name": "TERF2 interacting protein",
+        "omim_gene": [
+          "605061"
+        ],
+        "alias_name": null,
+        "gene_symbol": "TERF2IP",
+        "hgnc_symbol": "TERF2IP",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "16:75681684-75795770",
+              "ensembl_id": "ENSG00000166848"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "16:75647786-75761872",
+              "ensembl_id": "ENSG00000166848"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "2002-09-18"
+      },
+      "entity_type": "gene",
+      "entity_name": "TERF2IP",
+      "confidence_level": "2",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [],
+      "evidence": [
+        "Expert Review Amber",
+        "NHS GMS"
+      ],
+      "phenotypes": [],
+      "mode_of_inheritance": "",
+      "tags": [],
+      "transcript": null
+    },
+    {
+      "gene_data": {
+        "alias": [
+          "TRT",
+          "TP2",
+          "TCS1",
+          "hEST2",
+          "EST2"
+        ],
+        "biotype": "protein_coding",
+        "hgnc_id": "HGNC:11730",
+        "gene_name": "telomerase reverse transcriptase",
+        "omim_gene": [
+          "187270"
+        ],
+        "alias_name": null,
+        "gene_symbol": "TERT",
+        "hgnc_symbol": "TERT",
+        "hgnc_release": "2017-11-03",
+        "ensembl_genes": {
+          "GRch37": {
+            "82": {
+              "location": "5:1253262-1295184",
+              "ensembl_id": "ENSG00000164362"
+            }
+          },
+          "GRch38": {
+            "90": {
+              "location": "5:1253147-1295069",
+              "ensembl_id": "ENSG00000164362"
+            }
+          }
+        },
+        "hgnc_date_symbol_changed": "1998-01-21"
+      },
+      "entity_type": "gene",
+      "entity_name": "TERT",
+      "confidence_level": "2",
+      "penetrance": null,
+      "mode_of_pathogenicity": "",
+      "publications": [
+        "23348503",
+        "23348506",
+        "35912549"
+      ],
+      "evidence": [
+        "Expert Review Amber",
+        "NHS GMS",
+        "Expert List"
+      ],
+      "phenotypes": [
+        "{Melanoma, cutaneous malignant, 9}, OMIM:615134"
+      ],
+      "mode_of_inheritance": "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown",
+      "tags": [
+        "watchlist"
+      ],
+      "transcript": null
+    }
+  ],
+  "strs": [],
+  "regions": []
+}
