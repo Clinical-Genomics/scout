@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
 {% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
@@ -63,7 +63,7 @@
               <th title="Population frequency">Pop Freq</th>
               <th title="Observed" style="width:7%">Observed</th>
               <th title="Variant type">Type</th>
-              <th title="Variant type">Callers</th>
+              <th title="Callers">Callers</th>
               <th title="Functional consequence annotation" style="width:18%">Consequence</th>
               <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
               <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
@@ -119,11 +119,7 @@
             <td>{{ observed_cell_general(variant) }}</td>
             <td>{{ variant.sub_category }}</td>
             <td>{{ callers_cell(variant.callers) }}</td>
-            <td>
-              {% for annotation in variant.functional_annotations %}
-                <div>{{ annotation }}</div>
-              {% endfor %}
-            </td>
+            <td>{{ variant_funct_anno_cell(variant) }}</td>
             <td>{{ allele_cell(variant.tumor or {}) }}</td>
             <td>{{ allele_cell(variant.normal or {}) }}</td>
           </tr>
