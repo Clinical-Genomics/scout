@@ -50,7 +50,6 @@
 
 
 {% macro callers_cell(variant) %}
-  {{variant.callers}}
   {% for name, caller in variant.callers %}
       <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
         {{ name }}
