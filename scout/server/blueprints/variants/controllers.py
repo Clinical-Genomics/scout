@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from flask import Response, flash, session, url_for
 from flask_login import current_user
