@@ -948,13 +948,13 @@ def parse_variant(
     return variant_obj
 
 
-def get_str_mc(variant_obj: dict) -> Union[int, str]:
+def get_str_mc(variant_obj: dict) -> Optional[int]:
     """Return variant Short Tandem Repeat motif count, either as given by its ALT MC value
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
-    alt_mc = variant_obj["alternative"]
-    if alt_mc == ".":
+    alt_mc = None
+    if variant_obj["alternative"] == ".":
         return alt_mc
 
     for sample in variant_obj["samples"]:
@@ -968,8 +968,6 @@ def get_str_mc(variant_obj: dict) -> Union[int, str]:
     if alt_num:
         alt_mc = int(alt_num.group())
         return alt_mc
-
-    return ""
 
 
 def download_str_variants(case_obj, variant_objs):
@@ -1008,7 +1006,7 @@ def download_str_variants(case_obj, variant_objs):
         variant_line.append(
             variant.get("str_display_ru", variant.get("str_ru", ""))
         )  # Reference repeat unit
-        variant_line.append(str(get_str_mc(variant)))  # Estimated size
+        variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))  # Status
         gt_cell = ""
