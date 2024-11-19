@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
 - STRs variants export (do not allow null estimated variant size and repeat locus ID)
+- STRs variants page when one or more variants have Swegen mean frequency but lack Short Tandem Repeat motif count
 - ClinVar submission enquiry status for all submissions after the latest
 - Typing error when running commands using python 3.9
 - Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
