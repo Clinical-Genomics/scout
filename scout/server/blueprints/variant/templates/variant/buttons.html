@@ -5,7 +5,7 @@
     <a class="btn btn-sm btn-info text-white me-1 mb-1" role="link" href="{{ variant.franklin_link }}" rel="noreferrer noopener" target="_blank">Franklin</a>
   {% if variant.cosmic_links %} <!-- This is a list of tuples : [(id1, link1), (id2, link2), ..] -->
     {% for cosmic_link in variant.cosmic_links %}
-      <a data-bs-toggle="tooltip" title="COSMIC" class="btn btn-sm btn-info text-white me-1 mb-1" role="button" rel="noreferrer noopener" href="{{cosmic_link[1]}}" target="_blank">{{cosmic_link[0]}}</a>
+      <a data-bs-toggle="tooltip" title="COSMIC" class="btn btn-sm btn-info text-white me-1 mb-1" role="link" rel="noreferrer noopener" href="{{cosmic_link[1]}}" target="_blank">{{cosmic_link[0]}}</a>
     {% endfor %}
   {% endif %}
   {% if variant.dbsnp_id %}
