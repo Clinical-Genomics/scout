@@ -188,7 +188,7 @@
       <tr><td colspan=2>&nbsp;</td></tr>
       {% if variant.str_swegen_mean %}
         <tr><td>SweGen Z-score</td><td>
-          {% if variant.str_mc %}
+          {% if variant.str_mc and not variant.str_mc|int in ('','.') %}
             {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
           {% endif %}
         </td></tr>
