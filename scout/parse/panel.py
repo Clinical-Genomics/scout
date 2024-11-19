@@ -2,15 +2,9 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List
 
-from scout.constants import (
-    INCOMPLETE_PENETRANCE_MAP,
-    MODELS_MAP,
-    PANEL_GENE_INFO_MODELS,
-    PANEL_GENE_INFO_TRANSCRIPTS,
-    PANELAPP_CONFIDENCE_EXCLUDE,
-)
+from scout.constants import PANEL_GENE_INFO_MODELS, PANEL_GENE_INFO_TRANSCRIPTS
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 
@@ -262,114 +256,6 @@ def parse_gene_panel(
     else:
         panel_handle = get_file_handle(gene_panel["path"])
     gene_panel["genes"] = parse_genes(gene_lines=panel_handle)
-
-    return gene_panel
-
-
-def parse_panel_app_gene(
-    app_gene: dict,
-    ensembl_gene_hgnc_id_map: Dict[str, int],
-    hgnc_symbol_ensembl_gene_map: Dict[str, str],
-    confidence: str,
-) -> dict:
-    """Parse a panel app-formatted gene."""
-
-    gene_info = {}
-    confidence_level = app_gene["LevelOfConfidence"]
-    # Return empty gene if not confident gene
-    if confidence_level in PANELAPP_CONFIDENCE_EXCLUDE[confidence]:
-        return gene_info
-
-    hgnc_symbol = app_gene["GeneSymbol"]
-
-    ensembl_ids = app_gene["EnsembleGeneIds"]
-
-    if not ensembl_ids:  # This gene is probably tagged as ensembl_ids_known_missing on PanelApp
-        if hgnc_symbol in hgnc_symbol_ensembl_gene_map:
-            LOG.warning(
-                f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs. Using Ensembl IDs from internal gene collection instead."
-            )
-            ensembl_ids = [hgnc_symbol_ensembl_gene_map[hgnc_symbol]]
-        else:
-            LOG.warning(
-                f"PanelApp gene {hgnc_symbol} does not contain Ensembl IDs and gene symbol does not correspond to a gene in scout."
-            )
-
-    hgnc_ids = set(
-        ensembl_gene_hgnc_id_map.get(ensembl_id)
-        for ensembl_id in ensembl_ids
-        if ensembl_gene_hgnc_id_map.get(ensembl_id)
-    )
-    if not hgnc_ids:
-        LOG.warning("Gene %s does not exist in database. Skipping gene...", hgnc_symbol)
-        return gene_info
-
-    if len(hgnc_ids) > 1:
-        LOG.warning("Gene %s has unclear identifier. Choose random id", hgnc_symbol)
-
-    gene_info["hgnc_symbol"] = hgnc_symbol
-    for hgnc_id in hgnc_ids:
-        gene_info["hgnc_id"] = hgnc_id
-
-    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(app_gene["Penetrance"])
-
-    inheritance_models = []
-    for model in MODELS_MAP.get(app_gene["ModeOfInheritance"], []):
-        inheritance_models.append(model)
-
-    gene_info["inheritance_models"] = inheritance_models
-
-    return gene_info
-
-
-def parse_panel_app_panel(
-    panel_info: dict,
-    ensembl_gene_hgnc_id_map: Dict[str, int],
-    hgnc_symbol_ensembl_gene_map: Dict[str, str],
-    institute: Optional[str] = "cust000",
-    panel_type: Optional[str] = "clinical",
-    confidence: Optional[str] = "green",
-) -> dict:
-    """Parse a PanelApp panel
-
-    Args:
-        panel_info(dict)
-        hgnc_map(dict): Map from symbol to hgnc ids
-        institute(str)
-        panel_type(str)
-        confidence(str): enum green|amber|red
-
-    Returns:
-        gene_panel(dict)
-    """
-    date_format = "%Y-%m-%dT%H:%M:%S.%f"
-
-    gene_panel = {}
-    gene_panel["version"] = float(panel_info["version"])
-    gene_panel["date"] = get_date(panel_info["Created"][:-1], date_format=date_format)
-    gene_panel["display_name"] = " - ".join(
-        [panel_info["SpecificDiseaseName"], f"[{confidence.upper()}]"]
-    )
-    gene_panel["institute"] = institute
-    gene_panel["panel_type"] = panel_type
-
-    LOG.info("Parsing panel %s", gene_panel["display_name"])
-
-    gene_panel["genes"] = []
-
-    nr_excluded = 0
-    nr_genes = 0
-    for nr_genes, gene in enumerate(panel_info["Genes"], 1):
-        gene_info = parse_panel_app_gene(
-            gene, ensembl_gene_hgnc_id_map, hgnc_symbol_ensembl_gene_map, confidence
-        )
-        if not gene_info:
-            nr_excluded += 1
-            continue
-        gene_panel["genes"].append(gene_info)
-
-    LOG.info("Number of genes in panel %s", nr_genes)
-    LOG.info("Number of genes exluded due to confidence threshold: %s", nr_excluded)
 
     return gene_panel
 

@@ -5,7 +5,8 @@ import logging
 import click
 from flask.cli import current_app, with_appcontext
 
-from scout.load.panel import load_omim_panel, load_panel, load_panelapp_panel
+from scout.load.panel import load_omim_panel, load_panel
+from scout.load.panelapp import load_panelapp_panel
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

@@ -1,0 +1,37 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+		"id": 522,
+		"hash_id": null,
+		"name": "Familial melanoma",
+		"disease_group": "",
+		"disease_sub_group": "",
+		"status": "public",
+		"version": "2.4",
+		"version_created": "2024-01-09T11:31:08.965539Z",
+		"relevant_disorders": [
+			"R254"
+		],
+		"stats": {
+			"number_of_genes": 8,
+			"number_of_strs": 0,
+			"number_of_regions": 0
+		},
+		"types": [
+			{
+				"name": "GMS Rare Disease",
+				"slug": "gms-rare-disease",
+				"description": "This panel type is used for GMS panels that are not virtual (i.e. could be a wet lab test)"
+			},
+			{
+				"name": "GMS signed-off",
+				"slug": "gms-signed-off",
+				"description": "This panel has undergone review by a NHSE GMS disease specialist group and processes to be signed-off for use within the GMS."
+			}
+		]
+	}
+  ]
+}
