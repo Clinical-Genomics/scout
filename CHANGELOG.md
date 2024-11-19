@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Jarvik for PP1 added to ACMG modification guidelines
 - Display institute _id + display name on dashboard filters
 - ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
+- Simplify always loading ClinVar CLNSIG P, LP and conflicting annotations slightly
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
 - Names on IGV buttons, including an overview level IGV MT button
 - Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
@@ -30,9 +31,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tracks missing alignment files are skipped on generating IGV views
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
-- STRs variants export
+- STRs variants export (do not allow null estimated variant size and repeat locus ID)
 - ClinVar submission enquiry status for all submissions after the latest
-
+- Typing error when running commands using python 3.9
 
 ## [4.90.1]
 ### Fixed

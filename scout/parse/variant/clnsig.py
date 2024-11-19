@@ -1,9 +1,14 @@
 import logging
+from typing import Dict, List, Optional, Union
+
+import cyvcf2
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_clnsig(variant, transcripts=None):
+def parse_clnsig(
+    variant: cyvcf2.Variant, transcripts: Optional[dict] = None
+) -> List[Dict[str, Union[str, int]]]:
     """Get the clnsig information
 
     The clinvar format has changed several times and this function will try to parse all of them.
@@ -15,12 +20,7 @@ def parse_clnsig(variant, transcripts=None):
     sometimes with CLNVID.
     This function parses also Clinvar annotations performed by VEP (CSQ field, parsed transcripts required)
 
-    Args:
-        variant(cyvcf2.Variant)
-        transcripts(iterable(dict))
-
-    Returns:
-        clnsig_accsessions(list(dict)): A list with clnsig accessions
+    Returns a list with clnsig accessions
     """
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
@@ -87,32 +87,41 @@ def parse_clnsig(variant, transcripts=None):
     return clnsig_accessions
 
 
-def is_pathogenic(variant):
+def is_pathogenic(variant: cyvcf2.Variant):
     """Check if a variant has the clinical significance to be loaded
 
     We want to load all variants that are in any of the predefined categories regardless of rank
     scores etc.
 
-    Args:
-        variant(cyvcf2.Variant)
+    To avoid parsing much, we first quickly check if we have a string match to substrings in
+    all relevant categories, that are somewhat rare in the CSQ strings in general. If not,
+    we check more carefully.
+
+    We include the old style numerical categories as well for backwards compatibility.
 
     Returns:
         bool: If variant should be loaded based on clinvar or not
     """
 
-    load_categories = {
-        "pathogenic",
-        "likely_pathogenic",
-        "conflicting_interpretations_of_pathogenicity",
-        "conflicting_interpretations",
-    }
+    quick_load_categories = {"pathogenic", "conflicting_"}
 
     # check if VEP-annotated field contains clinvar pathogenicity info
     vep_info = variant.INFO.get("CSQ")
     if vep_info:
-        for category in load_categories:
+        for category in quick_load_categories:
             if category in vep_info.lower():
                 return True
+
+    load_categories: set = {
+        "pathogenic",
+        "likely_pathogenic",
+        "conflicting_classifications_of_pathogenicity",
+        "conflicting_interpretations_of_pathogenicity",
+        "conflicting_interpretations",
+        4,
+        5,
+        8,
+    }
 
     # Otherwise check if clinvar pathogenicity status is in INFO field
     clnsig_accessions = parse_clnsig(variant)
@@ -121,8 +130,4 @@ def is_pathogenic(variant):
         clnsig = annotation["value"]
         if clnsig in load_categories:
             return True
-        if isinstance(clnsig, int):
-            if clnsig == 4 or clnsig == 5:
-                return True
-
     return False
