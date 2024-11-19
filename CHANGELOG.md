@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
 - Names on IGV buttons, including an overview level IGV MT button
 - Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
-- Better layout for function annotations on cancer SNVs page
+- Better layout for Consequence cell on cancer SNVs page
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are skipped on generating IGV views
