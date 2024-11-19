@@ -63,8 +63,8 @@
               <th title="Population frequency">Pop Freq</th>
               <th title="Observed" style="width:7%">Observed</th>
               <th title="Variant type">Type</th>
-              <th title="Callers">Callers</th>
-              <th title="Functional consequence annotation" style="width:18%">Consequence</th>
+              <th title="Callers" style="width:5%">Callers</th>
+              <th title="Functional consequence annotation" style="width:15%">Consequence</th>
               <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
               <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
             </tr>
@@ -118,7 +118,7 @@
             <td class="text-end">{{ frequency_cell_general(variant) }}</td>
             <td>{{ observed_cell_general(variant) }}</td>
             <td>{{ variant.sub_category }}</td>
-            <td style="width:8%">{{ callers_cell(variant.callers) }}</td>
+            <td>{{ callers_cell(variant.callers) }}</td>
             <td>{{ variant_funct_anno_cell(variant) }}</td>
             <td>{{ allele_cell(variant.tumor or {}) }}</td>
             <td>{{ allele_cell(variant.normal or {}) }}</td>
