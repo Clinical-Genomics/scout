@@ -50,16 +50,15 @@
 
 
 {% macro callers_cell(variant) %}
-  {% for name, caller in variant.callers %}
-      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
-        {{ name }}
-      </span>
-  {% else %} <!-- collect info from variant's filters -->
-    {% for filter in variant.filters %}
+   {% for filter in variant.filters %} <!-- collect info from variant's filters (PASS) -->
       <span class="badge bg-{{ filter.label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ filter.description }}">
         {{ filter.label }}
       </span>
     {% endfor %}
+  {% for name, caller in variant.callers %} <!-- Collect info for specific callers -->
+      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
+        {{ name }}
+      </span>
   {% endfor %}
 {% endmacro %}
 
