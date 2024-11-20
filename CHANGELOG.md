@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
 - Refactor the loading of PanelApp panels to use the maintained API - Customised PanelApp GREEN panels
 - Better layout for Consequence cell on cancer SNVs page
+- Merged `Qual` and `Callers` cell on cancer SNVs page
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are skipped on generating IGV views
@@ -39,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission enquiry status for all submissions after the latest
 - Typing error when running commands using python 3.9
 - Refactored and fixed the function creating alignment files (scout.utils.case_append_alignments)
+- Fix missing "Repeat locus" info on STRs export
 - Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 
 ## [4.90.1]
