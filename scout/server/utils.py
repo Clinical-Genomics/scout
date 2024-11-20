@@ -297,52 +297,43 @@ def _check_path_name(ind: Dict, path_name: str) -> bool:
     return False
 
 
-def case_append_alignments(case_obj):
+def case_append_alignments(case_obj: dict):
     """Deconvolute information about files to case_obj.
 
-    This function prepares the bam/cram files in a certain way so that they are easily accessed in
-    the templates.
-
-    Loops over the the individuals and gather bam/cram files, indexes and sample display names in
-    lists
-
-    Args:
-        case_obj(scout.models.Case)
+    This function prepares bam/cram files and their indexes for easy access in templates.
     """
     unwrap_settings = [
         {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
-        {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": "no_index"},
-        {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": "no_index"},
-        {
-            "path": "upd_regions_bed",
-            "append_to": "upd_regions_beds",
-            "index": "no_index",
-        },
-        {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": "no_index"},
-        {
-            "path": "tiddit_coverage_wig",
-            "append_to": "tiddit_coverage_wigs",
-            "index": "no_index",
-        },
+        {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": None},
+        {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
+        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},
+        {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": None},
+        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": None},
     ]
 
-    for individual in case_obj["individuals"]:
+    def process_file(case_obj, individual, setting):
+        """Process a single file and its optional index."""
+        file_path = individual.get(setting["path"])
         append_safe(
             case_obj,
-            "sample_names",
-            case_obj.get("display_name", "") + " - " + individual.get("display_name", ""),
+            setting["append_to"],
+            file_path if file_path and os.path.exists(file_path) else "missing",
         )
+        if setting["index"]:
+            index_path = (
+                find_index(file_path) if file_path and os.path.exists(file_path) else "missing"
+            )
+            append_safe(case_obj, setting["index"], index_path)
+
+    for individual in case_obj["individuals"]:
+        # Add sample name
+        sample_name = f"{case_obj.get('display_name', '')} - {individual.get('display_name', '')}"
+        append_safe(case_obj, "sample_names", sample_name)
+
+        # Process all file settings
         for setting in unwrap_settings:
-            file_path = individual.get(setting["path"])
-            if not (file_path and os.path.exists(file_path)):
-                append_safe(case_obj, setting["append_to"], "missing")
-                continue
-            append_safe(case_obj, setting["append_to"], file_path)
-            if not setting["index"] == "no_index":
-                append_safe(
-                    case_obj, setting["index"], find_index(file_path)
-                )  # either bai_files or mt_bais
+            process_file(case_obj, individual, setting)
 
 
 def append_safe(obj, obj_index, elem):
