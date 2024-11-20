@@ -107,7 +107,7 @@ onsubmit="return validateForm()">
       {{ variant.sub_category|upper }}
     </td>
     <td>
-      {{ callers_cell(variant.callers) }}
+      {{ callers_cell(variant) }}
     </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.sub_category|upper }}</span></td>
