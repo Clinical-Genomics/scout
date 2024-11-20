@@ -108,7 +108,7 @@
       {{ variant.sub_category|upper }}
     </td>
     <td>
-      {{ callers_cell(variant.callers) }}
+      {{ callers_cell(variant) }}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
