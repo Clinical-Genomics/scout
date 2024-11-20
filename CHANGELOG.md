@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission enquiry status for all submissions after the latest
 - Typing error when running commands using python 3.9
 - Refactored and fixed the function creating alignment files (scout.utils.case_append_alignments)
+- Fix missing "Repeat locus" info on STRs export
 
 ## [4.90.1]
 ### Fixed
