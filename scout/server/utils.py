@@ -297,13 +297,10 @@ def _check_path_name(ind: Dict, path_name: str) -> bool:
     return False
 
 
-def case_append_alignments(case_obj):
+def case_append_alignments(case_obj: dict):
     """Deconvolute information about files to case_obj.
 
     This function prepares bam/cram files and their indexes for easy access in templates.
-
-    Args:
-        case_obj (scout.models.Case): The case object to process.
     """
     unwrap_settings = [
         {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},
