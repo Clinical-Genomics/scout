@@ -5,25 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## [unreleased]
+## [4.91]
 ### Added
 - Variant link to Franklin in database buttons (different depending on rare or cancer track)
 - MANE badges on list of variant's Genes/Transcripts/Proteins table, this way also SVs will display MANE annotations
-- Export variant type and callers-related info fields when exporting variants from variants pages
+- Export variant type and callers-related info fields when exporting variants from variantS pages
 - Cases advanced search on the dashboard page
 - Possibility to use only signed off panels when building the PanelApp GREEN panel
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
-- WTS outlier position copy button
+- WTS outlier position copy button on WTS outliers page
 - Update IGV.js to v3.0.9
 - Managed variants VCF export more verbose on SVs
 - `/api/v1/hpo-terms` returns pymongo OperationFailure errors when provided query string contains problematic characters
-- Prioritise caller AF if present
+- When parsing variants, prioritise caller AF if set in FORMAT over recalculation from AD
 - Expand the submissions information section on the ClinVar submissions page to fully display long text entries
-- Jarvik for PP1 added to ACMG modification guidelines
-- Display institute _id + display name on dashboard filters
+- Jarvik et al for PP1 added to ACMG modification guidelines
+- Display institute `_id` + display name on dashboard filters
 - ClinVar category 8 has changed to "Conflicting classifications of pathogenicity" instead of "interpretations"
-- Simplify always loading ClinVar CLNSIG P, LP and conflicting annotations slightly
+- Simplify always loading ClinVar `CLNSIG` P, LP and conflicting annotations slightly
 - Increased visibility of variant callers's "Pass" or "Filtered" on the following pages: SNV variants (cancer cases), SV variants (both RD and cancer cases)
 - Names on IGV buttons, including an overview level IGV MT button
 - Cases query no longer accepts strings for the `name_query` parameter, only ImmutableMultiDict (form data)
@@ -36,10 +36,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar form to accept MedGen phenotypes
 - Cancer SV variantS page spinner on variant export
 - STRs variants export (do not allow null estimated variant size and repeat locus ID)
-- STRs variants page when one or more variants have Swegen mean frequency but lack Short Tandem Repeat motif count
+- STRs variants page when one or more variants have SweGen mean frequency but lack Short Tandem Repeat motif count
 - ClinVar submission enquiry status for all submissions after the latest
-- Typing error when running commands using python 3.9
-- Refactored and fixed the function creating alignment files (scout.utils.case_append_alignments)
+- CLI scout update type hint error when running commands using Python 3.9
+- Missing alignment files but present index files could crash the function creating alignment tracks for IGV display
 - Fix missing "Repeat locus" info on STRs export
 - Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 
