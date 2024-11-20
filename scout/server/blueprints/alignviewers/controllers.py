@@ -321,7 +321,7 @@ def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
             return
 
         for count, sample in enumerate(case.get("sample_names")):
-            if case[track_items][count] == "missing":
+            if case[track_items][count] == "missing" or case[track_index_items][count] == "missing":
                 continue
             sample_tracks.append(
                 {
