@@ -106,13 +106,13 @@ def test_parse_clnsig_low_penetrance(cyvcf2_variant):
     ## WHEN parsing the annotations
     clnsig_annotations = parse_clnsig(cyvcf2_variant)
 
-    ## THEN assert that the correct terms are parsed
-    # assert clnsig_annotations[2] == "kls"
-    """
-    assert set(["Pathogenic", "Likely_pathogenic", ""]) == {
+    ## THEN assert that clnsig is parsed correctly
+    assert set(["pathogenic", "likely_pathogenic", "pathogenic,low_penetrance"]) == {
         term["value"] for term in clnsig_annotations
     }
-    """
+    for term in clnsig_annotations:
+        assert term["revstat"] == revstat.replace("&_", ",")
+        assert term["accession"] == int(acc_nr)
 
 
 def test_parse_semi_modern_clnsig(cyvcf2_variant):
