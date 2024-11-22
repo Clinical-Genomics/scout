@@ -71,7 +71,6 @@ def parse_callers(variant, category="snv"):
                 for caller in callers:
                     if caller in call:
                         callers[caller] = filter_status
-
             elif call in callers_keys:
                 callers[call] = filter_status_default
 
