@@ -49,10 +49,10 @@ def parse_callers(variant, category="snv"):
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
     elif svdb_origin:
-        callers = svdb_origin.split("|")
-        if len(callers) > 1:
+        svdb_callers = svdb_origin.split("|")
+        if len(svdb_callers) > 1:
             filter_status_default = "Pass"
-        for called_by in callers:
+        for called_by in svdb_callers:
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
     elif raw_info:
