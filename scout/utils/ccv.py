@@ -1,12 +1,6 @@
 # coding=UTF-8
-import logging
-
-LOG = logging.getLogger(__name__)
-
-
-from typing import Optional
-
 from scout.constants.ccv import CCV_COMPLETE_MAP, CCV_POTENTIAL_CONFLICTS
+from typing import Optional
 
 
 def get_ccv_points(ccv_terms: set) -> int:
@@ -53,15 +47,11 @@ def get_ccv_points(ccv_terms: set) -> int:
     }
 
     for term in ccv_terms:
-        print("Placing term {}".format(term))
         for suffix, prefix_dict in suffix_map.items():
             if term.endswith(suffix):
                 for prefix, term_list in prefix_dict.items():
                     if term.startswith(prefix):
                         term_list.append(term)
-                        print("added to (suffix)")
-                        print(suffix)
-                        print(prefix)
                         break
                 else:
                     continue
@@ -70,13 +60,7 @@ def get_ccv_points(ccv_terms: set) -> int:
             for prefix, term_list in prefix_map.items():
                 if term.startswith(prefix):
                     term_list.append(term)
-                    print("added to {} (prefix)".format(prefix))
                     break
-    """    for term in ccv_terms:
-        for prefix, term_list in prefix_map.items():
-            if term.startswith(prefix):
-                term_list.append(term)
-                break"""
     points = (
         8 * len(ovs_terms)
         + 4 * len(os_terms)

@@ -255,7 +255,8 @@ def variant_ccv(institute_id, case_name, variant_id):
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/update", methods=["POST"])
 def variant_update(institute_id, case_name, variant_id):
-    """Update user-defined information about a variant: manual rank & ACMG."""
+    """Update user-defined information about a variant: manual rank, cancer tier,
+     CLinGen-CGC-VICC classification, dismissal & mosaic tags."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)

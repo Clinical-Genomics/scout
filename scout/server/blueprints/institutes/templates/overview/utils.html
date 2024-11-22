@@ -469,7 +469,7 @@
           <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
           <th>Inheritance</th>
           <th>ACMG</th>
-          <th>CCV</th>
+          <th>ClinGen-CGC-VICC</th>
           <th>Case</th>
           <th>Analysis type</th>
           <th>Validated status</th>
@@ -610,10 +610,10 @@
               </a>
             </td>
             <td><!-- Clingen-CGC-VIGG -->
-              <a href="#" data-bs-toggle="tooltip" title="Clingen-CGC-VIGG classification assigned by Scout users (not Clinvar)"
+              <a href="#" data-bs-toggle="tooltip" title="Clingen-CGC-VIGG classification assigned by Scout users"
                 style="text-decoration: none; color: #000;">
                 {% if 'ccv_classification' in variant %}
-                <span class="badge bg-{{ccv_map[variant.ccv_classification].color}}">{{acmg_map[variant.ccv_classification].short}}</span>
+                <span class="badge bg-{{ccv_map[variant.ccv_classification].color}}">{{ccv_map[variant.ccv_classification].short}}</span>
                 {% else %}
                 -
                 {% endif %}

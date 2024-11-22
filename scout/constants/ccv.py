@@ -47,6 +47,7 @@ CCV_CRITERIA["oncogenicity"] = OrderedDict(
                         {
                             "short": "Null variant in tumor supressor",
                             "description": "Null variant (nonsense, frameshift, canonical ±1 or 2 splice sites, initiation codon, single-exon or multiexon deletion) in a bona fide tumor suppressor gene.",
+                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="blank">ClinGen’s recommendations for PVS1</a>'
                         },
                     )
                 ]
@@ -59,7 +60,7 @@ CCV_CRITERIA["oncogenicity"] = OrderedDict(
                     (
                         "OS1",
                         {
-                            "short": "Same aa change as oncogenic mutation",
+                            "short": "Same aa change as known oncogenic variant",
                             "description": "Same amino acid change as a previously established oncogenic variant (using this standard) regardless of nucleotide change.",
                         },
                     ),
