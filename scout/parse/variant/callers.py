@@ -37,16 +37,22 @@ def parse_callers(variant, category="snv"):
     raw_info = variant.INFO.get("set")
 
     filter_status_default = "Pass"
-    if variant.FILTER is not None and len(info) == 1:
-        filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - "))
+    if variant.FILTER is not None:
+        filter_status_default = "Filtered - {}".format(variant.FILTER.replace(";", " - "))
 
     if other_info:
-        for info in other_info.split(","):
+        infos = other_info.split(",")
+        if len(infos) > 1:
+            filter_status_default = "Pass"
+        for info in infos:
             called_by = info.split("|")[0]
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
     elif svdb_origin:
-        for called_by in svdb_origin.split("|"):
+        callers = svdb_origin.split("|")
+        if len(callers) > 1:
+            filter_status_default = "Pass"
+        for called_by in callers:
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
     elif raw_info:
