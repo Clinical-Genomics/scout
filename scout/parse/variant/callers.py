@@ -58,11 +58,9 @@ def parse_callers(variant, category="snv"):
     elif raw_info:
         info = raw_info.split("-")
         for call in info:
-
             if call == "FilteredInAll":
-                filter_status = "Filtered"
                 for caller in callers:
-                    callers[caller] = filter_status
+                    callers[caller] = "Filtered"
             elif call == "Intersection":
                 for caller in callers:
                     callers[caller] = filter_status_default
