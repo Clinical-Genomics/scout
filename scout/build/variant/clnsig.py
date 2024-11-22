@@ -19,7 +19,7 @@ def build_clnsig(clnsig_info: dict) -> dict:
         revstat=clnsig_info.get("revstat"),
     )
 
-    if "low_penetrance" in value:
+    if isinstance(value, str) and "low_penetrance" in value:
         clnsig_obj["low_penetrance"] = True
 
     return clnsig_obj
