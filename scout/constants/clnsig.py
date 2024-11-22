@@ -33,7 +33,9 @@ REV_CLINSIG_MAP = {
     "conflicting_classifications_of_pathogenicity": 8,
     "uncertain_significance": 0,
     "likely_pathogenic": 4,
+    "likely_pathogenic,low_penetrance": 4,
     "pathogenic": 5,
+    "pathogenic,low_penetrance": 5,
     # These are here so that the parsing function will work with the older clinvar format
     # Where significance where annotated with numbers
     0: 0,

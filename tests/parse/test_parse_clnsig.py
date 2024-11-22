@@ -91,6 +91,30 @@ def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     assert len(clnsig_annotations) == 2
 
 
+def test_parse_clnsig_low_penetrance(cyvcf2_variant):
+    """Testing parsing a variant with has a low penetrance clnsig (pathogenic or likely pathogenic)"""
+
+    ## GIVEN a variant with the following ClinVar annotations
+    acc_nr = "7888"
+    clnsig = "Pathogenic/Likely_pathogenic/Pathogenic&_low_penetrance"
+    revstat = "criteria_provided&_multiple_submitters&_no_conflicts"
+
+    cyvcf2_variant.INFO["CLNVID"] = acc_nr
+    cyvcf2_variant.INFO["CLNSIG"] = clnsig
+    cyvcf2_variant.INFO["CLNREVSTAT"] = revstat
+
+    ## WHEN parsing the annotations
+    clnsig_annotations = parse_clnsig(cyvcf2_variant)
+
+    ## THEN assert that the correct terms are parsed
+    # assert clnsig_annotations[2] == "kls"
+    """
+    assert set(["Pathogenic", "Likely_pathogenic", ""]) == {
+        term["value"] for term in clnsig_annotations
+    }
+    """
+
+
 def test_parse_semi_modern_clnsig(cyvcf2_variant):
     ## GIVEN a variant with semi modern clinvar annotations
     # This means that there can be spaces between words

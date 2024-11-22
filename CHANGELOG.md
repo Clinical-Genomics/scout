@@ -5,9 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- "Pathogenic, low-penetrance" and "Likely pathogenic, low-penetrance" ClinVar terma parsed and saved in variant documents
 ### Fixed
 - Update IGV.js to v3.1.0
 - Columns/headings on SV variantS shifted
+
 
 ## [4.91]
 ### Added

@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, List, Optional, Union
+from scout.constants import REV_CLINSIG_MAP
 
 import cyvcf2
 
@@ -11,14 +12,14 @@ def parse_clnsig(
 ) -> List[Dict[str, Union[str, int]]]:
     """Get the clnsig information
 
-    The clinvar format has changed several times and this function will try to parse all of them.
+    The ClinVar format has changed several times and this function will try to parse all of them.
     The first format represented the clinical significance terms with numbers. This was then
     replaced by strings and the separator changed. At this stage the possibility to connect review
     stats to a certain significance term was taken away. So now we can only annotate each
     significance term with all review stats.
     Also the clinvar accession numbers are in some cases annotated with the info key CLNACC and
     sometimes with CLNVID.
-    This function parses also Clinvar annotations performed by VEP (CSQ field, parsed transcripts required)
+    This function parses also ClinVar annotations performed by VEP (CSQ field, parsed transcripts required)
 
     Returns a list with clnsig accessions
     """
@@ -41,22 +42,26 @@ def parse_clnsig(
 
             return clnsig_accessions
 
-        # VEP 97+ annotated clinvar info:
+        # VEP 97+ annotated ClinVar info:
         if transcripts[0].get("clinvar_clnvid"):
             acc = transcripts[0]["clinvar_clnvid"]
             sig = transcripts[0].get("clinvar_clnsig")
             revstat = transcripts[0].get("clinvar_revstat")
 
-    # There are some versions where clinvar uses integers to represent terms
+    # There are some versions where ClinVar uses integers to represent terms
     if isinstance(acc, int) or acc.isdigit():
         revstat_groups = []
         if revstat:
             revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
         sig_groups = []
-        for significance in sig.replace("&", ",").split(","):
-            for term in significance.lstrip("_").split("/"):
-                sig_groups.append("_".join(term.split(" ")))
+        for term in sig.lstrip("_").split("/"):
+            significance = term.replace("&_", ",")
+            if significance in REV_CLINSIG_MAP:
+                sig_groups.append(significance)
+            elif "," in significance:
+                for sign_term in significance.split(","):
+                    sig_groups.append(sign_term)
 
         for sig_term in sig_groups:
             clnsig_accession = {
