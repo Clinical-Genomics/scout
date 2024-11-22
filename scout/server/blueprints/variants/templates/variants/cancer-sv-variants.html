@@ -58,8 +58,8 @@
           <tr>
             <th style="width:2%"></th>
             <th style="width:3%">Index</th>
-            <th>Type</th>
             <th style="width:9%">Callers</th>
+            <th>Type</th>
             <th style="width:5%">Chr</th>
             <th>Start</th>
             <th>End</th>
@@ -77,7 +77,7 @@
             {{ variant_row(variant) }}
           {% else %}
             <tr>
-                <td colspan="13">No matching variants</td>
+                <td colspan="14">No matching variants</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -105,10 +105,10 @@
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
     <td>
-      {{ variant.sub_category|upper }}
+      {{ callers_cell(variant) }}
     </td>
     <td>
-      {{ callers_cell(variant) }}
+      {{ variant.sub_category|upper }}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
