@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic, parse_clnsig
 
