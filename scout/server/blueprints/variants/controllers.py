@@ -940,9 +940,13 @@ def parse_variant(
 
     # annotate filters
     variant_obj["filters"] = [
-        VARIANT_FILTERS[f]
+        VARIANT_FILTERS[f] if f in VARIANT_FILTERS else
+        {
+            "label": f.upper(),
+            "description": f,
+            "label_class": "danger",
+        }
         for f in map(lambda x: x.lower(), variant_obj["filters"])
-        if f in VARIANT_FILTERS
     ]
 
     return variant_obj

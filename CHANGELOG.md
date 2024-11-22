@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Update IGV.js to v3.1.0
 - Columns/headings on SV variantS shifted
+- Display unknown filter tags as "danger" marked badges
 
 ## [4.91]
 ### Added
