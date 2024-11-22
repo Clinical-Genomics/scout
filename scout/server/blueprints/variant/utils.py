@@ -592,7 +592,7 @@ def clinsig_human(variant_obj):
         yield clinsig_obj
 
 
-def get_callers(variant_obj:dict) -> List[Tuple]:
+def get_callers(variant_obj: dict) -> List[Tuple]:
     """Return info about callers.
 
     Given a scout.models.Variant compliant variant obj dict,
@@ -610,7 +610,8 @@ def get_callers(variant_obj:dict) -> List[Tuple]:
 
     return list(calls)
 
-def get_filters(variant_obj:dict) -> List[Dict[str, str]]:
+
+def get_filters(variant_obj: dict) -> List[Dict[str, str]]:
     """Return a list with richer format descriptions about filter status,
     if available. Fall back to display the filter status in a "danger" badge
     if it is not known from the VARIANT_FILTERS constant.
