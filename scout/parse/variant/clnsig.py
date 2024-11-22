@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 
 def parse_clnsig_low_penetrance(sig_groups: List[str]) -> List[str]:
-    """If 'low_penentrance' is among the clnsig terms of an array, the term gets appended to the term immediately before in the array."""
+    """If 'low_penetrance' is among the clnsig terms of an array, the term gets appended to the term immediately before in the array."""
     result = []
     for sig in sig_groups:
         if sig == "low_penetrance" and result:
