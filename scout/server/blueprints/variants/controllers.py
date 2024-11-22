@@ -27,12 +27,12 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SPIDEX_HUMAN,
-    VARIANT_FILTERS,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.server.blueprints.variant.utils import (
-    callers,
     clinsig_human,
+    get_callers,
+    get_filters,
     predictions,
     update_representative_gene,
     update_variant_case_panels,
@@ -936,21 +936,10 @@ def parse_variant(
     update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
-    variant_obj["callers"] = callers(variant_obj)
+    variant_obj["callers"] = get_callers(variant_obj)
 
     # annotate filters
-    variant_obj["filters"] = [
-        (
-            VARIANT_FILTERS[f]
-            if f in VARIANT_FILTERS
-            else {
-                "label": f.upper(),
-                "description": f,
-                "label_class": "danger",
-            }
-        )
-        for f in map(lambda x: x.lower(), variant_obj["filters"])
-    ]
+    variant_obj["filters"] = get_filters(variant_obj)
 
     return variant_obj
 
@@ -1089,7 +1078,7 @@ def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: di
         else variant.get("category")
     )
     variant_line.append(cat.upper() if cat else "")
-    variant_line.append("  ".join([f"{name}:{caller}" for name, caller in callers(variant)]))
+    variant_line.append("  ".join([f"{name}:{caller}" for name, caller in get_callers(variant)]))
     variant_line.append(variant["chromosome"])
     variant_line.append(position)
     variant_line.append(change)

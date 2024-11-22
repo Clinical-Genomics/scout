@@ -2,7 +2,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from scout.adapter import MongoAdapter
-from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
+from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS, VARIANT_FILTERS
 from scout.server.links import add_gene_links, add_tx_links
 
 LOG = logging.getLogger(__name__)
@@ -592,14 +592,15 @@ def clinsig_human(variant_obj):
         yield clinsig_obj
 
 
-def callers(variant_obj):
+def get_callers(variant_obj:dict) -> List[Tuple]:
     """Return info about callers.
 
-    Args:
-        variant_obj(scout.models.Variant)
+    Given a scout.models.Variant compliant variant obj dict,
+    return a list of the callers that identified the variant.
 
-    Returns:
-        calls(list(str)): A list of the callers that identified the variant
+    Finds calls in the CALLERS constant for the variant category,
+    directly on the variant object, gathers them in a set of tuples
+    of caller name and status, and returns as a list of tuples.
     """
     category = variant_obj.get("category", "snv")
     calls = set()
@@ -608,6 +609,24 @@ def callers(variant_obj):
             calls.add((caller["name"], variant_obj[caller["id"]]))
 
     return list(calls)
+
+def get_filters(variant_obj:dict) -> List[Dict[str, str]]:
+    """Return a list with richer format descriptions about filter status,
+    if available. Fall back to display the filter status in a "danger" badge
+    if it is not known from the VARIANT_FILTERS constant.
+    """
+    return [
+        (
+            VARIANT_FILTERS[f]
+            if f in VARIANT_FILTERS
+            else {
+                "label": f.upper(),
+                "description": f,
+                "label_class": "danger",
+            }
+        )
+        for f in map(lambda x: x.lower(), variant_obj["filters"])
+    ]
 
 
 def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) -> None:
