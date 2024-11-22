@@ -1,6 +1,7 @@
 # coding=UTF-8
-from scout.constants.ccv import CCV_COMPLETE_MAP, CCV_POTENTIAL_CONFLICTS
 from typing import Optional
+
+from scout.constants.ccv import CCV_COMPLETE_MAP, CCV_POTENTIAL_CONFLICTS
 
 
 def get_ccv_points(ccv_terms: set) -> int:

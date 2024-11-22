@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 ### Fixed
 - Update IGV.js to v3.1.0
 - Columns/headings on SV variantS shifted
