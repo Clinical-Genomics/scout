@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Parse ClinVar low-penetrance info and display it alongside Pathogenic and likely pathogenic on SNVs pages
+### Fixed
+- Stranger TRGT parsing of `.` in `FORMAT.MC`
 
 
 ## [4.91.1]
