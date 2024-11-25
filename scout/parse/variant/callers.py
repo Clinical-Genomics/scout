@@ -1,5 +1,4 @@
 import logging
-
 from typing import Optional
 
 from scout.constants import CALLERS
@@ -43,7 +42,7 @@ def parse_callers(variant, category="snv"):
         if filter_status is not None:
             filter_status_default = (
                 "Filtered - {}".format(filter_status.replace(";", " - "))
-                if len(infos) == 1
+                if len(found_ins) == 1
                 else "Filtered"
             )
 
