@@ -81,7 +81,7 @@ def parse_callers(variant, category="snv"):
 
         """
 
-        calls = raw_info.split("-")
+        calls = info_set.split("-")
 
         filter_status_default = "Pass"
         if filter_status is not None:
