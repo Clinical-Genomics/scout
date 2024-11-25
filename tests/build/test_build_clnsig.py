@@ -39,3 +39,21 @@ def test_build_clnsig_pathogenic_int():
     assert isinstance(clsnig_obj, dict)
     ## THEN assert the value for pathogenic (5) is used
     assert clsnig_obj["value"] == 5
+
+
+def test_build_clnsig_low_penetrance():
+    """Make sure that low_penetrance info doesn't get lost when building variant significance."""
+
+    ## GIVEN a parsed clnsig object
+    clnsig_info = {
+        "value": "pathogenic,low_penetrance",
+        "accession": "7888",
+        "revstat": "criteria_provided,multiple_submitters,no_conflicts",
+    }
+    # WHEN building a clnsig obj prepared for database
+    clsnig_obj: dict = build_clnsig(clnsig_info)
+    # THEN the expected key/values should be present
+    assert clsnig_obj["value"] == 5
+    assert clsnig_obj["revstat"] == clnsig_info["revstat"]
+    assert clsnig_obj["accession"] == clnsig_info["accession"]
+    assert clsnig_obj["low_penetrance"] is True
