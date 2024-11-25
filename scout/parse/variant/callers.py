@@ -1,5 +1,7 @@
 import logging
 
+from typing import Optional
+
 from scout.constants import CALLERS
 
 LOG = logging.getLogger(__name__)
@@ -14,12 +16,8 @@ def parse_callers(variant, category="snv"):
     3. If a set tag (dash separated, GATK CombineVariants) is found, callers will be marked Pass or Filtered accordingly
 
     If the FILTER status is not PASS (e.g. None - cyvcf2 FILTER is None if VCF file column FILTER is "PASS"),
-    in all of these cases, if a single caller is found, the "Pass" status is replaced with variant filter
-    status. If there is more than one caller, we can't quite tell which one is which, so all will be "Filtered" instead.
-
-    As a final fallback, to accommodate a version range of MIP where no SNV caller was set for GATK,
-    if this is an SNV variant, and no other call was found, set as if it was a GATK call with Pass or filter status.
-
+    in all of these cases, if a single caller is found, the caller status is set to the filter status.
+    If there is more than one caller, we can't quite tell which one is which, so all caller statuses will be "Filtered" instead.
 
     Args:
         variant (cyvcf2.Variant): A variant object
@@ -28,59 +26,100 @@ def parse_callers(variant, category="snv"):
         callers (dict): A dictionary on the format
         {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
+
     relevant_callers = CALLERS[category]
     callers = {caller["id"]: None for caller in relevant_callers}
     callers_keys = set(callers.keys())
 
-    other_info = variant.INFO.get("FOUND_IN")
-    svdb_origin = variant.INFO.get("svdb_origin")
-    raw_info = variant.INFO.get("set")
+    def get_callers_from_found_in(info_found_in: str, filter_status: Optional[str]) -> dict:
+        """ If a FOUND_IN tag (comma separated) is found, callers listed will be marked Pass.
+        In case of a FILTER status, also set the caller status for a single caller to 'Filtered - status'.
+        If more than one caller, and FILTER status, we cant really tell which said what, and all will be
+        "Filtered".
+        """
+        found_ins: list = info_found_in.split(",")
 
-    filter_status_default = "Pass"
-    if variant.FILTER is not None:
-        filter_status_default = "Filtered - {}".format(variant.FILTER.replace(";", " - "))
+        filter_status_default = "Pass"
+        if filter_status is not None:
+            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(infos) == 1 else "Filtered"
 
-    if other_info:
-        infos = other_info.split(",")
-        if len(infos) > 1:
-            filter_status_default = "Pass"
-        for info in infos:
-            called_by = info.split("|")[0]
+        for found_in in found_ins:
+            called_by = found_in.split("|")[0]
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
-    elif svdb_origin:
-        svdb_callers = svdb_origin.split("|")
-        if len(svdb_callers) > 1:
-            filter_status_default = "Pass"
+        return callers
+
+    info_found_in:str = variant.INFO.get("FOUND_IN")
+    if info_found_in:
+        return get_callers_from_found_in(info_found_in, variant.FILTER)
+
+    def get_callers_from_svdb_origin(svdb_origin: str, filter_status: Optional[str]) -> dict:
+        """ If a svdb_origin tag (pipe separated) is found, callers listed will be marked Pass.
+        In case of a FILTER status, also set the caller status for a single caller to 'Filtered - status'.
+        """
+        svdb_callers: list = svdb_origin.split("|")
+
+        filter_status_default = "Pass"
+        if filter_status is not None:
+            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(svdb_callers) == 1 else "Filtered"
+
         for called_by in svdb_callers:
             if called_by in callers_keys:
                 callers[called_by] = filter_status_default
-    elif raw_info:
-        info = raw_info.split("-")
-        for call in info:
+        return callers
+
+    svdb_origin = variant.INFO.get("svdb_origin")
+    if svdb_origin:
+        return get_callers_from_svdb_origin(svdb_origin, variant.FILTER)
+
+    def get_callers_from_set(info_set: str, filter_status: str) -> dict:
+        """
+        If the FILTER status is not PASS (e.g. None - cyvcf2 FILTER is None if VCF file column FILTER is "PASS"),
+        in all of these cases, if a single caller is found, the "Pass" status is replaced with variant filter
+            status. If there is more than one caller, we can't quite tell which one is which, so all will be "Filtered"
+            without explicit status instead.
+
+        """
+
+        calls = raw_info.split("-")
+
+        filter_status_default = "Pass"
+        if filter_status is not None:
+            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(calls) == 1 else "Filtered"
+
+        for call in calls:
             if call == "FilteredInAll":
                 for caller in callers:
                     callers[caller] = "Filtered"
-            elif call == "Intersection":
+                return callers
+            if call == "Intersection":
                 for caller in callers:
-                    callers[caller] = filter_status_default
-            elif "filterIn" in call:
-                filter_status = filter_status_default
+                    callers[caller] = "Pass"
+                return callers
+            if "filterIn" in call:
                 if "Filtered" not in filter_status_default:
-                    filter_status = "Filtered"
+                    filter_status_default = "Filtered"
                 for caller in callers:
                     if caller in call:
-                        callers[caller] = filter_status
+                        callers[caller] = filter_status_default
             elif call in callers_keys:
-                callers[call] = filter_status_default
-
-    if raw_info or svdb_origin or other_info:
+                callers[call] = "Pass"
         return callers
 
+    info_set = variant.INFO.get("set")
+    if info_set:
+        return get_callers_from_set(info_set, variant.FILTER)
+
+    def get_callers_gatk_snv_fallback(filter_status: Optional[str]):
+        """ As a final fallback, to accommodate a version range of MIP where no SNV caller was set for GATK,
+        if this is an SNV variant, and no other call was found, set as if it was a GATK call with Pass or filter status.
+        """
+        filter_status_default = "Pass"
+        if filter_status is not None:
+            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - "))
+        callers["gatk"] = filter_status_default
+
     if category == "snv":
-        filter_status = "Pass"
-        if variant.FILTER is not None:
-            filter_status = "Filtered - {}".format(filter_status.replace(";", " - "))
-        callers["gatk"] = filter_status
+        return get_callers_gatk_snv_fallback(variant.FILTER)
 
     return callers
