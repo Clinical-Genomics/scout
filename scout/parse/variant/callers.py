@@ -32,7 +32,7 @@ def parse_callers(variant, category="snv"):
     callers_keys = set(callers.keys())
 
     def get_callers_from_found_in(info_found_in: str, filter_status: Optional[str]) -> dict:
-        """ If a FOUND_IN tag (comma separated) is found, callers listed will be marked Pass.
+        """If a FOUND_IN tag (comma separated) is found, callers listed will be marked Pass.
         In case of a FILTER status, also set the caller status for a single caller to 'Filtered - status'.
         If more than one caller, and FILTER status, we cant really tell which said what, and all will be
         "Filtered".
@@ -41,7 +41,11 @@ def parse_callers(variant, category="snv"):
 
         filter_status_default = "Pass"
         if filter_status is not None:
-            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(infos) == 1 else "Filtered"
+            filter_status_default = (
+                "Filtered - {}".format(filter_status.replace(";", " - "))
+                if len(infos) == 1
+                else "Filtered"
+            )
 
         for found_in in found_ins:
             called_by = found_in.split("|")[0]
@@ -49,19 +53,23 @@ def parse_callers(variant, category="snv"):
                 callers[called_by] = filter_status_default
         return callers
 
-    info_found_in:str = variant.INFO.get("FOUND_IN")
+    info_found_in: str = variant.INFO.get("FOUND_IN")
     if info_found_in:
         return get_callers_from_found_in(info_found_in, variant.FILTER)
 
     def get_callers_from_svdb_origin(svdb_origin: str, filter_status: Optional[str]) -> dict:
-        """ If a svdb_origin tag (pipe separated) is found, callers listed will be marked Pass.
+        """If a svdb_origin tag (pipe separated) is found, callers listed will be marked Pass.
         In case of a FILTER status, also set the caller status for a single caller to 'Filtered - status'.
         """
         svdb_callers: list = svdb_origin.split("|")
 
         filter_status_default = "Pass"
         if filter_status is not None:
-            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(svdb_callers) == 1 else "Filtered"
+            filter_status_default = (
+                "Filtered - {}".format(filter_status.replace(";", " - "))
+                if len(svdb_callers) == 1
+                else "Filtered"
+            )
 
         for called_by in svdb_callers:
             if called_by in callers_keys:
@@ -85,7 +93,11 @@ def parse_callers(variant, category="snv"):
 
         filter_status_default = "Pass"
         if filter_status is not None:
-            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - ")) if len(calls) == 1 else "Filtered"
+            filter_status_default = (
+                "Filtered - {}".format(filter_status.replace(";", " - "))
+                if len(calls) == 1
+                else "Filtered"
+            )
 
         for call in calls:
             if call == "FilteredInAll":
@@ -111,7 +123,7 @@ def parse_callers(variant, category="snv"):
         return get_callers_from_set(info_set, variant.FILTER)
 
     def get_callers_gatk_snv_fallback(filter_status: Optional[str]):
-        """ As a final fallback, to accommodate a version range of MIP where no SNV caller was set for GATK,
+        """As a final fallback, to accommodate a version range of MIP where no SNV caller was set for GATK,
         if this is an SNV variant, and no other call was found, set as if it was a GATK call with Pass or filter status.
         """
         filter_status_default = "Pass"
