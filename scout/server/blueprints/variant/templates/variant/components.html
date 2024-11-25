@@ -17,7 +17,7 @@
       <tbody>
         {% for clinsig in variant.clinsig_human %}
           <tr>
-            <td>{{ clinsig.human }}</td>
+            <td>{{ clinsig.human }} {% if clinsig.low_penetrance %}(low penetrance){% endif %}</td>
             {% if clinsig.accession %}
               <td><a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a></td>
             {% else %}

@@ -6,6 +6,17 @@ import cyvcf2
 LOG = logging.getLogger(__name__)
 
 
+def parse_clnsig_low_penetrance(sig_groups: List[str]) -> List[str]:
+    """If 'low_penetrance' is among the clnsig terms of an array, the term gets appended to the term immediately before in the array."""
+    result = []
+    for sig in sig_groups:
+        if sig == "low_penetrance" and result:
+            result[-1] += f",{sig}"
+        else:
+            result.append(sig)
+    return result
+
+
 def parse_clnsig(
     variant: cyvcf2.Variant, transcripts: Optional[dict] = None
 ) -> List[Dict[str, Union[str, int]]]:
@@ -57,6 +68,8 @@ def parse_clnsig(
         for significance in sig.replace("&", ",").split(","):
             for term in significance.lstrip("_").split("/"):
                 sig_groups.append("_".join(term.split(" ")))
+
+        sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
 
         for sig_term in sig_groups:
             clnsig_accession = {
