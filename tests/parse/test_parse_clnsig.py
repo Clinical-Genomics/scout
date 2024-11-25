@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic, parse_clnsig
 
@@ -89,6 +87,30 @@ def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     }
     ## THEN assert that they where parsed correct
     assert len(clnsig_annotations) == 2
+
+
+def test_parse_clnsig_low_penetrance(cyvcf2_variant):
+    """Testing parsing a variant with has a low penetrance clnsig (pathogenic or likely pathogenic)"""
+
+    ## GIVEN a variant with the following ClinVar annotations
+    acc_nr = "7888"
+    clnsig = "Pathogenic/Likely_pathogenic/Pathogenic&_low_penetrance"
+    revstat = "criteria_provided&_multiple_submitters&_no_conflicts"
+
+    cyvcf2_variant.INFO["CLNVID"] = acc_nr
+    cyvcf2_variant.INFO["CLNSIG"] = clnsig
+    cyvcf2_variant.INFO["CLNREVSTAT"] = revstat
+
+    ## WHEN parsing the annotations
+    clnsig_annotations = parse_clnsig(cyvcf2_variant)
+
+    ## THEN assert that clnsig is parsed correctly
+    assert set(["pathogenic", "likely_pathogenic", "pathogenic,low_penetrance"]) == {
+        term["value"] for term in clnsig_annotations
+    }
+    for term in clnsig_annotations:
+        assert term["revstat"] == revstat.replace("&_", ",")
+        assert term["accession"] == int(acc_nr)
 
 
 def test_parse_semi_modern_clnsig(cyvcf2_variant):
