@@ -8,6 +8,17 @@ INDEXES = {
             name="genes",
         )
     ],
+    "gene_panel": [
+        IndexModel(
+            [("panel_name", ASCENDING), ("version", ASCENDING)],
+            name="panel_name_version",
+            unique=True,
+        ),
+        IndexModel(
+            [("genes.hgnc_id", ASCENDING)],
+            name="genes.hgnc_id",
+        ),
+    ],
     "hgnc_gene": [
         IndexModel(
             [("build", ASCENDING), ("chromosome", ASCENDING)],

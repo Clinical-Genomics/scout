@@ -501,7 +501,7 @@ class PanelHandler:
         new_panel["version"] = float(version)
 
         # Update same version or create new version
-        if version == panel_obj["version"]:
+        if new_panel["version"] == panel_obj["version"]:
             result = self.panel_collection.find_one_and_replace(
                 {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER
             )
