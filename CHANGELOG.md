@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Stranger TRGT parsing of `.` in `FORMAT.MC`
+
 ## [4.91.1]
 ### Fixed
 - Update IGV.js to v3.1.0

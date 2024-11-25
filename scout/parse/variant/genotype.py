@@ -495,7 +495,7 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
                 if index in pathologic_mcs:
                     pathologic_counts += int(count)
         else:
-            pathologic_counts = int(allele)
+            pathologic_counts = 0 if allele == '.' else int(allele)
 
         if ref_idx is not None and idx == ref_idx:
             mc_ref = pathologic_counts
