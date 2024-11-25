@@ -1,12 +1,14 @@
 import logging
 from typing import Optional
 
+import cyvcf2
+
 from scout.constants import CALLERS
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_callers(variant, category="snv"):
+def parse_callers(variant: cyvcf2.Variant, category: str = "snv") -> dict:
     """Parse how the different variant callers have performed
 
     Caller information can be passed in one of three ways, in order of priority:
@@ -130,6 +132,7 @@ def parse_callers(variant, category="snv"):
         if filter_status is not None:
             filter_status_default = FILTERED.format(filter_status.replace(";", " - "))
         callers["gatk"] = filter_status_default
+        return callers
 
     if category == "snv":
         return get_callers_gatk_snv_fallback(variant.FILTER)
