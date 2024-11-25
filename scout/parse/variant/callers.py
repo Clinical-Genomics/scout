@@ -25,6 +25,7 @@ def parse_callers(variant, category="snv"):
         callers (dict): A dictionary on the format
         {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
+    FILTERED = "Filtered - {}"
 
     relevant_callers = CALLERS[category]
     callers = {caller["id"]: None for caller in relevant_callers}
@@ -41,7 +42,7 @@ def parse_callers(variant, category="snv"):
         filter_status_default = "Pass"
         if filter_status is not None:
             filter_status_default = (
-                "Filtered - {}".format(filter_status.replace(";", " - "))
+                FILTERED.format(filter_status.replace(";", " - "))
                 if len(found_ins) == 1
                 else "Filtered"
             )
@@ -65,7 +66,7 @@ def parse_callers(variant, category="snv"):
         filter_status_default = "Pass"
         if filter_status is not None:
             filter_status_default = (
-                "Filtered - {}".format(filter_status.replace(";", " - "))
+                FILTERED.format(filter_status.replace(";", " - "))
                 if len(svdb_callers) == 1
                 else "Filtered"
             )
@@ -93,7 +94,7 @@ def parse_callers(variant, category="snv"):
         filter_status_default = "Pass"
         if filter_status is not None:
             filter_status_default = (
-                "Filtered - {}".format(filter_status.replace(";", " - "))
+                FILTERED.format(filter_status.replace(";", " - "))
                 if len(calls) == 1
                 else "Filtered"
             )
@@ -127,7 +128,7 @@ def parse_callers(variant, category="snv"):
         """
         filter_status_default = "Pass"
         if filter_status is not None:
-            filter_status_default = "Filtered - {}".format(filter_status.replace(";", " - "))
+            filter_status_default = FILTERED.format(filter_status.replace(";", " - "))
         callers["gatk"] = filter_status_default
 
     if category == "snv":
