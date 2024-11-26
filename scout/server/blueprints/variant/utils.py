@@ -622,7 +622,7 @@ def get_filters(variant_obj: dict) -> List[Dict[str, str]]:
             if f in VARIANT_FILTERS
             else {
                 "label": f.replace("_", " ").upper(),
-                "description": f,
+                "description": f.replace("_", " "),
                 "label_class": "danger",
             }
         )
