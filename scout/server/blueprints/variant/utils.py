@@ -620,7 +620,7 @@ def get_filters(variant_obj: dict) -> List[Dict[str, str]]:
     for redecoration. Check if the filter strings have already been converted
     to dicts before attemting to convert them.
     """
-    variant_filters = variant_obj["filters"]
+    variant_filters = variant_obj.get("filters",[])
 
     filters: List[Dict[str, str]] = []
 
