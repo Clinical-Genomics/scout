@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Display panel IDs alongside panel display names on gene panels page
+- Just one `Hide removed panels` checkbox for all panels on gene panels page
 ### Fixed
 - Stranger TRGT parsing of `.` in `FORMAT.MC`
 - Parse ClinVar low-penetrance info and display it alongside Pathogenic and likely pathogenic on SNVs pages
