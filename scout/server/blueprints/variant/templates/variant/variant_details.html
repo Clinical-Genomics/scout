@@ -97,8 +97,15 @@
       </table>
     </div>
     <div class="panel-footer">
+       {% for filter in variant.filters %} <!-- collect info from variant's filters (PASS) -->
+        <span class="badge bg-{{ filter.label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ filter.description }}">
+          {{ filter.label }}
+        </span>
+      {% endfor %}
       {% for name, caller in variant.callers %}
-        <span class="badge bg-secondary">{{ name }}: {{ caller }}</span>
+        <span class="badge {% if caller == 'Pass' %}bg-success{% elif 'Filtered' in caller %}bg-secondary{% else %}bg-black{% endif %}">
+        {{ name }}: {{ caller }}
+        </span>
       {% endfor %}
     </div>
     </div>

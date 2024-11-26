@@ -56,7 +56,7 @@
       </span>
     {% endfor %}
   {% for name, caller in variant.callers %} <!-- Collect info for specific callers -->
-      <span class="badge {% if caller == 'Pass' %}bg-success{% elif caller == 'Filtered' %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
+      <span class="badge {% if caller == 'Pass' %}bg-success{% elif 'Filtered' in caller %}bg-secondary{% else %}bg-black{% endif %}" data-bs-toggle="tooltip" data-bs-html="true" title="{{caller}}">
         {{ name }}
       </span>
   {% endfor %}
