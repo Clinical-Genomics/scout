@@ -14,7 +14,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Open WTS variantS SNVs and SVs in new tabs
 - PanelApp panels update dcumentation to reflect the latest changes in the command line
 
-
 ## [4.91.1]
 ### Fixed
 - Update IGV.js to v3.1.0
