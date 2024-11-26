@@ -45,7 +45,6 @@ from scout.server.utils import (
 from .utils import (
     add_gene_info,
     associate_variant_genes_with_case_panels,
-    callers,
     ccv_evaluation,
     clinsig_human,
     default_panels,
@@ -53,6 +52,8 @@ from .utils import (
     evaluation,
     frequencies,
     frequency,
+    get_callers,
+    get_filters,
     is_affected,
     predictions,
 )
@@ -322,7 +323,10 @@ def variant(
     update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
-    variant_obj["callers"] = callers(variant_obj)
+    variant_obj["callers"] = get_callers(variant_obj)
+
+    # annotate filters
+    variant_obj["filters"] = get_filters(variant_obj)
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)

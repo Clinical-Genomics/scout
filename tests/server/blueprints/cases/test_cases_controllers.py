@@ -163,7 +163,9 @@ def test_case_controller_with_panel(app, institute_obj, panel, test_case):
     store.case_collection.insert_one(test_case)
 
     # GIVEN an adapter with a gene panel
-    store.panel_collection.insert_one(panel)
+    assert store.panel_collection.find_one(
+        {"panel_name": panel["panel_name"], "version": panel["version"]}
+    )
     fetched_case = store.case_collection.find_one()
     app = Flask(__name__)
     # WHEN fetching a case with the controller

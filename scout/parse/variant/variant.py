@@ -92,6 +92,7 @@ def parse_variant(
 
     # cyvcf2 will set QUAL to None if '.' in vcf
     parsed_variant["quality"] = variant.QUAL
+
     parsed_variant["filters"] = get_filters(variant)
 
     # Add the dbsnp ids
@@ -235,6 +236,7 @@ def parse_variant(
 
     ###################### Add conservation ######################
     parsed_variant["conservation"] = parse_conservations(variant, parsed_transcripts)
+
     parsed_variant["callers"] = parse_callers(variant, category=category)
     set_rank_result(parsed_variant, variant, rank_results_header)
 
