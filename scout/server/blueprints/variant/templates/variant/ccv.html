@@ -60,8 +60,8 @@
                   {% if evaluation and evaluation.ccv_criteria.get(criterion_code).links %}
                     {% set link = evaluation.ccv_criteria.get(criterion_code).links[0] %}
                   {% endif %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).modifier %}
-                    {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
+                  {% if evaluation and evaluation.ccv_criteria.get(criterion_code).modifier %}
+                    {% set modifier = evaluation.ccv_criteria.get(criterion_code).modifier %}
                   {% endif %}
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
