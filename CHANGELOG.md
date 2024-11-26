@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel indexes to reflect the indexes used in production database
 - Panel version check while editing the genes of a panel
 - Display unknown filter tags as "danger" marked badges
+- Variant filters redecoration from multiple classifications crashes general case report
 
 
 ## [4.91.1]
