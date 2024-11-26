@@ -21,7 +21,7 @@ Please note that when you create a PanalApp panel in **Scout, the software uses 
 `--panel-app-confidence red` collects all genes from PanelApp
 ```
 
-Please note that **if you don't specify any confidence level with the `--panel-app-confidence option`, then only the `HighEvidence` (green) genes will be included in the panels**.
+Also note that **if you don't specify any confidence level with the `--panel-app-confidence option`, then only the `HighEvidence` (green) genes will be included in the panels**.
 
 To **create/update only one** PanelApp panel, use the following command:
 
@@ -35,16 +35,45 @@ When loading a panel from PanelApp, Scout is parsing the latest version of it th
 
 https://panelapp.genomicsengland.co.uk/api/v1/panels/234/?format=api
 
-Please note that since the gene panel functionality in Scout is only supporting loading of genes, all eventual **`regions` or `strs` present in the PanelApp json document will not be saved in the created panel**.
+Since the Panelapp gene panels import functionality in Scout is only supporting loading of genes, all eventual **`regions` or `strs` present in the PanelApp json document will not be saved in the created panel**.
 
 PanelApp panels in Scout can be **updated any time by running the same command used for creating them**.  When panels are already present in Scout, running the command will update panels that are not up-to-date with PanelApp and just overwrite those that already present with the newest version.
 
 
 # PanelApp green genes panel
 
-As an admin, it is possible to create/update a gene panel **containing green genes from all available PanelApp panels**. You can create this panel for an institute by using the following syntax:
+As an admin, it is possible to create/update a gene panel **containing green genes from PanelApp panels**. The basic command to achieve this is the following:
 
-`scout update panelapp-green -i <institute> --force`
+`scout update panelapp-green -i <institute> (--signed-off) --force`
 
-The feature will connect to PanelApp and retrieve all green genes available in any panel in that moment.
-Note that the `--force` is required to force create a new version of the gene panel in the eventuality that the number of green genes found on the PanelApp server is lower than the number of genes contained in the old panel.
+
+### Command Line Step: Selecting Panel Types
+
+During this step, the command line will prompt you to select one or more panel types to filter the panels retrieved from the API.
+
+#### Available Panel Types
+At the time of writing, the following panel types are available:
+
+1. **Actionable**
+2. **Additional Findings**
+3. **Cancer Germline 100k**
+4. **ClinGen Curated Genes**
+5. **Component of Super Panel**
+6. **GMS Cancer Germline Virtual**
+7. **GMS Rare Disease**
+8. **GMS Rare Disease Virtual**
+9. **GMS Signed-Off**
+10. **Rare Disease 100k**
+11. **Reference**
+12. **Research**
+13. **Submitted List**
+14. **Superpanel**
+
+#### Default Behavior
+If no panel type is selected (i.e., the user presses Enter without input), Green Genes will be selected from the following default panel types: `3`, `4`, `6`, `7`, `8`, `9`, `10`.
+
+#### Important Note
+The `--force` or (`-f`) parameter is required to create a new version of the gene panel if the number of green genes retrieved from the PanelApp server is lower than the number of genes in the older version of the panel. This ensures the panel is updated despite the reduction in gene count.
+
+If specified, the `--signed-off` (or simply `-s`) parameter will restrict the download of green genes to include only signed-off panels.
+
