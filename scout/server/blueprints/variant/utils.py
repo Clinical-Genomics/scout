@@ -637,19 +637,31 @@ def get_filters(variant_obj: dict) -> List[Dict[str, str]]:
     """Return a list with richer format descriptions about filter status,
     if available. Fall back to display the filter status in a "danger" badge
     if it is not known from the VARIANT_FILTERS constant.
+
+    Currently, the controller may be applied repeatedly to the same variant object
+    for redecoration. Check if the filter strings have already been converted
+    to dicts before attemting to convert them.
     """
-    return [
-        (
-            VARIANT_FILTERS[f]
-            if f in VARIANT_FILTERS
-            else {
-                "label": f.replace("_", " ").upper(),
-                "description": f.replace("_", " "),
-                "label_class": "danger",
-            }
-        )
-        for f in map(lambda x: x.lower(), variant_obj["filters"])
-    ]
+    variant_filters = variant_obj.get("filters", [])
+
+    filters: List[Dict[str, str]] = []
+
+    for f in variant_filters:
+        if isinstance(f, str):
+            if f.lower() in VARIANT_FILTERS:
+                filters.append(f)
+            else:
+                filters.append(
+                    {
+                        "label": f.replace("_", " ").upper(),
+                        "description": f.replace("_", " "),
+                        "label_class": "danger",
+                    }
+                )
+        elif isinstance(f, dict):
+            filters.append(f)
+
+    return filters
 
 
 def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) -> None:
