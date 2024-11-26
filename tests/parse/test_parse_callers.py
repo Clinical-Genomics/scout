@@ -46,6 +46,21 @@ def test_parse_callers_complex(cyvcf2_variant):
     assert callers["samtools"] == "Filtered"
 
 
+def test_parse_callers_complex_filter(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN information about the variant callers and a single FILTERed variant
+    variant.FILTER = "MQRankSum"
+    variant.INFO["set"] = "filterInsamtools"
+
+    # WHEN parsing the information
+    callers = parse_callers(variant)
+
+    # THEN the correct output should be returned
+    assert callers["gatk"] == None
+    assert callers["freebayes"] == None
+    assert callers["samtools"] == "Filtered - MQRankSum"
+
+
 def test_parse_callers_intersection(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN information that all callers agree on Pass
@@ -73,6 +88,34 @@ def test_parse_callers_intersection_svdb_info(cyvcf2_variant):
     assert callers["gatk"] == "Pass"
     assert callers["deepvariant"] == "Pass"
     assert callers["samtools"] is None
+
+
+def test_parse_callers_filtered_svdb_info(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN FOUND_IN information that manta made a filtered call
+    variant.FILTER = "MinSomaticScore"
+    variant.INFO["svdb_origin"] = "manta"
+
+    # WHEN parsing the information
+    callers = parse_callers(variant, category="cancer_sv")
+
+    # THEN the manta filter status should be set
+    assert callers["manta"] == "Filtered - MinSomaticScore"
+    assert callers["dellysv"] is None
+
+
+def test_parse_callers_filtered_found_in_info(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN FOUND_IN information that manta made a filtered call
+    variant.FILTER = "MinSomaticScore"
+    variant.INFO["FOUND_IN"] = "manta"
+
+    # WHEN parsing the information
+    callers = parse_callers(variant, category="cancer_sv")
+
+    # THEN the manta filter status should be set
+    assert callers["manta"] == "Filtered - MinSomaticScore"
+    assert callers["dellysv"] is None
 
 
 def test_parse_callers_filtered_all(cyvcf2_variant):
