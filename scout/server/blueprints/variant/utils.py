@@ -2,7 +2,6 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from scout.adapter import MongoAdapter
-
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     CALLERS,
