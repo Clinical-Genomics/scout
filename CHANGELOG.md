@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - PanelApp panels update documentation to reflect the latest changes in the command line
 - Display panel IDs alongside panel display names on gene panels page
 - Just one `Hide removed panels` checkbox for all panels on gene panels page
-- Variant filters redecoration from multiple classifications crashes general case report
+- Variant filters redecoration from multiple classifications crash on general case report
 
 ## [4.91.1]
 ### Fixed
