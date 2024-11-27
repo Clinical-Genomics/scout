@@ -649,7 +649,7 @@ def get_filters(variant_obj: dict) -> List[Dict[str, str]]:
     for f in variant_filters:
         if isinstance(f, str):
             if f.lower() in VARIANT_FILTERS:
-                filters.append(f)
+                filters.append(VARIANT_FILTERS[f.lower()])
             else:
                 filters.append(
                     {
