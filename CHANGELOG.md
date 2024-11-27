@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
+
+## [4.91.2]
 ### Fixed
 - Stranger TRGT parsing of `.` in `FORMAT.MC`
 - Parse ClinVar low-penetrance info and display it alongside Pathogenic and likely pathogenic on SNVs pages
