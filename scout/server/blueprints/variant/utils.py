@@ -491,7 +491,6 @@ def ccv_evaluation(store, evaluation_obj):
     evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(
         evaluation_obj["ccv_classification"]
     )
-    return evaluation_obj
 
 
 def transcript_str(transcript_obj, gene_name=None):

@@ -1406,7 +1406,7 @@ class CaseHandler(object):
                 verb = action
                 if action == "acmg_classification":
                     verb = "acmg"
-                elif action == "is_commented":
+                if action == "is_commented":
                     verb = "comment"
                 if action == "ccv_classification":
                     verb = "ccv"
