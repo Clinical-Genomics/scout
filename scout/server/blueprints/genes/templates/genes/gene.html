@@ -84,6 +84,12 @@
                       <a target="_blank" href={{ record.entrez_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ entrez_id }}</a>
                     </span>
                   </li>
+                  <li class="list-group-item">
+                    PanelApp
+                    <span class="float-end">
+                      <a target="_blank" href={{ record.panelapp_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ symbol }} </a>
+                    </span>
+                  </li>
                   {% if pli_score %}
                   <li class="list-group-item">
                     pLi Score (<a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)

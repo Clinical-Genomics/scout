@@ -1,12 +1,13 @@
 """Code to parse panel information"""
 
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from scout.constants import INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANELAPP_CONFIDENCE_EXCLUDE
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
+PANELAPP_PANELS_URL = "https://panelapp.genomicsengland.co.uk/panels/"
 
 
 def parse_panel_app_gene(
@@ -90,6 +91,7 @@ def parse_panelapp_panel(
     gene_panel["display_name"] = " - ".join([panel_info["name"], f"[{confidence.upper()}]"])
     gene_panel["institute"] = institute
     gene_panel["panel_type"] = ("clinical",)
+    gene_panel["description"] = f"{PANELAPP_PANELS_URL}{panel_id}"
 
     LOG.info("Parsing panel %s", gene_panel["display_name"])
 
