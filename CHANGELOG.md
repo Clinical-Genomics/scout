@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - PanelApp link on gene page and on gene panels description
+- list/List typing issue on PanelApp extension module
 ### Changed
 - Switched to python:3.12-slim-bookworm in Dockerfiles
 

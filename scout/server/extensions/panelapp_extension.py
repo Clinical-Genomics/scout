@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import List, Optional
 
 import requests
 
@@ -41,7 +41,7 @@ class PanelAppClient:
             for type in panel.get("types", []):
                 self.panel_types.add(type["slug"])
 
-    def get_panel_ids(self, signed_off: bool) -> list[int]:
+    def get_panel_ids(self, signed_off: bool) -> List[int]:
         """Returns a list of panel ids contained in a json document with gene panels data."""
 
         def get_ids(json_panels):
