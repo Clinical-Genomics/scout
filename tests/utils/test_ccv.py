@@ -32,7 +32,7 @@ def test_get_ccv_benign():
     res = get_ccv(ccv_terms)
     assert res == "benign"
 
-    ccv_terms = {"SBP1", "SBP2", "SBS1", "SBS2" }
+    ccv_terms = {"SBP1", "SBP2", "SBS1", "SBS2"}
     res = get_ccv(ccv_terms)
     assert res == "benign"
 

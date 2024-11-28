@@ -75,6 +75,7 @@ def test_acmg(app):
         assert resp.status_code == 200
         assert resp.data
 
+
 def test_ccv(app):
     # GIVEN an initialized app
     with app.test_client() as client:
