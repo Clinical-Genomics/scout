@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from scout.constants import (
     CLINSIG_MAP,
@@ -19,23 +19,19 @@ LOG = logging.getLogger(__name__)
 
 class QueryHandler(object):
     def build_case_query(
-        self, case_id=None, status=None, older_than=None, analysis_type=[]
+        self,
+        case_ids: Optional[List[str]],
+        institute_id: Optional[List[str]],
+        status: Optional[List[str]],
+        older_than: Optional[int],
+        analysis_type: Optional[List[str]],
     ) -> dict:
-        """Build case query based on case id, status and analysis date
-
-        Args:
-            case_id(str): id of a case
-            status(list): one or more case status
-            older_than(int): to select cases older than a number of months
-            case_ids(list): a list of case _ids
-            analysis_type(list): a list of type of analysis ["wgs", "wes", "panel"]
-
-        Returns:
-            case_query(dict): query dictionary
-        """
+        """Build case query based on case id, status and analysis date."""
         case_query = {}
-        if case_id:
-            case_query["_id"] = case_id
+        if case_ids:
+            case_query["_id"] = {"$in": case_ids}
+        if institute_id:
+            case_query["owner"] = institute_id
         if analysis_type:
             case_query["individuals.analysis_type"] = {"$in": analysis_type}
         if older_than:
@@ -43,6 +39,7 @@ class QueryHandler(object):
             case_query["analysis_date"] = {"$lt": older_than_date}
         if status:
             case_query["status"] = {"$in": list(status)}
+
         return case_query
 
     def delete_variants_query(
