@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 #########
 # FINAL #
 #########
-FROM python:3.11-slim-bullseye
+FROM clinicalgenomics/python3.11-venv:1.0
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
