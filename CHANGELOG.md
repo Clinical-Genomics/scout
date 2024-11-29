@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - PanelApp link on gene page and on gene panels description
 ### Changed
 - Add more filters to the delete variants command (institute ID and text file with list of case IDs)
-- Switched to python:3.12-slim-bookworm in Dockerfiles
+- Use the `clinicalgenomics/python3.11-venv:1.0` image everywhere in the Dockerfiles
 ### Fixed
 - list/List typing issue on PanelApp extension module
 
