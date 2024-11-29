@@ -83,7 +83,7 @@ def variants(
 
     if case_file and case_id:
         click.echo(
-            f"You should specify either case ID (multiple times if needed) or the path to a text file containing a list of case IDs (one per line)."
+            "You should specify either case ID (multiple times if needed) or the path to a text file containing a list of case IDs (one per line)."
         )
         return
 
