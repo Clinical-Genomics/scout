@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - PanelApp link on gene page and on gene panels description
+- Add more filters to delete variants command (institute ID and text file with list of case IDs)
 
 ## [4.91.2]
 ### Fixed
