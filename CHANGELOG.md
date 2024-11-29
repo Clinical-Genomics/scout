@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - PanelApp link on gene page and on gene panels description
+- Add more filters to the delete variants command (institute ID and text file with list of case IDs)
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 
 ## [4.91.2]
