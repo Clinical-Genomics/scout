@@ -68,7 +68,7 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @with_appcontext
 def variants(
     user: str,
-    case_id: str,
+    case_id: list,
     case_file: str,
     institute: str,
     status: list,
