@@ -210,7 +210,7 @@
       <table class="table">
         <thead class="thead table-light">
           <tr>
-            <th scope="col">ID</th>
+            <th scope="col">IDS</th>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
             <th scope="col">Total nr.</th>
@@ -220,7 +220,7 @@
           {% for loqusid, obs in observations.items() %}
               <tr>
                 <td>{{ loqusid }}</td>
-               <td>{{ obs.observations|default('N/A') }}</td>
+               <td>AAA{{ obs.observations|default('N/A') }}</td>
                <td>{{ obs.homozygote|default('N/A') }}</td>
                <td>{{ obs.total|default('N/A') }}</td>
              </tr>
@@ -274,7 +274,7 @@
       <table class="table">
         <thead class="thead table-light">
           <tr>
-            <th scope="col">Archive</th>
+            <th scope="col">Archivea</th>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
             <th scope="col">Frequency</th>
