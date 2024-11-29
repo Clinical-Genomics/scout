@@ -103,9 +103,7 @@ def variant(variant_id, institute_id=None, case_name=None):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(
-            store, loqusdb, data["variant"], max_observations=10
-        )
+        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=10)
 
     return data
 
@@ -153,9 +151,7 @@ def sv_variant(institute_id, case_name, variant_id):
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
         return redirect(
-            url_for(
-                "variants.sv_variants", institute_id=institute_id, case_name=case_name
-            )
+            url_for("variants.sv_variants", institute_id=institute_id, case_name=case_name)
         )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
@@ -165,9 +161,7 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variant_bp.route(
-    "/<institute_id>/<case_name>/str/variant/<variant_id>", methods=["GET"]
-)
+@variant_bp.route("/<institute_id>/<case_name>/str/variant/<variant_id>", methods=["GET"])
 @templated("variant/str-variant-reviewer.html")
 def reviewer_aln(institute_id, case_name, variant_id):
     """Display STR variant alignment using the REViewer service."""
@@ -188,9 +182,7 @@ def reviewer_aln(institute_id, case_name, variant_id):
     )
 
 
-@variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"]
-)
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"])
 @templated("variant/acmg.html")
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
@@ -232,25 +224,17 @@ def variant_update(institute_id, case_name, variant_id):
     link = request.referrer
 
     manual_rank = (
-        Markup.escape(request.form.get("manual_rank"))
-        if request.form.get("manual_rank")
-        else None
+        Markup.escape(request.form.get("manual_rank")) if request.form.get("manual_rank") else None
     )
     cancer_tier = (
-        Markup.escape(request.form.get("cancer_tier"))
-        if request.form.get("cancer_tier")
-        else None
+        Markup.escape(request.form.get("cancer_tier")) if request.form.get("cancer_tier") else None
     )
 
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
         except ValueError:
-            LOG.warning(
-                "Attempt to update manual rank with invalid value {}".format(
-                    manual_rank
-                )
-            )
+            LOG.warning("Attempt to update manual rank with invalid value {}".format(manual_rank))
             manual_rank = "-1"
             new_manual_rank = -1
 
@@ -265,11 +249,7 @@ def variant_update(institute_id, case_name, variant_id):
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
         except ValueError:
-            LOG.warning(
-                "Attempt to update cancer tier with invalid value {}".format(
-                    cancer_tier
-                )
-            )
+            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
             cancer_tier = "-1"
             new_cancer_tier = "-1"
 
@@ -285,9 +265,7 @@ def variant_update(institute_id, case_name, variant_id):
         acmg_classification = variant_obj.get("acmg_classification")
         # If there already is a classification and the same one is sent again this means that
         # We want to remove the classification
-        if isinstance(acmg_classification, int) and (
-            new_acmg == ACMG_MAP[acmg_classification]
-        ):
+        if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
             new_acmg = None
 
         store.submit_evaluation(
@@ -314,23 +292,17 @@ def variant_update(institute_id, case_name, variant_id):
                 institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
             )
             flash(
-                "Reset variant dismissal: {}".format(
-                    variant_obj.get("dismiss_variant")
-                ),
+                "Reset variant dismissal: {}".format(variant_obj.get("dismiss_variant")),
                 "info",
             )
         else:
             LOG.debug(
-                "DO NOT reset variant dismissal: {}".format(
-                    ",".join(variant_dismiss), "info"
-                )
+                "DO NOT reset variant dismissal: {}".format(",".join(variant_dismiss), "info")
             )
 
     mosaic_tags = request.form.getlist("mosaic_tags")
     if mosaic_tags:
-        store.update_mosaic_tags(
-            institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
-        )
+        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
         flash("Added mosaic tags: {}".format(mosaic_tags), "info")
 
     variant_mosaic = variant_obj.get("mosaic_tags")
@@ -388,9 +360,7 @@ def acmg():
 
     acmg_bayesian = get_acmg_temperature(criteria)
     acmg_conflicts = get_acmg_conflicts(criteria)
-    return jsonify(
-        {"classification": classification, "conflicts": acmg_conflicts, **acmg_bayesian}
-    )
+    return jsonify({"classification": classification, "conflicts": acmg_conflicts, **acmg_bayesian})
 
 
 @variant_bp.route(
