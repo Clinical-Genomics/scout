@@ -98,7 +98,7 @@ def variant(variant_id, institute_id=None, case_name=None):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=10)
+        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=50)
 
     return data
 
