@@ -98,44 +98,7 @@ def variant(variant_id, institute_id=None, case_name=None):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        # FIXME: Ponder, seems to be two separate values living
-        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=50)
-
-        # FIXME: For testing, remove before PR
-        # def make_variant():
-        #     return {
-        #         "category": "snv",
-        #         "variant": "URL",
-        #         "_id": "ID"
-        #     }
-
-        # def make_case(name):
-        #     return {
-        #         "display_name": name,
-        #         "variant": make_variant(),
-        #         "case": {"display_name": name},
-        #         "owner": "owner",
-        #     }
-
-        # def make_obs(max_obs):
-        #     return {
-        #         "observations": 5,
-        #         "homozygote": 1,
-        #         "total": 37,
-        #         "cases": [
-        #             make_case("A"),
-        #             make_case("B"),
-        #             make_case("C"),
-        #             make_case("D"),
-        #             make_case("E"),
-        #         ]
-        #     }
-
-        
-
-        # data["observations"] = {
-        #     "loqusid1": make_obs(data["max_observations"]),
-        # }
+        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=10)
 
     return data
 
