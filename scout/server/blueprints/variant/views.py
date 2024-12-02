@@ -88,17 +88,18 @@ def variant(variant_id, institute_id=None, case_name=None):
         institute_id=institute_id,
         case_name=case_name,
     )
-    data["max_observations"] = request.args.get("max_observations", 10, type=int)
-
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
         return redirect(
             url_for("variants.variants", institute_id=institute_id, case_name=case_name)
         )
 
+    default_max_display = 10
+    data["max_display"] = request.args.get("max_display", default_max_display, type=int)
+
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(store, loqusdb, data["variant"], max_observations=50)
+        data["observations"] = observations(store, loqusdb, data["variant"])
 
     return data
 

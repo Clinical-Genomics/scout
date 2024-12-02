@@ -432,11 +432,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
 
 
 def get_loqusdb_obs_cases(
-    store: MongoAdapter,
-    variant_obj: dict,
-    category: str,
-    obs_families: list = [],
-    max_observations: int = 10,
+    store: MongoAdapter, variant_obj: dict, category: str, obs_families: list = []
 ) -> List[dict]:
     """Get a list of cases where variant observations occurred. These are only the cases the user has access to.
     We need to add links to the variant in other cases where the variant has been observed.
@@ -446,8 +442,6 @@ def get_loqusdb_obs_cases(
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
     for i, case_id in enumerate(obs_families):
-        if len(obs_cases) == max_observations:
-            break
         if case_id == variant_obj["case_id"]:
             continue
         # other case might belong to same institute, collaborators or other institutes
@@ -476,9 +470,7 @@ def get_loqusdb_obs_cases(
     return obs_cases
 
 
-def observations(
-    store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_observations: int = 10
-) -> Dict[str, dict]:
+def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Dict[str, dict]:
     """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
     If not return empty dictionary.
     """
@@ -522,11 +514,7 @@ def observations(
         )
         # collect other cases where observations occurred
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
-            store,
-            variant_obj,
-            category,
-            obs_data[loqus_id].get("families", []),
-            max_observations=max_observations,
+            store, variant_obj, category, obs_data[loqus_id].get("families", [])
         )
 
     return obs_data

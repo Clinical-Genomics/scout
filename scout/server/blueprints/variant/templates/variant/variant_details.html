@@ -200,7 +200,7 @@
   </div>
 {% endmacro %}
 
-{% macro observations_panel(variant, observations, case, max_observations) %}
+{% macro observations_panel(variant, observations, case, max_display) %}
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
@@ -240,7 +240,7 @@
                      </span>
                   {% endif %}
                   {% endif %}
-                  {% for data in obs.cases[:max_observations] %}
+                  {% for data in obs.cases[:max_display] %}
                      {% if data.variant and data.variant.category == "snv"%}
                        <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                      {% elif data.variant and data.variant.category == "sv"%}
@@ -251,9 +251,9 @@
                        </span>
                      {% endif %}
                   {% endfor %}
-                  {% if obs.cases|length > max_observations %}
+                  {% if obs.cases|length > max_display %}
                     <div>
-                      <a href="{{ request.url }}?max_observations={{ max_observations + 10 }}">Show more</a>
+                      <a href="{{ request.url }}?max_display={{ max_display + 10 }}">Show more</a>
                     </div>
                   {% endif %}
                 </td>

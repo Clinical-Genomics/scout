@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [TBD]
+### Changed
+- "Show more" button to see more than ten observed cases in LoqusDB observation panel
+
 ## [4.92]
 ### Added
 - PanelApp link on gene page and on gene panels description
