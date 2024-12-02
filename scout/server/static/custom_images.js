@@ -1,5 +1,5 @@
-imgMaxWidth = 1200;
-imgMaxHeight = 1000;
+const imgMaxWidth = window.innerWidth*0.7;
+const imgMaxHeight = window.innerHeight*0.7;
 
 function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
     var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
