@@ -29,7 +29,14 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 
 @click.command("variants", short_help="Delete variants for one or more cases")
 @click.option("-u", "--user", help="User running this command (email)", required=True)
-@click.option("-c", "--case-id", help="Case id")
+@click.option("-c", "--case-id", help="Case id", multiple=True)
+@click.option(
+    "-f",
+    "--case-file",
+    help="Path to file containing list of case IDs",
+    type=click.Path(exists=True),
+)
+@click.option("-i", "--institute", help="Restrict to cases with specified institute ID")
 @click.option(
     "--status",
     type=click.Choice(CASE_STATUSES),
@@ -42,7 +49,6 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
     "--analysis-type",
     type=click.Choice(["wgs", "wes", "panel"]),
     multiple=True,
-    default=["wgs"],
     help="Type of analysis",
 )
 @click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
@@ -62,7 +68,9 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @with_appcontext
 def variants(
     user: str,
-    case_id: str,
+    case_id: list,
+    case_file: str,
+    institute: str,
     status: list,
     older_than: int,
     analysis_type: list,
@@ -72,6 +80,12 @@ def variants(
     dry_run: bool,
 ) -> None:
     """Delete variants for one or more cases"""
+
+    if case_file and case_id:
+        click.echo(
+            "You should specify either case ID (multiple times if needed) or the path to a text file containing a list of case IDs (one per line)."
+        )
+        return
 
     user_obj = store.user(user)
     if user_obj is None:
@@ -86,7 +100,16 @@ def variants(
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    case_query = store.build_case_query(case_id, status, older_than, analysis_type)
+    if case_file:
+        case_id = [line.strip() for line in open(case_file).readlines() if line.strip()]
+
+    case_query = store.build_case_query(
+        case_ids=case_id,
+        institute_id=institute,
+        status=status,
+        older_than=older_than,
+        analysis_type=analysis_type,
+    )
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
 
