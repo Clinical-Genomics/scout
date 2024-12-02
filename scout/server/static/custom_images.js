@@ -17,7 +17,7 @@ function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 		 .then(blob => {
 				 const img = document.createElement("img");
 				 img.src = URL.createObjectURL(blob);
-				 if (width > imgMaxWidth || height> imgMaxHeight) {
+				 if (width > imgMaxWidth || height > imgMaxHeight) {
 				 		var resized_pixels = calculateAspectRatioFit(width, height, imgMaxWidth, imgMaxHeight);
 				 		width = resized_pixels[0];
 				 		height = resized_pixels[1];
