@@ -106,8 +106,7 @@ def tx_overview(variant_obj: dict):
             ovw_tx["transcript_id"] = tx.get("transcript_id")
             ovw_tx["is_primary"] = (
                 True
-                if tx.get("refseq_id")
-                in gene.get("common", {}).get("primary_transcripts", [])
+                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
                 else False
             )
             ovw_tx["is_canonical"] = tx.get("is_canonical")
@@ -311,9 +310,7 @@ def variant(
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = (
-        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    )
+    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
     variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
@@ -328,13 +325,9 @@ def variant(
     is_affected(variant_obj, case_obj)
 
     if variant_obj.get("genetic_models"):
-        variant_models = set(
-            model.split("_", 1)[0] for model in variant_obj["genetic_models"]
-        )
+        variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
         omim_models = variant_obj.get("omim_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(
-            variant_models, omim_models
-        )
+        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, omim_models)
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")
@@ -388,9 +381,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
-        "igv_tracks": get_igv_tracks(
-            "38" if variant_obj["is_mitochondrial"] else genome_build
-        ),
+        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
@@ -433,9 +424,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         # Loop over each rank score category and collect model explanation to display on variant page
         if rank_model:
             for score in rank_score_results:
-                category = score.get(
-                    "category"
-                )  # examples: Splicing, Consequence, Deleteriousness
+                category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
                 score["model_ranges"] = store.get_ranges_info(rank_model, category)
                 (score["min"], score["max"]) = store.range_span(score["model_ranges"])
 
@@ -455,9 +444,7 @@ def get_loqusdb_obs_cases(
     information about what institutes the user has access to.
     """
     obs_cases = []
-    user_institutes_ids = set(
-        [inst["_id"] for inst in user_institutes(store, current_user)]
-    )
+    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
     for i, case_id in enumerate(obs_families):
         if len(obs_cases) == max_observations:
             break
@@ -489,9 +476,7 @@ def get_loqusdb_obs_cases(
     return obs_cases
 
 
-def observations(
-    store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_observations: int = 10
-) -> Dict[str, dict]:
+def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_observations: int = 10) -> Dict[str, dict]:
     """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
     If not return empty dictionary.
     """
@@ -530,20 +515,15 @@ def observations(
             continue
 
         # Check if the current case is represented in the loqusdb instance
-        obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[
-            loqus_id
-        ].get("families", [])
+        obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[loqus_id].get(
+            "families", []
+        )
         # collect other cases where observations occurred
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
-            store,
-            variant_obj,
-            category,
-            obs_data[loqus_id].get("families", []),
+            store, variant_obj,
+            category, obs_data[loqus_id].get("families", []),
             max_observations=max_observations,
         )
-
-    logging.error("Hello")
-    logging.error(obs_data)
 
     return obs_data
 
@@ -598,9 +578,7 @@ def str_variant_reviewer(
             resp = requests.post(url, json=srs_query_data)
             display_individual["svg"] = Markup(resp.text)
         except Exception as err:
-            flash(
-                f"An error occurred while connecting to Scout-REViewer-Service: {err}"
-            )
+            flash(f"An error occurred while connecting to Scout-REViewer-Service: {err}")
             display_individual["svg"] = Markup("<SVG></SVG>")
 
         display_individuals.append(display_individual)
@@ -611,9 +589,7 @@ def str_variant_reviewer(
     }
 
 
-def variant_acmg(
-    store: MongoAdapter, institute_id: str, case_name: str, variant_id: str
-):
+def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant_id: str):
     """Collect data relevant for rendering ACMG classification form.
 
     Args:

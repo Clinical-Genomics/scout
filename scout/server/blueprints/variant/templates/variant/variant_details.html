@@ -200,7 +200,7 @@
   </div>
 {% endmacro %}
 
-{% macro observations_panel(variant, observations, case) %}
+{% macro observations_panel(variant, observations, case, max_observations) %}
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
@@ -210,7 +210,7 @@
       <table class="table">
         <thead class="thead table-light">
           <tr>
-            <th scope="col">IDS</th>
+            <th scope="col">ID</th>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
             <th scope="col">Total nr.</th>
@@ -220,7 +220,7 @@
           {% for loqusid, obs in observations.items() %}
               <tr>
                 <td>{{ loqusid }}</td>
-               <td>AAA{{ obs.observations|default('N/A') }}</td>
+               <td>{{ obs.observations|default('N/A') }}</td>
                <td>{{ obs.homozygote|default('N/A') }}</td>
                <td>{{ obs.total|default('N/A') }}</td>
              </tr>
@@ -240,7 +240,7 @@
                      </span>
                   {% endif %}
                   {% endif %}
-                  {% for data in obs.cases %}
+                  {% for data in obs.cases[:max_observations] %}
                      {% if data.variant and data.variant.category == "snv"%}
                        <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                      {% elif data.variant and data.variant.category == "sv"%}
@@ -251,8 +251,10 @@
                        </span>
                      {% endif %}
                   {% endfor %}
-                  {% if obs.cases|length > 10 %}
-                     + more
+                  {% if obs.cases|length > max_observations %}
+                    <div>
+                      <a href="{{ request.url }}?max_observations={{ max_observations + 10 }}">Show more</a>
+                    </div>
                   {% endif %}
                 </td>
               </tr>
@@ -274,7 +276,7 @@
       <table class="table">
         <thead class="thead table-light">
           <tr>
-            <th scope="col">Archivea</th>
+            <th scope="col">Archive</th>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
             <th scope="col">Frequency</th>
