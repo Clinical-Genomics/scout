@@ -476,7 +476,9 @@ def get_loqusdb_obs_cases(
     return obs_cases
 
 
-def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_observations: int = 10) -> Dict[str, dict]:
+def observations(
+    store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_observations: int = 10
+) -> Dict[str, dict]:
     """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
     If not return empty dictionary.
     """
@@ -520,9 +522,9 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict, max_o
         )
         # collect other cases where observations occurred
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
-            store, 
+            store,
             variant_obj,
-            category, 
+            category,
             obs_data[loqus_id].get("families", []),
             max_observations=max_observations,
         )
