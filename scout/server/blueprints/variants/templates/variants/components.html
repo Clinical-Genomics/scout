@@ -216,7 +216,9 @@
     {% endmacro %}
 
     {% if variant.category in ["cancer", "sv_cancer"] %}
-      {{ gene_link(variant.first_rep_gene) }}
+      {% if variant.first_rep_gene %}
+        {{ gene_link(variant.first_rep_gene) }}
+      {% endif %}
       {% if variant.secondary_gene %}
         <span class="text-muted">
           ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
