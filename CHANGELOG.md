@@ -5,13 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
 
 ## [4.92]
 ### Added
 - PanelApp link on gene page and on gene panels description
-- ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 - Add more filters to the delete variants command (institute ID and text file with list of case IDs)
 ### Changed
 - Use the `clinicalgenomics/python3.11-venv:1.0` image everywhere in the Dockerfiles
