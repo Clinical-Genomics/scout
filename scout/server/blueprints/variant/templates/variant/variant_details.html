@@ -200,15 +200,15 @@
   </div>
 {% endmacro %}
 
-{% macro observation_badge(data) %}
+{% macro observation_badge(observed_case) %}
 
-  {% if data.variant and data.variant.category == "snv"%}
-  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
-  {% elif data.variant and data.variant.category == "sv"%}
-  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+  {% if observed_case.variant and observed_case.variant.category == "snv"%}
+  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=observed_case.case.owner, case_name=observed_case.case.display_name, variant_id=observed_case.variant._id) }}">{{ observed_case.case.display_name }}</a>
+  {% elif observed_case.variant and observed_case.variant.category == "sv"%}
+  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.sv_variant', institute_id=observed_case.case.owner, case_name=observed_case.case.display_name, variant_id=observed_case.variant._id) }}">{{ observed_case.case.display_name }}</a>
   {% else %}
   <span data-bs-toggle="tooltip" title="Missing link, this might be caused by variants not loaded after a rerun or inexact SV matching.">
-    <span class="ml-3 badge rounded-pill bg-light text-dark">{{ data.case.display_name }}</span>
+    <span class="ml-3 badge rounded-pill bg-light text-dark">{{ observed_case.case.display_name }}</span>
   </span>
   {% endif %}
 
@@ -254,17 +254,17 @@
                      </span>
                   {% endif %}
                   {% endif %}
-                  {% for data in obs.cases %}
+                  {% for observed_case in obs.cases %}
                     {% if loop.index <= 10 %}
-                      {{ observation_badge(data) }}
+                      {{ observation_badge(observed_case) }}
                     {% endif %}
                   {% endfor %}
 
                   {% if obs.cases|length > 10 %}
                     <span class="collapse" id="additionalCases_{{ loqusid }}">
-                      {% for data in obs.cases %}
+                      {% for observed_case in obs.cases %}
                         {% if loop.index > 10 %}
-                          {{ observation_badge(data) }}
+                          {{ observation_badge(observed_case) }}
                         {% endif %}
                       {% endfor %}
                     </span>
