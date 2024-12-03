@@ -2,7 +2,14 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 from scout.adapter import MongoAdapter
-from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS, VARIANT_FILTERS
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    CALLERS,
+    CCV_COMPLETE_MAP,
+    CLINSIG_MAP,
+    SO_TERMS,
+    VARIANT_FILTERS,
+)
 from scout.server.links import add_gene_links, add_tx_links
 
 LOG = logging.getLogger(__name__)
@@ -470,6 +477,19 @@ def evaluation(store, evaluation_obj):
     }
     evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(evaluation_obj["classification"])
     return evaluation_obj
+
+
+def ccv_evaluation(store, evaluation_obj):
+    """Fetch and fill-in evaluation object."""
+    evaluation_obj["institute"] = store.institute(evaluation_obj["institute_id"])
+    evaluation_obj["case"] = store.case(evaluation_obj["case_id"])
+    evaluation_obj["variant"] = store.variant(evaluation_obj["variant_specific"])
+    evaluation_obj["ccv_criteria"] = {
+        criterion["term"]: criterion for criterion in evaluation_obj["ccv_criteria"]
+    }
+    evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(
+        evaluation_obj["ccv_classification"]
+    )
 
 
 def transcript_str(transcript_obj, gene_name=None):

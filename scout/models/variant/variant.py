@@ -94,6 +94,7 @@ variant = dict(
     manual_rank=int,  # choices=[0, 1, 2, 3, 4, 5]
     dismiss_variant=list,
     acmg_classification=str,  # choices=ACMG_TERMS
+    ccv_classification=str,  # choices=CCV_TERMS
 )
 
 compound = dict(

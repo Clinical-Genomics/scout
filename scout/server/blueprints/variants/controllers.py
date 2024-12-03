@@ -17,6 +17,8 @@ from scout.constants import (
     CANCER_EXPORT_HEADER,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
+    CCV_COMPLETE_MAP,
+    CCV_MAP,
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINSIG_MAP,
@@ -362,6 +364,7 @@ def get_manual_assessments(variant_obj):
     ## display manual input of interest: classified, commented, tagged, mosaicism or dismissed.
     assessment_keywords = [
         "acmg_classification",
+        "ccv_classification",
         "manual_rank",
         "cancer_tier",
         "dismiss_variant",
@@ -401,6 +404,16 @@ def get_manual_assessments(variant_obj):
                 assessment["title"] = "ACMG: {}".format(classification["label"])
                 assessment["label"] = classification["short"]
                 assessment["display_class"] = classification["color"]
+
+            if assessment_type == "ccv_classification":
+                ccv_classification = variant_obj[assessment_type]
+                if isinstance(ccv_classification, int):
+                    ccv_code = CCV_MAP[ccv_classification]
+                    ccv_classification = CCV_COMPLETE_MAP[ccv_code]
+
+                assessment["title"] = "ClinGen-CGC-VIGG: {}".format(ccv_classification["label"])
+                assessment["label"] = ccv_classification["short"]
+                assessment["display_class"] = ccv_classification["color"]
 
             if assessment_type == "dismiss_variant":
                 dismiss_variant_options = {
@@ -918,6 +931,11 @@ def parse_variant(
         acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
         variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
 
+    ccv_classification = variant_obj.get("ccv_classification")
+    if isinstance(ccv_classification, int):
+        ccv_code = CCV_MAP[variant_obj["ccv_classification"]]
+        variant_obj["ccv_classification"] = CCV_COMPLETE_MAP[ccv_code]
+
     # convert length for SV variants
     variant_length = variant_obj.get("length")
     variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(variant_length, variant_length)
@@ -1409,6 +1427,19 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
+
+        evaluations = []
+        # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
+        for evaluation_obj in store.get_ccv_evaluations(variant_obj):
+            if evaluation_obj["case_id"] == case_obj["_id"]:
+                continue
+
+            ccv_classification = evaluation_obj["ccv_classification"]
+
+            evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
+            evaluations.append(evaluation_obj)
+        variant_obj["ccv_evaluations"] = evaluations
+
         variants_list.append(variant_obj)
 
     data = dict(
