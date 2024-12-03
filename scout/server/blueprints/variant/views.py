@@ -155,7 +155,7 @@ def sv_variant(institute_id, case_name, variant_id):
         data["observations"] = observations(store, loqusdb, data["variant"])
         default_max_display = 10
         data["max_display"] = request.args.get("max_display", default_max_display, type=int)
-        
+
     return data
 
 
