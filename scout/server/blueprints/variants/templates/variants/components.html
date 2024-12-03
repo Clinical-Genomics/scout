@@ -221,7 +221,8 @@
           ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
         </span>
       {% endif %}
-      {{ panel_badge(variant, variant.first_rep_gene.hgnc_id) }}
+
+      {{ panel_badge(variant, variant.first_rep_gene.hgnc_id or variant.second_rep_gene.hgnc_id) }}
     {% else %}
       {% for gene in variant.genes %}
         <div>
