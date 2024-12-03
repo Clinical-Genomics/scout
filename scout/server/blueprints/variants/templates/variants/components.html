@@ -193,8 +193,15 @@
       </a>
     {% endmacro %}
 
-    {% macro panel_badge(variant) %}
-      {% set panel_count = variant.case_panels|rejectattr('removed')|list|length %}
+    {% macro panel_badge(variant, gene_id) %}
+      {% set matching_panels = [] %}
+      {% for panel in variant.case_panels|rejectattr('removed')|list %}
+        {% if gene_id in panel.genes %}
+           {% set _ = matching_panels.append(panel) %}
+        {% endif %}
+      {% endfor %}
+
+      {% set panel_count = matching_panels|length %}
       {% if panel_count > 0 %}
         <a
           class="badge bg-secondary text-white"
@@ -202,7 +209,7 @@
           data-bs-html="true"
           data-bs-trigger="hover click"
           title="Overlapping gene panels"
-          data-bs-content="{% for panel in variant.case_panels|sort(attribute='panel_name',case_sensitive=False)|rejectattr('removed') %}
+          data-bs-content="{% for panel in matching_panels %}
             {{ panel.panel_name|safe }}<br>
           {% endfor %}"
         >{{ panel_count }}</a>
@@ -216,7 +223,7 @@
           ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
         </span>
       {% endif %}
-      {{ panel_badge(variant) }}
+      {{ panel_badge(variant, variant.first_rep_gene.hgnc_id) }}
     {% else %}
       {% for gene in variant.genes %}
         <div>
@@ -224,7 +231,7 @@
           {% for model in gene.inheritance %}
             {{ inheritance_badge(model, inherit_palette) }}
           {% endfor %}
-          {{ panel_badge(variant) }}
+          {{ panel_badge(variant, gene.hgnc_id) }}
         </div>
       {% endfor %}
     {% endif %}
