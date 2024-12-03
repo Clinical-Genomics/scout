@@ -446,7 +446,7 @@
 {% endmacro %}
 
 
-{% macro variant_list_content(institute, variants, acmg_map, callers, inherit_palette) %}
+{% macro variant_list_content(institute, variants, acmg_map, ccv_map, callers, inherit_palette) %}
 <div class="card mt-3">
   <div class="card-body overflow-auto">
     <table id="variants_table" class="table display table-sm">
@@ -469,6 +469,7 @@
           <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
           <th>Inheritance</th>
           <th>ACMG</th>
+          <th>ClinGen-CGC-VICC</th>
           <th>Case</th>
           <th>Analysis type</th>
           <th>Validated status</th>
@@ -603,6 +604,16 @@
                 style="text-decoration: none; color: #000;">
                 {% if 'acmg_classification' in variant %}
                 <span class="badge bg-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
+                {% else %}
+                -
+                {% endif %}
+              </a>
+            </td>
+            <td><!-- Clingen-CGC-VIGG -->
+              <a href="#" data-bs-toggle="tooltip" title="Clingen-CGC-VIGG classification assigned by Scout users"
+                style="text-decoration: none; color: #000;">
+                {% if 'ccv_classification' in variant %}
+                <span class="badge bg-{{ccv_map[variant.ccv_classification].color}}">{{ccv_map[variant.ccv_classification].short}}</span>
                 {% else %}
                 -
                 {% endif %}

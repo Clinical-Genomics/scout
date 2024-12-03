@@ -16,6 +16,10 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CASE_TAGS,
+    CCV_COMPLETE_MAP,
+    CCV_CRITERIA,
+    CCV_MAP,
+    CCV_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
     INHERITANCE_PALETTE,
@@ -41,6 +45,7 @@ from scout.server.utils import (
 from .utils import (
     add_gene_info,
     associate_variant_genes_with_case_panels,
+    ccv_evaluation,
     clinsig_human,
     default_panels,
     end_position,
@@ -194,9 +199,11 @@ def variant(
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
+            'CCV_OPTIONS': CCV_OPTIONS,
             'igv_tracks': IGV_TRACKS,
             'gens_info': <dict>,
             'evaluations': <list(evaluations)>,
+            'ccv_evaluations': <list(evaluations)>,
             'rank_score_results': <list(rank_score_results)>,
         }
 
@@ -340,6 +347,17 @@ def variant(
         evaluation(store, evaluation_obj)
         evaluations.append(evaluation_obj)
 
+    # Prepare classification information for visualisation
+    ccv_classification = variant_obj.get("ccv_classification")
+    if isinstance(ccv_classification, int):
+        ccv_code = CCV_MAP[variant_obj["ccv_classification"]]
+        variant_obj["ccv_classification"] = CCV_COMPLETE_MAP[ccv_code]
+
+    ccv_evaluations = []
+    for evaluation_obj in store.get_ccv_evaluations(variant_obj):
+        ccv_evaluation(store, evaluation_obj)
+        ccv_evaluations.append(evaluation_obj)
+
     case_clinvars = store.case_to_clinVars(case_obj.get("display_name"))
 
     if variant_id in case_clinvars:
@@ -379,12 +397,14 @@ def variant(
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
+        "CCV_OPTIONS": CCV_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
+        "ccv_evaluations": ccv_evaluations,
         "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
     }
 
@@ -701,6 +721,133 @@ def variant_acmg_post(
         variant_id=variant_id,
     )
     classification = store.submit_evaluation(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        link=variant_link,
+        criteria=criteria,
+    )
+    return classification
+
+
+def variant_ccv(store: MongoAdapter, institute_id: str, case_name: str, variant_id: str):
+    """Collect data relevant for rendering ClinGen-CCV-VIGG classification form.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): institute_obj['_id']
+        case_name(str): case_obj['display_name']
+        variant_id(str): variant_obj['document_id']
+
+    Returns:
+        data(dict): Things for the template
+    """
+    variant_obj = store.variant(variant_id)
+
+    if not variant_obj:
+        return abort(404)
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
+
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        CRITERIA=CCV_CRITERIA,
+        CCV_OPTIONS=CCV_OPTIONS,
+    )
+
+
+def check_reset_variant_ccv_classification(
+    store: MongoAdapter, evaluation_obj: dict, link: str
+) -> bool:
+    """Check if this was the last ClinGen-CGC-VIGG evaluation left on the variant.
+    If there is still a classification we want to remove the classification.
+
+    Args:
+            stores(cout.adapter.MongoAdapter)
+            evaluation_obj(dict): ClinGen-CGC-VIGG evaluation object
+            link(str): link for event
+
+    Returns: reset(bool) - True if classification reset was attempted
+
+    """
+
+    if list(store.get_ccv_evaluations_case_specific(evaluation_obj["variant_specific"])):
+        return False
+
+    variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
+
+    if not variant_obj:
+        return abort(404)
+
+    ccv_classification = variant_obj.get("ccv_classification")
+
+    if not isinstance(ccv_classification, int):
+        return False
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store,
+        variant_obj,
+        evaluation_obj["institute"]["_id"],
+        evaluation_obj["case"]["display_name"],
+    )
+    user_obj = store.user(current_user.email)
+
+    new_ccv = None
+    store.submit_ccv_evaluation(
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        link=link,
+        classification=new_ccv,
+    )
+    return True
+
+
+def variant_ccv_post(
+    store: MongoAdapter,
+    institute_id: str,
+    case_name: str,
+    variant_id: str,
+    user_email: str,
+    criteria: list,
+) -> dict:
+    """Calculate an ClinGen-CGC-VICC classification based on a list of criteria.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): institute_obj['_id']
+        case_name(str): case_obj['display_name']
+        variant_id(str): variant_obj['document_id']
+        user_mail(str)
+        criteria()
+
+    Returns:
+        data(dict): Things for the template
+
+    """
+    variant_obj = store.variant(variant_id)
+
+    if not variant_obj:
+        return abort(404)
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
+
+    user_obj = store.user(user_email)
+    variant_link = url_for(
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
+    )
+    classification = store.submit_ccv_evaluation(
         institute_obj=institute_obj,
         case_obj=case_obj,
         variant_obj=variant_obj,

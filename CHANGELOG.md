@@ -5,16 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 ### Changed
 - "Show more/less" button to toggle showing 50 observed cases in LoqusDB observation panel
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
+- Classified variants not showing on case report when collaborator adds classification
 
 ## [4.92]
 ### Added
 - PanelApp link on gene page and on gene panels description
-### Changed
 - Add more filters to the delete variants command (institute ID and text file with list of case IDs)
+### Changed
 - Use the `clinicalgenomics/python3.11-venv:1.0` image everywhere in the Dockerfiles
 ### Fixed
 - list/List typing issue on PanelApp extension module
