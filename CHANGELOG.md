@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
+- Classified variants not showing on case report when collaborator adds classification
 
 ## [4.92]
 ### Added
