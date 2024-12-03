@@ -257,7 +257,7 @@
                     {% set args = request.args.to_dict() %}
                     {% do args.update({'max_display': updated_max_display}) %}
                     <div>
-                      <a href=" {{ request.path }}?{{ args|urlencode }}">Show more</a>
+                      <a href="{{ request.script_root }}{{ request.path }}?{{ args|urlencode }}">Show more</a>
                     </div>
                   {% endif %}
                 </td>
