@@ -1,5 +1,6 @@
 from scout.server.blueprints.variant.utils import (
     add_panel_specific_gene_info,
+    ccv_evaluation,
     clinsig_human,
     end_position,
     evaluation,
@@ -234,6 +235,30 @@ def test_evaluation(real_variant_database):
     updated_eval = evaluation(store, eval_obj)
     ## THEN assert that the correct information was added to display evaluation
     assert updated_eval["institute"] == institute
+
+
+def test_ccv_evaluation(real_variant_database):
+    ## GIVEN a populated database
+    store = real_variant_database
+    var = store.variant_collection.find_one()
+    user = store.user_collection.find_one()
+    institute = store.institute_collection.find_one()
+    case = store.case_collection.find_one()
+    link = "a link"
+    classification = "oncogenic"
+
+    ## WHEN adding an evaluation to the database
+    store.submit_ccv_evaluation(var, user, institute, case, link, classification=classification)
+
+    eval_obj = store.ccv_collection.find_one()
+    assert eval_obj["institute_id"] == institute["_id"]
+    assert "institute" not in eval_obj
+
+    # update eval_obj
+    ccv_evaluation(store, eval_obj)
+    ## THEN assert that the correct information was added to display evaluation
+
+    assert eval_obj["institute"] == institute
 
 
 def test_is_affected_healthy():

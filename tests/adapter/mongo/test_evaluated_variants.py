@@ -192,10 +192,10 @@ def test_evaluated_variants(case_obj, institute_obj, user_obj, real_variant_data
     assert n_documents > 0
 
     ## I want to test for the existence of variants with the following keys:
-    ## acmg_classification, manual_rank, dismiss_variant so I need to add these keys with values to variants in the database:
+    ## acmg_classification, manual_rank, dismiss_variant, comment and ccv_classification so I need to add these keys with values to variants in the database:
 
     # Collect four variants from the database
-    test_variants = list(adapter.variant_collection.find().limit(4))
+    test_variants = list(adapter.variant_collection.find().limit(5))
 
     # Add the 'acmg_classification' key with a value to one variant:
     acmg_variant = test_variants[0]
@@ -261,6 +261,23 @@ def test_evaluated_variants(case_obj, institute_obj, user_obj, real_variant_data
         variant=commented_variant,
     )
 
-    # Check that four variants (one ACMG-classified, one manual-ranked, one dismissed and one with comment) are retrieved from the database:
+    # Add the 'ccv_classification' key with a value to one variant:
+    ccv_variant = test_variants[4]
+    adapter.variant_collection.find_one_and_update(
+        {"_id": ccv_variant["_id"]}, {"$set": {"ccv_classification": 4}}
+    )
+
+    ccv_evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="ccv",
+        variant_id=ccv_variant["variant_id"],
+    )
+    adapter.event_collection.insert_one(ccv_evaluation)
+
+    # Check that four variants (one ACMG-classified, one manual-ranked, one dismissed,
+    # one with comment, and one ClinGen-CGC-VIGG classified) are retrieved from the database:
     evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
-    assert len(evaluated_variants) == 4
+    assert len(evaluated_variants) == 5

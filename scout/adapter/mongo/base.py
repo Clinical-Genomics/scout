@@ -34,6 +34,7 @@ from flask import current_app
 from .acmg import ACMGHandler
 from .case import CaseHandler
 from .case_group import CaseGroupHandler
+from .ccv import CCVHandler
 from .clinvar import ClinVarHandler
 from .cytoband import CytobandHandler
 from .disease_terms import DiagnosisHandler
@@ -61,6 +62,7 @@ class MongoAdapter(
     ACMGHandler,
     CaseGroupHandler,
     CaseHandler,
+    CCVHandler,
     ClinVarHandler,
     CytobandHandler,
     DiagnosisHandler,
@@ -97,6 +99,7 @@ class MongoAdapter(
         """Setup connection to database."""
         self.db = database
         self.acmg_collection = database.acmg
+        self.ccv_collection = database.ccv
         self.case_collection = database.case
         self.case_group_collection = database.case_group
         self.clinvar_collection = database.clinvar

@@ -76,6 +76,15 @@ def test_acmg(app):
         assert resp.data
 
 
+def test_ccv(app):
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # the ccv endpoint endpoint should return an ccv json file
+        resp = client.get("/api/v1/ccv")
+        assert resp.status_code == 200
+        assert resp.data
+
+
 def test_variant(app, institute_obj, case_obj, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute

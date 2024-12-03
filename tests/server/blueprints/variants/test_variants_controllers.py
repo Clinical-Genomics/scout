@@ -572,6 +572,7 @@ def test_variants_research_shadow_clinical_assessments(
                 "mosaic_tags": ["1"],
                 "dismiss_variant": ["2", "3"],
                 "acmg_classification": 0,
+                "ccv_classification": 1,
             }
         },
     )
