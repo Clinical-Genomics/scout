@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
+
 ## [4.92]
 ### Added
 - PanelApp link on gene page and on gene panels description
