@@ -4,9 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [TBD]
+## [unreleased]
 ### Changed
 - "Show more" button to see more than ten observed cases in LoqusDB observation panel
+### Fixed
+- Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
 
 ## [4.92]
 ### Added
