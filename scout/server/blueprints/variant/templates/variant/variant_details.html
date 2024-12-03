@@ -260,10 +260,10 @@
                     {% endif %}
                   {% endfor %}
 
-                  {% if obs.cases|length > 10 %}
+                  {% if obs.cases|length > 1 %}
                     <span class="collapse" id="additionalCases_{{ loqusid }}">
                       {% for observed_case in obs.cases %}
-                        {% if loop.index > 10 %}
+                        {% if loop.index > 1 %}
                           {{ observation_badge(observed_case) }}
                         {% endif %}
                       {% endfor %}
