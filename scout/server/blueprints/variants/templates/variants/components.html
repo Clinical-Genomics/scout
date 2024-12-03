@@ -196,24 +196,22 @@
     {% macro panel_badge(variant, gene_id) %}
       {% set matching_panels = [] %}
       {% for panel in variant.case_panels|rejectattr('removed')|list %}
-        {% if gene_id in panel.genes %}
+        {% if gene_id in panel.hgnc_ids %}
            {% set _ = matching_panels.append(panel) %}
         {% endif %}
       {% endfor %}
 
       {% set panel_count = matching_panels|length %}
-      {% if panel_count > 0 %}
-        <a
-          class="badge bg-secondary text-white"
-          data-bs-toggle="popover"
-          data-bs-html="true"
-          data-bs-trigger="hover click"
-          title="Overlapping gene panels"
-          data-bs-content="{% for panel in matching_panels %}
-            {{ panel.panel_name|safe }}<br>
-          {% endfor %}"
-        >{{ panel_count }}</a>
-      {% endif %}
+      <a
+        class="badge bg-secondary text-white"
+        data-bs-toggle="popover"
+        data-bs-html="true"
+        data-bs-trigger="hover click"
+        title="Overlapping gene panels"
+        data-bs-content="{% for panel in matching_panels %}
+          {{ panel.panel_name|safe }}<br>
+        {% endfor %}"
+      >{{ panel_count }}</a>
     {% endmacro %}
 
     {% if variant.category in ["cancer", "sv_cancer"] %}
