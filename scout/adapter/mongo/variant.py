@@ -779,7 +779,6 @@ class VariantHandler(VariantLoader):
         query = {
             "$and": [
                 {"variant_id": {"$in": variant_ids}},
-                {"institute": institute_id},
                 {"case_id": case_id},
                 {
                     "$or": [
