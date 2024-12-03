@@ -91,7 +91,7 @@
     <div class="col-md-4">
       {{ frequencies(variant) }}
       {% if config['LOQUSDB_SETTINGS'] %}
-        {{ observations_panel(variant, observations, case) }}
+        {{ observations_panel(variant, observations, case, max_display) }}
         {{ old_observations(variant) }}
       {% endif %}
 

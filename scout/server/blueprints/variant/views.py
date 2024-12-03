@@ -66,6 +66,8 @@ def variant_by_id(variant_id):
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data["observations"] = observations(store, loqusdb, data["variant"])
+        default_max_display = 10
+        data["max_display"] = request.args.get("max_display", default_max_display, type=int)
 
     if data["variant"].get("category") == "sv":
         return render_template("variant/sv-variant.html", **data)
@@ -94,12 +96,11 @@ def variant(variant_id, institute_id=None, case_name=None):
             url_for("variants.variants", institute_id=institute_id, case_name=case_name)
         )
 
-    default_max_display = 10
-    data["max_display"] = request.args.get("max_display", default_max_display, type=int)
-
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data["observations"] = observations(store, loqusdb, data["variant"])
+        default_max_display = 10
+        data["max_display"] = request.args.get("max_display", default_max_display, type=int)
 
     return data
 
@@ -126,6 +127,8 @@ def cancer_variant(institute_id, case_name, variant_id):
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data["observations"] = observations(store, loqusdb, data["variant"])
+        default_max_display = 10
+        data["max_display"] = request.args.get("max_display", default_max_display, type=int)
 
     return data
 
@@ -150,7 +153,9 @@ def sv_variant(institute_id, case_name, variant_id):
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data["observations"] = observations(store, loqusdb, data["variant"])
-
+        default_max_display = 10
+        data["max_display"] = request.args.get("max_display", default_max_display, type=int)
+        
     return data
 
 
