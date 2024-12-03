@@ -252,8 +252,10 @@
                      {% endif %}
                   {% endfor %}
                   {% if obs.cases|length > max_display %}
+                    {% set current_max_display = request.args.get('max_display', max_display, type=int) %}
+                    {% set updated_max_display = current_max_display + 10 %}
                     <div>
-                      <a href="{{ request.url }}?max_display={{ max_display + 10 }}">Show more</a>
+                      <a href=" {{ url_for(request.endpoint, max_display=updated_max_display, **request.args.to_dict()) }}">Show more</a>
                     </div>
                   {% endif %}
                 </td>
