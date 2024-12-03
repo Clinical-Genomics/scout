@@ -11,7 +11,7 @@ from bson import ObjectId
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
+from scout.constants import ACMG_MAP, CCV_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -1272,6 +1272,16 @@ class CaseHandler(object):
                 {"$set": {"case_id": family_id, "variant_specific": new_specific_id}},
             )
 
+        # update ClinGen-CGC-VIGG classification
+        for ccv_obj in self.ccv_collection.find({"case_id": case_obj["_id"]}):
+            LOG.info("update ClinGen-CGC-VIGG classification: %s", ccv_obj["classification"])
+            ccv_variant = self.variant(ccv_obj["variant_specific"])
+            new_specific_id = get_variantid(ccv_variant, family_id)
+            self.ccv_collection.find_one_and_update(
+                {"_id": ccv_obj["_id"]},
+                {"$set": {"case_id": family_id, "variant_specific": new_specific_id}},
+            )
+
         # update events
         institute_obj = self.institute(case_obj["owner"])
         for event_obj in self.events(institute_obj, case=case_obj):
@@ -1344,6 +1354,7 @@ class CaseHandler(object):
                 'mosaic_tags' : [list of variant ids],
                 'cancer_tier': [list of variant ids],
                 'acmg_classification': [list of variant ids]
+                'ccv_classification': [list of variant ids]
                 'is_commented': [list of variant ids]
         """
         updated_variants = {
@@ -1352,6 +1363,7 @@ class CaseHandler(object):
             "mosaic_tags": [],
             "cancer_tier": [],
             "acmg_classification": [],
+            "ccv_classification": [],
             "is_commented": [],
         }
 
@@ -1394,8 +1406,10 @@ class CaseHandler(object):
                 verb = action
                 if action == "acmg_classification":
                     verb = "acmg"
-                elif action == "is_commented":
+                if action == "is_commented":
                     verb = "comment"
+                if action == "ccv_classification":
+                    verb = "ccv"
 
                 old_event = self.event_collection.find_one(
                     {
@@ -1442,6 +1456,17 @@ class CaseHandler(object):
                         link=link,
                         variant_obj=new_var,
                         acmg_str=str_classif,
+                    )
+
+                if action == "ccv_classification":
+                    str_classif = CCV_MAP.get(old_var.get("ccv_classification"))
+                    updated_variant = self.update_ccv(
+                        institute_obj=institute_obj,
+                        case_obj=case_obj,
+                        user_obj=user_obj,
+                        link=link,
+                        variant_obj=new_var,
+                        ccv_str=str_classif,
                     )
 
                 if action in update_action_map.keys():

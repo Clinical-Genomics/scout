@@ -10,6 +10,8 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
     CALLERS,
+    CCV_COMPLETE_MAP,
+    CCV_MAP,
     INHERITANCE_PALETTE,
     VERBS_ICONS_MAP,
     VERBS_MAP,
@@ -72,6 +74,7 @@ def verified(institute_id):
     return dict(
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
         callers=CALLERS,
+        ccv_map={key: CCV_COMPLETE_MAP[value] for key, value in CCV_MAP.items()},
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         verified=verified_vars,
@@ -87,6 +90,7 @@ def causatives(institute_id):
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
         callers=CALLERS,
         causatives=controllers.causatives(institute_obj, request),
+        ccv_map={key: CCV_COMPLETE_MAP[value] for key, value in CCV_MAP.items()},
         institute=institute_obj,
         inherit_palette=INHERITANCE_PALETTE,
     )

@@ -23,6 +23,7 @@ from .case_tags import (
     VERBS_ICONS_MAP,
     VERBS_MAP,
 )
+from .ccv import CCV_COMPLETE_MAP, CCV_CRITERIA, CCV_MAP, CCV_OPTIONS, REV_CCV_MAP
 from .clinvar import (
     AFFECTED_STATUS,
     ALLELE_OF_ORIGIN,
@@ -126,6 +127,7 @@ COLLECTIONS = [
     "disease_term",
     "variant",
     "acmg",
+    "ccv",
 ]
 
 BUILDS = ["37", "38", "GRCh38"]

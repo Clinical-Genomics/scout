@@ -727,6 +727,7 @@ def test_api_case_report(app, institute_obj, case_obj):
             "causatives_detailed": "causatives",
             "suspects_detailed": "suspects",
             "classified_detailed": "acmg_classification",
+            "ccv_classified_detailed": "ccv_classification",
             "tagged_detailed": "manual_rank",
             "tier_detailed": "cancer_tier",
             "dismissed_detailed": "dismiss_variant",

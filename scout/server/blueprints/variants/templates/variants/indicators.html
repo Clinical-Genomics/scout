@@ -74,6 +74,17 @@
   {% endif %}
 {% endmacro %}
 
+{% macro ccv_evaluations_badge(variant) %}
+  {% if variant.ccv_evaluations %}
+    {% for evaluation in (variant.ccv_evaluations or []) %}
+      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-placement="right"
+        title="Previously classified as {{ evaluation.ccv_classification.label }}">
+        {{ evaluation.ccv_classification.short }}
+      </span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
 {% macro dismissals_badge(variant) %}
   {% if variant.dismissals %}
       <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
