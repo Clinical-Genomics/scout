@@ -628,9 +628,11 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
 
+    # Collect ACMG and CCV-classified, tagged, tiered, dismissed and commented variants
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
+        LOG.warning(str(var_obj))
         _append_evaluated_variant_by_type(
             evaluated_variants_by_type, var_obj, institute_obj, case_obj
         )
