@@ -200,7 +200,21 @@
   </div>
 {% endmacro %}
 
-{% macro observations_panel(variant, observations, case, max_display) %}
+{% macro observation_badge(data) %}
+
+  {% if data.variant and data.variant.category == "snv"%}
+  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+  {% elif data.variant and data.variant.category == "sv"%}
+  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+  {% else %}
+  <span data-bs-toggle="tooltip" title="Missing link, this might be caused by variants not loaded after a rerun or inexact SV matching.">
+    <span class="ml-3 badge rounded-pill bg-light text-dark">{{ data.case.display_name }}</span>
+  </span>
+  {% endif %}
+
+{% endmacro %}
+
+{% macro observations_panel(variant, observations, case) %}
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
@@ -240,25 +254,23 @@
                      </span>
                   {% endif %}
                   {% endif %}
-                  {% for data in obs.cases[:max_display] %}
-                     {% if data.variant and data.variant.category == "snv"%}
-                       <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
-                     {% elif data.variant and data.variant.category == "sv"%}
-                       <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
-                     {% else %}
-                       <span data-bs-toggle="tooltip" title="Missing link, this might be caused by variants not loaded after a rerun or inexact SV matching.">
-                         <span class="ml-3 badge rounded-pill bg-light text-dark">{{ data.case.display_name }}</span>
-                       </span>
-                     {% endif %}
+                  {% for data in obs.cases %}
+                    {% if loop.index <= 10 %}
+                      {{ observation_badge(data) }}
+                    {% endif %}
                   {% endfor %}
-                  {% if obs.cases|length > max_display %}
-                    {% set current_max_display = request.args.get('max_display', default=max_display) | int %}
-                    {% set updated_max_display = current_max_display + 10 %}
-                    {% set args = request.args.to_dict() %}
-                    {% do args.update({'max_display': updated_max_display}) %}
-                    <div>
-                      <a href="{{ request.script_root }}{{ request.path }}?{{ args|urlencode }}">Show more</a>
-                    </div>
+
+                  {% if obs.cases|length > 10 %}
+                    <span class="collapse" id="additionalCases_{{ loqusid }}">
+                      {% for data in obs.cases %}
+                        {% if loop.index > 10 %}
+                          {{ observation_badge(data) }}
+                        {% endif %}
+                      {% endfor %}
+                    </span>
+                    <button class="btn btn-link p-0 toggle-button" type="button" data-bs-toggle="collapse" href="#additionalCases_{{ loqusid }}">
+                      <span class="toggle-text">Show more</span>
+                    </button>
                   {% endif %}
                 </td>
               </tr>
@@ -446,3 +458,12 @@
     </div>
   </div>
 {% endmacro %}
+
+
+{% macro scripts() %}
+  <script>
+    console.log("Hellos");
+  </script>
+{% endmacro %}
+
+
