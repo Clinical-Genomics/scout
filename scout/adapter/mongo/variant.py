@@ -803,10 +803,12 @@ class VariantHandler(VariantLoader):
                 variant_obj=var, build=case_obj["genome_build"]
             )
 
+            LOG.warning(f"var id:{var['variant_id']} --->{variants[var['variant_id']]}")
+
         # Collect all variant comments from the case
         event_query = {"$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]}
 
-        # Get all variantids for commented variants
+        # Get all variant ids for commented variants
         comment_variants = {
             event["variant_id"] for event in self.event_collection.find(event_query)
         }
