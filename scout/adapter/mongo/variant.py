@@ -775,6 +775,7 @@ class VariantHandler(VariantLoader):
 
         # Get all variants that have been evaluated in some way for a case
         variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
+        LOG.error(f"VARIANT IDs: {variant_ids}")
 
         query = {
             "$and": [
