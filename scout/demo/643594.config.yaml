@@ -113,8 +113,8 @@ custom_images:
         path: scout/demo/images/custom_images/640x480_one.png
       - title: A jpg image
         description: A very good description
-        width: 500
-        path: scout/demo/images/custom_images/640x480_two.jpg
+        width: 1300
+        path: scout/demo/images/custom_images/1300x1000.jpg
     section_two:
       - title: An SVG image
         description: Another very good description
