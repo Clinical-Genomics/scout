@@ -462,8 +462,7 @@ def get_loqusdb_obs_cases(
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
     for i, case_id in enumerate(obs_families):
-        max_observations = 50
-        if len(obs_cases) == max_observations:
+        if len(obs_cases) == 50:
             break
         if case_id == variant_obj["case_id"]:
             continue
