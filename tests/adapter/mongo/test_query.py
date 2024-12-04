@@ -527,8 +527,8 @@ def test_build_has_clnsig(
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert {"clnsig": {"$exists": True}} in mongo_query["$and"]
-    assert {"clnsig": {"$ne": None}} in mongo_query["$and"]
+    assert mongo_query["clnsig"]["$exists"] is True
+    assert mongo_query["clnsig"]["$ne"] is None
 
 
 def test_build_has_cosmic_ids(
