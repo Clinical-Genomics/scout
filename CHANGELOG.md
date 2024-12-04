@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
+### Changed
+- "Show more/less" button to toggle showing 50 observed cases in LoqusDB observation panel
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
 - Classified variants not showing on case report when collaborator adds classification
