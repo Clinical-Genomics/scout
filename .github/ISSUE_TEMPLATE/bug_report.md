@@ -7,7 +7,9 @@ assignees: ''
 
 ---
 
-Thank you for taking the time to contribute an issue! 
+Thank you for taking the time to contribute an issue!
+
+**⚠️ Important:** Please avoid sharing any sensitive or personal information, including text or images, in this issue.
 
 **Describe the bug**
 A clear and concise description of what the bug is.

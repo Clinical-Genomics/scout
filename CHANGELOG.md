@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
+- A warning to not to post sensitive or personal info when opening an issue or any type
 ### Changed
 - "Show more/less" button to toggle showing 50 observed cases in LoqusDB observation panel
 ### Fixed
