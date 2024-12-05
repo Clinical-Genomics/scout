@@ -372,7 +372,7 @@
           <select class="form-control form-control-sm" name="collaborator">
             <option selected disabled value="">Select institute</option>
             {% for collab_id, collab_name in collaborators %}
-              <option value="{{ collab_id }}">{{ collab_name }}</option>
+              <option value="{{ collab_id }}">{{ collab_name }} ({{ collab_id }})</option>
             {% endfor %}
           </select>
           <span class="input-group-btn">
@@ -389,7 +389,7 @@
         <select class="form-control form-control-sm" name="collaborator">
           <option>Institute</option>
           {% for collab_id, collab_name in case.o_collaborators %}
-            <option value="{{ collab_id }}">{{ collab_name }}</option>
+            <option value="{{ collab_id }}">{{ collab_name }} ({{ collab_id }})</option>
           {% endfor %}
         </select>
         <div class="input-group-btn">
