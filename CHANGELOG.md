@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A warning to not to post sensitive or personal info when opening an issue
 ### Changed
 - "Show more/less" button to toggle showing 50 observed cases in LoqusDB observation panel
+- Show customer id on share and revoke sharing case collapsible sidebar dialog
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
 - Classified variants not showing on case report when collaborator adds classification
