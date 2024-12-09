@@ -80,6 +80,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLI scout update type hint error when running commands using Python 3.9
 - Missing alignment files but present index files could crash the function creating alignment tracks for IGV display
 - Fix missing "Repeat locus" info on STRs export
+- Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 
 ## [4.90.1]
 ### Fixed
