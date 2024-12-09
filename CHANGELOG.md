@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Limit the size of custom images displayed on case and variant page and add a link to display them in full size in a new tab
 - Classified variants not showing on case report when collaborator adds classification
+- On variantS page, when a variant has more than one gene, then the gene panel badge reflect the panels each gene is actually in
 - Updating genes on a gene panel using a file
 
 ## [4.92]
