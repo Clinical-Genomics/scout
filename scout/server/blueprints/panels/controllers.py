@@ -160,7 +160,6 @@ def update_panel(store, panel_name, csv_lines, option):
     Returns:
         panel_obj(dict)
     """
-    new_genes = []
     panel_obj = store.gene_panel(panel_name)
     if panel_obj is None:
         return None
@@ -202,11 +201,11 @@ def update_panel(store, panel_name, csv_lines, option):
             )
 
         info_data = {
-            "disease_associated_transcripts": new_gene["transcripts"],
-            "reduced_penetrance": new_gene["reduced_penetrance"],
-            "mosaicism": new_gene["mosaicism"],
-            "inheritance_models": new_gene["inheritance_models"],
-            "database_entry_version": new_gene["database_entry_version"],
+            "disease_associated_transcripts": new_gene.get("transcripts", []),
+            "reduced_penetrance": new_gene.get("reduced_penetrance", ""),
+            "mosaicism": new_gene.get("mosaicism", ""),
+            "inheritance_models": new_gene.get("inheritance_models", []),
+            "database_entry_version": new_gene.get("database_entry_version", ""),
         }
         if (
             option == "replace"
