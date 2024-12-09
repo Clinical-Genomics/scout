@@ -225,9 +225,9 @@
               <strong>Transcripts</strong>:
               {{ gene.info.disease_associated_transcripts|join(',') if gene.info.disease_associated_transcripts }} <br>
               <strong>Reduced penetrance</strong>:
-              {{ 'yes' if gene.info.reduced_penetrance else 'no' }} <br>
+              {{ gene.info.reduced_penetrance if gene.info.reduced_penetrance }} <br>
               <strong>Mosaicism</strong>:
-              {{ 'yes' if gene.info.mosaicism else 'no' }} <br>
+              {{ gene.info.mosaicism if gene.info.mosaicism }} <br>
               <strong>Inheritance models</strong>:
               {{ gene.info.inheritance_models|join(',') if gene.info.inheritance_models }} <br>
               <strong>Entry version</strong>:
