@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.93]
 ### Added
 - ClinGen-CGC-VICC oncogenicity classification for cancer SNVs
 - A warning to not to post sensitive or personal info when opening an issue
