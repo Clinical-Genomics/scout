@@ -13,10 +13,10 @@ jobs:
    - name: Check out git repository
      uses: actions/checkout@v4
 
-   - name: Set up Python 3.11
+   - name: Set up Python 3.12
      uses: actions/setup-python@v5
      with:
-      python-version: 3.11
+      python-version: 3.12
 
    - name: Install build tools
      run: >-
@@ -45,7 +45,7 @@ jobs:
    steps:
 
     - name: Check out git repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Publish main image (Dockerfile) to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
