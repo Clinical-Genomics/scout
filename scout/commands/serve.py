@@ -6,7 +6,6 @@ import click
 from flask.cli import current_app, with_appcontext
 from livereload import Server
 from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
-from pymongo.synchronous.mongo_client import MongoClient
 from werkzeug.serving import run_simple
 
 LOG = logging.getLogger(__name__)
