@@ -23,7 +23,7 @@ def serve(host, port, debug, livereload, test):
     """Start the web server."""
 
     # Verify the database connectivity before launching the app
-    mongo_client: MongoClient = current_app.config.get("MONGO_DATABASE").client
+    mongo_client = current_app.config.get("MONGO_DATABASE").client
 
     try:
         mongo_client.server_info()
