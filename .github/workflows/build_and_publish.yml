@@ -23,6 +23,7 @@ jobs:
         python -m
         pip install
         wheel
+        setuptools
         twine
         --user
 
