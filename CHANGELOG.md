@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Classified variants not showing on case report when collaborator adds classification
 - On variantS page, when a variant has more than one gene, then the gene panel badge reflect the panels each gene is actually in
 - Updating genes on a gene panel using a file
+- Link out to Horak 2020 from CCV classify page opens in new tab
 
 ## [4.92]
 ### Added
