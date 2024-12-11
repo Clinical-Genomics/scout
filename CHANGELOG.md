@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.93.1]
 ### Fixed
 - Updated PyPi build GitHub action to explicitly include setuptools (for Python 3.12 distro)
 
