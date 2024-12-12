@@ -1,12 +1,9 @@
 # coding=UTF-8
 
-import logging
 from typing import Optional
 
 from scout.constants import ACMG_COMPLETE_MAP
 from scout.constants.acmg import ACMG_POTENTIAL_CONFLICTS
-
-LOG = logging.getLogger(__name__)
 
 
 def is_pathogenic(pvs, ps_terms, pm_terms, pp_terms):
@@ -305,7 +302,6 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
         (points, temperature, point_classification)
 
     """
-    LOG.warning(f"acmg_terms received:{acmg_terms}")
     TEMPERATURE_STRINGS = {
         -1: {"label": "B/LB", "color": "success", "icon": "fa-times"},
         0: {"label": "Ice cold", "color": "info", "icon": "fa-icicles"},
