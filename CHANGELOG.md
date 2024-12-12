@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
+
 ## [4.93.1]
 ### Fixed
 - Updated PyPi build GitHub action to explicitly include setuptools (for Python 3.12 distro)

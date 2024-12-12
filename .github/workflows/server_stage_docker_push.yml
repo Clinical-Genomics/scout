@@ -29,9 +29,11 @@ jobs:
 
      - name: Build and push
        if: steps.branch-name.outputs.is_default == 'false'
-       uses: docker/build-push-action@v5
+       uses: docker/build-push-action@v6
        with:
          context: ./
          file: ./Dockerfile-server
          push: true
+         provenance: mode=max
+         sbom: true
          tags: "clinicalgenomics/scout-server-stage:${{steps.branch-name.outputs.current_branch}}, clinicalgenomics/scout-server-stage:latest"
