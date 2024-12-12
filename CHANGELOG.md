@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ACMG VUS Bayesian score / temperature on case reports
+### Changed
+- On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 ### Fixed
 - UCSC hg38 links are updated
 
