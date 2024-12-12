@@ -673,10 +673,12 @@ def _append_evaluated_variant_by_type(
                 )
                 if variant_acmg_classifications:
                     var_obj["bayesian_acmg"] = get_acmg_temperature(
-                        [
-                            criterium["term"]
-                            for criterium in variant_acmg_classifications[0].get("criteria")
-                        ]
+                        set(
+                            [
+                                criterium["term"]
+                                for criterium in variant_acmg_classifications[0].get("criteria")
+                            ]
+                        )
                     )
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
