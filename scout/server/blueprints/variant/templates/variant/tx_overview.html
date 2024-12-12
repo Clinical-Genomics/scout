@@ -76,15 +76,15 @@
               </td> <!-- end of ID col-->
 
               <td> <!-- HGVS Description col -->
-                {% set hgvs_c = (tx.coding_sequence_name or '')|truncate(20, True) %}
+                {% set hgvs_c = (tx.coding_sequence_name or '')|truncate(30, True) %}
                 {% if variant.chromosome in ["MT","M"] %}
                   {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
-                  {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
+                  {{ mt_notation|truncate(30,True) }} <span class="text-muted">({{ hgvs_c }})</span>
                 {% else %}
                   {{ hgvs_c }}
                 {% endif %}
                 <span class="text-muted float-end">
-                  {{ (tx.protein_sequence_name or '')|url_decode|truncate(20, True) }}
+                  {{ (tx.protein_sequence_name or '')|url_decode|truncate(30, True) }}
                 </span>
               </td> <!-- end of HGVS Description col -->
 
