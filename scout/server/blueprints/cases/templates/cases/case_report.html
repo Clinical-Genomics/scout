@@ -668,6 +668,7 @@
               <th>Inheritance models</th>
             {% endif %}
             <th>ACMG classification</th>
+            <th>Bayesian classification</th>
             {% if cancer %}
             <th>ClinGen-CGC-VICC classification</th>
             {% endif %}
@@ -718,6 +719,13 @@
               {% else %}
                 -
               {% endif %}
+            <td>
+              {% if variant.bayesian_acmg %}
+                <span class="badge rounded-pill bg-{{variant.bayesian_acmg.temperature_class}}">Score {{variant.bayesian_acmg.points|string}} <span class='fa {{variant.bayesian_acmg.temperature_icon}}'></span> {{variant.bayesian_acmg.temperature}} ({{variant.bayesian_acmg.point_classification}})</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
             </td>
             {% if cancer %}
             <td>

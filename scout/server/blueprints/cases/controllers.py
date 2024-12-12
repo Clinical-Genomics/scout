@@ -62,6 +62,7 @@ from scout.server.utils import (
     case_has_rna_tracks,
     institute_and_case,
 )
+from scout.utils.acmg import get_acmg_temperature
 
 LOG = logging.getLogger(__name__)
 
@@ -618,7 +619,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
 
     # Collect causative, partial causative and suspected variants
     for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
+        LOG.error(eval_category)
         for var_id in case_obj.get(case_key, []):
+            LOG.warning(var_id)
             var_obj = store.variant(document_id=var_id)
             if not var_obj:
                 continue
@@ -631,6 +634,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
+
         _append_evaluated_variant_by_type(
             evaluated_variants_by_type, var_obj, institute_obj, case_obj
         )
@@ -663,6 +667,19 @@ def _append_evaluated_variant_by_type(
     """
     for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
         if variant_key in var_obj and var_obj[variant_key] is not None:
+            if (
+                eval_category == "classified_detailed"
+            ):  # Append info to display the ACMG VUS Bayesian score / temperature
+                variant_acmg_classifications = store.get_evaluations_case_specific(
+                    document_id=var_obj["_id"]
+                )
+                if variant_acmg_classifications:
+                    var_obj["bayesian_acmg"] = get_acmg_temperature(
+                        [
+                            criterium["term"]
+                            for criterium in variant_acmg_classifications[0].get("criteria")
+                        ]
+                    )
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
