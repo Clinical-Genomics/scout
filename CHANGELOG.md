@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ACMG VUS Bayesian score / temperature on case reports
+### Fixed
+- UCSC hg38 links are updated
+
 
 ## [4.93.1]
 ### Fixed
