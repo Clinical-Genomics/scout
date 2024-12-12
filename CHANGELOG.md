@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- On variant page, RefSeq transcripts panel, truncate protein change description if it's longer than 20 characters
+- On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 
 ## [4.93.1]
 ### Fixed
