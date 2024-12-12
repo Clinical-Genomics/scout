@@ -67,6 +67,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export variant type and callers-related info fields when exporting variants from variantS pages
 - Cases advanced search on the dashboard page
 - Possibility to use only signed off panels when building the PanelApp GREEN panel
+- Option to exclude ClinVar significance status in SNVs filters form
 ### Changed
 - On genes panel page and gene panel PDF export, it's more evident which genes were newly introduced into the panel
 - WTS outlier position copy button on WTS outliers page
@@ -85,6 +86,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactor the loading of PanelApp panels to use the maintained API - Customised PanelApp GREEN panels
 - Better layout for Consequence cell on cancer SNVs page
 - Merged `Qual` and `Callers` cell on cancer SNVs page
+- Improved tooltips for ClinVar filter in SNVs filter form
 ### Fixed
 - Empty custom_images dicts in case load config do not crash
 - Tracks missing alignment files are skipped on generating IGV views
