@@ -619,9 +619,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
 
     # Collect causative, partial causative and suspected variants
     for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
-        LOG.error(eval_category)
         for var_id in case_obj.get(case_key, []):
-            LOG.warning(var_id)
             var_obj = store.variant(document_id=var_id)
             if not var_obj:
                 continue
