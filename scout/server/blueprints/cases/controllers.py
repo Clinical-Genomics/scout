@@ -665,14 +665,18 @@ def _append_evaluated_variant_by_type(
     """
     for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
         if variant_key in var_obj and var_obj[variant_key] is not None:
+
+            decorated_variant = _get_decorated_var(
+                var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj
+            )
             if (
                 eval_category == "classified_detailed"
             ):  # Append info to display the ACMG VUS Bayesian score / temperature
                 variant_acmg_classifications = store.get_evaluations_case_specific(
-                    document_id=var_obj["_id"]
+                    document_id=decorated_variant["_id"]
                 )
                 if variant_acmg_classifications:
-                    var_obj["bayesian_acmg"] = get_acmg_temperature(
+                    decorated_variant["bayesian_acmg"] = get_acmg_temperature(
                         set(
                             [
                                 criterium["term"]
@@ -680,10 +684,7 @@ def _append_evaluated_variant_by_type(
                             ]
                         )
                     )
-                    print(f"var[bayesian_acmg] is -->{var_obj['bayesian_acmg']}")
-            evaluated_variants_by_type[eval_category].append(
-                _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
-            )
+            evaluated_variants_by_type[eval_category].append(decorated_variant)
 
 
 def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
