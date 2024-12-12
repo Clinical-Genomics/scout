@@ -615,13 +615,16 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
 def add_bayesian_acmg_classification(variant_obj: dict):
     """Append info to display the ACMG VUS Bayesian score / temperature."""
     # Append info to display the ACMG VUS Bayesian score / temperature
-    variant_acmg_classifications = store.get_evaluations_case_specific(
-        document_id=variant_obj["_id"]
+    variant_acmg_classifications = list(
+        store.get_evaluations_case_specific(document_id=variant_obj["_id"])
     )
     if variant_acmg_classifications:
         variant_obj["bayesian_acmg"] = get_acmg_temperature(
             set(
-                [criterium["term"] for criterium in variant_acmg_classifications[0].get("criteria")]
+                [
+                    criterium.get("term")
+                    for criterium in variant_acmg_classifications[0].get("criteria", [])
+                ]
             )
         )
 
