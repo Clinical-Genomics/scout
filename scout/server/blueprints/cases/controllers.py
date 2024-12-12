@@ -62,6 +62,7 @@ from scout.server.utils import (
     case_has_rna_tracks,
     institute_and_case,
 )
+from scout.utils.acmg import get_acmg_temperature
 
 LOG = logging.getLogger(__name__)
 
@@ -611,6 +612,22 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
+def add_bayesian_acmg_classification(variant_obj: dict):
+    """Append info to display the ACMG VUS Bayesian score / temperature."""
+    variant_acmg_classifications = list(
+        store.get_evaluations_case_specific(document_id=variant_obj["_id"])
+    )
+    if variant_acmg_classifications:
+        variant_obj["bayesian_acmg"] = get_acmg_temperature(
+            set(
+                [
+                    criterium.get("term")
+                    for criterium in variant_acmg_classifications[0].get("criteria", [])
+                ]
+            )
+        )
+
+
 def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
     """Gather evaluated variants info to include in case report."""
 
@@ -624,6 +641,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 continue
             if case_key == "partial_causatives":
                 var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
+            add_bayesian_acmg_classification(var_obj)
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
@@ -663,6 +681,9 @@ def _append_evaluated_variant_by_type(
     """
     for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
         if variant_key in var_obj and var_obj[variant_key] is not None:
+
+            add_bayesian_acmg_classification(var_obj)
+
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
