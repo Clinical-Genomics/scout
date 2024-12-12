@@ -5,8 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 ### Fixed
 - UCSC hg38 links are updated
+
 
 ## [4.93.1]
 ### Fixed
