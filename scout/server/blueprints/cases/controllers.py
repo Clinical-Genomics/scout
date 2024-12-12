@@ -612,6 +612,20 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
+def add_bayesian_acmg_classification(variant_obj: dict):
+    """Append info to display the ACMG VUS Bayesian score / temperature."""
+    # Append info to display the ACMG VUS Bayesian score / temperature
+    variant_acmg_classifications = store.get_evaluations_case_specific(
+        document_id=variant_obj["_id"]
+    )
+    if variant_acmg_classifications:
+        variant_obj["bayesian_acmg"] = get_acmg_temperature(
+            set(
+                [criterium["term"] for criterium in variant_acmg_classifications[0].get("criteria")]
+            )
+        )
+
+
 def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
     """Gather evaluated variants info to include in case report."""
 
@@ -625,6 +639,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 continue
             if case_key == "partial_causatives":
                 var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
+            add_bayesian_acmg_classification(var_obj)
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
@@ -632,7 +647,6 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
-
         _append_evaluated_variant_by_type(
             evaluated_variants_by_type, var_obj, institute_obj, case_obj
         )
@@ -666,25 +680,11 @@ def _append_evaluated_variant_by_type(
     for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
         if variant_key in var_obj and var_obj[variant_key] is not None:
 
-            decorated_variant = _get_decorated_var(
-                var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj
+            add_bayesian_acmg_classification(var_obj)
+
+            evaluated_variants_by_type[eval_category].append(
+                _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
-            if (
-                eval_category == "classified_detailed"
-            ):  # Append info to display the ACMG VUS Bayesian score / temperature
-                variant_acmg_classifications = store.get_evaluations_case_specific(
-                    document_id=decorated_variant["_id"]
-                )
-                if variant_acmg_classifications:
-                    decorated_variant["bayesian_acmg"] = get_acmg_temperature(
-                        set(
-                            [
-                                criterium["term"]
-                                for criterium in variant_acmg_classifications[0].get("criteria")
-                            ]
-                        )
-                    )
-            evaluated_variants_by_type[eval_category].append(decorated_variant)
 
 
 def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
