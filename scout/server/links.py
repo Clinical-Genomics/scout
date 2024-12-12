@@ -714,7 +714,7 @@ def ucsc_link(variant_obj, build=None):
     )
     if build == 38:
         url_template = (
-            "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
+            "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&"
             "position=chr{this[chromosome]}:{this[position]}"
             "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack"
         )
