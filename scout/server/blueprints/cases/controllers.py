@@ -680,6 +680,7 @@ def _append_evaluated_variant_by_type(
                             ]
                         )
                     )
+                    print(f"var[bayesian_acmg] is -->{var_obj['bayesian_acmg']}")
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
