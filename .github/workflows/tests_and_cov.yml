@@ -14,21 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version-file: ".python-version"
 
-        # Cache package installation step to speed up the following step
-      - uses: actions/cache@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
         with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: Install deps
-        run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -r requirements.txt -e .
-          pip check
+      - name: Install the project
+        run: uv sync --all-extras --dev
 
   test:
     needs: setup
@@ -45,22 +43,22 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
-
-        # Cache package installation step to speed up the following step
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+          python-version-file: ".python-version"
 
       - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
       - name: Run pytest
-        run: pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
+        run: uv run pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -74,10 +72,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version-file: ".python-version"
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
