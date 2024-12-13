@@ -1395,15 +1395,16 @@ wheels = [
 
 [[package]]
 name = "mongomock"
-version = "3.20.0"
+version = "4.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "packaging" },
+    { name = "pytz" },
     { name = "sentinels" },
-    { name = "six" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7b/2d/7e83e435d1bc5a1a8f6e06f5e4f425aeb38a52a35e9539e7d2da0e528f2a/mongomock-3.20.0.tar.gz", hash = "sha256:02f660a839a4623669fefc7168056a0a6e0c0f9d93b2b5eeaa52d17f3a642486", size = 109297 }
+sdist = { url = "https://files.pythonhosted.org/packages/4d/a4/4a560a9f2a0bec43d5f63104f55bc48666d619ca74825c8ae156b08547cf/mongomock-4.3.0.tar.gz", hash = "sha256:32667b79066fabc12d4f17f16a8fd7361b5f4435208b3ba32c226e52212a8c30", size = 135862 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/56/fe1fcdfc8551e30fa66ec02275c0bf54376a81e196524690a10e6bade90a/mongomock-3.20.0-py2.py3-none-any.whl", hash = "sha256:f9c60ba13cea86ce532cf39091191237eaaf5a6360371d43d3b1dc624cb559f1", size = 51716 },
+    { url = "https://files.pythonhosted.org/packages/94/4d/8bea712978e3aff017a2ab50f262c620e9239cc36f348aae45e48d6a4786/mongomock-4.3.0-py2.py3-none-any.whl", hash = "sha256:5ef86bd12fc8806c6e7af32f21266c61b6c4ba96096f85129852d1c4fec1327e", size = 64891 },
 ]
 
 [[package]]
@@ -2384,7 +2385,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "invoke" },
-    { name = "mongomock", specifier = "==3.20" },
+    { name = "mongomock" },
     { name = "pytest", specifier = ">=5.2" },
     { name = "pytest", specifier = ">=7.4.4" },
     { name = "pytest-cov" },

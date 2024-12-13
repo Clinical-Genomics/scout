@@ -129,7 +129,7 @@ dev = [
 	"pytest-flask",
 	"pytest-test-groups",
 	"pytest-cov",
-	"mongomock==3.20",
+	"mongomock",
 	"responses",
     "pytest-cov>=4.1.0",
     "pytest>=7.4.4",
