@@ -58,7 +58,7 @@ jobs:
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
       - name: Run pytest
-        run: uv run pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
+        run: uv run --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
