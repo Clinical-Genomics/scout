@@ -13,7 +13,7 @@ jobs:
               run: uv python install
 
             - name: Install deps
-              run: uv pip install --group docs -e .
+              run: uv sync --only-group docs
 
             - name: launch mkdocs in strict mode
               run: uv run mkdocs build --strict
