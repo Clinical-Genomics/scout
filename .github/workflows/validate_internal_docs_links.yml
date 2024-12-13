@@ -9,13 +9,5 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: astral-sh/setup-uv@v3
-            - name: Set up Python
-              run: uv python install
-
-            - name: Install deps
-              run: uv sync --only-group docs
-
             - name: launch mkdocs in strict mode
-              run: uv run mkdocs build --strict
-
-
+              run: uv run --only-group docs mkdocs build --strict
