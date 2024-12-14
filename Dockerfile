@@ -5,8 +5,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS python-builder
 
 WORKDIR /app
 
-# Copy the project into the image, mostly for the pyproject.toml, uv.lock, README.md, ...
-#ADD . /app
+# Copy the project files needed to configure dependencies build into the image
 COPY pyproject.toml uv.lock README.md .
 
 # No wheel for indirect pycairo dependency so need build env for it to install
