@@ -1,28 +1,24 @@
 ###########
 # BUILDER #
 ###########
-FROM clinicalgenomics/python3.12-venv:1.0 AS python-builder
-
-ENV PATH="/venv/bin:$PATH"
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS python-builder
 
 WORKDIR /app
 
-# Install Scout dependencies
-COPY requirements.txt .
 # No wheel for indirect pycairo dependency so need build env for it to install
 RUN apt-get update && \
     apt-get -y upgrade && \
     apt-get -y install --no-install-recommends gcc libcairo2-dev pkg-config python3-dev
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv sync --frozen
 
 #########
 # FINAL #
 #########
-FROM python:3.12-slim-bookworm
+FROM ghcr.io/astral-sh/uv:python3.13-slim-bookworm
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
-LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
+LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNV,Next generation sequencing"
 LABEL about.license="MIT License (MIT)"
 
 # Install base dependencies

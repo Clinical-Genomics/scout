@@ -111,6 +111,9 @@ build-backend = "hatchling.build"
   ]
 
 
+[tool.pytest.ini_options]
+looponfailroots = ["tests/", "scout/"]
+
 [tool.black]
 line-length = 100
 target-version = ['py313']
