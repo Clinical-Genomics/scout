@@ -3,7 +3,7 @@ import datetime
 import logging
 from typing import Dict, List, Optional, Tuple
 
-from flask import Response, current_app, flash, url_for
+from flask import Response, current_app, flash, url_for, request
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
@@ -467,7 +467,7 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
     )
 
 
-def cases(store, request, institute_id):
+def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     """Preprocess case objects for the 'cases' view."""
     data = {}
 
@@ -552,7 +552,7 @@ def cases(store, request, institute_id):
     return data
 
 
-def populate_case_obj(case_obj, store):
+def populate_case_obj(case_obj: dict, store: MongoAdapter):
     """Helper function to populate additional case information."""
     analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
     if len(analysis_types) > 1:
