@@ -19,10 +19,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.variant.utils import (
-    predictions,
-    update_representative_gene,
-)
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
@@ -45,23 +42,6 @@ VAR_SPECIFIC_EVENTS = [
     "sanger",
     "cancel_sanger",
 ]
-
-ALL_CASES_PROJECTION = {
-    "analysis_date": 1,
-    "assignees": 1,
-    "beacon": 1,
-    "case_id": 1,
-    "display_name": 1,
-    "individuals": 1,
-    "is_rerun": 1,
-    "is_research": 1,
-    "mme_submission": 1,
-    "owner": 1,
-    "panels": 1,
-    "status": 1,
-    "track": 1,
-    "vcf_files": 1,
-}
 
 
 def get_timeline_data(limit):
@@ -508,6 +488,23 @@ def cases(store, request, institute_id):
     limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
 
     data["form"] = CaseFilterForm(request.form)
+
+    ALL_CASES_PROJECTION = {
+        "analysis_date": 1,
+        "assignees": 1,
+        "beacon": 1,
+        "case_id": 1,
+        "display_name": 1,
+        "individuals": 1,
+        "is_rerun": 1,
+        "is_research": 1,
+        "mme_submission": 1,
+        "owner": 1,
+        "panels": 1,
+        "status": 1,
+        "track": 1,
+        "vcf_files": 1,
+    }
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
