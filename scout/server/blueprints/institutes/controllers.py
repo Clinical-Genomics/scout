@@ -3,7 +3,7 @@ import datetime
 import logging
 from typing import Dict, List, Optional, Tuple
 
-from flask import Response, current_app, flash, url_for, request
+from flask import Response, current_app, flash, request, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
