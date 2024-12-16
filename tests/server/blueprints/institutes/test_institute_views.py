@@ -165,6 +165,31 @@ def test_institute_settings(app, user_obj, institute_obj):
         assert updated_institute["clinvar_submitters"] == form_data["clinvar_emails"]
 
 
+def test_cases_export_samples(app, institute_obj):
+    """Test the cases endpoint, providing a request to download cases samples to file."""
+
+    # GIVEN a valid logged user
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # GIVEN a query to download institute's cases and samples to file
+        request_data = {
+            "export": "Filter and export",
+        }
+        resp = client.get(
+            url_for(
+                "overview.cases",
+                institute_id=institute_obj["internal_id"],
+                params=request_data,
+            )
+        )
+        # THEN the response should be successful and contain text
+        assert resp.status_code == 200
+        assert resp.mimetype == "text/html"
+
+
 def test_cases(app, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -180,7 +205,7 @@ def test_cases(app, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-        # test query passing parameters in seach form
+        # test query passing parameters in search form
         request_data = {
             "limit": "100",
             "skip_assigned": "on",
