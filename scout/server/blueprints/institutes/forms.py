@@ -181,3 +181,4 @@ class CaseFilterForm(FlaskForm):
     has_rna = BooleanField("Has RNA-seq data")
     validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
+    export = SubmitField(label="Export")

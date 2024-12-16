@@ -41,6 +41,23 @@ VAR_SPECIFIC_EVENTS = [
     "cancel_sanger",
 ]
 
+ALL_CASES_PROJECTION = {
+    "analysis_date": 1,
+    "assignees": 1,
+    "beacon": 1,
+    "case_id": 1,
+    "display_name": 1,
+    "individuals": 1,
+    "is_rerun": 1,
+    "is_research": 1,
+    "mme_submission": 1,
+    "owner": 1,
+    "panels": 1,
+    "status": 1,
+    "track": 1,
+    "vcf_files": 1,
+}
+
 
 def get_timeline_data(limit):
     """Retrieve chronologially ordered events from the database to display them in the timeline page
@@ -422,6 +439,26 @@ def _sort_cases(data, request, all_cases):
     return all_cases
 
 
+def export_case_samples(filtered_cases):
+    """Export to file a list of samples from selected cases."""
+    export_lines = []
+    for case in filtered_cases:
+        for ind in case.get("individuals", []):
+            export_line = [
+                case["display_name"],
+                case["_id"],
+                case["created_at"],
+                case["status"],
+                case.get("track"),
+                individual["individual_id"],
+                individual["display_name"],
+                individual.get("analysis_type"),
+            ]
+            export_lines.append(export_line)
+
+    return export_lines
+
+
 def cases(store, request, institute_id):
     """Preprocess case objects.
 
@@ -443,23 +480,6 @@ def cases(store, request, institute_id):
     limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
 
     data["form"] = CaseFilterForm(request.form)
-
-    ALL_CASES_PROJECTION = {
-        "analysis_date": 1,
-        "assignees": 1,
-        "beacon": 1,
-        "case_id": 1,
-        "display_name": 1,
-        "individuals": 1,
-        "is_rerun": 1,
-        "is_research": 1,
-        "mme_submission": 1,
-        "owner": 1,
-        "panels": 1,
-        "status": 1,
-        "track": 1,
-        "vcf_files": 1,
-    }
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
@@ -524,6 +544,8 @@ def cases(store, request, institute_id):
         projection=ALL_CASES_PROJECTION,
     )
     all_cases = _sort_cases(data, request, all_cases)
+    if request.form.get("export"):
+        return export_case_samples(all_cases)
 
     nr_cases = 0
     for case_obj in all_cases:
