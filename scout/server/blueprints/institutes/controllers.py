@@ -446,7 +446,7 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
             export_line = [
                 individual["individual_id"],
                 individual["display_name"],
-                individual.get("analysis_type"),
+                individual.get("analysis_type").upper(),
                 PHENOTYPE_MAP[individual.get("phenotype", 0)],
                 SEX_MAP[individual.get("sex", 0)],
                 individual.get("tissue_type", "-"),
