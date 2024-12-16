@@ -15,9 +15,14 @@ from scout.constants import (
     DATE_DAY_FORMATTER,
     ID_PROJECTION,
     PHENOTYPE_GROUPS,
+    PHENOTYPE_MAP,
+    SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.variant.utils import predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    predictions,
+    update_representative_gene,
+)
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
@@ -439,24 +444,47 @@ def _sort_cases(data, request, all_cases):
     return all_cases
 
 
-def export_case_samples(filtered_cases):
-    """Export to file a list of samples from selected cases."""
+def export_case_samples(institute_id, filtered_cases):
+    """Export to CSV file a list of samples from selected cases."""
+    EXPORT_HEADER = [
+        "Sample ID",
+        "Sample Name",
+        "Analysis",
+        "Phenotype",
+        "Sex",
+        "Tissue",
+        "Case Name",
+        "Case ID",
+        "Analysis date",
+        "Case Status",
+        "Track",
+    ]
     export_lines = []
+    export_lines.append("\t".join(EXPORT_HEADER))  # Use tab-separated values
     for case in filtered_cases:
-        for ind in case.get("individuals", []):
+        for individual in case.get("individuals", []):
             export_line = [
-                case["display_name"],
-                case["_id"],
-                case["created_at"],
-                case["status"],
-                case.get("track"),
                 individual["individual_id"],
                 individual["display_name"],
                 individual.get("analysis_type"),
+                PHENOTYPE_MAP[individual.get("phenotype", 0)],
+                SEX_MAP[individual.get("sex", 0)],
+                individual.get("tissue_type", "-"),
+                case["display_name"],
+                case["_id"],
+                case["analysis_date"].strftime("%Y-%m-%d %H:%M:%S"),
+                case["status"],
+                case.get("track"),
             ]
-            export_lines.append(export_line)
+            export_lines.append("\t".join(str(item) for item in export_line))
 
-    return export_lines
+    file_content = "\n".join(export_lines)
+
+    return Response(
+        file_content,
+        mimetype="text/plain",
+        headers={"Content-Disposition": f"attachment;filename={institute_id}_cases.txt"},
+    )
 
 
 def cases(store, request, institute_id):
@@ -545,7 +573,7 @@ def cases(store, request, institute_id):
     )
     all_cases = _sort_cases(data, request, all_cases)
     if request.form.get("export"):
-        return export_case_samples(all_cases)
+        return export_case_samples(institute_id, all_cases)
 
     nr_cases = 0
     for case_obj in all_cases:
@@ -566,7 +594,9 @@ def cases(store, request, institute_id):
 
 
 def _get_unevaluated_variants_for_case(
-    case_obj: dict, var_ids_list: List[str], sanger_validated_by_user_by_case: Dict[str, List[str]]
+    case_obj: dict,
+    var_ids_list: List[str],
+    sanger_validated_by_user_by_case: Dict[str, List[str]],
 ) -> Tuple[Dict[str, list]]:
     """Returns the variants with Sanger ordered by a user that need validation or are validated by another user."""
 

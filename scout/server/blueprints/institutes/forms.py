@@ -73,7 +73,8 @@ class InstituteForm(FlaskForm):
     pheno_abbrev = StringField("Abbreviation", validators=[validators.Optional()])
 
     gene_panels = NonValidatingSelectMultipleField(
-        "Gene panels available for variants filtering", validators=[validators.Optional()]
+        "Gene panels available for variants filtering",
+        validators=[validators.Optional()],
     )
 
     gene_panels_matching = NonValidatingSelectMultipleField(
@@ -144,7 +145,8 @@ class GeneVariantFiltersForm(FlaskForm):
     variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
     category = SelectMultipleField(choices=CATEGORY_CHOICES)
     hgnc_symbols = TagListField(
-        "HGNC Symbols (comma-separated, case sensitive)", validators=[validators.InputRequired()]
+        "HGNC Symbols (comma-separated, case sensitive)",
+        validators=[validators.InputRequired()],
     )
     rank_score = IntegerField(default=15)
     phenotype_terms = TagListField("HPO terms (comma-separated)")
@@ -181,4 +183,4 @@ class CaseFilterForm(FlaskForm):
     has_rna = BooleanField("Has RNA-seq data")
     validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
-    export = SubmitField(label="Export")
+    export = SubmitField(label="Export samples")
