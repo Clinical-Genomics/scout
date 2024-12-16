@@ -1,24 +1,27 @@
 ###########
 # BUILDER #
 ###########
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS python-builder
+FROM clinicalgenomics/python3.12-venv:1.0 AS python-builder
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
 # Copy the project files needed to configure dependencies build into the image
-COPY pyproject.toml uv.lock README.md .
+COPY --chmod=644 pyproject.toml uv.lock README.md ./
 
 # No wheel for indirect pycairo dependency so need build env for it to install
 RUN apt-get update && \
     apt-get -y upgrade && \
     apt-get -y install --no-install-recommends gcc libcairo2-dev pkg-config python3-dev
 
-RUN uv sync --frozen
+RUN uv venv --relocatable
+RUN uv sync --frozen --no-install-project --no-editable
 
 #########
 # FINAL #
 #########
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+FROM python:3.12-slim-bookworm
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
@@ -41,10 +44,10 @@ RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin
 WORKDIR /home/worker/app
 
 # Copy current app code to app dir
-COPY --chown=worker:worker . /home/worker/app
+COPY --chown=root:root --chmod=755 . /home/worker/app
 
 # Copy virtual environment from builder
-COPY --chown=worker:worker --from=python-builder /app/.venv /home/worker/app/.venv
+COPY --chown=root:root --chmod=755 --from=python-builder /app/.venv /home/worker/app/.venv
 
 # Install only Scout app
 RUN uv pip install --no-cache-dir --editable .[coverage]
