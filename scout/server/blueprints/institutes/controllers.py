@@ -468,27 +468,21 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
 
 
 def cases(store, request, institute_id):
-    """Preprocess case objects.
-
-    Add all the necessary information to display the 'cases' view
-
-    Args:
-        store(adapter.MongoAdapter)
-        request(flask.request) request sent by browser to the api_institutes endpoint
-        institute_id(str): An _id of an institute
-
-    Returns:
-        data(dict): includes the cases, how many there are and the limit.
-    """
+    """Preprocess case objects for the 'cases' view."""
     data = {}
+
+    # Initialize data (institute info, filters, and case counts)
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
-
-    name_query = request.form
-    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
-
     data["form"] = CaseFilterForm(request.form)
+    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
+    data["nr_cases"] = sum(data["status_ncases"].values())
 
+    # Fetch Sanger unevaluated and validated cases
+    sanger_ordered_not_validated = get_sanger_unevaluated(store, institute_id, current_user.email)
+    data["sanger_unevaluated"], data["sanger_validated_by_others"] = sanger_ordered_not_validated
+
+    # Projection for fetching cases
     ALL_CASES_PROJECTION = {
         "analysis_date": 1,
         "assignees": 1,
@@ -506,58 +500,25 @@ def cases(store, request, institute_id):
         "vcf_files": 1,
     }
 
-    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
-    data["nr_cases"] = sum(data["status_ncases"].values())
-
-    sanger_ordered_not_validated: Tuple[Dict[str, list]] = get_sanger_unevaluated(
-        store, institute_id, current_user.email
-    )
-    data["sanger_unevaluated"]: Dict[str, list] = sanger_ordered_not_validated[0]
-    data["sanger_validated_by_others"]: Dict[str, list] = sanger_ordered_not_validated[1]
-
-    # local function to add info to case obj
-    def populate_case_obj(case_obj):
-        analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        if len(analysis_types) > 1:
-            LOG.debug("Set analysis types to {'mixed'}")
-            analysis_types = set(["mixed"])
-
-        case_obj["analysis_types"] = list(analysis_types)
-        case_obj["assignees"] = [
-            store.user(user_email) for user_email in case_obj.get("assignees", [])
-        ]
-        # Check if case was re-runned
-        last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
-        all_analyses_dates = set()
-        for analysis in case_obj.get("analyses", [{"date": last_analysis_date}]):
-            all_analyses_dates.add(analysis.get("date", last_analysis_date))
-
-        case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(
-            all_analyses_dates
-        )
-
-        case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
-        case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
-        return case_obj
-
+    # Group cases by status
     case_groups = {status: [] for status in CASE_STATUSES}
+    nr_cases_showall_statuses = 0
+    status_show_all_cases = institute_obj.get("show_all_cases_status") or ["prioritized"]
 
-    nr_cases_showall_statuses = (
-        0  # Nr of cases for the case statuses where all cases should be shown
-    )
-    # In institute settings, retrieve all case status categories for which all cases should be displayed
-    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_status") or ["prioritized"]
+    # Process cases for statuses that require all cases to be shown
     for status in status_show_all_cases:
         cases_in_status = store.cases_by_status(
             institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
         )
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
-            populate_case_obj(case_obj)
-            nr_cases_showall_statuses += 1
+            populate_case_obj(case_obj, store)
             case_groups[status].append(case_obj)
+            nr_cases_showall_statuses += 1
 
-    # Retrieve cases for the remaining status categories
+    # Fetch additional cases based on filters
+    name_query = request.form
+    limit = int(request.form.get("search_limit", 100))
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
@@ -569,25 +530,48 @@ def cases(store, request, institute_id):
         projection=ALL_CASES_PROJECTION,
     )
     all_cases = _sort_cases(data, request, all_cases)
+
     if request.form.get("export"):
         return export_case_samples(institute_id, all_cases)
 
+    # Process additional cases for the remaining statuses
     nr_cases = 0
     for case_obj in all_cases:
-        case_status = case_obj["status"]
-        if case_status in status_show_all_cases:
-            continue
-        if nr_cases == limit:
-            break
-        populate_case_obj(case_obj)
-        case_groups[case_status].append(case_obj)
-        nr_cases += 1
+        if case_obj["status"] not in status_show_all_cases:
+            if nr_cases == limit:
+                break
+            populate_case_obj(case_obj, store)
+            case_groups[case_obj["status"]].append(case_obj)
+            nr_cases += 1
 
+    # Compile the final data
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
     data["found_cases"] = nr_cases + nr_cases_showall_statuses
     data["limit"] = limit
 
     return data
+
+
+def populate_case_obj(case_obj, store):
+    """Helper function to populate additional case information."""
+    analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
+    if len(analysis_types) > 1:
+        analysis_types = set(["mixed"])
+    case_obj["analysis_types"] = list(analysis_types)
+
+    case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+
+    last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
+    all_analyses_dates = {
+        analysis.get("date", last_analysis_date)
+        for analysis in case_obj.get("analyses", [{"date": last_analysis_date}])
+    }
+    case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(
+        all_analyses_dates
+    )
+
+    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+    case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
 
 
 def _get_unevaluated_variants_for_case(
