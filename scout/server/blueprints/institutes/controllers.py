@@ -424,7 +424,7 @@ def _sort_cases(data, request, all_cases):
     return all_cases
 
 
-def export_case_samples(institute_id, filtered_cases):
+def export_case_samples(institute_id, filtered_cases) -> Response:
     """Export to CSV file a list of samples from selected cases."""
     EXPORT_HEADER = [
         "Sample ID",
