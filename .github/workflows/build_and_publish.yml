@@ -9,36 +9,13 @@ jobs:
  build-n-publish:
   name: Build and publish Python distribution to PyPI
   runs-on: ubuntu-latest
+  permissions:
+    id-token: write
   steps:
-   - name: Check out git repository
-     uses: actions/checkout@v4
-
-   - name: Set up Python 3.12
-     uses: actions/setup-python@v5
-     with:
-      python-version: 3.12
-
-   - name: Install build tools
-     run: >-
-        python -m
-        pip install
-        wheel
-        setuptools
-        twine
-        --user
-
-   - name: Build a binary wheel and a source tarball
-     run: >-
-        python
-        setup.py
-        sdist
-        bdist_wheel
-
-   - name: Publish distribution 📦 to PyPI
-     uses: pypa/gh-action-pypi-publish@release/v1
-     with:
-       user: __token__
-       password: ${{ secrets.pypi_password }}
+     - uses: actions/checkout@v4
+     - uses: astral-sh/setup-uv@v3
+     - run: uv build
+     - run: uv publish --trusted-publishing always
 
  docker-image-CI:
    name: Docker Image CI
@@ -79,16 +56,16 @@ jobs:
         tags: "clinicalgenomics/scout:latest, clinicalgenomics/scout:${{ github.event.release.tag_name }}"
 
  deploy-docs:
-   name: Deploy Docs to GitHubIO
-   runs-on: ubuntu-latest
-   steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-    - name: Setup environment for docs deployment
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.x
-    - name: Install mkdocs
-      run: pip install mkdocs mkdocs-material markdown-include
-    - name: Deploy documentation
-      run: mkdocs gh-deploy --force
+    name: Deploy Docs to GitHubIO
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout repo
+       uses: actions/checkout@v4
+     - name: Setup environment for docs deployment
+       uses: actions/setup-python@v5
+       with:
+         python-version: 3.x
+     - name: Install mkdocs
+       run: pip install mkdocs mkdocs-material markdown-include
+     - name: Deploy documentation
+       run: mkdocs gh-deploy --force
