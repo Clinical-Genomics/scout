@@ -1,8 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM clinicalgenomics/python3.12-venv:1.0 AS python-builder
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS python-builder
 
 WORKDIR /app
 
@@ -20,8 +19,7 @@ RUN uv sync --frozen --no-install-project --no-editable
 #########
 # FINAL #
 #########
-FROM python:3.12-slim-bookworm
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
@@ -35,11 +33,10 @@ RUN apt-get update && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
-# Do not upgrade to the latest pip version to ensure more reproducible builds
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-
 # Create a non-root user to run commands
 RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
+
+ENV PATH="/home/worker/app/.venv/bin:$PATH"
 
 WORKDIR /home/worker/app
 
@@ -56,4 +53,3 @@ RUN uv pip install --no-cache-dir --editable .[coverage]
 USER worker
 
 ENTRYPOINT ["uv", "run", "scout"]
-
