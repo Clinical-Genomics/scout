@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to filter and download case individuals/samples from institute's caseS page
 ### Changed
 - On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
+- Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
 ### Fixed
 - UCSC hg38 links are updated
 
