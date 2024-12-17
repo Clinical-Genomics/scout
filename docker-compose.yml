@@ -18,8 +18,7 @@ services:
     build: .
     platform: linux/amd64
     container_name: scout-cli
-    command: bash -c "
-      uv run scout --host mongodb setup demo"
+    command: "--host mongodb setup demo"
     volumes:
       - ./scout:/home/worker/app/scout
     networks:
