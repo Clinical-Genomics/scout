@@ -399,11 +399,10 @@ def json_api_submission(submission_id):
         afile.flush()
         afile.seek(0)
 
-    with NamedTemporaryFile(
-        mode="a+", prefix="Variant", suffix=".csv"
-    ) as variant_file, NamedTemporaryFile(
-        mode="a+", prefix="CaseData", suffix=".csv"
-    ) as casedata_file:
+    with (
+        NamedTemporaryFile(mode="a+", prefix="Variant", suffix=".csv") as variant_file,
+        NamedTemporaryFile(mode="a+", prefix="CaseData", suffix=".csv") as casedata_file,
+    ):
         # Write temp Variant CSV file
         _, variants_header, variants_lines = clinvar_submission_file(
             submission_id, "variant_data", "SUB000"

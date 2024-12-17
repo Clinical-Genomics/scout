@@ -1,4 +1,3 @@
-version: '3'
 # usage:
 # (sudo) docker-compose up -d
 # (sudo) docker-compose down
@@ -10,7 +9,7 @@ services:
     networks:
       - scout-net
     ports:
-      - '27013:27017'
+      - '27017:27017'
     expose:
       - '27017'
 
@@ -18,8 +17,7 @@ services:
     build: .
     platform: linux/amd64
     container_name: scout-cli
-    command: bash -c "
-      scout --host mongodb setup demo"
+    command: ["--host", "mongodb", "setup", "demo"]
     volumes:
       - ./scout:/home/worker/app/scout
     networks:

@@ -8,7 +8,7 @@
 
 1. Update version to, e.g. 2.0.0
 
-   - in `scout/__version__.py`
+   - in `scout/pyproject.toml`
 
 1. Make sure CHANGELOG.md is up to date for the release
 
@@ -22,17 +22,16 @@
 1. Commit changes, push to github and create a pull request
 
     ```bash
-    git add scout/__version__.py
-    git add ...
+    git add -u
     git commit -m "Release notes version 2.0.0"
     git push -u origin release-2.0.0
     ```
 
-1. On github click "create pull request"
+1. On github click "Create pull request"
 
 1. After getting the pull request approved by a reviewer merge it to master.
 
-1. Draft a new release on GitHub, add some text - e.g. and abbreviated CHANGELOG - and release.
+1. Draft a new release on GitHub, add some text - e.g. an abbreviated CHANGELOG - and release.
 This adds a version tag, builds and submits to PyPi.
 
 1. *Skip if using GitHub Action* Pull the new version of master and **tag** the release:

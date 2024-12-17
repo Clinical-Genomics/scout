@@ -1,0 +1,150 @@
+[project]
+name = "scout-browser"
+version = "4.93.1"
+description = "Clinical DNA variant visualizer and browser"
+authors = [{name="Chiara Rasi", email="chiara.rasi@scilifelab.se"}, {name="Daniel Nilsson", email="daniel.nilsson@ki.se"}, {name="Robin Andeer", email="robin.andeer@gmail.com"}, {name="Mans Magnuson", email="monsunas@gmail.com"}]
+license = {text = "MIT License"}
+readme = "README.md"
+include = [
+  "README.md",
+  "scout/**/*",
+]
+requires-python = ">=3.9"
+keywords = ["vcf", "variants", "dna", "lrs", "wgs", "wes", "panel", "wts", "rna", "fusion",
+	"snv", "sv", "str", "cnv", "outliers", "cancer", "sma", "ogm",
+	"acmg", "clingen-cgc-vicc", "phenopacket", "clinvar", "coverage", "beacon", "matchmaker exchange","panelapp",
+	"genome visualisation", "variant triage", "variant ranking",]
+classifiers = [
+	"Environment :: Web Environment",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: MIT License",
+ 	"Operating System :: MacOS :: MacOS X",
+ 	"Operating System :: Unix",
+	"Programming Language :: Python",
+  	"Programming Language :: Python :: Implementation :: CPython",
+	"Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+  	"Development Status :: 5 - Production/Stable",
+	"Intended Audience :: Science/Research",
+  	"Topic :: Scientific/Engineering :: Bio-Informatics",
+  	"Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = [
+	# Everything needed in production
+	"werkzeug",
+	"Flask>=2.0",
+	"Flask-Bootstrap",
+	"Flask-CORS",
+"path.py", # this is deprecated
+	"markdown",
+	"WTForms",
+	"Flask-WTF",
+	"Flask-Mail",
+	"coloredlogs",
+	"query_phenomizer",
+	"Flask-Babel>=3",
+	"livereload>=2.7",
+	"tornado >=6.4.1",
+	"python-dateutil",
+	"pymongo",
+	"pathlib",
+	"pdfkit",
+	"phenopackets",
+	"xlsxwriter",
+	"click",
+	"cryptography",
+	"defusedxml",
+	"svglib",
+	"cairosvg",
+	"importlib_resources",
+	# webapp login
+	"authlib",
+	"flask_login",
+	"flask-ldapconn",
+	# Parsing
+	"cyvcf2",
+	"configobj",
+	"ped_parser",
+	"pydantic>=2",
+	"PyYaml>=5.1",
+	# extras
+	"intervaltree==3.0.2",
+	"anytree",
+	# Required by scripts
+	"tabulate",
+]
+
+[project.optional-dependencies]
+coverage=[
+            "chanjo-report",
+            "pymysql",
+			"python-dateutil",
+        ]
+
+
+[project.urls]
+Repository = "https://github.com/Clinical-Genomics/scout"
+Changelog = "https://github.com/Clinical-Genomics/scout/blob/main/CHANGELOG.md"
+Documentation = "https://clinical-genomics.github.io/scout/"
+"Bug Tracker" = "https://github.com/Clinical-Genomics/scout/issues"
+Issues = "https://github.com/Clinical-Genomics/scout/issues"
+
+[project.scripts]
+scout = "scout.commands:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+  packages = ["scout/"]
+  include = [
+    "scout/**/*",
+  ]
+  exclude = [
+  	"tests/",
+  	"scripts/",
+  ]
+
+
+[tool.pytest.ini_options]
+looponfailroots = ["tests/", "scout/"]
+
+[tool.black]
+line-length = 100
+target-version = ['py313']
+
+[tool.ruff]
+src = ["scout", "tests", "scripts"]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[dependency-groups]
+dev = [
+	"pytest-mock",
+	"pytest>=5.2",
+	"pytest-flask",
+	"pytest-test-groups",
+	"pytest-cov",
+	"mongomock",
+	"responses",
+    "pytest-cov>=4.1.0",
+    "pytest>=7.4.4",
+	"invoke",
+]
+docs = [
+	"mkdocs",
+	"mkdocs-material",
+	"markdown-include",
+]
+lint = [
+    "black>=23.3.0",
+    "isort>=5.11.5",
+    "ruff>=0.8.0",
+]
