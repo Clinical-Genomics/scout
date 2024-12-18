@@ -486,8 +486,6 @@ class QueryHandler(object):
             coordinate_query(dict): returned object contains coordinate filters for sv variant
 
         """
-        coordinate_query = None
-        chromosome_query = {"$or": [{"chromosome": query["chrom"]}, {"end_chrom": query["chrom"]}]}
         if query.get("start") and query.get("end"):
             # Query for overlapping intervals. Taking into account these cases:
             # 1
@@ -528,14 +526,17 @@ class QueryHandler(object):
                     },  # 4
                 ]
             }
+            # Apply position search to both chromosome and end_chrom separately
             coordinate_query = {
-                "or": [
+                "$or": [
                     {"$and": [{"chromosome": query["chrom"]}, position_query]},
                     {"$and": [{"end_chrom": query["chrom"]}, position_query]},
                 ]
             }
         else:
-            coordinate_query = chromosome_query
+            coordinate_query = {
+                "$or": [{"chromosome": query["chrom"]}, {"end_chrom": query["chrom"]}]
+            }
         return coordinate_query
 
     def gene_filter(self, query, build="37"):
