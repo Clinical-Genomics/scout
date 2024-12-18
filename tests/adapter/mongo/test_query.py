@@ -1,6 +1,7 @@
 import re
 
 from pymongo import ReturnDocument
+
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
