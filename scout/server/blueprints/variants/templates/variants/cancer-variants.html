@@ -175,16 +175,16 @@
 {% endmacro %}
 
 {% macro position_cell(variant) %}
-  {{ variant.chromosome }}<span class="text-muted">:{{ variant.position }}</span>
+  <span class="text-body"><b>{{ variant.chromosome }}</b>:{{ variant.position }}</span>
 {% endmacro %}
 
 {% macro allele_cell(allele) %}
   {% if 'alt_freq' in allele %}
-    {{ allele.alt_freq|round(4)  }}
+    <span class="text-body"><b>{{ allele.alt_freq|round(4) }}</b></span>
     <br>
-    <small class="text-muted">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
+    <small class="text-body">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
   {% else %}
-    <span class="text-muted">N/A</span>
+    <span class="text-body">N/A</span>
   {% endif %}
 {% endmacro %}
 
