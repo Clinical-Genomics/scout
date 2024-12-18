@@ -306,12 +306,13 @@ class VariantHandler(VariantLoader):
                 "end": variant_obj["end"],
             }
         )
+
         query = {
             "case_id": case_id,
             "category": variant_obj["category"],  # sv
             "variant_type": variant_obj["variant_type"],  # clinical or research
             "sub_category": variant_obj["sub_category"],  # example -> "del"
-            "$and": coordinate_query["$and"],  # query for overlapping SV variants
+            "$and": coordinate_query["$or"],  # query for overlapping SV variants
         }
 
         overlapping_svs = list(
