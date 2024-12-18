@@ -610,7 +610,6 @@ def test_build_sv_coordinate_query(adapter):
     query = {"chrom": "1", "start": start, "end": end}
     mongo_query = adapter.build_query(case_id, query=query, category="sv")
 
-    chrom_part = {"$or": [{"chromosome": chrom}, {"end_chrom": chrom}]}
     coordinates_part = {
         "$or": [
             {"end": {"$gte": start, "$lte": end}},  # 1
@@ -620,7 +619,10 @@ def test_build_sv_coordinate_query(adapter):
         ]
     }
 
-    assert mongo_query["$and"] == [{"$and": [chrom_part, coordinates_part]}]
+    assert mongo_query["$and"][0]["$or"] == [
+        {"$and": [{"chromosome": chrom}, coordinates_part]},
+        {"$and": [{"end_chrom": chrom}, coordinates_part]},
+    ]
 
 
 def test_build_ngi_sv(adapter):
