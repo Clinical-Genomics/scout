@@ -180,7 +180,7 @@
 
 {% macro allele_cell(allele) %}
   {% if 'alt_freq' in allele %}
-    <b><span class="text-body">{{ allele.alt_freq|round(4)  }}</span></b>
+    <span class="text-body"><b>{{ allele.alt_freq|round(4) }}</b></span>
     <br>
     <small class="text-body">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
   {% else %}
