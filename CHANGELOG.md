@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
 ### Fixed
 - UCSC hg38 links are updated
+- Variants page tooltip errors
 
 ## [4.93.1]
 ### Fixed
