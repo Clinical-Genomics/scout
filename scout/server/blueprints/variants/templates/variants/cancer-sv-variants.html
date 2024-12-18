@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block, callers_cell %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
+{% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -122,7 +122,7 @@
     <td>
       {{ variant_funct_anno_cell(variant) }}
     </td>
-    <td>{{ allele_cell(variant.tumor or {}) }}{% if variant.somatic_score %}<small class="text-muted">[{{ variant.somatic_score }}]</small>{% endif %}</td>
+    <td>{{ allele_cell(variant.tumor or {}) }}{% if variant.somatic_score %}<small class="text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="SV caller (Manta) somatic score">[{{ variant.somatic_score }}]</small>{% endif %}</td>
     <td>{{ allele_cell(variant.normal or {}) }}</td>
   </tr>
 {% endmacro %}
