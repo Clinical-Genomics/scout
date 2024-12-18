@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - UCSC hg38 links are updated
 - Variants page tooltip errors
+- Cancer variantS page had poor visibility of VAF and chromosome coordinate on causatives (green background)
 
 ## [4.93.1]
 ### Fixed
