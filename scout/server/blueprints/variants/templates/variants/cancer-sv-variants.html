@@ -111,8 +111,8 @@
       {{ variant.sub_category|upper }}
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
-    <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
-    <td class="col-2"><span style="white-space: nowrap;">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint|safe }}</span></td>
+<td class="col-2">{% if variant.chromosome != variant.end_chrom %}<span class="text-body"></span><b>{{ variant.chromosome }}</b>:</span>{% endif %}<span class="text-body" style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
+<td class="col-2">{% if variant.chromosome != variant.end_chrom %}<span class="text-body"><b>{{ variant.end_chrom }}</b>:</span>{% endif %}<span style="white-space: nowrap;">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint|safe }}</span></td>
     <td class="col-2"><span style="white-space: nowrap;">{{ '-' if variant.length == 100000000000 else variant.length|human_longint|safe }}</span></td>
     <td class="text-end">{{ frequency_cell_general(variant) }}</td>
     <td>{{observed_cell_general(variant)}}</td>
