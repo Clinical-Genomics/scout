@@ -412,7 +412,7 @@
       <span class="text-body"><b>{{ allele.alt_freq|round(4) }}</b></span>
     {% endif %}
     <br>
-    <small class="text-body">{% if allele.alt_depth >= 0 %}{{ allele.alt_depth }}{% else %}.{% endif %}|{% if allele.ref_depth >= 0 %}{{ allele.ref_depth }}{% else %}.{% endif %}</small>
+    <small class="text-body">{% if alt_depth in allele and allele.alt_depth >= 0 %}{{ allele.alt_depth }}{% else %}.{% endif %}|{% if ref_depth in allele and allele.ref_depth >= 0 %}{{ allele.ref_depth }}{% else %}.{% endif %}</small>
   {% else %}
     <span class="text-body">N/A</span>
   {% endif %}
