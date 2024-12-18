@@ -1,7 +1,6 @@
 import re
 
 from pymongo import ReturnDocument
-
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
@@ -609,56 +608,7 @@ def test_build_sv_coordinate_query(adapter):
     end = 80000
     query = {"chrom": "1", "start": start, "end": end}
     mongo_query = adapter.build_query(case_id, query=query, category="sv")
-
-    chrom_part = {"$or": [{"chromosome": chrom}, {"end_chrom": chrom}]}
-    coordinates_part = [
-        # Case chromosome == end_chrom
-        {
-            "$and": [
-                {"chromosome": chrom},
-                {"end_chrom": chrom},
-                {
-                    "$or": [
-                        # Overlapping cases 1-4 (chromosome == end_chrom)
-                        {"end": {"$gte": start, "$lte": end}},  # Case 1
-                        {"position": {"$gte": start, "$lte": end}},  # Case 2
-                        {
-                            "$and": [
-                                {"position": {"$lte": start}},
-                                {"end": {"$gte": end}},
-                            ]
-                        },  # Case 3
-                        {
-                            "$and": [
-                                {"position": {"$gte": start}},
-                                {"end": {"$lte": end}},
-                            ]
-                        },  # Case 4
-                    ]
-                },
-            ]
-        },
-        # Case chromosome != end_chrom, position matching 'chromosome'
-        {
-            "$and": [
-                {"chromosome": chrom},
-                {"end_chrom": {"$ne": chrom}},
-                {"position": {"$gte": start}},
-                {"position": {"$lte": end}},
-            ]
-        },
-        # Case chromosome != end_chrom, position matching 'end_chrom'
-        {
-            "$and": [
-                {"chromosome": {"$ne": chrom}},
-                {"end_chrom": chrom},
-                {"end": {"$gte": start}},
-                {"end": {"$lte": end}},
-            ]
-        },
-    ]
-
-    assert mongo_query["$and"] == [{"$or": coordinates_part}]
+    assert mongo_query["$and"] == [adapter.get_position_query(chrom, start, end)]
 
 
 def test_build_ngi_sv(adapter):

@@ -366,7 +366,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -475,82 +474,84 @@ class QueryHandler(object):
 
         return mongo_query
 
+    def get_position_query(self, chrom: str, start: int, end: int) -> dict:
+        """Helper function that returns a dictionary containing start and stop coordinates.
+        # Query for overlapping intervals. Taking into account these cases:
+        # Case 1
+        # filter                 xxxxxxxxx
+        # Variant           xxxxxxxx
+
+        # Case 2
+        # filter                 xxxxxxxxx
+        # Variant                    xxxxxxxx
+
+        # Case 3
+        # filter                 xxxxxxxxx
+        # Variant                   xx
+
+        # Case 4
+        # filter                 xxxxxxxxx
+        # Variant             xxxxxxxxxxxxxx
+        """
+
+        return {
+            "$or": [
+                # Case chromosome == end_chrom
+                {
+                    "$and": [
+                        {"chromosome": chrom},
+                        {"end_chrom": chrom},
+                        {
+                            "$or": [
+                                # Overlapping cases 1-4 (chromosome == end_chrom)
+                                {"end": {"$gte": start, "$lte": end}},  # Case 1
+                                {"position": {"$gte": start, "$lte": end}},  # Case 2
+                                {
+                                    "$and": [
+                                        {"position": {"$lte": start}},
+                                        {"end": {"$gte": end}},
+                                    ]
+                                },  # Case 3
+                                {
+                                    "$and": [
+                                        {"position": {"$gte": start}},
+                                        {"end": {"$lte": end}},
+                                    ]
+                                },  # Case 4
+                            ]
+                        },
+                    ]
+                },
+                # Case chromosome != end_chrom, position matching 'chromosome'
+                {
+                    "$and": [
+                        {"chromosome": chrom},
+                        {"end_chrom": {"$ne": chrom}},
+                        {"position": {"$gte": start}},
+                        {"position": {"$lte": end}},
+                    ]
+                },
+                # Case chromosome != end_chrom, position matching 'end_chrom'
+                {
+                    "$and": [
+                        {"chromosome": {"$ne": chrom}},
+                        {"end_chrom": chrom},
+                        {"end": {"$gte": start}},
+                        {"end": {"$lte": end}},
+                    ]
+                },
+            ]
+        }
+
     def sv_coordinate_query(self, query: dict) -> dict:
         """Adds genomic coordinated-related filters to the query object
         This method is called to build coordinate query for sv variants
         """
         if query.get("start") and query.get("end"):  # query contains full coordinates
-            # Query for overlapping intervals. Taking into account these cases:
-            # Case 1
-            # filter                 xxxxxxxxx
-            # Variant           xxxxxxxx
-
-            # Case 2
-            # filter                 xxxxxxxxx
-            # Variant                    xxxxxxxx
-
-            # Case 3
-            # filter                 xxxxxxxxx
-            # Variant                   xx
-
-            # Case 4
-            # filter                 xxxxxxxxx
-            # Variant             xxxxxxxxxxxxxx
-
             chrom = query["chrom"]
             start = int(query["start"])
             end = int(query["end"])
-
-            # Define position queries based on chromosome equality
-            position_query = {
-                "$or": [
-                    # Case chromosome == end_chrom
-                    {
-                        "$and": [
-                            {"chromosome": chrom},
-                            {"end_chrom": chrom},
-                            {
-                                "$or": [
-                                    # Overlapping cases 1-4 (chromosome == end_chrom)
-                                    {"end": {"$gte": start, "$lte": end}},  # Case 1
-                                    {"position": {"$gte": start, "$lte": end}},  # Case 2
-                                    {
-                                        "$and": [
-                                            {"position": {"$lte": start}},
-                                            {"end": {"$gte": end}},
-                                        ]
-                                    },  # Case 3
-                                    {
-                                        "$and": [
-                                            {"position": {"$gte": start}},
-                                            {"end": {"$lte": end}},
-                                        ]
-                                    },  # Case 4
-                                ]
-                            },
-                        ]
-                    },
-                    # Case chromosome != end_chrom, position matching 'chromosome'
-                    {
-                        "$and": [
-                            {"chromosome": chrom},
-                            {"end_chrom": {"$ne": chrom}},
-                            {"position": {"$gte": start}},
-                            {"position": {"$lte": end}},
-                        ]
-                    },
-                    # Case chromosome != end_chrom, position matching 'end_chrom'
-                    {
-                        "$and": [
-                            {"chromosome": {"$ne": chrom}},
-                            {"end_chrom": chrom},
-                            {"end": {"$gte": start}},
-                            {"end": {"$lte": end}},
-                        ]
-                    },
-                ]
-            }
-            coordinate_query = position_query
+            coordinate_query = self.get_position_query(chrom=chrom, start=start, end=end)
         else:  # query contains only chromosome info
             coordinate_query = {
                 "$or": [{"chromosome": query["chrom"]}, {"end_chrom": query["chrom"]}]
