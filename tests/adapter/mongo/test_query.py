@@ -619,9 +619,13 @@ def test_build_sv_coordinate_query(adapter):
         ]
     }
 
-    assert mongo_query["$and"][0]["$or"] == [
-        {"$and": [{"chromosome": chrom}, coordinates_part]},
-        {"$and": [{"end_chrom": chrom}, coordinates_part]},
+    assert mongo_query["$and"] == [
+        {
+            "$or": [
+                {"$and": [{"chromosome": chrom}, coordinates_part]},
+                {"$and": [{"end_chrom": chrom}, coordinates_part]},
+            ]
+        }
     ]
 
 
