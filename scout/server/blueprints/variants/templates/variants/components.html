@@ -211,7 +211,7 @@
         title="Overlapping gene panels"
         data-bs-content="{% for panel in matching_panels %}
           {{ panel.panel_name|safe }}<br>
-        {% endfor %}"
+        {% else %} No ovelapping gene panels {% endfor %}"
       >{{ panel_count }}</a>
     {% endmacro %}
 
