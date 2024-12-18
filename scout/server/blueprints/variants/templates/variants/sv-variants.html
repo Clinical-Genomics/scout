@@ -108,8 +108,8 @@ onsubmit="return validateForm()">
     </td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
-    <td><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
-<td><span style="white-space: nowrap;">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint|safe }}</span></td>
+    <td>{% if variant.chromosome != variant.end_chrom %}<span class="text-body"></span><b>{{ variant.chromosome }}</b>:</span>{% endif %}<span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
+    <td>{% if variant.chromosome != variant.end_chrom %}<span class="text-body"><b>{{ variant.end_chrom }}</b>:</span>{% endif %}<span style="white-space: nowrap;">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint|safe }}</span></td>
     <td class="text-end"><span style="white-space: nowrap;">{{ '-' if variant.length == 100000000000 else variant.length|human_longint|safe}}</span></td>
     <td>
       {{ frequency_cell_general(variant) }}

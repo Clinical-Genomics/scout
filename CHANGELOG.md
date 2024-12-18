@@ -11,11 +11,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 - Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
+- On variantS pages, display chromosome directly on start and end chromosome if different
 - Stricter coordinate check in BND variants queries (affecting search results on SV variants page)
 ### Fixed
 - UCSC hg38 links are updated
 - Variants page tooltip errors
 - Cancer variantS page had poor visibility of VAF and chromosome coordinate on causatives (green background)
+
 
 ## [4.93.1]
 ### Fixed
