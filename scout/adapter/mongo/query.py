@@ -528,7 +528,12 @@ class QueryHandler(object):
                     },  # 4
                 ]
             }
-            coordinate_query = {"$and": [chromosome_query, position_query]}
+            coordinate_query = {
+                "or": [
+                    {"$and": [{"chromosome": query["chrom"]}, position_query]},
+                    {"$and": [{"end_chrom": query["chrom"]}, position_query]},
+                ]
+            }
         else:
             coordinate_query = chromosome_query
         return coordinate_query
