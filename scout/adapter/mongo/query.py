@@ -366,6 +366,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -496,6 +497,7 @@ class QueryHandler(object):
             # filter                 xxxxxxxxx
             # Variant             xxxxxxxxxxxxxx
 
+            chrom = query["chrom"]
             start = int(query["start"])
             end = int(query["end"])
 
@@ -505,8 +507,8 @@ class QueryHandler(object):
                     # Case chromosome == end_chrom
                     {
                         "$and": [
-                            {"chromosome": query["chrom"]},
-                            {"end_chrom": query["chrom"]},
+                            {"chromosome": chrom},
+                            {"end_chrom": chrom},
                             {
                                 "$or": [
                                     # Overlapping cases 1-4 (chromosome == end_chrom)
@@ -531,18 +533,18 @@ class QueryHandler(object):
                     # Case chromosome != end_chrom, position matching 'chromosome'
                     {
                         "$and": [
-                            {"chromosome": query["chrom"]},
-                            {"end_chrom": {"$ne": query["chrom"]}},
-                            {"position": {"$gte": {start}}},
+                            {"chromosome": chrom},
+                            {"end_chrom": {"$ne": chrom}},
+                            {"position": {"$gte": start}},
                             {"position": {"$lte": end}},
                         ]
                     },
                     # Case chromosome != end_chrom, position matching 'end_chrom'
                     {
                         "$and": [
-                            {"chromosome": {"$ne": query["chrom"]}},
-                            {"end_chrom": query["chrom"]},
-                            {"end": {"$gte": {start}}},
+                            {"chromosome": {"$ne": chrom}},
+                            {"end_chrom": chrom},
+                            {"end": {"$gte": start}},
                             {"end": {"$lte": end}},
                         ]
                     },
