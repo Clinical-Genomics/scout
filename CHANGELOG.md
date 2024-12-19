@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 - Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
 - On variantS pages, display chromosome directly on start and end chromosome if different
-- Use same macro for cancer alleles for SNV and SV
+- On cancer variantS pages, display allele counts and frequency the same way for SNVs and SVs (refactor macro)
 ### Fixed
 - UCSC hg38 links are updated
 - Variants page tooltip errors
