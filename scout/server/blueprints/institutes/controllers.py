@@ -474,7 +474,7 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
                 case.get("is_research"),
                 case.get("track"),
                 ", ".join(
-                    panel["panel_name"] for panel in case.get("panels") if panel["is_default"]
+                    panel["panel_name"] for panel in case.get("panels") if panel.get("is_default")
                 ),
                 case.get("genome_build"),
                 f"{case.get('rank_model_version', '-')}/{case.get('sv_rank_model_version', '-')}",
