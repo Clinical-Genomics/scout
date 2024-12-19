@@ -613,18 +613,7 @@ def test_build_sv_coordinate_query(adapter):
     end = 80000
     query = {"chrom": "1", "start": start, "end": end}
     mongo_query = adapter.build_query(case_id, query=query, category="sv")
-
-    chrom_part = {"$or": [{"chromosome": chrom}, {"end_chrom": chrom}]}
-    coordinates_part = {
-        "$or": [
-            {"end": {"$gte": start, "$lte": end}},  # 1
-            {"position": {"$lte": end, "$gte": start}},  # 2
-            {"$and": [{"position": {"$gte": start}}, {"end": {"$lte": end}}]},  # 3
-            {"$and": [{"position": {"$lte": start}}, {"end": {"$gte": end}}]},
-        ]
-    }
-
-    assert mongo_query["$and"] == [{"$and": [chrom_part, coordinates_part]}]
+    assert mongo_query["$and"] == [adapter.get_position_query(chrom, start, end)]
 
 
 def test_build_ngi_sv(adapter):
@@ -837,25 +826,40 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     # THEN the same variant should be returned
     assert list(results)[0] == variant_obj
 
-    # Query should return also BND variants that have end chromosome on another chromosome than chromomsome
-    assert variant_obj["chromosome"] != "6"
 
-    updated_variant = adapter.variant_collection.find_one_and_update(
-        {"_id": variant_obj["_id"]},
-        {"$set": {"end_chrom": "6"}},
-        return_document=ReturnDocument.AFTER,
-    )
-    assert updated_variant["end_chrom"] == "6"
+def test_query_svs_by_coordinates_bnds(adapter, case_obj):
+    """Test retrieving BND variants using variants query."""
 
-    query = {
-        "chrom": "6",
-        "start": variant_obj["position"] + 10,
-        "end": variant_obj["end"] - 10,
+    # WHEN adding a SV variant with chromosome != end_chrom
+    variant_obj = {
+        "chromosome": "2",
+        "end_chrom": "7",
+        "position": 65000,
+        "end": 22000,
+        "category": "sv",
+        "sub_category": "bnd",
+        "case_id": case_obj["_id"],
+        "variant_type": "clinical",
     }
-    # THEN using the filter in a variant query
+    adapter.load_variant(variant_obj)
+
+    # A coordinate search using chromosome should return the variant
+    query = {
+        "chrom": "2",
+        "start": 64000,
+        "end": 66000,
+    }
     results = adapter.variants(case_obj["_id"], query=query, category="sv")
-    # The same variant should be returned
-    assert list(results)[0] == updated_variant
+    assert list(results)
+
+    # Same should happen also when searching for coordinates matching end_chrom
+    query = {
+        "chrom": "7",
+        "start": 21000,
+        "end": 23000,
+    }
+    results = adapter.variants(case_obj["_id"], query=query, category="sv")
+    assert list(results)
 
 
 def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, sv_variant_obj):
