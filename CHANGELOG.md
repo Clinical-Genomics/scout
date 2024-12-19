@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to filter and download case individuals/samples from institute's caseS page
 ### Changed
 - On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
-- Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
+- Build system changed to uv/hatchling, remove setuptools, version file, add project toml and associated files
 - On variantS pages, display chromosome directly on start and end chromosome if different
 - On cancer variantS pages, display allele counts and frequency the same way for SNVs and SVs (refactor macro)
 - Stricter coordinate check in BND variants queries (affecting search results on SV variants page)
