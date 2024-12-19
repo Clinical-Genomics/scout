@@ -477,7 +477,7 @@ class QueryHandler(object):
     def get_position_query(self, chrom: str, start: int, end: int) -> dict:
         """Helper function that returns a dictionary containing start and stop coordinates.
 
-        The position query consists of 4 parts, each of them elements of the $or
+        The position query consists of 3 parts, each of them elements of the $or
         First part applies to searches when chromosome and end_chrom are the same.
         Here are the possible overlapping search scenarios:
         # Case 1
