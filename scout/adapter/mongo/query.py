@@ -555,7 +555,9 @@ class QueryHandler(object):
         """Adds genomic coordinated-related filters to the query object
         This method is called to build coordinate query for sv variants
         """
-        if query.get("start") and query.get("end"):  # query contains full coordinates
+        if (
+            query.get("start") is not None and query.get("end") is not None
+        ):  # query contains full coordinates
             chrom = query["chrom"]
             start = int(query["start"])
             end = int(query["end"])
