@@ -3,7 +3,7 @@ import datetime
 import logging
 from typing import Dict, List, Optional, Tuple
 
-from flask import Response, current_app, flash, url_for
+from flask import Response, current_app, flash, request, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
@@ -11,10 +11,13 @@ from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import (
+    CANCER_PHENOTYPE_MAP,
     CASE_STATUSES,
     DATE_DAY_FORMATTER,
     ID_PROJECTION,
     PHENOTYPE_GROUPS,
+    PHENOTYPE_MAP,
+    SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
@@ -422,97 +425,129 @@ def _sort_cases(data, request, all_cases):
     return all_cases
 
 
-def cases(store, request, institute_id):
-    """Preprocess case objects.
+def export_case_samples(institute_id, filtered_cases) -> Response:
+    """Export to CSV file a list of samples from selected cases."""
+    EXPORT_HEADER = [
+        "Sample ID",
+        "Sample Name",
+        "Analysis",
+        "Affected status",
+        "Sex",
+        "Sex confirmed",
+        "Parenthood confirmed",
+        "Predicted ancestry",
+        "Tissue",
+        "Case Name",
+        "Case ID",
+        "Analysis date",
+        "Case Status",
+        "Case phenotypes",
+        "Research",
+        "Track",
+        "Default panels",
+        "Genome build",
+        "SNV/SV rank models",
+    ]
+    export_lines = []
+    export_lines.append("\t".join(EXPORT_HEADER))  # Use tab-separated values
+    for case in filtered_cases:
+        for individual in case.get("individuals", []):
+            export_line = [
+                individual["individual_id"],
+                individual["display_name"],
+                individual.get("analysis_type").upper(),
+                (
+                    CANCER_PHENOTYPE_MAP[individual.get("phenotype", 0)]
+                    if case.get("track") == "cancer"
+                    else PHENOTYPE_MAP[individual.get("phenotype", 0)]
+                ),
+                SEX_MAP[individual.get("sex", 0)],
+                individual.get("confirmed_sex") or "-",
+                individual.get("confirmed_parent") or "-",
+                individual.get("predicted_ancestry") or "-",
+                individual.get("tissue_type") or "-",
+                case["display_name"],
+                case["_id"],
+                case["analysis_date"].strftime("%Y-%m-%d %H:%M:%S"),
+                case["status"],
+                ", ".join(hpo["phenotype_id"] for hpo in case.get("phenotype_terms", [])),
+                case.get("is_research"),
+                case.get("track"),
+                ", ".join(
+                    panel["panel_name"] for panel in case.get("panels") if panel.get("is_default")
+                ),
+                case.get("genome_build"),
+                f"{case.get('rank_model_version', '-')}/{case.get('sv_rank_model_version', '-')}",
+            ]
+            export_lines.append("\t".join(str(item) for item in export_line))
 
-    Add all the necessary information to display the 'cases' view
+    file_content = "\n".join(export_lines)
 
-    Args:
-        store(adapter.MongoAdapter)
-        request(flask.request) request sent by browser to the api_institutes endpoint
-        institute_id(str): An _id of an institute
+    return Response(
+        file_content,
+        mimetype="text/plain",
+        headers={
+            "Content-Disposition": f"attachment;filename={institute_id}_cases_{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.txt"
+        },
+    )
 
-    Returns:
-        data(dict): includes the cases, how many there are and the limit.
-    """
+
+def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
+    """Preprocess case objects for the 'cases' view."""
     data = {}
+
+    # Initialize data (institute info, filters, and case counts)
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
-
-    name_query = request.form
-    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
-
     data["form"] = CaseFilterForm(request.form)
+    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
+    data["nr_cases"] = sum(data["status_ncases"].values())
 
+    # Fetch Sanger unevaluated and validated cases
+    sanger_ordered_not_validated = get_sanger_unevaluated(store, institute_id, current_user.email)
+    data["sanger_unevaluated"], data["sanger_validated_by_others"] = sanger_ordered_not_validated
+
+    # Projection for fetching cases
     ALL_CASES_PROJECTION = {
         "analysis_date": 1,
         "assignees": 1,
         "beacon": 1,
         "case_id": 1,
         "display_name": 1,
+        "genome_build": 1,
         "individuals": 1,
         "is_rerun": 1,
         "is_research": 1,
         "mme_submission": 1,
         "owner": 1,
         "panels": 1,
+        "phenotype_terms": 1,
+        "rank_model_version": 1,
         "status": 1,
+        "sv_rank_model_version": 1,
         "track": 1,
         "vcf_files": 1,
     }
 
-    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
-    data["nr_cases"] = sum(data["status_ncases"].values())
-
-    sanger_ordered_not_validated: Tuple[Dict[str, list]] = get_sanger_unevaluated(
-        store, institute_id, current_user.email
-    )
-    data["sanger_unevaluated"]: Dict[str, list] = sanger_ordered_not_validated[0]
-    data["sanger_validated_by_others"]: Dict[str, list] = sanger_ordered_not_validated[1]
-
-    # local function to add info to case obj
-    def populate_case_obj(case_obj):
-        analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        if len(analysis_types) > 1:
-            LOG.debug("Set analysis types to {'mixed'}")
-            analysis_types = set(["mixed"])
-
-        case_obj["analysis_types"] = list(analysis_types)
-        case_obj["assignees"] = [
-            store.user(user_email) for user_email in case_obj.get("assignees", [])
-        ]
-        # Check if case was re-runned
-        last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
-        all_analyses_dates = set()
-        for analysis in case_obj.get("analyses", [{"date": last_analysis_date}]):
-            all_analyses_dates.add(analysis.get("date", last_analysis_date))
-
-        case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(
-            all_analyses_dates
-        )
-
-        case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
-        case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
-        return case_obj
-
+    # Group cases by status
     case_groups = {status: [] for status in CASE_STATUSES}
+    nr_cases_showall_statuses = 0
+    status_show_all_cases = institute_obj.get("show_all_cases_status") or ["prioritized"]
 
-    nr_cases_showall_statuses = (
-        0  # Nr of cases for the case statuses where all cases should be shown
-    )
-    # In institute settings, retrieve all case status categories for which all cases should be displayed
-    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_status") or ["prioritized"]
+    # Process cases for statuses that require all cases to be shown
     for status in status_show_all_cases:
         cases_in_status = store.cases_by_status(
             institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
         )
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
-            populate_case_obj(case_obj)
-            nr_cases_showall_statuses += 1
+            populate_case_obj(case_obj, store)
             case_groups[status].append(case_obj)
+            nr_cases_showall_statuses += 1
 
-    # Retrieve cases for the remaining status categories
+    # Fetch additional cases based on filters
+    name_query = request.form
+    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
@@ -525,17 +560,20 @@ def cases(store, request, institute_id):
     )
     all_cases = _sort_cases(data, request, all_cases)
 
+    if request.form.get("export"):
+        return export_case_samples(institute_id, all_cases)
+
+    # Process additional cases for the remaining statuses
     nr_cases = 0
     for case_obj in all_cases:
-        case_status = case_obj["status"]
-        if case_status in status_show_all_cases:
-            continue
-        if nr_cases == limit:
-            break
-        populate_case_obj(case_obj)
-        case_groups[case_status].append(case_obj)
-        nr_cases += 1
+        if case_obj["status"] not in status_show_all_cases:
+            if nr_cases == limit:
+                break
+            populate_case_obj(case_obj, store)
+            case_groups[case_obj["status"]].append(case_obj)
+            nr_cases += 1
 
+    # Compile the final data
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
     data["found_cases"] = nr_cases + nr_cases_showall_statuses
     data["limit"] = limit
@@ -543,8 +581,32 @@ def cases(store, request, institute_id):
     return data
 
 
+def populate_case_obj(case_obj: dict, store: MongoAdapter):
+    """Helper function to populate additional case information."""
+    analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
+    if len(analysis_types) > 1:
+        analysis_types = set(["mixed"])
+    case_obj["analysis_types"] = list(analysis_types)
+
+    case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+
+    last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
+    all_analyses_dates = {
+        analysis.get("date", last_analysis_date)
+        for analysis in case_obj.get("analyses", [{"date": last_analysis_date}])
+    }
+    case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(
+        all_analyses_dates
+    )
+
+    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+    case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
+
+
 def _get_unevaluated_variants_for_case(
-    case_obj: dict, var_ids_list: List[str], sanger_validated_by_user_by_case: Dict[str, List[str]]
+    case_obj: dict,
+    var_ids_list: List[str],
+    sanger_validated_by_user_by_case: Dict[str, List[str]],
 ) -> Tuple[Dict[str, list]]:
     """Returns the variants with Sanger ordered by a user that need validation or are validated by another user."""
 
