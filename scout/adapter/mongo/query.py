@@ -476,7 +476,10 @@ class QueryHandler(object):
 
     def get_position_query(self, chrom: str, start: int, end: int) -> dict:
         """Helper function that returns a dictionary containing start and stop coordinates.
-        # Query for overlapping intervals. Taking into account these cases:
+
+        The position query consists of 4 parts, each of them elements of the $or
+        First part applies to searches when chromosome and end_chrom are the same.
+        Here are the possible overlapping search scenarios:
         # Case 1
         # filter                 xxxxxxxxx
         # Variant           xxxxxxxx
@@ -492,6 +495,11 @@ class QueryHandler(object):
         # Case 4
         # filter                 xxxxxxxxx
         # Variant             xxxxxxxxxxxxxx
+
+        Second and third elements of the $or cover queries for variants where chromosome != end_chrom.
+        In this situation there are the following scenarios:
+        - Case chromosome != end_chrom, position matching 'chromosome'
+        - Case chromosome != end_chrom, position matching 'end_chrom'
         """
 
         return {
