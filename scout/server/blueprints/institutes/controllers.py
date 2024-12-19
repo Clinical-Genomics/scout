@@ -20,10 +20,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.variant.utils import (
-    predictions,
-    update_representative_gene,
-)
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
