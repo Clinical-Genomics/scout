@@ -249,6 +249,12 @@
     advSearchBlock.hide();
   }
 
+  function StopSpinner() {
+    // Avoid page spinner being stuck on file download
+    $(window).unbind('beforeunload');
+    return true;
+  }
+
   advBlockCheckbox.on('click', function() {
     if($(this).is(':checked')) {
       advSearchBlock.show();
