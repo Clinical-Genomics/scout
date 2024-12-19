@@ -11,6 +11,7 @@ from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import (
+    CANCER_PHENOTYPE_MAP,
     CASE_STATUSES,
     DATE_DAY_FORMATTER,
     ID_PROJECTION,
@@ -19,7 +20,10 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.variant.utils import predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    predictions,
+    update_representative_gene,
+)
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
@@ -430,14 +434,22 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
         "Sample ID",
         "Sample Name",
         "Analysis",
-        "Phenotype",
+        "Affected status",
         "Sex",
+        "Sex confirmed",
+        "Parenthood confirmed",
+        "Predicted ancestry",
         "Tissue",
         "Case Name",
         "Case ID",
         "Analysis date",
         "Case Status",
+        "Case phenotypes",
+        "Research",
         "Track",
+        "Default panels",
+        "Genome build",
+        "SNV/SV rank models",
     ]
     export_lines = []
     export_lines.append("\t".join(EXPORT_HEADER))  # Use tab-separated values
@@ -447,14 +459,28 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
                 individual["individual_id"],
                 individual["display_name"],
                 individual.get("analysis_type").upper(),
-                PHENOTYPE_MAP[individual.get("phenotype", 0)],
+                (
+                    CANCER_PHENOTYPE_MAP[individual.get("phenotype", 0)]
+                    if case.get("track") == "cancer"
+                    else PHENOTYPE_MAP[individual.get("phenotype", 0)]
+                ),
                 SEX_MAP[individual.get("sex", 0)],
+                individual.get("confirmed_sex", "-"),
+                individual.get("confirmed_parent", "-"),
+                individual.get("predicted_ancestry", "-"),
                 individual.get("tissue_type", "-"),
                 case["display_name"],
                 case["_id"],
                 case["analysis_date"].strftime("%Y-%m-%d %H:%M:%S"),
                 case["status"],
+                ", ".join(hpo["phenotype_id"] for hpo in case.get("phenotype_terms", [])),
+                case.get("is_research"),
                 case.get("track"),
+                ", ".join(
+                    panel["panel_name"] for panel in case.get("panels") if panel["is_default"]
+                ),
+                case.get("genome_build"),
+                f"{case.get('rank_model_version', '-')}/{case.get('sv_rank_model_version', '-')}",
             ]
             export_lines.append("\t".join(str(item) for item in export_line))
 
@@ -463,7 +489,9 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
     return Response(
         file_content,
         mimetype="text/plain",
-        headers={"Content-Disposition": f"attachment;filename={institute_id}_cases.txt"},
+        headers={
+            "Content-Disposition": f"attachment;filename={institute_id}_cases_{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.txt"
+        },
     )
 
 
