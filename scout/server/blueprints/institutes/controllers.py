@@ -547,7 +547,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
 
     # Fetch additional cases based on filters
     name_query = request.form
-    limit = int(request.form.get("search_limit", 100))
+    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
