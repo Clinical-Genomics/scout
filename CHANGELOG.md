@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.94]
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
 - ACMG VUS Bayesian score / temperature on case reports
@@ -17,7 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - UCSC hg38 links are updated
 - Variants page tooltip errors
 - Cancer variantS page had poor visibility of VAF and chromosome coordinate on causatives (green background)
-
 
 ## [4.93.1]
 ### Fixed
