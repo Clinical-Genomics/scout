@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
 - ACMG VUS Bayesian score / temperature on case reports
+- Button to filter and download case individuals/samples from institute's caseS page
 ### Changed
 - On variant page, RefSeq transcripts panel, truncate very long protein change descriptions
 - Build system changed to uv/hatchling, remove setuptools, add project toml and associated files
