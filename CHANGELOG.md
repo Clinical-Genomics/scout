@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Temporary directory generation for MT reports
+
 ## [4.94]
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
