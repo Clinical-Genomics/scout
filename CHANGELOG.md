@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.94.1]
 ### Fixed
-- Temporary directory generation for MT reports
+- Temporary directory generation for MT reports and pedigree files to avoid pages crashing
 
 ## [4.94]
 ### Added
