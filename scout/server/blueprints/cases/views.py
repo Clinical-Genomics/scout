@@ -7,7 +7,7 @@ import shutil
 from ast import literal_eval
 from io import BytesIO
 from operator import itemgetter
-from tempfile import mkdtemp
+from tempfile import NamedTemporaryFile, mkdtemp
 from typing import Generator, Optional, Union
 
 from cairosvg import svg2png
@@ -287,7 +287,9 @@ def pdf_case_report(institute_id, case_name):
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         try:
-            write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+            write_to = NamedTemporaryFile(
+                mode="a+", prefix=case_obj.get("_id"), suffix="madeline.png"
+            )
             svg2png(
                 bytestring=case_obj["madeline_info"],
                 write_to=write_to,
