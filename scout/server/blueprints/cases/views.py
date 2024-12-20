@@ -4,10 +4,10 @@ import json
 import logging
 import os.path
 import shutil
-import tempfile
 from ast import literal_eval
 from io import BytesIO
 from operator import itemgetter
+from tempfile import mkdtemp
 from typing import Generator, Optional, Union
 
 from cairosvg import svg2png
@@ -324,7 +324,7 @@ def mt_report(institute_id, case_name):
 
     # create a temp folder to write excel files into
 
-    temp_excel_dir = tempfile.mkdtemp(suffix="_".join([case_obj["display_name"], "mt_reports"]))
+    temp_excel_dir = mkdtemp(suffix="_".join([case_obj["display_name"], "mt_reports"]))
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
         data = zip_dir_to_obj(temp_excel_dir)
 
