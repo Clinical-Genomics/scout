@@ -4,6 +4,7 @@ import json
 import logging
 import os.path
 import shutil
+import tempfile
 from ast import literal_eval
 from io import BytesIO
 from operator import itemgetter
@@ -322,11 +323,8 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(
-        cases_bp.static_folder, "_".join([case_obj["display_name"], "mt_reports"])
-    )
-    os.makedirs(temp_excel_dir, exist_ok=True)
 
+    temp_excel_dir = tempfile.mkdtemp(suffix="_".join([case_obj["display_name"], "mt_reports"]))
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
         data = zip_dir_to_obj(temp_excel_dir)
 
