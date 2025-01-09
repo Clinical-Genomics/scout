@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Quick ACMG classification link on SV variant page
+### Fixed
+- ACMG temperature on case general report should respect term modifiers
+
 
 ## [4.94.1]
 ### Fixed
