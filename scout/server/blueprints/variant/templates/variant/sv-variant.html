@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, variant_scripts %}
+{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, panel_classify_sv, variant_scripts %}
 {% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel, custom_annotations, gene_panels %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
@@ -196,7 +196,7 @@
             {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
           </div>
           <div>
-            ACMG classification <a href="https://pubmed.ncbi.nlm.nih.gov/31690835/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guidelines</a> & <a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guide</a>.
+            {{ panel_classify_sv(variant, institute, case, ACMG_OPTIONS, evaluations) }}
           </div>
         </div>
         <div class="list-group mt-3">
