@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Gene aliases with lower case letters mixed would not match gene symbols when adding inheritance, constraint etc
+- Missing inheritance, constraint info for genes with symbols matching other genes previous aliases with some lower case letters
 
 ## [4.94.1]
 ### Fixed
