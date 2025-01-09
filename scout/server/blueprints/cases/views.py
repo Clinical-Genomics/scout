@@ -7,6 +7,7 @@ import shutil
 from ast import literal_eval
 from io import BytesIO
 from operator import itemgetter
+from tempfile import NamedTemporaryFile, mkdtemp
 from typing import Generator, Optional, Union
 
 from cairosvg import svg2png
@@ -286,7 +287,9 @@ def pdf_case_report(institute_id, case_name):
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         try:
-            write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+            write_to = NamedTemporaryFile(
+                mode="a+", prefix=case_obj.get("_id"), suffix="madeline.png"
+            )
             svg2png(
                 bytestring=case_obj["madeline_info"],
                 write_to=write_to,
@@ -322,11 +325,8 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(
-        cases_bp.static_folder, "_".join([case_obj["display_name"], "mt_reports"])
-    )
-    os.makedirs(temp_excel_dir, exist_ok=True)
 
+    temp_excel_dir = mkdtemp(suffix="_".join([case_obj["display_name"], "mt_reports"]))
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
         data = zip_dir_to_obj(temp_excel_dir)
 

@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- ACMG temperature on case general report should respect term modifiers
+
+## [4.94.1]
+### Fixed
+- Temporary directory generation for MT reports and pedigree file for case general report
+
+## [4.94]
 ### Added
 - Max-level provenance and Software Bill Of Materials (SBOM) to the Docker images pushed to Docker Hub
 - ACMG VUS Bayesian score / temperature on case reports
