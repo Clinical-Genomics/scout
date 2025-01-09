@@ -311,7 +311,6 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         mim_number = entry["mim_number"]
         inheritance = entry["inheritance"]
         phenotype_info = entry["phenotypes"]
-        hgnc_symbol = entry["hgnc_symbol"]
         hgnc_symbols = entry["hgnc_symbols"]
         if mim_number in genes:
             genes[mim_number]["inheritance"] = inheritance
@@ -354,11 +353,11 @@ def get_mim_disease(genemap_lines: Iterable[str]) -> Dict[str, Any]:
     """
     diseases_found = {}
 
-    # Genemap is a file with one entry per gene.
-    # Each line hold a lot of information and in specific it
-    # has information about the phenotypes that a gene is associated with
-    # From this source we collect inheritane patterns and what hgnc symbols
-    # a disease is associated with
+    # Genemap2 is a file with one entry per gene.
+    # Each line hold a lot of information and in particular it
+    # has information about the phenotypes that a gene is associated with.
+    # From this source we collect inheritance patterns and what hgnc symbols
+    # a disease is associated with.
     for entry in parse_genemap2(genemap_lines):
         hgnc_symbol = entry["hgnc_symbol"]
         for disease in entry["phenotypes"]:
