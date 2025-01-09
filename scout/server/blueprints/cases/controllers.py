@@ -613,19 +613,23 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
 
 
 def add_bayesian_acmg_classification(variant_obj: dict):
-    """Append info to display the ACMG VUS Bayesian score / temperature."""
+    """Append info to display the ACMG VUS Bayesian score / temperature.
+    Criteria have a term and a modifier field on the db document
+    that are joined together in a string to conform to a regular
+    ACMG term format. A set of such terms are passed on for evaluation
+    to the same function as the ACMG classification form uses.
+    """
     variant_acmg_classifications = list(
         store.get_evaluations_case_specific(document_id=variant_obj["_id"])
     )
     if variant_acmg_classifications:
-        variant_obj["bayesian_acmg"] = get_acmg_temperature(
-            set(
-                [
-                    criterium.get("term")
-                    for criterium in variant_acmg_classifications[0].get("criteria", [])
-                ]
-            )
-        )
+        terms = set()
+        for criterium in variant_acmg_classifications[0].get("criteria", []):
+            term = criterium.get("term")
+            if criterium.get("modifier"):
+                term += f"_{criterium.get('modifier')}"
+            terms.add(term)
+        variant_obj["bayesian_acmg"] = get_acmg_temperature(terms)
 
 
 def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
