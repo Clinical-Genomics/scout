@@ -36,15 +36,16 @@ def genes_by_alias(hgnc_genes):
         hgnc_symbol = gene["hgnc_symbol"]
 
         for alias in gene["previous_symbols"]:
+            alias = alias.upper()
             true_id = None
             if alias == hgnc_symbol:
                 true_id = hgnc_id
             if alias in alias_genes:
-                alias_genes[alias.upper()]["ids"].add(hgnc_id)
+                alias_genes[alias]["ids"].add(hgnc_id)
                 if true_id:
-                    alias_genes[alias.upper()]["true"] = hgnc_id
+                    alias_genes[alias]["true"] = hgnc_id
             else:
-                alias_genes[alias.upper()] = {"true": true_id, "ids": set([hgnc_id])}
+                alias_genes[alias] = {"true": true_id, "ids": set([hgnc_id])}
 
     return alias_genes
 
