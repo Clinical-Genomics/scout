@@ -38,9 +38,13 @@
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
     <div class="d-flex">
       <span>
-        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
+        {% if variant.category in ["snv", "cancer_snv"] %}
+          <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
+            {{ data.classification.label }}
+          </a>
+        {% else %}
           {{ data.classification.label }}
-        </a>
+        {% endif %}
         <span class="badge bg-info">{{ data.classification.short }}</span>
       </span>
       <span>
@@ -133,7 +137,6 @@
 {% endmacro %}
 
 {% macro acmg_form(institute, case, variant, ACMG_OPTIONS, selected=None) %}
-  <label class="mt-3" data-bs-toggle="tooltip" title="Richards et al 2015"><a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="color: inherit;  text-decoration: inherit;">ACMG classification</a></label>
   <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
     <div class="d-flex justify-content-between">
       {% for option in ACMG_OPTIONS %}
@@ -168,7 +171,7 @@
           <form action="{{ url_for('variant.ccv_evaluation', evaluation_id=data._id) }}" method="POST" style="display: inline-block;">
             <button class="btn btn-xs btn-link" >Delete</button>
           </form>
-          {% if data.ccv_criteria %} 
+          {% if data.ccv_criteria %}
             <a class="btn btn-xs btn-link" href="{{ url_for('variant.ccv_evaluation', evaluation_id=data._id, edit=True) }}" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Edit</a>
           {% endif %}
       {% endif %}
@@ -191,6 +194,25 @@
   </form>
 {% endmacro %}
 
+{% macro panel_classify_sv(variant, institute, case, ACMG_OPTIONS, evaluations) %}
+  <div class="mt-3">
+    ACMG (INDEL) classification<label class="mt-3" data-bs-toggle="tooltip" title="Richards et al 2015"><a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="color: inherit;  text-decoration: inherit;">(Richards et al 2015)</a></label>.
+  </div>
+  <div>
+    {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
+  </div>
+  <div class="mt-3">
+    ACMG SV classification <a href="https://pubmed.ncbi.nlm.nih.gov/31690835/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guidelines</a> & <a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guide</a>.
+  </div>
+  {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
+    <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
+      {% for evaluation in evaluations %}
+        {{ acmg_classification_item(variant, evaluation) }}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
 {% macro panel_classify(variant, institute, case, ACMG_OPTIONS, CCV_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations, ccv_evaluations) %}
   <div class="card panel-default">
     <div class="panel-heading">Classify</div>
@@ -203,6 +225,7 @@
       {% if case.track != "cancer" %}
         {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
       {% endif %}
+      <label class="mt-3" data-bs-toggle="tooltip" title="Richards et al 2015"><a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="color: inherit;  text-decoration: inherit;">ACMG classification</a></label>
       {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>

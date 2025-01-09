@@ -374,7 +374,6 @@ def variant_update(institute_id, case_name, variant_id):
 @templated("variant/acmg.html")
 def evaluation(evaluation_id):
     """Show, edit or delete an ACMG evaluation."""
-
     evaluation_obj = store.get_evaluation(evaluation_id)
     if evaluation_obj is None:
         flash("Evaluation was not found in database", "warning")
@@ -392,7 +391,7 @@ def evaluation(evaluation_id):
         if check_reset_variant_classification(store, evaluation_obj, link):
             flash("Cleared ACMG classification.", "info")
 
-        return redirect(link)
+        return redirect(request.referrer)
 
     return dict(
         evaluation=evaluation_obj,
