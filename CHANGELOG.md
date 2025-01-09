@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Quick ACMG classification link on SV variant page
+
 ## [4.94.1]
 ### Fixed
 - Temporary directory generation for MT reports and pedigree file for case general report
