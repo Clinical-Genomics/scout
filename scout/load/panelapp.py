@@ -86,6 +86,8 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         """Translate panel type input from users to panel type slugs."""
         if not types_filter:
             return PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
+        if "all" in types_filter:
+            return available_types
         index_list = [int(typeint) - 1 for typeint in types_filter.replace(" ", "").split(",")]
         return [available_types[i] for i in index_list]
 
@@ -107,6 +109,7 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
     available_types: List[str] = panelapp.get_panel_types()
     for number, type in enumerate(available_types, 1):
         LOG.info(f"{number}: {type}")
+    LOG.info("all: all types above")
     preselected_options_idx: List[str] = [
         str(available_types.index(presel) + 1)
         for presel in PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
