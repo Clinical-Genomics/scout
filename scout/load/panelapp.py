@@ -3,7 +3,7 @@ import math
 from datetime import datetime
 from typing import Dict, List, Set
 
-from click import Abort, progressbar
+from click import progressbar
 
 from scout.adapter import MongoAdapter
 from scout.constants.panels import PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
