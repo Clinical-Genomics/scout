@@ -43,9 +43,7 @@ def load_panelapp_panel(
         adapter.load_panel(parsed_panel=parsed_panel, replace=True)
 
 
-def get_panelapp_genes(
-    adapter: MongoAdapter, institute: str, panel_ids: List[str], types_filter: List[str]
-) -> Set[tuple]:
+def get_panelapp_genes(institute: str, panel_ids: List[str], types_filter: List[str]) -> Set[tuple]:
     """Parse and collect genes from one or more panelApp panels."""
 
     genes = set()
@@ -117,7 +115,7 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         f"This panel contains green genes from {'signed off ' if signed_off else ''}panels of the following types: {', '.join(types_filter)}"
     )
     genes: Set[tuple] = get_panelapp_genes(
-        adapter=adapter, institute=institute, panel_ids=panel_ids, types_filter=types_filter
+        institute=institute, panel_ids=panel_ids, types_filter=types_filter
     )
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
 

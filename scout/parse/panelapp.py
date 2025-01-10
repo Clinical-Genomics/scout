@@ -1,7 +1,7 @@
 """Code to parse panel information"""
 
 import logging
-from typing import Dict, Optional
+from typing import Optional
 
 from scout.constants import INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANELAPP_CONFIDENCE_EXCLUDE
 from scout.utils.date import get_date
