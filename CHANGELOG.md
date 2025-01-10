@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplify updating of the PanelApp Green panel from all source types in the command line interactive session
 ### Changed
 - Clearer link to `Richards 2015` on ACMG classification section on SVs and SVs variants pages
+- Skip variant genotype matching check and just return True when matching causative is found in a case with only one individual/sample
 ### Fixed
 - ACMG temperature on case general report should respect term modifiers
 - Missing inheritance, constraint info for genes with symbols matching other genes previous aliases with some lower case letters
