@@ -495,7 +495,7 @@ class VariantHandler(VariantLoader):
             {"samples": {"$size": 1}},  # Condition for samples with exactly one element
             {
                 "samples": {
-                    "$elemMatch": {  # Condition for samples with more than one element: GT should be carrier
+                    "$elemMatch": {  # Condition for samples with more than one element: individual/sample should be carrier
                         "sample_id": {"$in": affected_ids},
                         "genotype_call": {"$regex": CARRIER},
                     }
