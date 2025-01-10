@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ACMG SNV classification form also accessible from SV variant page
-- Simplify updating of the PanelApp Green panel from all source types in the command line
+- Simplify updating of the PanelApp Green panel from all source types in the command line interactive session
 ### Changed
 - Clearer link to `Richards 2015` on ACMG classification section on SVs and SVs variants pages
 ### Fixed
