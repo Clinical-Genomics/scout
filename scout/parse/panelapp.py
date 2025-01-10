@@ -3,11 +3,7 @@
 import logging
 from typing import Dict, Optional
 
-from scout.constants import (
-    INCOMPLETE_PENETRANCE_MAP,
-    MODELS_MAP,
-    PANELAPP_CONFIDENCE_EXCLUDE,
-)
+from scout.constants import INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANELAPP_CONFIDENCE_EXCLUDE
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
