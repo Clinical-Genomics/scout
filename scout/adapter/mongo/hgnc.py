@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict, Set
 
 import intervaltree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
@@ -126,9 +126,9 @@ class GeneHandler(object):
 
         return None
 
-    def hgnc_ids(self) -> List[int]:
+    def hgnc_ids(self) -> Set[int]:
         """Returns all HGNC IDs present in the hgnc_gene collection."""
-        return list(self.hgnc_collection.distinct("hgnc_id"))
+        return set(self.hgnc_collection.distinct("hgnc_id"))
 
     def hgnc_genes(self, hgnc_symbol, build="37", search=False):
         """Fetch all hgnc genes that match a hgnc symbol
