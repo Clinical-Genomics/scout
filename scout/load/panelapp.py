@@ -1,7 +1,7 @@
 import logging
 import math
 from datetime import datetime
-from typing import Dict, List, Set
+from typing import List, Set
 
 from click import progressbar
 
@@ -28,15 +28,10 @@ def load_panelapp_panel(
         LOG.info("Fetching all panel app panels")
         panel_ids: List[str] = panelapp.get_panel_ids(signed_off=False)
 
-    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
-    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
-
     for _ in panel_ids:
         panel_info: dict = panelapp.get_panel(panel_id)
         parsed_panel = parse_panelapp_panel(
             panel_info=panel_info,
-            ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-            hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
             institute=institute,
             confidence=confidence,
         )
@@ -54,8 +49,6 @@ def get_panelapp_genes(
     """Parse and collect genes from one or more panelApp panels."""
 
     genes = set()
-    ensembl_id_to_hgnc_id_map: Dict[str, int] = adapter.ensembl_to_hgnc_id_mapping()
-    hgnc_symbol_to_ensembl_id_map: Dict[int, str] = adapter.hgnc_symbol_ensembl_id_mapping()
 
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
@@ -67,8 +60,6 @@ def get_panelapp_genes(
 
             parsed_panel = parse_panelapp_panel(
                 panel_info=panel_dict,
-                ensembl_id_to_hgnc_id_map=ensembl_id_to_hgnc_id_map,
-                hgnc_symbol_to_ensembl_id_map=hgnc_symbol_to_ensembl_id_map,
                 institute=institute,
                 confidence="green",
             )
