@@ -1,7 +1,7 @@
 """Code to parse panel information"""
 
 import logging
-from typing import Optional
+from typing import List, Optional
 
 from scout.constants import INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANELAPP_CONFIDENCE_EXCLUDE
 from scout.utils.date import get_date
@@ -11,6 +11,7 @@ PANELAPP_PANELS_URL = "https://panelapp.genomicsengland.co.uk/panels/"
 
 
 def parse_panel_app_gene(
+    hgnc_gene_ids: List[int],
     panelapp_gene: dict,
     confidence: str,
 ) -> dict:
@@ -21,8 +22,15 @@ def parse_panel_app_gene(
     if confidence_level in PANELAPP_CONFIDENCE_EXCLUDE[confidence]:
         return gene_info
 
-    gene_info["hgnc_symbol"] = panelapp_gene["gene_data"]["gene_symbol"]
-    gene_info["hgnc_id"] = panelapp_gene["gene_data"]["hgnc_id"].split(":")[1]
+    gene_symbol = panelapp_gene["gene_data"]["gene_symbol"]
+    hgnc_id = int(panelapp_gene["gene_data"]["hgnc_id"].split(":")[1])
+    if hgnc_id not in hgnc_gene_ids:
+        LOG.warning("Gene %s does not exist in database. Skipping gene...", gene_symbol)
+        return gene_info
+
+    gene_info["hgnc_id"] = hgnc_id
+    gene_info["hgnc_symbol"] = gene_symbol
+
     gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(panelapp_gene["penetrance"])
 
     inheritance_models = []
@@ -35,6 +43,7 @@ def parse_panel_app_gene(
 
 
 def parse_panelapp_panel(
+    hgnc_gene_ids: List[int],
     panel_info: dict,
     institute: Optional[str] = "cust000",
     confidence: Optional[str] = "green",
@@ -64,7 +73,9 @@ def parse_panelapp_panel(
     nr_excluded = 0
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info["genes"], 1):
-        gene_info = parse_panel_app_gene(gene, confidence)
+        gene_info = parse_panel_app_gene(
+            hgnc_gene_ids=hgnc_gene_ids, panelapp_gene=gene, confidence=confidence
+        )
         if not gene_info:
             nr_excluded += 1
             continue
