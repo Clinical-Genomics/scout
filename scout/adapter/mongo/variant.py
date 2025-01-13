@@ -491,12 +491,17 @@ class VariantHandler(VariantLoader):
         if len(affected_ids) == 0:
             return []
         filters["case_id"] = case_obj["_id"]
-        filters["samples"] = {
-            "$elemMatch": {
-                "sample_id": {"$in": affected_ids},
-                "genotype_call": {"$regex": CARRIER},
-            }
-        }
+        filters["$or"] = [
+            {"samples": {"$size": 1}},  # Condition for samples with exactly one element
+            {
+                "samples": {
+                    "$elemMatch": {  # Condition for samples with more than one element: individual/sample should be carrier
+                        "sample_id": {"$in": affected_ids},
+                        "genotype_call": {"$regex": CARRIER},
+                    }
+                }
+            },
+        ]
 
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
