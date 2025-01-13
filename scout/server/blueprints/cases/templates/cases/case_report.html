@@ -658,7 +658,7 @@
         </tr>
       </table>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
-        <thead>
+        <thead style="text-align:center;">
           <tr>
             <th>Rank</th>
             <th>Score</th>
@@ -674,7 +674,7 @@
             {% endif %}
           </tr>
         </thead>
-        <tbody>
+        <tbody style="text-align:center;">
           <tr>
             <td>{{variant.variant_rank}}</td>
             <td>{{variant.rank_score}}</td>
@@ -715,7 +715,7 @@
             {% endif %}
             <td>
               {% if variant.acmg_classification %}
-                <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
+                <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['label']}}">{{variant.acmg_classification['label'] }}</span>
               {% else %}
                 -
               {% endif %}
@@ -730,9 +730,16 @@
             {% if cancer %}
             <td>
               {% if variant.ccv_classification %}
-                <span class="badge rounded-pill bg-{{variant.ccv_classification['color'] if variant.ccv_classification['color'] else 'secondary'}}" title="{{variant.ccv_classification['code']}}">{{variant.ccv_classification['code'] }}</span>
+                <span class="badge rounded-pill bg-{{variant.ccv_classification['color'] if variant.ccv_classification['color'] else 'secondary'}}" title="{{variant.ccv_classification['label']}}">{{variant.ccv_classification['label'] }}</span>
               {% else %}
                 -
+              {% endif %}
+              {% if variant.bayesian_ccv %}
+                 <span class="badge rounded-pill bg-{{variant.bayesian_ccv.temperature_class}}">Score {{variant.bayesian_ccv.points|string}} <span class='fa {{variant.bayesian_ccv.temperature_icon}}'></span>
+                 {% if variant.bayesian_ccv.point_classification == "VUS" %}
+                 {{variant.bayesian_ccv.temperature}}
+                {% endif %}
+                </span>
               {% endif %}
             </td>
             {% endif %}
