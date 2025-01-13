@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer link to `Richards 2015` on ACMG classification section on SVs and SVs variants pages
 - Parse HGNC Ids directly from PanelApp when updating/downloading PanelApp panels
 - Skip variant genotype matching check and just return True when matching causative is found in a case with only one individual/sample
+- Reduced number of research MEI variants present in the demo case from 17K to 145 to speed up automatic tests
 ### Fixed
 - ACMG temperature on case general report should respect term modifiers
 - Missing inheritance, constraint info for genes with symbols matching other genes previous aliases with some lower case letters
