@@ -3,7 +3,11 @@
 import logging
 from typing import Optional, Set
 
-from scout.constants import INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANELAPP_CONFIDENCE_EXCLUDE
+from scout.constants import (
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
+    PANELAPP_CONFIDENCE_EXCLUDE,
+)
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
@@ -31,9 +35,11 @@ def parse_panel_app_gene(
     gene_info["hgnc_id"] = hgnc_id
     gene_info["hgnc_symbol"] = gene_symbol
 
-    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(panelapp_gene["penetrance"])
+    if panelapp_gene["penetrance"] in ["Complete", "Incomplete"]:
+        gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(panelapp_gene["penetrance"])
 
     inheritance_models = []
+
     for model in MODELS_MAP.get(panelapp_gene["mode_of_inheritance"], []):
         inheritance_models.append(model)
 
