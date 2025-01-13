@@ -42,7 +42,7 @@ def build_gene(gene_info: dict, adapter) -> dict:
 
     # Add boolean flags
     gene_obj.update(
-        {key: True for key in ["reduced_penetrance", "mosaicism"] if gene_info.get(key)}
+        {key: gene_info.get(key) for key in ["reduced_penetrance", "mosaicism"] if key in gene_info}
     )
 
     # Handle inheritance models
