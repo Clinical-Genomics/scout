@@ -28,7 +28,7 @@ def load_panelapp_panel(
         LOG.info("Fetching all panel app panels")
         panel_ids: List[str] = panelapp.get_panel_ids(signed_off=False)
 
-    for _ in panel_ids:
+    for panel_id in panel_ids:
         panel_info: dict = panelapp.get_panel(panel_id)
         parsed_panel = parse_panelapp_panel(
             hgnc_gene_ids=adapter.hgnc_ids(),
