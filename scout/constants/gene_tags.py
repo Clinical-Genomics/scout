@@ -33,7 +33,7 @@ INHERITANCE_PALETTE = {
     "other": {"bgcolor": "bg-light", "text_color": "text-dark"},
 }
 
-INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
+INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "None": None, "Complete": False, "Incomplete": True}
 
 MODELS_MAP = {
     "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted": ["AD"],
