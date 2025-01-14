@@ -20,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Saving gene inheritance models when loading/updating specific/all PanelApp panels (doesn't apply to the `PanelApp Green Genes panel`)
 - Save also complete penetrance status (in addition to incomplete) if available when loading specific/all PanelApp panels (does not apply to the `PanelApp Green Genes panel`)
 
-
 ## [4.94.1]
 ### Fixed
 - Temporary directory generation for MT reports and pedigree file for case general report
