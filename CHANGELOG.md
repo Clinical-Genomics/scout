@@ -18,7 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing inheritance, constraint info for genes with symbols matching other genes previous aliases with some lower case letters
 - Loading of all PanelApp panels from command line
 - Saving gene inheritance models when loading/updating specific/all PanelApp panels (doesn't apply to the `PanelApp Green Genes panel`)
-- Save also reduced penetrance = false (together with true) when loading specific/all PanelApp panels (does not apply to the `PanelApp Green Genes panel`)
+- Save also complete penetrance status (in addition to incomplete) if available when loading specific/all PanelApp panels (does not apply to the `PanelApp Green Genes panel`)
 
 
 ## [4.94.1]
