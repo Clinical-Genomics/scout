@@ -178,7 +178,7 @@
               <td>{{ gene.hgnc_id }}</td>
 
               <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
-              <td>{{ gene.reduced_penetrance }}</td>
+              <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td class="d-flex justify-content-center">
                 {% if gene.database_entry_version and gene.database_entry_version|string == panel.version|string %}

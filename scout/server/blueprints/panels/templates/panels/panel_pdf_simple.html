@@ -67,7 +67,7 @@
             <a style="text-decoration:none;" href="https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:{{gene.hgnc_id}}" target="_blank">{{gene.hgnc_id}}</a>
           </td>
           <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
-          <td>{{ gene.reduced_penetrance }}</td>
+          <td>{{ 'Reduced penetrance' if gene.reduced_penetrance }}</td>
           <td>{{ 'Mosaicism' if gene.mosaicism }}</td>
           <td>
             {% if gene.database_entry_version and gene.database_entry_version|string == panel.version|string %}
