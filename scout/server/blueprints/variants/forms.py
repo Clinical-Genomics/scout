@@ -16,7 +16,7 @@ from wtforms import (
     SubmitField,
     validators,
 )
-from wtforms.widgets import TextInput
+from wtforms.widgets import NumberInput, TextInput
 
 from scout.constants import (
     CALLERS,
@@ -132,8 +132,22 @@ class VariantFiltersForm(FlaskForm):
     )
 
     chrom = NonValidatingSelectMultipleField("Chromosome", choices=[], default="")
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
+    start = IntegerField(
+        "Start position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+    end = IntegerField(
+        "End position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
@@ -264,8 +278,22 @@ class OutlierFiltersForm(FlaskForm):
     )
 
     chrom = NonValidatingSelectMultipleField("Chromosome", choices=[], default="")
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
+    start = IntegerField(
+        "Start position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=1, message="Start position must be 0 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+    end = IntegerField(
+        "End position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=1, message="Start position must be 0 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
