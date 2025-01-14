@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG temperature on case general report should respect term modifiers
 - Missing inheritance, constraint info for genes with symbols matching other genes previous aliases with some lower case letters
 - Loading of all PanelApp panels from command line
+- Saving gene inheritance models when loading/updating specific/all PanelApp panels (doesn't apply to the `PanelApp Green Genes panel`)
 
 ## [4.94.1]
 ### Fixed
