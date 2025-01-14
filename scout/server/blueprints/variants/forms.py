@@ -144,7 +144,7 @@ class VariantFiltersForm(FlaskForm):
         "End position",
         [
             validators.Optional(),
-            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+            validators.NumberRange(min=0, message="End position must be 1 or greater."),
         ],
         widget=NumberInput(min=1),
     )
@@ -290,7 +290,7 @@ class OutlierFiltersForm(FlaskForm):
         "End position",
         [
             validators.Optional(),
-            validators.NumberRange(min=1, message="Start position must be 0 or greater."),
+            validators.NumberRange(min=1, message="End position must be 0 or greater."),
         ],
         widget=NumberInput(min=1),
     )
