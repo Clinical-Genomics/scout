@@ -212,8 +212,8 @@
     <tbody>
       <tr>
       <td>{{ add_form.chromosome(class_="form-control") }}</td>
-      <td><input type="number" name="position" id="position" class="form-control" required></td>
-      <td><input type="number" name="end" id="end" class="form-control"></td>
+      <td><input type="number" name="position" id="position" class="form-control" required min="1"></td>
+      <td><input type="number" name="end" id="end" class="form-control" min="1"></td>
       <td><input type="text" name="reference" id="reference" class="form-control" required></td>
       <td><input type="text" name="alternative" id="alternative" class="form-control" required></td>
       <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
