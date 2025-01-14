@@ -10,6 +10,7 @@ from wtforms import (
     SubmitField,
     validators,
 )
+from wtforms.widgets import NumberInput
 
 from scout.constants import CHROMOSOMES, SV_TYPES
 
@@ -24,8 +25,22 @@ CATEGORY_CHOICES = [
 
 
 class ManagedVariantForm(FlaskForm):
-    position = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
+    position = IntegerField(
+        "Start position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+    end = IntegerField(
+        "End position",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="End position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
     description = StringField(label="Description")
