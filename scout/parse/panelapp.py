@@ -33,11 +33,11 @@ def parse_panel_app_gene(
 
     gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(panelapp_gene["penetrance"])
 
-    inheritance_models = []
-    for model in MODELS_MAP.get(panelapp_gene["mode_of_inheritance"], []):
-        inheritance_models.append(model)
+    mode_of_inheritance = panelapp_gene.get("mode_of_inheritance")
+    if mode_of_inheritance not in MODELS_MAP:
+        LOG.warning(f"Mode of inheritance '{mode_of_inheritance}' not found in MODELS_MAP.")
 
-    gene_info["inheritance_models"] = inheritance_models
+    gene_info["inheritance_models"] = MODELS_MAP.get(mode_of_inheritance, [])
 
     return gene_info
 
