@@ -36,17 +36,27 @@ INHERITANCE_PALETTE = {
 INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "None": None, "Complete": False, "Incomplete": True}
 
 MODELS_MAP = {
-    "monoallelic_not_imprinted": ["AD"],
-    "monoallelic_maternally_imprinted": ["AD"],
-    "monoallelic_paternally_imprinted": ["AD"],
-    "monoallelic": ["AD"],
-    "biallelic": ["AR"],
-    "monoallelic_and_biallelic": ["AD", "AR"],
-    "monoallelic_and_more_severe_biallelic": ["AD", "AR"],
-    "xlinked_biallelic": ["XR"],
-    "xlinked_monoallelic": ["XD"],
-    "mitochondrial": ["MT"],
-    "unknown": [],
+    "MONOALLELIC, autosomal or pseudoautosomal, NOT imprinted": ["AD"],
+    "MONOALLELIC, autosomal or pseudoautosomal, imprinted status unknown": ["AD"],
+    "MONOALLELIC, autosomal or pseudoautosomal, maternally imprinted (paternal allele expressed)": [
+        "AD"
+    ],
+    "MONOALLELIC, autosomal or pseudoautosomal, paternally imprinted (maternal allele expressed)": [
+        "AD"
+    ],
+    "BIALLELIC, autosomal or pseudoautosomal": ["AR"],
+    "BOTH monoallelic and biallelic, autosomal or pseudoautosomal": ["AD", "AR"],
+    "BOTH monoallelic and biallelic (but BIALLELIC mutations cause a more SEVERE disease form), autosomal or pseudoautosomal": [
+        "AD",
+        "AR",
+    ],
+    "X-LINKED: hemizygous mutation in males, biallelic mutations in females": ["XR"],
+    "X-LINKED: hemizygous mutation in males, monoallelic mutations in females may cause disease (may be less severe, later onset than males)": [
+        "XD"
+    ],
+    "MITOCHONDRIAL": ["MT"],
+    "Other": [],
+    "Other - please specifiy in evaluation comments": [],
 }
 
 PANEL_GENE_INFO_TRANSCRIPTS = [
