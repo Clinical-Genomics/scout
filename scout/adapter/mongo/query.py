@@ -469,8 +469,8 @@ class QueryHandler(object):
             mongo_query(dict): returned object contains coordinate filters
 
         """
-        start_pos = int(query["start"]) if query["start"] >= 1 else 1
-        end_pos = int(query["end"]) if query["end"] >= 1 else 1
+        start_pos = max(int(query["start"]), 1)
+        end_pos = max(int(query["end"]), 1)
         mongo_query["position"] = {"$lte": end_pos}
         mongo_query["end"] = {"$gte": start_pos}
 
@@ -561,8 +561,8 @@ class QueryHandler(object):
             query.get("start") is not None and query.get("end") is not None
         ):  # query contains full coordinates
             chrom = query["chrom"]
-            start = int(query["start"]) if query["start"] >= 1 else 1
-            end = int(query["end"]) if query["end"] >= 1 else 1
+            start = max(int(query["start"]), 1)
+            end = max(int(query["end"]), 1)
             coordinate_query = self.get_position_query(chrom=chrom, start=start, end=end)
         else:  # query contains only chromosome info
             coordinate_query = {
