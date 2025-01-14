@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading of all PanelApp panels from command line
 - Saving gene inheritance models when loading/updating specific/all PanelApp panels (doesn't apply to the `PanelApp Green Genes panel`)
 - Save also complete penetrance status (in addition to incomplete) if available when loading specific/all PanelApp panels (does not apply to the `PanelApp Green Genes panel`)
+- Variants and managed variants query by coordinates, which was returning all variants in the chromosome if start position was 0
 
 ## [4.94.1]
 ### Fixed

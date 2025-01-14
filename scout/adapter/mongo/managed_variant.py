@@ -180,10 +180,12 @@ class ManagedVariantHandler(object):
                 }
 
             if "position" in query_options:
-                query["end"] = {"$gte": int(query_options["position"])}
+                position = max(int(query_options["position"]), 1)
+                query["end"] = {"$gte": position}
 
             if "end" in query_options:
-                query["position"] = {"$lte": int(query_options["end"])}
+                end = max(int(query_options["end"]), 1)
+                query["position"] = {"$lte": end}
 
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
