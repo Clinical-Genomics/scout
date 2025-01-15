@@ -1,43 +1,42 @@
 import logging
+from typing import List
 
 from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_compounds(compound_info, case_id, variant_type):
-    """Get a list with compounds objects for this variant.
+def parse_compounds(compound_info: str, case_id: str, variant_type: str) -> List[dict]:
+    """Get a list with compounds objects(dicts) for this variant.
 
-    Arguments:
-        compound_info(str): A Variant dictionary
-        case_id (str): unique family id
-        variant_type(str): 'research' or 'clinical'
+    Scout IDs do not have "chr" prefixed chromosome names, hence we lstrip that from
+    any compound names.
 
-    Returns:
-        compounds(list(dict)): A list of compounds
+    We need the case id to construct the correct id, as well as the variant type (clinical or research).
+
     """
-    # We need the case to construct the correct id
+
     compounds = []
     if compound_info:
         for family_info in compound_info.split(","):
-            splitted_entry = family_info.split(":")
+            split_entry = family_info.split(":")
             # This is the family id
-            if splitted_entry[0] == case_id:
-                for compound in splitted_entry[1].split("|"):
-                    splitted_compound = compound.split(">")
-                    compound_obj = {}
-                    compound_name = splitted_compound[0]
-                    compound_obj["variant"] = generate_md5_key(
-                        compound_name.split("_") + [variant_type, case_id]
-                    )
+            if split_entry[0] == case_id:
+                for compound in split_entry[1].split("|"):
+                    split_compound = compound.split(">")
+                    compound_name = split_compound[0].lstrip("chr")
+                    compound_obj = {
+                        "display_name": compound_name,
+                        "variant": generate_md5_key(
+                            compound_name.split("_") + [variant_type, case_id]
+                        ),
+                    }
 
                     try:
-                        compound_score = float(splitted_compound[1])
+                        compound_score = float(split_compound[1])
                     except (TypeError, IndexError):
                         compound_score = 0.0
-
                     compound_obj["score"] = compound_score
-                    compound_obj["display_name"] = compound_name
 
                     compounds.append(compound_obj)
 
