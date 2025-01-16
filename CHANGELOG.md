@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.95]
 ### Added
+- CCV score / temperature on case reports
 - ACMG SNV classification form also accessible from SV variant page
 - Simplify updating of the PanelApp Green panel from all source types in the command line interactive session
 ### Changed
