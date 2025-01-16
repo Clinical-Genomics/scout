@@ -146,15 +146,7 @@ def get_ccv_temperature(ccv_terms: set) -> Optional[dict]:
     }
 
     if not ccv_terms:
-        points = 0
-        point_classification = "uncertain_significance"
-        return {
-            "points": points,
-            "temperature": TEMPERATURE_STRINGS[points].get("label"),
-            "temperature_class": TEMPERATURE_STRINGS[points].get("color"),
-            "temperature_icon": TEMPERATURE_STRINGS[points].get("icon"),
-            "point_classification": CCV_COMPLETE_MAP[point_classification].get("short"),
-        }
+        return {}
 
     points = get_ccv_points(ccv_terms)
 
