@@ -63,6 +63,7 @@ from scout.server.utils import (
     institute_and_case,
 )
 from scout.utils.acmg import get_acmg_temperature
+from scout.utils.ccv import get_ccv_temperature
 
 LOG = logging.getLogger(__name__)
 
@@ -632,6 +633,26 @@ def add_bayesian_acmg_classification(variant_obj: dict):
         variant_obj["bayesian_acmg"] = get_acmg_temperature(terms)
 
 
+def add_bayesian_ccv_classification(variant_obj: dict):
+    """Append info to display the CCV VUS Bayesian score / temperature.
+    Criteria have a term and a modifier field on the db document
+    that are joined together in a string to conform to a regular
+    CCV term format. A set of such terms are passed on for evaluation
+    to the same function as the CCV classification form uses.
+    """
+    variant_ccv_classifications = list(
+        store.get_ccv_evaluations_case_specific(document_id=variant_obj["_id"])
+    )
+    if variant_ccv_classifications:
+        terms = set()
+        for criterium in variant_ccv_classifications[0].get("ccv_criteria", []):
+            term = criterium.get("term")
+            if criterium.get("modifier"):
+                term += f"_{criterium.get('modifier')}"
+            terms.add(term)
+        variant_obj["bayesian_ccv"] = get_ccv_temperature(terms)
+
+
 def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
     """Gather evaluated variants info to include in case report."""
 
@@ -646,6 +667,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
             if case_key == "partial_causatives":
                 var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
             add_bayesian_acmg_classification(var_obj)
+            add_bayesian_ccv_classification(var_obj)
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
@@ -687,6 +709,7 @@ def _append_evaluated_variant_by_type(
         if variant_key in var_obj and var_obj[variant_key] is not None:
 
             add_bayesian_acmg_classification(var_obj)
+            add_bayesian_ccv_classification(var_obj)
 
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
