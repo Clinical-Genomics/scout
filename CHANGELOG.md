@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
 - Avoid recurrent error by removing variant ranking settings in unranked demo case
+- Actually re-raise exception after load aborts and has rolled back variant insertion
+
 
 ## [4.95]
 ### Added
