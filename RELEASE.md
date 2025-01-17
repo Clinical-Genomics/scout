@@ -10,6 +10,13 @@
 
    - in `scout/pyproject.toml`
 
+1. Upgrade dependencies that are not frozen to their latest compatible version e.g.
+   ```bash
+   uv lock --upgrade
+   git add uv.lock
+   git commit -m 'Upgrade dependencies'
+   ```
+
 1. Make sure CHANGELOG.md is up to date for the release
 
 1. Create a new blog post for the documentation
