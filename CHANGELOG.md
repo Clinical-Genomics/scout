@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Release docs to include instructions for upgrading dependencies
+
+
 ## [4.95]
 ### Added
 - CCV score / temperature on case reports
@@ -22,7 +27,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save also complete penetrance status (in addition to incomplete) if available when loading specific/all PanelApp panels (does not apply to the `PanelApp Green Genes panel`)
 - Variants and managed variants query by coordinates, which was returning all variants in the chromosome if start position was 0
 - Compound loading matches also "chr"-containing compound variant names
-- Release docs to include instructions for upgrading dependencies
 
 ## [4.94.1]
 ### Fixed
