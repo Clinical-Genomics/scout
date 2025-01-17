@@ -4,13 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.95]
 ### Added
 - CCV score / temperature on case reports
 - ACMG SNV classification form also accessible from SV variant page
 - Simplify updating of the PanelApp Green panel from all source types in the command line interactive session
 ### Changed
-- Clearer link to `Richards 2015` on ACMG classification section on SVs and SVs variants pages
+- Clearer link to `Richards 2015` on ACMG classification section on SVs and cancer SVs variants pages
 - Parse HGNC Ids directly from PanelApp when updating/downloading PanelApp panels
 - Skip variant genotype matching check and just return True when matching causative is found in a case with only one individual/sample
 - Reduced number of research MEI variants present in the demo case from 17K to 145 to speed up automatic tests
@@ -23,7 +23,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants and managed variants query by coordinates, which was returning all variants in the chromosome if start position was 0
 - Compound loading matches also "chr"-containing compound variant names
 - Release docs to include instrucion on upgrading dependencies
-
 
 ## [4.94.1]
 ### Fixed
