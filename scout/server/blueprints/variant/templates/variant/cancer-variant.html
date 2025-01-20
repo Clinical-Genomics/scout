@@ -229,16 +229,16 @@
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
         {% if primary_transcript %}
-          <li class="list-group-item" data-bs-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id|truncate(30, True) }}
+          <li class="list-group-item" data-bs-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
         {% endif %}
         {% if primary_gene and primary_gene.exon %}
           <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
         {% endif %}
         {% if primary_transcript and primary_transcript.coding_sequence_name %}
-              {{ primary_transcript.coding_sequence_name | url_decode }}
+              {{ primary_transcript.coding_sequence_name | url_decode | truncate(30, True) }}
         {% endif %}
         {% if primary_transcript and primary_transcript.protein_sequence_name %}
-          <strong>{{ primary_transcript.protein_sequence_name | url_decode }}</strong>
+          <strong>{{ primary_transcript.protein_sequence_name | url_decode | truncate(30, True) }}</strong>
         {% endif %}
         {% if primary_gene and primary_gene.region_annotation %}
           <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
