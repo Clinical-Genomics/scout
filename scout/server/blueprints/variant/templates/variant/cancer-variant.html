@@ -229,7 +229,7 @@
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
         {% if primary_transcript %}
-          <li class="list-group-item" data-bs-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
+          <li class="list-group-item" data-bs-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id|truncate(30, True) }}
         {% endif %}
         {% if primary_gene and primary_gene.exon %}
           <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
