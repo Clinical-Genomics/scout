@@ -235,10 +235,10 @@
           <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
         {% endif %}
         {% if primary_transcript and primary_transcript.coding_sequence_name %}
-              {{ primary_transcript.coding_sequence_name | url_decode | truncate(30, True) }}
+              {{ primary_transcript.coding_sequence_name | url_decode | truncate(50, True) }}
         {% endif %}
         {% if primary_transcript and primary_transcript.protein_sequence_name %}
-          <strong>{{ primary_transcript.protein_sequence_name | url_decode | truncate(30, True) }}</strong>
+          <strong>{{ primary_transcript.protein_sequence_name | url_decode | truncate(50, True) }}</strong>
         {% endif %}
         {% if primary_gene and primary_gene.region_annotation %}
           <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
