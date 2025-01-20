@@ -87,14 +87,14 @@
               <a target="_blank" href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
                 {% if variant.first_rep_gene.hgvs_identifier %}
-                  <div>{{ variant.first_rep_gene.hgvs_identifier|truncate(20, True) }}</div>
-                  <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(20, True) }}</div>
+                  <div>{{ variant.first_rep_gene.hgvs_identifier|truncate(30, True) }}</div>
+                  <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</div>
                 {% else %}
-                  <div>{{ variant.reference|truncate(20, True) }}→
+                  <div>{{ variant.reference|truncate(30, True) }}→
                     {% if variant.alternative | length > 5 %}
                       {{ variant.alternative[0] }}...{{ variant.alternative[-1] }}
                     {% else %}
-                      {{ variant.alternative|truncate(20, True) }}
+                      {{ variant.alternative|truncate(30, True) }}
                     {% endif %}
                   </div>
                 {% endif %}
