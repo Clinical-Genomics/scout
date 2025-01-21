@@ -55,7 +55,7 @@ madeline: scout/demo/madeline.xml
 default_gene_panels: [panel1]
 gene_panels: [panel1]
 
-# meta data
+# metadata
 rank_model_version: '1.12'
 sv_rank_model_version: '1.5'
 rank_score_threshold: -100
