@@ -88,7 +88,7 @@ class ClinVarApi:
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
         return actions_resp.json()
 
-    def get_clinvar_scv_accesssion(self, url: str) -> Optional[str]:
+    def get_clinvar_scv_accession(self, url: str) -> Optional[str]:
         """Downloads a submission summary from the given URL into a temporary file and parses this file to retrieve a SCV accession, if available."""
         # Send a GET request to download the file
         response = requests.get(url)
@@ -133,7 +133,7 @@ class ClinVarApi:
 
             # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
             subm_summary_url: str = subm_response["files"][0]["url"]
-            scv_accession: Optional(str) = self.get_clinvar_scv_accesssion(url=subm_summary_url)
+            scv_accession: Optional(str) = self.get_clinvar_scv_accession(url=subm_summary_url)
 
             # Remove ClinVar submission using preClinVar's 'delete' endpoint
             resp = requests.post(
