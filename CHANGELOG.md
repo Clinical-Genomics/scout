@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
-
+- Avoid recurrent error by removing variant ranking settings in unranked demo case
 
 ## [4.95]
 ### Added
