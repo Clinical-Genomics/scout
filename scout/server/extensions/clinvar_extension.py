@@ -77,10 +77,22 @@ class ClinVarApi:
         except Exception as ex:
             return self.submit_service_url, None, ex
 
-    def show_submission_status(self, submission_id: str, api_key=None):
+    def json_submission_status(self, submission_id: str, api_key=None) -> dict:
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
 
         header: dict = self.set_header(api_key)
         actions_url = f"{self.submit_service_url}{submission_id}/actions/"
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
-        flash(f"Response from ClinVar: {actions_resp.json()}", "primary")
+        return actions_resp.json()
+
+    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> None:
+        """Remove s successfully processed submission from ClinVar."""
+
+        submission_status_doc: dict = self.json_submission_status(
+            submission_id=submission_id, api_key=api_key
+        )
+        try:
+            submission_status = submission_status_doc["actions"][0]["responses"][0]["status"]
+        except Exception as ex:
+            flash(ex)
+            return

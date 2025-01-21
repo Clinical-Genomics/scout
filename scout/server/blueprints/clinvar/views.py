@@ -4,10 +4,22 @@ from json import dumps
 from tempfile import NamedTemporaryFile
 from typing import List
 
-from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_login import current_user
 
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, GERMLINE_CLASSIF_TERMS
+from scout.constants.clinvar import (
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    GERMLINE_CLASSIF_TERMS,
+)
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case
 
@@ -29,10 +41,21 @@ def clinvar_submission_status(submission_id):
     """Sends a request to ClinVar to retrieve and display the status of a submission."""
 
     # flash a message with current submission status for a ClinVar submission
-    clinvar_api.show_submission_status(
+    flash(
+        f'Response from ClinVar: {clinvar_api.json_submission_status( submission_id=submission_id, api_key=request.form.get("apiKey"))}',
+        "primary",
+    )
+    return redirect(request.referrer)
+
+
+@clinvar_bp.route("/clinvar/delete-enquiry/<submission_id>", methods=["POST"])
+def clinvar_submission_delete(submission_id):
+    """Sends a request to ClinVar to delete a successfully processed submission."""
+
+    # Retrieve the actual submission status:
+    clinvar_api.delete_clinvar_submission(
         submission_id=submission_id, api_key=request.form.get("apiKey")
     )
-
     return redirect(request.referrer)
 
 
