@@ -1,5 +1,7 @@
 import json
 import logging
+import tempfile
+from typing import Optional
 
 import requests
 from flask import flash
@@ -17,6 +19,7 @@ class ClinVarApi:
 
     def init_app(self, app):
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
+        self.delete_service = "/".join([PRECLINVAR_URL, "delete"])
         self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
 
     def set_header(self, api_key) -> dict:
@@ -85,6 +88,33 @@ class ClinVarApi:
         actions_resp: requests.models.Response = requests.get(actions_url, headers=header)
         return actions_resp.json()
 
+    def get_clinvar_scv_accesssion(self, url: str) -> Optional[str]:
+        """Downloads a submission summary from the given URL into a temporary file and parses this file to retrieve a SCV accession, if available."""
+        # Send a GET request to download the file
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error if the request failed
+
+        # Create a temporary file to save the JSON content
+        with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=True) as temp_file:
+            # Write the JSON content to the temporary file
+            temp_file.write(response.text)
+            temp_file.flush()  # Ensure content is written to disk
+
+            # Read and parse the JSON content from the file
+            temp_file.seek(0)  # Reset file pointer to the beginning
+            json_data = json.load(temp_file)
+
+            submission_data: dict = json_data["submissions"][0]
+            processing_status: str = submission_data["processingStatus"]
+            if processing_status != "Success":
+                flash(
+                    f"Could not delete provided submission because its processing status is '{processing_status}'.",
+                    "warning",
+                )
+                return
+
+            return submission_data["processingStatus"]["identifiers"]["clinvarAccession"]
+
     def delete_clinvar_submission(self, submission_id: str, api_key=None) -> None:
         """Remove s successfully processed submission from ClinVar."""
 
@@ -92,7 +122,28 @@ class ClinVarApi:
             submission_id=submission_id, api_key=api_key
         )
         try:
-            submission_status = submission_status_doc["actions"][0]["responses"][0]["status"]
+            subm_response: dict = submission_status_doc["actions"][0]["responses"][0]
+            submission_status = subm_response["status"]
+            if submission_status != "processed":
+                flash(
+                    f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
+                    "warning",
+                )
+                return
+
+            # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
+            subm_summary_url: str = subm_response["files"][0]["url"]
+            scv_accession: Optional(str) = self.get_clinvar_scv_accesssion(url=subm_summary_url)
+
+            # Remove ClinVar submission using preClinVar's 'delete' endpoint
+            resp = requests.post(
+                self.delete_service, data={"api_key": api_key, "clinvar_accession": scv_accession}
+            )
+            flash(
+                f"ClinVar response: {str(resp.json())}",
+                "success" if resp.status_code == 201 else "warning",
+            )
+
         except Exception as ex:
-            flash(ex)
+            flash(str(ex))
             return
