@@ -112,8 +112,7 @@ class ClinVarApi:
                     "warning",
                 )
                 return
-
-            return submission_data["processingStatus"]["identifiers"]["clinvarAccession"]
+            return submission_data["identifiers"]["clinvarAccession"]
 
     def delete_clinvar_submission(self, submission_id: str, api_key=None) -> None:
         """Remove s successfully processed submission from ClinVar."""
