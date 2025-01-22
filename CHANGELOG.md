@@ -6,7 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Warning and reference to Bieseker et al 2024 when using "PP1", "PP4", "BS4" ACMG criteria together
+- Warning and reference to Bieseker et al 2024 when using PP1/PP4 and BS4 in ACMG classifications
+- Warning to not to use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for De Novo Criteria (PS2 & PM6)
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages

@@ -345,7 +345,19 @@ ACMG_POTENTIAL_CONFLICTS = [
         "Avoid double-counting evidence for constraints in both PM1 and PP2 (Durkie et al 2024).",
     ),
     (
-        {"PP1", "PP4", "BS4"},
-        "Make sure to evaluate phenotype and co-segregation (use of PP1, BS4 and PP4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+        {"PP1", "BS4"},
+        "Make sure to evaluate co-segregation and phenotype (use of PP1 and BS4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+    ),
+    (
+        {"PP4", "BS4"},
+        "Make sure to evaluate phenotype and segregation (use of PP4 and BS4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+    ),
+    (
+        {"PS2", "PP4"},
+        "Consider using PS2 without the PP4 criterion, based on the SVI Recommendation for De Novo Criteria (PS2 & PM6).",
+    ),
+    (
+        {"PM6", "PP4"},
+        "Consider using PM6 without the PP4 criterion, based on the SVI Recommendation for De Novo Criteria (PS2 & PM6).",
     ),
 ]
