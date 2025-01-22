@@ -1,7 +1,7 @@
 import json
 import logging
 import tempfile
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 from flask import flash
@@ -114,15 +114,19 @@ class ClinVarApi:
                 return
             return submission_data["identifiers"]["clinvarAccession"]
 
-    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> None:
-        """Remove s successfully processed submission from ClinVar."""
+    def delete_clinvar_submission(
+        self, submission_id: str, api_key=None
+    ) -> Optional[Tuple[int, dict]]:
+        """Remove a successfully processed submission from ClinVar."""
 
-        submission_status_doc: dict = self.json_submission_status(
-            submission_id=submission_id, api_key=api_key
-        )
         try:
+            submission_status_doc: dict = self.json_submission_status(
+                submission_id=submission_id, api_key=api_key
+            )
+
             subm_response: dict = submission_status_doc["actions"][0]["responses"][0]
             submission_status = subm_response["status"]
+
             if submission_status != "processed":
                 flash(
                     f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
@@ -138,10 +142,7 @@ class ClinVarApi:
             resp = requests.post(
                 self.delete_service, data={"api_key": api_key, "clinvar_accession": scv_accession}
             )
-            flash(
-                f"ClinVar response: {str(resp.json())}",
-                "success" if resp.status_code == 201 else "warning",
-            )
+            return resp.status_code, resp.json()
 
         except Exception as ex:
             flash(str(ex))
