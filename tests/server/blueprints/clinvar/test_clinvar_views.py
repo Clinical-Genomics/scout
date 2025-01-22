@@ -7,7 +7,6 @@ from scout.server.extensions import store
 SAVE_ENDPOINT = "clinvar.clinvar_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
-DELETE_ENDPOINT = "clinvar.clinvar_submission_delete"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
 API_CSV_2_JSON_URL = "/".join([PRECLINVAR_URL, "csv_2_json"])
 API_VALIDATE_ENDPOINT = "/".join([PRECLINVAR_URL, "validate"])
@@ -339,48 +338,6 @@ def test_clinvar_api_status(app):
 
         # THEN the response should redirect
         assert response.status_code == 302
-
-
-@responses.activate
-def test_delete_processed(app):
-    """Test the endpoint that deletes a successfully processed submission using the API."""
-
-    """
-    DEMO_SUBMISSION_ID = "SUB12345678"
-    DEMO_API_KEY = "test_key"
-
-    # GIVEN a mocked submitted response from ClinVar:
-    actions: list[dict] = [
-        {
-            "id": f"{DEMO_SUBMISSION_ID}-1",
-            "responses": [],
-            "status": "processed",
-            "targetDb": "clinvar",
-            "updated": "2024-01-21T13:39:24.384085Z",
-            "responses": [
-                {
-                    "status": "processed",
-                    "message": {
-                        "errorCode": null,
-                        "severity": "info",
-                        "text": "Your ClinVar submission processing status is \"Success\". Please find the details in the file referenced by actions[0].responses[0].files[0].url."
-                    },
-                    "files": [
-                        {
-                            "url": "https://submit.ncbi.nlm.nih.gov/api/2.0/files/xxxxxxxx/sub999999-summary-report.json/?format=attachment"
-                        }
-                    ],
-                    "objects": []
-                }
-            ]
-        }
-    ]
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-    """
 
 
 @responses.activate
