@@ -20,7 +20,7 @@ def test_json_submission_status(processed_submission):
         status=200,
     )
 
-    # WHEN app is created and contains the CHANJO2_URL param
+    # WHEN app is created and contains the CLINVAR_API_URL param
     test_app = create_app(config=dict(TESTING=True, CLINVAR_API_URL=CLINVAR_TEST_API_URL))
 
     with test_app.app_context():
