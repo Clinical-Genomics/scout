@@ -79,6 +79,7 @@ class Sex(str, Enum):
     female = "female"
     unknown = "unknown"
 
+
 def _resource_abs_path(string_path: str) -> str:
     """Return the absolute path to a resource file."""
     if not exists(string_path):
@@ -435,7 +436,9 @@ class CaseLoader(BaseModel):
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Optional[Union[List[str], str]] = None
-    status: Optional[Literal["prioritized", "inactive", "ignored", "active", "solved", "archived"]] = None
+    status: Optional[
+        Literal["prioritized", "inactive", "ignored", "active", "solved", "archived"]
+    ] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles]
 
