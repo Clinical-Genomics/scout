@@ -2,7 +2,7 @@ import csv
 import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
-from typing import List
+from typing import List, Tuple
 
 from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
