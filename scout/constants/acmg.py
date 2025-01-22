@@ -309,39 +309,39 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
 
 ACMG_POTENTIAL_CONFLICTS = [
     (
-        ("PVS1", "PM4"),
+        {"PVS1", "PM4"},
         "Use of PVS1 and PM4 together risks double-counting evidence (Tayoun et al 2019).",
     ),
     (
-        ("PVS1", "PM1"),
+        {"PVS1", "PM1"},
         "Use of PVS1 and PM1 together is not recommended (Durkie et al 2024).",
     ),
     (
-        ("PVS1", "PP2"),
+        {"PVS1", "PP2"},
         "Use of PVS1 and PP2 together is not recommended (Durkie et al 2024).",
     ),
     (
-        ("PVS1", "PS3"),
+        {"PVS1", "PS3"},
         "Note that for RNA PS3 should only be taken with PVS1 for well established functional assays, not splicing alone (Walker 2023).",
     ),
     (
-        ("PS1", "PM4"),
+        {"PS1", "PM4"},
         "Use of PS1 and PM4 together is not recommended (Durkie et al 2024).",
     ),
     (
-        ("PS1", "PM5"),
+        {"PS1", "PM5"},
         "Use of PS1 and PM5 together conflicts with original definition (Richards et al 2015).",
     ),
     (
-        ("PS1", "PP3"),
+        {"PS1", "PP3"},
         "Use of PS1 and PP3 together risks double-counting evidence (Tayoun et al 2019).",
     ),
     (
-        ("PS2", "PM6"),
+        {"PS2", "PM6"},
         "Use of PS2 and PM6 together conflicts with original definition (Richards et al 2015).",
     ),
     (
-        ("PM1", "PP2"),
+        {"PM1", "PP2"},
         "Avoid double-counting evidence for constraints in both PM1 and PP2 (Durkie et al 2024).",
     ),
 ]
