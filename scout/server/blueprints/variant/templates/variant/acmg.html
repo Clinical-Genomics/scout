@@ -79,7 +79,7 @@
                       <div class="row">
                         <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
-                          {% for level in "Strong", "Moderate", "Supporting" %}
+                          {% for level in "Very Strong", "Strong", "Moderate", "Supporting" %}
                             {% if(level != evidence) %}
                               <option id="{{ criterion_code }}-{{ level }}" value="{{ level }}" {% if modifier == level %}selected{% endif %}>{{ level }}</option>
                             {% endif %}
