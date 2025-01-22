@@ -573,6 +573,40 @@ def sv_var_obj():
 #############################################################
 ##################### Clinvar fixtures ######################
 #############################################################
+@pytest.fixture
+def processed_submission():
+    """Mocks a dictionary corresponding to a processed submission coming from ClinVar.
+    Copied from the ClinVar howto pages: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+    """
+
+    return {
+        "actions": [
+            {
+                "id": "SUB999999-1",
+                "responses": [
+                    {
+                        "status": "processed",
+                        "message": {
+                            "errorCode": None,
+                            "severity": "info",
+                            "text": 'Your ClinVar submission processing status is "Success". Please find the details in the file referenced by actions[0].responses[0].files[0].url.',
+                        },
+                        "files": [
+                            {
+                                "url": "https://submit.ncbi.nlm.nih.gov/api/2.0/files/xxxxxxxx/sub999999-summary-report.json/?format=attachment"
+                            }
+                        ],
+                        "objects": [],
+                    }
+                ],
+                "status": "processed",
+                "targetDb": "clinvar",
+                "updated": "2021-03-24T04:22:04.101297Z",
+            }
+        ]
+    }
+
+
 @pytest.fixture(scope="function")
 def clinvar_form(request):
     """Mocks a ClinVar form compiled by the user. Contains Variant and CaseData input data"""
