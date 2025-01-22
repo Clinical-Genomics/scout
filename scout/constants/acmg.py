@@ -344,4 +344,8 @@ ACMG_POTENTIAL_CONFLICTS = [
         {"PM1", "PP2"},
         "Avoid double-counting evidence for constraints in both PM1 and PP2 (Durkie et al 2024).",
     ),
+    (
+        {"PP1", "PP4", "BS4"},
+        "Make sure to evaluate phenotype and co-segregation (use of PP1, BS4 and PP4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+    ),
 ]
