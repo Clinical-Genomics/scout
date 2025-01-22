@@ -346,11 +346,11 @@ ACMG_POTENTIAL_CONFLICTS = [
     ),
     (
         {"PP1", "BS4"},
-        "Make sure to evaluate co-segregation and phenotype (use of PP1 and BS4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+        "Make sure to evaluate phenotype and segregation data according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
     ),
     (
         {"PP4", "BS4"},
-        "Make sure to evaluate phenotype and segregation (use of PP4 and BS4 together) according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+        "Make sure to evaluate phenotype and segregation data according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
     ),
     (
         {"PS2", "PP4"},
