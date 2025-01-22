@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Warning and reference to Bieseker et al 2024 when using "PP1", "PP4", "BS4" ACMG criteria together
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
