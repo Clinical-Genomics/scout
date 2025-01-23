@@ -375,7 +375,7 @@
         </li>
         <li class="list-group-item">
           SPIDEX
-          <span class="float-end">{{ variant.spidex or none|spidex_human }}</span>
+          <span class="float-end">{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</span>
         </li>
         <li class="list-group-item">
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
