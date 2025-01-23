@@ -3,7 +3,6 @@ from urllib.parse import quote
 
 from flask import current_app
 
-from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
@@ -486,7 +485,6 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         ensembl_link=ensembl_link(variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
-        spidex_human=spidex_human(variant_obj),
         spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
@@ -906,18 +904,6 @@ def hmtvar_link(variant_obj):
     """Compose a link to a variant in HmtVar"""
     url_template = "https://www.hmtvar.uniba.it/varCard/{id}"
     return url_template.format(id=variant_obj.get("hmtvar_variant_id"))
-
-
-def spidex_human(variant_obj):
-    """Translate SPIDEX annotation to human readable string."""
-    if variant_obj.get("spidex") is None:
-        return "not_reported"
-    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["low"]["pos"][1]:
-        return "low"
-    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["medium"]["pos"][1]:
-        return "medium"
-
-    return "high"
 
 
 def external_primer_order_link(variant_obj, build=None):
