@@ -8,6 +8,8 @@ from os.path import abspath, dirname, exists, isabs
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from scout.constants import CASE_STATUSES
+
 try:
     from typing import Literal
 except ImportError:
@@ -436,9 +438,7 @@ class CaseLoader(BaseModel):
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Optional[Union[List[str], str]] = None
-    status: Optional[
-        Literal["prioritized", "inactive", "ignored", "active", "solved", "archived"]
-    ] = None
+    status: Optional[Literal[tuple(CASE_STATUSES)]] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles]
 
