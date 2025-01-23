@@ -746,12 +746,34 @@
           </tr>
         </tbody>
       </table>
+      <table id="severity-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>SIFT</th>
+            <th>REVEL score</th>
+            <th>REVEL rank score</th>
+            <th>Polyphen</th>
+            <th>SPIDEX</th>
+            <th>SpliceAI DS max</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ variant.sift_predictions|join(', ') or '-'}}</td>
+            <td>{{ variant.revel or '-' }}</td>
+            <td>{{ variant.revel_score or '-' }}</td>
+            <td>{{ variant.polyphen_predictions|join(', ') or '-' }}</td>
+            <td>{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</td>
+            <td>{{ variant.spliceai_scores|join(', ') or '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
             <th>Affected gene(s)</th>
             <th>Description</th>
             <th>Region annotation</th>
+            <th>Consequence</th>
             <th>Transcript - HGVS - Protein</th>
             <th>Diagnoses [inheritance]</th>
           </tr>
@@ -767,6 +789,7 @@
                 </td>
                 <td>{{gene.description|title}}</td>
                 <td>{{gene.region_annotation}}</td>
+                <td>{{gene.functional_annotation.replace("_"," ")|truncate(20, True)}}</td>
                 <td>
                   {{ variant_transcripts(gene) }}
                 </td>
