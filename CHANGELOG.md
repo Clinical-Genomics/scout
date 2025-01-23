@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Support case status assignment upon loading (by providing case status in the case config file)
 - Warning and reference to Bieseker et al 2024 when using PP1/PP4 and BS4 in ACMG classifications
 - Warning to not to use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for De Novo Criteria (PS2 & PM6)
 ### Fixed
