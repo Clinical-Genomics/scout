@@ -162,7 +162,7 @@ def build_case(case_data, adapter):
 
     case_obj["synopsis"] = case_data.get("synopsis", "")
 
-    case_obj["status"] = "inactive"
+    case_obj["status"] = case_data.get("status") or "inactive"
     case_obj["is_research"] = False
     case_obj["research_requested"] = False
     case_obj["rerun_requested"] = False

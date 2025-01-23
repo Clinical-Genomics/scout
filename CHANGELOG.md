@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Support case status assignment upon loading (by providing case status in the case config file)
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
