@@ -22,3 +22,4 @@ RNAfusion_inspector_research: scout/demo/rnafusion_inspector_example.html
 analysis_date: 2022-11-02 14:00:46
 human_genome_build: '38'
 track: cancer
+status: 'prioritized'
