@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Support case status assignment upon loading (by providing case status in the case config file)
 - Version of Scout used when the case was loaded is displayed on case page and general report now
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
