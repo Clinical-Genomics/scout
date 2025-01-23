@@ -13,6 +13,7 @@ from flask_login import current_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
 
+from scout.constants import SPIDEX_HUMAN
 from scout.log import init_log
 
 from . import extensions
@@ -198,6 +199,17 @@ def register_filters(app):
         if value.isnumeric():
             return "{:,}".format(int(value)).replace(",", "&thinsp;")
         return value
+
+    @app.template_filter()
+    def spidex_human(spidex):
+        """Translate SPIDEX annotation to human readable string."""
+        if spidex is None:
+            return "not_reported"
+        if abs(spidex) < SPIDEX_HUMAN["low"]["pos"][1]:
+            return "low"
+        if abs(spidex) < SPIDEX_HUMAN["medium"]["pos"][1]:
+            return "medium"
+        return "high"
 
     @app.template_filter()
     def human_decimal(number, ndigits=4):
