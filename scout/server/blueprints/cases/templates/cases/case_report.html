@@ -746,6 +746,27 @@
           </tr>
         </tbody>
       </table>
+      <table id="severity-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>SIFT</th>
+            <th>REVEL score</th>
+            <th>REVEL rank score</th>
+            <th>Polyphen</th>
+            <th>SPIDEX</th>
+            <th>SpliceAI DS max</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ variant.sift_predictions|join(', ') or '-'}}</td>
+            <td>{{ variant.revel or '-' }}</td>
+            <td>{{ variant.revel_score or '-' }}</td>
+            <td>{{ variant.polyphen_predictions|join(', ') or '-' }}</td>
+            <td>{{ variant.spidex or none|spidex_human }}</td>
+            <td>{{ variant.spliceai_scores|join(', ') or '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
