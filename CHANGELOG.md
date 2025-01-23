@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Support case status assignment upon loading (by providing case status in the case config file)
 - Button to directly remove accepted submissions from ClinVar
 ### Fixed
 - Release docs to include instructions for upgrading dependencies

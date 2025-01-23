@@ -98,6 +98,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
     - **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 - **smn_tsv** _String_ Path to an SMN TSV file.
+- **status** _String_ Any of the following strings: 'prioritized', 'inactive', 'ignored', 'active', 'solved' or 'archived'.
 - **synopsis** _String_ Synopsis of case.
 - **sv_rank_model_version** _String_ Rank model that was used when scoring the variants.
 - **track** _String_ Type of track: {"rare", "cancer"}. Default: "rare".
