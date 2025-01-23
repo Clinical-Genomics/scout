@@ -773,6 +773,7 @@
             <th>Affected gene(s)</th>
             <th>Description</th>
             <th>Region annotation</th>
+            <th>Consequence</th>
             <th>Transcript - HGVS - Protein</th>
             <th>Diagnoses [inheritance]</th>
           </tr>
@@ -788,6 +789,7 @@
                 </td>
                 <td>{{gene.description|title}}</td>
                 <td>{{gene.region_annotation}}</td>
+                <td>{{gene.functional_annotation.replace("_"," ")|truncate(20, True)}}</td>
                 <td>
                   {{ variant_transcripts(gene) }}
                 </td>
