@@ -101,7 +101,10 @@
           <td>
 	          <table class="table table-sm">
 	            <tr>
-	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
+                <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
+                {% if case.scout_version %}
+                  <td> Scout: <strong>v.{{case.scout_version}}</strong></td>
+                {% endif %}
 	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d') if case.updated_at else "n.a." }}</strong></td>
 	            </tr>
 	          </table>
