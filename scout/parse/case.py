@@ -34,6 +34,7 @@ def parse_case_data(**kwargs):
         RNAfusion_report: Path to the RNA fusion report
         RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
+        status(str): Optional case status ("prioritized", "inactive", "ignored", "active", "solved", "archived")
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
         vcf_fusion(str): Path to a vcf file
