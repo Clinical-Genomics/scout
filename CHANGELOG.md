@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Support case status assignment upon loading (by providing case status in the case config file)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
 ### Fixed
