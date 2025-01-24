@@ -15,6 +15,7 @@
           {{ reports(institute,case, report_types) }}
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
+          {{ software_version(case) }}
           {{ genome_build(case, case_groups, has_rna_tracks) }}
           {{ rank_model(case) }}
           <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
@@ -185,6 +186,17 @@
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-info fa-fw me-3"></span>
       <span class="menu-collapsed">migrated</span>
+    </div>
+  </div>
+{% endif %}
+{% endmacro %}
+
+{% macro software_version(case) %}
+{% if case.scout_load_version%}
+  <div href="#" class="bg-dark list-group-item text-white" data-bs-toggle="tooltip" title="Scout version used for loading the case" data-bs-placement="right">
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fa fa-gear fa-fw me-3"></span>
+      <span class="menu-collapsed">v.{{ case.scout_load_version }}</span>
     </div>
   </div>
 {% endif %}

@@ -13,6 +13,7 @@ from flask_login import current_user
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
+from scout import __version__
 from scout.adapter import MongoAdapter
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
@@ -757,6 +758,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    data["current_scout_version"] = __version__
 
     case_report_variants(store, case_obj, institute_obj, data)
 

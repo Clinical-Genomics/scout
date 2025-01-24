@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from typing import Dict
+from scout import __version__
 
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
@@ -154,6 +155,7 @@ def build_case(case_data, adapter):
     now = datetime.now()
     case_obj["created_at"] = now
     case_obj["updated_at"] = now
+    case_obj["scout_load_version"] = __version__
 
     if case_data.get("suspects"):
         case_obj["suspects"] = case_data["suspects"]
