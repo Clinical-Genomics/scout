@@ -1146,7 +1146,7 @@ class CaseHandler(object):
                 "RNAfusion_report": case_obj.get("RNAfusion_report"),
                 "RNAfusion_report_research": case_obj.get("RNAfusion_report_research"),
                 "rna_delivery_report": case_obj.get("rna_delivery_report"),
-                "scout_version": case_obj.get("scout_version"),
+                "scout_load_version": case_obj.get("scout_load_version"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
