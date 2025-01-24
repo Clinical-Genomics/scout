@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support case status assignment upon loading (by providing case status in the case config file)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
+- Version of Scout used when the case was loaded is displayed on case page and general report now
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
