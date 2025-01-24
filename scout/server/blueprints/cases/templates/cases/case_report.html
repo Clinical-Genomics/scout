@@ -63,7 +63,7 @@
 </nav>
 
 <div id="container" class="container">
-  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong> using <strong>Scout v.{{current_scout_version}}</strong><br><br>
    {{ phenotype_panel() }}
    {{ gene_panels_panel()}}
    {{ causatives_panel()}}
@@ -101,8 +101,11 @@
           <td>
 	          <table class="table table-sm">
 	            <tr>
-	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
+                <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
 	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d') if case.updated_at else "n.a." }}</strong></td>
+                {% if case.scout_load_version %}
+                  <td> Loaded with <strong>Scout v.{{case.scout_load_version}}</strong></td>
+                {% endif %}
 	            </tr>
 	          </table>
 	          <br>
