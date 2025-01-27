@@ -995,32 +995,33 @@ class CaseHandler(object):
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-            LOG.warning(error)
-
-        self._load_omics_variants(case_obj, build=genome_build, update=update)
-
-        if existing_case:
-            self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
-            case_obj["rerun_requested"] = False
-            if case_obj["status"] in ["active", "archived"]:
-                case_obj["status"] = "inactive"
-
-            case_obj["variants_stats"] = self.case_variants_count(
-                case_id=case_obj["_id"],
-                institute_id=institute_obj["_id"],
-                force_update_case=True,
-            )
-
-            self.update_case_cli(case_obj, institute_obj)
-            # update Sanger status for the new inserted variants
-            self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
-
-            if keep_actions and old_evaluated_variants:
-                self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
-
+            LOG.exception(error)
+            raise error
         else:
-            LOG.info("Loading case %s into database", case_obj["display_name"])
-            self.add_case(case_obj, institute_obj)
+            self._load_omics_variants(case_obj, build=genome_build, update=update)
+        finally:
+            if existing_case:
+                self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
+                case_obj["rerun_requested"] = False
+                if case_obj["status"] in ["active", "archived"]:
+                    case_obj["status"] = "inactive"
+
+                case_obj["variants_stats"] = self.case_variants_count(
+                    case_id=case_obj["_id"],
+                    institute_id=institute_obj["_id"],
+                    force_update_case=True,
+                )
+
+                self.update_case_cli(case_obj, institute_obj)
+                # update Sanger status for the new inserted variants
+                self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
+
+                if keep_actions and old_evaluated_variants:
+                    self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
+
+            else:
+                LOG.info("Loading case %s into database", case_obj["display_name"])
+                self.add_case(case_obj, institute_obj)
 
         return case_obj
 
