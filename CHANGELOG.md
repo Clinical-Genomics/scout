@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
 - Version of Scout used when the case was loaded is displayed on case page and general report now
+### Changed
+- Discontinue ClinVar submissions via CSV files and support only submission via API: removed buttons for downloading ClinVar submission objects as CSV files.
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
