@@ -10,7 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
 - Version of Scout used when the case was loaded is displayed on case page and general report now
+### Changed
 - Display STR variant filter status on corresponding variantS page
+- Discontinue ClinVar submissions via CSV files and support only submission via API: removed buttons for downloading ClinVar submission objects as CSV files.
 - Warning and reference to Bieseker et al Biesecker when using PP1/BS4 and PP4 in ACMG classifications
 - Warning to not to use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for _De Novo_ Criteria (PS2 & PM6)
 ### Fixed
