@@ -1,4 +1,3 @@
-import csv
 import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
@@ -102,33 +101,6 @@ def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
     controllers.update_clinvar_submission_status(request, institute_id, submission)
     return redirect(request.referrer)
-
-
-@clinvar_bp.route("/<submission>/download/csv/<csv_type>/<clinvar_id>", methods=["GET"])
-def clinvar_download_csv(submission, csv_type, clinvar_id):
-    """Download a csv (Variant file or CaseData file) for a clinVar submission"""
-
-    clinvar_file_data = controllers.clinvar_submission_file(submission, csv_type, clinvar_id)
-
-    if clinvar_file_data is None:
-        return redirect(request.referrer)
-
-    # Write temp CSV file and serve it in response
-    tmp_csv = NamedTemporaryFile(
-        mode="a+", prefix=clinvar_file_data[0].split(".")[0], suffix=".csv"
-    )
-    writes = csv.writer(tmp_csv, delimiter=",", quoting=csv.QUOTE_ALL)
-    writes.writerow(clinvar_file_data[1])  # Write header
-    writes.writerows(clinvar_file_data[2])  # Write lines
-    tmp_csv.flush()
-    tmp_csv.seek(0)
-
-    return send_file(
-        tmp_csv.name,
-        download_name=clinvar_file_data[0],
-        mimetype="text/csv",
-        as_attachment=True,
-    )
 
 
 @clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
