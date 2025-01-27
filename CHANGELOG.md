@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
 - Version of Scout used when the case was loaded is displayed on case page and general report now
+- Display STR variant filter status on corresponding variantS page
 - Button to directly remove accepted submissions from ClinVar
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
