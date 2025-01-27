@@ -100,8 +100,8 @@
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
-                    <div class="float-start">{{ sample.display_name }}</div>
-                    <div class="float-end">{{ sample.genotype_call }}</div>
+                    <div class="row"><div class="col-8">{{ sample.display_name }}</div>
+                    <div class="col-4">{{ sample.genotype_call }}</div></div>
                   {% endif %}
                 {% endfor %}
             </td>
