@@ -109,9 +109,7 @@ class ClinVarApi:
                 return
             return submission_data["identifiers"]["clinvarAccession"]
 
-    def delete_clinvar_submission(
-        self, submission_id: str, api_key=None
-    ) -> Optional[Tuple[int, dict]]:
+    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> Tuple[int, dict]:
         """Remove a successfully processed submission from ClinVar."""
 
         try:
@@ -123,11 +121,10 @@ class ClinVarApi:
             submission_status = subm_response["status"]
 
             if submission_status != "processed":
-                flash(
+                return (
+                    500,
                     f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
-                    "warning",
                 )
-                return
 
             # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
             subm_summary_url: str = subm_response["files"][0]["url"]
@@ -140,5 +137,4 @@ class ClinVarApi:
             return resp.status_code, resp.json()
 
         except Exception as ex:
-            flash(str(ex))
-            return
+            return 500, str(ex)

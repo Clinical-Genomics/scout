@@ -44,7 +44,8 @@ def clinvar_submission_delete(submission_id):
         submission_id=submission_id, api_key=request.form.get("apiKey")
     )
     flash(
-        f"ClinVar response: {str(delete_res[1])}", "success" if delete_res[0] == 201 else "warning"
+        f"ClinVar response: { str(delete_res[1]) }",
+        "success" if delete_res[0] == 201 else "warning",
     )
     return redirect(request.referrer)
 
