@@ -345,7 +345,7 @@ ACMG_POTENTIAL_CONFLICTS = [
         "Avoid double-counting evidence for constraints in both PM1 and PP2 (Durkie et al 2024).",
     ),
     (
-        {"PP1", "BS4"},
+        {"PP1", "PP4"},
         "When applying phenotype specificity and segregation data together, a point-system is available from ClinGen SVI (Biesecker et al 2024)",
     ),
     (
