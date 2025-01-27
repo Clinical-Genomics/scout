@@ -354,7 +354,7 @@ ACMG_POTENTIAL_CONFLICTS = [
     ),
     (
         {"PS2", "PP4"},
-        "Consider using PS2 without the PP4 criterion, based on the SVI Recommendation for De Novo Criteria (PS2 & PM6).",
+        "Consider using PS2 without the PP4 criterion, based on the SVI Recommendation for de novo Criteria (PS2 & PM6).",
     ),
     (
         {"PM6", "PP4"},
