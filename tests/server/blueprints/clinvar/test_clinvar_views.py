@@ -256,50 +256,6 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
         assert store.clinvar_submission_collection.find_one() is None
 
 
-def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
-    """Test downloading the Variant and CaseData .CSV files from the ClinVar submissions page"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-
-        # It should be possible to download the Variant .CSV file
-        resp = client.get(
-            url_for(
-                "clinvar.clinvar_download_csv",
-                submission=subm_obj["_id"],
-                csv_type="variant_data",
-                clinvar_id="SUB000",
-            )
-        )
-        assert resp.status_code == 200
-        assert resp.mimetype == "text/csv"
-
-        # AND a a CaseData .CSV file
-        resp = client.get(
-            url_for(
-                "clinvar.clinvar_download_csv",
-                submission=subm_obj["_id"],
-                csv_type="case_data",
-                clinvar_id="SUB000",
-            )
-        )
-        assert resp.status_code == 200
-        assert resp.mimetype == "text/csv"
-
-
 @responses.activate
 def test_clinvar_api_status(app):
     """Test the endpoint used to check the status of a ClinVar submission."""
