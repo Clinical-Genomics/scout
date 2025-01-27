@@ -1,6 +1,6 @@
 import json
 import logging
-import tempfile
+from io import StringIO
 from typing import Optional, Tuple
 
 import requests
@@ -94,15 +94,10 @@ class ClinVarApi:
         response = requests.get(url)
         response.raise_for_status()  # Raise an error if the request failed
 
-        # Create a temporary file to save the JSON content
-        with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=True) as temp_file:
-            # Write the JSON content to the temporary file
-            temp_file.write(response.text)
-            temp_file.flush()  # Ensure content is written to disk
+        # Use an in-memory file-like object to hold the JSON content
+        with StringIO(response.text) as memory_file:
 
-            # Read and parse the JSON content from the file
-            temp_file.seek(0)  # Reset file pointer to the beginning
-            json_data = json.load(temp_file)
+            json_data = json.load(memory_file)
 
             submission_data: dict = json_data["submissions"][0]
             processing_status: str = submission_data["processingStatus"]
