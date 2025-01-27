@@ -358,6 +358,6 @@ ACMG_POTENTIAL_CONFLICTS = [
     ),
     (
         {"PM6", "PP4"},
-        "Consider using PM6 without the PP4 criterion, based on the SVI Recommendation for De Novo Criteria (PS2 & PM6).",
+        "Consider using PM6 without the PP4 criterion, based on the SVI Recommendation for de novo Criteria (PS2 & PM6).",
     ),
 ]
