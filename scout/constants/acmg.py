@@ -346,11 +346,11 @@ ACMG_POTENTIAL_CONFLICTS = [
     ),
     (
         {"PP1", "PP4"},
-        "When applying phenotype specificity and segregation data together, a point-system is available from ClinGen SVI (Biesecker et al 2024)",
+        "When applying phenotype specificity and segregation data together, a point-system is available from ClinGen SVI (Biesecker et al 2024).",
     ),
     (
         {"BS4", "PP4"},
-        "Make sure to evaluate phenotype and segregation data according to a point-system and integrated into the Bayesian framework (Bieseker et al 2024).",
+        "When applying phenotype specificity and segregation data together, a point-system is available from ClinGen SVI (Biesecker et al 2024).",
     ),
     (
         {"PS2", "PP4"},
