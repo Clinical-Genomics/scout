@@ -1,4 +1,3 @@
-import csv
 import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
