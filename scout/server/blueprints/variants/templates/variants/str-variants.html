@@ -89,7 +89,7 @@
           {% elif variant.str_status == 'pre_mutation' %}
               <tr class="bg-warning">
 	        {% else %}
-	            <td>
+	            <tr>
 	        {% endif %}
             <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td class="str-link">{{ str_locus_info(variant) }}</td>
