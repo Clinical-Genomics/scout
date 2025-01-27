@@ -1,6 +1,6 @@
 # coding=UTF-8
 
-from typing import Optional
+from typing import List, Optional
 
 from scout.constants import ACMG_COMPLETE_MAP
 from scout.constants.acmg import ACMG_POTENTIAL_CONFLICTS
@@ -362,12 +362,12 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     }
 
 
-def get_acmg_conflicts(acmg_terms: set) -> list:
-    """Check potential conflict paris, return list of reference strings."""
+def get_acmg_conflicts(acmg_terms: List[str]) -> List[str]:
+    """Check for potential conflicting terms, return a list of references as strings."""
 
     conflicts = []
-    for t1, t2, reference in ACMG_POTENTIAL_CONFLICTS:
-        if t1 in acmg_terms and t2 in acmg_terms:
+    for conflict_set, reference in ACMG_POTENTIAL_CONFLICTS:
+        if conflict_set.issubset(set(acmg_terms)):
             conflicts.append(reference)
 
     return conflicts
