@@ -49,7 +49,7 @@ def create_app(config_file=None, config=None):
     app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
-    app.jinja_env.globals['SCOUT_VERSION'] = __version__
+    app.jinja_env.globals["SCOUT_VERSION"] = __version__
 
     app.config.from_pyfile("config.py")  # Load default config file
     if (
