@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Software version and link to the relative release on GitHub in the top left dropdown menu
+- Software version and link to the relative release on GitHub on the top left dropdown menu
 
 ## [4.96]
 ### Added
