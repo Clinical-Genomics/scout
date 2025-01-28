@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.96]
 ### Added
 - Support case status assignment upon loading (by providing case status in the case config file)
 - Severity predictions on general case report for SNVs and cancer SNVs
@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Warning and reference to Bieseker et al Biesecker when using PP1/BS4 and PP4 in ACMG classifications
 - Warning to not to use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for _De Novo_ Criteria (PS2 & PM6)
 - Button to directly remove accepted submissions from ClinVar
+- Upgraded libs in uv.lock file
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
