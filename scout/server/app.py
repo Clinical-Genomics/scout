@@ -13,9 +13,9 @@ from flask_login import current_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
 
+from scout import __version__
 from scout.constants import SPIDEX_HUMAN
 from scout.log import init_log
-from scout import __version__
 
 from . import extensions
 from .blueprints import (
