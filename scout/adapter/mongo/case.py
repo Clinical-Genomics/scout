@@ -998,6 +998,10 @@ class CaseHandler(object):
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.exception(error)
             raise error
+        else:
+            if not existing_case:
+                LOG.info("Loading case %s into database", case_obj["display_name"])
+                self.add_case(case_obj, institute_obj)
         finally:
             if existing_case:
                 self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
@@ -1017,10 +1021,6 @@ class CaseHandler(object):
 
                 if keep_actions and old_evaluated_variants:
                     self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
-
-            else:
-                LOG.info("Loading case %s into database", case_obj["display_name"])
-                self.add_case(case_obj, institute_obj)
 
         return case_obj
 
