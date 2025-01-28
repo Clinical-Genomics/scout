@@ -363,6 +363,7 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
+
     if update_status == "submit":
         submitter_key = request_obj.form.get("apiKey")
         send_api_submission(institute_id, submission_id, submitter_key)
