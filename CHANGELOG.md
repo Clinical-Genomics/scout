@@ -4,22 +4,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.96]
 ### Added
 - Support case status assignment upon loading (by providing case status in the case config file)
 - Severity predictions on general case report for SNVs and cancer SNVs
 - Variant functional annotation on general case report for SNVs and cancer SNVs
-- Version of Scout used when the case was loaded is displayed on case page and general report now
+- Version of Scout used when the case was loaded is displayed on case page and general report
+### Removed
+- Discontinue ClinVar submissions via CSV files and support only submission via API: removed buttons for downloading ClinVar submission objects as CSV files
 ### Changed
 - Display STR variant filter status on corresponding variantS page
-- Discontinue ClinVar submissions via CSV files and support only submission via API: removed buttons for downloading ClinVar submission objects as CSV files.
-- Warning and reference to Bieseker et al Biesecker when using PP1/BS4 and PP4 in ACMG classifications
-- Warning to not to use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for _De Novo_ Criteria (PS2 & PM6)
+- Warning and reference to Biesecker et al when using PP1/BS4 and PP4 together in ACMG classifications
+- Warning to not use PP4 criterion together with PS2/PM6 in ACMG classifications with reference to the SVI Recommendation for _de novo_ Criteria (PS2 & PM6)
 - Button to directly remove accepted submissions from ClinVar
+- Upgraded libs in uv.lock file
 ### Fixed
 - Release docs to include instructions for upgrading dependencies
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
 - Avoid recurrent error by removing variant ranking settings in unranked demo case
+- Actually re-raise exception after load aborts and has rolled back variant insertion
+
 
 ## [4.95]
 ### Added
