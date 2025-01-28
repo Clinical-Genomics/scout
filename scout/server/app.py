@@ -15,6 +15,7 @@ from markupsafe import Markup
 
 from scout.constants import SPIDEX_HUMAN
 from scout.log import init_log
+from scout import __version__
 
 from . import extensions
 from .blueprints import (
@@ -48,6 +49,7 @@ def create_app(config_file=None, config=None):
     app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
+    app.jinja_env.globals['SCOUT_VERSION'] = __version__
 
     app.config.from_pyfile("config.py")  # Load default config file
     if (
