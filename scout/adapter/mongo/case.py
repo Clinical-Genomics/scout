@@ -982,7 +982,6 @@ class CaseHandler(object):
                         variant_type=variant_type,
                         category=category,
                     )
-                # add variants
                 self.load_variants(
                     case_obj=case_obj,
                     variant_type=variant_type,
@@ -994,11 +993,11 @@ class CaseHandler(object):
                     ),
                 )
 
+                self._load_omics_variants(case_obj, build=genome_build, update=update)
+
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.exception(error)
             raise error
-        else:
-            self._load_omics_variants(case_obj, build=genome_build, update=update)
         finally:
             if existing_case:
                 self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
