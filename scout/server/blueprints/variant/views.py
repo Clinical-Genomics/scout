@@ -27,12 +27,19 @@ from scout.server.blueprints.variant.controllers import (
     check_reset_variant_classification,
 )
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
-from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
+from scout.server.blueprints.variant.controllers import (
+    observations,
+    str_variant_reviewer,
+)
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
-from scout.server.blueprints.variant.controllers import variant_acmg_post
+from scout.server.blueprints.variant.controllers import (
+    variant_acmg_post,
+)
 from scout.server.blueprints.variant.controllers import variant_ccv as ccv_controller
-from scout.server.blueprints.variant.controllers import variant_ccv_post
+from scout.server.blueprints.variant.controllers import (
+    variant_ccv_post,
+)
 from scout.server.blueprints.variant.verification_controllers import (
     MissingVerificationRecipientError,
     variant_verification,
