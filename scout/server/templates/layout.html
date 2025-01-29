@@ -43,7 +43,7 @@
                 <div class="dropdown-divider" ></div>
                 <a class="dropdown-item" href="https://clinical-genomics.github.io/scout" referrerpolicy="no-referrer" rel="noopener" target='_blank'>User guide</a>
                 <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" referrerpolicy="no-referrer" rel="noopener" target='_blank'>Open issues</a>
-                <a class="dropdown-item mb-1" href="https://github.com/Clinical-Genomics/scout/releases/tag/v{{ SCOUT_VERSION[:-2] if SCOUT_VERSION.endswith('.0') and SCOUT_VERSION.count('.') > 1 else SCOUT_VERSION }}" referrerpolicy="no-referrer" rel="noopener" target='_blank'>Release note v{{SCOUT_VERSION}}</a>
+                <a class="dropdown-item mb-1" href="https://github.com/Clinical-Genomics/scout/releases/tag/v{{ SCOUT_VERSION[:-2] if SCOUT_VERSION.endswith('.0') and SCOUT_VERSION.count('.') > 1 else SCOUT_VERSION }}" referrerpolicy="no-referrer" rel="noopener" target='_blank'>Release notes v{{SCOUT_VERSION}}</a>
               </div>
             </li>
             {% block top_nav %}{% endblock %}
