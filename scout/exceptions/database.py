@@ -1,5 +1,5 @@
 """The following exceptions follow PEP249:
-    https://www.python.org/dev/peps/pep-0249
+https://www.python.org/dev/peps/pep-0249
 """
 
 
