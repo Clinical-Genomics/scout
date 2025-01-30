@@ -92,10 +92,10 @@ def parse_frequency(variant, info_key):
         info_key(str)
 
     Returns:
-        frequency(float): or None if frequency does not exist
+        frequency(float): or None if frequency does not exist (or is ".", "0", or "-1")
     """
     raw_annotation = variant.INFO.get(info_key)
-    raw_annotation = None if raw_annotation == "." else raw_annotation
+    raw_annotation = None if raw_annotation in [".", "-1", -1, 0, "0"] else raw_annotation
     frequency = float(raw_annotation) if raw_annotation else None
     return frequency
 
