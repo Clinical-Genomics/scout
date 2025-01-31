@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
+### Changed
+- Do not show overlapping gene panels badge on variants from cases runned without gene panels
 
 ## [4.96]
 ### Added
