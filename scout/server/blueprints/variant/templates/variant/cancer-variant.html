@@ -227,12 +227,8 @@
         <thead class="thead table-light border-top">
           <tr class="active">
             <th>Gene</th>
-            <th data-bs-toggle="tooltip" title="Quantifies the likelihood that this gene is intolerant to a mutation that produces LoF in the protein product">pLI score</th>
             <th>Description</th>
-            <th data-bs-toggle="tooltip" title="Quantifies the likelihood that this gene is intolerant to a mutation that produces LoF in the protein product">pLI</th>
-            {% if case.genome_build == "38" %}
-              <th id="MANE functional annotations">Consequence (MANE transcripts)</th>
-            {% endif %}
+            <th data-bs-toggle="tooltip" title="Quantifies the likelihood that this gene is intolerant to a mutation that produces LoF in the protein product">pLI score</th>
           </tr>
         </thead>
         <tbody>
