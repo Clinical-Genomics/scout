@@ -339,6 +339,7 @@
         <thead class="thead table-light border-top">
           <tr class="active">
             <th>Gene</th>
+            <th data-bs-toggle="tooltip" title="Quantifies the likelihood that this gene is intolerant to a mutation that produces LoF in the protein product">pLI score</th>
             <th>Region</th>
             <th>Consequence</th>
             {% if case.genome_build == "38" %}
@@ -349,11 +350,12 @@
         <tbody>
           {% for gene in variant.genes %}
             <tr>
-              <th>
+              <td>
                 <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
-              </th>
+              </td>
+              <td>{{gene.pli_score}}</td>
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
               {% if case.genome_build == "38" %} <!-- Display eventual functional annotations associated to MANE transcripts -->
