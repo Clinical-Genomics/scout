@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
-- Display pLI score on SNV variants page
+- Display pLI score on rare diseases and cancer SNV pages
 
 ## [4.96]
 ### Added
