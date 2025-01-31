@@ -8,9 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Display pLI score on rare diseases and cancer SNV pages
+### Changed
+- Do not show overlapping gene panels badge on variants from cases runned without gene panels
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
-
 
 ## [4.96]
 ### Added
