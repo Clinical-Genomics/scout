@@ -203,16 +203,18 @@
       {% endfor %}
 
       {% set panel_count = matching_panels|length %}
-      <a
-        class="badge bg-secondary text-white"
-        data-bs-toggle="popover"
-        data-bs-html="true"
-        data-bs-trigger="hover click"
-        title="Overlapping gene panels"
-        data-bs-content="{% for panel in matching_panels %}
-          {{ panel.panel_name|safe }}<br>
-        {% else %} No ovelapping gene panels {% endfor %}"
-      >{{ panel_count }}</a>
+      {% if panel_count %}
+        <a
+          class="badge bg-secondary text-white"
+          data-bs-toggle="popover"
+          data-bs-html="true"
+          data-bs-trigger="hover click"
+          title="Overlapping gene panels"
+          data-bs-content="{% for panel in matching_panels %}
+            {{ panel.panel_name|safe }}<br>
+          {% endfor %}"
+        >{{ panel_count }}</a>
+      {% endif %}
     {% endmacro %}
 
     {% if variant.category in ["cancer", "sv_cancer"] %}
