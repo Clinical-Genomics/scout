@@ -1,7 +1,7 @@
-""" OMICS variant
+"""OMICS variant
 
-    For potentially causative variants that are not yet in ClinVar
-    and have yet not been marked causative in any existing case.
+For potentially causative variants that are not yet in ClinVar
+and have yet not been marked causative in any existing case.
 
 """
 

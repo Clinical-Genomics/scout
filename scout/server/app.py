@@ -13,6 +13,7 @@ from flask_login import current_user
 from markdown import markdown as python_markdown
 from markupsafe import Markup
 
+from scout import __version__
 from scout.constants import SPIDEX_HUMAN
 from scout.log import init_log
 
@@ -48,6 +49,7 @@ def create_app(config_file=None, config=None):
     app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
+    app.jinja_env.globals["SCOUT_VERSION"] = __version__
 
     app.config.from_pyfile("config.py")  # Load default config file
     if (
