@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Software version and link to the relative release on GitHub on the top left dropdown menu
+### Fixed
+- Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
+
 ## [4.96]
 ### Added
 - Support case status assignment upon loading (by providing case status in the case config file)
@@ -23,7 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Truncated long HGVS descriptions on cancer SNV and SNVs pages
 - Avoid recurrent error by removing variant ranking settings in unranked demo case
 - Actually re-raise exception after load aborts and has rolled back variant insertion
-
 
 ## [4.95]
 ### Added

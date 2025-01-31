@@ -1,5 +1,5 @@
 """Code for MatchMaker Exchange integration
-   Tested with PatientMatcher: https://github.com/Clinical-Genomics/patientMatcher
+Tested with PatientMatcher: https://github.com/Clinical-Genomics/patientMatcher
 """
 
 import datetime

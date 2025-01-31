@@ -1,5 +1,4 @@
-"""Code for updating information on individuals
-"""
+"""Code for updating information on individuals"""
 
 from pathlib import Path
 

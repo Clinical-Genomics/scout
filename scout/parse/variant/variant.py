@@ -484,7 +484,7 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
 
 
 def add_gene_and_transcript_info_for_fusions(
-    parsed_variant: Dict[str, Any]
+    parsed_variant: Dict[str, Any],
 ) -> List[Optional[Dict]]:
     """Add gene and transcript info for fusions. Return list of parsed
     transcripts for later use in parsing.
