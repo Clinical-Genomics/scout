@@ -59,7 +59,7 @@
               <tr>
                 <th style="width:14%" title="HGNC symbols">Gene</th>
                 <th style="width:7%" title="Sub-category">Type</th>
-                <th style="width:7%" title="Value - delta Psi or l2fc ">Value</th>
+                <th style="width:7%" title="Value - delta Psi or l2fc">Value</th>
                 <th title="Functional annotation">Func. annotation</th>
                 <th style="width:7%" title="P-value">P-value</th>
                 <th style="width:10%" title="Individual">Ind</th>
@@ -246,6 +246,13 @@
   <div class="col-6">
     {{ stash_filter_buttons(form, institute, case) }}
   </div>
+
+  <div class="col-2 offset-2">
+      <div class="btn-group">
+        {{ form.sort_by(class="form-select btn btn-primary", style="width: auto;") }}
+        {{ form.sort_order(class="form-select btn btn-primary", style="width: auto;") }}
+      </div>
+    </div>
 </div>
 {% endmacro %}
 
@@ -266,7 +273,7 @@
     <div class="col-4 d-flex justify-content-center">
       Filter returns {{result_size}} / {{ total_variants }} variants.
     </div>
-    <div class="col-4 d-flex flex-column justify-content-end">
+    <div class="col-4 d-flex justify-content-end">
       <div class="d-flex justify-content-end">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.</div>
     </div>
   </div>
