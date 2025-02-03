@@ -1,11 +1,14 @@
 import logging
 from typing import Dict, Optional
 
+from pymongo import ASCENDING, DESCENDING
+
 from scout.constants import OMICS_FILE_TYPE_MAP
 from scout.models.omics_variant import OmicsVariantLoader
 from scout.parse.omics_variant import parse_omics_file
 
 LOG = logging.getLogger(__name__)
+SORT_ORDER = {"asc": ASCENDING, "desc": DESCENDING}
 
 
 class OmicsVariantHandler:
@@ -180,9 +183,21 @@ class OmicsVariantHandler:
         else:
             nr_of_variants = skip + nr_of_variants
 
-        query = self.build_query(case_id, query=query, category=category, build=build)
+        variants_query = self.build_query(case_id, query=query, category=category, build=build)
+
+        if query.get("sort_by") and query.get("sort_order"):
+            return (
+                self.omics_variant_collection.find(variants_query, projection)
+                .sort([(query.get("sort_by"), SORT_ORDER[query.get("sort_order")])])
+                .skip(skip)
+                .limit(nr_of_variants)
+            )
+
         return self.omics_variant_collection.find(
-            query, projection, skip=skip, limit=nr_of_variants
+            variants_query,
+            projection,
+            skip=skip,
+            limit=nr_of_variants,
         )
 
     def count_omics_variants(
