@@ -178,29 +178,6 @@
       })
     })
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // Find all buttons inside elements with the class "sort-btn"
-    const sortButtons = document.querySelectorAll('.sort-btn button[data-sort]');
-
-    sortButtons.forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();  // Prevent default button behavior
-
-            // Toggle the sort direction
-            let sortDir = button.dataset.sort === 'asc' ? 'desc' : 'asc';
-            button.dataset.sort = sortDir;  // Set the new sort direction
-
-            // Update the icon class based on the new sort direction
-            const icon = button.querySelector('.fa');
-            if (icon) {
-                icon.className = 'fa fa-sort-' + sortDir;  // Update the icon class (e.g., fa-sort-asc or fa-sort-desc)
-            }
-
-            // Call your sorting function here (e.g., sortDesc() or sortAsc)
-        });
-      });
-    });
-
   </script>
 
 {% endblock %}
