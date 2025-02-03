@@ -188,7 +188,7 @@ class OmicsVariantHandler:
         if query.get("sort_by") and query.get("sort_order"):
             return (
                 self.omics_variant_collection.find(variants_query, projection)
-                .sort([(query.get("sort_by"), SORTING_ORDER[query.get("sort_order")])])
+                .sort([(query.get("sort_by"), SORT_ORDER[query.get("sort_order")])])
                 .skip(skip)
                 .limit(nr_of_variants)
             )
