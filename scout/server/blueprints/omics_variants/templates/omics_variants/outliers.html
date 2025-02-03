@@ -59,7 +59,7 @@
               <tr>
                 <th style="width:14%" title="HGNC symbols">Gene</th>
                 <th style="width:7%" title="Sub-category">Type</th>
-                <th style="width:7%" title="Value - delta Psi or l2fc ">Value</th>
+                <th style="width:7%" title="Value - delta Psi or l2fc">Value</th>
                 <th title="Functional annotation">Func. annotation</th>
                 <th style="width:7%" title="P-value">P-value</th>
                 <th style="width:10%" title="Individual">Ind</th>
@@ -178,6 +178,29 @@
       })
     })
 
+    document.addEventListener('DOMContentLoaded', function() {
+    // Find all buttons inside elements with the class "sort-btn"
+    const sortButtons = document.querySelectorAll('.sort-btn button[data-sort]');
+
+    sortButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default button behavior
+
+            // Toggle the sort direction
+            let sortDir = button.dataset.sort === 'asc' ? 'desc' : 'asc';
+            button.dataset.sort = sortDir;  // Set the new sort direction
+
+            // Update the icon class based on the new sort direction
+            const icon = button.querySelector('.fa');
+            if (icon) {
+                icon.className = 'fa fa-sort-' + sortDir;  // Update the icon class (e.g., fa-sort-asc or fa-sort-desc)
+            }
+
+            // Call your sorting function here (e.g., sortDesc() or sortAsc)
+        });
+      });
+    });
+
   </script>
 
 {% endblock %}
@@ -246,6 +269,13 @@
   <div class="col-6">
     {{ stash_filter_buttons(form, institute, case) }}
   </div>
+
+  <div class="col-2 offset-2">
+      <div class="btn-group">
+        {{ form.sort_by(class="form-select btn btn-primary", style="width: auto;") }}
+        {{ form.sort_order(class="form-select btn btn-primary", style="width: auto;") }}
+      </div>
+    </div>
 </div>
 {% endmacro %}
 
@@ -266,7 +296,7 @@
     <div class="col-4 d-flex justify-content-center">
       Filter returns {{result_size}} / {{ total_variants }} variants.
     </div>
-    <div class="col-4 d-flex flex-column justify-content-end">
+    <div class="col-4 d-flex justify-content-end">
       <div class="d-flex justify-content-end">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.</div>
     </div>
   </div>

@@ -32,6 +32,8 @@ omics_variants_bp = Blueprint(
 def outliers(institute_id, case_name):
     """Display a list of outlier omics variants."""
 
+    print(request.form)
+
     page = get_variants_page(request.form)
     category = "outlier"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

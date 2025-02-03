@@ -304,6 +304,15 @@ class OutlierFiltersForm(FlaskForm):
 
     show_unaffected = BooleanField("Show also variants present only in unaffected", default=False)
 
+    sort_by = NonValidatingSelectField(
+        choices=[("", "Sort by"), ("value", "Sort by Value"), ("p_value", "Sort by P-value")],
+        validators=[validators.Optional()],
+    )
+    sort_order = NonValidatingSelectField(
+        choices=[("", "Sort order"), ("asc", "asc"), ("desc", "desc")],
+        validators=[validators.Optional()],
+    )
+
 
 FILTERSFORMCLASS = {
     "snv": FiltersForm,
