@@ -145,6 +145,7 @@ def parse_variant(
     parsed_variant["azqual"] = call_safe(float, variant.INFO.get("AZQUAL"))
 
     # STR variant info
+
     set_str_info(variant, parsed_variant)
     # STR source dict with display string, source type and entry id
     set_str_source(parsed_variant, variant)
@@ -241,14 +242,16 @@ def parse_variant(
     set_rank_result(parsed_variant, variant, rank_results_header)
 
     ###################### Add SV specific annotations ######################
-    sv_frequencies = parse_sv_frequencies(variant)
-    for key in sv_frequencies:
-        parsed_variant["frequencies"][key] = sv_frequencies[key]
+    if parsed_variant.get("category") in ["sv", "cancer_sv"]:
+        sv_frequencies = parse_sv_frequencies(variant)
+        for key in sv_frequencies:
+            parsed_variant["frequencies"][key] = sv_frequencies[key]
 
     ###################### Add MEI specific annotations #####################
-    mei_frequencies = parse_mei_frequencies(variant)
-    for key in mei_frequencies:
-        parsed_variant["frequencies"][key] = mei_frequencies[key]
+    if parsed_variant.get("category") in ["mei"]:
+        mei_frequencies = parse_mei_frequencies(variant)
+        for key in mei_frequencies:
+            parsed_variant["frequencies"][key] = mei_frequencies[key]
 
     ###################### Add Cancer specific annotations ######################
     # MSK_MVL indicates if variants are in the MSK managed variant list

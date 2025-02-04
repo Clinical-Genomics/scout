@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
+- Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
 
 ## [4.96]
 ### Added
