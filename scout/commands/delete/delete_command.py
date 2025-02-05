@@ -4,7 +4,7 @@ import click
 from flask import current_app, url_for
 from flask.cli import with_appcontext
 
-from scout.constants import CASE_STATUSES
+from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -23,8 +23,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-
-VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
+VARIANT_CATEGORIES = VARIANTS_TARGET_FROM_CATEGORY.keys()
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -47,18 +46,25 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @click.option("--older-than", type=click.INT, default=0, help="Older than (months)")
 @click.option(
     "--analysis-type",
-    type=click.Choice(["wgs", "wes", "panel"]),
+    type=click.Choice(ANALYSIS_TYPES),
     multiple=True,
     help="Type of analysis",
 )
 @click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
 @click.option("--variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
+    "--rm-ctg",
+    type=click.Choice(VARIANT_CATEGORIES),
+    multiple=True,
+    required=False,
+    help="Remove only the following categories",
+)
+@click.option(
     "--keep-ctg",
     type=click.Choice(VARIANT_CATEGORIES),
     multiple=True,
     required=False,
-    help="Do not delete one of more variant categories",
+    help="Keep the following categories",
 )
 @click.option(
     "--dry-run",
