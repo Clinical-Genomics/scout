@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
+- Downloading and parsing of genes from ensembl (including MT-TP)
 
 ## [4.96]
 ### Added
