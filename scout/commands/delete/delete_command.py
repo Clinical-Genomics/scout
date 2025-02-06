@@ -112,11 +112,9 @@ def variants(
         return
 
     total_deleted = 0
-    items_name = "deleted variants"
 
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
-        items_name = "estimated deleted variants"
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
@@ -188,6 +186,7 @@ def variants(
             continue
 
         # delete variants specified by variants_query
+        items_name = "deleted variants"
         result = store.variant_collection.delete_many(variants_query)
         total_deleted += result.deleted_count
         click.echo(
