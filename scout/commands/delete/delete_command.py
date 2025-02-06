@@ -167,7 +167,11 @@ def variants(
             items_name = "estimated deleted variants"
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
-            remove_n_omics_variants = store.omics_variant_collection.count_documents(variants_query)
+            remove_n_omics_variants = (
+                store.omics_variant_collection.count_documents(variants_query)
+                if "wts_outliers" not in keep_ctg
+                else 0
+            )
             total_deleted += remove_n_variants + remove_n_omics_variants
             click.echo(
                 "\t".join(
@@ -190,10 +194,14 @@ def variants(
 
         # delete variants specified by variants_query
         items_name = "deleted variants"
-        result_variants = store.variant_collection.delete_many(variants_query)
-        result_omics_variants = store.omics_variant_collection.delete_many(variants_query)
+        remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
+        remove_n_omics_variants = (
+            store.omics_variant_collection.delete_many(variants_query).deleted_count
+            if "wts_outliers" not in keep_ctg
+            else 0
+        )
 
-        total_deleted += result_variants.deleted_count + result_omics_variants.deleted_count
+        total_deleted += remove_n_variants + remove_n_omics_variants
         click.echo(
             "\t".join(
                 [
@@ -207,7 +215,7 @@ def variants(
                     case.get("status", ""),
                     str(case.get("is_research", "")),
                     str(case_n_variants),
-                    str(result_variants.deleted_count + result_omics_variants.deleted_count),
+                    str(remove_n_variants + remove_n_omics_variants),
                 ]
             )
         )
