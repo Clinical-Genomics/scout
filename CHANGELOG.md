@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
+- Updated the GitHub MongoDB action to version to 1.12 in automatic tests workflow
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 
