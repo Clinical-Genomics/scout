@@ -138,7 +138,7 @@ def variants(
     if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id, institute_id))
 
-    def check_research(adapter: MongoAdapter, case_obj: dict, variant_type: str):
+    def check_research(adapter: MongoAdapter, case_obj: dict, variant_type: str, force: bool):
         if variant_type == "research":
             if not (force or case_obj["research_requested"]):
                 LOG.warning("research not requested, use '--force'")
@@ -160,7 +160,7 @@ def variants(
 
             i += 1
 
-            check_research(adapter, case_obj, variant_type)
+            check_research(adapter, case_obj, variant_type, force)
 
             LOG.info(
                 "Delete {0} {1} variants for case {2}".format(
