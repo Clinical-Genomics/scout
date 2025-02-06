@@ -10,7 +10,7 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
+BYTES_IN_ONE_GIGABYTE = 1073741824
 DELETE_VARIANTS_HEADER = [
     "Case n.",
     "Ncases",

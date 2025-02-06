@@ -62,7 +62,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for _ in store.variant_collection.find())
-    n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
+    n_variants_to_delete = store.variant_collection.count_documents(VARIANTS_QUERY)
 
     # Then the function that delete variants should run without error
     cmd_params = [
@@ -88,7 +88,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     # variants should be deleted
     n_current_vars = sum(1 for _ in store.variant_collection.find())
     assert n_current_vars < n_initial_vars
-    assert n_current_vars + n_variants_to_exclude == n_initial_vars
+    assert n_current_vars + n_variants_to_delete == n_initial_vars
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
@@ -96,6 +96,43 @@ def test_delete_variants(mock_app, case_obj, user_obj):
         event["content"]
         == f"Rank-score threshold:{RANK_THRESHOLD}, case n. variants threshold:{VARIANTS_THRESHOLD}."
     )
+
+
+def test_delete_omics_variants(mock_app, case_obj, user_obj):
+    """Test the delete variants command's ability to remove omics variants."""
+
+    # GIVEN a database with -omics variants
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "variants", case_obj["_id"], "--outlier", "--rank-treshold", 0]
+    )
+    assert result.exit_code == 0
+    n_initial_vars = sum(1 for _ in store.variant_collection.find())
+    n_variants_to_delete = store.variant_collection.count_documents(VARIANTS_QUERY)
+    # WHEN variants are removed using the command line
+    cmd_params = [
+        "delete",
+        "variants",
+        "-u",
+        user_obj["email"],
+        "--rank-threshold",
+        0,
+        "--rm-ctg",
+        "wts_outliers",
+    ]
+    result = runner.invoke(cli, cmd_params, input="y")
+    assert result.exit_code == 0
+    assert "estimated deleted variants" not in result.output
+    assert "Estimated space freed" in result.output
+
+    # THEN the should all be gone
+    n_current_vars = sum(1 for _ in store.variant_collection.find())
+    assert n_current_vars == 0
+    assert n_current_vars + n_variants_to_delete == n_initial_vars
+    # and a relative event should be created
+    event = store.event_collection.find_one({"verb": "remove_variants"})
+    assert event["case"] == case_obj["_id"]
+    assert f"Rank-score threshold:0" in event["content"]
 
 
 def test_delete_panel_non_existing(empty_mock_app, testpanel_obj):
