@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import click
 from flask import current_app, url_for
@@ -24,6 +25,17 @@ DELETE_VARIANTS_HEADER = [
     "Removed variants",
 ]
 VARIANT_CATEGORIES = VARIANTS_TARGET_FROM_CATEGORY.keys()
+
+
+def _set_keep_ctg(keep_ctg: set[str], rm_ctg: set[str]) -> List[str]:
+    """Define the categories of variants that should not be removed."""
+    if keep_ctg and rm_ctg:
+        raise click.UsageError(f"Please use either '--keep-ctg' or '--rm-ctg' parameter, not both.")
+    if keep_ctg:
+        return list(keep_ctg)
+    if rm_ctg:
+        return list(VARIANT_CATEGORIES - rm_ctg)
+    return []
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -82,6 +94,7 @@ def variants(
     analysis_type: list,
     rank_threshold: int,
     variants_threshold: int,
+    rm_ctg: list,
     keep_ctg: list,
     dry_run: bool,
 ) -> None:
@@ -100,6 +113,7 @@ def variants(
 
     total_deleted = 0
     items_name = "deleted variants"
+
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
         items_name = "estimated deleted variants"
@@ -126,6 +140,8 @@ def variants(
         f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     )
     click.echo("\t".join(DELETE_VARIANTS_HEADER))
+    keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
+
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         institute_id = case["owner"]
@@ -142,11 +158,13 @@ def variants(
         variants_to_keep = (
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
+
         variants_query = store.delete_variants_query(
             case_id, variants_to_keep, rank_threshold, keep_ctg
         )
 
         if dry_run:
+            items_name = "estimated deleted variants"
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
             total_deleted += remove_n_variants
