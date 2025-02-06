@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
+- Expand the command line to remove more types of variants. Now supports: `cancer`, `cancer_sv`, `fusion`, `mei`, `outlier`, `snv`, `str`, `sv`, `wts_outliers`
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 ### Fixed

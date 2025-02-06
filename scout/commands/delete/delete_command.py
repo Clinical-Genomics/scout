@@ -27,14 +27,14 @@ DELETE_VARIANTS_HEADER = [
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers"]
 
 
-def _set_keep_ctg(keep_ctg: set[str], rm_ctg: set[str]) -> List[str]:
+def _set_keep_ctg(keep_ctg: tuple[str], rm_ctg: tuple[str]) -> List[str]:
     """Define the categories of variants that should not be removed."""
     if keep_ctg and rm_ctg:
         raise click.UsageError(f"Please use either '--keep-ctg' or '--rm-ctg' parameter, not both.")
     if keep_ctg:
         return list(keep_ctg)
     if rm_ctg:
-        return list(VARIANT_CATEGORIES - rm_ctg)
+        return list(set(VARIANT_CATEGORIES).difference(set(rm_ctg)))
     return []
 
 
