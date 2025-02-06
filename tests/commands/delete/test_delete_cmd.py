@@ -132,7 +132,7 @@ def test_delete_omics_variants(mock_app, case_obj, user_obj):
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
-    assert f"Rank-score threshold:0" in event["content"]
+    assert "Rank-score threshold:0" in event["content"]
 
 
 def test_delete_panel_non_existing(empty_mock_app, testpanel_obj):
