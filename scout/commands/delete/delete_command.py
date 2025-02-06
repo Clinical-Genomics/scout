@@ -24,7 +24,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-VARIANT_CATEGORIES = VARIANTS_TARGET_FROM_CATEGORY.keys()
+VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers"]
 
 
 def _set_keep_ctg(keep_ctg: set[str], rm_ctg: set[str]) -> List[str]:
@@ -86,16 +86,16 @@ def _set_keep_ctg(keep_ctg: set[str], rm_ctg: set[str]) -> List[str]:
 @with_appcontext
 def variants(
     user: str,
-    case_id: list,
+    case_id: tuple,
     case_file: str,
     institute: str,
-    status: list,
+    status: tuple,
     older_than: int,
-    analysis_type: list,
+    analysis_type: tuple,
     rank_threshold: int,
     variants_threshold: int,
-    rm_ctg: list,
-    keep_ctg: list,
+    rm_ctg: tuple,
+    keep_ctg: tuple,
     dry_run: bool,
 ) -> None:
     """Delete variants for one or more cases"""
@@ -143,7 +143,9 @@ def variants(
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         institute_id = case["owner"]
-        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
+        case_n_variants = store.variant_collection.count_documents(
+            {"case_id": case_id}
+        ) + store.omics_variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
         if variants_threshold and case_n_variants < variants_threshold:
             continue
@@ -157,7 +159,7 @@ def variants(
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
 
-        variants_query = store.delete_variants_query(
+        variants_query: dict = store.delete_variants_query(
             case_id, variants_to_keep, rank_threshold, keep_ctg
         )
 
@@ -165,7 +167,8 @@ def variants(
             items_name = "estimated deleted variants"
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
-            total_deleted += remove_n_variants
+            remove_n_omics_variants = store.omics_variant_collection.count_documents(variants_query)
+            total_deleted += remove_n_variants + remove_n_omics_variants
             click.echo(
                 "\t".join(
                     [
@@ -179,7 +182,7 @@ def variants(
                         case.get("status", ""),
                         str(case.get("is_research", "")),
                         str(case_n_variants),
-                        str(remove_n_variants),
+                        str(remove_n_variants + remove_n_omics_variants),
                     ]
                 )
             )
@@ -187,8 +190,10 @@ def variants(
 
         # delete variants specified by variants_query
         items_name = "deleted variants"
-        result = store.variant_collection.delete_many(variants_query)
-        total_deleted += result.deleted_count
+        result_variants = store.variant_collection.delete_many(variants_query)
+        result_omics_variants = store.omics_variant_collection.delete_many(variants_query)
+
+        total_deleted += result_variants.deleted_count + result_omics_variants.deleted_count
         click.echo(
             "\t".join(
                 [
@@ -202,7 +207,7 @@ def variants(
                     case.get("status", ""),
                     str(case.get("is_research", "")),
                     str(case_n_variants),
-                    str(result.deleted_count),
+                    str(result_variants.deleted_count + result_omics_variants.deleted_count),
                 ]
             )
         )
