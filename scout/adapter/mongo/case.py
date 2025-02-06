@@ -1087,6 +1087,7 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
+        LOG.info("Updating case {0}".format(case_obj["_id"]))
         old_case = self.case_collection.find_one({"_id": case_obj["_id"]})
 
         updated_at = datetime.datetime.now()
@@ -1210,6 +1211,7 @@ class CaseHandler(object):
                 return_document=pymongo.ReturnDocument.AFTER,
             )
 
+        LOG.info("Case updated")
         return updated_case
 
     def replace_case(self, case_obj):
