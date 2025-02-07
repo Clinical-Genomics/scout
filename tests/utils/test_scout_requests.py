@@ -329,7 +329,7 @@ def test_fetch_constraint(exac_file, mocker):
         data = scout_requests.fetch_constraint()
 
     # THEN assert that the exac header is there
-    assert "gene\ttranscript" in data[0]
+    assert "gene\tgene_id\ttranscript" in data[0]
 
 
 @responses.activate
