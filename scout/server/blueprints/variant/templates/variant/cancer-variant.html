@@ -223,9 +223,25 @@
       {% if tmp_gene_info %}
         {% set primary_transcript = tmp_gene_info[1] %}
         {% set nr_genes = variant.genes | length %}
-        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details."><h5 class="card-title">
-          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge bg-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
-        </h5></a>
+        <table class="table table-bordered table-fixed table-sm">
+          <thead class="thead table-light border-top">
+            <tr class="active">
+              <th>Gene</th>
+              <th>Description</th>
+              <th data-bs-toggle="tooltip" title="Gene tolerance to a single copy of a truncating mutation (pLI) | Loss-of-function observed/expected upper bound fraction (LOEUF)">pLI score|LOEUF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details.">{{ primary_gene.hgnc_symbol }}</a>
+                {% if nr_genes > 1 %} <span class="badge bg-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
+              </td>
+              <td>{{primary_gene.description}}</td>
+              <td>{{primary_gene.pli_score|round(2) if primary_gene.pli_score else "n.a."}} | {{primary_gene.loeuf|round(2) if primary_gene.loeuf else "n.a."}}</td>
+            </tr>
+          </tbody>
+        </table>
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
         {% if primary_transcript %}
