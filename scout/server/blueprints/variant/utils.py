@@ -283,6 +283,7 @@ def add_gene_info(
 
             all_models.update(set(variant_gene["manual_inheritance"]))
             variant_gene["pli_score"] = hgnc_gene.get("pli_score")
+            variant_gene["loeuf"] = hgnc_gene.get("constraint_lof_oe_ci_upper")
 
             update_inheritance_model(variant_gene, all_models, disease_terms)
 
