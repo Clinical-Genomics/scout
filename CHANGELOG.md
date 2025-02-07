@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
+- Downloading and parsing of genes from Ensembl (including MT-TP)
 - In automatic tests, avoid the `toomanyrequests: You have reached your pull rate limit` error by pulling the MongoDB image from The Amazon Elastic Container Registry (ecr.aws) instead of Docker Hub.
 
 ## [4.96]
