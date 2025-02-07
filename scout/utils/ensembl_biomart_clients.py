@@ -4,7 +4,7 @@ from typing import Dict, Iterator
 import requests
 
 LOG = logging.getLogger(__name__)
-SCHUG_BASE = "https://schug.scilifelab.se"
+SCHUG_BASE = "https://schug-stage.scilifelab.se"
 
 BUILDS: Dict[str, str] = {"37": "GRCh37", "38": "GRCh38"}
 
@@ -29,15 +29,6 @@ class EnsemblBiomartHandler:
     def stream_resource(self, interval_type: str) -> Iterator[str]:
         """Use schug web to fetch genes, transcripts or exons from a remote Ensembl biomart in the right genome build and save them to file."""
 
-        def yield_resource_lines(iterable) -> str:
-            """Removes the last element from an iterator."""
-            it = iter(iterable)
-            current = next(it)
-            for i in it:
-                yield current
-                current = i
-
         shug_url: str = f"{SCHUG_BASE}{SCHUG_RESOURCE_URL[interval_type]}{self.build}"
 
-        # return all lines except the last, which contains the "[success]" string
-        return yield_resource_lines(self.stream_get(shug_url))
+        return self.stream_get(shug_url)
