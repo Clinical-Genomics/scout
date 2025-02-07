@@ -186,7 +186,7 @@ def database(
                 resource_files["genemap_path"] = str(path.resolve())
             if path.stem == "hgnc":
                 resource_files["hgnc_path"] = str(path.resolve())
-            if path.stem == "gnomad.v4.0.constraint_metrics":
+            if path.stem == "gnomad.v4.1.constraint_metrics":
                 resource_files["constraint_path"] = str(path.resolve())
             if path.stem == "ensembl_genes_37":
                 resource_files["genes37_path"] = str(path.resolve())

@@ -341,7 +341,7 @@ def test_fetch_constraint_failed_mirror(variant_clinical_file, mocker):
     mocker.patch.object(scout_requests.urllib.request, "urlopen")
     url = (
         "https://storage.googleapis.com/gcp-public-data--gnomad"
-        "/release/v4.0/constraint/gnomad.v4.0.constraint_metrics.tsv"
+        "/release/4.1/constraint/gnomad.v4.1.constraint_metrics.tsv"
     )
     scout_requests.urllib.request.urlopen.return_value = HTTPError(
         url, 500, "Internal Error", {}, None

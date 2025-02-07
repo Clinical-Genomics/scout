@@ -79,7 +79,7 @@ UPDATE_GENES_RESOURCES = {
     "hpo_genes": ["genes_to_phenotype.txt", "genes_to_phenotype_reduced.txt"],
     "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
     "exac_lines": [
-        "gnomad.v4.0.constraint_metrics.tsv",
+        "gnomad.v4.1.constraint_metrics.tsv",
         "gnomad.v4.0.constraint_metrics_reduced.tsv",
     ],
     "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
@@ -94,7 +94,7 @@ UPDATE_GENES_RESOURCES = {
     ],
 }
 
-GNOMAD_CONSTRAINT_FILENAME = "gnomad.v4.0.constraint_metrics.tsv"
+GNOMAD_CONSTRAINT_FILENAME = "gnomad.v4.1.constraint_metrics.tsv"
 
 GENE_CONSTRAINT_LABELS = {
     "pli_score": "lof.pLI",
