@@ -123,7 +123,7 @@ def variants(
         {
             "category": "outlier",
             "variant_type": "research",
-            "upload": outlier,
+            "upload": outlier_research,
         },
     ]
 
@@ -201,6 +201,7 @@ def variants(
         """Load variants from indicated VCF files. Keep count of files used for logging blank commands."""
         i = 0
         for file_type in omics_files:
+            LOG.warning(file_type)
             variant_type = file_type["variant_type"]
             category = file_type["category"]
 
@@ -256,7 +257,6 @@ def variants(
         case_obj,
         omics_files,
     )
-
     if i == 0:
         LOG.info("No files where specified to upload variants from")
 
