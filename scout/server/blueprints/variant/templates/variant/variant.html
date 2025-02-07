@@ -339,6 +339,7 @@
         <thead class="thead table-light border-top">
           <tr class="active">
             <th>Gene</th>
+            <th data-bs-toggle="tooltip" title="Gene tolerance to a single copy of a truncating mutation (pLI) | Loss-of-function observed/expected upper bound fraction (LOEUF)">pLI score|LOEUF</th>
             <th>Region</th>
             <th>Consequence</th>
             {% if case.genome_build == "38" %}
@@ -349,11 +350,12 @@
         <tbody>
           {% for gene in variant.genes %}
             <tr>
-              <th>
+              <td>
                 <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
-              </th>
+              </td>
+              <td>{{gene.pli_score|round(2) if gene.pli_score else "n.a."}} | {{gene.loeuf|round(2) if gene.loeuf else "n.a."}}</td>
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
               {% if case.genome_build == "38" %} <!-- Display eventual functional annotations associated to MANE transcripts -->
