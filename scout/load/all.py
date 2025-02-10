@@ -55,9 +55,11 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    for file_type in ORDERED_FILE_TYPE_MAP:
+    for file_type, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
         if not case_obj.get("vcf_files", {}).get(file_type):
             continue
+        variant_type = vcf_dict["variant_type"]
+        variant_category = vcf_dict["category"]
         if variant_type == "research" and not case_obj["is_research"]:
             continue
 
@@ -69,7 +71,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         adapter.load_variants(
             case_obj=case_obj,
             variant_type=variant_type,
-            category=category,
+            category=variant_category,
             chrom=chrom,
             start=start,
             end=end,
