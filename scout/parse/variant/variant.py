@@ -28,13 +28,13 @@ LOG = logging.getLogger(__name__)
 def parse_variant(
     variant: Variant,
     case: dict,
-    variant_type: str="clinical",
-    rank_results_header:list=None,
-    vep_header:list=None,
-    individual_positions:dict=None,
-    category:str=None,
-    local_archive_info:dict=None,
-)-> dict:
+    variant_type: str = "clinical",
+    rank_results_header: list = None,
+    vep_header: list = None,
+    individual_positions: dict = None,
+    category: str = None,
+    local_archive_info: dict = None,
+) -> dict:
     """Return a parsed variant
 
         Get all the necessary information to build a variant object
@@ -205,11 +205,12 @@ def parse_variant(
 
 
 def set_mei_specific_annotations(parsed_variant: dict, variant: dict):
-    """ Add MEI specific annotations"""
+    """Add MEI specific annotations"""
     if parsed_variant.get("category") in ["mei"]:
         mei_frequencies = parse_mei_frequencies(variant)
         for key in mei_frequencies:
             parsed_variant["frequencies"][key] = mei_frequencies[key]
+
 
 def set_cancer_specific_annotations(parsed_variant: dict, variant: dict):
     """
@@ -220,6 +221,7 @@ def set_cancer_specific_annotations(parsed_variant: dict, variant: dict):
     if variant.INFO.get("MSK_MVL"):
         parsed_variant["mvl_tag"] = True
 
+
 def set_sv_specific_annotations(parsed_variant: dict, variant: dict):
     """
     Add SV specific annotations
@@ -229,7 +231,8 @@ def set_sv_specific_annotations(parsed_variant: dict, variant: dict):
         for key in sv_frequencies:
             parsed_variant["frequencies"][key] = sv_frequencies[key]
 
-def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_archive_info: dict)
+
+def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_archive_info: dict):
     """
     loqusdb archive frequencies
     Fist, RD germline, for MIP and Balsamic
@@ -276,7 +279,7 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
 
 def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):
     """
-        Set severity predictions on parsed variant.
+    Set severity predictions on parsed variant.
     """
 
     parsed_variant["cadd_score"] = parse_cadd(variant, parsed_transcripts)
@@ -287,6 +290,7 @@ def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcr
             "revel_rankscore"
         )  # This is actually the value of REVEL_rankscore
         parsed_variant["revel"] = get_highest_revel_score(parsed_transcripts)
+
 
 def get_highest_revel_score(parsed_transcripts: List[dict]) -> Optional[float]:
     """Retrieve the highest REVEL_score value from parsed variant transcripts."""
