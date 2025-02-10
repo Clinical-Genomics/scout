@@ -9,14 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
 - Display pLI score and LOEUF on rare diseases and cancer SNV pages
-- Load research WYS outliers using the `scout load variants --outliers-research` command
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
-<<<<<<< HEAD
 - Refactored code for prioritizing the order of variant loading
-=======
->>>>>>> bdcf2e0ee (Set case as research case if it contains any type of research variants (#5225))
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
