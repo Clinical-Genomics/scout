@@ -65,7 +65,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
 
         LOG.info(
             "Load {} {} variants for case: {} region: chr {}, start {}, end {}".format(
-                category, variant_type.upper(), case_obj["_id"], chrom, start, end
+                variant_category, variant_type.upper(), case_obj["_id"], chrom, start, end
             )
         )
         adapter.load_variants(
