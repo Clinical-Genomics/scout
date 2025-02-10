@@ -324,7 +324,7 @@ def fetch_constraint():
     Returns:
         exac_lines(iterable(str))
     """
-    path = "/release/v4.0/constraint/gnomad.v4.0.constraint_metrics.tsv"
+    path = "/release/4.1/constraint/gnomad.v4.1.constraint_metrics.tsv"
     mirror_urls = [
         f"https://storage.googleapis.com/gcp-public-data--gnomad{path}",
         f"https://gnomad-public-us-east-1.s3.amazonaws.com{path}",
