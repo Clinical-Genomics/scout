@@ -22,8 +22,16 @@ LOG = logging.getLogger(__name__)
     help="Path to clinical WTS OMICS outlier FRASER TSV file to be added - NB variants are NOT loaded",
 )
 @click.option(
+    "--fraser-research",
+    help="Path to research WTS OMICS outlier FRASER TSV file to be added - NB variants are NOT loaded",
+)
+@click.option(
     "--outrider",
     help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
+)
+@click.option(
+    "--outrider-research",
+    help="Path to research WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
 )
 @click.option(
     "--rna-genome-build",
@@ -100,7 +108,9 @@ def case(
     institute,
     collaborator,
     fraser,
+    fraser_research,
     outrider,
+    outrider_research,
     vcf,
     vcf_sv,
     vcf_str,
@@ -166,7 +176,9 @@ def case(
 
     for key_name, key in [
         ("fraser", fraser),
+        ("fraser_research", fraser_research),
         ("outrider", outrider),
+        ("outrider_research", outrider_research),
     ]:
         if key is None:
             continue
