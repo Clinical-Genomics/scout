@@ -2,7 +2,7 @@ import csv
 import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from flask import flash
 from flask_login import current_user
@@ -26,14 +26,9 @@ from .form import CaseDataForm, SNVariantForm, SVariantForm
 LOG = logging.getLogger(__name__)
 
 
-def _get_var_tx_hgvs(case_obj, variant_obj):
-    """Retrieve all transcripts / hgvs for a given variant
-    Args:
-        case_obj(scout.models.Case)
-        variant_obj(scout.models.Variant)
-    Returns:
-        list of tuples. example: [("NM_002340.6:c.1840C>T", "NM_002340.6:c.1840C>T (validated)" ), ("NM_001145436.2:c.1840C>T", "NM_001145436.2:c.1840C>T"), .. ]
-    """
+def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
+    """Retrieve all transcripts / hgvs for a given variant."""
+
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
     for gene in variant_obj.get("genes", []):
