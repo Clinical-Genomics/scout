@@ -27,14 +27,14 @@ LOG = logging.getLogger(__name__)
 
 def parse_variant(
     variant: Variant,
-    case,
-    variant_type="clinical",
-    rank_results_header=None,
-    vep_header=None,
-    individual_positions=None,
-    category=None,
-    local_archive_info=None,
-):
+    case: dict,
+    variant_type: str="clinical",
+    rank_results_header:list=None,
+    vep_header:list=None,
+    individual_positions:dict=None,
+    category:str=None,
+    local_archive_info:dict=None,
+)-> dict:
     """Return a parsed variant
 
         Get all the necessary information to build a variant object
@@ -145,7 +145,6 @@ def parse_variant(
     parsed_variant["azqual"] = call_safe(float, variant.INFO.get("AZQUAL"))
 
     # STR variant info
-
     set_str_info(variant, parsed_variant)
     # STR source dict with display string, source type and entry id
     set_str_source(parsed_variant, variant)
@@ -184,10 +183,60 @@ def parse_variant(
 
     parsed_variant["frequencies"] = frequencies
 
-    # loqus archive frequencies
+    set_loqus_archive_frequencies(parsed_variant, variant, local_archive_info)
 
-    # RD germline, for MIP and Balsamic
-    # SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
+    set_severity_predictions(parsed_variant, variant, parsed_transcripts)
+
+    ###################### Add conservation ######################
+    parsed_variant["conservation"] = parse_conservations(variant, parsed_transcripts)
+
+    parsed_variant["callers"] = parse_callers(variant, category=category)
+    set_rank_result(parsed_variant, variant, rank_results_header)
+
+    ##################### Add type specific #####################
+    set_sv_specific_annotations(parsed_variant, variant)
+
+    set_mei_specific_annotations(parsed_variant, variant)
+
+    set_cancer_specific_annotations(parsed_variant, variant)
+
+    remove_nonetype(parsed_variant)
+    return parsed_variant
+
+
+def set_mei_specific_annotations(parsed_variant: dict, variant: dict):
+    """ Add MEI specific annotations"""
+    if parsed_variant.get("category") in ["mei"]:
+        mei_frequencies = parse_mei_frequencies(variant)
+        for key in mei_frequencies:
+            parsed_variant["frequencies"][key] = mei_frequencies[key]
+
+def set_cancer_specific_annotations(parsed_variant: dict, variant: dict):
+    """
+    ###################### Add Cancer specific annotations ######################
+    # MSK_MVL indicates if variants are in the MSK managed variant list
+    # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5437632/
+    """
+    if variant.INFO.get("MSK_MVL"):
+        parsed_variant["mvl_tag"] = True
+
+def set_sv_specific_annotations(parsed_variant: dict, variant: dict):
+    """
+    Add SV specific annotations
+    """
+    if parsed_variant.get("category") in ["sv", "cancer_sv"]:
+        sv_frequencies = parse_sv_frequencies(variant)
+        for key in sv_frequencies:
+            parsed_variant["frequencies"][key] = sv_frequencies[key]
+
+def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_archive_info: dict)
+    """
+    loqusdb archive frequencies
+    Fist, RD germline, for MIP and Balsamic
+    Then, Cancer (Balsamic) Germline and Somatic loqus archives
+    SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
+    """
+
     local_obs_old = (
         variant.INFO.get("Obs")
         or variant.INFO.get("clinical_genomics_loqusObs")
@@ -204,7 +253,6 @@ def parse_variant(
     parsed_variant["local_obs_old_freq"] = call_safe(float, local_frq_old)
     set_local_archive_info(parsed_variant, local_archive_info)
 
-    # Cancer (Balsamic) Germline and Somatic loqus archives
     parsed_variant["local_obs_cancer_germline_old"] = call_safe(
         int, variant.INFO.get("Cancer_Germline_Obs")
     )
@@ -225,7 +273,12 @@ def parse_variant(
         float, variant.INFO.get("Cancer_Somatic_Frq")
     )
 
-    ###################### Add severity predictions ######################
+
+def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):
+    """
+        Set severity predictions on parsed variant.
+    """
+
     parsed_variant["cadd_score"] = parse_cadd(variant, parsed_transcripts)
     parsed_variant["spidex"] = call_safe(float, variant.INFO.get("SPIDEX"))
 
@@ -234,34 +287,6 @@ def parse_variant(
             "revel_rankscore"
         )  # This is actually the value of REVEL_rankscore
         parsed_variant["revel"] = get_highest_revel_score(parsed_transcripts)
-
-    ###################### Add conservation ######################
-    parsed_variant["conservation"] = parse_conservations(variant, parsed_transcripts)
-
-    parsed_variant["callers"] = parse_callers(variant, category=category)
-    set_rank_result(parsed_variant, variant, rank_results_header)
-
-    ###################### Add SV specific annotations ######################
-    if parsed_variant.get("category") in ["sv", "cancer_sv"]:
-        sv_frequencies = parse_sv_frequencies(variant)
-        for key in sv_frequencies:
-            parsed_variant["frequencies"][key] = sv_frequencies[key]
-
-    ###################### Add MEI specific annotations #####################
-    if parsed_variant.get("category") in ["mei"]:
-        mei_frequencies = parse_mei_frequencies(variant)
-        for key in mei_frequencies:
-            parsed_variant["frequencies"][key] = mei_frequencies[key]
-
-    ###################### Add Cancer specific annotations ######################
-    # MSK_MVL indicates if variants are in the MSK managed variant list
-    # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5437632/
-    if variant.INFO.get("MSK_MVL"):
-        parsed_variant["mvl_tag"] = True
-
-    remove_nonetype(parsed_variant)
-    return parsed_variant
-
 
 def get_highest_revel_score(parsed_transcripts: List[dict]) -> Optional[float]:
     """Retrieve the highest REVEL_score value from parsed variant transcripts."""
