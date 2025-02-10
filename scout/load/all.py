@@ -3,7 +3,6 @@ import logging
 
 from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
-from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
