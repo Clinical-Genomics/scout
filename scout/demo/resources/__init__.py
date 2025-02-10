@@ -10,7 +10,7 @@ BASE_PATH = "scout.demo.resources"
 reduced_resources_path = str(files(BASE_PATH))
 hgnc_reduced_path = str(files(BASE_PATH).joinpath("hgnc_reduced_set.txt"))
 constraint_reduced_path = str(
-    files(BASE_PATH).joinpath("gnomad.v4.0.constraint_metrics_reduced.tsv")
+    files(BASE_PATH).joinpath("gnomad.v4.1.constraint_metrics_reduced.tsv")
 )
 transcripts37_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_37_reduced.txt"))
 transcripts38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_38_reduced.txt"))
