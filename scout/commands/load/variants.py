@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 import click
 from flask.cli import with_appcontext
 
+from scout.adapter.mongo import MongoAdapter
 from scout.constants import OMICS_FILE_TYPE_MAP
 from scout.server.extensions import store
 
@@ -137,6 +138,14 @@ def variants(
     if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id, institute_id))
 
+    def check_research(adapter: MongoAdapter, case_obj: dict, variant_type: str, force: bool):
+        if variant_type == "research":
+            if not (force or case_obj["research_requested"]):
+                LOG.warning("research not requested, use '--force'")
+                raise click.Abort()
+            case_obj["is_research"] = True
+            adapter.update_case(case_obj=case_obj)
+
     def load_variant_files(
         case_obj: dict, files: List[Dict], rank_threshold: int, force: bool
     ) -> int:
@@ -150,10 +159,8 @@ def variants(
                 continue
 
             i += 1
-            if variant_type == "research":
-                if not (force or case_obj["research_requested"]):
-                    LOG.warning("research not requested, use '--force'")
-                    raise click.Abort()
+
+            check_research(adapter, case_obj, variant_type, force)
 
             LOG.info(
                 "Delete {0} {1} variants for case {2}".format(
