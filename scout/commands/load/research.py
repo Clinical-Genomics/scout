@@ -7,7 +7,7 @@ import click
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
-from scout.constants import FILE_TYPE_MAP
+from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

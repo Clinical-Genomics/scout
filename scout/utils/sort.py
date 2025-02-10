@@ -1,4 +1,4 @@
-from scout.constants import FILE_TYPE_MAP
+from scout.constants import ORDERED_FILE_TYPE_MAP
 
 
 def get_load_priority(category: str = None, variant_type: str = None, file_type: str = None) -> int:

@@ -12,7 +12,7 @@ from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.constants import CHROMOSOMES, ORDERED_FILE_TYPE_MAP
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -660,10 +660,10 @@ class VariantLoader(object):
         nr_inserted = 0
 
         variant_files = []
-        for vcf_file_key in FILE_TYPE_MAP.keys():
-            if FILE_TYPE_MAP[vcf_file_key]["variant_type"] != variant_type:
+        for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
+            if vcf_dict["variant_type"] != variant_type:
                 continue
-            if FILE_TYPE_MAP[vcf_file_key]["category"] != category:
+            if vcf_dict["category"] != category:
                 continue
 
             LOG.debug("Attempt to load %s %s VCF.", variant_type, category.upper())

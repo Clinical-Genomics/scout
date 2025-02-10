@@ -25,7 +25,6 @@ LOG = logging.getLogger(__name__)
 @click.option("--mei", is_flag=True, help="Upload clinical MEI variants")
 @click.option("--mei-research", is_flag=True, help="Upload research MEI variants")
 @click.option("--outlier", is_flag=True, help="Upload clinical OMICS outlier variants")
-@click.option("--outlier-research", is_flag=True, help="Upload research OMICS outlier variants")
 @click.option("--sv", is_flag=True, help="Upload clinical structural variants")
 @click.option("--sv-research", is_flag=True, help="Upload research structural variants")
 @click.option("--snv", is_flag=True, help="Upload clinical SNV variants")
@@ -59,7 +58,6 @@ def variants(
     mei,
     mei_research,
     outlier,
-    outlier_research,
     sv,
     sv_research,
     snv,
@@ -120,11 +118,6 @@ def variants(
             "category": "outlier",
             "variant_type": "clinical",
             "upload": outlier,
-        },
-        {
-            "category": "outlier",
-            "variant_type": "research",
-            "upload": outlier_research,
         },
     ]
 
@@ -208,7 +201,6 @@ def variants(
         """Load variants from indicated VCF files. Keep count of files used for logging blank commands."""
         i = 0
         for file_type in omics_files:
-            LOG.warning(file_type)
             variant_type = file_type["variant_type"]
             category = file_type["category"]
 
@@ -264,6 +256,7 @@ def variants(
         case_obj,
         omics_files,
     )
+
     if i == 0:
         LOG.info("No files where specified to upload variants from")
 

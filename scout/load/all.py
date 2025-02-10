@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import FILE_TYPE_MAP
+from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
 from scout.utils.sort import get_load_priority
 

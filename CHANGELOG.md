@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
+- Refactored code for prioritizing the order of variant loading
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
