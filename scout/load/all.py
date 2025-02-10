@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
+from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
 from scout.utils.sort import get_load_priority
 
@@ -55,18 +55,9 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    case_file_types = set()
-
-    for file_type in FILE_TYPE_MAP:
-        if case_obj.get("vcf_files", {}).get(file_type):
-            case_file_types.add(
-                (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
-            )
-
-    for variant_type, category in sorted(
-        case_file_types,
-        key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
-    ):
+    for file_type in ORDERED_FILE_TYPE_MAP:
+        if not case_obj.get("vcf_files", {}).get(file_type):
+            continue
         if variant_type == "research" and not case_obj["is_research"]:
             continue
 

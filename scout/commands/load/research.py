@@ -93,8 +93,8 @@ def research(case_id, institute, force):
             LOG.warning("research not requested, use '--force'")
             continue
 
-        for file_type in FILE_TYPE_MAP:
-            if FILE_TYPE_MAP[file_type]["variant_type"] != "research":
+        for file_type in ORDERED_FILE_TYPE_MAP:
+            if ORDERED_FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
 
             if case_obj["vcf_files"].get(file_type):
@@ -106,7 +106,7 @@ def research(case_id, institute, force):
                     adapter=adapter,
                     case_obj=case_obj,
                     variant_type="research",
-                    category=FILE_TYPE_MAP[file_type]["category"],
+                    category=ORDERED_FILE_TYPE_MAP[file_type]["category"],
                     rank_treshold=default_threshold,
                 )
 
