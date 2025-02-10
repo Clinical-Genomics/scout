@@ -922,7 +922,8 @@ class CaseHandler(object):
         )
         load_type_cat = set()
         for file_name, vcf_dict in CLINICAL_ORDERED_FILE_TYPE_MAP.items():
-            if not file_name in case_obj.get("vcf_files", {}):
+            if not case_obj["vcf_files"].get(file_name):
+                LOG.debug("didn't find {}, skipping".format(file_name))
                 continue
             load_type_cat.add((vcf_dict["variant_type"], vcf_dict["category"]))
 

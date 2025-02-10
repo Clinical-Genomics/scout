@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import click
 from flask.cli import with_appcontext
 
 from scout.adapter.mongo import MongoAdapter
-from scout.constants import OMICS_FILE_TYPE_MAP
+from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
