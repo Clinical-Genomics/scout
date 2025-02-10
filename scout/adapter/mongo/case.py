@@ -11,7 +11,13 @@ from bson import ObjectId
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, CCV_MAP, FILE_TYPE_MAP, ID_PROJECTION, OMICS_FILE_TYPE_MAP
+from scout.constants import (
+    ACMG_MAP,
+    CCV_MAP,
+    FILE_TYPE_MAP,
+    ID_PROJECTION,
+    OMICS_FILE_TYPE_MAP,
+)
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -1087,6 +1093,7 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
+
         LOG.info("Updating case {0}".format(case_obj["_id"]))
         old_case = self.case_collection.find_one({"_id": case_obj["_id"]})
 
