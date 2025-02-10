@@ -152,11 +152,14 @@ def parse_sv_frequency(variant, info_key):
     These have to be treated separately since some of them are not actually frequencies(float) but
     occurences(int)
     """
-    value = variant.INFO.get(info_key, 0)
-    if any([float_str in info_key.upper() for float_str in ["AF", "FRQ"]]):
-        value = float(value)
+    raw_value = variant.INFO.get(info_key, 0)
+    if raw_value in [".", "-1", -1, 0, "0"]:
+        return None
+
+    if any(float_str in info_key.upper() for float_str in ["AF", "FRQ"]):
+        value = float(raw_value)
     else:
-        value = int(value)
+        value = int(raw_value)
     if value > 0:
         return value
     return None
