@@ -110,25 +110,33 @@
                     <table style="width:100%; table-layout: auto; border-collapse: collapse;">
                       <caption></caption>
                       <tr><th></th></tr>
-                    {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
                       {% for item in item_row %}
-                        <td style="width: 3%; text-align: right; vertical-align: baseline;">{{item}}</td>
+                        {% set ns = namespace(label='', validated=false, mane_select=false) %}
 
-                        {% if "(validated)" in item.label.text %}
+                        {% if "_validated_" in item.label.text %}
                           {% set ns.validated = true %}
-                        {% else %}
-                          {% set ns.validated = false %}
                         {% endif %}
-                        {% set ns.label = item.label.text | replace(" (validated)", "") %}
+                        {% if "_mane-select_" in item.label.text %}
+                          {% set ns.mane_select = true %}
+                        {% endif %}
+                        {% set ns.label = item.label.text | replace("_validated_", "") | replace("_mane-select_", "")  %}
+
+                        <td style="width: 3%; text-align: right; vertical-align: baseline;">
+                          <input type="radio" name="tx_hgvs" value="{{ ns.label }}"
+                            {% if ns.mane_select %}checked{% endif %}>
+                        </td>
 
                         <td style="width: 30%; text-align: left; ">
                           <p class="text-dark"
-                          {% if ns.label|length > 25 %}
+                          {% if ns.label|length > 50 %}
                            data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}
                           {% else %}
                             >{{ ns.label }}
+                          {% endif %}
+                          {% if ns.mane_select %}
+                            <span class='badge bg-dark'>MANE SELECT</span>
                           {% endif %}
                           {% if ns.validated %}
                             <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>

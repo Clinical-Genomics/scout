@@ -38,6 +38,7 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
     tx_hgvs_list = [("", "Do not specify")]
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
+            mane_select = tx.get("mane_select")
             if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
                 for refseq in tx.get("refseq_identifiers"):
                     refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
@@ -48,10 +49,11 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
 
                     label = hgvs_simple
                     if validated:
-                        label += " (validated)"
+                        label += "_validated_"
+                    if mane_select and mane_select == refseq_version:
+                        label += "_mane-select_"
 
                     tx_hgvs_list.append((hgvs_simple, label))
-
     return tx_hgvs_list
 
 
