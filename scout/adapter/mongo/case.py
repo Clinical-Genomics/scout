@@ -929,7 +929,7 @@ class CaseHandler(object):
 
         for variant_type, category in load_type_cat:
             if update:
-                adapter.delete_variants(
+                self.delete_variants(
                     case_id=case_obj["_id"],
                     variant_type=variant_type,
                     category=category,

@@ -205,8 +205,11 @@ class VariantLoader(object):
         # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
         # Possible variant types are 'clinical', 'research'.
         load_variants = {
-            (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
-            for file_type in FILE_TYPE_MAP
+            (
+                ORDERED_FILE_TYPE_MAP[file_type]["variant_type"],
+                ORDERED_FILE_TYPE_MAP[file_type]["category"],
+            )
+            for file_type in ORDERED_FILE_TYPE_MAP
             if case_obj.get("vcf_files", {}).get(file_type)
         }
 
