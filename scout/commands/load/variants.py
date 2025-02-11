@@ -244,19 +244,20 @@ def variants(
                 )
 
                 build = case_obj.get("rna_genome_build", case_obj.get("genome_build", "38"))
-                adapter.load_omics_variants(
-                    case_obj=case_obj,
-                    file_type=file_type,
-                    build=build,
-                )
-                # Update case variants count
-                adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
 
-                """
+                try:
+                    adapter.load_omics_variants(
+                        case_obj=case_obj,
+                        file_type=file_type,
+                        build=build,
+                    )
+                    # Update case variants count
+                    adapter.case_variants_count(
+                        case_obj["_id"], institute_id, force_update_case=True
+                    )
                 except Exception as e:
                     LOG.warning(e)
                     raise click.Abort()
-                """
 
         return i
 
