@@ -117,7 +117,9 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
     "omics_key",
     [
         "fraser",
+        "fraser_research",
         "outrider",
+        "outrider_research",
     ],
 )
 def test_update_case_vcf_path(mock_app, case_obj, omics_key, custom_temp_file):
