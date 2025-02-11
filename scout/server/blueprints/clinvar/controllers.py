@@ -17,6 +17,7 @@ from scout.constants.clinvar import (
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
+from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
@@ -31,9 +32,10 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
+    add_gene_info(store, variant_obj, genome_build=build)
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
-            mane_select = tx.get("mane_select")
+            mane_select = tx.get("mane_select_transcript")
             if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
                 for refseq in tx.get("refseq_identifiers"):
                     refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
@@ -45,6 +47,7 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
                     label = hgvs_simple
                     if validated:
                         label += "_validated_"
+
                     if mane_select and mane_select == refseq_version:
                         label += "_mane-select_"
 
