@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import FILE_TYPE_MAP
+from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
-from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -55,30 +54,23 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    case_file_types = set()
-
-    for file_type in FILE_TYPE_MAP:
-        if case_obj.get("vcf_files", {}).get(file_type):
-            case_file_types.add(
-                (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
-            )
-
-    for variant_type, category in sorted(
-        case_file_types,
-        key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
-    ):
+    for file_type, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
+        if not case_obj.get("vcf_files", {}).get(file_type):
+            continue
+        variant_type = vcf_dict["variant_type"]
+        variant_category = vcf_dict["category"]
         if variant_type == "research" and not case_obj["is_research"]:
             continue
 
         LOG.info(
             "Load {} {} variants for case: {} region: chr {}, start {}, end {}".format(
-                category, variant_type.upper(), case_obj["_id"], chrom, start, end
+                variant_category, variant_type.upper(), case_obj["_id"], chrom, start, end
             )
         )
         adapter.load_variants(
             case_obj=case_obj,
             variant_type=variant_type,
-            category=category,
+            category=variant_category,
             chrom=chrom,
             start=start,
             end=end,

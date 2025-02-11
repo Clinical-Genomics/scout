@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import click
 from flask.cli import with_appcontext
 
 from scout.adapter.mongo import MongoAdapter
-from scout.constants import OMICS_FILE_TYPE_MAP
+from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -218,7 +218,7 @@ def variants(
                 case_id=case_obj["_id"], variant_type=variant_type, category=category
             )
 
-            for file_type, omics_file_type in OMICS_FILE_TYPE_MAP.items():
+            for file_type, omics_file_type in ORDERED_OMICS_FILE_TYPE_MAP.items():
                 if (
                     omics_file_type["variant_type"] != variant_type
                     or omics_file_type["category"] != category

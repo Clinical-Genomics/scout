@@ -3,6 +3,7 @@ import datetime
 import logging
 import operator
 import re
+from collections import OrderedDict
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
@@ -14,14 +15,13 @@ from scout.build.case import build_case
 from scout.constants import (
     ACMG_MAP,
     CCV_MAP,
-    FILE_TYPE_MAP,
     ID_PROJECTION,
-    OMICS_FILE_TYPE_MAP,
+    ORDERED_FILE_TYPE_MAP,
+    ORDERED_OMICS_FILE_TYPE_MAP,
 )
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
-from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 EXISTS = "$exists"
@@ -892,11 +892,17 @@ class CaseHandler(object):
             if key in old_case:
                 new_case[key] = old_case[key]
 
-    def _load_omics_variants(self, case_obj: dict, build: str, update: bool = False):
+    def _load_clinical_omics_variants(self, case_obj: dict, build: str, update: bool = False):
         """Load omics variants. The OMICS FILE type dict contains all we need to
         determine how to load variants (type, category etc)."""
 
-        for omics_file in OMICS_FILE_TYPE_MAP.keys():
+        CLINICAL_ORDERED_OMICS_FILE_TYPE_MAP = OrderedDict(
+            (key, value)
+            for key, value in ORDERED_OMICS_FILE_TYPE_MAP.items()
+            if value["variant_type"] != "research"
+        )
+
+        for omics_file in CLINICAL_ORDERED_OMICS_FILE_TYPE_MAP.keys():
             if not case_obj["omics_files"].get(omics_file):
                 LOG.debug("didn't find %s for case, skipping", omics_file)
                 continue
@@ -906,6 +912,38 @@ class CaseHandler(object):
                 self.delete_omics_variants(case_id=case_obj["_id"], file_type=omics_file)
 
             self.load_omics_variants(case_obj=case_obj, build=build, file_type=omics_file)
+
+    def _load_clinical_variants(self, case_obj: dict, build: str, update: bool = False):
+        """Load variants in the order specified by CLINICAL_ORDERED_FILE_TYPE_MAP."""
+        CLINICAL_ORDERED_FILE_TYPE_MAP = OrderedDict(
+            (key, value)
+            for key, value in ORDERED_FILE_TYPE_MAP.items()
+            if value["variant_type"] != "research"
+        )
+        load_type_cat = set()
+        for file_name, vcf_dict in CLINICAL_ORDERED_FILE_TYPE_MAP.items():
+            if not case_obj["vcf_files"].get(file_name):
+                LOG.debug("didn't find {}, skipping".format(file_name))
+                continue
+            load_type_cat.add((vcf_dict["variant_type"], vcf_dict["category"]))
+
+        for variant_type, category in load_type_cat:
+            if update:
+                self.delete_variants(
+                    case_id=case_obj["_id"],
+                    variant_type=variant_type,
+                    category=category,
+                )
+            self.load_variants(
+                case_obj=case_obj,
+                variant_type=variant_type,
+                category=category,
+                build=build,
+                rank_threshold=case_obj.get("rank_score_threshold", 5),
+                custom_images=self._get_variants_custom_images(
+                    variant_category=category, case=case_obj
+                ),
+            )
 
     def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
         """Load a case into the database
@@ -956,50 +994,9 @@ class CaseHandler(object):
             old_evaluated_variants = list(
                 self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             )
-
-        # load from files
-        files = [
-            {
-                "file_name": file_type,
-                "variant_type": FILE_TYPE_MAP[file_type]["variant_type"],
-                "category": FILE_TYPE_MAP[file_type]["category"],
-            }
-            for file_type in FILE_TYPE_MAP.keys()
-            if FILE_TYPE_MAP[file_type]["variant_type"] != "research"
-        ]
-
-        # (type, category) tuples are not unique - eg SNV, SNV_MT
-        load_variants = set()
         try:
-            for vcf_file in files:
-                # Check if any file of this kind is configured for case
-                if not case_obj["vcf_files"].get(vcf_file["file_name"]):
-                    LOG.debug("didn't find {}, skipping".format(vcf_file["file_name"]))
-                    continue
-                load_variants.add((vcf_file["variant_type"], vcf_file["category"]))
-
-            for variant_type, category in sorted(
-                load_variants,
-                key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
-            ):
-                if update:
-                    self.delete_variants(
-                        case_id=case_obj["_id"],
-                        variant_type=variant_type,
-                        category=category,
-                    )
-                self.load_variants(
-                    case_obj=case_obj,
-                    variant_type=variant_type,
-                    category=category,
-                    build=genome_build,
-                    rank_threshold=case_obj.get("rank_score_threshold", 5),
-                    custom_images=self._get_variants_custom_images(
-                        variant_category=category, case=case_obj
-                    ),
-                )
-
-                self._load_omics_variants(case_obj, build=genome_build, update=update)
+            self._load_clinical_variants(case_obj, build=genome_build, update=update)
+            self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.exception(error)
