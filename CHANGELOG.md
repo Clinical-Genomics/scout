@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update igv.js to 3.1.4
 - IGV DNA alignment track defaults to group by tag:HP and color by methylation (useful for LRS), and show soft-clips
 - Update gnomAD constraint to v4.1
+- HG38 genes track in igv.js browser, to correctly display gene names
 - Refactored code for prioritizing the order of variant loading
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
