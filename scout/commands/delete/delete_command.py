@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Tuple
 
 import click
 from flask import current_app, url_for
@@ -27,7 +27,7 @@ DELETE_VARIANTS_HEADER = [
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers"]
 
 
-def _set_keep_ctg(keep_ctg: tuple[str], rm_ctg: tuple[str]) -> List[str]:
+def _set_keep_ctg(keep_ctg: Tuple[str], rm_ctg: Tuple[str]) -> List[str]:
     """Define the categories of variants that should not be removed."""
     if keep_ctg and rm_ctg:
         raise click.UsageError("Please use either '--keep-ctg' or '--rm-ctg' parameter, not both.")
