@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
 - Display pLI score on rare diseases and cancer SNV pages
+- Preselect MANE SELECT transcripts in the multi-step ClinVar variant add to submission process
 - Allow updating case with WTS Fraser and Outrider research files
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
@@ -20,7 +21,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
 - Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
-
 
 ## [4.96]
 ### Added

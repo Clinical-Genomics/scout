@@ -2,7 +2,7 @@ import csv
 import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from flask import flash
 from flask_login import current_user
@@ -17,6 +17,7 @@ from scout.constants.clinvar import (
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
+from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
@@ -26,18 +27,15 @@ from .form import CaseDataForm, SNVariantForm, SVariantForm
 LOG = logging.getLogger(__name__)
 
 
-def _get_var_tx_hgvs(case_obj, variant_obj):
-    """Retrieve all transcripts / hgvs for a given variant
-    Args:
-        case_obj(scout.models.Case)
-        variant_obj(scout.models.Variant)
-    Returns:
-        list of tuples. example: [("NM_002340.6:c.1840C>T", "NM_002340.6:c.1840C>T (validated)" ), ("NM_001145436.2:c.1840C>T", "NM_001145436.2:c.1840C>T"), .. ]
-    """
+def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
+    """Retrieve all transcripts / hgvs for a given variant."""
+
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
+    add_gene_info(store, variant_obj, genome_build=build)
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
+            mane_select = tx.get("mane_select_transcript")
             if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
                 for refseq in tx.get("refseq_identifiers"):
                     refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
@@ -48,10 +46,12 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
 
                     label = hgvs_simple
                     if validated:
-                        label += " (validated)"
+                        label += "_validated_"
+
+                    if mane_select and mane_select == refseq_version:
+                        label += "_mane-select_"
 
                     tx_hgvs_list.append((hgvs_simple, label))
-
     return tx_hgvs_list
 
 
