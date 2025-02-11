@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
-- Display pLI score on rare diseases and cancer SNV pages
+- Display pLI score and LOEUF on rare diseases and cancer SNV pages
 - Preselect MANE SELECT transcripts in the multi-step ClinVar variant add to submission process
 - Allow updating case with WTS Fraser and Outrider research files
 ### Changed
@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - IGV DNA alignment track defaults to group by tag:HP and color by methylation (useful for LRS), and show soft-clips
 - Update gnomAD constraint to v4.1
 - HG38 genes track in igv.js browser, to correctly display gene names
+- Refactored code for prioritizing the order of variant loading
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)

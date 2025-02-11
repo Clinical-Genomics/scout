@@ -12,7 +12,7 @@ from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.constants import CHROMOSOMES, ORDERED_FILE_TYPE_MAP
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -27,7 +27,6 @@ from scout.parse.variant.headers import (
 from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
-from scout.utils.sort import get_load_priority
 
 LOG = logging.getLogger(__name__)
 
@@ -205,8 +204,11 @@ class VariantLoader(object):
         # Cancer SVs, in particular, and keep a consistent variant_id collision resolution order.
         # Possible variant types are 'clinical', 'research'.
         load_variants = {
-            (FILE_TYPE_MAP[file_type]["variant_type"], FILE_TYPE_MAP[file_type]["category"])
-            for file_type in FILE_TYPE_MAP
+            (
+                ORDERED_FILE_TYPE_MAP[file_type]["variant_type"],
+                ORDERED_FILE_TYPE_MAP[file_type]["category"],
+            )
+            for file_type in ORDERED_FILE_TYPE_MAP
             if case_obj.get("vcf_files", {}).get(file_type)
         }
 
@@ -214,16 +216,12 @@ class VariantLoader(object):
         # Loop over all intervals
         for chrom in CHROMOSOMES:
             intervals = coding_intervals.get(chrom, IntervalTree())
-            for var_type, category in sorted(
-                list(load_variants),
-                key=lambda tup: get_load_priority(variant_type=tup[0], category=tup[1]),
-            ):
+            for var_type, category in load_variants:
                 LOG.info(
                     "Updating compounds on chromosome:{0}, type:{1}, category:{2} for case:{3}".format(
                         chrom, var_type, category, case_id
                     )
                 )
-
                 # Fetch all variants from a chromosome
                 query = {"variant_type": var_type, "chrom": chrom}
 
@@ -660,10 +658,10 @@ class VariantLoader(object):
         nr_inserted = 0
 
         variant_files = []
-        for vcf_file_key in FILE_TYPE_MAP.keys():
-            if FILE_TYPE_MAP[vcf_file_key]["variant_type"] != variant_type:
+        for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
+            if vcf_dict["variant_type"] != variant_type:
                 continue
-            if FILE_TYPE_MAP[vcf_file_key]["category"] != category:
+            if vcf_dict["category"] != category:
                 continue
 
             LOG.debug("Attempt to load %s %s VCF.", variant_type, category.upper())
