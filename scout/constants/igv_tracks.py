@@ -5,7 +5,6 @@ HG19REF_URL = (
 HG19REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/1kg_v37/human_g1k_v37_decoy.fasta.fai"
 HG19CYTOBAND_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt"
 HG19ALIAS_URL = "https://igv.org/genomes/data/hg19/hg19_alias.tab"
-HG19GENES_FORMAT = "refgene"
 
 HG38REF_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa"
 HG38REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
@@ -15,9 +14,11 @@ HG38CYTOBAND_URL = (
 )
 
 HG38GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg38/refGene.txt.gz"
+HG38GENES_FORMAT = "refgene"
 
 HG19GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz"
 HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz.tbi"
+HG19GENES_FORMAT = "refgene"
 
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
 HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
@@ -103,7 +104,6 @@ CLINVAR_SV_38 = {
 # Human genes track, build 37
 HUMAN_GENES_37 = {
     "name": "Genes",
-    "track_name": "genes_track",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "EXPANDED",
@@ -116,6 +116,11 @@ HUMAN_GENES_37 = {
 # Human genes track, build 38
 HUMAN_GENES_38 = {
     "name": "Genes",
+    "type": "annotation",
+    "sourceType": "file",
+    "displayMode": "EXPANDED",
+    "visibilityWindow": 300000000,
+    "format": HG38GENES_FORMAT,
     "url": HG38GENES_URL,
     "order": 1000000,
 }
