@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from pymongo import ASCENDING, DESCENDING
 
-from scout.constants import OMICS_FILE_TYPE_MAP
+from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.models.omics_variant import OmicsVariantLoader
 from scout.parse.omics_variant import parse_omics_file
 
@@ -33,7 +33,7 @@ class OmicsVariantHandler:
 
     def delete_omics_variants(self, case_id: str, file_type: str):
         """Delete OMICS variants for a case"""
-        omics_file_type = OMICS_FILE_TYPE_MAP.get(file_type)
+        omics_file_type = ORDERED_OMICS_FILE_TYPE_MAP.get(file_type)
         category = omics_file_type["category"]
         sub_category = omics_file_type["sub_category"]
         variant_type = omics_file_type["variant_type"]
@@ -126,7 +126,7 @@ class OmicsVariantHandler:
         case_panels = case_obj.get("panels", [])
         gene_to_panels = self.gene_to_panels(case_obj)
 
-        omics_file_type: dict = OMICS_FILE_TYPE_MAP.get(file_type)
+        omics_file_type: dict = ORDERED_OMICS_FILE_TYPE_MAP.get(file_type)
 
         nr_inserted = 0
 
