@@ -25,6 +25,7 @@ LOG = logging.getLogger(__name__)
 @click.option("--mei", is_flag=True, help="Upload clinical MEI variants")
 @click.option("--mei-research", is_flag=True, help="Upload research MEI variants")
 @click.option("--outlier", is_flag=True, help="Upload clinical OMICS outlier variants")
+@click.option("--outlier-research", is_flag=True, help="Upload research OMICS outlier variants")
 @click.option("--sv", is_flag=True, help="Upload clinical structural variants")
 @click.option("--sv-research", is_flag=True, help="Upload research structural variants")
 @click.option("--snv", is_flag=True, help="Upload clinical SNV variants")
@@ -58,6 +59,7 @@ def variants(
     mei,
     mei_research,
     outlier,
+    outlier_research,
     sv,
     sv_research,
     snv,
@@ -118,6 +120,11 @@ def variants(
             "category": "outlier",
             "variant_type": "clinical",
             "upload": outlier,
+        },
+        {
+            "category": "outlier",
+            "variant_type": "research",
+            "upload": outlier_research,
         },
     ]
 
@@ -208,6 +215,9 @@ def variants(
                 continue
 
             i += 1
+
+            check_research(adapter, case_obj, variant_type, force)
+
             LOG.info(
                 "Delete {0} {1} OMICS variants for case {2}".format(
                     variant_type, category, case_obj["_id"]
@@ -219,6 +229,7 @@ def variants(
             )
 
             for file_type, omics_file_type in ORDERED_OMICS_FILE_TYPE_MAP.items():
+
                 if (
                     omics_file_type["variant_type"] != variant_type
                     or omics_file_type["category"] != category
@@ -233,21 +244,19 @@ def variants(
                 )
 
                 build = case_obj.get("rna_genome_build", case_obj.get("genome_build", "38"))
+                adapter.load_omics_variants(
+                    case_obj=case_obj,
+                    file_type=file_type,
+                    build=build,
+                )
+                # Update case variants count
+                adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
 
-                try:
-                    adapter.load_omics_variants(
-                        case_obj=case_obj,
-                        file_type=file_type,
-                        build=build,
-                    )
-                    # Update case variants count
-                    adapter.case_variants_count(
-                        case_obj["_id"], institute_id, force_update_case=True
-                    )
-
+                """
                 except Exception as e:
                     LOG.warning(e)
                     raise click.Abort()
+                """
 
         return i
 
