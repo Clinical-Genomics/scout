@@ -366,6 +366,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -763,16 +764,14 @@ class QueryHandler(object):
 
             if criterion == "size":
                 size = query["size"]
-                size_query = {"length": {"$gt": int(size)}}
-
-                if query.get("size_shorter"):
+                size_query = {"length": {"$gte": int(size)}}
+                if query.get("size_selector") == "$lt" or query.get("size_shorter"):
                     size_query = {
                         "$or": [
                             {"length": {"$lt": int(size)}},
                             {"length": {"$exists": False}},
                         ]
                     }
-
                 mongo_secondary_query.append(size_query)
 
             if criterion == "svtype":
