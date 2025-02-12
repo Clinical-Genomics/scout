@@ -275,6 +275,16 @@
 </div>
 {% endmacro %}
 
+{% macro variant_size_filter(form) %}
+<div class="col-2">
+  {{ form.size_selector.label(class="control-label") }}
+  <div class="input-group">
+    {{ form.size_selector(class="form-select") }}
+    {{ form.size(class="form-control") }}
+  </div>
+</div>
+{% endmacro %}
+
 {% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
   {{ variants_common_filters(form, "snv") }}
@@ -348,13 +358,7 @@
     <div class="col-2">
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
-    <div class="col-2">
-      {{ form.size_selector.label(class="control-label") }}
-      <div class="input-group">
-        {{ form.size_selector(class="form-select") }}
-        {{ form.size(class="form-control") }}
-      </div>
-    </div>
+     {{ variant_size_filter(form) }}
   </div>
   <div class="row">
     <div class="col-2">
@@ -631,13 +635,7 @@
   <div class="col-1">
     {{ wtf.form_field(form.cytoband_end) }}
   </div>
-  <div class="col-2">
-    {{ form.size_selector.label(class="control-label") }}
-    <div class="input-group">
-      {{ form.size_selector(class="form-select") }}
-      {{ form.size(class="form-control") }}
-    </div>
-  </div>
+  {{ variant_size_filter(form) }}
 </div>
 <div class="row mb-3">
   <div class="col-2">
@@ -769,13 +767,7 @@
         <div class="col">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
-        <div class="col-2">
-          {{ form.size_selector.label(class="control-label") }}
-          <div class="input-group">
-            {{ form.size_selector(class="form-select") }}
-            {{ form.size(class="form-control") }}
-          </div>
-      </div>
+        {{ variant_size_filter(form) }}
       </div>
       <div class="row" style="margin-top:10px;">
         <div class="col-2">
@@ -889,13 +881,7 @@
         <div class="col">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
-        <div class="col-2">
-          {{ form.size_selector.label(class="control-label") }}
-          <div class="input-group">
-            {{ form.size_selector(class="form-select") }}
-            {{ form.size(class="form-control") }}
-          </div>
-        </div>
+        {{ variant_size_filter(form) }}
       </div>
       <div class="row" style="margin-top:10px;">
         <div class="col-2">
