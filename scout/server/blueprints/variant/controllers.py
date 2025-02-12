@@ -36,6 +36,8 @@ from scout.server.extensions import LoqusDB, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
+    case_has_chanjo_coverage,
+    case_has_chanjo2_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
     user_institutes,
@@ -257,6 +259,8 @@ def variant(
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
     case_has_mt_alignments(case_obj)
+    case_has_chanjo_coverage(case_obj)
+    case_has_chanjo2_coverage(case_obj)
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))

@@ -118,7 +118,7 @@
         {% endif %}
         </div>
       {% endfor %}
-      {{ gene_coverage(variant, case) }}
+      {{ gene_coverage(variant, case, config) }}
     </li>
     <li class="list-group-item">
       <div>
@@ -128,7 +128,7 @@
   </ul>
 {% endmacro %}
 
-{% macro gene_coverage(variant, case) %}
+{% macro gene_coverage(variant, case, config) %}
   {% if case.chanjo_coverage and config.chanjo_report %}
     <div class="d-flex flex-wrap ms-1">
       {% for gene in variant.genes %}
