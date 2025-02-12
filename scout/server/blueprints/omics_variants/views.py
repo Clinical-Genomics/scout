@@ -11,6 +11,7 @@ from scout.server.blueprints.variants.controllers import (
     get_variants_page,
     populate_chrom_choices,
     populate_filters_form,
+    update_form_hgnc_symbols,
 )
 from scout.server.blueprints.variants.forms import OutlierFiltersForm
 from scout.server.extensions import store
@@ -78,7 +79,7 @@ def outliers(institute_id, case_name):
     genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
-    # controllers.update_form_hgnc_symbols(store, case_obj, form)
+    update_form_hgnc_symbols(store, case_obj, form)
     variants_query = store.omics_variants(
         case_obj["_id"], query=form.data, category=category, build=genome_build
     )

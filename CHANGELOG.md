@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
 - Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
+- HPO search on WTS Outliers page
 
 ## [4.96]
 ### Added
