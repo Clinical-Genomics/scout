@@ -763,14 +763,14 @@ class QueryHandler(object):
 
             if criterion == "size":
                 size = query["size"]
-                size_query = {"length": {query["size_selector"]: size}}
-                if query.get("size_selector") == "$lt":
-                    size_query = {
-                        "$or": [
-                            {"length": {"$lt": size}},
-                            {"length": {"$exists": False}},
-                        ]
-                    }
+                size_selector = query.get("size_selector")
+
+                size_query = (
+                    {"$or": [{"length": {size_selector: size}}, {"length": {"$exists": False}}]}
+                    if size_selector == "$lt"
+                    else {"length": {size_selector: size}}
+                )
+
                 mongo_secondary_query.append(size_query)
 
             if criterion == "svtype":
