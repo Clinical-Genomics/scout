@@ -44,3 +44,10 @@ class Chanjo2Client:
             coverage_stats[ind["individual_id"]] = coverage_info
 
         return coverage_stats
+
+    def get_gene_complete_coverage(self, gene: int, threshold: int) -> dict:
+        """
+        Return complete coverage for hgnc_id at a coverage threshold.
+        """
+
+        return
