@@ -588,12 +588,6 @@
     {{ form.size.label(class="control-label") }}
     {{ form.size(class="form-control", type="number") }}
   </div>
-  <div class="col-2 d-flex align-items-end">
-    <div class="mb-2 form-check">
-      {{ form.size_shorter.label(class="form-check-label") }}
-      {{ form.size_shorter(class="form-check-input",type="checkbox") }}
-    </div>
-  </div>
   <div class="col-1 d-flex align-items-end">
     <div class="mb-2 form-check">
       {{ form.decipher.label(class="form-check-label") }}
@@ -864,14 +858,6 @@
       <div class="col-2">
         {{ form.size.label(class="control-label") }}
         {{ form.size(class="form-control", type="number") }}
-      </div>
-      <div class="col-2 d-flex align-items-end">
-        <div class="form-check mb-2">
-          {{ form.size_shorter.label(class="form-check-label") }}
-          {{ form.size_shorter(class="form-check-input",type="checkbox") }}
-        </div>
-      </div>
-      <div class="col-1">
       </div>
       <div class="col-1">
         {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller. Filter away variants called with a score lower or equal to this value.") }}

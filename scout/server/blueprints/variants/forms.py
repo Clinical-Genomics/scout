@@ -224,8 +224,6 @@ class StrFiltersForm(VariantFiltersForm):
 class SvFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for structural variants"""
 
-    size = StringField("Length")
-    size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
@@ -254,8 +252,6 @@ class CancerSvFiltersForm(SvFiltersForm):
 class FusionFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for fusion variants"""
 
-    size = StringField("Length")
-    size_shorter = BooleanField("Length shorter than")
     decipher = BooleanField("Decipher")
     clinical_filter = SubmitField(label="Clinical filter")
     fusion_score = BetterDecimalField("Fusion score >=", validators=[validators.Optional()])

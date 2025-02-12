@@ -227,6 +227,7 @@ class QueryHandler(object):
             mongo_query : A dictionary in the mongo query format
 
         """
+        LOG.warning(query)
         query = query or {}
         mongo_query = {}
         coordinate_query = None
@@ -366,7 +367,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
@@ -764,11 +764,11 @@ class QueryHandler(object):
 
             if criterion == "size":
                 size = query["size"]
-                size_query = {"length": {"$gte": int(size)}}
-                if query.get("size_selector") == "$lt" or query.get("size_shorter"):
+                size_query = {"length": {query["size_selector"]: size}}
+                if query.get("size_selector") == "$lt":
                     size_query = {
                         "$or": [
-                            {"length": {"$lt": int(size)}},
+                            {"length": {"$lt": size}},
                             {"length": {"$exists": False}},
                         ]
                     }
