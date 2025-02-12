@@ -180,7 +180,12 @@
                Clinical HPO MEIs
              </a>
             {% endif %}
-           {% endif %}
+            {% if case.has_outliers %}
+              <a class="btn btn-secondary btn-sm text-white" href="{{ url_for('omics_variants.outliers',
+                institute_id=institute._id, case_name=case.display_name, variant_type='clinical',
+                gene_panels=['hpo']) }}" target="_blank" rel="noopener">Clinical HPO WTS</a>
+            {% endif %}
+          {% endif %}
           </div>
         </div>
         {% if case.chanjo_coverage or case.chanjo2_coverage and case.dynamic_gene_list|length > 0 %}
