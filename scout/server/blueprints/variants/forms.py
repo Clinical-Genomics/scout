@@ -151,6 +151,18 @@ class VariantFiltersForm(FlaskForm):
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
+    size_selector = NonValidatingSelectField(
+        "Variant size in bp", choices=[("$gte", ">="), ("$lt", "<")]
+    )
+    size = IntegerField(
+        "",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Number of bases must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+
     hide_dismissed = BooleanField("Hide dismissed", default=False)
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
