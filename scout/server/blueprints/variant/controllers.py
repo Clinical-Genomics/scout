@@ -36,8 +36,8 @@ from scout.server.extensions import LoqusDB, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
-    case_has_chanjo_coverage,
     case_has_chanjo2_coverage,
+    case_has_chanjo_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
     user_institutes,
