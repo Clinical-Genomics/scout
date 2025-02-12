@@ -584,10 +584,6 @@
         gene_panels=['hpo']) }}">HPO gene list</a>
     </div>
   </div>
-  <div class="col-2">
-    {{ form.size.label(class="control-label") }}
-    {{ form.size(class="form-control", type="number") }}
-  </div>
   <div class="col-1 d-flex align-items-end">
     <div class="mb-2 form-check">
       {{ form.decipher.label(class="form-check-label") }}
@@ -855,9 +851,7 @@
         {{ form.hgnc_symbols.label(class="control-label") }}
         {{ form.hgnc_symbols(class="form-control") }}
       </div>
-      <div class="col-2">
-        {{ form.size.label(class="control-label") }}
-        {{ form.size(class="form-control", type="number") }}
+      <div class="col-1">
       </div>
       <div class="col-1">
         {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller. Filter away variants called with a score lower or equal to this value.") }}
