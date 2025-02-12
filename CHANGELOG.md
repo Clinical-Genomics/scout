@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display pLI score and LOEUF on rare diseases and cancer SNV pages
 - Preselect MANE SELECT transcripts in the multi-step ClinVar variant add to submission process
 - Allow updating case with WTS Fraser and Outrider research files
+- Chanjo2 gene coverage report and completeness indicator
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants

@@ -118,15 +118,7 @@
         {% endif %}
         </div>
       {% endfor %}
-      {% if config.chanjo_report %}
-        <div class="d-flex flex-wrap ms-1">
-          {% for gene in variant.genes %}
-            <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-              Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-            </a>
-          {% endfor %}
-        </div>
-      {% endif %}
+      {{ gene_coverage(variant, case) }}
     </li>
     <li class="list-group-item">
       <div>
@@ -134,6 +126,27 @@
       </div>
     </li>
   </ul>
+{% endmacro %}
+
+{% macro gene_coverage(variant, case) %}
+  {% if case.chanjo_coverage and config.chanjo_report %}
+    <div class="d-flex flex-wrap ms-1">
+      {% for gene in variant.genes %}
+        <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}" data-bs-toggle="tooltip" title="Chanjo coverage report">
+          Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if case.chanjo2_coverage %}
+    <div class="d-flex flex-wrap ms-1">
+      {% for gene in variant.genes %}
+        <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}" data-bs-toggle="tooltip" title="Chanjo2 coverage report">
+          Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro acmg_form(institute, case, variant, ACMG_OPTIONS, selected=None) %}
