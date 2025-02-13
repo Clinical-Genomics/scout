@@ -265,7 +265,10 @@ def variant(
     if case_obj.get("chanjo2_coverage"):
         gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
         gene_has_full_coverage: bool = chanjo2.get_gene_complete_coverage(
-            genes=gene_ids, threshold=15, build=genome_build
+            genes=gene_ids,
+            threshold=15,
+            individuals=case_obj.get("individuals"),
+            build=genome_build,
         )
 
     # Collect all the events for the variant
