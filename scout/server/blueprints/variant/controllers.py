@@ -32,7 +32,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import LoqusDB, config_igv_tracks, gens
+from scout.server.extensions import LoqusDB, chanjo2, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
@@ -261,6 +261,12 @@ def variant(
     case_has_mt_alignments(case_obj)
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
+
+    if case_obj.get("chanjo2_coverage"):
+        gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
+        gene_has_full_coverage: bool = chanjo2.get_gene_complete_coverage(
+            genes=gene_ids, threshold=15, build=genome_build
+        )
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
