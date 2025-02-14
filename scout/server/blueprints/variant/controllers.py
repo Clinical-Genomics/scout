@@ -424,7 +424,7 @@ def get_gene_has_full_coverage(case_obj, variant_obj, genome_build) -> Dict[int,
         gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
         for gene in gene_ids:
             gene_has_full_coverage[gene]: bool = chanjo2.get_gene_complete_coverage(
-                genes=gene,
+                gene=gene,
                 threshold=15,
                 individuals=case_obj.get("individuals"),
                 build=genome_build,
