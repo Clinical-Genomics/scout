@@ -141,10 +141,7 @@
   {% if case.chanjo2_coverage %}
     <div class="d-flex flex-wrap ms-1">
       {% for gene in variant.genes %}
-        <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}" data-bs-toggle="tooltip" title="Chanjo2 coverage report">
-          Gene coverage {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-
-        </a>
+        {{ chanjo2_report_form(panel.institute, case, gene.hgnc_symbol, 'overview', gene.hgnc_id, "Gene coverage " + (gene.common.hgnc_symbol if gene.common else gene.hgnc_id)) }} <!--chanjo2 genes overview -->
         {% if gene.common.hgnc_id in gene_has_full_coverage and gene.common.hgnc_id[gene.common.hgnc_id] %}
           <span class="bg-success fa-solid fa-circle-check"></span>
         {% else %}
