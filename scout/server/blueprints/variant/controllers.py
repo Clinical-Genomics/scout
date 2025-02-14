@@ -406,7 +406,9 @@ def variant(
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
-        "gene_has_full_coverage": get_gene_has_full_coverage(case_obj, variant_obj, genome_build),
+        "gene_has_full_coverage": get_gene_has_full_coverage(
+            institute_obj, case_obj, variant_obj, genome_build
+        ),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
         "ccv_evaluations": ccv_evaluations,
@@ -414,7 +416,9 @@ def variant(
     }
 
 
-def get_gene_has_full_coverage(case_obj, variant_obj, genome_build) -> Dict[int, bool]:
+def get_gene_has_full_coverage(
+    institute_obj, case_obj, variant_obj, genome_build
+) -> Dict[int, bool]:
     """
     Query chanjo2, if configured and d4 files are available for this case,
     for coverage completeness on the genes touching this variant.
@@ -425,7 +429,7 @@ def get_gene_has_full_coverage(case_obj, variant_obj, genome_build) -> Dict[int,
         for gene in gene_ids:
             gene_has_full_coverage[gene]: bool = chanjo2.get_gene_complete_coverage(
                 gene=gene,
-                threshold=15,
+                threshold=institute_obj.get("coverage_cutoff") or 15,
                 individuals=case_obj.get("individuals"),
                 build=genome_build,
             )
