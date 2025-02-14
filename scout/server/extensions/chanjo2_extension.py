@@ -49,8 +49,8 @@ class Chanjo2Client:
         return coverage_stats
 
     def get_gene_complete_coverage(
-        self, genes: List[int], threshold: int = 15, individuals: dict = {}, build: str = "38"
-    ) -> dict:
+        self, gene: int, threshold: int = 15, individuals: dict = {}, build: str = "38"
+    ) -> bool:
         """
         Return complete coverage for hgnc_id at a coverage threshold.
         """
@@ -62,7 +62,7 @@ class Chanjo2Client:
         gene_cov_query = {
             "build": chanjo_build,
             "coverage_threshold": threshold,
-            "hgnc_gene_ids": genes,
+            "hgnc_gene_ids": [gene],
             "interval_type": "genes",
         }
         for ind in individuals:

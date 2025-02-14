@@ -262,15 +262,6 @@ def variant(
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
 
-    if case_obj.get("chanjo2_coverage"):
-        gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
-        gene_has_full_coverage: bool = chanjo2.get_gene_complete_coverage(
-            genes=gene_ids,
-            threshold=15,
-            individuals=case_obj.get("individuals"),
-            build=genome_build,
-        )
-
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
@@ -415,11 +406,30 @@ def variant(
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
+        "gene_has_full_coverage": get_gene_has_full_coverage(case_obj, variant_obj, genome_build),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
         "ccv_evaluations": ccv_evaluations,
         "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
     }
+
+
+def get_gene_has_full_coverage(case_obj, variant_obj, genome_build) -> Dict[int, bool]:
+    """
+    Query chanjo2, if configured and d4 files are available for this case,
+    for coverage completeness on the genes touching this variant.
+    """
+    gene_has_full_coverage = {}
+    if case_obj.get("chanjo2_coverage"):
+        gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
+        for gene in gene_ids:
+            gene_has_full_coverage[gene]: bool = chanjo2.get_gene_complete_coverage(
+                genes=gene,
+                threshold=15,
+                individuals=case_obj.get("individuals"),
+                build=genome_build,
+            )
+    return gene_has_full_coverage
 
 
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
