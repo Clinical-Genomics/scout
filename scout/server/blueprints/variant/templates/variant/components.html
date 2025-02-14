@@ -140,13 +140,13 @@
     </div>
   {% endif %}
   {% if case.chanjo2_coverage %}
-    <div class="d-flex flex-wrap ms-1">
+    <div class="d-flex flex-wrap ms-1" data-bs-toggle="tooltip" title="Chanjo2 coverage reports">
       {% for gene in variant.genes %}
         {{ chanjo2_report_form(institute, case, gene.hgnc_symbol, 'overview', gene.hgnc_id, "Gene coverage " + (gene.common.hgnc_symbol if gene.common else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
         {% if gene.common.hgnc_id in gene_has_full_coverage and gene.common.hgnc_id[gene.common.hgnc_id] %}
-          <span class="bg-success fa-solid fa-circle-check"></span>
+          <span class="bg-success fa-solid fa-circle-check" data-bs-toggle="tooltip" title="Chanjo2 coverage is at 100% completeness."></span>
         {% else %}
-          <span class="bg-warning fa-solid fa-triangle-exclamation"></span>
+          <span class="bg-warning fa-solid fa-triangle-exclamation" data-bs-toggle="tooltip" title="Note that Chanjo2 coverage is below 100% completeness."></span>
         {% endif %}
       {% endfor %}
     </div>
