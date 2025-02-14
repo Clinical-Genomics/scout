@@ -64,6 +64,7 @@ class Chanjo2Client:
             "coverage_threshold": threshold,
             "hgnc_gene_ids": [gene],
             "interval_type": "genes",
+            "samples": [],
         }
         for ind in individuals:
             if not ind.get("d4_file"):
