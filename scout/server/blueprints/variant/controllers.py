@@ -423,15 +423,18 @@ def get_gene_has_full_coverage(
     Query chanjo2, if configured and d4 files are available for this case,
     for coverage completeness on the genes touching this variant.
     """
-    gene_has_full_coverage = {}
-    if case_obj.get("chanjo2_coverage"):
-        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes")]:
-            gene_has_full_coverage[hgnc_id]: bool = chanjo2.get_gene_complete_coverage(
-                hgnc_id=hgnc_id,
-                threshold=institute_obj.get("coverage_cutoff") or 15,
-                individuals=case_obj.get("individuals"),
-                build=genome_build,
-            )
+    if not case_obj.get("chanjo2_coverage"):
+        return {}
+
+    gene_has_full_coverage: dict = {
+        hgnc_id: chanjo2.get_gene_complete_coverage(
+            hgnc_id=hgnc_id,
+            threshold=institute_obj.get("coverage_cutoff") or 15,
+            individuals=case_obj.get("individuals"),
+            build=genome_build,
+        )
+        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
+    }
     return gene_has_full_coverage
 
 
