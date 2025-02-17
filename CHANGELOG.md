@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow updating case with WTS Fraser and Outrider research files
 - Load research WTS outliers using the `scout load variants --outliers-research` command
 - Chanjo2 gene coverage completeness indicator and report from variant page, summary card
+- Enhanced SNV and SV filtering for cancer and rare disease cases, now supporting size thresholds (≥ or < a specified base pair length)
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
