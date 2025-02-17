@@ -766,9 +766,20 @@ class QueryHandler(object):
                 size_selector = query.get("size_selector")
 
                 size_query = (
-                    {"$or": [{"length": {size_selector: size}}, {"length": {"$exists": False}}]}
+                    {
+                        "$or": [
+                            {"length": {size_selector: size}},
+                            {"length": {size_selector: -size}},  # Add the negative condition
+                            {"length": {"$exists": False}},
+                        ]
+                    }
                     if size_selector == "$lt"
-                    else {"length": {size_selector: size}}
+                    else {
+                        "$or": [
+                            {"length": {size_selector: size}},
+                            {"length": {size_selector: -size}},  # Add the negative condition
+                        ]
+                    }
                 )
 
                 mongo_secondary_query.append(size_query)
