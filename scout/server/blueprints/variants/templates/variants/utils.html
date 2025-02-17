@@ -275,6 +275,16 @@
 </div>
 {% endmacro %}
 
+{% macro variant_size_filter(form) %}
+<div class="col-2">
+  {{ form.size_selector.label(class="control-label") }}
+  <div class="input-group">
+    {{ form.size_selector(class="form-select") }}
+    {{ form.size(class="form-control") }}
+  </div>
+</div>
+{% endmacro %}
+
 {% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
   {{ variants_common_filters(form, "snv") }}
@@ -336,10 +346,10 @@
         </div>
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ wtf.form_field(form.start) }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ wtf.form_field(form.end) }}
     </div>
     <div class="col-2">
@@ -348,6 +358,7 @@
     <div class="col-2">
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
+     {{ variant_size_filter(form) }}
   </div>
   <div class="row">
     <div class="col-2">
@@ -577,16 +588,6 @@
         gene_panels=['hpo']) }}">HPO gene list</a>
     </div>
   </div>
-  <div class="col-2">
-    {{ form.size.label(class="control-label") }}
-    {{ form.size(class="form-control", type="number") }}
-  </div>
-  <div class="col-2 d-flex align-items-end">
-    <div class="mb-2 form-check">
-      {{ form.size_shorter.label(class="form-check-label") }}
-      {{ form.size_shorter(class="form-check-input",type="checkbox") }}
-    </div>
-  </div>
   <div class="col-1 d-flex align-items-end">
     <div class="mb-2 form-check">
       {{ form.decipher.label(class="form-check-label") }}
@@ -622,10 +623,10 @@
       </div>
     </div>
   </div>
-  <div class="col-2">
+  <div class="col-1">
     {{ wtf.form_field(form.start) }}
   </div>
-  <div class="col-2">
+  <div class="col-1">
     {{ wtf.form_field(form.end) }}
   </div>
   <div class="col-1">
@@ -634,6 +635,7 @@
   <div class="col-1">
     {{ wtf.form_field(form.cytoband_end) }}
   </div>
+  {{ variant_size_filter(form) }}
 </div>
 <div class="row mb-3">
   <div class="col-2">
@@ -765,9 +767,9 @@
         <div class="col">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
+        {{ variant_size_filter(form) }}
       </div>
       <div class="row" style="margin-top:10px;">
-        <div class="col-2"></div>
         <div class="col-2">
           <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
             String coordinates
@@ -841,16 +843,6 @@
         {{ form.hgnc_symbols.label(class="control-label") }}
         {{ form.hgnc_symbols(class="form-control") }}
       </div>
-      <div class="col-2">
-        {{ form.size.label(class="control-label") }}
-        {{ form.size(class="form-control", type="number") }}
-      </div>
-      <div class="col-2 d-flex align-items-end">
-        <div class="form-check mb-2">
-          {{ form.size_shorter.label(class="form-check-label") }}
-          {{ form.size_shorter(class="form-check-input",type="checkbox") }}
-        </div>
-      </div>
       <div class="col-1">
       </div>
       <div class="col-1">
@@ -889,9 +881,9 @@
         <div class="col">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
+        {{ variant_size_filter(form) }}
       </div>
       <div class="row" style="margin-top:10px;">
-        <div class="col-2"></div>
         <div class="col-2">
           <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
             String coordinates
