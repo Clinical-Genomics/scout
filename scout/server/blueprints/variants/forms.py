@@ -152,6 +152,18 @@ class VariantFiltersForm(FlaskForm):
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
+    size_selector = NonValidatingSelectField(
+        "Variant size in bp", choices=[("$gte", ">="), ("$lt", "<")]
+    )
+    size = IntegerField(
+        "",
+        [
+            validators.Optional(),
+            validators.NumberRange(min=0, message="Number of bases must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+
     hide_dismissed = BooleanField("Hide dismissed", default=False)
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
@@ -213,8 +225,6 @@ class StrFiltersForm(VariantFiltersForm):
 class SvFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for structural variants"""
 
-    size = StringField("Length")
-    size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
@@ -243,8 +253,6 @@ class CancerSvFiltersForm(SvFiltersForm):
 class FusionFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for fusion variants"""
 
-    size = StringField("Length")
-    size_shorter = BooleanField("Length shorter than")
     decipher = BooleanField("Decipher")
     clinical_filter = SubmitField(label="Clinical filter")
     fusion_score = BetterDecimalField("Fusion score >=", validators=[validators.Optional()])
