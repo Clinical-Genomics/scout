@@ -765,7 +765,14 @@ class QueryHandler(object):
                 size = query["size"]
                 size_selector = query.get("size_selector")
 
-                size_query = {"$expr": {size_selector: [{"$abs": "$length"}, size]}}
+                size_query = {
+                    "$or": [
+                        {"$expr": {size_selector: [{"$abs": "$length"}, size]}},
+                        {
+                            "length": {"$exists": False}
+                        },  # Include documents where 'length' is missing
+                    ]
+                }
 
                 mongo_secondary_query.append(size_query)
 
