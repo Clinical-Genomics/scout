@@ -769,7 +769,7 @@ class QueryHandler(object):
                     {
                         "$or": [
                             {"length": {size_selector: size}},
-                            {"length": {size_selector: -size}},  # Add the negative condition
+                            {"length": {size_selector: -size}},
                             {"length": {"$exists": False}},
                         ]
                     }
@@ -777,7 +777,7 @@ class QueryHandler(object):
                     else {
                         "$or": [
                             {"length": {size_selector: size}},
-                            {"length": {size_selector: -size}},  # Add the negative condition
+                            {"length": {size_selector: -size}},
                         ]
                     }
                 )
