@@ -425,9 +425,8 @@ def get_gene_has_full_coverage(
     """
     gene_has_full_coverage = {}
     if case_obj.get("chanjo2_coverage"):
-        gene_ids = [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
-        for hgnc_id in gene_ids:
-            gene_has_full_coverage[gene]: bool = chanjo2.get_gene_complete_coverage(
+        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes")]:
+            gene_has_full_coverage[hgnc_id]: bool = chanjo2.get_gene_complete_coverage(
                 hgnc_id=hgnc_id,
                 threshold=institute_obj.get("coverage_cutoff") or 15,
                 individuals=case_obj.get("individuals"),
