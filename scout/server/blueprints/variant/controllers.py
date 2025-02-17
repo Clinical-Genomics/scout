@@ -32,10 +32,12 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import LoqusDB, config_igv_tracks, gens
+from scout.server.extensions import LoqusDB, chanjo2, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
+    case_has_chanjo2_coverage,
+    case_has_chanjo_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
     user_institutes,
@@ -257,6 +259,8 @@ def variant(
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
     case_has_mt_alignments(case_obj)
+    case_has_chanjo_coverage(case_obj)
+    case_has_chanjo2_coverage(case_obj)
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
@@ -402,11 +406,36 @@ def variant(
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
+        "gene_has_full_coverage": get_gene_has_full_coverage(
+            institute_obj, case_obj, variant_obj, genome_build
+        ),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
         "ccv_evaluations": ccv_evaluations,
         "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
     }
+
+
+def get_gene_has_full_coverage(
+    institute_obj, case_obj, variant_obj, genome_build
+) -> Dict[int, bool]:
+    """
+    Query chanjo2, if configured and d4 files are available for this case,
+    for coverage completeness on the genes touching this variant.
+    """
+    if not case_obj.get("chanjo2_coverage"):
+        return {}
+
+    gene_has_full_coverage: dict = {
+        hgnc_id: chanjo2.get_gene_complete_coverage(
+            hgnc_id=hgnc_id,
+            threshold=institute_obj.get("coverage_cutoff") or 15,
+            individuals=case_obj.get("individuals"),
+            build=genome_build,
+        )
+        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
+    }
+    return gene_has_full_coverage
 
 
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
