@@ -411,30 +411,48 @@ class QueryHandler(object):
 
     def clinsig_query(self, query: dict) -> dict:
         """Add clinsig filter values to the mongo query object"""
-        clnsig_query = {}
 
-        if query.get("clinsig"):  # If any ClinVar significance was selected
-            rank = [int(item) for item in query["clinsig"]]
-            str_rank = [CLINSIG_MAP[item] for item in rank]
-            rank += str_rank  # Merge numeric and string representations
+        clnsig_query = {"clnsig": {}}
 
-            elem_match = {
-                ("$nor" if query.get("clinsig_exclude") else "$or"): [
-                    {"value": {"$in": rank}},
-                    {"value": re.compile("|".join(str_rank))},
-                ]
-            }
+        if query.get("clinsig"):  # If any ClinVar significance was selected in the form multiselect
+            rank = []
+            str_rank = []
+            for item in query["clinsig"]:
+                rank.append(int(item))
+                # search for human readable clinsig values in newer cases
+                rank.append(CLINSIG_MAP[int(item)])
+                str_rank.append(CLINSIG_MAP[int(item)])
 
-            if query.get("clinsig_confident_always_returned"):
-                elem_match = {
-                    "$and": [elem_match, {"revstat": re.compile("|".join(TRUSTED_REVSTAT_LEVEL))}]
+            if query.get("clinsig_exclude"):
+                elem_match_or = {
+                    "$nor": [
+                        {"value": {"$in": rank}},
+                        {"value": re.compile("|".join(str_rank))},
+                    ]
+                }
+            else:
+                elem_match_or = {
+                    "$or": [
+                        {"value": {"$in": rank}},
+                        {"value": re.compile("|".join(str_rank))},
+                    ]
                 }
 
-            clnsig_query["clnsig"] = {"$elemMatch": elem_match}
+            if query.get("clinsig_confident_always_returned") is True:
+                clnsig_query["clnsig"] = {
+                    "$elemMatch": {
+                        "$and": [
+                            elem_match_or,
+                            {"revstat": re.compile("|".join(TRUSTED_REVSTAT_LEVEL))},
+                        ]
+                    }
+                }
+            else:
+                clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
-            clnsig_query.setdefault("clnsig", {})  # Ensure key exists
-            clnsig_query["clnsig"].update({"$exists": True, "$ne": None})
+            clnsig_query["clnsig"]["$exists"] = True
+            clnsig_query["clnsig"]["$ne"] = None
 
         return clnsig_query
 
