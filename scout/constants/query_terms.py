@@ -24,7 +24,7 @@ FUNDAMENTAL_CRITERIA = [
 # added as a top level '$and'.
 # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
 # are joined together with them as a single lower level '$and'.
-PRIMARY_CRITERIA = ["clinsig"]
+PRIMARY_CRITERIA = ["clinsig", "clinvar_tag"]
 
 # Secondary, excluding filter criteria will hide variants in general,
 # but can be overridden by an including, major filter criteria
@@ -53,7 +53,6 @@ SECONDARY_CRITERIA = [
     "somatic_score",
     "control_frequency",
     "mvl_tag",
-    "clinvar_tag",
     "cosmic_tag",
     "tumor_frequency",
     "fusion_score",
