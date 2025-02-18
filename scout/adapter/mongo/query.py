@@ -328,7 +328,7 @@ class QueryHandler(object):
                 break
 
         if primary_terms is True:
-            clinsign_filter = self.clinsig_query(query)
+            clinsign_filter: dict = self.clinsig_query(query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -407,7 +407,7 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def clinsig_query(self, query: dict):
+    def clinsig_query(self, query: dict) -> dict:
         """Add clinsig filter values to the mongo query object"""
 
         clnsig_query = {"clnsig": {}}
