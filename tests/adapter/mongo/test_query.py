@@ -274,6 +274,28 @@ def test_build_clinsig(adapter):
     }
 
 
+def test_build_clinsig_filter_exclude_status(adapter):
+    """Test building a variants query excluding ClinVar statuses."""
+
+    clinsig_items = [4, 5]
+    clinsig_mapped_items = []
+    all_clinsig = []  # both numerical and human readable values
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
+
+    # GIVEN a query containing clinsig terms and "clinsig_exclude" = True
+    query = {"clinsig": clinsig_items, "clinsig_exclude": True}
+
+    # THEN the mongo query should contain the expected elements ($nor + list of conditions)
+    mongo_query = adapter.build_query(case_id="cust000", query=query)
+    assert mongo_query["clnsig"]["$elemMatch"]["$nor"] == [
+        {"value": {"$in": all_clinsig}},
+        {"value": re.compile("|".join(clinsig_mapped_items))},
+    ]
+
+
 def test_build_clinsig_filter(real_variant_database):
     """Test building a variants query with ClinVar status."""
     adapter = real_variant_database
