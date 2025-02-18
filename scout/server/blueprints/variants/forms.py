@@ -113,7 +113,7 @@ class VariantFiltersForm(FlaskForm):
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
-    clinsig_exclude = BooleanField("Exclude significance")
+    clinsig_exclude = BooleanField("Exclude")
 
     gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
     local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
