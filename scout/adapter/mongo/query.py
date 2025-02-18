@@ -427,10 +427,7 @@ class QueryHandler(object):
 
             if query.get("clinsig_confident_always_returned"):
                 elem_match = {
-                    "$and": [
-                        elem_match,
-                        {"revstat": re.compile("|".join(TRUSTED_REVSTAT_LEVEL))}
-                    ]
+                    "$and": [elem_match, {"revstat": re.compile("|".join(TRUSTED_REVSTAT_LEVEL))}]
                 }
 
             clnsig_query["clnsig"] = {"$elemMatch": elem_match}
