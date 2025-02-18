@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HG38 genes track in igv.js browser, to correctly display gene names
 - Refactored code for prioritizing the order of variant loading
 - Modified the web pages body style to adapt content to smaller screens
+- Refactored filters to filter variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
@@ -170,7 +171,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLI scout update type hint error when running commands using Python 3.9
 - Missing alignment files but present index files could crash the function creating alignment tracks for IGV display
 - Fix missing "Repeat locus" info on STRs export
-- Filtering variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 
 ## [4.90.1]
 ### Fixed
