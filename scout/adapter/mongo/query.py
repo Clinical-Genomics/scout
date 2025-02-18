@@ -13,7 +13,8 @@ from scout.constants import (
 )
 
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
-EXISTS = "$exists"
+EXISTS = {"$exists": True}
+NOT_EXISTS = {"$exists": False}
 LOG = logging.getLogger(__name__)
 
 
@@ -441,7 +442,7 @@ class QueryHandler(object):
                 clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
-            clnsig_query["clnsig"][EXISTS] = True
+            clnsig_query["clnsig"]["$exists"] = True
             clnsig_query["clnsig"]["$ne"] = None
 
         return clnsig_query
@@ -607,7 +608,7 @@ class QueryHandler(object):
                     {
                         "$or": [
                             {"gnomad_frequency": {"$lt": float(gnomad)}},
-                            {"gnomad_frequency": {EXISTS: False}},
+                            {"gnomad_frequency": NOT_EXISTS},
                         ]
                     }
                 )
@@ -645,7 +646,7 @@ class QueryHandler(object):
                     {
                         "$or": [
                             {"swegen_mei_max": {"$lt": float(swegen)}},
-                            {"swegen_mei_max": {EXISTS: False}},
+                            {"swegen_mei_max": NOT_EXISTS},
                         ]
                     }
                 )
@@ -654,7 +655,7 @@ class QueryHandler(object):
                 mongo_secondary_query.append(
                     {
                         "$or": [
-                            {criterion: {EXISTS: False}},
+                            {criterion: NOT_EXISTS},
                             {criterion: {"$lt": query[criterion] + 1}},
                         ]
                     }
@@ -666,7 +667,7 @@ class QueryHandler(object):
 
                 spidex_query_or_part = []
                 if "not_reported" in spidex_human:
-                    spidex_query_or_part.append({"spidex": {EXISTS: False}})
+                    spidex_query_or_part.append({"spidex": NOT_EXISTS})
 
                 for spidex_level in SPIDEX_HUMAN:
                     if spidex_level in spidex_human:
@@ -710,7 +711,7 @@ class QueryHandler(object):
             if criterion == "revel":
                 revel = query["revel"]
                 revel_query = {"revel": {"$gt": float(revel)}}
-                revel_query = {"$or": [revel_query, {"revel": {EXISTS: False}}]}
+                revel_query = {"$or": [revel_query, {"revel": NOT_EXISTS}]}
 
                 mongo_secondary_query.append(revel_query)
 
@@ -718,7 +719,7 @@ class QueryHandler(object):
                 rank_score_query = {
                     "$or": [
                         {"rank_score": {"$gte": float(query["rank_score"])}},
-                        {"rank_score": {EXISTS: False}},
+                        {"rank_score": NOT_EXISTS},
                     ]
                 }
                 mongo_secondary_query.append(rank_score_query)
@@ -728,7 +729,7 @@ class QueryHandler(object):
                 cadd_query = {"cadd_score": {"$gt": float(cadd)}}
 
                 if query.get("cadd_inclusive") is True:
-                    cadd_query = {"$or": [cadd_query, {"cadd_score": {EXISTS: False}}]}
+                    cadd_query = {"$or": [cadd_query, {"cadd_score": NOT_EXISTS}]}
 
                 mongo_secondary_query.append(cadd_query)
 
@@ -757,9 +758,7 @@ class QueryHandler(object):
                 size_query = {
                     "$or": [
                         {"$expr": {size_selector: [{"$abs": "$length"}, size]}},
-                        {
-                            "length": {"$exists": False}
-                        },  # Include documents where 'length' is missing
+                        {"length": NOT_EXISTS},  # Include documents where 'length' is missing
                     ]
                 }
 
@@ -770,7 +769,7 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"sub_category": {"$in": svtype}})
 
             if criterion == "decipher":
-                mongo_query["decipher"] = {EXISTS: True}
+                mongo_query["decipher"] = EXISTS
 
             if criterion == "depth":
                 mongo_secondary_query.append({"tumor.read_depth": {"$gt": query.get("depth")}})
@@ -783,7 +782,7 @@ class QueryHandler(object):
                     {
                         "$or": [
                             {"somatic_score": {"$gt": query.get("somatic_score")}},
-                            {"somatic_score": {EXISTS: False}},
+                            {"somatic_score": NOT_EXISTS},
                         ]
                     }
                 )
@@ -799,10 +798,10 @@ class QueryHandler(object):
                 )
 
             if criterion == "mvl_tag":
-                mongo_secondary_query.append({"mvl_tag": {EXISTS: True}})
+                mongo_secondary_query.append({"mvl_tag": EXISTS})
 
             if criterion == "cosmic_tag":
-                mongo_secondary_query.append({"cosmic_ids": {EXISTS: True}})
+                mongo_secondary_query.append({"cosmic_ids": EXISTS})
                 mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
             if criterion == "fusion_score":
