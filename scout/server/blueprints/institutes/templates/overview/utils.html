@@ -285,52 +285,49 @@
             </div>
             <!-- End of cohorts settings -->
 
-            <!-- Variants and panels searching -->
+             <!-- Variants and panels searching -->
             <div class="row mt-5 d-flex align-items-center">
-              <fieldset class="w-100">
-                <legend>Variants and Gene Panels Searching</legend>
-                <div class="row gx-3">
-
-                  <div class="col-sm-6 col-lg-3">
-                    {{ form.institutes.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
-                    <select multiple="multiple" class="selectpicker w-100" name="institutes" data-style="btn-secondary">
-                      {% for choice in form.institutes.choices %}
-                        <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-
-                  <div class="col-sm-6 col-lg-3">
-                    {{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Select gene panels that will be available for variants filtering.") }}
-                    <select multiple="multiple" name="gene_panels" class="selectpicker w-100" data-style="btn-secondary">
-                      {% for choice in form.gene_panels.choices or [] %}
-                        <option value="{{choice[0]}}" {% if institute.gene_panels and choice[0] in institute.gene_panels.keys() %} selected {% endif %}>{{choice[1]}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-
-                  <div class="col-sm-6 col-lg-3">
-                    {{ form.gene_panels_matching.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed and causatives variants only in these panels.") }}
-                    <select multiple="multiple" name="gene_panels_matching" class="selectpicker w-100" data-style="btn-secondary">
-                      {% for choice in form.gene_panels_matching.choices or [] %}
-                        <option value="{{choice[0]}}" {% if institute.gene_panels_matching and choice[0] in institute.gene_panels_matching.keys() %} selected {% endif %}>{{choice[1]}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-
-                  <div class="col-sm-6 col-lg-3 d-flex align-items-center">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="check_show_all_vars" id="check_show_all_vars" {% if institute.check_show_all_vars %} checked {%endif%}>
-                      <label class="form-check-label" for="check_show_all_vars" data_bs_toggle="tooltip" data_bs_placement="top" title="Check this box if you want all variants (and not just those occurring in the affected individuals) to be shown by default on the variants page">
-                        {{ form.check_show_all_vars.label.text }}
-                      </label>
-                    </div>
-                  </div>
+            <fieldset>
+              <legend>Variants and gene panels searching</legend>
+              <div class="row">
+                 <div class="col-3">
+                  {{ form.institutes.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
+                  <select multiple="multiple" class="selectpicker" name="institutes" data-style="btn-secondary">
+                  {% for choice in form.institutes.choices %}
+                    <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
+                  {% endfor %}
+                  </select>
                 </div>
-              </fieldset>
+
+                <div class="col-3">
+                  {{ form.gene_panels.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Select gene panels that will be available for variants filtering.") }}
+                  <select multiple="multiple" name="gene_panels" class="selectpicker ml-3" data-style="btn-secondary">
+                    {% for choice in form.gene_panels.choices or [] %}
+                      <option value="{{choice[0]}}" {% if institute.gene_panels and choice[0] in institute.gene_panels.keys() %} selected {% endif %}>{{choice[1]}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-4">
+                  {{ form.gene_panels_matching.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed and causatives variants only in these panels") }}
+                  <select multiple="multiple" name="gene_panels_matching" class="selectpicker ml-3" data-style="btn-secondary">
+                    {% for choice in form.gene_panels_matching.choices or [] %}
+                      <option value="{{choice[0]}}" {% if institute.gene_panels_matching and choice[0] in institute.gene_panels_matching.keys() %} selected {% endif %}>{{choice[1]}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-2">
+                  <input type="checkbox" name="check_show_all_vars" {% if institute.check_show_all_vars %} checked {%endif%}>
+                  {{ form.check_show_all_vars.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Check this box if you want all variants (and not just those occurring in the affected individuals) to be shown by default on variants page") }}
+                </div>
+
+              </div>
+
+            </fieldset>
             </div>
             <!-- End of Variants and panels searching -->
-
+          
 
             {% if "admin" in current_user.roles %}
               <!-- LoqusDB settings -->
