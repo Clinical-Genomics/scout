@@ -326,15 +326,6 @@
                       </label>
                     </div>
                   </div>
-
-                  <div class="col-sm-6 col-lg-3">
-                      {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="key:value to filter variant documents with by default. Example tnscope:germline_risk, bcftools:in_normal.")}}
-                      <select class="select2" id="soft_filters" name="soft_filters" multiple="true" style="width:100%;">
-                        {% for filter, value in institute.soft_filters.items() %}
-                          <option value="{{filter}}:{{value}}" selected>{{filter}}:{{value}}</option>
-                        {% endfor %}
-                      </select>
-                  </div>
                 </div>
               </fieldset>
             </div>
@@ -360,6 +351,23 @@
                   </div>
               </div>
               <!-- End of loqusdb settings -->
+
+              <!-- Custom soft filters for variants -->
+              <div class="row mt-5 d-flex align-items-center">
+                <fieldset>
+                  <legend>Custom variants soft filters</legend>
+                  <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                      {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="key:value to filter variant documents with by default. Example tnscope:germline_risk, bcftools:in_normal.")}}
+                      <select class="select2" id="soft_filters" name="soft_filters" multiple="true" style="width:100%;">
+                        {% for filter, value in institute.soft_filters.items() %}
+                          <option value="{{filter}}:{{value}}" selected>{{filter}}:{{value}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+              </div>
+              <!-- End of custom soft filters for variants -->
 
               <!-- Alamut settings -->
               <div class="row mt-5 d-flex align-items-center">
