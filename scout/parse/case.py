@@ -19,7 +19,7 @@ def parse_case_data(**kwargs):
     on the command line. Or all the information can be specified in a config file.
     Please see Scout documentation for further instructions.
 
-    Possible keyword args:
+    Possible keyword args are formally available in the CaseLoader class, but here is a common list with explanations:
         cnv_report: Path to pdf file with CNV report
         config(dict): A yaml formatted config file
         coverage_qc_report: Path to html file with coverage and qc report
@@ -34,6 +34,8 @@ def parse_case_data(**kwargs):
         RNAfusion_report: Path to the RNA fusion report
         RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
+        somalier_pairs(str): Path to a Somalier pairs releatedness check file
+        somalier_samples(str): Path to a Somalier samples sex check file
         status(str): Optional case status ("prioritized", "inactive", "ignored", "active", "solved", "archived")
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
@@ -76,6 +78,7 @@ def parse_case_data(**kwargs):
 
     # This will add information from peddy to the individuals
     add_peddy_information(config_dict)
+    add_somalier_information(config_dict)
 
     if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
@@ -182,6 +185,25 @@ def add_smn_info_case(case_data):
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
             LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
+
+
+def add_somalier_information(config_data):
+
+    analysis_inds = {}
+
+    if config_data.get("somalier_samples"):
+        with open(config_data["somalier_samples"], "r") as file_handle:
+            for pair_info in parse_peddy_ped_check(file_handle):
+                ped_check[(pair_info["sample_a"], pair_info["sample_b"])] = pair_info
+
+    if config_data.get("peddy_sex_check"):
+        with open(config_data["peddy_sex_check"], "r") as file_handle:
+            for ind_info in parse_peddy_sex_check(file_handle):
+                sex_check[ind_info["sample_id"]] = ind_info
+
+    for ind in config_data["individuals"]:
+        ind_id = ind["individual_id"]
+        analysis_inds[ind_id] = ind
 
 
 def add_peddy_information(config_data):
