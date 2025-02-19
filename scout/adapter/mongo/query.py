@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
 from scout.constants import (
-    CANCER_SOFT_FILTERS,
     CLINSIG_MAP,
     FUNDAMENTAL_CRITERIA,
     PRIMARY_CRITERIA,
@@ -378,7 +377,7 @@ class QueryHandler(object):
 
     def soft_filters_query(self, mongo_query):
         """Adds info to variants query to exclude variants flagged by specific filters."""
-        for filter, flag in CANCER_SOFT_FILTERS.items():
+        for filter, flag in {}:
             mongo_query[filter] = {"$ne": flag}
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):

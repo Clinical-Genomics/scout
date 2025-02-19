@@ -47,7 +47,6 @@ from .disease_parsing import (
 )
 from .file_types import ORDERED_FILE_TYPE_MAP, ORDERED_OMICS_FILE_TYPE_MAP
 from .filters import (
-    CANCER_SOFT_FILTERS,
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_MEI,

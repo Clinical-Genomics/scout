@@ -34,5 +34,3 @@ CLINICAL_FILTER_BASE_MEI = {
 CLINICAL_FILTER_BASE_OUTLIER = {
     "variant_type": "clinical",
 }
-
-CANCER_SOFT_FILTERS = {"tnscope": "germline_risk", "bcftools": "in_normal"}
