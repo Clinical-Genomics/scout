@@ -333,7 +333,7 @@ def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
 
 def get_soft_filters(form: MultiDict) -> Optional[dict]:
     """
-    Return a dictionary with custom soft filter or None.
+    Return a dictionary with custom soft filters or None.
     This is not available on the form for unprivileged users, only admin.
     """
     if current_user.is_admin is False:

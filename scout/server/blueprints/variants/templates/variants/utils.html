@@ -108,10 +108,17 @@
         {{ form.hide_dismissed(class="form-check-input") }}
         {{ form.hide_dismissed.label(class="form-check-label ms-2") }}
       </div>
-      {% if "show_soft_filtered" in form %} <!-- Available for paired/normal cancer cases -->
+      {% if institute.soft_filters %} <!-- Available only for institutes with soft filters in settings -->
+        {% set soft_filters = institute.soft_filters.items() | map('join',':') | join(',') %}
         <div class="form-check d-flex justify-content-start">
           {{ form.show_soft_filtered(class="form-check-input") }}
-          {{ form.show_soft_filtered.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'Include variants flagged as likely present in paired normal/germline samples from TNScope and bcftools.'}) }}
+          {{ form.show_soft_filtered.label(
+              class="form-check-label ms-2",
+              data_bs_toggle="tooltip",
+              title="Filters are defined by admins in the institute settings. Current filters are: " ~
+                soft_filters
+          ) }}
+          {{ form.institute_soft_filters(value=soft_filters) }}
         </div>
       {% endif %}
       <div class="form-check d-flex justify-content-start">
