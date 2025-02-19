@@ -201,7 +201,7 @@ class CancerFiltersForm(VariantFiltersForm):
     local_obs_cancer_germline_old = IntegerField(
         "Local germline obs. (archive)", validators=[validators.Optional()]
     )
-
+    show_soft_filtered = BooleanField("Include soft-filtered variants", default=False)
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE_CANCER
 
@@ -310,7 +310,7 @@ class OutlierFiltersForm(FlaskForm):
 
     clinical_filter_base = CLINICAL_FILTER_BASE_OUTLIER
 
-    show_unaffected = BooleanField("Show also variants present only in unaffected", default=False)
+    show_unaffected = BooleanField("Include variants present only in unaffected", default=False)
 
     sort_by = NonValidatingSelectField(
         choices=[

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
 from scout.constants import (
+    CANCER_SOFT_FILTERS,
     CLINSIG_MAP,
     FUNDAMENTAL_CRITERIA,
     PRIMARY_CRITERIA,
@@ -306,6 +307,9 @@ class QueryHandler(object):
             if criterion == "show_unaffected" and query.get(criterion) is False:
                 self.affected_inds_query(mongo_query, case_id, gt_query)
 
+            if criterion == "show_soft_filtered" and query.get(criterion) is False:
+                self.soft_filters_query(mongo_query)
+
             ##### end of fundamental query params
 
         ##### start of the custom query params
@@ -371,6 +375,11 @@ class QueryHandler(object):
                 mongo_query["$and"] = coordinate_query
 
         return mongo_query
+
+    def soft_filters_query(self, mongo_query):
+        """Adds info to variants query to exclude variants flagged by specific filters."""
+        for filter, flag in CANCER_SOFT_FILTERS.items():
+            mongo_query[filter] = {"$ne": flag}
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
         """Add info to variants query to filter out variants which are only in unaffected individuals
