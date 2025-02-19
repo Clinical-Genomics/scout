@@ -168,7 +168,7 @@ class VariantFiltersForm(FlaskForm):
     export = SubmitField(label="Filter and export")
 
     show_unaffected = BooleanField("Include variants present only in unaffected", default=True)
-    show_soft_filtered = BooleanField(f"Include soft-filtered variants", default=True)
+    show_soft_filtered = BooleanField(f"Include soft-filtered variants", default=False)
     institute_soft_filters = HiddenField()
 
 

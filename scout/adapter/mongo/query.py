@@ -381,6 +381,7 @@ class QueryHandler(object):
             institute_soft_filters = [
                 tuple(item.split(":")) for item in query.get("institute_soft_filters").split(",")
             ]
+            LOG.warning(institute_soft_filters)
             for filter, flag in institute_soft_filters:
                 mongo_query[filter] = {"$ne": flag}
 
