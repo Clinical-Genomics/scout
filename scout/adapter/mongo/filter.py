@@ -24,8 +24,6 @@ class FilterHandler(object):
         Returns:
             filter_obj(dict)
         """
-        filter_obj = None
-        LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is not None:
             # use _id to preselect the currently loaded filter, and drop it while we are at it
@@ -49,15 +47,6 @@ class FilterHandler(object):
         Returns:
             filter_id(str) - a unique id that can be cast to ObjectId
         """
-
-        LOG.info(
-            "Stashing filter for user '%s' and institute %s.",
-            user_obj.get("email"),
-            institute_obj.get("display_name"),
-        )
-
-        LOG.info("Filter object {}".format(filter_obj))
-
         institute_id = institute_obj.get("_id")
         filter_dict = {"institute_id": institute_id, "category": category}
 
