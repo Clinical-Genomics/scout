@@ -12,6 +12,7 @@ from scout.server.blueprints.variants.controllers import (
     populate_chrom_choices,
     populate_filters_form,
     update_form_hgnc_symbols,
+    set_persistent_filters_choices,
 )
 from scout.server.blueprints.variants.forms import OutlierFiltersForm
 from scout.server.extensions import store
@@ -64,12 +65,6 @@ def outliers(institute_id, case_name):
             store, institute_obj, case_obj, user_obj, category, request.form
         )
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_obj["_id"], category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
@@ -97,7 +92,9 @@ def outliers(institute_id, case_name):
         case=case_obj,
         cytobands=cytobands,
         expand_search=get_expand_search(request.form),
-        filters=available_filters,
+        filters=set_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
