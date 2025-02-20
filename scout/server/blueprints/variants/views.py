@@ -605,7 +605,9 @@ def cancer_sv_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.set_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
