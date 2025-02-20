@@ -1493,3 +1493,18 @@ def add_link_for_disease(case_obj: dict):
         for diagnosis in case_diagnoses:
             #: Add link
             diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
+
+
+def remove_dynamic_genes(store: dict, case_obj: dict, request_form: dict):
+    """Remove one or more genes from the dynamic gene list. If there are no more
+    genes on the list, also stop using the HPO panel for clinical filter."""
+    case_dynamic_genes = [dyn_gene["hgnc_id"] for dyn_gene in case_obj.get("dynamic_gene_list")]
+    genes_to_remove = [int(gene_id) for gene_id in request_form.getlist("dynamicGene")]
+    hgnc_ids = list(set(case_dynamic_genes) - set(genes_to_remove))
+    store.update_dynamic_gene_list(
+        case_obj,
+        hgnc_ids=hgnc_ids,
+        delete_only=True,
+    )
+    if not hgnc_ids:
+        case_obj["hpo_clinical_filter"] = False

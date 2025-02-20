@@ -486,50 +486,45 @@ def phenotypes_actions(institute_id, case_name):
     hpo_ids = request.form.getlist("hpo_id")
     user_obj = store.user(current_user.email)
 
-    if action == "PHENOMIZER":
-        diseases = controllers.phenomizer_diseases(hpo_ids, case_obj)
-        if diseases:
-            return render_template(
-                "cases/diseases.html",
-                diseases=diseases,
-                institute=institute_obj,
-                case=case_obj,
-            )
+    match action:
+        case "PHENOMIZER":
+            diseases = controllers.phenomizer_diseases(hpo_ids, case_obj)
+            if diseases:
+                return render_template(
+                    "cases/diseases.html",
+                    diseases=diseases,
+                    institute=institute_obj,
+                    case=case_obj,
+                )
 
-    if action == "DELETE":
-        for hpo_id in hpo_ids:
-            # DELETE a phenotype from the list
-            store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
+        case "DELETE":
+            for hpo_id in hpo_ids:
+                # DELETE a phenotype from the list
+                store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
 
-    if action == "ADDGENE":
-        try:
-            hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
-        except ValueError:
-            flash(
-                "Provided gene info could not be parsed!. Please allow autocompletion to finish.",
-                "warning",
-            )
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
+        case "ADDGENE":
+            try:
+                hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
+            except ValueError:
+                flash(
+                    "Provided gene info could not be parsed!. Please allow autocompletion to finish.",
+                    "warning",
+                )
+            store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
-    if action == "REMOVEGENES":  # Remove one or more genes from the dynamic gene list
-        case_dynamic_genes = [dyn_gene["hgnc_id"] for dyn_gene in case_obj.get("dynamic_gene_list")]
-        genes_to_remove = [int(gene_id) for gene_id in request.form.getlist("dynamicGene")]
-        store.update_dynamic_gene_list(
-            case_obj,
-            hgnc_ids=list(set(case_dynamic_genes) - set(genes_to_remove)),
-            delete_only=True,
-        )
+        case "REMOVEGENES":
+            controllers.remove_dynamic_genes(store, case_obj, request.form)
 
-    if action == "GENES":
-        hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
-        store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
+        case "GENES":
+            hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
+            store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
 
-    if action == "GENERATE":
-        results = store.generate_hpo_gene_list(*hpo_ids)
-        # determine how many HPO terms each gene must match
-        hpo_count = int(request.form.get("min_match") or 1)
-        hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
+        case "GENERATE":
+            results = store.generate_hpo_gene_list(*hpo_ids)
+            # determine how many HPO terms each gene must match
+            hpo_count = int(request.form.get("min_match") or 1)
+            hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
+            store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
