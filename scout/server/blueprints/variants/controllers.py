@@ -49,7 +49,12 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
+from .forms import (
+    FILTERSFORMCLASS,
+    CancerSvFiltersForm,
+    FusionFiltersForm,
+    SvFiltersForm,
+)
 from .utils import update_case_panels
 
 NUM = re.compile(r"\d+")
@@ -84,7 +89,7 @@ def populate_force_show_unaffected_vars(institute_obj, form):
         form.show_unaffected.data = True
 
 
-def set_persistent_filters_choices(
+def populate_persistent_filters_choices(
     institute_id: str, category: str, form: ImmutableMultiDict
 ) -> List[dict]:
     """Populate the options present in the form.filters on variants page, directly setting on the form.

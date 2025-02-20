@@ -156,7 +156,7 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
@@ -245,7 +245,7 @@ def str_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
@@ -321,7 +321,7 @@ def sv_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
@@ -414,7 +414,7 @@ def mei_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
@@ -529,7 +529,7 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         result_size=result_size,
@@ -605,7 +605,7 @@ def cancer_sv_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
@@ -688,7 +688,7 @@ def fusion_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.set_persistent_filters_choices(
+        filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
