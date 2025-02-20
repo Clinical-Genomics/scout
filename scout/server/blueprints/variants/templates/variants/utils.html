@@ -318,16 +318,17 @@
       {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
-      {{ form.clinsig.label(class="control-label") }}
+      <span>{{ form.clinsig.label(class="control-label") }}</span>
+      <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
       {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-1">
-      {{ form.clinsig_confident_always_returned.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
-      <div>{{ form.clinsig_confident_always_returned() }}</div>
+      <span>{{ form.clinsig_confident_always_returned.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Limit search to variants with trusted ClinVar revision status levels: mult, multiple_submitters, single, single_submitter, exp, reviewed_by_expert_panel, guideline, practice_guideline.") }}</span>
+      <span>{{ form.clinsig_confident_always_returned() }}</span>
     </div>
     <div class="col-1">
+      {{ form.clinvar_tag.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Return only variants with annotated ClinVar significance.") }}
       {{ form.clinvar_tag() }}
-      {{ form.clinvar_tag.label(class="ms-2") }}
     </div>
   </div>
   <div class="row mb-2">
