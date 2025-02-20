@@ -105,7 +105,7 @@ def test_gene_symbols_query(adapter, case_obj):
 
 
 def test_gene_panel_query(adapter, case_obj):
-    """Test variants query using a gene panel cointaining a certain gene"""
+    """Test variants query using a gene panel containing a certain gene"""
 
     # GIVEN a database containing a minimal gene panel
     test_gene = "POT1"
@@ -129,6 +129,25 @@ def test_gene_panel_query(adapter, case_obj):
         "variant_type": "clinical",
         "hgnc_ids": {"$in": [test_gene_hgnc_id]},
     }
+
+
+def test_soft_filters_query(adapter, case_obj):
+    """Test variants query by providing a form with soft filters data."""
+
+    # GIVEN some soft filters saved at the institute level:
+    institute_soft_filters = "tnscope:germline_risk,bcftools:in_normal"
+    show_soft_filtered = False
+
+    # WHEN user query contains this data:
+    query = {
+        "institute_soft_filters": institute_soft_filters,
+        "show_soft_filtered": show_soft_filtered,
+    }
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+
+    # THEN the MongoDB query should contain soft filters:
+    assert mongo_query["tnscope"] == {"$ne": "germline_risk"}
+    assert mongo_query["bcftools"] == {"$ne": "in_normal"}
 
 
 def test_genotype_query_heterozygous(adapter, case_obj):
