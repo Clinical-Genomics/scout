@@ -87,7 +87,9 @@ def populate_force_show_unaffected_vars(institute_obj, form):
 def set_persistent_filters_choices(
     institute_id: str, category: str, form: ImmutableMultiDict
 ) -> List[dict]:
-    """Populate the options present in the form.filters on variants page."""
+    """Populate the options present in the form.filters on variants page, directly setting on the form.
+    Also return a convenient list of filters for use in filter update macros.
+    """
     available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name"))
