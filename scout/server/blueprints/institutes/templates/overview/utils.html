@@ -357,9 +357,11 @@
                     <div class="col-sm-6 col-lg-4">
                       {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="key:value to filter variant documents with by default. Example tnscope:germline_risk, bcftools:in_normal.")}}
                       <select class="select2" id="soft_filters" name="soft_filters" multiple="true" style="width:100%;">
-                        {% for filter, value in institute.soft_filters.items() %}
-                          <option value="{{filter}}:{{value}}" selected>{{filter}}:{{value}}</option>
-                        {% endfor %}
+                        {% if institute.soft_filters %}
+                          {% for filter, value in institute.soft_filters.items() %}
+                            <option value="{{filter}}:{{value}}" selected>{{filter}}:{{value}}</option>
+                          {% endfor %}
+                        {% endif %}
                       </select>
                     </div>
                   </div>
