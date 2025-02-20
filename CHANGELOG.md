@@ -1780,6 +1780,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Accept only numbers in managed variants filter as position and end coordinates
 - SNP id format and links in Variant page, ClinVar submission form and general report
 - Case groups tooltip triggered only when mouse is on the panel header
+- Loadable filters displayed in alphabetical order on variants page
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report

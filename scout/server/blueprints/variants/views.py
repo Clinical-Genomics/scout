@@ -97,11 +97,6 @@ def variants(institute_id, case_name):
 
     controllers.populate_force_show_unaffected_vars(institute_obj, form)
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_id, category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -164,7 +159,9 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         genetic_models_palette=GENETIC_MODELS_PALETTE,
         inherit_palette=INHERITANCE_PALETTE,
@@ -213,12 +210,6 @@ def str_variants(institute_id, case_name):
     controllers.populate_force_show_unaffected_vars(institute_obj, form)
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_id, category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -260,7 +251,9 @@ def str_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
@@ -305,12 +298,6 @@ def sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_obj["_id"], category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -343,7 +330,9 @@ def sv_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
@@ -402,12 +391,6 @@ def mei_variants(institute_id, case_name):
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_obj["_id"], category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -443,7 +426,9 @@ def mei_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
@@ -519,12 +504,6 @@ def cancer_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_id, category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -565,7 +544,9 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -606,12 +587,6 @@ def cancer_sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_obj["_id"], category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -648,7 +623,9 @@ def cancer_sv_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
@@ -697,12 +674,6 @@ def fusion_variants(institute_id, case_name):
         store, institute_obj, case_obj, category, request
     )
 
-    # populate filters dropdown
-    available_filters = list(store.filters(institute_obj["_id"], category))
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -738,7 +709,9 @@ def fusion_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
-        filters=available_filters,
+        filters=controllers.populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
         form=form,
         institute=institute_obj,
         manual_rank_options=MANUAL_RANK_OPTIONS,

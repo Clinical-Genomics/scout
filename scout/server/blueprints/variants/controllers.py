@@ -40,6 +40,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.forms import BetterDecimalField
+from scout.server.extensions import store
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
     case_has_alignments,
@@ -86,6 +87,20 @@ def populate_force_show_unaffected_vars(institute_obj, form):
     """
     if institute_obj.get("check_show_all_vars"):
         form.show_unaffected.data = True
+
+
+def populate_persistent_filters_choices(
+    institute_id: str, category: str, form: ImmutableMultiDict
+) -> List[dict]:
+    """Populate the options present in the form.filters on variants page, directly setting on the form.
+    Also return a convenient list of filters for use in filter update macros.
+    """
+    available_filters = list(store.filters(institute_id, category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name"))
+        for filter in sorted(available_filters, key=lambda f: f.get("display_name", "").lower())
+    ]
+    return available_filters
 
 
 def populate_chrom_choices(form, case_obj):
