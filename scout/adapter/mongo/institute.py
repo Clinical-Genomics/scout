@@ -56,6 +56,7 @@ class InstituteHandler(object):
         check_show_all_vars: Optional[str] = None,
         clinvar_key: Optional[str] = None,
         clinvar_submitters: Optional[List[str]] = None,
+        soft_filters: Optional[dict] = None,
     ) -> Union[dict, str]:
         """Update the information for an institute."""
 
@@ -127,6 +128,7 @@ class InstituteHandler(object):
             "alamut_institution": alamut_institution,
             "clinvar_key": clinvar_key,
             "show_all_cases_status": show_all_cases_status,
+            "soft_filters": soft_filters,
         }
         for key, value in ADMIN_SETTINGS.items():
             if value not in [None, "", []]:

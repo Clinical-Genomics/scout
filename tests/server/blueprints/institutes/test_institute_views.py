@@ -139,6 +139,7 @@ def test_institute_settings(app, user_obj, institute_obj):
             "alamut_key": "test_alamut_key",
             "clinvar_key": "test_clinvar_key",
             "clinvar_emails": ["john@doe.com"],
+            "soft_filters": ["gatk:Filtered"],
         }
 
         # via POST request
@@ -163,6 +164,7 @@ def test_institute_settings(app, user_obj, institute_obj):
         assert updated_institute["alamut_key"] == form_data["alamut_key"]
         assert updated_institute["clinvar_key"] == form_data["clinvar_key"]
         assert updated_institute["clinvar_submitters"] == form_data["clinvar_emails"]
+        assert updated_institute["soft_filters"] == {"gatk": "Filtered"}
 
 
 def test_cases_export_samples(app, institute_obj):
