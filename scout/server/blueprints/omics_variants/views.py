@@ -11,8 +11,8 @@ from scout.server.blueprints.variants.controllers import (
     get_variants_page,
     populate_chrom_choices,
     populate_filters_form,
-    update_form_hgnc_symbols,
     set_persistent_filters_choices,
+    update_form_hgnc_symbols,
 )
 from scout.server.blueprints.variants.forms import OutlierFiltersForm
 from scout.server.extensions import store

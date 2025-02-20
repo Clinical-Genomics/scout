@@ -40,6 +40,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.forms import BetterDecimalField
+from scout.server.extensions import store
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
     case_has_alignments,
@@ -50,7 +51,6 @@ from scout.server.utils import (
 
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels
-from scout.server.extensions import store
 
 NUM = re.compile(r"\d+")
 
