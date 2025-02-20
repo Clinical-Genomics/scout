@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load research WTS outliers using the `scout load variants --outliers-research` command
 - Chanjo2 gene coverage completeness indicator and report from variant page, summary card
 - Enhanced SNV and SV filtering for cancer and rare disease cases, now supporting size thresholds (≥ or < a specified base pair length)
+- Expand the command line to remove more types of variants. Now supports: `cancer`, `cancer_sv`, `fusion`, `mei`, `outlier`, `snv`, `str`, `sv`, `wts_outliers`
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
@@ -29,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Downloading and parsing of genes from Ensembl (including MT-TP)
 - Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
 - HPO search on WTS Outliers page
+
 
 ## [4.96]
 ### Added

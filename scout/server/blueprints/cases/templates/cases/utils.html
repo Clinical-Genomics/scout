@@ -291,7 +291,7 @@
 
 {% macro pretty_variant(variant) %}
 
-  {% if variant.category in "str" %}
+  {% if variant.category and variant.category in "str" %}
         {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
 
   {% elif variant.category in ("snv", "cancer") %}

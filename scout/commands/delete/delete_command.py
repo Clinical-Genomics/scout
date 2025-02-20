@@ -1,15 +1,16 @@
 import logging
+from typing import List, Tuple
 
 import click
 from flask import current_app, url_for
 from flask.cli import with_appcontext
 
-from scout.constants import CASE_STATUSES
+from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
+BYTES_IN_ONE_GIGABYTE = 1073741824
 DELETE_VARIANTS_HEADER = [
     "Case n.",
     "Ncases",
@@ -23,8 +24,18 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
+VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers"]
 
-VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
+
+def _set_keep_ctg(keep_ctg: Tuple[str], rm_ctg: Tuple[str]) -> List[str]:
+    """Define the categories of variants that should not be removed."""
+    if keep_ctg and rm_ctg:
+        raise click.UsageError("Please use either '--keep-ctg' or '--rm-ctg' parameter, not both.")
+    if keep_ctg:
+        return list(keep_ctg)
+    if rm_ctg:
+        return list(set(VARIANT_CATEGORIES).difference(set(rm_ctg)))
+    return []
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -47,18 +58,25 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @click.option("--older-than", type=click.INT, default=0, help="Older than (months)")
 @click.option(
     "--analysis-type",
-    type=click.Choice(["wgs", "wes", "panel"]),
+    type=click.Choice(ANALYSIS_TYPES),
     multiple=True,
     help="Type of analysis",
 )
 @click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
 @click.option("--variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
+    "--rm-ctg",
+    type=click.Choice(VARIANT_CATEGORIES),
+    multiple=True,
+    required=False,
+    help="Remove only the following categories",
+)
+@click.option(
     "--keep-ctg",
     type=click.Choice(VARIANT_CATEGORIES),
     multiple=True,
     required=False,
-    help="Do not delete one of more variant categories",
+    help="Keep the following categories",
 )
 @click.option(
     "--dry-run",
@@ -68,15 +86,16 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @with_appcontext
 def variants(
     user: str,
-    case_id: list,
+    case_id: tuple,
     case_file: str,
     institute: str,
-    status: list,
+    status: tuple,
     older_than: int,
-    analysis_type: list,
+    analysis_type: tuple,
     rank_threshold: int,
     variants_threshold: int,
-    keep_ctg: list,
+    rm_ctg: tuple,
+    keep_ctg: tuple,
     dry_run: bool,
 ) -> None:
     """Delete variants for one or more cases"""
@@ -93,10 +112,9 @@ def variants(
         return
 
     total_deleted = 0
-    items_name = "deleted variants"
+
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
-        items_name = "estimated deleted variants"
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
@@ -120,10 +138,14 @@ def variants(
         f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     )
     click.echo("\t".join(DELETE_VARIANTS_HEADER))
+    keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
+
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         institute_id = case["owner"]
-        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
+        case_n_variants = store.variant_collection.count_documents(
+            {"case_id": case_id}
+        ) + store.omics_variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
         if variants_threshold and case_n_variants < variants_threshold:
             continue
@@ -136,14 +158,21 @@ def variants(
         variants_to_keep = (
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
-        variants_query = store.delete_variants_query(
+
+        variants_query: dict = store.delete_variants_query(
             case_id, variants_to_keep, rank_threshold, keep_ctg
         )
 
         if dry_run:
+            items_name = "estimated deleted variants"
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
-            total_deleted += remove_n_variants
+            remove_n_omics_variants = (
+                store.omics_variant_collection.count_documents(variants_query)
+                if "wts_outliers" not in keep_ctg
+                else 0
+            )
+            total_deleted += remove_n_variants + remove_n_omics_variants
             click.echo(
                 "\t".join(
                     [
@@ -157,15 +186,22 @@ def variants(
                         case.get("status", ""),
                         str(case.get("is_research", "")),
                         str(case_n_variants),
-                        str(remove_n_variants),
+                        str(remove_n_variants + remove_n_omics_variants),
                     ]
                 )
             )
             continue
 
         # delete variants specified by variants_query
-        result = store.variant_collection.delete_many(variants_query)
-        total_deleted += result.deleted_count
+        items_name = "deleted variants"
+        remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
+        remove_n_omics_variants = (
+            store.omics_variant_collection.delete_many(variants_query).deleted_count
+            if "wts_outliers" not in keep_ctg
+            else 0
+        )
+
+        total_deleted += remove_n_variants + remove_n_omics_variants
         click.echo(
             "\t".join(
                 [
@@ -179,7 +215,7 @@ def variants(
                     case.get("status", ""),
                     str(case.get("is_research", "")),
                     str(case_n_variants),
-                    str(result.deleted_count),
+                    str(remove_n_variants + remove_n_omics_variants),
                 ]
             )
         )
