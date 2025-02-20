@@ -513,7 +513,7 @@ def phenotypes_actions(institute_id, case_name):
             store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
         case "REMOVEGENES":
-            controllers.remove_dynamic_genes(store, case_obj, request.form)
+            controllers.remove_dynamic_genes(store, case_obj, institute_obj, request.form)
 
         case "GENES":
             hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
@@ -923,9 +923,10 @@ def default_panels(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"])
 def update_clinical_filter_hpo(institute_id, case_name):
     """Update default panels for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     hpo_clinical_filter = request.form.get("hpo_clinical_filter")
     controllers.update_clinical_filter_hpo(
-        store, current_user, institute_id, case_name, hpo_clinical_filter
+        store, current_user, institute_obj, case_obj, hpo_clinical_filter
     )
     return redirect(request.referrer)
 

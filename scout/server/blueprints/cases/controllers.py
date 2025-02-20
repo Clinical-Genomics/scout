@@ -1088,11 +1088,12 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
 
-def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter):
+def update_clinical_filter_hpo(store, current_user, institute_obj, case_obj, hpo_clinical_filter):
     """Update HPO clinical filter use for a case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
-    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    link = url_for(
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+    )
     store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
 
 
@@ -1495,7 +1496,7 @@ def add_link_for_disease(case_obj: dict):
             diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
 
 
-def remove_dynamic_genes(store: dict, case_obj: dict, request_form: dict):
+def remove_dynamic_genes(store: dict, case_obj: dict, institute_obj: dict, request_form: dict):
     """Remove one or more genes from the dynamic gene list. If there are no more
     genes on the list, also stop using the HPO panel for clinical filter."""
     case_dynamic_genes = [dyn_gene["hgnc_id"] for dyn_gene in case_obj.get("dynamic_gene_list")]
@@ -1507,4 +1508,8 @@ def remove_dynamic_genes(store: dict, case_obj: dict, request_form: dict):
         delete_only=True,
     )
     if not hgnc_ids:
-        case_obj["hpo_clinical_filter"] = False
+        hpo_clinical_filter = False
+        case_obj["hpo_clinical_filter"] = hpo_clinical_filter
+        update_clinical_filter_hpo(
+            store, current_user, institute_obj, case_obj, hpo_clinical_filter
+        )
