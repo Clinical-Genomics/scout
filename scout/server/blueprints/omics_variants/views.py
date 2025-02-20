@@ -12,6 +12,7 @@ from scout.server.blueprints.variants.controllers import (
     populate_chrom_choices,
     populate_filters_form,
     populate_persistent_filters_choices,
+    set_hpo_clinical_filter,
     update_form_hgnc_symbols,
 )
 from scout.server.blueprints.variants.forms import OutlierFiltersForm
@@ -45,8 +46,7 @@ def outliers(institute_id, case_name):
         variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
+    set_hpo_clinical_filter(case_obj, request.form)
 
     # update status of case if visited for the first time
     activate_case(store, institute_obj, case_obj, current_user)

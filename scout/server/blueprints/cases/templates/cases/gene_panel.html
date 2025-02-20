@@ -79,8 +79,7 @@
           <span class="mr-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
               {{ case.dynamic_panel_phenotypes|length }} phenotypes
           </span>
-        {% endif %}
-        )
+        {% endif %})
         {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
       </h6>
     </div>
@@ -119,6 +118,7 @@
       </div>
 
       <div>
+        {% if case.track == 'rare' %}
         <div class="row"> <!-- Show variants in dynamic gene list -->
           <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
             <div class="form-check form-switch">
@@ -128,6 +128,7 @@
             </div>
           </form>
         </div>
+        {% endif %}
         <div class="row mt-3">
           <div class="btn-group btn-group-sm">
           {% if case.track == 'cancer' %}

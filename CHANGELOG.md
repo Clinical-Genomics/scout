@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Downloading and parsing of genes from Ensembl (including MT-TP)
 - Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
 - HPO search on WTS Outliers page
+- Stop using dynamic gene panel (HPO generated list) for clinical filter when the last gene is removed from the dynamic gene panel
 
 ## [4.96]
 ### Added
