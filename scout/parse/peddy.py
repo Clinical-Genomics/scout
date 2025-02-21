@@ -1,3 +1,5 @@
+from typing import List
+
 from scout.utils.convert import convert_number, make_bool
 
 
@@ -147,3 +149,48 @@ def parse_peddy_sex_check(lines):
             sex_check.append(ind_info)
 
     return sex_check
+
+
+def parse_somalier_pairs(lines: List[str]) -> dict:
+    """Parse a Somalier pairs tsv file"""
+    for i, line in enumerate(lines):
+        line = line.rstrip()
+        if i == 0:
+            # Header line
+            header = line.lstrip("#").split("\t")
+            continue
+
+        pair_info = dict(zip(header, line.split("\t")))
+        pair_info["relatedness"] = convert_number(pair_info["relatedness"])
+        pair_info["ibs0"] = convert_number(pair_info["ibs0"])
+        pair_info["ibs2"] = convert_number(pair_info["ibs2"])
+
+    return pair_info
+
+
+def parse_somalier_samples(lines: List[str]) -> dict:
+    """Parse a Somalier samples tsv file"""
+    for i, line in enumerate(lines):
+        line = line.rstrip()
+        if i == 0:
+            # Header line
+            header = line.lstrip("#").split("\t")
+            continue
+
+        samples_info = dict(zip(header, line.split("\t")))
+
+    return samples_info
+
+
+def parse_somalier_ancestry(lines: List[str]) -> dict:
+    """Parse a Somalier ancestry tsv file"""
+    for i, line in enumerate(lines):
+        line = line.rstrip()
+        if i == 0:
+            # Header line
+            header = line.lstrip("#").split("\t")
+            continue
+
+        ancestry_info = dict(zip(header, line.split("\t")))
+
+    return ancestry_info
