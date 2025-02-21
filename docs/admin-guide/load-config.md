@@ -98,6 +98,9 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
     - **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 - **smn_tsv** _String_ Path to an SMN TSV file.
+- **somalier_ancestry** _String_ Path to a [Somalier][somalier] ancestry tsv file.
+- **somalier_pairs** _String_ Path to a [Somalier][somalier] pairs tsv file.
+- **somalier_samples** _String_ Path to a [Somalier][somalier] samples tsv file.
 - **status** _String_ Any of the following strings: 'prioritized', 'inactive', 'ignored', 'active', 'solved' or 'archived'.
 - **synopsis** _String_ Synopsis of case.
 - **sv_rank_model_version** _String_ Rank model that was used when scoring the variants.
@@ -146,6 +149,7 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
 [rnafusion-report]: https://nf-co.re/rnafusion/output#fusion-report
 [rhocall]: https://github.com/dnil/rhocall
+[somalier]: https://github.com/brentp/somalier
 [srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service
 [tiddit]: https://github.com/SciLifeLab/TIDDIT
 [tomte]: https://github.com/genomic-medicine-sweden/tomte

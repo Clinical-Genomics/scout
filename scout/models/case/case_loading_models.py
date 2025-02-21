@@ -54,6 +54,9 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
+    "somalier_ancestry",
+    "somalier_pairs",
+    "somalier_samples",
     "smn_tsv",
     "reference_info",
     "RNAfusion_inspector",
@@ -426,6 +429,7 @@ class CaseLoader(BaseModel):
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
     phenotype_groups: Optional[List[str]] = None
     phenotype_terms: Optional[List[str]] = None
+    somalier_ancestry: Optional[str] = None
     somalier_pairs: Optional[str] = None
     somalier_samples: Optional[str] = None
     exe_ver: Optional[str] = None
