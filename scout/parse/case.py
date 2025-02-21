@@ -215,6 +215,9 @@ def add_somalier_information(case_config: dict):
             for ind_info in parse_somalier_ancestry(file_handle):
                 ancestry_info[ind_info["sample_id"]] = ind_info
 
+    if not ped_check or sex_check or ancestry_info:
+        return
+
     analysis_inds = {}
     for ind in case_config["individuals"]:
         ind_id = ind["individual_id"]
