@@ -2,7 +2,7 @@ import logging
 
 from ped_parser import FamilyParser
 
-from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.constants import PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
 from scout.models.case.case_loading_models import CaseLoader
 from scout.parse.mitodel import parse_mitodel_file
@@ -35,7 +35,7 @@ def parse_case_data(**kwargs):
         RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
         somalier_pairs(str): Path to a Somalier pairs releatedness check file
-        somalier_samples(str): Path to a Somalier samples sex check file
+        somalier_samples(str): Path to a Somalier samples sex check/ped file
         status(str): Optional case status ("prioritized", "inactive", "ignored", "active", "solved", "archived")
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
@@ -184,26 +184,67 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
+            LOG.warning("Individual {} has no SMN info to   update: {}.".format(ind_id, err))
 
 
-def add_somalier_information(config_data):
+def add_somalier_information(case_config: dict):
 
-    analysis_inds = {}
+    ped_check = {}
+    sex_check = {}
+    ancestry_info = {}
 
-    if config_data.get("somalier_samples"):
-        with open(config_data["somalier_samples"], "r") as file_handle:
-            for pair_info in parse_peddy_ped_check(file_handle):
+    if case_config.get("somalier_pairs"):
+        with open(case_config["somalier_pairs"], "r") as file_handle:
+            for pair_info in parse_somalier_pairs(file_handle):
                 ped_check[(pair_info["sample_a"], pair_info["sample_b"])] = pair_info
 
-    if config_data.get("peddy_sex_check"):
-        with open(config_data["peddy_sex_check"], "r") as file_handle:
-            for ind_info in parse_peddy_sex_check(file_handle):
+    if case_config.get("somalier_samples"):
+        with open(case_config["somalier_samples"], "r") as file_handle:
+            for ind_info in parse_somalier_samples(file_handle):
                 sex_check[ind_info["sample_id"]] = ind_info
 
-    for ind in config_data["individuals"]:
+    if case_config.get("somalier_ancestry"):
+        with open(case_config["peddy_ped"], "r") as file_handle:
+            for ind_info in parse_somalier_ancestry(file_handle):
+                ancestry_info[ind_info["sample_id"]] = ind_info
+
+    analysis_inds = {}
+    for ind in case_config["individuals"]:
         ind_id = ind["individual_id"]
         analysis_inds[ind_id] = ind
+
+    for ind_id in analysis_inds:
+        ind = analysis_inds[ind_id]
+        # Check if Somalier has inferred the ancestry
+        if ind_id in ancestry_info:
+            ind["predicted_ancestry"] = ancestry_info[ind_id].get("predicted_ancestry", "UNKNOWN")
+        # Check if Somalier has inferred the sex
+        if ind_id in sex_check and all(
+            key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
+        ):
+            ind["confirmed_sex"] = (
+                sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
+            )
+
+        # Check if peddy har confirmed parental relations
+        for parent in ["mother", "father"]:
+            # If we are looking at individual with parents
+            parent_id = ind[parent]
+            if parent_id == "0":
+                continue
+            # Check if the child/parent pair is in peddy data
+            for pair in ped_check:
+                if not (ind_id in pair and parent_id in pair):
+                    continue
+                if (
+                    ped_check[pair]["relatedness"] > 0.32
+                    and ped_check[pair]["relatedness"] < 0.67
+                    and ped_check[pair]["ibs0"] / ped_check[pair]["ibs2"] < 0.014
+                ):
+                    analysis_inds[parent_id]["confirmed_parent"] = True
+                    continue
+                # else if parent confirmation failed
+                analysis_inds[parent_id]["confirmed_parent"] = False
 
 
 def add_peddy_information(config_data):
