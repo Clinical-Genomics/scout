@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load research WTS outliers using the `scout load variants --outliers-research` command
 - Chanjo2 gene coverage completeness indicator and report from variant page, summary card
 - Enhanced SNV and SV filtering for cancer and rare disease cases, now supporting size thresholds (≥ or < a specified base pair length)
+- Option to exclude ClinVar significance status in SNVs filters form
 - Load pedigree and sex check from Somalier, provided by e.g. the Nallo pipeline
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
@@ -25,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored code for prioritizing the order of variant loading
 - Modified the web pages body style to adapt content to smaller screens
 - Refactored filters to filter variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
+- Improved tooltips for ClinVar filter in SNVs filter form
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
