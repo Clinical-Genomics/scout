@@ -41,9 +41,6 @@ def parse_case_data(**kwargs):
         RNAfusion_report: Path to the RNA fusion report
         RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
-        parse_somalier_ancestry(str): Path to a Somalier ancestry check tsv file
-        somalier_pairs(str): Path to a Somalier pairs releatedness check tsv file
-        somalier_samples(str): Path to a Somalier samples sex check/ped tsv file
         status(str): Optional case status ("prioritized", "inactive", "ignored", "active", "solved", "archived")
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
@@ -84,7 +81,8 @@ def parse_case_data(**kwargs):
             except KeyError:
                 config_dict[key] = None
 
-    # This will add information from peddy to the individuals
+    # This will add pedigree qc information from Peddy and Somalier to the individuals.
+    # Let the newer Somalier have the last word if there is any disagreement
     add_peddy_information(config_dict)
     add_somalier_information(config_dict)
 

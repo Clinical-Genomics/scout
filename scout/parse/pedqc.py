@@ -151,8 +151,9 @@ def parse_peddy_sex_check(lines):
     return sex_check
 
 
-def parse_somalier_pairs(lines: List[str]) -> dict:
+def parse_somalier_pairs(lines: List[str]) -> List[dict]:
     """Parse a Somalier pairs tsv file"""
+    somalier_pairs = []
     for i, line in enumerate(lines):
         line = line.rstrip()
         if i == 0:
@@ -164,12 +165,14 @@ def parse_somalier_pairs(lines: List[str]) -> dict:
         pair_info["relatedness"] = convert_number(pair_info["relatedness"])
         pair_info["ibs0"] = convert_number(pair_info["ibs0"])
         pair_info["ibs2"] = convert_number(pair_info["ibs2"])
+        somalier_pairs.append(pair_info)
 
-    return pair_info
+    return somalier_pairs
 
 
-def parse_somalier_samples(lines: List[str]) -> dict:
+def parse_somalier_samples(lines: List[str]) -> List[dict]:
     """Parse a Somalier samples tsv file"""
+    somalier_samples = []
     for i, line in enumerate(lines):
         line = line.rstrip()
         if i == 0:
@@ -178,12 +181,13 @@ def parse_somalier_samples(lines: List[str]) -> dict:
             continue
 
         samples_info = dict(zip(header, line.split("\t")))
+        somalier_samples.append(samples_info)
+    return somalier_samples
 
-    return samples_info
 
-
-def parse_somalier_ancestry(lines: List[str]) -> dict:
+def parse_somalier_ancestry(lines: List[str]) -> List[dict]:
     """Parse a Somalier ancestry tsv file"""
+    somalier_ancestry = []
     for i, line in enumerate(lines):
         line = line.rstrip()
         if i == 0:
@@ -192,5 +196,5 @@ def parse_somalier_ancestry(lines: List[str]) -> dict:
             continue
 
         ancestry_info = dict(zip(header, line.split("\t")))
-
-    return ancestry_info
+        somalier_ancestry.append(ancestry_info)
+    return somalier_ancestry
