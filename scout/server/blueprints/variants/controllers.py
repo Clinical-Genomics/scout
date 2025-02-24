@@ -113,9 +113,7 @@ def populate_chrom_choices(form, case_obj):
 def populate_institute_soft_filters(form, institute_obj):
     """Populate the hidden field 'institute_soft_filters' with a string containing all institute's soft filters."""
     if institute_obj.get("soft_filters"):
-        form.institute_soft_filters.data = ",".join(
-            f"{k}:{v}" for k, v in institute_obj["soft_filters"].items()
-        )
+        form.institute_soft_filters.data = ",".join(institute_obj["soft_filters"])
 
 
 def variants(

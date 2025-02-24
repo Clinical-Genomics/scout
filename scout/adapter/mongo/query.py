@@ -377,12 +377,9 @@ class QueryHandler(object):
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
         """Adds info to variants query to exclude variants flagged by specific filters."""
-        if query.get("institute_soft_filters"):
-            institute_soft_filters = [
-                tuple(item.split(":")) for item in query.get("institute_soft_filters").split(",")
-            ]
-            for filter, flag in institute_soft_filters:
-                mongo_query[filter] = {"$ne": flag}
+        inst_soft_filters: Optional[list] = query.get("institute_soft_filters").split(",")
+        if inst_soft_filters:
+            mongo_query["filters"] = {"$nin": inst_soft_filters}
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
         """Add info to variants query to filter out variants which are only in unaffected individuals
