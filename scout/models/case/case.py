@@ -37,6 +37,7 @@ individual = dict(
     tumor_type=str,
     tmb=str,
     msi=str,
+    hrd=str,
     tumor_purity=float,
     tissue_type=str,
     chromograph_images=str,  # path to image files

@@ -122,6 +122,9 @@ def build_individual(ind: dict) -> dict:
     if "msi" in ind:
         ind_obj["msi"] = ind["msi"]
 
+    if "hrd" in ind:
+        ind_obj["hrd"] = ind["hrd"]
+
     if "tumor_purity" in ind:
         ind_obj["tumor_purity"] = ind["tumor_purity"]
 

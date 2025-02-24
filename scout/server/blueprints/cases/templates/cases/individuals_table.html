@@ -17,7 +17,9 @@
              title="Measure of the tumor mutational burden">TMB</th>
             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Measure of microsatellite instability">MSI</th>
-            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
+             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
+             title="Homologous Recombination Deficiency">HRD</th>
+             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Measure of tumor purity">Tumor Purity</th>
             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Downloadable CytoSure file">CGH</th>
@@ -41,6 +43,7 @@
               <td>{{ ind.analysis_type|upper }}</td>
               <td>{{ ind.tmb or 'N/A' }}</td>
               <td>{{ ind.msi or 'N/A' }}</td>
+              <td>{{ ind.hrd or 'N/A' }}</td>
               {% if ind.phenotype_human == "tumor" %}
                 <td>
                   <div class="d-flex align-items-center">
