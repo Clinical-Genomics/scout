@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored code for prioritizing the order of variant loading
 - Modified the web pages body style to adapt content to smaller screens
 - Refactored filters to filter variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
+- Updated dependencies in uv.lock file
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
