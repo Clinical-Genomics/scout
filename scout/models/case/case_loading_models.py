@@ -212,6 +212,7 @@ class SampleLoader(BaseModel):
     d4_file: Optional[str] = None
     display_name: Optional[str] = None
     father: Optional[str] = None
+    hrd: Optional[str] = None
     individual_id: str = Field(alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
@@ -250,8 +251,8 @@ class SampleLoader(BaseModel):
 
     @model_validator(mode="before")
     def convert_cancer_int_values_to_str(cls, values) -> "SampleLoader":
-        """Sets 'msi' and 'msi' values for cancer cases to string. This is a required step in Pydantic2, in Pydantic1 values were just coerced from int to str."""
-        for item in ["msi", "tmb"]:
+        """Sets 'msi' 'tmb' and 'hrd' values for cancer cases to string. This is a required step in Pydantic2, in Pydantic1 values were just coerced from int to str."""
+        for item in ["msi", "tmb", "hrd"]:
             if values.get(item):
                 values[item] = str(values[item])
         return values
