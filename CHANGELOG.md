@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.97]
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
