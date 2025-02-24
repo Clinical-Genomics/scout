@@ -1,0 +1,4 @@
+#family_id	sample_id	paternal_id	maternal_id	sex	phenotype	original_pedigree_sex	gt_depth_mean	gt_depth_sd	depth_mean	depth_sd	ab_mean	ab_std	n_hom_ref	n_het	n_hom_alt	n_unknown	p_middling_ab	X_depth_mean	X_n	X_hom_ref	X_het	X_hom_alt	Y_depth_mean	Y_n
+643594-300M	ADM1059A2	ADM1059A1	ADM1059A3	1	2	male	31.6	8.0	31.6	8.0	0.53	0.39	4569	6770	5632	413	0.009	16.45	347	164	0	183	18.38	16
+643594-300M	ADM1059A1	0	0	1	1	male	31.6	8.0	31.6	8.0	0.53	0.39	4569	6770	5632	413	0.009	16.45	347	164	0	183	18.38	16
+643594-300M	ADM1059A3	0	0	2	1	female	31.6	8.0	31.6	8.0	0.53	0.39	4569	6770	5632	413	0.009	16.45	347	164	0	183	18.38	16

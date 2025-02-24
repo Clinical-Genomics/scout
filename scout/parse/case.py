@@ -41,8 +41,9 @@ def parse_case_data(**kwargs):
         RNAfusion_report: Path to the RNA fusion report
         RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
-        somalier_pairs(str): Path to a Somalier pairs releatedness check file
-        somalier_samples(str): Path to a Somalier samples sex check/ped file
+        parse_somalier_ancestry(str): Path to a Somalier ancestry check tsv file
+        somalier_pairs(str): Path to a Somalier pairs releatedness check tsv file
+        somalier_samples(str): Path to a Somalier samples sex check/ped tsv file
         status(str): Optional case status ("prioritized", "inactive", "ignored", "active", "solved", "archived")
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
@@ -236,13 +237,14 @@ def add_somalier_information(case_config: dict):
                 sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
             )
 
-        # Check if peddy har confirmed parental relations
+        # Check if Somalier confirmed parental relations
         for parent in ["mother", "father"]:
             # If we are looking at individual with parents
             parent_id = ind[parent]
             if parent_id == "0":
                 continue
-            # Check if the child/parent pair is in peddy data
+            # Double-check that the child/parent pair is in somalier data and set ok.
+            # If we demand Somalier be run with "relate --infer" we can skip this.
             for pair in ped_check:
                 if not (ind_id in pair and parent_id in pair):
                     continue
