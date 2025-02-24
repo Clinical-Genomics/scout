@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chanjo2 gene coverage completeness indicator and report from variant page, summary card
 - Enhanced SNV and SV filtering for cancer and rare disease cases, now supporting size thresholds (≥ or < a specified base pair length)
 - Option to exclude ClinVar significance status in SNVs filters form
+- Made HRD a config parameter and display it for cancer cases.
 - Preset institute-level soft filters for variants (filtering based on "filters" values on variant documents). Settings editable by admins on the institute's settings page
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
