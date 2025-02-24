@@ -423,20 +423,15 @@ class QueryHandler(object):
                 rank.append(CLINSIG_MAP[int(item)])
                 str_rank.append(CLINSIG_MAP[int(item)])
 
+            elem_match = [
+                {"value": {"$in": rank}},
+                {"value": re.compile("|".join(str_rank))},
+            ]
+
             if query.get("clinsig_exclude"):
-                elem_match_or = {
-                    "$nor": [
-                        {"value": {"$in": rank}},
-                        {"value": re.compile("|".join(str_rank))},
-                    ]
-                }
+                elem_match_or = {"$nor": elem_match}
             else:
-                elem_match_or = {
-                    "$or": [
-                        {"value": {"$in": rank}},
-                        {"value": re.compile("|".join(str_rank))},
-                    ]
-                }
+                elem_match_or = {"$or": elem_match}
 
             if query.get("clinsig_confident_always_returned") is True:
                 clnsig_query["clnsig"] = {
