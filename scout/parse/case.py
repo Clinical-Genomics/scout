@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from ped_parser import FamilyParser
 
@@ -239,6 +240,7 @@ def set_somalier_sex_and_relatedness_checks(
         # Check if Somalier has inferred the ancestry
         if ind_id in ancestry_info:
             ind["predicted_ancestry"] = ancestry_info[ind_id].get("predicted_ancestry", "UNKNOWN")
+
         # Check if Somalier has inferred the sex
         if ind_id in sex_check and all(
             key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
