@@ -116,17 +116,9 @@ def build_individual(ind: dict) -> dict:
         raise PedigreeError("Analysis type %s not allowed", analysis_type)
     ind_obj["analysis_type"] = analysis_type
 
-    if "tmb" in ind:
-        ind_obj["tmb"] = ind["tmb"]
-
-    if "msi" in ind:
-        ind_obj["msi"] = ind["msi"]
-
-    if "tumor_purity" in ind:
-        ind_obj["tumor_purity"] = ind["tumor_purity"]
-
-    if "tumor_type" in ind:
-        ind_obj["tumor_type"] = ind["tumor_type"]
+    for optional_ind_key in ["hrd", "msi", "tmb", "tumor_purity", "tumor_type"]:
+        if optional_ind_key in ind:
+            ind_obj[optional_ind_key] = ind[optional_ind_key]
 
     ind_obj["tissue_type"] = ind.get("tissue_type", "unknown")
 
