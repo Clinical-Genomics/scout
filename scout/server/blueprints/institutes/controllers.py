@@ -331,27 +331,17 @@ def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
     return clinvar_submitters
 
 
-def get_soft_filters(form: MultiDict) -> Optional[dict]:
+def get_soft_filters(form: MultiDict) -> Optional[list]:
     """
-    Return a dictionary with custom soft filters or None.
+    Return a list with custom soft filters or None.
     This is not available on the form for unprivileged users, only admin.
     """
     if current_user.is_admin is False:
         return None
 
-    soft_filters = {}
+    soft_filters = []
     for filter in form.getlist("soft_filters"):
-        split_filter = filter.strip().split(":")
-        if len(split_filter) != 2:
-            flash(
-                f"Soft filter '{filter}' does not have a valid format. Valid format: 'filter:value'. Filter not saved.",
-                "warning",
-            )
-            continue
-
-        filter_key = filter.split(":")[0]
-        filter_value = filter.split(":")[1]
-        soft_filters[filter_key] = filter_value
+        soft_filters.append(filter)
 
     return soft_filters
 
