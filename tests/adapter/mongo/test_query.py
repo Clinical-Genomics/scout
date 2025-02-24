@@ -292,7 +292,30 @@ def test_build_clinsig(adapter):
     }
 
 
+def test_build_clinsig_filter_exclude_status(adapter):
+    """Test building a variants query excluding ClinVar statuses."""
+
+    clinsig_items = [4, 5]
+    clinsig_mapped_items = []
+    all_clinsig = []  # both numerical and human readable values
+    for item in clinsig_items:
+        all_clinsig.append(item)
+        all_clinsig.append(CLINSIG_MAP[item])
+        clinsig_mapped_items.append(CLINSIG_MAP[item])
+
+    # GIVEN a query containing clinsig terms and "clinsig_exclude" = True
+    query = {"clinsig": clinsig_items, "clinsig_exclude": True}
+
+    # THEN the mongo query should contain the expected elements ($nor + list of conditions)
+    mongo_query = adapter.build_query(case_id="cust000", query=query)
+    assert mongo_query["clnsig"]["$elemMatch"]["$nor"] == [
+        {"value": {"$in": all_clinsig}},
+        {"value": re.compile("|".join(clinsig_mapped_items))},
+    ]
+
+
 def test_build_clinsig_filter(real_variant_database):
+    """Test building a variants query with ClinVar status."""
     adapter = real_variant_database
     case_id = "cust000"
     clinsig_items = [4, 5]
@@ -367,7 +390,7 @@ def test_build_clinsig_filter(real_variant_database):
         {"$set": {"clnsig.0.value": "Pathogenic, Likely pathogenic"}},
     )
 
-    # One variant has multiple clssig now:
+    # One variant has multiple clinsig now:
     res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
     assert sum(1 for _ in res) == 1
 
@@ -402,7 +425,8 @@ def test_build_clinsig_filter(real_variant_database):
     assert n_results_raw_query == n_filtered_variants
 
 
-def test_build_clinsig_always(real_variant_database):
+def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_database):
+    """Test building a variants query with ClinVar status and high confidence."""
     adapter = real_variant_database
     case_id = "cust000"
     clinsig_confident_always_returned = True
@@ -563,7 +587,8 @@ def test_build_has_cosmic_ids(
     assert {"cosmic_ids": {"$ne": None}} in mongo_query["$and"]
 
 
-def test_build_clinsig_always_only(adapter):
+def test_build_clinsig_high_confidence(adapter):
+    """Test building a variants query with high confidence of ClinVar status."""
     case_id = "cust000"
     clinsig_confident_always_returned = True
     trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
@@ -575,6 +600,7 @@ def test_build_clinsig_always_only(adapter):
         all_clinsig.append(CLINSIG_MAP[item])
         clinsig_mapped_items.append(CLINSIG_MAP[item])
 
+    # Testing with INCLUDE ClinVar terms criterion
     query = {
         "clinsig": clinsig_items,
         "clinsig_confident_always_returned": clinsig_confident_always_returned,
