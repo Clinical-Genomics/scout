@@ -198,13 +198,14 @@ class QueryHandler(object):
                 'functional_annotations': list,
                 'clinsig': list,
                 'clinsig_confident_always_returned': boolean,
+                'clinsig_exclude': bool,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str or list of str,
                 'start': int,
                 'end': int,
                 'svtype': list,
                 'size': int,
-                'size_shorter': boolean,
+                'size_selector': str,
                 'gene_panels': list(str),
                 'mvl_tag": boolean,
                 'clinvar_tag': boolean,
@@ -349,7 +350,7 @@ class QueryHandler(object):
                         {"$and": secondary_filter},
                         clinsign_filter,
                     ]
-                else:  # clisig terms are provided but no need for trusted revstat levels
+                else:  # clnsig terms are provided but no need for trusted revstat levels
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
@@ -416,12 +417,15 @@ class QueryHandler(object):
                 rank.append(CLINSIG_MAP[int(item)])
                 str_rank.append(CLINSIG_MAP[int(item)])
 
-            elem_match_or = {
-                "$or": [
-                    {"value": {"$in": rank}},
-                    {"value": re.compile("|".join(str_rank))},
-                ]
-            }
+            elem_match = [
+                {"value": {"$in": rank}},
+                {"value": re.compile("|".join(str_rank))},
+            ]
+
+            if query.get("clinsig_exclude"):
+                elem_match_or = {"$nor": elem_match}
+            else:
+                elem_match_or = {"$or": elem_match}
 
             if query.get("clinsig_confident_always_returned") is True:
                 clnsig_query["clnsig"] = {
