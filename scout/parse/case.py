@@ -194,7 +194,10 @@ def add_smn_info_case(case_data):
 
 
 def add_somalier_information(case_config: dict):
-
+    """
+    Parse any somalier files, and update ancestry, sex and relatedness checks for individuals in case config
+    based on them.
+    """
     ped_check = {}
     sex_check = {}
     ancestry_info = {}
@@ -217,6 +220,15 @@ def add_somalier_information(case_config: dict):
     if not ped_check or sex_check or ancestry_info:
         return
 
+    set_somalier_sex_and_relatedness_checks(case_config, ped_check, sex_check, ancestry_info)
+
+
+def set_somalier_sex_and_relatedness_checks(
+    case_config: dict, ped_check: List[dict], sex_check: List[dict], ancestry_info: List[dict]
+):
+    """
+    Update ancestry, sex and relatedness checks for individuals in case config based on parsed Somalier file content.
+    """
     analysis_inds = {}
     for ind in case_config["individuals"]:
         ind_id = ind["individual_id"]
