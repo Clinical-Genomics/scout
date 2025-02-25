@@ -30,7 +30,7 @@ VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers
 def _set_keep_ctg(keep_ctg: Tuple[str], rm_ctg: Tuple[str]) -> List[str]:
     """Define the categories of variants that should not be removed."""
     if keep_ctg and rm_ctg:
-        raise click.UsageError("Please use either '--keep-ctg' or '--rm-ctg' parameter, not both.")
+        raise click.UsageError("Please use either '--keep-ctg' or '--rm-ctg', not both.")
     if keep_ctg:
         return list(keep_ctg)
     if rm_ctg:
