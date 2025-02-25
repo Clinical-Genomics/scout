@@ -98,7 +98,7 @@ class InstituteForm(FlaskForm):
     check_show_all_vars = BooleanField("Preselect 'Show also variants only present in unaffected'")
 
     soft_filters = NonValidatingSelectMultipleField(
-        "Default soft-filters", validators=[validators.Optional()]
+        "Default soft filters", validators=[validators.Optional()]
     )
 
     clinvar_key = StringField("API key", widget=PasswordInput(hide_value=False))
