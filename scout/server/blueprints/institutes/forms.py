@@ -95,7 +95,11 @@ class InstituteForm(FlaskForm):
 
     alamut_institution = StringField("Alamut Institution ID", validators=[validators.Optional()])
 
-    check_show_all_vars = BooleanField("Preselect 'Show also variants only present in unaffected'")
+    check_show_all_vars = BooleanField("Preselect 'Include variants only present in unaffected'")
+
+    soft_filters = NonValidatingSelectMultipleField(
+        "Default soft filters", validators=[validators.Optional()]
+    )
 
     clinvar_key = StringField("API key", widget=PasswordInput(hide_value=False))
 
