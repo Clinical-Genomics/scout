@@ -115,7 +115,7 @@ def test_delete_omics_variants(mock_app, case_obj, user_obj):
         "--rank-threshold",
         0,
         "--rm-ctg",
-        "wts_outliers",
+        "outlier",
     ]
     result = runner.invoke(cli, cmd_params, input="y")
     assert result.exit_code == 0
