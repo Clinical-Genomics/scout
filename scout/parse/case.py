@@ -1,12 +1,20 @@
 import logging
+from typing import Any, Dict, Tuple
 
 from ped_parser import FamilyParser
 
-from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.constants import PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
 from scout.models.case.case_loading_models import CaseLoader
 from scout.parse.mitodel import parse_mitodel_file
-from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
+from scout.parse.pedqc import (
+    parse_peddy_ped,
+    parse_peddy_ped_check,
+    parse_peddy_sex_check,
+    parse_somalier_ancestry,
+    parse_somalier_pairs,
+    parse_somalier_samples,
+)
 from scout.parse.smn import parse_smn_file
 
 LOG = logging.getLogger(__name__)
@@ -19,7 +27,7 @@ def parse_case_data(**kwargs):
     on the command line. Or all the information can be specified in a config file.
     Please see Scout documentation for further instructions.
 
-    Possible keyword args:
+    Possible keyword args are formally available in the CaseLoader class, but here is a common list with explanations:
         cnv_report: Path to pdf file with CNV report
         config(dict): A yaml formatted config file
         coverage_qc_report: Path to html file with coverage and qc report
@@ -74,8 +82,10 @@ def parse_case_data(**kwargs):
             except KeyError:
                 config_dict[key] = None
 
-    # This will add information from peddy to the individuals
+    # This will add pedigree qc information from Peddy and Somalier to the individuals.
+    # Let the newer Somalier have the last word if there is any disagreement
     add_peddy_information(config_dict)
+    add_somalier_information(config_dict)
 
     if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
@@ -181,7 +191,103 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
+            LOG.warning(f"Individual {ind_id} has no SMN info to update: {err}.")
+
+
+def set_somalier_sex_check_ind(ind: Dict[str, str], sex_check: Dict[str, Dict[str, str]]):
+    """Check if Somalier has inferred the sex"""
+
+    ind_id = ind["individual_id"]
+    if ind_id in sex_check and all(
+        key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
+    ):
+        ind["confirmed_sex"]: bool = (
+            sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
+        )
+
+
+def set_somalier_confirmed_parent(
+    analysis_inds: Dict[str, Any], ind: Dict[str, Any], ped_check: Dict[Tuple, Any]
+):
+    """Check if Somalier confirmed parental relations.
+    First, check that we are looking at individual with parents.
+    Double-check that the child/parent pair is in somalier data and set ok.
+    If we demand Somalier be run with "relate --infer" we can skip this.
+    """
+
+    ind_id = ind["individual_id"]
+    for parent in ["mother", "father"]:
+        parent_id = ind[parent]
+        if parent_id == "0":
+            continue
+
+        for pair in ped_check:
+            if ind_id not in pair or parent_id not in pair:
+                continue
+            if (
+                ped_check[pair]["relatedness"] > 0.32
+                and ped_check[pair]["relatedness"] < 0.67
+                and ped_check[pair]["ibs0"] / ped_check[pair]["ibs2"] < 0.014
+            ):
+                analysis_inds[parent_id]["confirmed_parent"] = True
+                continue
+            # else if parent confirmation failed
+            analysis_inds[parent_id]["confirmed_parent"] = False
+
+
+def set_somalier_sex_and_relatedness_checks(
+    case_config: dict,
+    ped_check: Dict[Tuple, Any],
+    sex_check: Dict[str, Dict],
+    ancestry_info: Dict[str, Dict],
+):
+    """
+    Update ancestry, sex and relatedness checks for individuals in case config based on parsed Somalier file content.
+    """
+    analysis_inds = {}
+    for ind in case_config["individuals"]:
+        ind_id = ind["individual_id"]
+        analysis_inds[ind_id] = ind
+
+    for ind_id in analysis_inds:
+        ind = analysis_inds[ind_id]
+        # Check if Somalier has inferred the ancestry
+        if ind_id in ancestry_info:
+            ind["predicted_ancestry"]: str = ancestry_info[ind_id].get(
+                "predicted_ancestry", "UNKNOWN"
+            )
+        set_somalier_sex_check_ind(ind, sex_check)
+        set_somalier_confirmed_parent(analysis_inds, ind, ped_check)
+
+
+def add_somalier_information(case_config: dict):
+    """
+    Parse any somalier files, and update ancestry, sex and relatedness checks for individuals in case config
+    based on them.
+    """
+    ped_check = {}
+    sex_check = {}
+    ancestry_info = {}
+
+    if case_config.get("somalier_pairs"):
+        with open(case_config["somalier_pairs"], "r") as file_handle:
+            for pair_info in parse_somalier_pairs(file_handle):
+                ped_check[(pair_info["sample_a"], pair_info["sample_b"])] = pair_info
+
+    if case_config.get("somalier_samples"):
+        with open(case_config["somalier_samples"], "r") as file_handle:
+            for ind_info in parse_somalier_samples(file_handle):
+                sex_check[ind_info["sample_id"]] = ind_info
+
+    if case_config.get("somalier_ancestry"):
+        with open(case_config["peddy_ped"], "r") as file_handle:
+            for ind_info in parse_somalier_ancestry(file_handle):
+                ancestry_info[ind_info["sample_id"]] = ind_info
+
+    if not ped_check or sex_check or ancestry_info:
+        return
+
+    set_somalier_sex_and_relatedness_checks(case_config, ped_check, sex_check, ancestry_info)
 
 
 def add_peddy_information(config_data):

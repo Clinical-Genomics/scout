@@ -1,0 +1,4 @@
+#sample_a	sample_b	relatedness	ibs0	ibs2	hom_concordance	hets_a	hets_b	hets_ab	shared_hets	hom_alts_a	hom_alts_b	shared_hom_alts	n	x_ibs0	x_ibs2	expected_relatedness
+ADM1059A2	ADM1059A1	0.5051	7	8452	1	8019	7882	1	3995	1	1	1	16370	7	8452	0.5
+ADM1059A2	ADM1059A3	0.5012	5	8384	1	8019	7776	1	3907	1	1	1	16370	5	8384	0.5
+ADM1059A1	ADM1059A3	-0.01492	1539	5097	1	7882	7776	1	2962	1	1	1	16370	1539	5097	0

@@ -142,6 +142,10 @@ peddy_ped: scout/demo/643594.peddy.ped
 peddy_check: scout/demo/643594.ped_check.csv
 peddy_sex: scout/demo/643594.sex_check.csv
 
+somalier_ancestry: scout/demo/643594.somalier.ancestry.tsv
+somalier_pairs: scout/demo/643594.somalier.pairs.tsv
+somalier_samples: scout/demo/643594.somalier.samples.tsv
+
 delivery_report: scout/demo/delivery_report.html
 gene_fusion_report: scout/demo/draw-fusions-example.pdf
 rna_delivery_report: scout/demo/delivery_report.html
