@@ -245,7 +245,7 @@ def set_somalier_sex_and_relatedness_checks(
         if ind_id in sex_check and all(
             key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
         ):
-            ind["confirmed_sex"] = (
+            ind["confirmed_sex"]: bool = (
                 sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
             )
 
