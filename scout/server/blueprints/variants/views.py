@@ -67,8 +67,7 @@ def variants(institute_id, case_name):
 
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
+    controllers.set_hpo_clinical_filter(case_obj, request.form)
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
@@ -281,8 +280,7 @@ def sv_variants(institute_id, case_name):
         variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
+    controllers.set_hpo_clinical_filter(case_obj, request.form)
 
     if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
@@ -359,8 +357,7 @@ def mei_variants(institute_id, case_name):
     )
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
+    controllers.set_hpo_clinical_filter(case_obj, request.form)
 
     if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
@@ -570,9 +567,6 @@ def cancer_sv_variants(institute_id, case_name):
         variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
-
     if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
             store,
@@ -654,9 +648,6 @@ def fusion_variants(institute_id, case_name):
     if variant_type not in ["clinical", "research"]:
         variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-
-    if request.form.get("hpo_clinical_filter"):
-        case_obj["hpo_clinical_filter"] = True
 
     if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
