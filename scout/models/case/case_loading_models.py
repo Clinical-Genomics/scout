@@ -17,11 +17,7 @@ except ImportError:
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from scout.constants import (
-    ANALYSIS_TYPES,
-    ORDERED_FILE_TYPE_MAP,
-    ORDERED_OMICS_FILE_TYPE_MAP,
-)
+from scout.constants import ANALYSIS_TYPES, ORDERED_FILE_TYPE_MAP, ORDERED_OMICS_FILE_TYPE_MAP
 from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
@@ -58,6 +54,9 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
+    "somalier_ancestry",
+    "somalier_pairs",
+    "somalier_samples",
     "smn_tsv",
     "reference_info",
     "RNAfusion_inspector",
@@ -431,6 +430,9 @@ class CaseLoader(BaseModel):
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
     phenotype_groups: Optional[List[str]] = None
     phenotype_terms: Optional[List[str]] = None
+    somalier_ancestry: Optional[str] = None
+    somalier_pairs: Optional[str] = None
+    somalier_samples: Optional[str] = None
     exe_ver: Optional[str] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
