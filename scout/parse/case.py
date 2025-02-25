@@ -239,7 +239,9 @@ def set_somalier_sex_and_relatedness_checks(
         ind = analysis_inds[ind_id]
         # Check if Somalier has inferred the ancestry
         if ind_id in ancestry_info:
-            ind["predicted_ancestry"]: str = ancestry_info[ind_id].get("predicted_ancestry", "UNKNOWN")
+            ind["predicted_ancestry"]: str = ancestry_info[ind_id].get(
+                "predicted_ancestry", "UNKNOWN"
+            )
 
         # Check if Somalier has inferred the sex
         if ind_id in sex_check and all(
