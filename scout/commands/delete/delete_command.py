@@ -197,7 +197,7 @@ def variants(
         remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
         remove_n_omics_variants = (
             store.omics_variant_collection.delete_many(variants_query).deleted_count
-            if "wts_outliers" not in keep_ctg
+            if "outlier" not in keep_ctg
             else 0
         )
 
