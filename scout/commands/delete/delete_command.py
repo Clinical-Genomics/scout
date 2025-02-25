@@ -24,7 +24,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys()) + ["wts_outliers"]
+VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
 
 
 def _set_keep_ctg(keep_ctg: Tuple[str], rm_ctg: Tuple[str]) -> List[str]:
