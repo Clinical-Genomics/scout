@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Any, Dict, Tuple
 
 from ped_parser import FamilyParser
 
@@ -191,7 +191,73 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
-            LOG.warning("Individual {} has no SMN info to   update: {}.".format(ind_id, err))
+            LOG.warning(f"Individual {ind_id} has no SMN info to update: {err}.")
+
+
+def set_somalier_sex_check_ind(ind: Dict[str, str], sex_check: Dict[str, Dict[str, str]]):
+    """Check if Somalier has inferred the sex"""
+
+    ind_id = ind["individual_id"]
+    if ind_id in sex_check and all(
+        key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
+    ):
+        ind["confirmed_sex"]: bool = (
+            sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
+        )
+
+
+def set_somalier_confirmed_parent(
+    analysis_inds: Dict[str, Any], ind: Dict[str, Any], ped_check: Dict[Tuple, Any]
+):
+    """Check if Somalier confirmed parental relations.
+    First, check that we are looking at individual with parents.
+    Double-check that the child/parent pair is in somalier data and set ok.
+    If we demand Somalier be run with "relate --infer" we can skip this.
+    """
+
+    ind_id = ind["individual_id"]
+    for parent in ["mother", "father"]:
+        parent_id = ind[parent]
+        if parent_id == "0":
+            continue
+
+        for pair in ped_check:
+            if ind_id not in pair or parent_id not in pair:
+                continue
+            if (
+                ped_check[pair]["relatedness"] > 0.32
+                and ped_check[pair]["relatedness"] < 0.67
+                and ped_check[pair]["ibs0"] / ped_check[pair]["ibs2"] < 0.014
+            ):
+                analysis_inds[parent_id]["confirmed_parent"] = True
+                continue
+            # else if parent confirmation failed
+            analysis_inds[parent_id]["confirmed_parent"] = False
+
+
+def set_somalier_sex_and_relatedness_checks(
+    case_config: dict,
+    ped_check: Dict[Tuple, Any],
+    sex_check: Dict[str, Dict],
+    ancestry_info: Dict[str, Dict],
+):
+    """
+    Update ancestry, sex and relatedness checks for individuals in case config based on parsed Somalier file content.
+    """
+    analysis_inds = {}
+    for ind in case_config["individuals"]:
+        ind_id = ind["individual_id"]
+        analysis_inds[ind_id] = ind
+
+    for ind_id in analysis_inds:
+        ind = analysis_inds[ind_id]
+        # Check if Somalier has inferred the ancestry
+        if ind_id in ancestry_info:
+            ind["predicted_ancestry"]: str = ancestry_info[ind_id].get(
+                "predicted_ancestry", "UNKNOWN"
+            )
+        set_somalier_sex_check_ind(ind, sex_check)
+        set_somalier_confirmed_parent(analysis_inds, ind, ped_check)
 
 
 def add_somalier_information(case_config: dict):
@@ -222,55 +288,6 @@ def add_somalier_information(case_config: dict):
         return
 
     set_somalier_sex_and_relatedness_checks(case_config, ped_check, sex_check, ancestry_info)
-
-
-def set_somalier_sex_and_relatedness_checks(
-    case_config: dict, ped_check: List[dict], sex_check: List[dict], ancestry_info: List[dict]
-):
-    """
-    Update ancestry, sex and relatedness checks for individuals in case config based on parsed Somalier file content.
-    """
-    analysis_inds = {}
-    for ind in case_config["individuals"]:
-        ind_id = ind["individual_id"]
-        analysis_inds[ind_id] = ind
-
-    for ind_id in analysis_inds:
-        ind = analysis_inds[ind_id]
-        # Check if Somalier has inferred the ancestry
-        if ind_id in ancestry_info:
-            ind["predicted_ancestry"]: str = ancestry_info[ind_id].get(
-                "predicted_ancestry", "UNKNOWN"
-            )
-
-        # Check if Somalier has inferred the sex
-        if ind_id in sex_check and all(
-            key in sex_check[ind_id] for key in ("sex", "original_pedigree_sex")
-        ):
-            ind["confirmed_sex"]: bool = (
-                sex_check[ind_id]["sex"] == REV_SEX_MAP[sex_check[ind_id]["original_pedigree_sex"]]
-            )
-
-        # Check if Somalier confirmed parental relations
-        for parent in ["mother", "father"]:
-            # If we are looking at individual with parents
-            parent_id = ind[parent]
-            if parent_id == "0":
-                continue
-            # Double-check that the child/parent pair is in somalier data and set ok.
-            # If we demand Somalier be run with "relate --infer" we can skip this.
-            for pair in ped_check:
-                if not (ind_id in pair and parent_id in pair):
-                    continue
-                if (
-                    ped_check[pair]["relatedness"] > 0.32
-                    and ped_check[pair]["relatedness"] < 0.67
-                    and ped_check[pair]["ibs0"] / ped_check[pair]["ibs2"] < 0.014
-                ):
-                    analysis_inds[parent_id]["confirmed_parent"] = True
-                    continue
-                # else if parent confirmation failed
-                analysis_inds[parent_id]["confirmed_parent"] = False
 
 
 def add_peddy_information(config_data):
