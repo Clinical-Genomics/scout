@@ -446,7 +446,14 @@ class QueryHandler(object):
                 clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
-            mongo_query["clnsig"] = {"$exists": True, "$ne": None}
+            mongo_query["clnsig"] = {
+                "$exists": True,
+                "$ne": None,
+            }  # Used when query has secondary terms
+            clnsig_query["clnsig"] = {
+                "$exists": True,
+                "$ne": None,
+            }  # Used when query has no secondary terms
 
         return clnsig_query
 
