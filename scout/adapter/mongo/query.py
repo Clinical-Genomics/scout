@@ -329,7 +329,7 @@ class QueryHandler(object):
                 break
 
         if primary_terms is True:
-            clinsign_filter: dict = self.clinsig_query(query)
+            clinsign_filter: dict = self.set_clinsig_query(query, mongo_query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -408,8 +408,8 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def clinsig_query(self, query: dict) -> dict:
-        """Add clinsig filter values to the mongo query object"""
+    def set_clinsig_query(self, query: dict, mongo_query: dict) -> dict:
+        """Add clinsig filter values to the mongo query object. if clinvar_tag esists in query then only results with ClinVar annotation are returned."""
 
         clnsig_query = {"clnsig": {}}
 
@@ -442,8 +442,7 @@ class QueryHandler(object):
                 clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
-            clnsig_query["clnsig"]["$exists"] = True
-            clnsig_query["clnsig"]["$ne"] = None
+            mongo_query["clnsig"] = {"$exists": True, "$ne": None}
 
         return clnsig_query
 
