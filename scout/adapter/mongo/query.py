@@ -375,6 +375,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
@@ -456,13 +457,14 @@ class QueryHandler(object):
 
         if query.get("clinvar_tag"):
             mongo_query["clnsig"] = EXISTS_NOT_NULL  # Used when query has secondary terms
-            clnsig_query["clnsig"] = EXISTS_NOT_NULL  # Used when query has no secondary terms
+            clnsig_query["clnsig"]["$exists"] = True
+            clnsig_query["clnsig"]["$ne"] = None
 
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):
         """Adds genomic coordinated-related filters to the query object
-            This method is called to buid coordinate query for non-sv variants
+            This method is called to build coordinate query for non-sv variants
 
         Args:
             query(dict): a dictionary of query filters specified by the users
