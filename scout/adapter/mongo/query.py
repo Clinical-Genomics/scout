@@ -15,6 +15,7 @@ from scout.constants import (
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
 EXISTS = {"$exists": True}
 NOT_EXISTS = {"$exists": False}
+EXISTS_NOT_NULL = {"$exists": True, "$ne": None}
 LOG = logging.getLogger(__name__)
 
 
@@ -454,14 +455,8 @@ class QueryHandler(object):
                 clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
-            mongo_query["clnsig"] = {
-                "$exists": True,
-                "$ne": None,
-            }  # Used when query has secondary terms
-            clnsig_query["clnsig"] = {
-                "$exists": True,
-                "$ne": None,
-            }  # Used when query has no secondary terms
+            mongo_query["clnsig"] = EXISTS_NOT_NULL  # Used when query has secondary terms
+            clnsig_query["clnsig"] = EXISTS_NOT_NULL  # Used when query has no secondary terms
 
         return clnsig_query
 
