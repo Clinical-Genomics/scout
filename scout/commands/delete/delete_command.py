@@ -163,15 +163,20 @@ def variants(
             case_id, variants_to_keep, rank_threshold, keep_ctg
         )
 
+        LOG.warning(variants_query)
+
         if dry_run:
             items_name = "estimated deleted variants"
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
             remove_n_omics_variants = (
                 store.omics_variant_collection.count_documents(variants_query)
-                if "wts_outliers" not in keep_ctg
+                if "outliers" not in keep_ctg
                 else 0
             )
+
+            LOG.error(remove_n_omics_variants)
+
             total_deleted += remove_n_variants + remove_n_omics_variants
             click.echo(
                 "\t".join(
