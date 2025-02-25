@@ -285,7 +285,7 @@
             </div>
             <!-- End of cohorts settings -->
 
-            <!-- Variants and panels searching -->
+             <!-- Variants and panels searching -->
             <div class="row mt-5 d-flex align-items-center">
             <fieldset>
               <legend>Variants and gene panels searching</legend>
@@ -348,6 +348,25 @@
                   </div>
               </div>
               <!-- End of loqusdb settings -->
+
+              <!-- Custom soft filters for variants -->
+              <div class="row mt-5 d-flex align-items-center">
+                <fieldset>
+                  <legend>Variants custom soft filters</legend>
+                  <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                      {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Values to filter variant documents with by default. For example germline_risk or in_normal.")}}
+                      <select class="select2" id="soft_filters" name="soft_filters" multiple="true" style="width:100%;">
+                        {% if institute.soft_filters %}
+                          {% for filter in institute.soft_filters %}
+                            <option value="{{filter}}" selected>{{filter}}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
+              </div>
+              <!-- End of custom soft filters for variants -->
 
               <!-- Alamut settings -->
               <div class="row mt-5 d-flex align-items-center">
