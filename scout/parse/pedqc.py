@@ -43,7 +43,7 @@ def parse_peddy_ped(lines: List[str]) -> List[dict]:
     """
     return tsv_to_info_dicts(
         lines,
-        ",",
+        "\t",
         number_keys=["PC1", "PC2", "PC3", "het_call_rate", "het_idr_baf", "het_mean_depth"],
     )
 
