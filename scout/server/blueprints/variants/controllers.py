@@ -49,12 +49,7 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import (
-    FILTERSFORMCLASS,
-    CancerSvFiltersForm,
-    FusionFiltersForm,
-    SvFiltersForm,
-)
+from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
 NUM = re.compile(r"\d+")
@@ -2114,3 +2109,9 @@ def get_show_dismiss_block():
         session["show_dismiss_block"] = show_dismiss_block
 
     return show_dismiss_block
+
+
+def set_hpo_clinical_filter(case_obj: dict, request_form: dict):
+    """Set HPO clinical filter on case if requested through the form."""
+    if request_form.get("hpo_clinical_filter"):
+        case_obj["hpo_clinical_filter"] = True
