@@ -63,6 +63,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **d4_path** _String_ Path to [.d4 file][d4_file]. Required for Chanjo2 integration
     - **expected_coverage** _Int_ The level of expected coverage.
     - **father** _String/Int_ Sample ID for father or 0.
+    - **hrd** _Int_ Homologous recombination deficiency.
     - **is_sma** _Bool/None_ if SMA status determined - None if not done.
     - **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
     - **mitodel** _String_ Path to mitodel file.
