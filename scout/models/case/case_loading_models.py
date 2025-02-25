@@ -57,7 +57,7 @@ CASE_FILE_PATH_CHECKS = [
     "somalier_ancestry",
     "somalier_pairs",
     "somalier_samples",
-    "smn_tsv",a
+    "smn_tsv",
     "reference_info",
     "RNAfusion_inspector",
     "RNAfusion_inspector_research",
