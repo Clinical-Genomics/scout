@@ -20,7 +20,10 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.variant.utils import predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    predictions,
+    update_representative_gene,
+)
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
@@ -328,6 +331,21 @@ def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
     return clinvar_submitters
 
 
+def get_soft_filters(form: MultiDict) -> Optional[list]:
+    """
+    Return a list with custom soft filters or None.
+    This is not available on the form for unprivileged users, only admin.
+    """
+    if current_user.is_admin is False:
+        return None
+
+    soft_filters = []
+    for filter in form.getlist("soft_filters"):
+        soft_filters.append(filter)
+
+    return soft_filters
+
+
 def get_loqusdb_ids(form: MultiDict) -> Optional[List[str]]:
     """
     Return loqusdb ids from the form multiselect.
@@ -390,6 +408,7 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         check_show_all_vars=form.get("check_show_all_vars"),
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
+        soft_filters=get_soft_filters(form),
     )
     return updated_institute
 
