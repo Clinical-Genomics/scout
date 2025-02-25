@@ -355,7 +355,7 @@
                   <legend>Variants custom soft filters</legend>
                   <div class="row">
                     <div class="col-sm-6 col-lg-4">
-                      {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="values to filter variant documents with by default. Example germline_risk, in_normal.")}}
+                      {{form.soft_filters.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Values to filter variant documents with by default. For example germline_risk or in_normal.")}}
                       <select class="select2" id="soft_filters" name="soft_filters" multiple="true" style="width:100%;">
                         {% if institute.soft_filters %}
                           {% for filter in institute.soft_filters %}
