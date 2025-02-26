@@ -877,11 +877,6 @@ class VariantHandler(VariantLoader):
                     }
                 }
         """
-        LOG.info(
-            "Retrieving variants by category for case: {0}, institute: {1}".format(
-                case_id, institute_id
-            )
-        )
 
         case_obj = self.case(case_id=case_id)
         variants_stats = case_obj.get("variants_stats") or {}

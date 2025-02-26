@@ -45,18 +45,16 @@ class QueryHandler(object):
         return case_query
 
     def delete_variants_query(
-        self, case_id, variants_to_keep=[], min_rank_threshold=None, keep_ctg=[]
+        self,
+        case_id: str,
+        variants_to_keep: List[str] = [],
+        min_rank_threshold: Optional[int] = None,
+        keep_ctg: List[str] = [],
     ) -> dict:
-        """Build a query to delete variants from a case
+        """Build a query to delete variants from a case (variant collection).
 
-        Args:
-            case_id(str): id of a case
-            variants_to_keep(list): a list of variant ids
-            min_rank_threshold(int): remove variants with rank lower than this number
-            keep_ctg(list): exclude one of more variants categories from deletion. Example ["cancer", "cancer_sv"]
-
-        Return:
-            variant_query(dict): query dictionary
+        Removes variants with rank lower than `min_rank_threshold`.
+        Retains variants in categories `keep_ctg` by excluding them from deletion - eg `["cancer", "cancer_sv"]`.
         """
         variants_query = {}
         case_subquery = {"case_id": case_id}
