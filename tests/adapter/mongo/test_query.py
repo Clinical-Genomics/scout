@@ -447,6 +447,7 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
         "clinsig": clinsig_items,
         "clinsig_confident_always_returned": clinsig_confident_always_returned,
         "gnomad_frequency": freq,
+        "prioritise_clinvar": True,
     }
 
     mongo_query = adapter.build_query(case_id, query=query)
