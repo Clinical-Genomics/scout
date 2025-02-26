@@ -178,7 +178,7 @@ def variants(
             remove_n_variants = store.variant_collection.count_documents(variants_query)
             remove_n_omics_variants = (
                 store.omics_variant_collection.count_documents(variants_query)
-                if "outliers" not in keep_ctg
+                if "outlier" not in keep_ctg
                 else 0
             )
 
