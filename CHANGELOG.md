@@ -37,7 +37,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO search on WTS Outliers page
 - Stop using dynamic gene panel (HPO generated list) for clinical filter when the last gene is removed from the dynamic gene panel
 
-
 ## [4.96]
 ### Added
 - Support case status assignment upon loading (by providing case status in the case config file)
