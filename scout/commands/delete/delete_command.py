@@ -5,6 +5,7 @@ import click
 from flask import current_app, url_for
 from flask.cli import with_appcontext
 
+from scout.adapter.mongo import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
@@ -50,6 +51,29 @@ def get_case_ids(case_file: Optional[str], case_id: List[str]) -> List[str]:
         if case_file
         else list(case_id)
     )
+
+
+def handle_delete_variants(
+    store: MongoAdapter, keep_ctg: List[str], dry_run: bool, variants_query: dict
+) -> Tuple[int]:
+    """Handle variant removal for a case or count how many variants would be removed if it's a simulation.."""
+
+    if dry_run:
+        remove_n_variants = store.variant_collection.count_documents(variants_query)
+        remove_n_omics_variants = (
+            store.omics_variant_collection.count_documents(variants_query)
+            if "outlier" not in keep_ctg
+            else 0
+        )
+    else:
+        remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
+        remove_n_omics_variants = (
+            store.omics_variant_collection.delete_many(variants_query).deleted_count
+            if "outlier" not in keep_ctg
+            else 0
+        )
+
+    return remove_n_variants, remove_n_omics_variants
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -125,8 +149,10 @@ def variants(
 
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
+        items_name = "estimated deleted variants"
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
+        items_name = "deleted variants"
 
     case_query = store.build_case_query(
         case_ids=case_ids,
@@ -148,6 +174,7 @@ def variants(
     keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
 
     for nr, case in enumerate(cases, 1):
+
         case_id = case["_id"]
         institute_id = case["owner"]
         case_n_variants = store.variant_collection.count_documents(
@@ -170,49 +197,9 @@ def variants(
             case_id, variants_to_keep, rank_threshold, keep_ctg
         )
 
-        LOG.warning(variants_query)
-
-        if dry_run:
-            items_name = "estimated deleted variants"
-            # Just print how many variants would be removed for this case
-            remove_n_variants = store.variant_collection.count_documents(variants_query)
-            remove_n_omics_variants = (
-                store.omics_variant_collection.count_documents(variants_query)
-                if "outlier" not in keep_ctg
-                else 0
-            )
-
-            LOG.error(remove_n_omics_variants)
-
-            total_deleted += remove_n_variants + remove_n_omics_variants
-            click.echo(
-                "\t".join(
-                    [
-                        str(nr),
-                        str(n_cases),
-                        case["owner"],
-                        case["display_name"],
-                        case_id,
-                        case.get("track", ""),
-                        str(case["analysis_date"]),
-                        case.get("status", ""),
-                        str(case.get("is_research", "")),
-                        str(case_n_variants),
-                        str(remove_n_variants + remove_n_omics_variants),
-                    ]
-                )
-            )
-            continue
-
-        # delete variants specified by variants_query
-        items_name = "deleted variants"
-        remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
-        remove_n_omics_variants = (
-            store.omics_variant_collection.delete_many(variants_query).deleted_count
-            if "outlier" not in keep_ctg
-            else 0
+        remove_n_variants, remove_n_omics_variants = handle_delete_variants(
+            store=store, keep_ctg=keep_ctg, dry_run=dry_run, variants_query=variants_query
         )
-
         total_deleted += remove_n_variants + remove_n_omics_variants
         click.echo(
             "\t".join(
@@ -231,6 +218,9 @@ def variants(
                 ]
             )
         )
+
+        if dry_run:  # Do not create an associated event
+            continue
 
         # Create event in database
         institute_obj = store.institute(case["owner"])
