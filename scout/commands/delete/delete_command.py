@@ -1,5 +1,5 @@
 import logging
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import click
 from flask import current_app, url_for
@@ -36,6 +36,20 @@ def _set_keep_ctg(keep_ctg: Tuple[str], rm_ctg: Tuple[str]) -> List[str]:
     if rm_ctg:
         return list(set(VARIANT_CATEGORIES).difference(set(rm_ctg)))
     return []
+
+
+def get_case_ids(case_file: Optional[str], case_id: List[str]) -> List[str]:
+    """Fetch the _id of the cases to remove variants from."""
+    if case_file and case_id:
+        click.echo(
+            "You should specify either case ID (multiple times if needed) or the path to a text file containing a list of case IDs (one per line)."
+        )
+        return []
+    return (
+        [line.strip() for line in open(case_file).readlines() if line.strip()]
+        if case_file
+        else list(case_id)
+    )
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -100,16 +114,12 @@ def variants(
 ) -> None:
     """Delete variants for one or more cases"""
 
-    if case_file and case_id:
-        click.echo(
-            "You should specify either case ID (multiple times if needed) or the path to a text file containing a list of case IDs (one per line)."
-        )
-        return
-
     user_obj = store.user(user)
     if user_obj is None:
         click.echo(f"Could not find a user with email '{user}' in database")
         return
+
+    case_ids = get_case_ids(case_file=case_file, case_id=case_id)
 
     total_deleted = 0
 
@@ -118,11 +128,8 @@ def variants(
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    if case_file:
-        case_id = [line.strip() for line in open(case_file).readlines() if line.strip()]
-
     case_query = store.build_case_query(
-        case_ids=case_id,
+        case_ids=case_ids,
         institute_id=institute,
         status=status,
         older_than=older_than,
