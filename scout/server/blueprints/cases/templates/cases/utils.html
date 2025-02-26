@@ -291,29 +291,33 @@
 
 {% macro pretty_variant(variant) %}
 
-  {% if variant.category in "str" %}
-        {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
+  {% if variant.category %}
+    {% if variant.category in "str" %}
+      {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
 
-  {% elif variant.category in ("snv", "cancer") %}
-    {% set display_genes = [] %}
-    {% for gene in variant.genes %}
-      {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
-        {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
-      {% elif gene.hgnc_symbol %}
-        {{ "" if display_genes.append(gene.hgnc_symbol) }}
-      {% elif gene.hgvs_identifier and gene.hgnc_id %}
-        {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
+    {% elif variant.category in ("snv", "cancer") %}
+      {% set display_genes = [] %}
+      {% for gene in variant.genes %}
+        {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
+          {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
+        {% elif gene.hgnc_symbol %}
+          {{ "" if display_genes.append(gene.hgnc_symbol) }}
+        {% elif gene.hgvs_identifier and gene.hgnc_id %}
+          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
+        {% endif %}
+      {% endfor %}
+
+      {% if not display_genes %}
+          {{ "" if display_genes.append( variant.simple_id|truncate(40,True) ) }}
       {% endif %}
-    {% endfor %}
 
-    {% if not display_genes %}
-        {{ "" if display_genes.append( variant.simple_id|truncate(40,True) ) }}
+      {{ display_genes|join(", ") }}
+
+    {% else %} <!-- structural variants -->
+      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
     {% endif %}
-
-    {{ display_genes|join(", ") }}
-  {% else %} <!-- structural variants -->
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
+
 {% endmacro %}
 
 {% macro pretty_link_variant(variant, case) %}
