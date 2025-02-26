@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.97]
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu
 - Option to sort WTS outliers by p_value, Δψ, ψ value, zscore or l2fc
@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified the web pages body style to adapt content to smaller screens
 - Refactored filters to filter variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 - Improved tooltips for ClinVar filter in SNVs filter form
+- Updated dependencies in uv.lock file
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
 - Downloading and parsing of genes from Ensembl (including MT-TP)
