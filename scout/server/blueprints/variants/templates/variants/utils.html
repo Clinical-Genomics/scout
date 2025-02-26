@@ -340,13 +340,24 @@
       <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
       {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
     </div>
-    <div class="col-1">
-      <span>{{ form.clinsig_confident_always_returned.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Limit search to variants with trusted ClinVar revision status levels: mult, multiple_submitters, single, single_submitter, exp, reviewed_by_expert_panel, guideline, practice_guideline.") }}</span>
-      <span>{{ form.clinsig_confident_always_returned() }}</span>
-    </div>
-    <div class="col-1">
-      {{ form.clinvar_tag.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Return only variants with annotated ClinVar significance.") }}
-      {{ form.clinvar_tag() }}
+    <div class="col-2">
+      <div class="row">
+        <div class="class="form-check">
+          {{ form.clinsig_confident_always_returned(class="form-check-input") }}
+          {{ form.clinsig_confident_always_returned.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Limit search to variants with trusted ClinVar revision status levels: mult, multiple_submitters, single, single_submitter, exp, reviewed_by_expert_panel, guideline, practice_guideline.") }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="class="form-check">
+        {{ form.clinvar_tag(class="form-check-input") }}
+        {{ form.clinvar_tag.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Return only variants with annotated ClinVar significance.") }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="class="form-check">
+        {{ form.prioritise_clinvar(class="form-check-input") }}
+        {{ form.prioritise_clinvar.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Always return variants that match the selected ClinVar conditions, regardless of any other selections.") }}
+      </div>
     </div>
   </div>
   <div class="row mb-2">

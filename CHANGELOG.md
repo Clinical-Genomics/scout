@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Made HRD a config parameter and display it for cancer cases.
 - Preset institute-level soft filters for variants (filtering based on "filters" values on variant documents). Settings editable by admins on the institute's settings page. Allows e.g. hiding tumor `in_normal` and `germline_risk` filter status variants.
 - Load pedigree and sex check from Somalier, provided by e.g. the Nallo pipeline
+- New `prioritise_clinvar` checkbox on rare SNVs form, used by clinical filter or for expanding the search to always return variants that match the selected ClinVar conditions
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants

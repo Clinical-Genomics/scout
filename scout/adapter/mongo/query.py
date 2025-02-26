@@ -347,20 +347,15 @@ class QueryHandler(object):
             if secondary_filter and primary_terms is False:
                 mongo_query["$and"] = secondary_filter
 
-            # If there is only one primary criterion given without any secondary, it will also be
-            # added as a top level '$and'.
-            # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
-            # are joined together with them as a single lower level '$and'.
-            if primary_terms is True:  # clinsig is specified
-                # Given a request to always return confident clinical variants,
-                # add the clnsig query as a major criteria, but only
-                # trust clnsig entries with trusted revstat levels.
-                if query.get("clinsig_confident_always_returned") is True:
+            # if prioritise_clinvar checkbox is checked, then clinical_filter will be applied in alternative to the secondary_filter ("$or")
+            # This will happen when the search is supposed is more relaxed, for instance when applying the clinical filter
+            if primary_terms is True:
+                if query.get("prioritise_clinvar") is True:
                     mongo_query["$or"] = [
                         {"$and": secondary_filter},
                         clinsign_filter,
                     ]
-                else:  # clnsig terms are provided but no need for trusted revstat levels
+                else:  # clinical_filter will be applied at the same level as the other secondary filters ("$and")
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
@@ -375,7 +370,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
