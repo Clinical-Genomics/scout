@@ -113,14 +113,17 @@ def test_delete_variants(mock_app, case_obj, user_obj):
 def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     """Test the delete variants command's ability to remove omics variants."""
 
-    # GIVEN a database with -omics variants
+    # Given a case with with (research) outlier variants
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--outlier", "--rank-treshold", RANK_THRESHOLD]
+        cli, ["load", "variants", "--outlier-research", case_obj["_id"], "--force"]
     )
     assert result.exit_code == 0
-    n_initial_vars = sum(1 for _ in store.variant_collection.find())
-    n_variants_to_delete = store.variant_collection.count_documents(VARIANTS_QUERY)
+    n_initial_vars = sum(1 for _ in store.omics_variant_collection.find())
+    assert n_initial_vars
+    n_variants_to_delete = store.omics_variant_collection.count_documents({})
+    assert n_variants_to_delete
+
     # WHEN variants are removed using the command line
     cmd_params = [
         "delete",
@@ -137,7 +140,7 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     assert "estimated deleted variants" not in result.output
     assert "Estimated space freed" in result.output
 
-    # THEN the should all be gone
+    # THEN the variants should be gone
     n_current_vars = sum(1 for _ in store.variant_collection.find())
     assert n_current_vars == 0
     assert n_current_vars + n_variants_to_delete == n_initial_vars
