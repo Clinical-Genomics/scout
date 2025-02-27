@@ -267,7 +267,7 @@ class FilterHandler(object):
         """Update remaining legacy filter options,
         i e filter controls that changed names or functionality.
         In particular, clinsig_confident_always_returned was split into two different
-        options.
+        options: clinvar_trusted_revstat and prioritise_clinvar.
         """
         if "clinsig_confident_always_returned" not in filter_obj:
             return
