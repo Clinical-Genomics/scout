@@ -346,7 +346,7 @@ class QueryHandler(object):
                 mongo_query["$and"] = secondary_filter
 
             # if prioritise_clinvar checkbox is checked, then clinical_filter will be applied in alternative to the secondary_filter ("$or")
-            # This will happen when the search is supposed is more relaxed, for instance when applying the clinical filter
+            # This will happen when the search for ClinVar annotated variants is supposed to be more relaxed compared to other filter constraints, for instance when applying the clinical filter
             if primary_terms is True:
                 if query.get("prioritise_clinvar") is True:
                     mongo_query["$or"] = [
