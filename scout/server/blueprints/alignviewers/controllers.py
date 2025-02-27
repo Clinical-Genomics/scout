@@ -305,6 +305,7 @@ def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
 
     A missing file is indicated with the string "missing", and no track is made for such entries.
     """
+
     sample_tracks = []
 
     track_items = "mt_bams" if chromosome == "M" else "bam_files"
@@ -330,6 +331,7 @@ def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
                     "indexURL": case[track_index_items][count],
                     "format": case[track_items][count].split(".")[-1],  # "bam" or "cram"
                     "height": 700,
+                    "show_soft_clips": case["track_items_soft_clips_settings"][count],
                 }
             )
         display_obj["sample_tracks"] = sample_tracks
