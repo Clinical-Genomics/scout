@@ -15,6 +15,7 @@ from scout.constants import (
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
 EXISTS = {"$exists": True}
 NOT_EXISTS = {"$exists": False}
+EXISTS_NOT_NULL = {"$exists": True, "$ne": None}
 LOG = logging.getLogger(__name__)
 
 
@@ -201,7 +202,7 @@ class QueryHandler(object):
                 'region_annotations': list,
                 'functional_annotations': list,
                 'clinsig': list,
-                'clinsig_confident_always_returned': boolean,
+                'clinvar_trusted_revstat': boolean,
                 'clinsig_exclude': bool,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str or list of str,
@@ -331,7 +332,7 @@ class QueryHandler(object):
                 break
 
         if primary_terms is True:
-            clinsign_filter: dict = self.clinsig_query(query)
+            clinsign_filter: dict = self.set_and_get_clinsig_query(query, mongo_query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -344,26 +345,27 @@ class QueryHandler(object):
             if secondary_filter and primary_terms is False:
                 mongo_query["$and"] = secondary_filter
 
-            # If there is only one primary criterion given without any secondary, it will also be
-            # added as a top level '$and'.
-            # Otherwise, primary criteria are added as a high level '$or' and all secondary criteria
-            # are joined together with them as a single lower level '$and'.
-            if primary_terms is True:  # clinsig is specified
-                # Given a request to always return confident clinical variants,
-                # add the clnsig query as a major criteria, but only
-                # trust clnsig entries with trusted revstat levels.
-                if query.get("clinsig_confident_always_returned") is True:
+            # if prioritise_clinvar checkbox is checked, then clinical_filter will be applied in alternative to the secondary_filter ("$or")
+            # This will happen when the search for ClinVar annotated variants is supposed to be more relaxed compared to other filter constraints, for instance when applying the clinical filter
+            if primary_terms is True:
+                if query.get("prioritise_clinvar") is True:
                     mongo_query["$or"] = [
                         {"$and": secondary_filter},
                         clinsign_filter,
                     ]
-                else:  # clnsig terms are provided but no need for trusted revstat levels
+                else:  # clinical_filter will be applied at the same level as the other secondary filters ("$and")
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
         elif primary_terms is True:  # clisig is provided without secondary terms query
-            # use implicit and
-            mongo_query["clnsig"] = clinsign_filter["clnsig"]
+            if query.get("clinsig_exclude"):
+                mongo_query["$or"] = [
+                    clinsign_filter,
+                    {"clnsig": {"$exists": False}},
+                    {"clnsig": {"$eq": None}},
+                ]
+            else:
+                mongo_query["clnsig"] = clinsign_filter["clnsig"]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
@@ -415,8 +417,8 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def clinsig_query(self, query: dict) -> dict:
-        """Add clinsig filter values to the mongo query object"""
+    def set_and_get_clinsig_query(self, query: dict, mongo_query: dict) -> dict:
+        """Add clinsig filter values to the mongo query object. if clinvar_tag esists in query then only results with ClinVar annotation are returned."""
 
         clnsig_query = {"clnsig": {}}
 
@@ -439,7 +441,7 @@ class QueryHandler(object):
             else:
                 elem_match_or = {"$or": elem_match}
 
-            if query.get("clinsig_confident_always_returned") is True:
+            if query.get("clinvar_trusted_revstat") is True:
                 clnsig_query["clnsig"] = {
                     "$elemMatch": {
                         "$and": [
@@ -452,6 +454,7 @@ class QueryHandler(object):
                 clnsig_query["clnsig"] = {"$elemMatch": elem_match_or}
 
         if query.get("clinvar_tag"):
+            mongo_query["clnsig"] = EXISTS_NOT_NULL  # Used when query has secondary terms
             clnsig_query["clnsig"]["$exists"] = True
             clnsig_query["clnsig"]["$ne"] = None
 
@@ -459,7 +462,7 @@ class QueryHandler(object):
 
     def coordinate_filter(self, query, mongo_query):
         """Adds genomic coordinated-related filters to the query object
-            This method is called to buid coordinate query for non-sv variants
+            This method is called to build coordinate query for non-sv variants
 
         Args:
             query(dict): a dictionary of query filters specified by the users

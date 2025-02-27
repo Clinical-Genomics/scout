@@ -305,13 +305,19 @@ def test_build_clinsig_filter_exclude_status(adapter):
 
     # GIVEN a query containing clinsig terms and "clinsig_exclude" = True
     query = {"clinsig": clinsig_items, "clinsig_exclude": True}
-
-    # THEN the mongo query should contain the expected elements ($nor + list of conditions)
     mongo_query = adapter.build_query(case_id="cust000", query=query)
-    assert mongo_query["clnsig"]["$elemMatch"]["$nor"] == [
+
+    # THEN the mongo query should contain the expected elements, either the variant has no ClinVar signififcance
+    assert {"clnsig": {"$exists": False}} in mongo_query["$or"]
+    assert {"clnsig": {"$eq": None}} in mongo_query["$or"]
+
+    # OR the clinical significance doesn't contain the selected terms
+    clinsig_exclude_elemmatch = [
         {"value": {"$in": all_clinsig}},
         {"value": re.compile("|".join(clinsig_mapped_items))},
     ]
+    clisig_signif_exclude_query = {"clnsig": {"$elemMatch": {"$nor": clinsig_exclude_elemmatch}}}
+    assert clisig_signif_exclude_query in mongo_query["$or"]
 
 
 def test_build_clinsig_filter(real_variant_database):
@@ -429,7 +435,7 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
     """Test building a variants query with ClinVar status and high confidence."""
     adapter = real_variant_database
     case_id = "cust000"
-    clinsig_confident_always_returned = True
+    clinvar_trusted_revstat = True
     trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
@@ -445,8 +451,9 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
     query = {
         "region_annotations": region_annotation,
         "clinsig": clinsig_items,
-        "clinsig_confident_always_returned": clinsig_confident_always_returned,
+        "clinvar_trusted_revstat": clinvar_trusted_revstat,
         "gnomad_frequency": freq,
+        "prioritise_clinvar": True,
     }
 
     mongo_query = adapter.build_query(case_id, query=query)
@@ -590,7 +597,7 @@ def test_build_has_cosmic_ids(
 def test_build_clinsig_high_confidence(adapter):
     """Test building a variants query with high confidence of ClinVar status."""
     case_id = "cust000"
-    clinsig_confident_always_returned = True
+    clinvar_trusted_revstat = True
     trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
@@ -603,7 +610,7 @@ def test_build_clinsig_high_confidence(adapter):
     # Testing with INCLUDE ClinVar terms criterion
     query = {
         "clinsig": clinsig_items,
-        "clinsig_confident_always_returned": clinsig_confident_always_returned,
+        "clinvar_trusted_revstat": clinvar_trusted_revstat,
     }
 
     mongo_query = adapter.build_query(case_id, query=query)

@@ -6,7 +6,8 @@ CLINICAL_FILTER_BASE = {
     "region_annotations": ["exonic", "splicing"],
     "functional_annotations": SEVERE_SO_TERMS,
     "clinsig": [4, 5],
-    "clinsig_confident_always_returned": True,
+    "clinvar_trusted_revstat": True,
+    "prioritise_clinvar": True,
 }
 
 CLINICAL_FILTER_BASE_SV = {

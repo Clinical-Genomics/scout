@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Preset institute-level soft filters for variants (filtering based on "filters" values on variant documents). Settings editable by admins on the institute's settings page. Allows e.g. hiding tumor `in_normal` and `germline_risk` filter status variants.
 - Load pedigree and sex check from Somalier, provided by e.g. the Nallo pipeline
 - Expand the command line to remove more types of variants. Now supports: `cancer`, `cancer_sv`, `fusion`, `mei`, `outlier`, `snv`, `str`, and `sv`.
+- New `prioritise_clinvar` checkbox on rare diseases cases, SNVs page, used by clinical filter or for expanding the search to always return variants that match the selected ClinVar conditions
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
@@ -37,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't parse SV frequencies for SNVs even if the name matches. Also accept "." as missing value for SV frequencies.
 - HPO search on WTS Outliers page
 - Stop using dynamic gene panel (HPO generated list) for clinical filter when the last gene is removed from the dynamic gene panel
+- Return only variants with ClinVar annotation when `ClinVar hits` checkbox is checked on variants search form
 
 ## [4.96]
 ### Added
