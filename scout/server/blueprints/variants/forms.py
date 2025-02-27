@@ -114,6 +114,7 @@ class VariantFiltersForm(FlaskForm):
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
     clinsig_exclude = BooleanField("Exclude")
+    prioritise_clinvar = BooleanField("Prioritise ClinVar")
 
     gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
     local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
@@ -178,11 +179,11 @@ class FiltersForm(VariantFiltersForm):
 
     symbol_file = FileField("Symbol File")
 
-    clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
+    clinvar_trusted_revstat = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     clinical_filter = SubmitField(label="Clinical filter")
-    clinvar_tag = BooleanField("ClinVar hits")
+    clinvar_tag = BooleanField("ClinVar hits only")
 
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE
@@ -195,7 +196,7 @@ class CancerFiltersForm(VariantFiltersForm):
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField("Normal alt AF <", validators=[validators.Optional()])
     tumor_frequency = BetterDecimalField("Tumor alt AF >", validators=[validators.Optional()])
-    clinvar_tag = BooleanField("ClinVar hits")
+    clinvar_tag = BooleanField("ClinVar hits only")
     cosmic_tag = BooleanField("Cosmic hits")
     mvl_tag = BooleanField("Managed Variants hits")
     local_obs_cancer_somatic_old = IntegerField(
