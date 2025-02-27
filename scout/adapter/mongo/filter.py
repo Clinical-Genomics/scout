@@ -264,16 +264,31 @@ class FilterHandler(object):
         return filters_res
 
     def set_legacy_options(self, filter_obj):
-        """Update any remaining legacy filter options,
+        """Update remaining legacy filter options,
         i e filter controls that changed names or functionality.
-
-        clinsig_confident_always_returned was split into two different
+        In particular, clinsig_confident_always_returned was split into two different
         options.
         """
-        if "clinsig_confident_always_returned" in filter_obj:
-            filter_obj["clinvar_trusted_revstat"] = filter_obj.get(
-                "clinsig_confident_always_returned", ["True"]
-            )
-            filter_obj["prioritise_clinvar"] = filter_obj.get(
-                "clinsig_confident_always_returned", ["True"]
-            )
+        if "clinsig_confident_always_returned" not in filter_obj:
+            return
+
+        filter_obj["clinvar_trusted_revstat"] = filter_obj.get(
+            "clinsig_confident_always_returned", ["True"]
+        )
+        filter_obj["prioritise_clinvar"] = filter_obj.get(
+            "clinsig_confident_always_returned", ["True"]
+        )
+        del filter_obj["clinsig_confident_always_returned"]
+
+        self.filter_collection.find_one_and_update(
+            {"_id": filter_obj["_id"]},
+            {
+                "$set": {
+                    "clinvar_trusted_revstat": filter_obj["clinvar_trusted_revstat"],
+                    "prioritise_clinvar": filter_obj["prioritise_clinvar"],
+                },
+                "$unset": {
+                    "clinsig_confident_always_returned": "",
+                },
+            },
+        )
