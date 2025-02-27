@@ -12,6 +12,8 @@ from scout.constants import (
     TRUSTED_REVSTAT_LEVEL,
 )
 
+CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
+CLNSIG_NULL = {"clnsig": {"$eq": None}}
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
 EXISTS = {"$exists": True}
 NOT_EXISTS = {"$exists": False}
@@ -334,14 +336,6 @@ class QueryHandler(object):
 
         if primary_terms is True:
             clinsign_filter: dict = self.set_and_get_clinsig_query(query, mongo_query)
-            if query.get("clinsig_exclude"):
-                clinsign_filter = {
-                    "$or": [
-                        clinsign_filter,
-                        {"clnsig": {"$exists": False}},
-                        {"clnsig": {"$eq": None}},
-                    ]
-                }
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
@@ -363,14 +357,26 @@ class QueryHandler(object):
                         clinsign_filter,
                     ]
                 else:  # clinical_filter will be applied at the same level as the other secondary filters ("$and")
+                    if query.get("clinsig_exclude"):
+                        clinsign_filter = {
+                            "$or": [
+                                clinsign_filter,
+                                CLNSIG_NOT_EXISTS,
+                                CLNSIG_NULL,
+                            ]
+                        }
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
         elif primary_terms is True:  # clisig is provided without secondary terms query
-            if clinsign_filter.get("clnsig"):
+            if query.get("clinsig_exclude"):
+                mongo_query["$or"] = [
+                    clinsign_filter,
+                    CLNSIG_NOT_EXISTS,
+                    CLNSIG_NULL,
+                ]
+            else:
                 mongo_query["clnsig"] = clinsign_filter["clnsig"]
-            elif clinsign_filter.get("$or"):
-                mongo_query["$or"] = clinsign_filter["$or"]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
