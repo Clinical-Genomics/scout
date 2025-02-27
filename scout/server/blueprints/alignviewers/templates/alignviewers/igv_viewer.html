@@ -118,7 +118,7 @@
                         sourceType: "file",
                         groupBy: "tag:HP",
                         colorBy: "basemod2:m",
-                        showSoftClips: true,
+                        showSoftClips: {{track.show_soft_clips | lower }},
                         format: "{{ track.format }}",
                         height: "{{track.height}}"
                       },
