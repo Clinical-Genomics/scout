@@ -429,7 +429,7 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
     """Test building a variants query with ClinVar status and high confidence."""
     adapter = real_variant_database
     case_id = "cust000"
-    clinsig_confident_always_returned = True
+    clinvar_trusted_revstat = True
     trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
@@ -445,7 +445,7 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
     query = {
         "region_annotations": region_annotation,
         "clinsig": clinsig_items,
-        "clinsig_confident_always_returned": clinsig_confident_always_returned,
+        "clinvar_trusted_revstat": clinvar_trusted_revstat,
         "gnomad_frequency": freq,
         "prioritise_clinvar": True,
     }
@@ -591,7 +591,7 @@ def test_build_has_cosmic_ids(
 def test_build_clinsig_high_confidence(adapter):
     """Test building a variants query with high confidence of ClinVar status."""
     case_id = "cust000"
-    clinsig_confident_always_returned = True
+    clinvar_trusted_revstat = True
     trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
@@ -604,7 +604,7 @@ def test_build_clinsig_high_confidence(adapter):
     # Testing with INCLUDE ClinVar terms criterion
     query = {
         "clinsig": clinsig_items,
-        "clinsig_confident_always_returned": clinsig_confident_always_returned,
+        "clinvar_trusted_revstat": clinvar_trusted_revstat,
     }
 
     mongo_query = adapter.build_query(case_id, query=query)

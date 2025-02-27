@@ -202,7 +202,7 @@ class QueryHandler(object):
                 'region_annotations': list,
                 'functional_annotations': list,
                 'clinsig': list,
-                'clinsig_confident_always_returned': boolean,
+                'clinvar_trusted_revstat': boolean,
                 'clinsig_exclude': bool,
                 'variant_type': str(('research', 'clinical')),
                 'chrom': str or list of str,
@@ -435,7 +435,7 @@ class QueryHandler(object):
             else:
                 elem_match_or = {"$or": elem_match}
 
-            if query.get("clinsig_confident_always_returned") is True:
+            if query.get("clinvar_trusted_revstat") is True:
                 clnsig_query["clnsig"] = {
                     "$elemMatch": {
                         "$and": [

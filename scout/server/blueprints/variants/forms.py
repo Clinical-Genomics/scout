@@ -179,7 +179,7 @@ class FiltersForm(VariantFiltersForm):
 
     symbol_file = FileField("Symbol File")
 
-    clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
+    clinvar_trusted_revstat = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     clinical_filter = SubmitField(label="Clinical filter")
