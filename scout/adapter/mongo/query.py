@@ -332,7 +332,7 @@ class QueryHandler(object):
                 break
 
         if primary_terms is True:
-            clinsign_filter: dict = self.set_clinsig_query(query, mongo_query)
+            clinsign_filter: dict = self.set_and_get_clinsig_query(query, mongo_query)
 
         # Secondary, excluding filter criteria will hide variants in general,
         # but can be overridden by an including, major filter criteria
