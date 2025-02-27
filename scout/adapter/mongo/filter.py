@@ -272,20 +272,16 @@ class FilterHandler(object):
         if "clinsig_confident_always_returned" not in filter_obj:
             return
 
-        filter_obj["clinvar_trusted_revstat"] = filter_obj.get(
-            "clinsig_confident_always_returned", ["True"]
-        )
-        filter_obj["prioritise_clinvar"] = filter_obj.get(
-            "clinsig_confident_always_returned", ["True"]
-        )
-        del filter_obj["clinsig_confident_always_returned"]
+        filter_value = filter_obj.pop("clinsig_confident_always_returned", ["True"])
+        filter_obj["clinvar_trusted_revstat"] = filter_value
+        filter_obj["prioritise_clinvar"] = filter_value
 
         self.filter_collection.find_one_and_update(
             {"_id": filter_obj["_id"]},
             {
                 "$set": {
-                    "clinvar_trusted_revstat": filter_obj["clinvar_trusted_revstat"],
-                    "prioritise_clinvar": filter_obj["prioritise_clinvar"],
+                    "clinvar_trusted_revstat": filter_value,
+                    "prioritise_clinvar": filter_value,
                 },
                 "$unset": {
                     "clinsig_confident_always_returned": "",
