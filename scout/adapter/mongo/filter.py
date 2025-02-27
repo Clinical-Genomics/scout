@@ -265,7 +265,7 @@ class FilterHandler(object):
 
     def set_legacy_options(self, filter_obj):
         """Update remaining legacy filter options,
-        i e filter controls that changed names or functionality.
+        i.e. filter controls that changed names or functionality.
         In particular, clinsig_confident_always_returned was split into two different
         options: clinvar_trusted_revstat and prioritise_clinvar.
         """
