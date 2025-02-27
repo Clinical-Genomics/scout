@@ -13,9 +13,12 @@ from scout.constants import (
 )
 
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
+CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
+CLNSIG_NULL = {"clnsig": {"$eq": None}}
 EXISTS = {"$exists": True}
 NOT_EXISTS = {"$exists": False}
 EXISTS_NOT_NULL = {"$exists": True, "$ne": None}
+
 LOG = logging.getLogger(__name__)
 
 
@@ -354,6 +357,14 @@ class QueryHandler(object):
                         clinsign_filter,
                     ]
                 else:  # clinical_filter will be applied at the same level as the other secondary filters ("$and")
+                    if query.get("clinsig_exclude"):
+                        clinsign_filter = {
+                            "$or": [
+                                clinsign_filter,
+                                CLNSIG_NOT_EXISTS,
+                                CLNSIG_NULL,
+                            ]
+                        }
                     secondary_filter.append(clinsign_filter)
                     mongo_query["$and"] = secondary_filter
 
@@ -361,8 +372,8 @@ class QueryHandler(object):
             if query.get("clinsig_exclude"):
                 mongo_query["$or"] = [
                     clinsign_filter,
-                    {"clnsig": {"$exists": False}},
-                    {"clnsig": {"$eq": None}},
+                    CLNSIG_NOT_EXISTS,
+                    CLNSIG_NULL,
                 ]
             else:
                 mongo_query["clnsig"] = clinsign_filter["clnsig"]
