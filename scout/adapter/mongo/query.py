@@ -411,7 +411,7 @@ class QueryHandler(object):
         ]:  # Consider situation where all individuals are unaffected
             mongo_query["samples"] = affected_query
 
-    def set_clinsig_query(self, query: dict, mongo_query: dict) -> dict:
+    def set_and_get_clinsig_query(self, query: dict, mongo_query: dict) -> dict:
         """Add clinsig filter values to the mongo query object. if clinvar_tag esists in query then only results with ClinVar annotation are returned."""
 
         clnsig_query = {"clnsig": {}}
