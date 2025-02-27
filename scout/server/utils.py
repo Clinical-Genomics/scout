@@ -330,6 +330,11 @@ def case_append_alignments(case_obj: dict):
         # Add sample name
         sample_name = f"{case_obj.get('display_name', '')} - {individual.get('display_name', '')}"
         append_safe(case_obj, "sample_names", sample_name)
+        append_safe(
+            case_obj,
+            "track_items_soft_clips_settings",
+            individual.get("analysis_type", "") not in ["wes", "panel"],
+        )
 
         # Process all file settings
         for setting in unwrap_settings:

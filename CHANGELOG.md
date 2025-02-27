@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified the web pages body style to adapt content to smaller screens
 - Refactored filters to filter variants by ClinVar significance, CLINSIG Confident and ClinVar hits at the same time
 - Improved tooltips for ClinVar filter in SNVs filter form
+- `showSoftClips` parameter in igv.js is set to false by default for WES and PANEL samples
 - Updated dependencies in uv.lock file
 ### Fixed
 - Don't save any "-1", "." or "0" frequency values for SNVs - same as for SVs
