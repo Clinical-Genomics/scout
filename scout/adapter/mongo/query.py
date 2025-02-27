@@ -358,8 +358,14 @@ class QueryHandler(object):
                     mongo_query["$and"] = secondary_filter
 
         elif primary_terms is True:  # clisig is provided without secondary terms query
-            # use implicit and
-            mongo_query["clnsig"] = clinsign_filter["clnsig"]
+            if query.get("clinsig_exclude"):
+                mongo_query["$or"] = [
+                    clinsign_filter,
+                    {"clnsig": {"$exists": False}},
+                    {"clnsig": {"$eq": None}},
+                ]
+            else:
+                mongo_query["clnsig"] = clinsign_filter["clnsig"]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
