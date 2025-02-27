@@ -25,7 +25,9 @@ class FilterHandler(object):
             filter_obj(dict)
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+
         if filter_obj is not None:
+            self.set_legacy_options(filter_obj)
             # use _id to preselect the currently loaded filter, and drop it while we are at it
             filter_obj.update([("filters", filter_obj.pop("_id", None))])
         return filter_obj
@@ -260,3 +262,29 @@ class FilterHandler(object):
         )
 
         return filters_res
+
+    def set_legacy_options(self, filter_obj):
+        """Update remaining legacy filter options,
+        i.e. filter controls that changed names or functionality.
+        In particular, clinsig_confident_always_returned was split into two different
+        options: clinvar_trusted_revstat and prioritise_clinvar.
+        """
+        if "clinsig_confident_always_returned" not in filter_obj:
+            return
+
+        filter_value = filter_obj.pop("clinsig_confident_always_returned", ["True"])
+        filter_obj["clinvar_trusted_revstat"] = filter_value
+        filter_obj["prioritise_clinvar"] = filter_value
+
+        self.filter_collection.find_one_and_update(
+            {"_id": filter_obj["_id"]},
+            {
+                "$set": {
+                    "clinvar_trusted_revstat": filter_value,
+                    "prioritise_clinvar": filter_value,
+                },
+                "$unset": {
+                    "clinsig_confident_always_returned": "",
+                },
+            },
+        )
