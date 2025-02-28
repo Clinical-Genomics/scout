@@ -280,13 +280,14 @@ def add_somalier_information(case_config: dict):
                 sex_check[ind_info["sample_id"]] = ind_info
 
     if case_config.get("somalier_ancestry"):
-        with open(case_config["peddy_ped"], "r") as file_handle:
+        with open(case_config["somalier_ancestry"], "r") as file_handle:
             for ind_info in parse_somalier_ancestry(file_handle):
                 ancestry_info[ind_info["sample_id"]] = ind_info
 
-    if not ped_check or sex_check or ancestry_info:
+    if not (ped_check or sex_check or ancestry_info):
         return
 
+    LOG.info("Adding Somalier info")
     set_somalier_sex_and_relatedness_checks(case_config, ped_check, sex_check, ancestry_info)
 
 
