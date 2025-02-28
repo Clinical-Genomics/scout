@@ -41,6 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Return only variants with ClinVar annotation when `ClinVar hits` checkbox is checked on variants search form
 - Legacy variant filter option `clinsig_confident_always_returned` on saved filters is remapped as `prioritised_clivar` and `clinvar_trusted_revstat`
 - Variants queries excluding ClinVar tags without `prioritise_clinvar` checkbox checked
+- Pedigree QC Somalier loading demo ancestry file and operator priority
 
 ## [4.96]
 ### Added
