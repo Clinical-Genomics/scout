@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load pedigree and sex check from Somalier, provided by e.g. the Nallo pipeline
 - Expand the command line to remove more types of variants. Now supports: `cancer`, `cancer_sv`, `fusion`, `mei`, `outlier`, `snv`, `str`, and `sv`.
 - New `prioritise_clinvar` checkbox on rare diseases cases, SNVs page, used by clinical filter or for expanding the search to always return variants that match the selected ClinVar conditions
+- ClinVar CLNSIG Exclude option on cancer variantS filters
 ### Changed
 - Do not show overlapping gene panels badge on variants from cases runned without gene panels
 - Set case as research case if it contains any type of research variants
