@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Documentation on how to delete variants for one or more cases
+- Document the option to collect green genes from any panel when updating the PanelApp green genes panel
 
 ## [4.97]
 ### Added
