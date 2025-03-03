@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Documentation on how to delete variants for one or more cases
+
 ## [4.97]
 ### Added
 - Software version and link to the relative release on GitHub on the top left dropdown menu

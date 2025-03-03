@@ -67,6 +67,7 @@ nav:
       - Updating a case without a new config: 'admin-guide/updating-case.md'
       - Updating case individuals tracks: 'admin-guide/updating-individuals.md'
       - Loading variants: 'admin-guide/loading-variants.md'
+      - Removing variants: 'admin-guide/deleting-variants.md'
       - Gene definitions: 'admin-guide/genes.md'
       - PanelApp gene panels: 'admin-guide/panelapp_panels.md'
       - HPO terms: 'admin-guide/hpo.md'
