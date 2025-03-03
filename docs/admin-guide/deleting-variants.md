@@ -52,7 +52,7 @@ Options:
 | `--variants-threshold` | **Optional.** Remove variants only from cases containing at least this number of variants.                                                               |
 | `--rm-ctg`             | **Optional.** Remove only the specified variant categories. Example: `--rm-ctg snv --rm-ctg sv`.                                                         |
 | `--keep-ctg`           | **Optional.** Keep only the specified variant categories. Cannot be used together with `--rm-ctg`. Use multiple times to specify more than one category. |
-| `--dry-run`            | **Optional.** Runs a simulation, showing an estimate of the variants to be removed without actually deleting anything.                                   |
+| `--dry-run`            | **Optional.** Runs a simulation, showing an estimate of the number of variants to be removed without actually deleting anything.                                   |
 
 > **Note:** If you are removing variants from Scout for the first time, it is strongly recommended to run a simulation first using the `--dry-run` option.
 
