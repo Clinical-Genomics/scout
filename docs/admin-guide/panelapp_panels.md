@@ -68,9 +68,13 @@ At the time of writing, the following panel types are available:
 12. **Research**
 13. **Submitted List**
 14. **Superpanel**
+15. **all** - all types above
 
 #### Default Behavior
 If no panel type is selected (i.e., the user presses Enter without input), Green Genes will be selected from the following default panel types: `3`, `4`, `6`, `7`, `8`, `9`, `10`.
+
+### Include all available panels
+By typing `all` at the prompt, green genes will be collected from any panel available in PanelApp
 
 #### Important Note
 The `--force` or (`-f`) parameter is required to create a new version of the gene panel if the number of green genes retrieved from the PanelApp server is lower than the number of genes in the older version of the panel. This ensures the panel is updated despite the reduction in gene count.
