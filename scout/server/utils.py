@@ -244,15 +244,23 @@ def case_has_chanjo2_coverage(case_obj: dict):
 def case_has_alignments(case_obj: dict):
     """Add info on bam/cram files availability to a case dictionary
 
+    This sets the availability of alignments for autosomal chromosomes.
+    If paraphase or de novo assembly alignments, this is also sufficient to set
+    alignment availability.
     Args:
         case_obj(scout.models.Case)
     """
-    case_obj["bam_files"] = False  # Availability of alignments for autosomal chromosomes
+    case_obj["bam_files"] = False
     for ind in case_obj.get("individuals"):
-        bam_path = ind.get("bam_file")
-        if bam_path and os.path.exists(bam_path):
-            case_obj["bam_files"] = True
-            return
+        for alignment_path_key in [
+            "bam_file",
+            "assembly_alignment_path",
+            "paraphase_alignment_path",
+        ]:
+            bam_path = ind.get(alignment_path_key)
+            if bam_path and os.path.exists(bam_path):
+                case_obj["bam_files"] = True
+                return
 
 
 def case_has_mt_alignments(case_obj: dict):
