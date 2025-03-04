@@ -295,7 +295,7 @@
         {% if case.vcf_files.vcf_fusion_research %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research fusion variants</a>
         {% endif %}
-        {% if case.omics_files.fraser_research or case.omics_files.outrider_research %}
+        {% if case.omics_files and (case.omics_files.fraser_research or case.omics_files.outrider_research) %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research WTS variants</a>
         {% endif %}
       </div>
