@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation on how to delete variants for one or more cases
 - Document the option to collect green genes from any panel when updating the PanelApp green genes panel
 - On the institute's filters page, display also any soft filters applied to institute's variants
+### Fixed
+- Case page patch for research cases without WTS outliers
 
 ## [4.97]
 ### Added
