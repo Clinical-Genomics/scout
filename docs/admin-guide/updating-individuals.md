@@ -22,11 +22,13 @@ Options:
   --help              Show this message and exit.
 ```
 And the tracks that can be updated are the following:
+- assembly_alignment_path
 - bam_file
 - d4_file
 - rna_alignment_path
 - mt_bam
 - vcf2cytosure
+- paraphase_alignment_path
 - rhocall_bed
 - rhocall_wig
 - tiddit_coverage_wig

@@ -25,9 +25,11 @@ LOG = logging.getLogger(__name__)
 REPID = "{REPID}"
 
 SAMPLES_FILE_PATH_CHECKS = [
+    "assembly_alignment_path",
     "bam_file",
     "d4_file",
     "mitodel_file",
+    "paraphase_alignment_path",
     "rhocall_bed",
     "rhocall_wig",
     "rna_alignment_path",
@@ -201,6 +203,7 @@ class REViewer(BaseModel):
 
 class SampleLoader(BaseModel):
     alignment_path: Optional[str] = None
+    assembly_alignment_path: Optional[str] = None
     analysis_type: Literal[ANALYSIS_TYPES] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
@@ -221,6 +224,7 @@ class SampleLoader(BaseModel):
     mother: Optional[str] = None
     msi: Optional[str] = None
     mt_bam: Optional[str] = None
+    paraphase_alignment_path: Optional[str] = None
     phenotype: Literal["affected", "unaffected", "unknown"]
     predicted_ancestry: Optional[str] = None
     reviewer: Optional[REViewer] = REViewer()
