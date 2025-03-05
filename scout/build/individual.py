@@ -6,9 +6,11 @@ from scout.exceptions import PedigreeError
 
 log = logging.getLogger(__name__)
 BUILD_INDIVIDUAL_FILES = [
+    "assembly_alignment_path",
     "bam_file",
     "d4_file",
     "mt_bam",
+    "paraphase_alignment_path",
     "rhocall_bed",
     "rhocall_wig",
     "rna_alignment_path",

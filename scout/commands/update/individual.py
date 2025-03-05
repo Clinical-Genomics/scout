@@ -7,6 +7,7 @@ import click
 from scout.server.extensions import store
 
 UPDATE_DICT = {
+    "assembly_alignment_path": "path",
     "bam_file": "path",
     "bionano_access.sample": "str",
     "bionano_access.project": "str",
@@ -16,6 +17,7 @@ UPDATE_DICT = {
     "chromograph_images.upd_regions": "str",
     "chromograph_images.upd_sites": "str",
     "mt_bam": "path",
+    "paraphase_alignment_path": "path",
     "reviewer.alignment": "path",
     "reviewer.alignment_index": "path",
     "reviewer.vcf": "path",

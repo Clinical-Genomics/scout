@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import pytest
+
 from scout.build import build_individual
 from scout.exceptions import PedigreeError
-import pytest
 
 
 def test_build_individual():
@@ -14,6 +15,8 @@ def test_build_individual():
         "sex": "male",
         "phenotype": "affected",
         "bam_file": "scout/demo/reduced_mt.bam",
+        "paraphase_alignment_path": "scout/demo/reduced_mt.bam",
+        "assembly_alignment_path": "scout/demo/reduced_mt.bam",
         "capture_kits": ["Agilent"],
     }
 
@@ -28,6 +31,8 @@ def test_build_individual():
     assert ind_obj["sex"] == "1"
     assert ind_obj["phenotype"] == 2
     assert ind_obj["bam_file"].endswith(ind_info["bam_file"])
+    assert ind_obj["paraphase_alignment_path"].endswith(ind_info["bam_file"])
+    assert ind_obj["assembly_alignment_path"].endswith(ind_info["bam_file"])
     assert ind_obj["analysis_type"] == "unknown"
 
 

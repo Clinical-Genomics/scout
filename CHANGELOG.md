@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- De novo assembly alignment file load and display
+- Paraphase bam-let alignment file load and display
+
 ## [4.98]
 ### Added
 - Documentation on how to delete variants for one or more cases

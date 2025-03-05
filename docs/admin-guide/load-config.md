@@ -51,6 +51,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **samples** _List_ List of samples included in the case:
     - **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
     - **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
+    - **assembly_alignment_path** _String_ Path to BAM/CRAM file to view de novo assembly alignments.
     - **bam_file** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
     - **bam_path** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
     - **capture_kit** _String_ Exome specifies the capture kit.
@@ -70,6 +71,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **mother** _String/Int_ Sample ID for mother or 0.
     - **msi** _Int_ Microsatellite instability [0-60].
     - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
+    - **paraphase_alignment_path** _String_ Path to BAM/CRAM file to view Paraphase alignments.
     - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
     - **reviewer** _List_ [Reference][srs]
       - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
