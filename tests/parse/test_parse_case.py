@@ -396,7 +396,9 @@ def test_parse_individual_files(scout_config, custom_temp_file):
 
     # GIVEN that the samples contained in the scout load config file have a path associated to each possible file
     for sample_config in scout_config["samples"]:
+        sample_config["assembly_alignment_path"] = str(custom_temp_file(".bam"))
         sample_config["bam_path"] = str(custom_temp_file(".cram"))
+        sample_config["paraphase_alignment_path"] = str(custom_temp_file(".bam"))
         sample_config["rhocall_bed"] = str(custom_temp_file(".bed"))
         sample_config["rhocall_wig"] = str(custom_temp_file(".wig"))
         sample_config["tiddit_coverage_wig"] = str(custom_temp_file(".wig"))
