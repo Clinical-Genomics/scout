@@ -173,7 +173,7 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
         finally, check remaining prefixes if no suffix match or stand-alone criteria match
 
     Return a tuple with
-        pvs: This variable indicates if Pathogenicity Very Strong exists
+        pvs_terms: This variable indicates if Pathogenicity Very Strong exists
         ps_terms: Collection of terms with Pathogenicity Strong
         pm_terms: Collection of terms with Pathogenicity moderate
         pp_terms: Collection of terms with Pathogenicity supporting
@@ -182,25 +182,29 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
         bp_terms: Collection of terms with supporting Benign evidence
     """
 
-    pvs = False
+    pvs_terms = []
     ps_terms = []
     pm_terms = []
     pp_terms = []
 
-    ba = False
+    ba_terms = []
     bs_terms = []
     bp_terms = []
 
     suffix_map = {
+        "_Stand-alone": {"B": ba_terms},
+        "_Very Strong": {"P": pvs_terms},
         "_Strong": {"P": ps_terms, "B": bs_terms},
         "_Moderate": {"P": pm_terms},
         "_Supporting": {"P": pp_terms, "B": bp_terms},
     }
 
     prefix_map = {
+        "PVS": pvs_terms,
         "PS": ps_terms,
         "PM": pm_terms,
         "PP": pp_terms,
+        "BA": ba_terms,
         "BS": bs_terms,
         "BP": bp_terms,
     }
@@ -216,17 +220,12 @@ def get_acmg_criteria(acmg_terms: set) -> tuple:
                     continue
                 break
         else:
-            if term.startswith("PVS"):
-                pvs = True
-            elif term.startswith("BA"):
-                ba = True
-            else:
-                for prefix, term_list in prefix_map.items():
-                    if term.startswith(prefix):
-                        term_list.append(term)
-                        break
+            for prefix, term_list in prefix_map.items():
+                if term.startswith(prefix):
+                    term_list.append(term)
+                    break
 
-    return (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms)
+    return (pvs_terms, ps_terms, pm_terms, pp_terms, ba_terms, bs_terms, bp_terms)
 
 
 def get_acmg(acmg_terms: set) -> Optional[str]:
@@ -316,19 +315,19 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     if not acmg_terms:
         return {}
 
-    (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
+    (pvs_terms, ps_terms, pm_terms, pp_terms, ba_terms, bs_terms, bp_terms) = get_acmg_criteria(
+        acmg_terms
+    )
 
-    if ba:
-        points = -8
-    else:
-        points = (
-            8 * pvs
-            + 4 * len(ps_terms)
-            + 2 * len(pm_terms)
-            + len(pp_terms)
-            - 4 * len(bs_terms)
-            - len(bp_terms)
-        )
+    points = (
+        8 * len(pvs_terms)
+        + 4 * len(ps_terms)
+        + 2 * len(pm_terms)
+        + len(pp_terms)
+        - 8 * len(ba_terms)
+        - 4 * len(bs_terms)
+        - len(bp_terms)
+    )
 
     if points <= -7:
         point_classification = "benign"

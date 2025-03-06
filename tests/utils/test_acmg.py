@@ -21,7 +21,7 @@ def test_is_pathogenic_1():
 
     """
     # GIVEN values that fulfill the (a) criteria for pathogenic
-    pvs = True
+    pvs = ["PVS1"]
     ps_terms = ["PS1"]
     pm_terms = []
     pp_terms = []
@@ -39,7 +39,7 @@ def test_is_pathogenic_1():
     assert res
 
     # GIVEN values that fulfill the (b) criteria for pathogenic
-    pvs = True
+    pvs = ["PVS1"]
     ps_terms = []
     pm_terms = ["PM1", "PM2"]
     pp_terms = []
@@ -56,7 +56,7 @@ def test_is_pathogenic_1():
     assert not res
 
     # GIVEN values that fulfill the (c) criteria for pathogenic
-    pvs = True
+    pvs = ["PVS1"]
     ps_terms = []
     pm_terms = ["PM1"]
     pp_terms = ["PP1"]
@@ -66,7 +66,7 @@ def test_is_pathogenic_1():
     assert res
 
     # GIVEN values that fulfill the (d) criteria for pathogenic
-    pvs = True
+    pvs = ["PVS1"]
     ps_terms = []
     pm_terms = []
     pp_terms = ["PP1", "PP2"]
@@ -91,7 +91,7 @@ def test_is_pathogenic_2():
 
     """
     # GIVEN values that fulfill the (ii) criteria for pathogenic
-    pvs = False
+    pvs = []
     ps_terms = ["PS1", "PS2"]
     pm_terms = []
     pp_terms = []
@@ -119,7 +119,7 @@ def test_is_pathogenic_3():
 
     """
     # GIVEN values that fulfill the (a) criteria for pathogenic (iii)
-    pvs = False
+    pvs = []
     ps_terms = ["PS1"]
     pm_terms = ["PM1", "PM2", "PM3"]
     pp_terms = []
@@ -135,7 +135,7 @@ def test_is_pathogenic_3():
     assert not res
 
     # GIVEN values that fulfill the (b) criteria for pathogenic (iii)
-    pvs = False
+    pvs = []
     ps_terms = ["PS1"]
     pm_terms = ["PM1", "PM2"]
     pp_terms = ["PP1", "PP2"]
@@ -151,7 +151,7 @@ def test_is_pathogenic_3():
     assert not res
 
     # GIVEN values that fulfill the (c) criteria for pathogenic (iii)
-    pvs = False
+    pvs = []
     ps_terms = ["PS1"]
     pm_terms = ["PM1"]
     pp_terms = ["PP1", "PP2", "PP3", "PP4"]
@@ -175,7 +175,7 @@ def test_is_likely_pathogenic_1():
 
     """
     # GIVEN values that fulfill the (1) criteria for likely pathogenic
-    pvs = True
+    pvs = ["PVS1"]
     ps_terms = []
     pm_terms = ["PM1"]
     pp_terms = []
@@ -197,7 +197,7 @@ def test_is_likely_pathogenic_2():
 
     """
     # GIVEN values that fulfill the (1) criteria for likely pathogenic
-    pvs = False
+    pvs = []
     ps_terms = ["PS1"]
     pm_terms = ["PM1"]
     pp_terms = []
@@ -219,7 +219,7 @@ def test_is_likely_pathogenic_3():
 
     """
     # GIVEN values that fulfill the (1) criteria for likely pathogenic
-    pvs = False
+    pvs = []
     ps_terms = ["PS1"]
     pm_terms = []
     pp_terms = ["PP1", "PP2"]
@@ -241,7 +241,7 @@ def test_is_likely_pathogenic_4():
 
     """
     # GIVEN values that fulfill the (1) criteria for likely pathogenic
-    pvs = False
+    pvs = []
     ps_terms = []
     pm_terms = ["PM1", "PM2", "PM3"]
     pp_terms = []
@@ -263,7 +263,7 @@ def test_is_likely_pathogenic_5():
 
     """
     # GIVEN values that fulfill the (1) criteria for likely pathogenic
-    pvs = False
+    pvs = []
     ps_terms = []
     pm_terms = ["PM1", "PM2"]
     pp_terms = ["PP1", "PP2"]
@@ -285,7 +285,7 @@ def test_is_likely_pathogenic_6():
 
     """
     # GIVEN values that fulfill the (vi) criteria for likely pathogenic
-    pvs = False
+    pvs = []
     ps_terms = []
     pm_terms = ["PM1"]
     pp_terms = ["PP1", "PP2", "PP3", "PP4"]
@@ -307,14 +307,14 @@ def test_is_benign_1():
 
     """
     # GIVEN values that fulfill the (i) criteria for benign
-    ba = True
+    ba = ["BA1"]
     bs_terms = []
     ## WHEN performing the evaluation
     res = is_benign(ba, bs_terms)
     ## THEN assert the criterias are fullfilled
     assert res
 
-    ba = False
+    ba = []
     res = is_benign(ba, bs_terms)
     assert not res
 
@@ -327,7 +327,7 @@ def test_is_benign_2():
 
     """
     # GIVEN values that fulfill the (ii) criteria for benign
-    ba = False
+    ba = []
     bs_terms = ["BS1", "BS2"]
     ## WHEN performing the evaluation
     res = is_benign(ba, bs_terms)
@@ -454,6 +454,18 @@ def test_acmg_temperature():
     res = get_acmg_temperature(acmg_terms)
     assert res["points"] == 4
     assert res["temperature"] == "Warm"
+    assert res["point_classification"] == "VUS"
+
+    acmg_terms = {"PS1_Very Strong", "PP1_Moderate", "PP3", "BS1_Supporting"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 10
+    assert res["temperature"] == "Pathogenic"
+    assert res["point_classification"] == "P"
+
+    acmg_terms = {"PS1_Very Strong", "PP1_Moderate", "PP3", "BS1_Supporting", "BS2_Stand-alone"}
+    res = get_acmg_temperature(acmg_terms)
+    assert res["points"] == 2
+    assert res["temperature"] == "Cold"
     assert res["point_classification"] == "VUS"
 
     acmg_terms = {"PVS1", "BS2", "BP1"}
