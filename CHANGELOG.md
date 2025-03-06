@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - De novo assembly alignment file load and display
 - Paraphase bam-let alignment file load and display
+### Changed
+- Allow ACMG criteria strength modification to Very strong/Stand-alone
 
 ## [4.98]
 ### Added
