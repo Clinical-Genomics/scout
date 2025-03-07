@@ -101,7 +101,7 @@
                       {% endfor %}
                       {% for btrack in rhocall_beds %}
                       {
-                        type: "bed",
+                        type: "annotation",
                         name: '{{ btrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=btrack.url) }}',
                         format: 'bb',
@@ -135,7 +135,7 @@
                       {% endfor %}
                       {% for rtrack in upd_regions_beds %}
                       {
-                        type: 'bed',
+                        type: 'annotation',
                         format: 'bb',
                         name: '{{ rtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
@@ -145,7 +145,7 @@
                       {% endfor %}
                       {% for strack in upd_sites_beds %}
                       {
-                        type: "bed",
+                        type: "annotation",
                         format: 'bb',
                         name: '{{ strack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
