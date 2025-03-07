@@ -17,101 +17,84 @@ def parse_clnsig_low_penetrance(sig_groups: List[str]) -> List[str]:
     return result
 
 
+from typing import Dict, List, Optional, Union
+import cyvcf2
+
+
 def parse_clnsig(
-    variant: cyvcf2.Variant, transcripts: Optional[dict] = None
+    variant: cyvcf2.Variant, transcripts: Optional[List[Dict[str, Union[str, int]]]] = None
 ) -> List[Dict[str, Union[str, int]]]:
-    """Get the clnsig information
+    """Parse and return ClinVar significance information."""
 
-    The clinvar format has changed several times and this function will try to parse all of them.
-    The first format represented the clinical significance terms with numbers. This was then
-    replaced by strings and the separator changed. At this stage the possibility to connect review
-    stats to a certain significance term was taken away. So now we can only annotate each
-    significance term with all review stats.
-    Also the clinvar accession numbers are in some cases annotated with the info key CLNACC and
-    sometimes with CLNVID.
-    This function parses also Clinvar annotations performed by VEP (CSQ field, parsed transcripts required)
+    def parse_transcripts(transcripts: List[Dict[str, Union[str, int]]]) -> List[Dict[str, str]]:
+        """Extract ClinVar annotations from transcripts."""
+        clnsig_values = {
+            anno.lstrip("_")
+            for t in transcripts
+            for annotation in t.get("clnsig", [])
+            for anno in annotation.split("/")
+        }
+        return [{"value": annotation} for annotation in clnsig_values]
 
-    Returns a list with clnsig accessions
-    """
+    def parse_int_format(
+        acc: Union[str, int], sig: str, revstat: str
+    ) -> List[Dict[str, Union[str, int]]]:
+        """Handle integer-based ClinVar annotations."""
+        revstat_groups = (
+            [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")] if revstat else []
+        )
+        sig_groups = [
+            "_".join(term.split(" "))
+            for significance in sig.replace("&", ",").split(",")
+            for term in significance.lstrip("_").split("/")
+        ]
+        sig_groups = parse_clnsig_low_penetrance(sig_groups)
+        return [
+            {"value": sig_term, "accession": int(acc), "revstat": ",".join(revstat_groups)}
+            for sig_term in sig_groups
+        ]
+
+    def parse_older_format(acc: str, sig: str, revstat: str) -> List[Dict[str, Union[str, int]]]:
+        """Parse older ClinVar formats where data is separated by pipes (`|`)."""
+        return [
+            {"value": int(significance), "accession": accession, "revstat": revstat}
+            for acc_group, sig_group, revstat_group in zip(
+                acc.split("|"), sig.split("|"), revstat.split("|")
+            )
+            for accession, significance, revstat in zip(
+                acc_group.split(","), sig_group.split(","), revstat_group.split(",")
+            )
+        ]
 
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
-    sig = variant.INFO.get("CLNSIG", "").lower()
-    revstat = variant.INFO.get("CLNREVSTAT", "").lower()
+    sig, revstat = (
+        variant.INFO.get("CLNSIG", "").lower(),
+        variant.INFO.get("CLNREVSTAT", "").lower(),
+    )
+    onc, onc_revstat, onccdn = (
+        variant.INFO.get("ONC", "").lower(),
+        variant.INFO.get("ONCREVSTAT", "").lower(),
+        variant.INFO.get("ONCDN", "").lower(),
+    )
 
-    # Oncogenocity-related criteria
-    onc = variant.INFO.get("ONC", "").lower()
-    onccdn = variant.INFO.get("ONCDN", "").lower()
-    oncrevstat = variant.INFO.get("ONCREVSTAT", "").lower()
-
-    clnsig_accessions = []
-
-    if acc == "" and transcripts:
+    # Try parsing from transcripts if `acc` is empty
+    if not acc and transcripts:
         if transcripts[0].get("clnsig"):
-            clnsig = set()
-            for transcript in transcripts:
-                for annotation in transcript.get("clnsig", []):
-                    for anno in annotation.split("/"):
-                        clnsig.add(anno.lstrip("_"))
-            for annotation in clnsig:
-                clnsig_accessions.append({"value": annotation})
+            return parse_transcripts(transcripts)
+        acc = transcripts[0].get("clinvar_clnvid", acc)
+        sig = transcripts[0].get("clinvar_clnsig", sig)
+        revstat = transcripts[0].get("clinvar_revstat", revstat)
 
-            return clnsig_accessions
+    # Parse integer-based ClinVar annotations
+    if acc and (isinstance(acc, int) or acc.isdigit()):
+        return parse_int_format(acc, sig, revstat)
 
-        # VEP 97+ annotated clinvar info:
-        if transcripts[0].get("clinvar_clnvid"):
-            acc = transcripts[0]["clinvar_clnvid"]
-            sig = transcripts[0].get("clinvar_clnsig")
-            revstat = transcripts[0].get("clinvar_revstat")
+    # Parse older ClinVar formats
+    if acc:
+        return parse_older_format(acc, sig, revstat)
 
-    # There are some versions where clinvar uses integers to represent terms
-    if isinstance(acc, int) or acc.isdigit():
-        revstat_groups = []
-        if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
-
-        sig_groups = []
-        for significance in sig.replace("&", ",").split(","):
-            for term in significance.lstrip("_").split("/"):
-                sig_groups.append("_".join(term.split(" ")))
-
-        sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
-
-        for sig_term in sig_groups:
-            clnsig_accession = {
-                "value": sig_term,
-                "accession": int(acc),
-                "revstat": ",".join(revstat_groups),
-            }
-            clnsig_accessions.append(clnsig_accession)
-
-    # Test to parse the older format
-    if acc and not clnsig_accessions:
-        acc_groups = acc.split("|")
-        sig_groups = sig.split("|")
-        revstat_groups = revstat.split("|")
-        for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
-            accessions = acc_group.split(",")
-            significances = sig_group.split(",")
-            revstats = revstat_group.split(",")
-            for accession, significance, revstat in zip(accessions, significances, revstats):
-
-                clnsig_dict = {
-                    {
-                        "value": int(significance),
-                        "accession": accession,
-                        "revstat": revstat,
-                    }
-                }
-
-                if any([onc, onccdn, oncrevstat]):
-                    clnsig_dict["oncogenicity"] = onc
-                    clnsig_dict["tumor_type"] = onccdn
-                    clnsig_dict["onc_revstat"] = revstat
-
-                clnsig_accessions.append(clnsig_dict)
-
-    return clnsig_accessions
+    return []
 
 
 def is_pathogenic(variant: cyvcf2.Variant):
