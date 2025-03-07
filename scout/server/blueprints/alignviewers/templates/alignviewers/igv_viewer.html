@@ -86,12 +86,12 @@
                           {% endif %}
                         },
                       {% endfor %}
-                      {% for wtrack in rhocall_wig %}
+                      {% for wtrack in rhocall_wigs %}
                       {
                         type: "wig",
                         name: '{{ wtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
-                        format: 'wig',
+                        format: 'bw',
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
                         color: "rgb(60, 37, 17)",
                         min: '{{ wtrack.min }}',
@@ -99,12 +99,12 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for btrack in rhocall_bed %}
+                      {% for btrack in rhocall_beds %}
                       {
                         type: "bed",
                         name: '{{ btrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=btrack.url) }}',
-                        format: 'bed',
+                        format: 'bb',
                         color: "rgb(65, 31, 30)",
                         sourceType: 'file'
                       },
@@ -123,27 +123,30 @@
                         height: "{{track.height}}"
                       },
                       {% endfor %}
-                      {% for ttrack in tiddit_coverage_wig %}
+                      {% for ttrack in tiddit_coverage_wigs %}
                       {
                         type: "wig",
+                        format: 'bw',
                         name: '{{ ttrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
                         color: "rgb(40, 0, 13)",
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for rtrack in upd_regions_bed %}
+                      {% for rtrack in upd_regions_beds %}
                       {
-                        type: "bed",
+                        type: 'bed',
+                        format: 'bb',
                         name: '{{ rtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
                         color: "rgb(0, 204, 102)",
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for strack in upd_sites_bed %}
+                      {% for strack in upd_sites_beds %}
                       {
                         type: "bed",
+                        format: 'bb',
                         name: '{{ strack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
                         color: "rgb(25, 61, 4)",
