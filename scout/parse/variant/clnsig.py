@@ -33,10 +33,16 @@ def parse_clnsig(
 
     Returns a list with clnsig accessions
     """
+
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
+
+    # Oncogenocity-related criteria
+    onc = variant.INFO.get("ONC", "").lower()
+    onccdn = variant.INFO.get("ONCDN", "").lower()
+    oncrevstat = variant.INFO.get("ONCREVSTAT", "").lower()
 
     clnsig_accessions = []
 
@@ -89,13 +95,21 @@ def parse_clnsig(
             significances = sig_group.split(",")
             revstats = revstat_group.split(",")
             for accession, significance, revstat in zip(accessions, significances, revstats):
-                clnsig_accessions.append(
+
+                clnsig_dict = {
                     {
                         "value": int(significance),
                         "accession": accession,
                         "revstat": revstat,
                     }
-                )
+                }
+
+                if any([onc, onccdn, oncrevstat]):
+                    clnsig_dict["oncogenicity"] = onc
+                    clnsig_dict["tumor_type"] = onccdn
+                    clnsig_dict["onc_revstat"] = revstat
+
+                clnsig_accessions.append(clnsig_dict)
 
     return clnsig_accessions
 
