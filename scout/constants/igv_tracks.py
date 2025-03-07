@@ -124,11 +124,11 @@ HUMAN_GENES_38 = {
 }
 
 CASE_SPECIFIC_TRACKS = {
-    "rhocall_bed": "Rhocall Zygosity",
-    "rhocall_wig": "Rhocall Regions",
-    "tiddit_coverage_wig": "TIDDIT Coverage",
-    "upd_regions_bed": "UPD regions",
-    "upd_sites_bed": "UPD sites",
+    "rhocall_beds": "Rhocall Zygosity",
+    "rhocall_wigs": "Rhocall Regions",
+    "tiddit_coverage_wigs": "TIDDIT Coverage",
+    "upd_regions_beds": "UPD regions",
+    "upd_sites_beds": "UPD sites",
 }
 
 HUMAN_REFERENCE = {"37": HUMAN_REFERENCE_37, "38": HUMAN_REFERENCE_38}

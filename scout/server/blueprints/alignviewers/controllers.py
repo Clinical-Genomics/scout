@@ -43,7 +43,9 @@ def set_session_tracks(display_obj: dict):
 
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
-        if key not in ["tracks", "custom_tracks", "sample_tracks", "config_custom_tracks"]:
+        if key not in ["tracks", "custom_tracks", "sample_tracks", "config_custom_tracks"] + list(
+            CASE_SPECIFIC_TRACKS.keys()
+        ):
             continue
         for track_item in track_items:
             session_tracks += list(track_item.values())
@@ -267,6 +269,8 @@ def set_tracks(name, file_list):
     """Return a dict according to IGV track format."""
     track_list = []
     for track in file_list:
+        if track == "missing":
+            continue
         track_list.append({"name": name, "url": track, "min": 0.0, "max": 30.0})
     return track_list
 
@@ -347,7 +351,7 @@ def set_case_specific_tracks(display_obj, case_obj):
     for track, label in CASE_SPECIFIC_TRACKS.items():
         if case_obj.get(track) is None:
             continue
-        track_info = set_tracks(label, case_obj.get(track).split(","))
+        track_info = set_tracks(label, case_obj.get(track))
         display_obj[track] = track_info
 
 
