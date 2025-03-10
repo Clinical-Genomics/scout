@@ -50,10 +50,6 @@ samples:
         'coverage': 'scout/demo/images/chromograph_demo/coverage'
         'upd_regions': 'scout/demo/images/chromograph_demo/upd_regions'
         'upd_sites': 'scout/demo/images/chromograph_demo/upd_sites'
-    rhocall_wig: /Users/dannil/project/upd_tracks/justhusky_gatkcomb_rhocall_norm_af_rhoviz.hugelymodelbat.bw
-    tiddit_coverage_wig: /Users/dannil/project/upd_tracks/hugelymodelbat_lanes_1_fastp_sorted_md_tcov.bw
-    upd_regions_bed: /Users/dannil/project/upd_tracks/hugelymodelbat_gatkcomb_rhocall_norm_af_upd.regions.bb
-    upd_sites_bed: /Users/dannil/project/upd_tracks/hugelymodelbat_gatkcomb_rhocall_norm_af_upd.sites.bb
   - analysis_type: wes
     sample_id: ADM1059A1
     capture_kit: Agilent_SureSelectCRE.V1
