@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Paraphase bam-let alignment file load and display
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone
+### Fixed
+- Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts when variant contains more 50 HGVS descriptors
 
 ## [4.98]
 ### Added

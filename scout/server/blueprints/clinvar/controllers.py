@@ -25,33 +25,45 @@ from scout.utils.scout_requests import fetch_refseq_version
 from .form import CaseDataForm, SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
+MAX_VALIDATED_HGVS = 50
 
 
 def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
-    """Retrieve all transcripts / hgvs for a given variant."""
+    """Retrieve all transcripts / HGVS for a given variant."""
 
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
+
     add_gene_info(store, variant_obj, genome_build=build)
+
     for gene in variant_obj.get("genes", []):
-        for tx in gene.get("transcripts", []):
+        transcripts = gene.get("transcripts", [])
+        nr_transcripts = len(transcripts)
+
+        for tx in transcripts:
+            refseq_id = tx.get("refseq_id")
+            coding_seq_name = tx.get("coding_sequence_name")
+            if not (refseq_id and coding_seq_name):
+                continue  # Skip transcripts missing required fields
+
             mane_select = tx.get("mane_select_transcript")
-            if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
-                for refseq in tx.get("refseq_identifiers"):
-                    refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
-                    hgvs_simple = ":".join([refseq_version, tx["coding_sequence_name"]])
+            mane_plus_clinical = tx.get("mane_plus_clinical_transcript")
 
-                    # Validate descriptor using VariantValidator
-                    validated = validate_hgvs(build, hgvs_simple)
+            for refseq in tx.get("refseq_identifiers", []):
+                refseq_version = fetch_refseq_version(refseq)  # Adds version to a RefSeq ID
+                hgvs_simple = f"{refseq_version}:{coding_seq_name}"
 
-                    label = hgvs_simple
-                    if validated:
-                        label += "_validated_"
+                # Transcript is validate only when conditions are met
+                validated = (
+                    validate_hgvs(build, hgvs_simple)
+                    if (nr_transcripts <= MAX_VALIDATED_HGVS or mane_select or mane_plus_clinical)
+                    else ""
+                )
 
-                    if mane_select and mane_select == refseq_version:
-                        label += "_mane-select_"
+                label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if mane_select == refseq_version else ''}{'_mane-plus-clinical_' if mane_plus_clinical == refseq_version else ''}"
 
-                    tx_hgvs_list.append((hgvs_simple, label))
+                tx_hgvs_list.append((hgvs_simple, label))
+
     return tx_hgvs_list
 
 

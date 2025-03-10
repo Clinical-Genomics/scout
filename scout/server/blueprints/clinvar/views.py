@@ -3,10 +3,22 @@ from json import dumps
 from tempfile import NamedTemporaryFile
 from typing import List, Tuple
 
-from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_login import current_user
 
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, GERMLINE_CLASSIF_TERMS
+from scout.constants.clinvar import (
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    GERMLINE_CLASSIF_TERMS,
+)
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case
 
@@ -58,6 +70,7 @@ def clinvar_add_variant(institute_id, case_name):
         "institute": institute_obj,
         "case": case_obj,
         "germline_classif_terms": GERMLINE_CLASSIF_TERMS,
+        "max_validated_hgvs": controllers.MAX_VALIDATED_HGVS,
     }
     controllers.set_clinvar_form(request.form.get("var_id"), data)
     return render_template("clinvar/multistep_add_variant.html", **data)
