@@ -140,27 +140,38 @@ def test_parse_semi_modern_clnsig(cyvcf2_variant):
         )
 
 
-def test_parse_clnsig_all(cyvcf2_variant):
-    ## GIVEN a variant with classic clinvar annotations
-    acc_nr = "265359"
-    clnsig = "Pathogenic/Likely pathogenic"
-    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+def test_parse_clnsig_oncogenic(cyvcf2_variant):
+    ## GIVEN a variant with all ClinVar annotations, including oncogenicity
 
-    cyvcf2_variant.INFO["CLNACC"] = acc_nr
+    acc_nr = "13655"
+    clnsig = "Pathogenic/Likely_pathogenic"
+    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+    oncog = "Oncogenic"
+    oncog_revstat = "criteria_provided,_single_submitter"
+    oncog_type = "Neoplasm"
+
+    cyvcf2_variant.INFO["CLNVID"] = acc_nr
     cyvcf2_variant.INFO["CLNSIG"] = clnsig
     cyvcf2_variant.INFO["CLNREVSTAT"] = revstat
+    cyvcf2_variant.INFO["ONC"] = oncog
+    cyvcf2_variant.INFO["ONCREVSTAT"] = oncog_revstat
+    cyvcf2_variant.INFO["ONCDN"] = oncog_type
 
     revstat_groups = [rev.lstrip("_") for rev in revstat.split(",")]
+    oncog_revstat_groups = [rev.lstrip("_") for rev in oncog_revstat.split(",")]
 
     clnsig_annotations = parse_clnsig(cyvcf2_variant)
 
-    ## assert that they where parsed correct
+    ## assert that they where parsed correctly
     assert len(clnsig_annotations) == 2
 
     for entry in clnsig_annotations:
         assert entry["accession"] == int(acc_nr)
         assert entry["value"] in ["pathogenic", "likely_pathogenic"]
         assert entry["revstat"] == ",".join(revstat_groups)
+        assert entry["oncog"] == oncog.lower()
+        assert entry["oncog_revstat"] == ",".join(oncog_revstat_groups)
+        assert entry["oncog_type"] == oncog_type.lower()
 
 
 def test_parse_complex_clnsig(cyvcf2_variant):
