@@ -38,6 +38,11 @@ def parse_clnsig(
     sig = variant.INFO.get("CLNSIG", "").lower()
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
+    # Oncogenicity criteria
+    oncog = variant.INFO.get("ONC", "").lower()
+    oncog_revstat = variant.INFO.get("ONCREVSTAT", "").lower()
+    oncog_type = variant.INFO.get("ONCDN", "").lower()
+
     clnsig_accessions = []
 
     if acc == "" and transcripts:
@@ -58,16 +63,20 @@ def parse_clnsig(
             sig = transcripts[0].get("clinvar_clnsig")
             revstat = transcripts[0].get("clinvar_revstat")
 
-    # There are some versions where clinvar uses integers to represent terms
+    # There are some versions where ClinVar uses integers to represent terms
     if isinstance(acc, int) or acc.isdigit():
-        revstat_groups = []
-        if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
-        sig_groups = []
-        for significance in sig.replace("&", ",").split(","):
-            for term in significance.lstrip("_").split("/"):
-                sig_groups.append("_".join(term.split(" ")))
+        def parse_groups(value):
+            return (
+                [item.lstrip("_") for item in value.replace("&", ",").split(",")] if value else []
+            )
+
+        revstat_groups = parse_groups(revstat)
+        sig_groups = [
+            "_".join(term.lstrip("_").split(" "))
+            for sig_term in sig.replace("&", ",").split(",")
+            for term in sig_term.split("/")
+        ]
 
         sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
 
@@ -77,25 +86,35 @@ def parse_clnsig(
                 "accession": int(acc),
                 "revstat": ",".join(revstat_groups),
             }
-            clnsig_accessions.append(clnsig_accession)
 
-    # Test to parse the older format
-    if acc and not clnsig_accessions:
-        acc_groups = acc.split("|")
-        sig_groups = sig.split("|")
-        revstat_groups = revstat.split("|")
-        for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
-            accessions = acc_group.split(",")
-            significances = sig_group.split(",")
-            revstats = revstat_group.split(",")
-            for accession, significance, revstat in zip(accessions, significances, revstats):
-                clnsig_accessions.append(
+            if oncog:
+                clnsig_accession.update(
                     {
-                        "value": int(significance),
-                        "accession": accession,
-                        "revstat": revstat,
+                        "oncog": oncog,
+                        "oncog_revstat": ",".join(parse_groups(oncog_revstat)),
+                        "oncog_type": ",".join(parse_groups(oncog_type)),
                     }
                 )
+
+            clnsig_accessions.append(clnsig_accession)
+
+        # Test to parse the older format
+        if acc and not clnsig_accessions:
+            acc_groups = acc.split("|")
+            sig_groups = sig.split("|")
+            revstat_groups = revstat.split("|")
+            for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
+                accessions = acc_group.split(",")
+                significances = sig_group.split(",")
+                revstats = revstat_group.split(",")
+                for accession, significance, revstat in zip(accessions, significances, revstats):
+                    clnsig_accessions.append(
+                        {
+                            "value": int(significance),
+                            "accession": accession,
+                            "revstat": revstat,
+                        }
+                    )
 
     return clnsig_accessions
 

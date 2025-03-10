@@ -19,6 +19,11 @@ def build_clnsig(clnsig_info: dict) -> dict:
         revstat=clnsig_info.get("revstat"),
     )
 
+    if clnsig_info.get("oncog"):
+        clnsig_obj["oncog"] = clnsig_info["oncog"]
+        clnsig_obj["oncog_revstat"] = clnsig_info["oncog_revstat"]
+        clnsig_obj["oncog_type"] = clnsig_info["oncog_type"]
+
     if isinstance(value, str) and "low_penetrance" in value:
         clnsig_obj["low_penetrance"] = True
 
