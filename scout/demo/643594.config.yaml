@@ -29,6 +29,7 @@ samples:
     expected_coverage: 30
     tissue_type: blood
     mitodel_file: scout/demo/mitodel_test_files/hugelymodelbat_lanes_1_sorted_md_mitodel.txt
+    mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     d4_file: scout/demo/ADM1059A2.d4
     bionano_access:
@@ -48,7 +49,7 @@ samples:
         'coverage': 'scout/demo/images/chromograph_demo/coverage'
         'upd_regions': 'scout/demo/images/chromograph_demo/upd_regions'
         'upd_sites': 'scout/demo/images/chromograph_demo/upd_sites'
-    
+
   - analysis_type: wes
     sample_id: ADM1059A1
     capture_kit: Agilent_SureSelectCRE.V1
