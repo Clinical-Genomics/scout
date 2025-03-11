@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing and showing ClinVar oncogenity criteria: `ONC`, `ONCREVSTAT` and `ONCDN`
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone
+### Fixed
+- Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
 
 ## [4.98]
 ### Added
