@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import List
 
 from scout.utils.convert import call_safe
 from scout.utils.dict_utils import remove_nonetype
@@ -248,6 +249,7 @@ def build_variant(
     add_hgnc_symbols(variant_obj, variant_obj["hgnc_ids"], hgncid_to_gene)
     link_gene_panels(variant_obj, gene_to_panels)
     add_clnsig_objects(variant_obj, variant.get("clnsig", []))
+    add_clnsig_onc_objects(variant_obj, variant.get("clnsig_onc"))
 
     add_callers(variant_obj, variant.get("callers", {}))
 
@@ -336,6 +338,11 @@ def add_clnsig_objects(variant_obj, clnsig_list):
 
     if clnsig_objects:
         variant_obj["clnsig"] = clnsig_objects
+
+
+def add_clnsig_onc_objects(variant_obj: dict, onc_clnsig: List[dict]):
+    if onc_clnsig:
+        variant_obj["clnsig_onc"] = onc_clnsig
 
 
 def add_callers(variant_obj, call_info):

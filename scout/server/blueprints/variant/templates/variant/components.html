@@ -32,6 +32,25 @@
       </tbody>
     </table>
   {% endif %}
+
+  {% if variant.clnsig_onc %}
+    <table id='clinsig_table' class="table table-bordered table-sm">
+      <thead>
+        <th>Oncogenicity</th>
+        <th>Tumor type</th>
+        <th>Revstat</th>
+      </thead>
+      <tbody>
+        {% for classif in variant.clnsig_onc %}
+          <tr>
+            <td>{{ classif.value|capitalize }}</td>
+            <td>{{ classif.dn }}</td>
+            <td>{{ classif.revstat }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
 {% endmacro %}
 
 {% macro acmg_classification_item(variant, data) %}
