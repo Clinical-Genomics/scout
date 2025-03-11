@@ -1,5 +1,29 @@
 from scout.parse.variant import parse_variant
-from scout.parse.variant.clnsig import is_pathogenic, parse_clnsig
+from scout.parse.variant.clnsig import is_pathogenic, parse_clnsig, parse_clnsig_onc
+
+
+def test_parse_clnsig_onc(cyvcf2_variant):
+    """Test the function that parses somatic oncogenicity ClinVar classifications from a variant."""
+
+    acc_nr = "13961"
+    onc = "Oncogenic"
+    onc_revstat = "criteria_provided,_single_submitter"
+    onc_dn = "Neoplasm|Thyroid_gland_undifferentiated_(anaplastic)_carcinoma"
+
+    ## GIVEN a variant with somatic oncogenicity annotations
+    cyvcf2_variant.INFO["CLNVID"] = acc_nr
+    cyvcf2_variant.INFO["ONC"] = onc
+    cyvcf2_variant.INFO["ONCREVSTAT"] = onc_revstat
+    cyvcf2_variant.INFO["ONCDN"] = onc_dn
+
+    ## WHEN parsing the annotations
+    onc_clnsig_annotations = parse_clnsig_onc(cyvcf2_variant)
+
+    ## THEN all the expected field should be parsed correctly
+    assert onc_clnsig_annotations[0]["accession"] == int(acc_nr)
+    assert onc_clnsig_annotations[0]["value"] == onc.lower()
+    assert onc_clnsig_annotations[0]["revstat"] == "criteria_provided,single_submitter"
+    assert onc_clnsig_annotations[0]["dn"] == onc_dn.replace("|", ",")
 
 
 def test_parse_classic_clnsig(cyvcf2_variant):
