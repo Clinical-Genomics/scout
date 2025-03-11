@@ -38,7 +38,7 @@ def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
                 "accession": acc,
                 "value": onc_sig,
                 "revstat": onc_revstat,
-                "dn": onc_dn_groups[i].replace("|", ",").replace("_", " "),
+                "dn": onc_dn_groups[i].replace("|", ","),
             }
         )
     return onc_clnsig_accessions

@@ -44,7 +44,7 @@
         {% for classif in variant.clnsig_onc %}
           <tr>
             <td>{{ classif.value|capitalize }}</td>
-            <td>{{ classif.dn }}</td>
+            <td>{{ classif.dn|replace("_", " ")|replace(",", ", ") }}</td>
             <td>{{ classif.revstat }}</td>
           </tr>
         {% endfor %}

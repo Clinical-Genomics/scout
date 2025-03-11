@@ -23,10 +23,7 @@ def test_parse_clnsig_onc(cyvcf2_variant):
     assert onc_clnsig_annotations[0]["accession"] == int(acc_nr)
     assert onc_clnsig_annotations[0]["value"] == onc.lower()
     assert onc_clnsig_annotations[0]["revstat"] == "criteria_provided,single_submitter"
-    assert (
-        onc_clnsig_annotations[0]["dn"]
-        == "Neoplasm,Thyroid gland undifferentiated (anaplastic) carcinoma"
-    )
+    assert onc_clnsig_annotations[0]["dn"] == onc_dn.replace("|", ",")
 
 
 def test_parse_classic_clnsig(cyvcf2_variant):
