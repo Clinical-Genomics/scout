@@ -3,7 +3,45 @@ from typing import Dict, List, Optional, Union
 
 import cyvcf2
 
+from scout.constants.clnsig import ONC_CLNSIG
+
 LOG = logging.getLogger(__name__)
+
+
+def split_groups(value: str) -> List[str]:
+    """Removes leading underscore from a string and splits it into a list of items."""
+    return [
+        item.lstrip("_").replace(" ", "_")
+        for group in value.replace("&", ",").split(",")
+        for item in group.split("/")
+    ]
+
+
+def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
+    """Collect somatic oncogenicity ClinVar classifications for a variant, if available."""
+    if not variant.INFO.get("ONC"):
+        return []
+    acc = int(variant.INFO.get("CLNVID", 0))
+    onc_sig_groups = split_groups(value=variant.INFO.get("ONC", "").lower())
+    onc_revstat = ",".join(split_groups(value=variant.INFO.get("ONCREVSTAT", "").lower()))
+    onc_dn_groups = split_groups(variant.INFO.get("ONCDN", ""))
+
+    onc_clnsig_accessions = []
+
+    for i, onc_sig in enumerate(onc_sig_groups):
+        if (
+            onc_sig.capitalize() not in ONC_CLNSIG
+        ):  # This is excluding entries with ONC=no_classification_for_the_single_variant
+            continue
+        onc_clnsig_accessions.append(
+            {
+                "accession": acc,
+                "value": onc_sig,
+                "revstat": onc_revstat,
+                "dn": onc_dn_groups[i].replace("|", ",").replace("_", " "),
+            }
+        )
+    return onc_clnsig_accessions
 
 
 def parse_clnsig_low_penetrance(sig_groups: List[str]) -> List[str]:

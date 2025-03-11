@@ -115,6 +115,7 @@ def build_variant(
         revel_score = float, REVEL rankscore
         revel = float, REVEL score
         clnsig = list, # list of <clinsig>
+
         spidex = float,
 
         missing_data = bool, # default False

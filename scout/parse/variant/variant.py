@@ -9,7 +9,7 @@ from scout.utils.convert import call_safe
 from scout.utils.dict_utils import remove_nonetype
 
 from .callers import parse_callers
-from .clnsig import parse_clnsig
+from .clnsig import parse_clnsig, parse_clnsig_onc
 from .compound import parse_compounds
 from .conservation import parse_conservations
 from .coordinates import parse_coordinates
@@ -660,13 +660,12 @@ def set_clnsig(parsed_variant, variant, parsed_transcripts):
         variant(cyvcf2.Variant)
         parsed_transcripts(list)
     """
-    # XXX: Why is clnsig_predictions set to emtpy list and then compared?
-    clnsig_predictions = []
-    if len(clnsig_predictions) == 0 and len(parsed_transcripts) > 0:
-        # Parse INFO fielf to collect clnsig info
-        clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
-
+    clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
     parsed_variant["clnsig"] = clnsig_predictions
+
+    clnsig_onco_predictions = parse_clnsig_onc(variant)
+    if clnsig_onco_predictions:
+        parsed_variant["clnsig_onc"] = clnsig_onco_predictions
 
 
 def set_rank_result(parsed_variant, variant, rank_results_header):
