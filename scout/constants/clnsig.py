@@ -65,3 +65,5 @@ TRUSTED_REVSTAT_LEVEL = [
     "guideline",
     "practice_guideline",
 ]
+
+ONC_CLNSIG = ["Oncogenic", "Likely oncogenic", "Uncertain significance", "Likely benign", "Benign"]
