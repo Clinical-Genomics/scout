@@ -11,7 +11,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone
 ### Fixed
+- Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts when variant contains more than 50 HGVS descriptors
+
 
 ## [4.98]
 ### Added
