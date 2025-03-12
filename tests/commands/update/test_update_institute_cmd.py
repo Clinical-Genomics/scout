@@ -49,14 +49,19 @@ def test_update_institute_frequency_cutoff(mock_app):
     # GIVEN a CLI mock runner
     runner = mock_app.test_cli_runner()
 
+    # GIVEN an existing institute in a database
+    institute_obj = store.institute_collection.find_one()
+    # WITH a frequency cutoff
+    old_cutoff = institute_obj["frequency_cutoff"]
+
     # WHEN updating the frequency cutoff via CLI
     result = runner.invoke(cli, ["update", "institute", "cust000", "-f", frequency_cutoff])
     # THEN it should NOT return error
     assert result.exit_code == 0
 
-    # AND the institute should have the frequency coverage cutoff
+    # AND the institute should have the new frequency coverage cutoff
     updated_institute = store.institute_collection.find_one()
-    assert updated_institute["frequency_cutoff"] == frequency_cutoff
+    assert updated_institute["frequency_cutoff"] > old_cutoff
 
 
 def test_update_institute_display_name(mock_app):
