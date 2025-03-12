@@ -114,7 +114,7 @@ class InstituteHandler(object):
             "check_show_all_vars": check_show_all_vars is not None,
         }
         for key, value in UPDATE_SETTINGS.items():
-            if value is not False:
+            if bool(value) is True:
                 updates["$set"][key] = value
             else:
                 updates["$unset"][key] = ""  # Remove the key from the institute document
