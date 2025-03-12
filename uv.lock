@@ -337,7 +337,7 @@ wheels = [
 [[package]]
 name = "chanjo-report"
 version = "4.11.2"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "ssh://git@github.com/Clinical-Genomics/chanjo-report#8d2839971e384783b2805641eafff5b92fa73a3d" }
 dependencies = [
     { name = "cairocffi" },
     { name = "cffi" },
@@ -358,10 +358,6 @@ dependencies = [
     { name = "tabulate" },
     { name = "toml" },
     { name = "toolz" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/ee/82a09ce51d46600d5bba9a3e903f97824521ac30337289d1ac33bc6e9c34/chanjo-report-4.11.2.tar.gz", hash = "sha256:551c9b344ef545d993733a815c5c8044ee0a4157016960cb88d1d1075974fa1e", size = 26931 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/59/17c4fee1b79a260bd0bb825f0b5fbd8c6da83e8e3a79863fd8dc91f87b1d/chanjo_report-4.11.2-py2.py3-none-any.whl", hash = "sha256:e1dbcbe41b9a6e4b30c62dac59393eabdef5627a677c60d68f8ab55b53e5da2b", size = 26161 },
 ]
 
 [[package]]
@@ -682,15 +678,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/fb/f3/1c8088ff19a0fcd9c3234802a0ee47006ea64bd8852f1019194f0e3583ff/dominate-2.9.1.tar.gz", hash = "sha256:558284687d9b8aae1904e3d6051ad132dd4a8c0cf551b37ea4e7e42a31d19dc4", size = 37715 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/58/19/0380af745f151a1648657bbcef0fb49ac28bf09083d94498163ffd9b32dc/dominate-2.9.1-py2.py3-none-any.whl", hash = "sha256:cb7b6b79d33b15ae0a6e87856b984879927c7c2ebb29522df4c75b28ffd9b989", size = 29976 },
-]
-
-[[package]]
-name = "enum34"
-version = "1.1.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/11/c4/2da1f4952ba476677a42f25cd32ab8aaf0e1c0d0e00b89822b835c7e654c/enum34-1.1.10.tar.gz", hash = "sha256:cce6a7477ed816bd2542d03d53db9f0db935dd013b70f336a95c73979289f248", size = 28187 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/f6/ccb1c83687756aeabbf3ca0f213508fcfb03883ff200d201b3a4c60cedcc/enum34-1.1.10-py3-none-any.whl", hash = "sha256:c3858660960c984d6ab0ebad691265180da2b43f07e061c0f8dca9ef3cffd328", size = 11224 },
 ]
 
 [[package]]
@@ -1586,18 +1573,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pathlib2"
-version = "2.3.7.post1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "six" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/31/51/99caf463dc7c18eb18dad1fffe465a3cf3ee50ac3d1dccbd1781336fe9c7/pathlib2-2.3.7.post1.tar.gz", hash = "sha256:9fe0edad898b83c0c3e199c842b27ed216645d2e177757b2dd67384d4113c641", size = 211190 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/09/eb/4af4bcd5b8731366b676192675221c5324394a580dfae469d498313b5c4a/pathlib2-2.3.7.post1-py2.py3-none-any.whl", hash = "sha256:5266a0fd000452f1b3467d782f079a4343c63aaa119221fbdc4e39577489ca5b", size = 18027 },
-]
-
-[[package]]
 name = "pathspec"
 version = "0.12.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2013,8 +1988,6 @@ name = "pyscss"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "enum34" },
-    { name = "pathlib2" },
     { name = "six" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/92/30/64c818fd317e03138f98ca67800edb6a916f59fc07b3d7e535e84c3c333a/pyScss-1.4.0.tar.gz", hash = "sha256:8f35521ffe36afa8b34c7d6f3195088a7057c185c2b8f15ee459ab19748669ff", size = 122100 }
@@ -2417,7 +2390,7 @@ requires-dist = [
     { name = "anytree" },
     { name = "authlib" },
     { name = "cairosvg" },
-    { name = "chanjo-report", marker = "extra == 'coverage'" },
+    { name = "chanjo-report", marker = "extra == 'coverage'", git = "ssh://git@github.com/Clinical-Genomics/chanjo-report" },
     { name = "click" },
     { name = "coloredlogs" },
     { name = "configobj" },

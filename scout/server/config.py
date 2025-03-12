@@ -39,7 +39,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # )
 
 # Chanjo database connection string - used by chanjo report to create coverage reports
-# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@localhost:3306/chanjo4_test"
 
 # URL to an instance of Chanjo2, for generating coverage report
 # CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
