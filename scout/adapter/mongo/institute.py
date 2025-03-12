@@ -65,7 +65,7 @@ class InstituteHandler(object):
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
-        updates = {"$set": {}}
+        updates = {"$set": {}, "$pull": {}, "$unset": {}, "$push": {}}
         updated_institute = institute_obj
 
         if sanger_recipient:
@@ -78,7 +78,7 @@ class InstituteHandler(object):
                     internal_id, sanger_recipient
                 )
             )
-            updates["$push"] = {"sanger_recipients": sanger_recipient}
+            updates["$push"]["sanger_recipients"] = sanger_recipient
 
         if remove_sanger:
             LOG.info(
@@ -86,24 +86,7 @@ class InstituteHandler(object):
                     remove_sanger, internal_id
                 )
             )
-            updates["$pull"] = {"sanger_recipients": remove_sanger}
-
-        # Set a number of items
-        GENERAL_SETTINGS = {
-            "cohorts": cohorts,
-            "collaborators": sharing_institutes,
-            "coverage_cutoff": coverage_cutoff,
-            "display_name": display_name,
-            "frequency_cutoff": frequency_cutoff,
-            "gene_panels": gene_panels,
-            "gene_panels_matching": gene_panels_matching,
-            "loqusdb_id": loqusdb_ids,
-            "sanger_recipients": sanger_recipients,
-            "clinvar_submitters": clinvar_submitters,
-        }
-        for key, value in GENERAL_SETTINGS.items():
-            if value not in [None, ""]:
-                updates["$set"][key] = value
+            updates["$pull"]["sanger_recipients"] = remove_sanger
 
         if phenotype_groups is not None:
             if group_abbreviations:
@@ -123,27 +106,38 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
-        ADMIN_SETTINGS = {
-            "alamut_key": alamut_key,
-            "alamut_institution": alamut_institution,
-            "clinvar_key": clinvar_key,
-            "show_all_cases_status": show_all_cases_status,
-            "soft_filters": soft_filters,
+        UPDATE_SETTINGS = {
+            "cohorts": cohorts,
+            "collaborators": sharing_institutes,
+            "coverage_cutoff": coverage_cutoff,
+            "display_name": display_name,
+            "frequency_cutoff": frequency_cutoff,
+            "gene_panels": gene_panels,
+            "gene_panels_matching": gene_panels_matching,
+            "loqusdb_id": loqusdb_ids,
+            "sanger_recipients": sanger_recipients,
+            "clinvar_submitters": clinvar_submitters,
+            "alamut_key": alamut_key,  # Admin setting
+            "alamut_institution": alamut_institution,  # Admin setting
+            "clinvar_key": clinvar_key,  # Admin setting
+            "show_all_cases_status": show_all_cases_status,  # Admin setting
+            "soft_filters": soft_filters,  # Admin setting
         }
-        for key, value in ADMIN_SETTINGS.items():
+        for key, value in UPDATE_SETTINGS.items():
             if value not in [None, "", []]:
                 updates["$set"][key] = value
+            else:
+                updates["$unset"][key] = ""
 
         updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
 
-        if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
+        if any(updates.get(op) for op in ["$set", "$pull", "$unset", "$push"]):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
                 {"_id": internal_id},
                 updates,
                 return_document=pymongo.ReturnDocument.AFTER,
             )
-
             LOG.info("Institute updated")
 
         return updated_institute
