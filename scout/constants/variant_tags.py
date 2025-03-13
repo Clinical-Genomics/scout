@@ -244,7 +244,7 @@ CANCER_TIER_OPTIONS = {
     "4": {
         "label": "Tier IV",
         "description": "Observed at high frequency in the population. No published evidence.",
-        "label_class": "default",
+        "label_class": "success",
     },
 }
 
@@ -334,7 +334,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "VUS",
                 "name": "Unknown Significance",
                 "description": "Variant of unknown significance",
-                "label_class": "default",
+                "label_class": "primary",
             },
         ),
         (
@@ -361,7 +361,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "RF",
                 "name": "Risk Factor",
                 "description": "Established risk allele - strong evidence for a small risk increase",
-                "label_class": "default",
+                "label_class": "dark",
             },
         ),
         (
@@ -370,7 +370,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "LRF",
                 "name": "Likely Risk Factor",
                 "description": "Likely risk allele - some evidence for a small risk increase",
-                "label_class": "default",
+                "label_class": "dark",
             },
         ),
         (
@@ -379,7 +379,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "URF",
                 "name": "Uncertain Risk Factor",
                 "description": "Uncertain risk allele - uncertain evidence for a small risk increase",
-                "label_class": "default",
+                "label_class": "dark",
             },
         ),
         (
@@ -388,7 +388,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "O",
                 "name": "Other",
                 "description": "Other, phenotype not related to disease",
-                "label_class": "default",
+                "label_class": "primary",
             },
         ),
     ]
