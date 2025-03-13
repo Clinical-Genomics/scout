@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing and showing ClinVar somatic oncogenicity anontations, when available
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone
-- Mocked the Enseml liftover service in igv tracks tests
+- Mocked the Ensembl liftover service in igv tracks tests
 ### Fixed
 - Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
 - Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled.
