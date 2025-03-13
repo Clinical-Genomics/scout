@@ -7,8 +7,21 @@ from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import config_igv_tracks, store
 
 
-def test_make_sashimi_tracks_variant_38(app, case_obj):
+@responses.activate
+def test_make_sashimi_tracks_variant_38(app, case_obj, ensembl_liftover_response):
     """Test function that creates splice junction tracks for a variant with genome build 38"""
+
+    # WHEN the gene splice junction track is created for any variant in a gene
+    test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
+    # GIVEN a patched response from Ensembl liftover API
+    url = f'https://grch37.rest.ensembl.org/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    responses.add(
+        responses.GET,
+        url,
+        json=ensembl_liftover_response,
+        status=200,
+    )
 
     # GIVEN a case with genome build 38
     store.case_collection.find_one_and_update(
