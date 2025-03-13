@@ -25,7 +25,7 @@ from scout.utils.scout_requests import fetch_refseq_version
 from .form import CaseDataForm, SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
-MAX_VALIDATED_HGVS = 50
+MAX_VALIDATED_HGVS = 10
 
 
 def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
