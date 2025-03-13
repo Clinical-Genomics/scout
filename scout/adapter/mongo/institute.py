@@ -108,7 +108,7 @@ class InstituteHandler(object):
             "alamut_key": alamut_key,  # Admin setting
             "alamut_institution": alamut_institution,  # Admin setting
             "clinvar_key": clinvar_key,  # Admin setting
-            "phenotype_groups": existing_groups,
+            "phenotype_groups": get_existing_groups(institute_obj, phenotype_groups, group_abbreviations)
             "show_all_cases_status": show_all_cases_status,  # Admin setting
             "soft_filters": soft_filters,  # Admin setting
             "check_show_all_vars": check_show_all_vars is not None,
