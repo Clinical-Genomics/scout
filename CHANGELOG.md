@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
 - Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled.
+- Institute settings reset
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38
 
 ## [4.98]
