@@ -388,7 +388,7 @@ MANUAL_RANK_OPTIONS = OrderedDict(
                 "label": "O",
                 "name": "Other",
                 "description": "Other, phenotype not related to disease",
-                "label_class": "primary",
+                "label_class": "dark",
             },
         ),
     ]
