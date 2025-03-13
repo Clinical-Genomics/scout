@@ -80,7 +80,7 @@ dependencies = [
 
 [project.optional-dependencies]
 coverage=[
-            "chanjo-report @ git+ssh://git@github.com/Clinical-Genomics/chanjo-report#no_webassets",
+            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report#no_webassets",
             "pymysql",
 			"python-dateutil",
         ]
