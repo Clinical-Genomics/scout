@@ -32,6 +32,7 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
+    case_has_build_37 = "37" in case_obj.get("genome_buil", "37")
 
     add_gene_info(store, variant_obj, genome_build=build)
 
@@ -53,7 +54,9 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
                 # Transcript is validate only when conditions are met
                 validated = (
-                    validate_hgvs(build, hgvs_simple) if (mane_select or mane_plus_clinical) else ""
+                    validate_hgvs(build, hgvs_simple)
+                    if (case_has_build_37 or mane_select or mane_plus_clinical)
+                    else ""
                 )
 
                 label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if mane_select == refseq_version else ''}{'_mane-plus-clinical_' if mane_plus_clinical == refseq_version else ''}"
