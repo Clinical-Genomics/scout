@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+import responses
 from flask import session, url_for
-
-from scout.server.extensions import store
 
 
 def test_remote_static_no_auth(app):
@@ -146,8 +145,20 @@ def test_igv_authorized(app, user_obj, case_obj, variant_obj):
         assert session.get("igv_tracks") is None
 
 
-def test_sashimi_igv(app, user_obj, case_obj, variant_obj):
+@responses.activate
+def test_sashimi_igv(app, user_obj, case_obj, variant_obj, ensembl_liftover_response):
     """Test view requests and produces igv alignments, when the user has access to the case"""
+
+    # GIVEN a mocked response from the Ensembl liftover service
+    chromosome = variant_obj["chromosome"]
+    position = variant_obj["position"]
+    mocked_liftover_url = f"https://grch37.rest.ensembl.org/map/human/GRCh37/{chromosome}:{position}..{position}/GRCh38?content-type=application/json"
+    responses.add(
+        responses.GET,
+        mocked_liftover_url,
+        json=ensembl_liftover_response,
+        status=200,
+    )
 
     # GIVEN an initialized app
     with app.test_client() as client:
