@@ -13,7 +13,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow ACMG criteria strength modification to Very strong/Stand-alone
 ### Fixed
 - Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
+- Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled.
 - Try Chanjo-report branch unaffected by newish python webassets issue
+
 
 ## [4.98]
 ### Added
