@@ -70,7 +70,6 @@ def clinvar_add_variant(institute_id, case_name):
         "institute": institute_obj,
         "case": case_obj,
         "germline_classif_terms": GERMLINE_CLASSIF_TERMS,
-        "max_validated_hgvs": controllers.MAX_VALIDATED_HGVS,
     }
     controllers.set_clinvar_form(request.form.get("var_id"), data)
     return render_template("clinvar/multistep_add_variant.html", **data)

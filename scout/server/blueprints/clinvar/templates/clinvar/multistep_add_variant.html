@@ -110,11 +110,10 @@
                     <table style="width:100%; table-layout: auto; border-collapse: collapse;">
                       <caption></caption>
                       <tr><th></th></tr>
+                    {% set ns = namespace(label='', validated=false, mane_select=false, mane_plus_clinical=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
                       {% for item in item_row %}
-                        {% set ns = namespace(label='', validated=false, mane_select=false) %}
-
                         {% if "_validated_" in item.label.text %}
                           {% set ns.validated = true %}
                         {% endif %}
@@ -155,8 +154,8 @@
                     {% endfor %}
                     </table>
 
-                    {% if variant_data.var_form.tx_hgvs.choices |length > max_validated_hgvs+1 %} <!-- +1 because there is also the option to leave HGVS blank -->
-                      <span class="text-danger">HGVS validations were skipped because the variant contains more than {{max_validated_hgvs}} HGVS entries. Validating a large number of HGVS entries may cause a page timeout. Please perform a manual validation using the VariantValidator link above.</span>
+                    {% if ns.mane_select or ns.mane_plus_clinical %} <!-- Only those HGVS have been validated -->
+                      <span class="text-danger">HGVS validation was only performed on MANE Select and MANE Plus Clinical transcripts. For any other available HGVS present in this list, manual validation can be performed using the VariantValidator link above.</span>
                     {% endif %}
 
                     <br><br>

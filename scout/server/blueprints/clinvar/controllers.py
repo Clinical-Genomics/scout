@@ -25,7 +25,6 @@ from scout.utils.scout_requests import fetch_refseq_version
 from .form import CaseDataForm, SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
-MAX_VALIDATED_HGVS = 10
 
 
 def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
@@ -38,7 +37,6 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     for gene in variant_obj.get("genes", []):
         transcripts = gene.get("transcripts", [])
-        nr_transcripts = len(transcripts)
 
         for tx in transcripts:
             refseq_id = tx.get("refseq_id")
@@ -55,13 +53,10 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
                 # Transcript is validate only when conditions are met
                 validated = (
-                    validate_hgvs(build, hgvs_simple)
-                    if (nr_transcripts <= MAX_VALIDATED_HGVS or mane_select or mane_plus_clinical)
-                    else ""
+                    validate_hgvs(build, hgvs_simple) if (mane_select or mane_plus_clinical) else ""
                 )
 
                 label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if mane_select == refseq_version else ''}{'_mane-plus-clinical_' if mane_plus_clinical == refseq_version else ''}"
-
                 tx_hgvs_list.append((hgvs_simple, label))
 
     return tx_hgvs_list
