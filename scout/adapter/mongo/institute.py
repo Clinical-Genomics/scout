@@ -60,7 +60,29 @@ class InstituteHandler(object):
     ) -> Union[dict, str]:
         """Update the information for an institute."""
 
-        add_groups = add_groups or False
+        def get_phenotype_groups() -> dict:
+            """Returns a dictionary with phenotype descriptions and abbreviations."""
+            existing_groups = (
+                institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS) if add_groups else {}
+            )
+
+            if not phenotype_groups:
+                return existing_groups
+
+            group_abbreviations_list = list(group_abbreviations) if group_abbreviations else []
+
+            for i, hpo_term in enumerate(phenotype_groups):
+                hpo_obj = self.hpo_term(hpo_term)
+                if not hpo_obj:
+                    return f"Term {hpo_term} does not exist in database"
+
+                existing_groups[hpo_term] = {
+                    "name": hpo_obj["description"],
+                    "abbr": group_abbreviations_list[i] if group_abbreviations_list else None,
+                }
+
+            return existing_groups
+
         institute_obj = self.institute(internal_id)
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
@@ -77,24 +99,12 @@ class InstituteHandler(object):
                 set(institute_obj.get("sanger_recipients", [])) - set([remove_sanger])
             )
 
-        existing_groups = {}
-        if phenotype_groups is not None:
-            if group_abbreviations:
-                group_abbreviations = list(group_abbreviations)
-            if add_groups:
-                existing_groups = institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS)
-            for i, hpo_term in enumerate(phenotype_groups):
-                hpo_obj = self.hpo_term(hpo_term)
-                if not hpo_obj:
-                    return "Term {} does not exist in database".format(hpo_term)
-                hpo_id = hpo_obj["hpo_id"]
-                description = hpo_obj["description"]
-                abbreviation = None
-                if group_abbreviations:
-                    abbreviation = group_abbreviations[i]
-                existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
-
         UPDATE_SETTINGS = {
+            "alamut_institution": alamut_institution,  # Admin setting
+            "alamut_key": alamut_key,  # Admin setting
+            "check_show_all_vars": check_show_all_vars is not None,
+            "clinvar_key": clinvar_key,  # Admin setting
+            "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
             "collaborators": sharing_institutes,
             "coverage_cutoff": coverage_cutoff,
@@ -103,15 +113,10 @@ class InstituteHandler(object):
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
             "loqusdb_id": loqusdb_ids,
+            "phenotype_groups": get_phenotype_groups(),
             "sanger_recipients": sanger_recipients,
-            "clinvar_submitters": clinvar_submitters,
-            "alamut_key": alamut_key,  # Admin setting
-            "alamut_institution": alamut_institution,  # Admin setting
-            "clinvar_key": clinvar_key,  # Admin setting
-            "phenotype_groups": get_existing_groups(institute_obj, phenotype_groups, group_abbreviations)
             "show_all_cases_status": show_all_cases_status,  # Admin setting
             "soft_filters": soft_filters,  # Admin setting
-            "check_show_all_vars": check_show_all_vars is not None,
         }
         for key, value in UPDATE_SETTINGS.items():
             if bool(value) is True:
