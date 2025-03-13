@@ -67,7 +67,7 @@ def test_matching_manual_rank(
     assert matching_ranked == {
         10: {
             "description": "Established risk allele - strong evidence for a small risk increase",
-            "label_class": "default",
+            "label_class": "dark",
             "label": "RF",
             "links": {"link"},
         }
