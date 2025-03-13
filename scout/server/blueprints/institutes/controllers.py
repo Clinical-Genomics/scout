@@ -391,8 +391,16 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
     updated_institute = store.update_institute(
         internal_id=institute_obj["_id"],
         sanger_recipients=get_sanger_recipients(form),
-        coverage_cutoff=int(form.get("coverage_cutoff")),
-        frequency_cutoff=float(form.get("frequency_cutoff")),
+        coverage_cutoff=(
+            int(form["coverage_cutoff"])
+            if form.get("coverage_cutoff")
+            else form.get("coverage_cutoff")
+        ),
+        frequency_cutoff=(
+            float(form["frequency_cutoff"])
+            if form.get("frequency_cutoff")
+            else form.get("frequency_cutoff")
+        ),
         show_all_cases_status=form.getlist("show_all_cases_status"),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
