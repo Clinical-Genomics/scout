@@ -65,7 +65,6 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
                 label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if refseq_is_mane_select else ''}{'_mane-plus-clinical_' if refseq_is_mane_plus_clinical else ''}"
 
-                print(label)
                 tx_hgvs_list.append((hgvs_simple, label))
 
     return tx_hgvs_list
