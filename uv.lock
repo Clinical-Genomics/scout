@@ -337,14 +337,13 @@ wheels = [
 [[package]]
 name = "chanjo-report"
 version = "4.11.2"
-source = { git = "ssh://git@github.com/Clinical-Genomics/chanjo-report#8d2839971e384783b2805641eafff5b92fa73a3d" }
+source = { git = "https://github.com/Clinical-Genomics/chanjo-report/?branch=no_webassets#9f16a74fd5ad8b500b7f8a3d29804db36a2f8412" }
 dependencies = [
     { name = "cairocffi" },
     { name = "cffi" },
     { name = "chanjo" },
     { name = "cryptography" },
     { name = "flask" },
-    { name = "flask-assets" },
     { name = "flask-babel" },
     { name = "flask-debugtoolbar" },
     { name = "flask-sqlalchemy" },
@@ -704,19 +703,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/89/50/dff6380f1c7f84135484e176e0cac8690af72fa90e932ad2a0a60e28c69b/flask-3.1.0.tar.gz", hash = "sha256:5f873c5184c897c8d9d1b05df1e3d01b14910ce69607a117bd3277098a5836ac", size = 680824 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/af/47/93213ee66ef8fae3b93b3e29206f6b251e65c97bd91d8e1c5596ef15af0a/flask-3.1.0-py3-none-any.whl", hash = "sha256:d667207822eb83f1c4b50949b1623c8fc8d51f2341d65f72e1a1815397551136", size = 102979 },
-]
-
-[[package]]
-name = "flask-assets"
-version = "2.1.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "flask" },
-    { name = "webassets" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3e/8b/1bc3887678557a1ff85fe294ef7f1139ca0f8956195741c8fad39b69616f/Flask-Assets-2.1.0.tar.gz", hash = "sha256:f84d6532ffe59c9ff352885e8740ff4da25c0bcfacd805f0a806815e44354813", size = 24280 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/bc/11fe3ca1c4970e1a7dc401a7dd237fc005167abeb74b5456fa8b5ae2e1c7/Flask_Assets-2.1.0-py3-none-any.whl", hash = "sha256:a56c476b15f84701712cc3b4b4a001ebbe62b1dcbe81c23f96fbe6f261b75324", size = 8505 },
 ]
 
 [[package]]
@@ -2390,7 +2376,7 @@ requires-dist = [
     { name = "anytree" },
     { name = "authlib" },
     { name = "cairosvg" },
-    { name = "chanjo-report", marker = "extra == 'coverage'", git = "ssh://git@github.com/Clinical-Genomics/chanjo-report" },
+    { name = "chanjo-report", marker = "extra == 'coverage'", git = "https://github.com/Clinical-Genomics/chanjo-report/?branch=no_webassets" },
     { name = "click" },
     { name = "coloredlogs" },
     { name = "configobj" },
@@ -2740,15 +2726,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6c/a0/f6b3ef688e747488b17b3b39d27fe7438d3ec88d1b79d5524485a5458020/weasyprint-64.1.tar.gz", hash = "sha256:28b02f2c6409bafce1b1220d9d76a7345875bd3bd08c4f6dfbf510bb92a94757", size = 498647 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/42/95/bf333fbbaf73c1c211b6b801b9ac2563db8e2225f69902d1ba8b25c70e9c/weasyprint-64.1-py3-none-any.whl", hash = "sha256:f7c88ea8ce0ce0c527cbb9c802689e035fae50016d7efc5dfdaba4b75abf68f4", size = 302025 },
-]
-
-[[package]]
-name = "webassets"
-version = "2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c1/c4/2da869584205c064614535cc626defa493b98f0d114e8f4741c99800000e/webassets-2.0.tar.gz", hash = "sha256:167132337677c8cedc9705090f6d48da3fb262c8e0b2773b29f3352f050181cd", size = 288016 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/7c/be5d23512974c5843e94aacec163fc31539e91d1e740dd9b886f7714f9d1/webassets-2.0-py3-none-any.whl", hash = "sha256:a31a55147752ba1b3dc07dee0ad8c8efff274464e08bbdb88c1fd59ffd552724", size = 142873 },
 ]
 
 [[package]]

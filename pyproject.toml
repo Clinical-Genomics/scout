@@ -79,12 +79,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-coverage=[
-            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report#no_webassets",
+coverage=[ "chanjo-report",
             "pymysql",
 			"python-dateutil",
         ]
 
+[tool.uv.sources]
+chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report/", branch="no_webassets"}
 
 [project.urls]
 Repository = "https://github.com/Clinical-Genomics/scout"
