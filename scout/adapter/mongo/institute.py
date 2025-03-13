@@ -60,36 +60,51 @@ class InstituteHandler(object):
     ) -> Union[dict, str]:
         """Update the information for an institute."""
 
-        add_groups = add_groups or False
+        def get_phenotype_groups() -> dict:
+            """Returns a dictionary with phenotype descriptions and abbreviations."""
+            existing_groups = (
+                institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS) if add_groups else {}
+            )
+
+            if not phenotype_groups:
+                return existing_groups
+
+            group_abbreviations_list = list(group_abbreviations) if group_abbreviations else []
+
+            for i, hpo_term in enumerate(phenotype_groups):
+                hpo_obj = self.hpo_term(hpo_term)
+                if not hpo_obj:
+                    continue
+
+                existing_groups[hpo_term] = {
+                    "name": hpo_obj["description"],
+                    "abbr": group_abbreviations_list[i] if group_abbreviations_list else None,
+                }
+
+            return existing_groups
+
         institute_obj = self.institute(internal_id)
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
-        updates = {"$set": {}}
+        updates = {"$set": {}, "$unset": {}}
         updated_institute = institute_obj
 
         if sanger_recipient:
-            user_obj = self.user(sanger_recipient)
-            if not user_obj:
-                raise IntegrityError("user {} does not exist in database".format(sanger_recipient))
-
-            LOG.info(
-                "Updating sanger recipients for institute: {0} with {1}".format(
-                    internal_id, sanger_recipient
-                )
-            )
-            updates["$push"] = {"sanger_recipients": sanger_recipient}
+            old_recipients = institute_obj.get("sanger_recipients", [])
+            sanger_recipients = old_recipients + [sanger_recipient]
 
         if remove_sanger:
-            LOG.info(
-                "Removing sanger recipient {0} from institute: {1}".format(
-                    remove_sanger, internal_id
-                )
+            sanger_recipients = list(
+                set(institute_obj.get("sanger_recipients", [])) - set([remove_sanger])
             )
-            updates["$pull"] = {"sanger_recipients": remove_sanger}
 
-        # Set a number of items
-        GENERAL_SETTINGS = {
+        UPDATE_SETTINGS = {
+            "alamut_institution": alamut_institution,  # Admin setting
+            "alamut_key": alamut_key,  # Admin setting
+            "check_show_all_vars": check_show_all_vars is not None,
+            "clinvar_key": clinvar_key,  # Admin setting
+            "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
             "collaborators": sharing_institutes,
             "coverage_cutoff": coverage_cutoff,
@@ -98,52 +113,24 @@ class InstituteHandler(object):
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
             "loqusdb_id": loqusdb_ids,
+            "phenotype_groups": get_phenotype_groups(),
             "sanger_recipients": sanger_recipients,
-            "clinvar_submitters": clinvar_submitters,
+            "show_all_cases_status": show_all_cases_status,  # Admin setting
+            "soft_filters": soft_filters,  # Admin setting
         }
-        for key, value in GENERAL_SETTINGS.items():
-            if value not in [None, ""]:
+        for key, value in UPDATE_SETTINGS.items():
+            if bool(value) is True:
                 updates["$set"][key] = value
+            else:
+                updates["$unset"][key] = ""  # Remove the key from the institute document
 
-        if phenotype_groups is not None:
-            if group_abbreviations:
-                group_abbreviations = list(group_abbreviations)
-            existing_groups = {}
-            if add_groups:
-                existing_groups = institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS)
-            for i, hpo_term in enumerate(phenotype_groups):
-                hpo_obj = self.hpo_term(hpo_term)
-                if not hpo_obj:
-                    return "Term {} does not exist in database".format(hpo_term)
-                hpo_id = hpo_obj["hpo_id"]
-                description = hpo_obj["description"]
-                abbreviation = None
-                if group_abbreviations:
-                    abbreviation = group_abbreviations[i]
-                existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
-            updates["$set"]["phenotype_groups"] = existing_groups
-
-        ADMIN_SETTINGS = {
-            "alamut_key": alamut_key,
-            "alamut_institution": alamut_institution,
-            "clinvar_key": clinvar_key,
-            "show_all_cases_status": show_all_cases_status,
-            "soft_filters": soft_filters,
-        }
-        for key, value in ADMIN_SETTINGS.items():
-            if value not in [None, "", []]:
-                updates["$set"][key] = value
-
-        updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
-
-        if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
+        if any(updates.get(op) for op in ["$set", "$unset"]):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
                 {"_id": internal_id},
                 updates,
                 return_document=pymongo.ReturnDocument.AFTER,
             )
-
             LOG.info("Institute updated")
 
         return updated_institute
