@@ -11,7 +11,7 @@ COPY --chmod=644 pyproject.toml uv.lock README.md ./
 # No wheel for indirect pycairo dependency so need build env for it to install
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get -y install --no-install-recommends libcairo2-dev
+    apt-get -y install --no-install-recommends libcairo2-dev git
 
 RUN uv venv --relocatable
 RUN uv sync --frozen --no-install-project --no-editable
