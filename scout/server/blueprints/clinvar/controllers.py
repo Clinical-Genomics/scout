@@ -32,7 +32,7 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [("", "Do not specify")]
-    case_has_build_37 = "37" in case_obj.get("genome_buil", "37")
+    case_has_build_37 = "37" in case_obj.get("genome_build", "37")
 
     add_gene_info(store, variant_obj, genome_build=build)
 
@@ -40,6 +40,7 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
         transcripts = gene.get("transcripts", [])
 
         for tx in transcripts:
+
             refseq_id = tx.get("refseq_id")
             coding_seq_name = tx.get("coding_sequence_name")
             if not (refseq_id and coding_seq_name):
@@ -52,14 +53,19 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
                 refseq_version = fetch_refseq_version(refseq)  # Adds version to a RefSeq ID
                 hgvs_simple = f"{refseq_version}:{coding_seq_name}"
 
+                refseq_is_mane_select = mane_select == refseq_version
+                refseq_is_mane_plus_clinical = mane_plus_clinical == refseq_version
+
                 # Transcript is validate only when conditions are met
                 validated = (
                     validate_hgvs(build, hgvs_simple)
-                    if (case_has_build_37 or mane_select or mane_plus_clinical)
+                    if (case_has_build_37 or refseq_is_mane_select or refseq_is_mane_plus_clinical)
                     else ""
                 )
 
-                label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if mane_select == refseq_version else ''}{'_mane-plus-clinical_' if mane_plus_clinical == refseq_version else ''}"
+                label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if refseq_is_mane_select else ''}{'_mane-plus-clinical_' if refseq_is_mane_plus_clinical else ''}"
+
+                print(label)
                 tx_hgvs_list.append((hgvs_simple, label))
 
     return tx_hgvs_list
