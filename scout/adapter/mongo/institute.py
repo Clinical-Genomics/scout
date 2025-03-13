@@ -74,7 +74,7 @@ class InstituteHandler(object):
             for i, hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
-                    return f"Term {hpo_term} does not exist in database"
+                    continue
 
                 existing_groups[hpo_term] = {
                     "name": hpo_obj["description"],
