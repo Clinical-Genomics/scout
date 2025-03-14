@@ -6,19 +6,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- De novo assembly alignment file load and display
-- Paraphase bam-let alignment file load and display
-- Parsing and showing ClinVar somatic oncogenicity anontations, when available
+- De novo assembly alignment file load and display (#5284)
+- Paraphase bam-let alignment file load and display (#5284)
+- Parsing and showing ClinVar somatic oncogenicity anontations, when available (#5304)
 ### Changed
-- Allow ACMG criteria strength modification to Very strong/Stand-alone
-- Mocked the Ensembl liftover service in igv tracks tests
+- Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
+- Mocked the Ensembl liftover service in igv tracks tests (#5319)
 ### Fixed
-- Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity)
-- Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled.
-- Institute settings reset
-- Updated color scheme for variant assessment badges that were hard to see in light mode, notably Risk Factor
-- Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38
-- Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available
+- Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity) (#5300)
+- Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled (#5311)
+- Institute settings reset (#5309)
+- Updated color scheme for variant assessment badges that were hard to see in light mode, notably Risk Factor (#5318)
+- Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38 (#5302)
+- Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available (#5322)
 
 ## [4.98]
 ### Added
