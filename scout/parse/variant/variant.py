@@ -63,6 +63,10 @@ def parse_variant(
     chrom_match = CHR_PATTERN.match(variant.CHROM)
     chrom = chrom_match.group(2)
 
+    ### We always assume split and normalized vcfs!!!
+    if len(variant.ALT) > 1:
+        raise VcfError("Variants are only allowed to have one alternative")
+
     # Builds a dictionary with the different ids that are used
     alt = get_variant_alternative(variant, category)
 
@@ -99,25 +103,19 @@ def parse_variant(
             variant_type=variant_type,
         ),
         "rank_score": parse_rank_score(variant.INFO.get("RankScore", ""), genmod_key) or 0,
+        "genetic_models": parse_genetic_models(variant.INFO.get("GeneticModels"), genmod_key),
+        "str_swegen_mean": call_safe(float, variant.INFO.get("SweGenMean")),
+        "str_swegen_std": call_safe(float, variant.INFO.get("SweGenStd")),
+        "somatic_score": call_safe(int, variant.INFO.get("SOMATICSCORE")),
+        "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
 
-    parsed_variant["category"] = get_category(category, variant, parsed_variant)
-
-    ### We always assume split and normalized vcfs!!!
-    if len(variant.ALT) > 1:
-        raise VcfError("Variants are only allowed to have one alternative")
-
-    # Add the dbsnp ids
+    set_category(parsed_variant, category, variant)
     set_dbsnp_id(parsed_variant, variant.ID)
 
     # This is the id of other position in translocations
     # (only for specific svs)
     parsed_variant["mate_id"] = None
-
-    ################# Add inheritance patterns #################
-    parsed_variant["genetic_models"] = parse_genetic_models(
-        variant.INFO.get("GeneticModels"), genmod_key
-    )
 
     ################# Add autozygosity calls if present #################
     parsed_variant["azlength"] = call_safe(int, variant.INFO.get("AZLENGTH"))
@@ -127,8 +125,6 @@ def parse_variant(
     set_str_info(variant, parsed_variant)
     # STR source dict with display string, source type and entry id
     set_str_source(parsed_variant, variant)
-    parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
-    parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
     # MEI variant info
     set_mei_info(variant, parsed_variant)
@@ -136,17 +132,11 @@ def parse_variant(
     # Add Fusion info
     set_fusion_info(variant, parsed_variant)
 
-    ################# Add somatic info ##################
-    parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
-
     ################# Add mitomap info, from HmtNote #################
     set_mitomap_associated_diseases(parsed_variant, variant)
 
     ################# Add HmtVar variant id, from HmtNote #################
     add_hmtvar(parsed_variant, variant)
-
-    ### Add custom info
-    parsed_variant["custom"] = parse_custom_data(variant.INFO.get("SCOUT_CUSTOM"))
 
     ### Add gene and transcript information
     if parsed_variant.get("category") == "fusion":
@@ -375,7 +365,7 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def set_category(category: str, variant: Variant, parsed_variant: dict) -> str:
+def set_category(parsed_variant: dict, category: str, variant: Variant) -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
