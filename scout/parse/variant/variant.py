@@ -375,27 +375,22 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_category(category, variant, parsed_variant):
-    """Get category of variant.
-    Args:
-        category(str)
-        variant(cyvcf2.Variant)
-        parsed_variant(dict)
-    Return:
-        category(str)
+def set_category(category: str, variant: Variant, parsed_variant: dict) -> str:
+    """Set category of variant. Convenience return of category only.
+
+    If category not set, assume it's an SNP or INDEL and set to type "snv".
+    Warn on old style "mnp", but set "snv" as well - these are "INDEL" effectively.
     """
+
     if category:
+        parsed_variant["category"] = category
         return category
 
-    var_type = variant.var_type
-    if var_type == "indel":
-        return "snv"
-    if var_type == "snp":
-        return "snv"
-    if var_type == "mnp":
-        LOG.warning("Category MNP found: {}".format(parsed_variant["ids"]["display_name"]))
-        return "snv"
-    return var_type
+    if variant.var_type == "mnp":
+        LOG.warning(f"Category MNP found: {parsed_variant['ids']['display_name']}")
+
+    parsed_variant["category"] = "snv"
+    return parsed_variant["category"]
 
 
 def set_dbsnp_id(parsed_variant, variant_id):
