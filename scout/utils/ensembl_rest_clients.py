@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 HEADERS = {"Content-type": "application/json"}
 RESTAPI_37 = "https://grch37.rest.ensembl.org"
 RESTAPI_38 = "https://rest.ensembl.org"
-WARNING = "warninng"
+WARNING = "warning"
 
 
 class EnsemblRestApiClient:
@@ -46,11 +46,13 @@ class EnsemblRestApiClient:
         Returns:
             data(dict): dictionary from json response
         """
+        LOG.error(url)
         error = None
         data = None
         try:
             response = requests.get(url, headers=HEADERS)
             if response.status_code not in [404, 500]:
+
                 data = response.json()
             else:
                 error = f"Ensembl request failed with code:{response.status_code} for url {url}"
@@ -60,7 +62,7 @@ class EnsemblRestApiClient:
             error = f"Ensembl request failed with HTTPError error for url {url}"
 
         if error:
-            flash(f"Request failed for url {url}", WARNING)
+            flash(error, WARNING)
         return data
 
     def liftover(self, build, chrom, start, end=None):
