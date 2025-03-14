@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from cyvcf2 import Variant
 
-from scout.constants import CHR_PATTERN
+from scout.constants import CHR_PATTERN, INVALID_SAMPLE_TYPES
 from scout.exceptions import VcfError
 from scout.utils.convert import call_safe
 from scout.utils.dict_utils import remove_nonetype
@@ -389,7 +389,12 @@ def get_samples(variant, individual_positions, case):
         variant filter
     """
     if individual_positions and case["individuals"]:
-        return parse_genotypes(variant, case["individuals"], individual_positions)
+        individuals = []
+        for ind in individuals:
+            if ind.get("analysis_type") in INVALID_SAMPLE_TYPES.get(variant.get("category")):
+                continue
+            individuals.append(ind)
+        return parse_genotypes(variant, individuals, individual_positions)
     return []
 
 

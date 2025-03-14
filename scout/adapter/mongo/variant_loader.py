@@ -12,7 +12,7 @@ from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, INVALID_SAMPLE_TYPES, ORDERED_FILE_TYPE_MAP
+from scout.constants import CHROMOSOMES, ORDERED_FILE_TYPE_MAP
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -695,11 +695,7 @@ class VariantLoader(object):
                 LOG.debug("Found VEP header %s", "|".join(vep_header))
 
             # This is a dictionary to tell where ind are in vcf
-            individual_positions = {
-                ind: i
-                for i, ind in enumerate(vcf_obj.samples)
-                if vcf_obj.samples[i].analysis_type not in INVALID_SAMPLE_TYPES[category]
-            }
+            individual_positions = {ind: i for i, ind in enumerate(vcf_obj.samples)}
 
             # Dictionary for cancer analysis
             sample_info = {}
