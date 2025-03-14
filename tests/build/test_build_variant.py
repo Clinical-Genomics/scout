@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 
 from scout.build import build_variant

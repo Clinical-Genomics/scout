@@ -27,16 +27,10 @@ GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 LOG = logging.getLogger(__name__)
 
 
-def parse_genotypes(variant, individuals, individual_positions):
-    """Parse the genotype calls for a variant
-
-    Args:
-        variant(cyvcf2.Variant)
-        individuals: List[dict]
-        individual_positions(dict)
-    Returns:
-        genotypes(list(dict)): A list of genotypes
-    """
+def parse_genotypes(
+    variant: cyvcf2.Variant, individuals: List[Dict], individual_positions: Dict
+) -> List[Dict]:
+    """Parse the genotype calls for a variant"""
     genotypes = []
     for ind in individuals:
         pos = individual_positions[ind["individual_id"]]

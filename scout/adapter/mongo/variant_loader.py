@@ -621,16 +621,16 @@ class VariantLoader(object):
 
     def load_variants(
         self,
-        case_obj,
-        variant_type="clinical",
-        category="snv",
-        rank_threshold=None,
-        chrom=None,
-        start=None,
-        end=None,
-        gene_obj=None,
-        custom_images=None,
-        build="37",
+        case_obj: dict,
+        variant_type: str = "clinical",
+        category: str = "snv",
+        rank_threshold: float = None,
+        chrom: str = None,
+        start: int = None,
+        end: int = None,
+        gene_obj: dict = None,
+        custom_images: list = None,
+        build: str = "37",
     ):
         """Load variants for a case into scout.
 
@@ -675,7 +675,7 @@ class VariantLoader(object):
             )
 
         gene_to_panels = self.gene_to_panels(case_obj)
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        genes = list(self.all_genes(build=build))
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
