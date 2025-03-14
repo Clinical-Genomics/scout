@@ -18,7 +18,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings reset
 - Updated color scheme for variant assessment badges that were hard to see in light mode, notably Risk Factor
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38
-- Sashimi view page not crashing but displaying a red warning when Ensembl REST APU (liftover) are not available
+- Sashimi view page displaying a warning when Ensembl REST API (LiftOver) is not available
+
 
 ## [4.98]
 ### Added
