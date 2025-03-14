@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
+- Allow loading of mixed analysis type cases where some individuals are fully WTS and do not appear in DNA VCFs (#5327)
 ### Fixed
 - Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity) (#5300)
 - Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled (#5311)
