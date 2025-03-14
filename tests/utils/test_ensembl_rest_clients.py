@@ -63,7 +63,7 @@ def test_send_request_unavaailable(mock_app, ensembl_rest_client_37, mocker):
     """Test the Ensembl REST client with an URL that is not available (500 error)."""
 
     url = f"{RESTAPI_37}/fakeyurl"
-    # GIVEN patched Ensembl client
+    # GIVEN a patched Ensembl client
     client = ensembl_rest_client_37
 
     # GIVEN a mocked 550 response from Ensembl
