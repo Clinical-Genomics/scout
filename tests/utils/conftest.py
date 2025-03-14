@@ -49,21 +49,15 @@ def fixture_ensembl_biomart_xml_query():
 
 
 @pytest.fixture
-def ensembl_biomart_client_37():
+def ensembl_biomart_client():
     """Return a client to the ensembl biomart, build 37"""
     return ensembl_rest_clients.EnsemblBiomartClient("37")
 
 
 @pytest.fixture
-def ensembl_rest_client_37():
-    """Return a client to the ensembl rest api, build 37"""
-    return ensembl_rest_clients.EnsemblRestApiClient("37")
-
-
-@pytest.fixture
-def ensembl_rest_client_38():
-    """Return a client to the ensembl rest api, build 38"""
-    return ensembl_rest_clients.EnsemblRestApiClient("38")
+def ensembl_rest_client():
+    """Return a client to the Ensembl REST API."""
+    return ensembl_rest_clients.EnsemblRestApiClient()
 
 
 @pytest.fixture
