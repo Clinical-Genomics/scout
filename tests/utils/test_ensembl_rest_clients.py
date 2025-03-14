@@ -49,7 +49,7 @@ def test_send_request_fakey_url(mock_app, ensembl_rest_client_37, mocker):
 
     # GIVEN a completely invalid URL
     url = "fakeyurl"
-    # GIVEN patched Ensembl client
+    # GIVEN a patched Ensembl client
     client = ensembl_rest_client_37
     mocker.patch("requests.get", side_effect=MissingSchema("Invalid URL"))
 
