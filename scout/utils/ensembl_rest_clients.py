@@ -46,7 +46,6 @@ class EnsemblRestApiClient:
         Returns:
             data(dict): dictionary from json response
         """
-        LOG.error(url)
         error = None
         data = None
         try:
