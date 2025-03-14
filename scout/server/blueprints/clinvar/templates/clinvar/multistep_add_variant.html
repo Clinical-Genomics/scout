@@ -92,7 +92,7 @@
                   {% if var_category == 'snv' %}
                     <br><br>
                     <!-- Transcripts & HGVS:(optional) -->
-                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}
+                    {{ variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark") }}
 
                     <span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
                     <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
@@ -101,7 +101,7 @@
                     {% with messages = get_flashed_messages() %}
                       {% if messages %}
                         {% for message in messages %}
-                          <span class="ml-3" style="color:red">{{ message }}</span><br>
+                          <span class="ml-3">{{ message }}</span><br>
                         {% endfor %}
                         <br><br>
                       {% endif %}
@@ -113,14 +113,17 @@
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
                       {% for item in item_row %}
-                        {% set ns = namespace(label='', validated=false, mane_select=false) %}
-
+                        {% set ns = namespace(label='', validated=false, mane_select=false, mane_plus_clinical=false) %}
                         {% if "_validated_" in item.label.text %}
                           {% set ns.validated = true %}
                         {% endif %}
                         {% if "_mane-select_" in item.label.text %}
                           {% set ns.mane_select = true %}
                         {% endif %}
+                        {% if "_mane-plus-clinical_" in item.label.text %}
+                           {% set ns.mane_plus_clinical = true %}
+                        {% endif %}
+
                         {% set ns.label = item.label.text | replace("_validated_", "") | replace("_mane-select_", "")  %}
 
                         <td style="width: 3%; text-align: right; vertical-align: baseline;">
@@ -138,6 +141,9 @@
                           {% if ns.mane_select %}
                             <span class='badge bg-dark'>MANE SELECT</span>
                           {% endif %}
+                          {% if ns.mane_plus_clinical %}
+                            <span class='badge bg-dark'>MANE PLUS CLINICAL</span>
+                          {% endif %}
                           {% if ns.validated %}
                             <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>
                           {% endif %}
@@ -147,6 +153,9 @@
                       </tr>
                     {% endfor %}
                     </table>
+
+                    <span class="text-danger">HGVS validation is performed only for variants in build GRCh37 or MANE Select and MANE Plus Clinical transcripts. For any other available HGVS present in this list, manual validation can be performed using the VariantValidator link above.</span>
+
                     <br><br>
                     <!-- dbSNP identifier -->
                     {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}

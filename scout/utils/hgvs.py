@@ -6,7 +6,7 @@ LOG = logging.getLogger(__name__)
 VALIDATOR_URL = "https://rest.variantvalidator.org/VariantValidator/variantvalidator/{}/{}/select?content-type=application%2Fjson"
 
 
-def validate_hgvs(build, desc):
+def validate_hgvs(build: str, desc: str) -> bool:
     """Validates a simple hgvs descriptor using the VariantValidator API (https://rest.variantvalidator.org/)
 
     Args:
