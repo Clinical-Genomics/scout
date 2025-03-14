@@ -154,7 +154,7 @@ def test_sashimi_igv(app, user_obj, case_obj, variant_obj, ensembl_liftover_resp
     # GIVEN a mocked response from the Ensembl liftover service
     chromosome = variant_obj["chromosome"]
     position = variant_obj["position"]
-    mocked_liftover_url = f"{RESTAPI_URL}map/human/GRCh37/{chromosome}:{position}..{position}/GRCh38?content-type=application/json"
+    mocked_liftover_url = f"{RESTAPI_URL}/map/human/GRCh37/{chromosome}:{position}..{position}/GRCh38?content-type=application/json"
     responses.add(
         responses.GET,
         mocked_liftover_url,
