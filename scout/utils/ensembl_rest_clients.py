@@ -54,9 +54,9 @@ class EnsemblRestApiClient:
                 data = response.json()
             else:
                 error = f"Ensembl request failed with code:{response.status_code} for url {url}"
-        except requests.exceptions.MissingSchema as err:
+        except requests.exceptions.MissingSchema:
             error = f"Ensembl request failed with MissingSchema error for url {url}"
-        except requests.exceptions.HTTPError as err:
+        except requests.exceptions.HTTPError:
             error = f"Ensembl request failed with HTTPError error for url {url}"
 
         if error:
