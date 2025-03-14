@@ -1,9 +1,11 @@
 """Code for talking to ensembl rest API"""
 
 import logging
+from typing import Optional
 from urllib.parse import urlencode
 
 import requests
+from flask import flash
 
 LOG = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class EnsemblRestApiClient:
         return "".join([self.server, endpoint])
 
     @staticmethod
-    def send_request(url):
+    def send_request(url) -> Optional[dict]:
         """Sends the actual request to the server and returns the response
 
         Accepts:
@@ -43,19 +45,22 @@ class EnsemblRestApiClient:
         Returns:
             data(dict): dictionary from json response
         """
-        data = {}
+        error = None
+        data = None
         try:
             response = requests.get(url, headers=HEADERS)
-            if response.status_code == 404:
-                LOG.info("Request failed for url %s\n", url)
-                response.raise_for_status()
-            data = response.json()
-        except requests.exceptions.MissingSchema as err:
-            LOG.info("Request failed for url %s: Error: %s\n", url, err)
-            data = err
-        except requests.exceptions.HTTPError as err:
-            LOG.info("Request failed for url %s: Error: %s\n", url, err)
-            data = err
+            if response.status_code not in [404, 500]:
+
+                data = response.json()
+            else:
+                error = f"Ensembl request failed with code:{response.status_code} for url {url}"
+        except requests.exceptions.MissingSchema:
+            error = f"Ensembl request failed with MissingSchema error for url {url}"
+        except requests.exceptions.HTTPError:
+            error = f"Ensembl request failed with HTTPError error for url {url}"
+
+        if error:
+            flash(error)
         return data
 
     def liftover(self, build, chrom, start, end=None):
