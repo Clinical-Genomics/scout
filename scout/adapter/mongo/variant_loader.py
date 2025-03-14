@@ -12,7 +12,7 @@ from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, ORDERED_FILE_TYPE_MAP
+from scout.constants import CHROMOSOMES, INVALID_SAMPLE_TYPES, ORDERED_FILE_TYPE_MAP
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -621,16 +621,16 @@ class VariantLoader(object):
 
     def load_variants(
         self,
-        case_obj,
-        variant_type="clinical",
-        category="snv",
-        rank_threshold=None,
-        chrom=None,
-        start=None,
-        end=None,
-        gene_obj=None,
-        custom_images=None,
-        build="37",
+        case_obj: dict,
+        variant_type: str = "clinical",
+        category: str = "snv",
+        rank_threshold: float = None,
+        chrom: str = None,
+        start: int = None,
+        end: int = None,
+        gene_obj: dict = None,
+        custom_images: list = None,
+        build: str = "37",
     ):
         """Load variants for a case into scout.
 
@@ -675,7 +675,7 @@ class VariantLoader(object):
             )
 
         gene_to_panels = self.gene_to_panels(case_obj)
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        genes = list(self.all_genes(build=build))
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
@@ -695,7 +695,11 @@ class VariantLoader(object):
                 LOG.debug("Found VEP header %s", "|".join(vep_header))
 
             # This is a dictionary to tell where ind are in vcf
-            individual_positions = {ind: i for i, ind in enumerate(vcf_obj.samples)}
+            individual_positions = {
+                ind: i
+                for i, ind in enumerate(vcf_obj.samples)
+                if vcf_obj.samples[i].analysis_type not in INVALID_SAMPLE_TYPES[category]
+            }
 
             # Dictionary for cancer analysis
             sample_info = {}

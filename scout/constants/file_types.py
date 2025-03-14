@@ -23,6 +23,18 @@ ORDERED_FILE_TYPE_MAP = OrderedDict(
     ]
 )
 
+INVALID_SAMPLE_TYPES = {
+    "snv": ["wts"],
+    "sv": ["wts"],
+    "mei": ["wts"],
+    "str": ["wts"],
+    "vcf_snv_mt": ["wts"],
+    "vcf_snv_research_mt": ["wts"],
+    "vcf_snv_research": ["wts"],
+    "vcf_sv_research_mt": ["wts"],
+    "vcf_sv_research": ["wts"],
+    "vcf_mei_research": ["wts"],
+}
 
 ORDERED_OMICS_FILE_TYPE_MAP = OrderedDict(
     [
