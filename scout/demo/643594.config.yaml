@@ -88,19 +88,6 @@ samples:
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
     d4_file: scout/demo/ADM1059A3.d4
 
-  - analysis_type: wts
-    sample_id: ADM1059A4
-    father: '0'
-    mother: '0'
-    sample_name: NA12879
-    phenotype: unaffected
-    sex: female
-    expected_coverage: 30
-    tissue_type: blood
-    omics_sample_id: RNA1059A4
-    rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
-    splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
-
 
 custom_images:
   str_variants_images:

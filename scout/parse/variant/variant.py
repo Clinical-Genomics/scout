@@ -355,11 +355,11 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     Do not add individuals if they are not wanted based on the analysis type,
     eg a WTS only individual for a DNA SNV variant.
     """
-    if individual_positions and case["individuals"]:
+    if individual_positions and bool(case["individuals"]):
         individuals = [
             ind
             for ind in case["individuals"]
-            if ind.get("analysis_type") not in INVALID_SAMPLE_TYPES.get(category)
+            if ind.get("analysis_type") not in INVALID_SAMPLE_TYPES.get(category, [])
         ]
         return parse_genotypes(variant, individuals, individual_positions)
     return []

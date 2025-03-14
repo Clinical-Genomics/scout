@@ -23,7 +23,6 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         }
     )
     assert test_var
-    LOG.info(f"TEST VAR: {test_var}")
 
     # IF the variant receives a fake clinsig annotation compatible with the clinical filter
     clinsig_criteria = {
