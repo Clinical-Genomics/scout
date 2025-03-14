@@ -110,7 +110,7 @@ def parse_variant(
         "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
 
-    set_category(parsed_variant, category, variant)
+    category = get_and_set_category(parsed_variant, category, variant)
     set_dbsnp_id(parsed_variant, variant.ID)
 
     # This is the id of other position in translocations
@@ -365,7 +365,7 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def set_category(parsed_variant: dict, category: str, variant: Variant) -> str:
+def get_and_set_category(parsed_variant: dict, category: str, variant: Variant) -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
