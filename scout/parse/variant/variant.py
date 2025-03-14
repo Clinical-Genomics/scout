@@ -57,7 +57,6 @@ def parse_variant(
     # Vep information
     vep_header = vep_header or []
 
-    parsed_variant = {}
     # Create the ID for the variant
     case_id = case["_id"]
     genmod_key = get_genmod_key(case)
@@ -67,33 +66,46 @@ def parse_variant(
     # Builds a dictionary with the different ids that are used
     alt = get_variant_alternative(variant, category)
 
-    parsed_variant["ids"] = parse_ids(
-        chrom=chrom,
-        pos=variant.POS,
-        ref=variant.REF,
-        alt=alt,
-        case_id=case_id,
-        variant_type=variant_type,
-    )
-    parsed_variant["case_id"] = case_id
-    # type can be 'clinical' or 'research'
-    parsed_variant["variant_type"] = variant_type
+    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
 
-    category = get_category(category, variant, parsed_variant)
-    parsed_variant["category"] = category
+    parsed_variant = {
+        "ids": parse_ids(
+            chrom=chrom,
+            pos=variant.POS,
+            ref=variant.REF,
+            alt=alt,
+            case_id=case_id,
+            variant_type=variant_type,
+        ),
+        "case_id": case_id,
+        "variant_type": variant_type,
+        "reference": variant.REF,
+        "quality": variant.QUAL,  # cyvcf2 will set QUAL to None if '.' in vcf
+        "filters": get_filters(variant),
+        "alternative": alt,
+        "chromosome": chrom,
+        "cytoband_end": coordinates["cytoband_end"],
+        "cytoband_start": coordinates["cytoband_start"],
+        "end": coordinates["end"],
+        "end_chrom": coordinates["end_chrom"],
+        "length": coordinates["length"],
+        "mate_id": coordinates["mate_id"],
+        "position": coordinates["position"],
+        "sub_category": coordinates["sub_category"],
+        "samples": get_samples(variant, individual_positions, case, category),
+        "compounds": parse_compounds(
+            compound_info=variant.INFO.get("Compounds"),
+            case_id=genmod_key,
+            variant_type=variant_type,
+        ),
+        "rank_score": parse_rank_score(variant.INFO.get("RankScore", ""), genmod_key) or 0,
+    }
 
-    ################# General information #################
-    parsed_variant["reference"] = variant.REF
+    parsed_variant["category"] = get_category(category, variant, parsed_variant)
 
-    ### We allways assume splitted and normalized vcfs!!!
+    ### We always assume split and normalized vcfs!!!
     if len(variant.ALT) > 1:
         raise VcfError("Variants are only allowed to have one alternative")
-    parsed_variant["alternative"] = alt
-
-    # cyvcf2 will set QUAL to None if '.' in vcf
-    parsed_variant["quality"] = variant.QUAL
-
-    parsed_variant["filters"] = get_filters(variant)
 
     # Add the dbsnp ids
     set_dbsnp_id(parsed_variant, variant.ID)
@@ -101,39 +113,6 @@ def parse_variant(
     # This is the id of other position in translocations
     # (only for specific svs)
     parsed_variant["mate_id"] = None
-
-    ################# Position specific #################
-    parsed_variant["chromosome"] = chrom
-
-    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
-
-    parsed_variant["cytoband_end"] = coordinates["cytoband_end"]
-    parsed_variant["cytoband_start"] = coordinates["cytoband_start"]
-    parsed_variant["end"] = coordinates["end"]
-    parsed_variant["end_chrom"] = coordinates["end_chrom"]
-    parsed_variant["length"] = coordinates["length"]
-    parsed_variant["mate_id"] = coordinates["mate_id"]
-    parsed_variant["position"] = coordinates["position"]
-    parsed_variant["sub_category"] = coordinates["sub_category"]
-
-    ################# Add rank score #################
-    # The rank score is central for displaying variants in scout.
-    # Use RankScore for somatic variations also
-
-    rank_score = parse_rank_score(variant.INFO.get("RankScore", ""), genmod_key)
-    parsed_variant["rank_score"] = rank_score or 0
-
-    ################# Add gt calls #################
-    parsed_variant["samples"] = get_samples(variant, individual_positions, case)
-
-    ################# Add compound information #################
-    compounds = parse_compounds(
-        compound_info=variant.INFO.get("Compounds"),
-        case_id=genmod_key,
-        variant_type=variant_type,
-    )
-
-    parsed_variant["compounds"] = compounds
 
     ################# Add inheritance patterns #################
     parsed_variant["genetic_models"] = parse_genetic_models(
@@ -378,22 +357,20 @@ def get_filters(variant):
     return ["PASS"]
 
 
-def get_samples(variant, individual_positions, case):
+def get_samples(variant: Variant, individual_positions: dict, case: dict, category: str) -> List:
     """Get samples
 
-    Args:
-        variant(cyvcf2.Variant)
-        individual_positions(dict):
-        case(dict)
-    Return:
-        variant filter
+    Add GT calls to individuals.
+
+    Do not add individuals if they are not wanted based on the analysis type,
+    eg a WTS only individual for a DNA SNV variant.
     """
     if individual_positions and case["individuals"]:
-        individuals = []
-        for ind in individuals:
-            if ind.get("analysis_type") in INVALID_SAMPLE_TYPES.get(variant.get("category")):
-                continue
-            individuals.append(ind)
+        individuals = [
+            ind
+            for ind in case["individuals"]
+            if ind.get("analysis_type") not in INVALID_SAMPLE_TYPES.get(category)
+        ]
         return parse_genotypes(variant, individuals, individual_positions)
     return []
 

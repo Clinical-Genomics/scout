@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import logging
 from urllib.parse import urlencode
+
+LOG = logging.getLogger(__name__)
 
 import pymongo
 from flask import url_for
@@ -20,6 +23,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         }
     )
     assert test_var
+    LOG.info(f"TEST VAR: {test_var}")
 
     # IF the variant receives a fake clinsig annotation compatible with the clinical filter
     clinsig_criteria = {
@@ -30,7 +34,14 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
 
     updated_var = store.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
-        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
+        {
+            "$set": {
+                "clnsig": [clinsig_criteria],
+                "panels": ["panel1"],
+                "rank_score": 100,
+                "variant_rank": 1,
+            },
+        },
         return_document=pymongo.ReturnDocument.AFTER,
     )
 
