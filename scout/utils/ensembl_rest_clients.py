@@ -15,7 +15,7 @@ RESTAPI_URL = "https://rest.ensembl.org"
 
 class EnsemblRestApiClient:
     """A class handling requests and responses to and from the Ensembl REST APIs.
-    Endpoints: http://rest.ensembl.org/
+    Endpoint: http://rest.ensembl.org/
     Documentation: https://github.com/Ensembl/ensembl-rest/wiki
     doi:10.1093/bioinformatics/btu613
     """

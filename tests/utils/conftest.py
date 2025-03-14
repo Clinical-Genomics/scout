@@ -56,7 +56,7 @@ def ensembl_biomart_client():
 
 @pytest.fixture
 def ensembl_rest_client():
-    """Return a client to the ensembl rest api."""
+    """Return a client to the Ensembl REST API."""
     return ensembl_rest_clients.EnsemblRestApiClient()
 
 
