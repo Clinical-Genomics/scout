@@ -12,7 +12,6 @@ LOG = logging.getLogger(__name__)
 HEADERS = {"Content-type": "application/json"}
 RESTAPI_37 = "https://grch37.rest.ensembl.org"
 RESTAPI_38 = "https://rest.ensembl.org"
-WARNING = "warning"
 
 
 class EnsemblRestApiClient:
@@ -61,7 +60,7 @@ class EnsemblRestApiClient:
             error = f"Ensembl request failed with HTTPError error for url {url}"
 
         if error:
-            flash(error, WARNING)
+            flash(error)
         return data
 
     def liftover(self, build, chrom, start, end=None):
