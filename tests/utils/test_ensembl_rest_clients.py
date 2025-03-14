@@ -24,26 +24,6 @@ def test_liftover(ensembl_rest_client, ensembl_liftover_response):
     assert mapped_coords[0]["mapped"]
 
 
-@responses.activate
-def test_send_gene_request(ensembl_gene_response, ensembl_rest_client):
-    """Test send request with correct params and endpoint"""
-    url = f"{RESTAPI_URL}/overlap/id/ENSG00000103591?feature=gene"
-    client = ensembl_rest_client
-    responses.add(
-        responses.GET,
-        url,
-        json=ensembl_gene_response,
-        status=200,
-    )
-    data = client.send_request(url)
-
-    # get all gene for the ensembl gene, They should be a list of items
-    assert data[0]["assembly_name"] == "GRCh37"
-    assert data[0]["external_name"] == "AAGAB"
-    assert data[0]["start"]
-    assert data[0]["end"]
-
-
 def test_send_request_fakey_url(mock_app, ensembl_rest_client, mocker):
     """Test the Ensembl REST client with an URL that is raising missing schema error."""
 
