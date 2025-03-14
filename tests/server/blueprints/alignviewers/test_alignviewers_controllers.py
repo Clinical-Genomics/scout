@@ -5,6 +5,7 @@ from flask_login import current_user
 
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import config_igv_tracks, store
+from scout.utils.ensembl_rest_clients import RESTAPI_URL
 
 
 @responses.activate
@@ -15,7 +16,7 @@ def test_make_sashimi_tracks_variant_38(app, case_obj, ensembl_liftover_response
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
     # GIVEN a patched response from Ensembl liftover API
-    url = f'https://grch37.rest.ensembl.org/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    url = f'{RESTAPI_URL}/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
     responses.add(
         responses.GET,
         url,
@@ -56,7 +57,7 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
     # GIVEN a patched response from Ensembl liftover API
-    url = f'https://grch37.rest.ensembl.org/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    url = f'{RESTAPI_URL}/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
     responses.add(
         responses.GET,
         url,
