@@ -54,9 +54,10 @@ def test_case_has_alignments(case_obj):
 def test_case_has_mt_alignments(case_obj):
     """Test function that adds info on availability of MT alignment files for a case"""
 
-    # GIVEN a case with MT alignment files
+    # GIVEN a case with MT alignment files (wts samples won't have them)
     for ind in case_obj["individuals"]:
-        assert ind["mt_bam"]
+        if ind.get("analysis_type") != "wts":
+            assert ind["mt_bam"]
 
     # THEN case_has_alignments should assign mt_bams = True to a case
     assert case_obj.get("mt_bams") is None
