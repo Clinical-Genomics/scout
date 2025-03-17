@@ -88,7 +88,7 @@ def parse_variant(
         "somatic_score": call_safe(int, variant.INFO.get("SOMATICSCORE")),
         "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
-    category = get_and_set_category(parsed_variant, category)
+    category = get_and_set_category(parsed_variant, variant, category)
     alt = get_and_set_variant_alternative(parsed_variant, variant, category)
 
     parsed_variant["ids"] = parse_ids(
@@ -372,13 +372,22 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_and_set_category(parsed_variant: dict, category: str) -> str:
-    """Set category of variant. Convenience return of category only.
+def get_and_set_category(parsed_variant: dict, variant: Variant, category: str) -> str:
+    """Set category of variant. Convenience return of category.
 
-    If category not set, assume it's an SNP or INDEL and set to type "snv".
+    If category not set, use variant type, but convert types SNP or INDEL (or old MNP) to "snv".
     """
-    if not category:
+    if category:
+        parsed_variant["category"] = category
+        return category
+
+    category = variant.var_type
+    if category in ["indel", "snp"]:
         category = "snv"
+    if category == "mnp":
+        category = "snv"
+        LOG.warning("Category MNP found for variant. Setting to SNV.")
+
     parsed_variant["category"] = category
     return category
 
