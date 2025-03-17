@@ -372,7 +372,7 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_and_set_category(parsed_variant: dict, variant: Variant, category: "snv") -> str:
+def get_and_set_category(parsed_variant: dict, variant: Variant, category: str = "snv") -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
