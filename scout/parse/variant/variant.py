@@ -372,22 +372,13 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_and_set_category(parsed_variant: dict, variant: Variant, category: str) -> str:
+def get_and_set_category(parsed_variant: dict, variant: Variant, category: "snv") -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
-    Warn on old style "mnp", but set "snv" as well - these are "INDEL" effectively.
     """
-
-    if category:
-        parsed_variant["category"] = category
-        return category
-
-    if variant.var_type == "mnp":
-        LOG.warning(f"Category MNP found: {parsed_variant['ids']['display_name']}")
-
-    parsed_variant["category"] = "snv"
-    return parsed_variant["category"]
+    parsed_variant["category"] = category
+    return category
 
 
 def set_dbsnp_id(parsed_variant, variant_id):
