@@ -88,7 +88,7 @@ def parse_variant(
         "somatic_score": call_safe(int, variant.INFO.get("SOMATICSCORE")),
         "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
-    category = get_and_set_category(parsed_variant, variant, category)
+    category = get_and_set_category(parsed_variant, category)
     alt = get_and_set_variant_alternative(parsed_variant, variant, category)
 
     parsed_variant["ids"] = parse_ids(
@@ -372,11 +372,13 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_and_set_category(parsed_variant: dict, variant: Variant, category: str = "snv") -> str:
+def get_and_set_category(parsed_variant: dict, category: str) -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
     """
+    if not category:
+        category = "snv"
     parsed_variant["category"] = category
     return category
 
