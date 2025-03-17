@@ -59,6 +59,7 @@ def parse_variant(
 
     # Create the ID for the variant
     case_id = case["_id"]
+
     genmod_key = get_genmod_key(case)
     chrom_match = CHR_PATTERN.match(variant.CHROM)
     chrom = chrom_match.group(2)
@@ -68,35 +69,13 @@ def parse_variant(
         raise VcfError("Variants are only allowed to have one alternative")
 
     # Builds a dictionary with the different ids that are used
-    alt = get_variant_alternative(variant, category)
-
-    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
-
     parsed_variant = {
-        "ids": parse_ids(
-            chrom=chrom,
-            pos=variant.POS,
-            ref=variant.REF,
-            alt=alt,
-            case_id=case_id,
-            variant_type=variant_type,
-        ),
         "case_id": case_id,
         "variant_type": variant_type,
         "reference": variant.REF,
         "quality": variant.QUAL,  # cyvcf2 will set QUAL to None if '.' in vcf
         "filters": get_filters(variant),
-        "alternative": alt,
         "chromosome": chrom,
-        "cytoband_end": coordinates["cytoband_end"],
-        "cytoband_start": coordinates["cytoband_start"],
-        "end": coordinates["end"],
-        "end_chrom": coordinates["end_chrom"],
-        "length": coordinates["length"],
-        "mate_id": coordinates["mate_id"],
-        "position": coordinates["position"],
-        "sub_category": coordinates["sub_category"],
-        "samples": get_samples(variant, individual_positions, case, category),
         "compounds": parse_compounds(
             compound_info=variant.INFO.get("Compounds"),
             case_id=genmod_key,
@@ -109,8 +88,22 @@ def parse_variant(
         "somatic_score": call_safe(int, variant.INFO.get("SOMATICSCORE")),
         "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
+    category = get_and_set_category(parsed_variant, variant, category)
+    alt = get_and_set_variant_alternative(parsed_variant, variant, category)
 
-    category = get_and_set_category(parsed_variant, category, variant)
+    parsed_variant["ids"] = parse_ids(
+        chrom=chrom,
+        pos=variant.POS,
+        ref=variant.REF,
+        alt=alt,
+        case_id=case_id,
+        variant_type=variant_type,
+    )
+
+    set_coordinates(parsed_variant, variant, case, category)
+
+    parsed_variant["samples"] = get_samples(variant, individual_positions, case, category)
+
     set_dbsnp_id(parsed_variant, variant.ID)
 
     # This is the id of other position in translocations
@@ -171,6 +164,25 @@ def parse_variant(
 
     remove_nonetype(parsed_variant)
     return parsed_variant
+
+
+def set_coordinates(parsed_variant: dict, variant: dict, case: dict, category: str):
+    """
+    Parse and set coordinate annotations
+    """
+    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
+    parsed_variant.update(
+        {
+            "cytoband_end": coordinates["cytoband_end"],
+            "cytoband_start": coordinates["cytoband_start"],
+            "end": coordinates["end"],
+            "end_chrom": coordinates["end_chrom"],
+            "length": coordinates["length"],
+            "mate_id": coordinates["mate_id"],
+            "position": coordinates["position"],
+            "sub_category": coordinates["sub_category"],
+        }
+    )
 
 
 def set_mei_specific_annotations(parsed_variant: dict, variant: dict):
@@ -284,20 +296,15 @@ def get_genmod_key(case):
     return case["_id"]
 
 
-def get_variant_alternative(variant, category):
-    """Get variant's ALT
-
-    Args:
-        variant(cyvcf2.Variant)
-        category(str)
-    Return:
-        alternative variant: Str
-    """
+def get_and_set_variant_alternative(parsed_variant: dict, variant: Variant, category: str) -> str:
+    """Get and set variant's ALT as alternative"""
 
     if variant.ALT:
-        return variant.ALT[0]
+        alt = variant.ALT[0]
     elif not variant.ALT and category == "str":
-        return "."
+        alt = "."
+    parsed_variant["alternative"] = alt
+    return alt
 
 
 def set_mei_info(variant: Variant, parsed_variant: Dict[str, Any]):
@@ -365,7 +372,7 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     return []
 
 
-def get_and_set_category(parsed_variant: dict, category: str, variant: Variant) -> str:
+def get_and_set_category(parsed_variant: dict, variant: Variant, category: str) -> str:
     """Set category of variant. Convenience return of category only.
 
     If category not set, assume it's an SNP or INDEL and set to type "snv".
