@@ -325,21 +325,21 @@
 
   {% if variant.category in ("mei", "str", "snv", "cancer") %}
     {% if variant.category == "cancer" %}
-    <a href="{{ url_for('variant.cancer_variant',
+    <a href='{{ url_for('variant.cancer_variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
-                   variant_id=variant._id) }}" target="_blank">
+                   variant_id=variant._id) }}' target='_blank'>
     {% else %}
-    <a href="{{ url_for('variant.variant',
+    <a href='{{ url_for('variant.variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
-                   variant_id=variant._id) }}" target="_blank">
+                   variant_id=variant._id) }}' target='_blank'>
     {% endif %}
   {% else %} <!-- structural variants -->
-    <a href="{{ url_for('variant.sv_variant',
+    <a href='{{ url_for('variant.sv_variant',
                               institute_id=variant.institute,
                               case_name=case.display_name,
-                              variant_id=variant._id) }}" target="_blank">
+                              variant_id=variant._id) }}' target='_blank'>
   {% endif %}
     {{ pretty_variant(variant) }}
   </a>

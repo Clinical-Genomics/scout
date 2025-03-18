@@ -2,7 +2,7 @@
 # stdlib modules
 import logging
 import re
-from typing import Any
+from typing import Any, Dict, Iterable
 
 # Third party modules
 import pymongo
@@ -689,7 +689,7 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def hgnc_overlapping(self, variant_obj, limit=30):
+    def hgnc_overlapping(self, variant_obj: dict, limit: int = None) -> Iterable[Dict]:
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps to.
@@ -707,9 +707,11 @@ class VariantHandler(VariantLoader):
         """
         # This is the category of the variants that we want to collect
 
-        category = '{"$in": ["sv", "snv"]}' if variant_obj["category"] == "sv" else "sv"
+        category = {"$in": ["sv", "snv"]} if variant_obj["category"] == "sv" else "sv"
         variant_type = variant_obj.get("variant_type", "clinical")
         hgnc_ids = variant_obj["hgnc_ids"]
+        if not limit:
+            limit = 30 if variant_obj["category"] == "snv" else 45
 
         query = {
             "$and": [
@@ -720,7 +722,7 @@ class VariantHandler(VariantLoader):
             ]
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
-        # We collect the 30 most severe overlapping variants
+        # We collect the LIMIT most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(limit)
 
         return variants

@@ -233,6 +233,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        overlapping_svs = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping_svs or None
+
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
