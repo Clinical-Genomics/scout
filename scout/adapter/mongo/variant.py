@@ -718,6 +718,7 @@ class VariantHandler(VariantLoader):
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
+                {"variant_id": {"$ne": variant_obj["variant_id"]}},
             ]
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
