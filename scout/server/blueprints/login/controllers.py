@@ -92,7 +92,7 @@ def ldap_login(form: Request.form) -> Optional[str]:
     flash("User not authorized by LDAP server", "warning")
 
 
-def google_login() -> Union[Response, str]:
+def google_login() -> Optional[Response]:
     """Authenticate user via Google OAuth and return email if successful."""
     if "email" in session:
         return redirect(url_for("public.login"))  # Redirect to the login route with session info
