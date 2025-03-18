@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
-from datetime import datetime
+from typing import Optional
 
 from flask import (
     Blueprint,
+    Request,
+    Response,
     current_app,
     flash,
     redirect,
@@ -45,64 +47,34 @@ def load_user(user_id):
 
 @login_bp.route("/login", methods=["GET", "POST"])
 @public_endpoint
-def login():
+def login() -> Response:
     """Login a user if they have access."""
 
-    if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if request.form.get("consent_checkbox") is None and "consent_given" not in session:
-            flash(
-                "Logging user activity is a requirement for using this site and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
-                "warning",
-            )
-            return redirect(url_for("public.index"))
-        session["consent_given"] = True
+    if not controllers.handle_user_consent(request.form):
+        return redirect(url_for("public.index"))
 
-    user_id = None
-    user_mail = None
+    user_id: Optional[str] = None
+    user_mail: Optional[str] = None
 
     if current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER")):
-        ldap_authorized = controllers.ldap_authorized(
-            request.form.get("ldap_user"), request.form.get("ldap_password")
-        )
-        if ldap_authorized is True:
-            user_id = request.form.get("ldap_user")
-        else:
-            flash("User not authorized by LDAP server", "warning")
+        user_id = controllers.ldap_login(request.form)
+        if user_id is None:
             return redirect(url_for("public.index"))
 
     elif current_app.config.get("GOOGLE"):
-        if session.get("email"):
-            user_mail = session["email"]
-            session.pop("email", None)
-        else:
-            redirect_uri = url_for(".authorized", _external=True)
-            try:
-                return oauth_client.google.authorize_redirect(redirect_uri)
-            except Exception as ex:
-                flash("An error has occurred while logging in user using Google OAuth")
+        user_mail = controllers.google_login(request.form)
+        if user_mail is None:
+            return redirect(url_for("public.index"))
 
-    elif request.form.get("email"):  # log in against Scout database
-        user_mail = request.form["email"]
-        LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
+    elif request.form.get("email"):
+        user_mail = controllers.database_login(request.form)
 
-    user_obj = store.user(email=user_mail, user_id=user_id)
-    if user_obj is None:
-        flash("User not found in Scout database", "warning")
-        return redirect(url_for("public.index"))
-
-    user_obj["accessed_at"] = datetime.now()
-    if session.get("name"):  # These args come from google auth
-        user_obj["name"] = session.get("name")
-        user_obj["locale"] = session.get("locale")
-    store.update_user(user_obj)
-
-    user_dict = LoginUser(user_obj)
-    return perform_login(user_dict)
+    return controllers.validate_and_login_user(user_mail=user_mail, user_id=user_id)
 
 
-@login_bp.route("/authorized")
+@login_bp.route("/google_authorized")
 @public_endpoint
-def authorized():
+def google_authorized():
     """Google auth callback function"""
 
     token = oauth_client.google.authorize_access_token()
@@ -130,11 +102,3 @@ def users():
     """Show all users in the system."""
     data = controllers.users(store)
     return render_template("login/users.html", **data)
-
-
-def perform_login(user_dict):
-    if login_user(user_dict, remember=True):
-        flash("you logged in as: {}".format(user_dict.name), "success")
-        return redirect(url_for("cases.index"))
-    flash("sorry, you could not log in", "warning")
-    return redirect(url_for("public.index"))
