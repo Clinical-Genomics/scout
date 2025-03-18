@@ -62,7 +62,11 @@ def login() -> Response:
             return redirect(url_for("public.index"))
 
     elif current_app.config.get("GOOGLE"):
-        user_mail = controllers.google_login()
+        if session.get("callback"):
+            user_mail = session.get("email")
+            session.pop("callback", None)
+        else:
+            return controllers.google_login()
         if user_mail is None:
             return redirect(url_for("public.index"))
 
@@ -82,6 +86,7 @@ def google_authorized():
     session["email"] = google_user.get("email").lower()
     session["name"] = google_user.get("name")
     session["locale"] = google_user.get("locale")
+    session["callback"] = True
 
     return redirect(url_for(".login"))
 
@@ -93,6 +98,7 @@ def logout():
     session.pop("name", None)
     session.pop("locale", None)
     session.pop("consent_given", None)
+    session.pop("callback", None)
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
