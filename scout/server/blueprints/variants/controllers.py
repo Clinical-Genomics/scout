@@ -282,6 +282,9 @@ def mei_variants(
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        overlapping = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping or None
+
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":

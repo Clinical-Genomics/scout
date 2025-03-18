@@ -439,11 +439,11 @@
   <a href="#" class="badge bg-warning" data-bs-toggle="popover" data-bs-placement="left"
     data-bs-html="true" data-bs-trigger="hover click"
     {% if variant.category == "SNV" %}
-      data-bs-content="<div>Gene overlapping SVs</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">Gene overlapping SVs</a>
+      data-bs-content="<div>Gene overlapping non-SNVs</div>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">Gene overlapping</a>
     {% else %}
-      data-bs-content="<div>Gene overlapping SNVs and SVs</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">Gene overlapping SNVs and SVs</a>
+      data-bs-content="<div>Gene overlapping variants</div>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">Gene overlapping</a>
     {% endif %}
   {% endif %}
 {% endmacro %}

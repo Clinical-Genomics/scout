@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import mei_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Mobile Element Insertion variants
@@ -57,16 +57,17 @@ onsubmit="return validateForm()">
           <thead class="table-light thead">
             <tr>
               <th style="width:3%"></th>
-              <th>Rank</th>
-              <th>Score</th>
+              <th title="Rank position">Rank</th>
+              <th title="Rank score">Score</th>
               <th>Type</th>
               <th style="width:18%">Element</th>
-              <th>Chr</th>
+              <th title="Chromosome">Chr</th>
               <th style="width:9%">Start loc</th>
               <th>Frequency</th>
               <th>Gene(s)</th>
-              <th>Function</th>
-            </tr>
+              <th title="Functional annotation">Function</th>
+              <th title="Gene overlapping variants">Overlap</th>
+          </tr>
           </thead>
           <tbody>
             {% for variant in variants %}
@@ -113,6 +114,7 @@ onsubmit="return validateForm()">
     <td style="word-wrap:break-word;">
       {{ variant_funct_anno_cell(variant) }}
     </td>
+    <td>{{ overlapping_cell(variant, institute, case) }}</td>
   </tr>
 {% endmacro %}
 
