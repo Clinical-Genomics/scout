@@ -137,7 +137,7 @@ def variants(
 
     variants = []
     for variant_obj in variant_res:
-        overlapping_svs = list(store.overlapping(variant_obj))
+        overlapping_svs = list(store.hgnc_overlapping(variant_obj))
         variant_obj["overlapping"] = overlapping_svs or None
 
         evaluations = []

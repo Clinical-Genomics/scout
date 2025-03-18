@@ -689,13 +689,14 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def overlapping(self, variant_obj, limit=30):
+    def hgnc_overlapping(self, variant_obj, limit=30):
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps to.
         Then return all variants that overlap these genes.
 
-        If variant_obj is sv it will return the overlapping snvs and oposite
+        If variant_obj is an SV it will return the hgnc_id matching SVs and SNVs, but
+        for SNVs we will only return the SVs
         There is a problem when SVs are huge since there are to many overlapping variants.
 
         Args:
@@ -705,7 +706,8 @@ class VariantHandler(VariantLoader):
             variants(iterable(dict))
         """
         # This is the category of the variants that we want to collect
-        category = "snv" if variant_obj["category"] == "sv" else "sv"
+
+        category = '{"$in": ["sv", "snv"]}' if variant_obj["category"] == "sv" else "sv"
         variant_type = variant_obj.get("variant_type", "clinical")
         hgnc_ids = variant_obj["hgnc_ids"]
 
