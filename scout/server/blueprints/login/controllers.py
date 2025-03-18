@@ -133,10 +133,11 @@ def validate_and_login_user(user_mail: Optional[str], user_id: Optional[str]) ->
     return perform_flask_login(LoginUser(user_obj))
 
 
-def perform_flask_login(user_dict):
-    """Login user using flask login."""
+def perform_flask_login(user_dict: "LoginUser") -> Response:
+    """Login user using Flask-Login."""
     if login_user(user_dict, remember=True):
-        flash("Welcome {}".format(user_dict.name), "success")
+        flash(f"Welcome {user_dict.name}", "success")
         return redirect(url_for("cases.index"))
+
     flash("Sorry, you could not log in", "warning")
     return redirect(url_for("public.index"))
