@@ -64,7 +64,7 @@ def login() -> Response:
     elif current_app.config.get("GOOGLE"):
         if session.get("callback"):
             user_mail = session.get("email")
-            session.pop("callback", None)
+            session.pop("callback")
         else:
             return controllers.google_login()
         if user_mail is None:
@@ -80,7 +80,6 @@ def login() -> Response:
 @public_endpoint
 def google_authorized():
     """Google auth callback function"""
-
     token = oauth_client.google.authorize_access_token()
     google_user = oauth_client.google.parse_id_token(token, None)
     session["email"] = google_user.get("email").lower()
