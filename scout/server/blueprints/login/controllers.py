@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from flask import Request, Response, current_app, flash, redirect, session, url_for
 from flask_login import login_user
@@ -92,12 +92,12 @@ def ldap_login(form: Request.form) -> Optional[str]:
     flash("User not authorized by LDAP server", "warning")
 
 
-def google_login() -> Optional[Response]:
+def google_login() -> Union[Response, str]:
     """Authenticate user via Google OAuth and return email if successful."""
     if "email" in session:
-        return session.pop("email", None)
+        return redirect(url_for("public.login"))  # Redirect to the login route with session info
 
-    redirect_uri: str = url_for(".google_authorized", _external=True)
+    redirect_uri: str = url_for("login.authorized", _external=True)
     try:
         return oauth_client.google.authorize_redirect(redirect_uri)
     except Exception:

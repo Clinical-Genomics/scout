@@ -62,13 +62,11 @@ def login() -> Response:
             return redirect(url_for("public.index"))
 
     elif current_app.config.get("GOOGLE"):
-        if session.get("callback"):
-            user_mail = session.get("email")
-            session.pop("callback")
+        if session.get("email"):
+            user_mail = session["email"]
         else:
+            # Redirect to Google OAuth if not completed
             return controllers.google_login()
-        if user_mail is None:
-            return redirect(url_for("public.index"))
 
     elif request.form.get("email"):
         user_mail = controllers.database_login(request.form)
@@ -76,16 +74,15 @@ def login() -> Response:
     return controllers.validate_and_login_user(user_mail=user_mail, user_id=user_id)
 
 
-@login_bp.route("/google_authorized")
+@login_bp.route("/authorized")
 @public_endpoint
-def google_authorized():
+def authorized():
     """Google auth callback function"""
     token = oauth_client.google.authorize_access_token()
     google_user = oauth_client.google.parse_id_token(token, None)
     session["email"] = google_user.get("email").lower()
     session["name"] = google_user.get("name")
     session["locale"] = google_user.get("locale")
-    session["callback"] = True
 
     return redirect(url_for(".login"))
 
