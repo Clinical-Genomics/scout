@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 from flask import Request, Response, current_app, flash, redirect, session, url_for
 from flask_login import login_user
