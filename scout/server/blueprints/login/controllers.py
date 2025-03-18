@@ -121,6 +121,7 @@ def validate_and_login_user(user_mail: Optional[str], user_id: Optional[str]) ->
 
     if user_obj is None:
         flash("User not found in Scout database", "warning")
+        session.pop("email", None)
         return redirect(url_for("public.index"))
 
     user_obj["accessed_at"] = datetime.now()
