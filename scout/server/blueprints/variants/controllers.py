@@ -1454,6 +1454,9 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
 
+        overlapping = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping or None
+
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
         for evaluation_obj in store.get_ccv_evaluations(variant_obj):

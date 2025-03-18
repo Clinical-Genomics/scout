@@ -706,7 +706,7 @@ class VariantHandler(VariantLoader):
         category = (
             {"$in": ["sv", "mei"]}
             if variant_obj["category"] == "snv"
-            else {"$in": ["sv", "snv", "mei"]}
+            else {"$in": ["sv", "snv", "mei", "cancer", "cancer_sv"]}
         )
 
         variant_type = variant_obj.get("variant_type", "clinical")
