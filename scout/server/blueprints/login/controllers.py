@@ -93,7 +93,7 @@ def ldap_login(form: Request.form) -> Optional[str]:
 
 
 def google_login() -> Optional[Response]:
-    """Authenticate user via Google OAuth and return email if successful."""
+    """Authenticate user via Google OAuth and redirect to the Google redirect URI. The name of this endpoint should be present on the Google login settings."""
     if "email" in session:
         return redirect(url_for("public.login"))  # Redirect to the login route with session info
 
