@@ -94,7 +94,6 @@ def logout():
     session.pop("name", None)
     session.pop("locale", None)
     session.pop("consent_given", None)
-    session.pop("callback", None)
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
