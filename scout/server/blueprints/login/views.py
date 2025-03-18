@@ -62,7 +62,7 @@ def login() -> Response:
             return redirect(url_for("public.index"))
 
     elif current_app.config.get("GOOGLE"):
-        user_mail = controllers.google_login(request.form)
+        user_mail = controllers.google_login()
         if user_mail is None:
             return redirect(url_for("public.index"))
 
