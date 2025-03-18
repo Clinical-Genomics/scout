@@ -698,6 +698,8 @@ class VariantHandler(VariantLoader):
         If variant_obj is an SV it will return the hgnc_id matching SVs, SNVs, and MEIs but
         for SNVs we will only return the SVs and MEIs since the genmod compounds are way better.
 
+        Do not return the present variant as matching.
+
         limit: A maximum count of returned variants is introduced: mainly this is a problem when SVs are huge since there can be many genes and overlapping variants.
                We sort to offer the LIMIT most severe overlapping variants.
         """
