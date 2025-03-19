@@ -50,14 +50,16 @@ def load_user(user_id):
 def login() -> Response:
     """Login a user if they have access."""
 
-    if controllers.user_has_consented(request.form) is False:
+    if controllers.user_has_consented(user_consent=request.form.get("consent_checkbox")) is False:
         return redirect(url_for("public.index"))
 
     user_id: Optional[str] = None
     user_mail: Optional[str] = None
 
     if current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER")):
-        user_id = controllers.ldap_login(request.form)
+        user_id = controllers.ldap_login(
+            ldap_user=request.form.get("ldap_user"), ldap_password=request.form.get("ldap_password")
+        )
         if user_id is None:
             return redirect(url_for("public.index"))
 
@@ -69,7 +71,7 @@ def login() -> Response:
             return controllers.google_login()
 
     elif request.form.get("email"):
-        user_mail = controllers.database_login(request.form)
+        user_mail = request.form.get("email")
 
     return controllers.validate_and_login_user(user_mail=user_mail, user_id=user_id)
 

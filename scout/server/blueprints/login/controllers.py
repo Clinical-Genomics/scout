@@ -62,10 +62,10 @@ def users(store):
     )
 
 
-def user_has_consented(form: Request.form) -> bool:
+def user_has_consented(user_consent: Optional[str]) -> bool:
     """Check if user has given consent for activity logging."""
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if form.get("consent_checkbox") is None and "consent_given" not in session:
+        if user_consent is None and "consent_given" not in session:
             flash(
                 "Logging user activity is a requirement for using this site and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
                 "warning",
@@ -75,11 +75,8 @@ def user_has_consented(form: Request.form) -> bool:
     return True
 
 
-def ldap_login(form: Request.form) -> Optional[str]:
+def ldap_login(ldap_user: Optional[str], ldap_password: Optional[str]) -> Optional[str]:
     """Authenticate user via LDAP and return user ID if authorized."""
-
-    ldap_user: Optional[str] = form.get("ldap_user")
-    ldap_password: Optional[str] = form.get("ldap_password")
 
     if not ldap_user or not ldap_password:
         return None
@@ -103,16 +100,6 @@ def google_login() -> Optional[Response]:
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
         return None
-
-
-def database_login(form: Request.form) -> Optional[str]:
-    """Authenticate user against the Scout database and return email if successful."""
-    user_mail: Optional[str] = form.get("email")
-
-    if user_mail:
-        LOG.info("Validating user email %s against Scout database", user_mail)
-
-    return user_mail
 
 
 def validate_and_login_user(user_mail: Optional[str], user_id: Optional[str]) -> Response:
