@@ -362,7 +362,7 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     Do not add individuals if they are not wanted based on the analysis type,
     eg a WTS only individual for a DNA SNV variant.
     """
-    invalid_sample_types = []
+    invalid_sample_types: List[str] = []
     if category in DNA_SAMPLE_VARIANT_CATEGORIES:
         invalid_sample_types = ["wts"]
 
