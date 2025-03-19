@@ -70,7 +70,7 @@ def login() -> Response:
             return controllers.google_login()
 
     elif request.form.get("email"):
-        user_mail = controllers.database_login(fuser_mail=equest.form.get("email"))
+        user_mail = controllers.database_login(fuser_mail=request.form.get("email"))
 
     return controllers.validate_and_login_user(user_mail=user_mail, user_id=user_id)
 
