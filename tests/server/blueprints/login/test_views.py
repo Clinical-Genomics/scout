@@ -2,6 +2,7 @@
 from flask import url_for
 from flask_login import current_user
 
+from scout.server.blueprints.login.views import session
 from scout.server.extensions import ldap_manager, store
 
 
@@ -56,3 +57,24 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
 
         # THEN current user should be authenticated
         assert current_user.is_authenticated
+
+
+def test_google_login_authenticated(google_app, user_obj, mocker):
+    """Test authentication using Google credentials, second step - authentication passed."""
+
+    # GIVEN a patched database containing the user
+    mocker.patch("scout.server.blueprints.login.views.store.user", return_value=user_obj)
+
+    # GIVEN an initialized app with GOOGLE config params
+    with google_app.test_client() as client:
+
+        # GIVEN that the user has been already authenticated
+        with client.session_transaction() as mock_session:
+            mock_session["email"] = user_obj["email"]  # Set session properly
+
+        with google_app.app_context():
+            # AFTER the first redirection
+            client.post(url_for("login.login"))
+
+            # THEN the user should be authenticated
+            assert current_user.is_authenticated
