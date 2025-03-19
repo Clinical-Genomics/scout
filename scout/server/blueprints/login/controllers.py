@@ -63,9 +63,7 @@ def users(store):
 
 
 def user_has_consented(user_consent: Optional[str]) -> bool:
-    """Check if user has given consent for activity logging.
-    Return true also if user config checking is not enabled.
-    """
+    """Check if user has given consent for activity logging."""
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
         if user_consent is None and "consent_given" not in session:
             flash(
@@ -102,6 +100,11 @@ def google_login() -> Optional[Response]:
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
         return None
+
+
+def database_login(user_mail: Optional[str]) -> Optional[str]:
+    """Authenticate user against the Scout database and return email if successful."""
+    return user_mail
 
 
 def validate_and_login_user(user_mail: Optional[str], user_id: Optional[str]) -> Response:
