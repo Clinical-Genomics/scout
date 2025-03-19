@@ -62,7 +62,7 @@ def users(store):
     )
 
 
-def handle_user_consent(form: Request.form) -> bool:
+def user_has_consented(form: Request.form) -> bool:
     """Check if user has given consent for activity logging."""
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
         if form.get("consent_checkbox") is None and "consent_given" not in session:
