@@ -45,7 +45,11 @@ from .disease_parsing import (
     MIMNR_PATTERN,
     OMIM_STATUS_MAP,
 )
-from .file_types import INVALID_SAMPLE_TYPES, ORDERED_FILE_TYPE_MAP, ORDERED_OMICS_FILE_TYPE_MAP
+from .file_types import (
+    DNA_SAMPLE_VARIANT_CATEGORIES,
+    ORDERED_FILE_TYPE_MAP,
+    ORDERED_OMICS_FILE_TYPE_MAP,
+)
 from .filters import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,

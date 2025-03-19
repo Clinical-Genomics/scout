@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from cyvcf2 import Variant
 
-from scout.constants import CHR_PATTERN, INVALID_SAMPLE_TYPES
+from scout.constants import CHR_PATTERN, DNA_SAMPLE_VARIANT_CATEGORIES
 from scout.exceptions import VcfError
 from scout.utils.convert import call_safe
 from scout.utils.dict_utils import remove_nonetype
@@ -362,11 +362,14 @@ def get_samples(variant: Variant, individual_positions: dict, case: dict, catego
     Do not add individuals if they are not wanted based on the analysis type,
     eg a WTS only individual for a DNA SNV variant.
     """
+    if category in DNA_SAMPLE_VARIANT_CATEGORIES:
+        invalid_sample_types = ["wts"]
+
     if individual_positions and bool(case["individuals"]):
         individuals = [
             ind
             for ind in case["individuals"]
-            if ind.get("analysis_type") not in INVALID_SAMPLE_TYPES.get(category, [])
+            if ind.get("analysis_type") not in invalid_sample_types
         ]
         return parse_genotypes(variant, individuals, individual_positions)
     return []
