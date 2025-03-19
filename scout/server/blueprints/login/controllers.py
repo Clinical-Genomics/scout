@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 
 
 def ldap_authorized(userid: str, password: str) -> bool:
-    """Log in a LDAP user."""
+    """Log in an LDAP user."""
     authorized = False
     try:
         authorized = ldap_manager.authenticate(
