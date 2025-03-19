@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
 from urllib.parse import urlencode
-
-LOG = logging.getLogger(__name__)
 
 import pymongo
 from flask import url_for

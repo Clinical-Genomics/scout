@@ -1,11 +1,7 @@
-import logging
-
 from flask import request, url_for
 
 import scout.server.blueprints.cases.controllers as controllers
 from scout.server.extensions import matchmaker, store
-
-LOG = logging.getLogger(__name__)
 
 
 def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, mock_redirect):
