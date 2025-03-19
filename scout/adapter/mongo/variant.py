@@ -2,7 +2,7 @@
 # stdlib modules
 import logging
 import re
-from typing import Any
+from typing import Any, Dict, Iterable
 
 # Third party modules
 import pymongo
@@ -689,25 +689,30 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def overlapping(self, variant_obj, limit=30):
+    def hgnc_overlapping(self, variant_obj: dict, limit: int = None) -> Iterable[Dict]:
         """Return overlapping variants.
 
-        Look at the genes that a variant overlaps to.
-        Then return all variants that overlap these genes.
+        Look at the genes that a variant overlaps, then return all variants that overlap these genes.
 
-        If variant_obj is sv it will return the overlapping snvs and oposite
-        There is a problem when SVs are huge since there are to many overlapping variants.
+        The operation is slightly different depending on the category of the variants that we want to collect.
+        If variant_obj is an SV it will return the hgnc_id matching SVs, SNVs, and MEIs but
+        for SNVs we will only return the SVs and MEIs since the genmod compounds are way better.
 
-        Args:
-            variant_obj(dict)
+        Do not return the present variant as matching.
 
-        Returns:
-            variants(iterable(dict))
+        limit: A maximum count of returned variants is introduced: mainly this is a problem when SVs are huge since there can be many genes and overlapping variants.
+               We sort to offer the LIMIT most severe overlapping variants.
         """
-        # This is the category of the variants that we want to collect
-        category = "snv" if variant_obj["category"] == "sv" else "sv"
+        category = (
+            {"$in": ["sv", "mei"]}
+            if variant_obj["category"] == "snv"
+            else {"$in": ["sv", "snv", "mei", "cancer", "cancer_sv"]}
+        )
+
         variant_type = variant_obj.get("variant_type", "clinical")
         hgnc_ids = variant_obj["hgnc_ids"]
+        if not limit:
+            limit = 30 if variant_obj["category"] == "snv" else 45
 
         query = {
             "$and": [
@@ -715,13 +720,12 @@ class VariantHandler(VariantLoader):
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
+                {"variant_id": {"$ne": variant_obj["variant_id"]}},
             ]
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
-        # We collect the 30 most severe overlapping variants
-        variants = self.variant_collection.find(query).sort(sort_key).limit(limit)
 
-        return variants
+        return self.variant_collection.find(query).sort(sort_key).limit(limit)
 
     def evaluated_variant_ids_from_events(self, case_id, institute_id):
         """Returns variant ids for variants that have been evaluated

@@ -137,7 +137,7 @@ def variants(
 
     variants = []
     for variant_obj in variant_res:
-        overlapping_svs = list(store.overlapping(variant_obj))
+        overlapping_svs = list(store.hgnc_overlapping(variant_obj))
         variant_obj["overlapping"] = overlapping_svs or None
 
         evaluations = []
@@ -233,6 +233,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        overlapping_svs = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping_svs or None
+
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
@@ -279,6 +282,9 @@ def mei_variants(
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        overlapping = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping or None
+
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
@@ -1447,6 +1453,9 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
+
+        overlapping = list(store.hgnc_overlapping(variant_obj))
+        variant_obj["overlapping"] = overlapping or None
 
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
