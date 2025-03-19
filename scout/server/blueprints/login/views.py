@@ -4,7 +4,6 @@ from typing import Optional
 
 from flask import (
     Blueprint,
-    Request,
     Response,
     current_app,
     flash,
