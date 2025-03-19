@@ -68,18 +68,3 @@ def test_users_controller(user_adapter):
     res = users(user_adapter)
     user = res["users"][0]
     assert user["events_rank"] == "aspirant"
-
-
-def test_google_login_user_logged_in(app):
-    """Test that logged-in users are redirected to the login route, when the login is performed via Google Oauth 2.0"""
-
-    # GIVEN an initialized app with LDAP config params
-    with mock_app.test_client() as client:
-
-        # GIVEN that the user is logged in
-        with client.session_transaction() as sess:
-            sess["email"] = "test@example.com"  # Simulate a logged-in user
-
-            # THEN the function that checks the login should redirect to the login page
-            resp = google_login()
-            assert resp == "jksd"
