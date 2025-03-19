@@ -23,6 +23,18 @@ ORDERED_FILE_TYPE_MAP = OrderedDict(
     ]
 )
 
+DNA_SAMPLE_VARIANT_CATEGORIES = [
+    "snv",
+    "sv",
+    "mei",
+    "str",
+    "vcf_snv_mt",
+    "vcf_snv_research_mt",
+    "vcf_snv_research",
+    "vcf_sv_research_mt",
+    "vcf_sv_research",
+    "vcf_mei_research",
+]
 
 ORDERED_OMICS_FILE_TYPE_MAP = OrderedDict(
     [

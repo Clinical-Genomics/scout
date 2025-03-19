@@ -88,6 +88,7 @@ samples:
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
     d4_file: scout/demo/ADM1059A3.d4
 
+
 custom_images:
   str_variants_images:
     - title: A png image
