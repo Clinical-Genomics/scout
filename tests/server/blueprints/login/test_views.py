@@ -5,7 +5,7 @@ from flask_login import current_user
 from scout.server.extensions import ldap_manager, store
 
 
-def test_unathorized_login(app):
+def test_unathorized_database_login(app):
     """Test failed authentication against scout database"""
 
     # GIVEN an initialized app
@@ -20,7 +20,7 @@ def test_unathorized_login(app):
         assert current_user.is_authenticated is False
 
 
-def test_authorized_login(app, user_obj):
+def test_authorized_database_login(app, user_obj):
     """Test successful authentication against scout database"""
 
     # GIVEN an initialized app
@@ -51,7 +51,7 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
     # GIVEN an initialized app with LDAP config params
     with ldap_app.test_client() as client:
         # When submitting LDAP username and password
-        form_data = {"username": "test_user", "password": "test_password"}
+        form_data = {"ldap_user": "test_user", "ldap_password": "test_password"}
         client.post(url_for("login.login"), data=form_data)
 
         # THEN current user should be authenticated
