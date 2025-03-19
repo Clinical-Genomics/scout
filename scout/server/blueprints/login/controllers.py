@@ -63,7 +63,9 @@ def users(store):
 
 
 def user_has_consented(user_consent: Optional[str]) -> bool:
-    """Check if user has given consent for activity logging."""
+    """Check if user has given consent for activity logging.
+    Return true also if user config checking is not enabled.
+    """
     if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
         if user_consent is None and "consent_given" not in session:
             flash(
