@@ -118,10 +118,10 @@
 
 {% macro overlapping_panel(variant, overlapping_vars, case, institute) %}
   <div class="card panel-default">
-    {% if variant.category == 'sv' %}
-      <div class="panel-heading">Overlapping SNVs</div>
+    {% if variant.category != "snv" %}
+      <div class="panel-heading">Gene overlapping variants</div>
     {% else %}
-      <div class="panel-heading">Overlapping SVs</div>
+      <div class="panel-heading">Gene overlapping non-SNVs</div>
     {% endif %}
     <div class="card-body">
       <div class="table-responsive">
