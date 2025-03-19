@@ -64,14 +64,15 @@ def users(store):
 
 def user_has_consented(user_consent: Optional[str]) -> bool:
     """Check if user has given consent for activity logging."""
-    if current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
-        if user_consent is None and "consent_given" not in session:
-            flash(
-                "Logging user activity is a requirement for using this site and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
-                "warning",
-            )
-            return False
-        session["consent_given"] = True
+    if not current_app.config.get("USERS_ACTIVITY_LOG_PATH"):
+        return True
+
+    if user_consent is None and "consent_given" not in session:
+        flash(
+            "Logging user activity is a requirement for using this site and accessing your account. Without consent to activity logging, you will not be able to log in into Scout.",
+            "warning",
+        )
+        return False
     return True
 
 
