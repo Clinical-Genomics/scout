@@ -50,7 +50,7 @@ def load_user(user_id):
 def login() -> Response:
     """Login a user if they have access."""
 
-    if not controllers.handle_user_consent(request.form):
+    if controllers.user_has_consented(request.form) is False:
         return redirect(url_for("public.index"))
 
     user_id: Optional[str] = None
