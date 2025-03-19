@@ -1,5 +1,4 @@
 from flask import request, url_for
-from flask_login import current_user
 
 import scout.server.blueprints.cases.controllers as controllers
 from scout.server.extensions import matchmaker, store
@@ -131,9 +130,6 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
         # GIVEN a SV variant with genes
-        sv_variant_obj["samples"] = [
-            {"sample_id": "ADM1059A2", "display_name": "NA12882", "genotype_call": "0/1"}
-        ]
         sv_variant_obj["genes"] = [{"hgnc_id": 30832, "hgnc_symbol": TEST_GENE}]
         store.variant_collection.insert_one(sv_variant_obj)
 
@@ -149,7 +145,7 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
 
         assert test_variant
 
-        updated_case = store.case_collection.find_one_and_update(
+        store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"suspects": [test_variant["_id"]]}},
         )
@@ -164,8 +160,8 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
         )
         assert saved_results == 1
 
-        # THEN ine case should be uodated and a submission object correctly saved to database
-        updated_case = store.case_collection.find_one()
+        # THEN the case should be updated and a submission object correctly saved to database
+        updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
         submission = updated_case["mme_submission"]
         assert submission["patients"][0]["genomicFeatures"][0]["gene"]["id"] == TEST_GENE
 

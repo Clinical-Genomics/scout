@@ -30,7 +30,14 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
 
     updated_var = store.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
-        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
+        {
+            "$set": {
+                "clnsig": [clinsig_criteria],
+                "panels": ["panel1"],
+                "rank_score": 100,
+                "variant_rank": 1,
+            },
+        },
         return_document=pymongo.ReturnDocument.AFTER,
     )
 

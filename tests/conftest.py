@@ -1237,7 +1237,7 @@ def cancer_variant_obj(request, parsed_cancer_variant):
 
 @pytest.fixture(scope="function")
 def one_variant_customannotation(request, customannotation_snv_file):
-    LOG.info("Return one parsed variant with custom annotations")
+    """Return one parsed variant with custom annotations"""
     variant_parser = VCF(customannotation_snv_file)
 
     variant = next(variant_parser)
@@ -1246,15 +1246,17 @@ def one_variant_customannotation(request, customannotation_snv_file):
 
 @pytest.fixture(scope="function")
 def one_sv_variant(request, sv_clinical_file):
-    LOG.info("Return one parsed SV variant")
+    """Return one parsed SV variant"""
     variant_parser = VCF(sv_clinical_file)
 
     variant = next(variant_parser)
+
     return variant
 
 
 @pytest.fixture(scope="function")
 def sv_variant_obj(request, parsed_sv_variant):
+    """Return one built SV variant object"""
     institute_id = "cust000"
     variant = build_variant(parsed_sv_variant, institute_id=institute_id)
     return variant
@@ -1262,7 +1264,7 @@ def sv_variant_obj(request, parsed_sv_variant):
 
 @pytest.fixture(scope="function")
 def one_str_variant(request, str_clinical_file):
-    LOG.info("Return one parsed STR variant")
+    """Return one parsed STR variant"""
     variant_parser = VCF(str_clinical_file)
 
     variant = next(variant_parser)
@@ -1362,10 +1364,16 @@ def cyvcf2_variant():
 
 
 @pytest.fixture(scope="function")
-def parsed_sv_variant(request, one_sv_variant, case_obj):
+def parsed_sv_variant(request, one_sv_variant, sv_variants, case_obj):
     """Return a parsed variant"""
 
-    variant_dict = parse_variant(one_sv_variant, case_obj)
+    individual_positions = {}
+    for i, ind in enumerate(sv_variants.samples):
+        individual_positions[ind] = i
+
+    variant_dict = parse_variant(
+        one_sv_variant, case_obj, category="sv", individual_positions=individual_positions
+    )
     return variant_dict
 
 
@@ -1386,7 +1394,6 @@ def parsed_variants(request, variants, case_obj):
 @pytest.fixture(scope="function")
 def parsed_sv_variants(request, sv_variants, case_obj):
     """Get a generator with parsed variants"""
-
     individual_positions = {}
     for i, ind in enumerate(sv_variants.samples):
         individual_positions[ind] = i

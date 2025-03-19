@@ -36,7 +36,6 @@ def test_variant(real_variant_database, variant_objs, case_obj):
     assert variant_b
     # it should be the same variant as before:
     assert variant_a == variant_b
-
     # try to collect the variant from database using its case id and simple_id:
     variant_c = adapter.variant(simple_id=test_variant["simple_id"], case_id=case_obj["_id"])
     assert variant_c
