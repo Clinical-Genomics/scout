@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general  %}
+{% from "variants/utils.html" import snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell  %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -59,7 +59,7 @@
               <th style="width:5%" title="Rank score">Score</th>
               <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:12%" title="HGNC symbols">Gene</th>
-              <th style="width:6%" title="Pop Freq">Pop Freq</th>
+              <th style="width:6%" title="Population Frequency">Pop Freq</th>
               <th style="width:10%" title="Observed database matches">Observed</th>
               <th style="width:5%" title="CADD score">CADD</th>
               <th style="width:18%" title="Functional annotation">Function</th>
@@ -93,7 +93,7 @@
                   {{ functional_annotation_cell(variant) }}
                 </td>
                 <td>{{ cell_models(variant) }}</td>
-                <td>{{ overlapping_cell(variant) }}</td>
+                <td>{{ overlapping_cell(variant, institute, case) }}</td>
               </tr>
             {% else %}
               <tr>
@@ -156,27 +156,6 @@
 
   {% if variant.mosaic_tags %}
     <span class="badge bg-warning">mosaic</span>
-  {% endif %}
-{% endmacro %}
-
-{% macro overlapping_cell(variant) %}
-
-  {% if variant.compounds %}
-    {% set ns=namespace(show_compounds=false) %}
-    {% for compound in variant.compounds if not compound.is_dismissed %}
-      {% set ns.show_compounds = true %}
-    {% endfor %}
-    {% if ns.show_compounds %}
-      <a href="#" class="badge bg-primary text-white" data-bs-toggle="popover" data-bs-placement="left"
-        data-bs-html="true" data-bs-trigger="hover click"
-        data-bs-content="{{ compounds_table(institute, case, variant.compounds[:20], is_popover=true) }}">Compounds</a>
-    {% endif %}
-  {% endif %}
-
-  {% if variant.overlapping %}
-  <a href="#" class="badge bg-warning" data-bs-toggle="popover" data-bs-placement="left"
-    data-bs-html="true" data-bs-trigger="hover click"
-    data-bs-content="{{ svs_table(institute, case, variant.overlapping[:20]) }}">Overlapping SVs</a>
   {% endif %}
 {% endmacro %}
 

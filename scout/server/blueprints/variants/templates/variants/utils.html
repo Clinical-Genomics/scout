@@ -1,5 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
+{% from "cases/utils.html" import pretty_link_variant %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
 {% macro filter_script_main(cytobands) %}
@@ -225,30 +226,25 @@
   </table>
 {% endmacro %}
 
-{% macro svs_table(institute, case, overlapping) %}
+{% macro overlapping_tooltip_table(institute, case, overlapping) %}
   <table class='table table-bordered table-hover table-condensed'>
     <thead>
       <tr>
-        <th>Region</th>
+        <th>Pos</th>
         <th>Type</th>
         <th>Length</th>
         <th>Rank score</th>
       </tr>
     </thead>
     <tbody>
-      {% for sv in overlapping %}
+      {% for variant in overlapping %}
         <tr>
           <td>
-              <a href='{{ url_for("variant.sv_variant",
-                                 institute_id=institute._id,
-                                 case_name=case.display_name,
-                                 variant_id=sv._id) }}'>
-                {{ sv.chromosome }}{{ sv.cytoband_start }}
-              </a>
+            {{ pretty_link_variant(variant, case) }}
           </td>
-          <td class='text-end'>{{ sv.sub_category }}</td>
-          <td class='text-end'>{{ sv.length if sv.length < 100000000000 else "-" }}</td>
-          <td class='text-end'>{{ sv.rank_score }}</td>
+          <td class='text-end'>{{ variant.sub_category }}</td>
+          <td class='text-end'>{{ variant.length if variant.length < 100000000000 else '-' }}</td>
+          <td class='text-end'>{{ variant.rank_score }}</td>
         </tr>
       {% endfor %}
     </tbody>
