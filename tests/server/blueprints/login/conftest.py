@@ -45,7 +45,7 @@ def google_app(request):
         "GOOGLE": {
             "client_id": "test",
             "client_secret": "test",
-            "discovery_url": "http://test.com",
+            "discovery_url": "https://test.com",
         },
         "MONGO_DBNAME": "testdb",
     }

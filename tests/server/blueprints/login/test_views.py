@@ -35,7 +35,7 @@ def test_authorized_database_login(app, user_obj):
         assert current_user.is_authenticated
 
 
-def test_ldap_login(ldap_app, user_obj, monkeypatch):
+def test_ldap_login(ldap_app, user_obj, mocker):
     """Test authentication using LDAP"""
 
     # Given a MonkeyPatched flask_ldap3_login authenticate functionality
@@ -58,8 +58,31 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
         assert current_user.is_authenticated
 
 
-def test_google_login_request_authentication(google_app, user_obj, mocker):
-    """Test authentication using Google credentials, first step - redirect from Google."""
+def test_google_login(google_app, user_obj, mocker):
+    """Test authentication using Google credentials."""
+
+    # GIVEN a patched database containing the user
+    mocker.patch("scout.server.blueprints.login.views.store.user", return_value=user_obj)
+
+    # GIVEN a set of patched responses from Google OAuth
+    mock_redirect_to_auth = redirect(url_for("login.authorized"))
+    mocker.patch(
+        "scout.server.blueprints.login.controllers.oauth_client.google.authorize_redirect",
+        return_value=mock_redirect_to_auth,
+    )
+    mocker.patch(
+        "scout.server.blueprints.login.controllers.oauth_client.google.authorize_access_token",
+        return_value={"access_token": "fake_access_token"},
+    )
+    fake_google_user = {
+        "email": user_obj["email"],
+        "name": user_obj["name"],
+        "locale": "en",
+    }
+    mocker.patch(
+        "scout.server.blueprints.login.controllers.oauth_client.google.parse_id_token",
+        return_value=fake_google_user,
+    )
 
     # GIVEN an initialized app with GOOGLE config params
     with google_app.test_client() as client:
@@ -69,35 +92,8 @@ def test_google_login_request_authentication(google_app, user_obj, mocker):
             assert "email" not in mock_session
 
         with google_app.app_context():
-
-            # GIVEN a patched redirect response from Google
-            mock_redirect_response = redirect(url_for("login.authorized"))
-            mocker.patch(
-                "scout.server.blueprints.login.controllers.oauth_client.google.authorize_redirect",
-                return_value=mock_redirect_response,
-            )
-
-            # THEN the response from login should be a redirect
-            resp = client.post(url_for("login.login"))
-            assert resp.status_code == 302
-
-
-def test_google_login_authenticated(google_app, user_obj, mocker):
-    """Test authentication using Google credentials, second step - authentication passed."""
-
-    # GIVEN a patched database containing the user
-    mocker.patch("scout.server.blueprints.login.views.store.user", return_value=user_obj)
-
-    # GIVEN an initialized app with GOOGLE config params
-    with google_app.test_client() as client:
-
-        # GIVEN that the user has been already authenticated
-        with client.session_transaction() as mock_session:
-            mock_session["email"] = user_obj["email"]
-
-        with google_app.app_context():
-            # AFTER the first redirection
-            client.post(url_for("login.login"))
-
-            # THEN the user should be authenticated
+            # THEN the login should be successful
+            resp = client.post(url_for("login.login"), follow_redirects=True)
+            assert resp.status_code == 200
+            # AND the user should be authenticated
             assert current_user.is_authenticated
