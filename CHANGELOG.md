@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene overlapping variants (superset of compounds) for SVs (#5332)
 - Gene overlapping variants for MEIs (#5332)
 - Gene overlapping variants for cancer (and cancer_sv) (#5332)
+- Tests for the Google login functionality
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)

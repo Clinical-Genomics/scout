@@ -126,28 +126,6 @@ def user_info(institute_info):
 
 
 @pytest.fixture
-def ldap_app(request):
-    """app ficture for testing LDAP connections."""
-    config = {
-        "TESTING": True,
-        "DEBUG": True,
-        "SERVER_NAME": "fakey.server.name",
-        "LDAP_HOST": "ldap://test_ldap_server",
-        "WTF_CSRF_ENABLED": False,
-        "MONGO_DBNAME": "testdb",
-    }
-    app = create_app(config=config)
-    ctx = app.app_context()
-    ctx.push()
-
-    def teardown():
-        ctx.pop()
-
-    request.addfinalizer(teardown)
-    return app
-
-
-@pytest.fixture
 def hpo_checkboxes():
     """Returns a list of dictionaries representing HPO checkboxes"""
     checkbox1 = {
