@@ -165,7 +165,7 @@ def configure_extensions(app):
 
 
 def set_login_system(app):
-    """Initialize login system: LDAP, Google OAuth, Keycloak or simple database user search."""
+    """Initialize login system: LDAP, Google OAuth, Keycloak. If none of these is set, then simple database user matching is used."""
     if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
         extensions.ldap_manager.init_app(app)
