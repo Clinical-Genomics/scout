@@ -73,7 +73,6 @@ def login() -> Response:
         if session.get("email"):
             user_mail = session["email"]
         else:
-            # Redirect to Google OAuth if not completed
             return controllers.keycloak_login()
 
     elif request.form.get("email"):

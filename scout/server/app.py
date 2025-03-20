@@ -168,12 +168,10 @@ def set_login_system(app):
     """Initialize login system: LDAP, Google OAuth, Keycloak or simple database user search."""
     if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
-        # setup connection to server
         extensions.ldap_manager.init_app(app)
 
     if app.config.get("GOOGLE"):
         LOG.info("Google login enabled")
-        # setup connection to google oauth2
         configure_google_login(app)
 
     if app.config.get("KEYCLOAK"):
