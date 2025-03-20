@@ -2,8 +2,6 @@
 from flask import redirect, url_for
 from flask_login import current_user
 
-from scout.server.extensions import ldap_manager, store
-
 
 def test_unathorized_database_login(app):
     """Test failed authentication against scout database"""
