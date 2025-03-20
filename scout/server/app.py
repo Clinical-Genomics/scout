@@ -149,15 +149,7 @@ def configure_extensions(app):
         # setup rerunner service
         extensions.rerunner.init_app(app)
 
-    if app.config.get("LDAP_HOST"):
-        LOG.info("LDAP login enabled")
-        # setup connection to server
-        extensions.ldap_manager.init_app(app)
-
-    if app.config.get("GOOGLE"):
-        LOG.info("Google login enabled")
-        # setup connection to google oauth2
-        configure_oauth_login(app)
+    set_login_system(app)
 
     if app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS"):
         LOG.info("Collecting IGV tracks from cloud or local resources")
@@ -170,6 +162,23 @@ def configure_extensions(app):
     if app.config.get("BIONANO_ACCESS"):
         LOG.info("Enable BioNano Access API")
         extensions.bionano_access.init_app(app)
+
+
+def set_login_system(app):
+    """Initialize login system: LDAP, Google OAuth, Keycloak or simple database user search."""
+    if app.config.get("LDAP_HOST"):
+        LOG.info("LDAP login enabled")
+        # setup connection to server
+        extensions.ldap_manager.init_app(app)
+
+    if app.config.get("GOOGLE"):
+        LOG.info("Google login enabled")
+        # setup connection to google oauth2
+        configure_google_login(app)
+
+    if app.config.get("KEYCLOAK"):
+        LOG.info("keycloak login enabled")
+        configure_keycloak_login(app)
 
 
 def register_blueprints(app):
@@ -301,23 +310,27 @@ def register_tests(app):
         return os.path.exists(path)
 
 
-def configure_oauth_login(app):
-    """Register the Google Oauth login client using config settings"""
-
-    google_conf = app.config["GOOGLE"]
-    discovery_url = google_conf.get("discovery_url")
-    client_id = google_conf.get("client_id")
-    client_secret = google_conf.get("client_secret")
-
+def configure_oidc_login(app: Flask, provider_name: str, config_key: str):
+    """Register an OIDC login client using config settings."""
+    provider_conf = app.config[config_key]
     extensions.oauth_client.init_app(app)
-
     extensions.oauth_client.register(
-        name="google",
-        server_metadata_url=discovery_url,
-        client_id=client_id,
-        client_secret=client_secret,
+        name=provider_name,
+        server_metadata_url=provider_conf.get("discovery_url"),
+        client_id=provider_conf.get("client_id"),
+        client_secret=provider_conf.get("client_secret"),
         client_kwargs={"scope": "openid email profile"},
     )
+
+
+def configure_google_login(app):
+    """Register the Google Oauth login client using config settings"""
+    configure_oidc_login(app, "google", "GOOGLE")
+
+
+def configure_keycloak_login(app):
+    """Register a Keycloak OIDC login client using config settings"""
+    configure_oidc_login(app, "keycloak", "KEYCLOAK")
 
 
 def configure_email_logging(app):

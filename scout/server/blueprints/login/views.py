@@ -69,6 +69,13 @@ def login() -> Response:
             # Redirect to Google OAuth if not completed
             return controllers.google_login()
 
+    elif current_app.config.get("KEYCLOAK"):
+        if session.get("email"):
+            user_mail = session["email"]
+        else:
+            # Redirect to Google OAuth if not completed
+            return controllers.keycloak_login()
+
     elif request.form.get("email"):
         user_mail = controllers.database_login(user_mail=request.form.get("email"))
 
@@ -78,23 +85,32 @@ def login() -> Response:
 @login_bp.route("/authorized")
 @public_endpoint
 def authorized():
-    """Google auth callback function"""
-    token = oauth_client.google.authorize_access_token()
-    google_user = oauth_client.google.parse_id_token(token, None)
-    session["email"] = google_user.get("email").lower()
-    session["name"] = google_user.get("name")
-    session["locale"] = google_user.get("locale")
+    """OIDC callback function."""
+    if current_app.config.get("GOOGLE"):
+        token = oauth_client.google.authorize_access_token()
+        user = oauth_client.google.parse_id_token(token, None)
+    if current_app.config.get("KEYCLOAK"):
+        token = oauth_client.keycloak.authorize_access_token()
+        user = oauth_client.keycloak.parse_id_token(token, None)
+
+    session["email"] = user.get("email").lower()
+    session["name"] = user.get("name")
+    session["locale"] = user.get("locale")
+    session["token_response"] = token
 
     return redirect(url_for(".login"))
 
 
 @login_bp.route("/logout")
 def logout():
-    logout_user()
-    session.pop("email", None)
-    session.pop("name", None)
-    session.pop("locale", None)
-    session.pop("consent_given", None)
+    logout_user()  # logs out user from scout
+    if current_app.config.get("GOOGLE"):
+        controllers.logout_oidc_user(session, "GOOGLE")  # logs out user from Google OIDC provider
+    if current_app.config.get("KEYCLOAK"):
+        controllers.logout_oidc_user(
+            session, "KEYCLOAK"
+        )  # logs out user from Keycloak OIDC provider
+    session.clear()
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 

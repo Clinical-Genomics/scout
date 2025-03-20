@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from typing import Optional
 
+import requests
 from flask import Response, current_app, flash, redirect, session, url_for
 from flask_login import login_user
 
@@ -91,7 +92,7 @@ def ldap_login(ldap_user: Optional[str], ldap_password: Optional[str]) -> Option
 
 
 def google_login() -> Optional[Response]:
-    """Authenticate user via Google OAuth and redirect to the Google redirect URI. The name of this endpoint should be present on the Google login settings."""
+    """Authenticate user via Google OIDC and redirect to the redirect URI. The name of this endpoint should be present on the Google login settings."""
     if "email" in session:
         return redirect(url_for("public.login"))  # Redirect to the login route with session info
 
@@ -100,6 +101,17 @@ def google_login() -> Optional[Response]:
         return oauth_client.google.authorize_redirect(redirect_uri)
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
+        return None
+
+
+def keycloak_login() -> Optional[Response]:
+    """Authenticate user via Keycloak OIDC and redirect to the redirect URI. The name of this endpoint should be present on the Keycloak login settings."""
+
+    redirect_uri: str = url_for("login.authorized", _external=True)
+    try:
+        return oauth_client.keycloak.authorize_redirect(redirect_uri)
+    except Exception:
+        flash("An error has occurred while logging in user using Keycloak", "warning")
         return None
 
 
@@ -135,3 +147,18 @@ def perform_flask_login(user_dict: "LoginUser") -> Response:
 
     flash("Sorry, you could not log in", "warning")
     return redirect(url_for("public.index"))
+
+
+def logout_oidc_user(session, provider: str):
+    logout_url = current_app.config[provider].get("logout_url")
+    if not logout_url:
+        return
+    refresh_token = session["token_response"]["refresh_token"]
+    requests.post(
+        logout_url,
+        data={
+            "client_id": current_app.config[provider]["client_id"],
+            "client_secret": current_app.config[provider]["client_secret"],
+            "refresh_token": refresh_token,
+        },
+    )
