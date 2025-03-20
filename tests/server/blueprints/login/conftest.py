@@ -15,7 +15,7 @@ def user_adapter(adapter, user_obj, institute_obj):
 
 @pytest.fixture
 def ldap_app(request):
-    """app ficture for testing LDAP connections."""
+    """app ficture for testing the LDAP login system."""
     config = {
         "TESTING": True,
         "DEBUG": True,
@@ -37,7 +37,7 @@ def ldap_app(request):
 
 @pytest.fixture
 def google_app(request):
-    """app ficture for testing LDAP connections."""
+    """app ficture for testing the Google login system."""
     config = {
         "TESTING": True,
         "DEBUG": True,
@@ -46,6 +46,32 @@ def google_app(request):
             "client_id": "test",
             "client_secret": "test",
             "discovery_url": "https://test.com",
+        },
+        "MONGO_DBNAME": "testdb",
+    }
+    app = create_app(config=config)
+    ctx = app.app_context()
+    ctx.push()
+
+    def teardown():
+        ctx.pop()
+
+    request.addfinalizer(teardown)
+    return app
+
+
+@pytest.fixture
+def keycloak_app(request):
+    """app ficture for testing the Keycloak login system."""
+    config = {
+        "TESTING": True,
+        "DEBUG": True,
+        "SERVER_NAME": "fakey.server.name",
+        "KEYCLOAK": {
+            "client_id": "test",
+            "client_secret": "test",
+            "discovery_url": "https://test.com",
+            "logout_url": "https://test.com/logout",
         },
         "MONGO_DBNAME": "testdb",
     }
