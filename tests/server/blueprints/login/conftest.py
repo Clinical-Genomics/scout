@@ -4,6 +4,8 @@ import pytest
 
 from scout.server.app import create_app
 
+SERVER_NAME = "test.server"
+
 
 @pytest.fixture
 def user_adapter(adapter, user_obj, institute_obj):
@@ -19,7 +21,7 @@ def ldap_app(request):
     config = {
         "TESTING": True,
         "DEBUG": True,
-        "SERVER_NAME": "fakey.server.name",
+        "SERVER_NAME": SERVER_NAME,
         "LDAP_HOST": "ldap://test_ldap_server",
         "WTF_CSRF_ENABLED": False,
         "MONGO_DBNAME": "testdb",
@@ -41,7 +43,7 @@ def google_app(request):
     config = {
         "TESTING": True,
         "DEBUG": True,
-        "SERVER_NAME": "fakey.server.name",
+        "SERVER_NAME": SERVER_NAME,
         "GOOGLE": {
             "client_id": "test",
             "client_secret": "test",
@@ -66,7 +68,7 @@ def keycloak_app(request):
     config = {
         "TESTING": True,
         "DEBUG": True,
-        "SERVER_NAME": "fakey.server.name",
+        "SERVER_NAME": SERVER_NAME,
         "KEYCLOAK": {
             "client_id": "test",
             "client_secret": "test",
