@@ -38,15 +38,11 @@ def test_authorized_database_login(app, user_obj):
 def test_ldap_login(ldap_app, user_obj, mocker):
     """Test authentication using LDAP"""
 
-    # Given a MonkeyPatched flask_ldap3_login authenticate functionality
-    def validate_ldap(*args, **kwargs):
-        return True
+    # GIVEN a patched LDAP module
+    mocker.patch("scout.server.extensions.ldap_manager.authenticate", return_value=True)
 
-    def return_user(*args, **kwargs):
-        return user_obj
-
-    monkeypatch.setattr(ldap_manager, "authenticate", validate_ldap)
-    monkeypatch.setattr(store, "user", return_user)
+    # GIVEN a patched database containing the user
+    mocker.patch("scout.server.blueprints.login.views.store.user", return_value=user_obj)
 
     # GIVEN an initialized app with LDAP config params
     with ldap_app.test_client() as client:

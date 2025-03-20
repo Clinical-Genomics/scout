@@ -1,6 +1,6 @@
 """Tests for login controllers"""
 
-from scout.server.blueprints.login.controllers import event_rank, google_login, users
+from scout.server.blueprints.login.controllers import event_rank, users
 
 
 def test_event_rank_zero():
