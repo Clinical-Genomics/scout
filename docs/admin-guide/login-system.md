@@ -20,13 +20,13 @@ Assuming a Keycloak realm containing users is available, you can edit the Scout 
 ```python
 KEYCLOAK = dict(
     client_id="<name_of_client>",
-    client_secret="secret",
+    client_secret="secret", # available in Keycloak's settings, under client credentials
     discovery_url="http://<url_to_keycloak_instance>/realms/<name_of_realm>/.well-known/openid-configuration",
     logout_url="http://<url_to_keycloak_instance>/realms/<name_of_realm>/protocol/openid-connect/logout",
 )
 ```
 
-Users attempting to log in to Scout will be redirected to the Keycloak instance for authentication
+Users attempting to log in to Scout will be redirected to the Keycloak instance for authentication.
 
 ## Google OpenID Connect login system
 
