@@ -50,7 +50,7 @@ Instructions on how to run a Scout image connected to your local database or a c
 
 ## Installation
 
-Here is a quick start Please see the [Installation instructions](./docs/install.md) for more details.
+Here is a quick start. Please see e.g. the [Installation instructions](docs/install.md) for more details.
 
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
