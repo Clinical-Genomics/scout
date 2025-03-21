@@ -86,7 +86,7 @@ def login() -> Response:
 def authorized():
     """OIDC callback function."""
     if current_app.config.get("GOOGLE"):
-        token = oauth_client.google.authorize_access_token()
+        client = oauth_client.google
         user = oauth_client.google.parse_id_token(token, None)
     if current_app.config.get("KEYCLOAK"):
         token = oauth_client.keycloak.authorize_access_token()
