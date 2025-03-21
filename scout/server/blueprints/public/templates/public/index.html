@@ -21,7 +21,11 @@
       </p>
     {% else %}
       <form class="row" method="POST" action="{{ url_for('login.login') }}">
-        {% if config.GOOGLE %}
+        {% if config.KEYCLOAK %}
+          <button name="googleLogin" class="btn btn-primary btn-lg text-white" href="{{ url_for('login.login') }}" type="submit">
+            Login with Keycloak
+          </button>
+        {% elif config.GOOGLE %}
           <button name="googleLogin" class="btn btn-primary btn-lg text-white" href="{{ url_for('login.login') }}" type="submit">
             Login with Google
           </button>
