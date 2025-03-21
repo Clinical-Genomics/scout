@@ -50,29 +50,25 @@ Instructions on how to run a Scout image connected to your local database or a c
 
 ## Installation
 
-<!-- You can install the latest release of Scout using `pip`:
-
-```bash
-pip install scout-browser
-
-# ... to include optional coverage tools you would use:
-pip install scout-browser[coverage]
-```
-
-If you would like to install Scout for local development: -->
+Here is a quick start. Please see e.g. the [Installation instructions](docs/install.md) for more details.
 
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
 cd scout
-pip install --editable .
 ```
 
-Scout is configured to use `uv` if you like; either run, install, install as a tool or
-```
+Scout is configured to use `uv`; either run, install, or install as a tool.
+
+```bash
 uv sync --frozen
 uv run scout
 ```
 
+You can also install using pip:
+
+```
+pip install --editable .
+```
 
 Scout PDF reports are created using [Flask-WeasyPrint](https://pythonhosted.org/Flask-WeasyPrint/). This library requires external dependencies which need be installed separately (namely Cairo and Pango). See platform-specific instructions for Linux, macOS and Windows available on the WeasyPrint installation [pages](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation).
 

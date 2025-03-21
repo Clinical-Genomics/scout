@@ -22,9 +22,25 @@ theme:
   name: 'material'
   logo: 'img/logo-only.png'
   palette:
-    primary: 'blue grey'
-    accent: 'cyan'
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: 'blue grey'
+      accent: 'cyan'
+      toggle:
+          icon: material/toggle-switch
+          name: Switch to dark mode
 
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: "slate"
+      primary: "black"
+      accent: "cg-accent"
+      toggle:
+          icon: material/toggle-switch-off-outline
+          name: Switch to light mode
+
+extra_css:
+    - stylesheets/extra.css
 
 nav:
   - Introduction: 'README.md'
