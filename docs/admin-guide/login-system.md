@@ -1,6 +1,6 @@
 # Setting up a user login system
 
-Scout currently supports 3 types of login systems:
+Scout currently supports 4 types of login systems:
   - [keycloak authentication via OpenID Connect](#keycloak-openid-connect-login-system)
   - [Google authentication via OpenID Connect](#google-openid-connect-login-system)
   - [LDAP authentication](#login-using-lightweight-directory-access-protocol)
