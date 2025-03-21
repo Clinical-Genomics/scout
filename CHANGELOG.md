@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene overlapping variants for cancer (and cancer_sv) (#5332)
 - Tests for the Google login functionality (#5335)
 - Support for login using Keycloak (#5337)
+- Documentation on Keycloak login system integration (#5342)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
