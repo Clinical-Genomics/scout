@@ -39,6 +39,8 @@ theme:
           icon: material/toggle-switch-off-outline
           name: Switch to light mode
 
+extra_css:
+    - stylesheets/extra.css
 
 nav:
   - Introduction: 'README.md'
