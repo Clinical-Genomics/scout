@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.99]
 ### Added
 - De novo assembly alignment file load and display (#5284)
 - Paraphase bam-let alignment file load and display (#5284)
@@ -28,7 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated color scheme for variant assessment badges that were hard to see in light mode, notably Risk Factor (#5318)
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38 (#5302)
 - Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available (#5322)
-- Refactored the liftover functionality to avoid using the old Ensembl REST API (#5326)
+- Refactored the LiftOver functionality to avoid using the old Ensembl REST API (#5326)
 
 
 
