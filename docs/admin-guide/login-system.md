@@ -1,12 +1,32 @@
 # Setting up a user login system
 
-Scout currently supports 3 types of login systems:
+SScout currently supports 3 types of login systems:
+  - [keycloak authentication via OpenID Connect](#keycloak-openid-connect-login-system)
   - [Google authentication via OpenID Connect](#google-openid-connect-login-system)
   - [LDAP authentication](#login-using-lightweight-directory-access-protocol)
   - [Simple authentication using userid](#simple-login-with-userid)
 
 **Login systems are mutually exclusive so when you choose a system, it will become be the only way all users will have access to the Scout app.**
 
+
+## Keycloak OpenID Connect Login System
+
+If your organization uses Keycloak as a login provider, Scout can be configured to authenticate users (who are already registered in the Scout database) using Keycloak in a few simple steps.
+
+A small tutorial with basic settings (intended for testing only, not for production) is available [on this page](https://github.com/northwestwitch/keycloak_flask_auth?tab=readme-ov-file#keycloak_flask_auth).
+
+Assuming a Keycloak realm containing users is available, you can edit the Scout configuration file to enable this authentication method:
+
+```python
+KEYCLOAK = dict(
+    client_id="<name_of_client>",
+    client_secret="secret",
+    discovery_url="http://<url_to_keycloak_instance>/realms/<name_of_realm>/.well-known/openid-configuration",
+    logout_url="http://<url_to_keycloak_instance>/realms/<name_of_realm>/protocol/openid-connect/logout",
+)
+```
+
+Users attempting to log in to Scout will be redirected to the Keycloak instance for authentication
 
 ## Google OpenID Connect login system
 
