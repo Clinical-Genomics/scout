@@ -103,14 +103,9 @@ def authorized():
 @login_bp.route("/logout")
 def logout():
     logout_user()  # logs out user from scout
-    for client_type in ["GOOGLE", "KEYCLOAK"]:
-        if current_app.config.get(session, client_type):
-            controllers.logout_oidc_user(session, client_type)
-        controllers.logout_oidc_user(session, "GOOGLE")  # logs out user from Google OIDC provider
-    if current_app.config.get("KEYCLOAK"):
-        controllers.logout_oidc_user(
-            session, "KEYCLOAK"
-        )  # logs out user from Keycloak OIDC provider
+    for provider in ["GOOGLE", "KEYCLOAK"]:
+        if current_app.config.get(provider):
+            controllers.logout_oidc_user(session, provider)
     session.clear()
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
