@@ -130,9 +130,6 @@ scout load panel scout/demo/panel_1.txt
 scout load case scout/demo/643594.config.yaml
 ```
 
-Scout will work with many a generic (ideally VEP annotated) VCF as input, but for best results, use an already well integrated pipeline
-MIP, Balsamic, nf-core/raredisease, Nallo, poorpipe
-or say hi to the developers in a GitHub issue or discussion, describe your pipeline and situation and we may be able to direct you.
 
 
 [google-console]: https://console.developers.google.com/project
