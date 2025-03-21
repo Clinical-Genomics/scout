@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene overlapping variants for MEIs (#5332)
 - Gene overlapping variants for cancer (and cancer_sv) (#5332)
 - Tests for the Google login functionality (#5335)
+- Support for login using Keycloak (#5337)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
@@ -26,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38 (#5302)
 - Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available (#5322)
 - Refactored the LiftOver functionality to avoid using the old Ensembl REST API (#5326)
+
 
 ## [4.98]
 ### Added

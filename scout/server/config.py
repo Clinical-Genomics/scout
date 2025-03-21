@@ -38,6 +38,14 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    discovery_url="https://accounts.google.com/.well-known/openid-configuration",
 # )
 
+# Parameters required for login with Keycloak
+# KEYCLOAK = dict(
+#    client_id="<name_of_client>",
+#    client_secret="secret",
+#    discovery_url="http://localhost:8080/realms/<name_of_realm>/.well-known/openid-configuration",
+#    logout_url="http://localhost:8080/realms/<name_of_realm>/protocol/openid-connect/logout",
+# )
+
 # Chanjo database connection string - used by chanjo report to create coverage reports
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
 
