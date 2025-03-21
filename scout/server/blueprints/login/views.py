@@ -90,7 +90,9 @@ def authorized():
         user = oauth_client.google.parse_id_token(token, None)
     if current_app.config.get("KEYCLOAK"):
         token = oauth_client.keycloak.authorize_access_token()
-        user = oauth_client.keycloak.parse_id_token(token, None)
+        client = oauth_client.keycloak
+    token = client.authorize_access_token()
+    user = client.parse_id_token(token, None)
 
     session["email"] = user.get("email").lower()
     session["name"] = user.get("name")
