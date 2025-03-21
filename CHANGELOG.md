@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
 - Refactored the login function into smaller functions, handling respectively: user consent, LDAP login, Google login, database login and user validation (#5331)
 - Allow loading of mixed analysis type cases where some individuals are fully WTS and do not appear in DNA VCFs (#5327)
+- Documentation available in dark mode, and expanded installation instructions (#5343)
 ### Fixed
 - Re-enable display of case and individual specific tracks (pre-computed coverage, UPD, zygosity) (#5300)
 - Disable 2-color mode in IGV.js by default, since it obscures variant proportion of reads. Can be manually enabled (#5311)
@@ -29,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available (#5322)
 - Refactored the liftover functionality to avoid using the old Ensembl REST API (#5326)
 - Missing MT genes from the IGV track
+
 
 
 ## [4.98]
