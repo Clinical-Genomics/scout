@@ -26,6 +26,11 @@ KEYCLOAK = dict(
 )
 ```
 
+**Please note**: For this setup to work, the Keycloak client must include the following parameter:
+
+`Valid redirect URIs: "http://<scout-uri>/authorized"`
+
+
 Users attempting to log in to Scout will be redirected to the Keycloak instance for authentication.
 
 ## Google OpenID Connect login system
