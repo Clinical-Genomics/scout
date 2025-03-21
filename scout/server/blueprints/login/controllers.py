@@ -152,7 +152,7 @@ def perform_flask_login(user_dict: "LoginUser") -> Response:
 def logout_oidc_user(session, provider: str):
     """Log out a user from an OIDC login provider-"""
     logout_url = current_app.config[provider].get("logout_url")
-    if not logout_url:
+    if not logout_url or not session.get("token_response"):
         return
     refresh_token = session["token_response"]["refresh_token"]
     requests.post(
