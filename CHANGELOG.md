@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid page timeout by skipping HGVS validations in ClinVar multistep submission for non-MANE transcripts from variants in build 38 (#5302)
 - Sashimi view page displaying an error message when Ensembl REST API (LiftOver) is not available (#5322)
 - Refactored the liftover functionality to avoid using the old Ensembl REST API (#5326)
+- Missing MT genes from the IGV track
 
 ## [4.98]
 ### Added
