@@ -11,7 +11,7 @@ HG38REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq
 HG38ALIAS_URL = "https://igv.org/genomes/data/hg38/hg38_alias.tab"
 HG38CYTOBAND_URL = "https://igv-genepattern-org.s3.amazonaws.com/genomes/hg38/cytoBandIdeo.txt.gz"
 
-HG38GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg38/refGene.txt.gz"
+HG38GENES_URL = "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz"
 HG38GENES_FORMAT = "refgene"
 
 HG19GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz"
