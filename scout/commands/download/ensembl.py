@@ -40,6 +40,8 @@ def print_ensembl(
 
         LOG.info(f"{file_name} file saved to disk")
 
+        ensembl_client.check_integrity(file_path)
+
 
 @click.command("ensembl", help="Download files with ensembl info")
 @click.option("-o", "--out-dir", default="./", show_default=True)
