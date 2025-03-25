@@ -1,7 +1,7 @@
 import logging
 import math
 from datetime import datetime
-from typing import List, Set
+from typing import List, Optional, Set
 
 from click import progressbar
 
@@ -77,8 +77,8 @@ def load_panelapp_green_panel(
     institute: str,
     force: bool,
     signed_off: bool,
-    custom_id: str | None,
-    custom_display_name: str | None,
+    custom_id: Optional[str],
+    custom_display_name: Optional[str],
 ):
     """Load/Update the panel containing all Panelapp Green genes."""
 
