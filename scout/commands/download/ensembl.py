@@ -2,13 +2,25 @@
 
 import logging
 import pathlib
+import time
 from typing import List, Optional
 
 import click
 
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 
+CHROM_SEPARATOR = "[success]"
+NR_EXPECTED_CHROMS = 24
+
 LOG = logging.getLogger(__name__)
+
+
+def integrity_check(nr_chromosomes_in_file: int):
+    if nr_chromosomes_in_file < NR_EXPECTED_CHROMS:
+        raise BufferError(
+            f"Ensembl resource does not seem to be complete. Please retry downloading the file."
+        )
+    LOG.info(f"Integrity check OK.")
 
 
 def print_ensembl(
@@ -31,16 +43,19 @@ def print_ensembl(
 
         file_name: str = f"ensembl_{resource_type}_{build}.txt"
         file_path = out_dir / file_name
+        nr_chroms_in_file = 0
 
         LOG.info("Print ensembl info %s to %s", build, file_path)
 
         with file_path.open("w", encoding="utf-8") as outfile:
             for line in ensembl_client.stream_resource(interval_type=resource_type):
-                outfile.write(line + "\n")
+                if line.strip() == CHROM_SEPARATOR:
+                    nr_chroms_in_file += 1
+                else:
+                    outfile.write(line + "\n")
 
-        LOG.info(f"{file_name} file saved to disk")
-
-        ensembl_client.check_integrity(file_path)
+        LOG.info(f"{file_name} file saved to disk.")
+        integrity_check(nr_chroms_in_file)
 
 
 @click.command("ensembl", help="Download files with ensembl info")

@@ -32,7 +32,7 @@ def test_print_ensembl_genes(mocker, genes37_handle):
     # GIVEN a patched call to schug
     # GIVEN a patched response from Ensembl Biomart, via schug
     mocker.patch.object(EnsemblBiomartHandler, "stream_get", return_value=genes37_handle)
-    mocker.patch.object(EnsemblBiomartHandler, "check_integrity")
+    mocker.patch("scout.commands.download.ensembl.integrity_check")
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
@@ -53,7 +53,7 @@ def test_print_ensembl_transcripts(mocker, transcripts_handle):
 
     # GIVEN a patched call to schug
     mocker.patch.object(EnsemblBiomartHandler, "stream_get", return_value=transcripts_handle)
-    mocker.patch.object(EnsemblBiomartHandler, "check_integrity")
+    mocker.patch("scout.commands.download.ensembl.integrity_check")
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
@@ -74,7 +74,7 @@ def test_print_ensembl_exons(mocker, exons_handle):
 
     # GIVEN a patched call to schug
     mocker.patch.object(EnsemblBiomartHandler, "stream_get", return_value=exons_handle)
-    mocker.patch.object(EnsemblBiomartHandler, "check_integrity")
+    mocker.patch("scout.commands.download.ensembl.integrity_check")
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
