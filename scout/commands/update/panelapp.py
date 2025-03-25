@@ -31,8 +31,10 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Force update even if updated panel contains less genes",
 )
+@click.option("--panel-id", help="Use a custom ID")
+@click.option("--panel-display-name", help="Use a custom display name")
 @with_appcontext
-def panelapp_green(institute, force, signed_off):
+def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
     """
@@ -47,7 +49,12 @@ def panelapp_green(institute, force, signed_off):
 
     try:
         load_panelapp_green_panel(
-            adapter=store, institute=institute, force=force, signed_off=signed_off
+            adapter=store,
+            institute=institute,
+            force=force,
+            signed_off=signed_off,
+            custom_id=panel_id,
+            custom_display_name=panel_display_name,
         )
     except Exception as err:
         LOG.error(err)

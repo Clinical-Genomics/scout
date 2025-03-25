@@ -72,7 +72,14 @@ def get_panelapp_genes(
     return genes
 
 
-def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool, signed_off: bool):
+def load_panelapp_green_panel(
+    adapter: MongoAdapter,
+    institute: str,
+    force: bool,
+    signed_off: bool,
+    custom_id: str | None,
+    custom_display_name: str | None,
+):
     """Load/Update the panel containing all Panelapp Green genes."""
 
     def parse_types_filter(types_filter: str, available_types: List[str]) -> List[str]:
@@ -85,10 +92,15 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         return [available_types[i] for i in index_list]
 
     # check and set panel version
-    old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
+    panel_id = custom_id if custom_id is not None else PANEL_NAME
+    panel_display_name = (
+        custom_display_name if custom_display_name is not None else "PanelApp Green Genes"
+    )
+
+    old_panel = adapter.gene_panel(panel_id=panel_id)
     green_panel = {
-        "panel_name": PANEL_NAME,
-        "display_name": "PanelApp Green Genes",
+        "panel_name": panel_id,
+        "display_name": panel_display_name,
         "institute": institute,
         "version": float(math.floor(old_panel["version"]) + 1) if old_panel else 1.0,
         "date": datetime.now(),
