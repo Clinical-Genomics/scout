@@ -18,9 +18,9 @@ LOG = logging.getLogger(__name__)
 def integrity_check(nr_chromosomes_in_file: int):
     if nr_chromosomes_in_file < NR_EXPECTED_CHROMS:
         raise BufferError(
-            f"Ensembl resource does not seem to be complete. Please retry downloading the file."
+            "Ensembl resource does not seem to be complete. Please retry downloading the file."
         )
-    LOG.info(f"Integrity check OK.")
+    LOG.info("Integrity check OK.")
 
 
 def print_ensembl(
