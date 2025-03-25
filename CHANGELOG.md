@@ -16,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for login using Keycloak (#5337)
 - Documentation on Keycloak login system integration (#5342)
 - Integrity check for genes/transcripts/exons file downloaded from Ensembl
-- Options for custom ID/display name for PanelApp Green updates
+- Options for custom ID/display name for PanelApp Green updates (#5355)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
