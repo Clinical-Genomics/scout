@@ -265,8 +265,13 @@ def make_locus_from_gene(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     return f"{chrom}:{locus_start}-{locus_end}"
 
 
-def set_tracks(name_list, file_list):
-    """Return a dict according to IGV track format."""
+def get_tracks(name_list, file_list):
+    """Return a dict according to IGV track format.
+
+    If an index can be found (e.g. for bam, cram files), use it explicitly.
+    If the format is one of those two alignment types, set it explicitly: it will need to be dynamically
+    filled into the igv_viewer html template script for igv.js.
+    """
     track_list = []
     for name, track in zip(name_list, file_list):
         if track == "missing":
@@ -362,8 +367,7 @@ def set_case_specific_tracks(display_obj, case_obj):
 
         labels = [f"{label} - {sample}" for sample in case_obj.get("sample_names")]
 
-        set_tracks(labels, case_obj.get(track))
-        track_info = set_tracks(labels, case_obj.get(track))
+        track_info = get_tracks(labels, case_obj.get(track))
         display_obj[track] = track_info
 
 
