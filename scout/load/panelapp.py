@@ -11,7 +11,6 @@ from scout.parse.panelapp import parse_panelapp_panel
 from scout.server.extensions import panelapp
 
 LOG = logging.getLogger(__name__)
-PANEL_NAME = "PANELAPP-GREEN"
 
 
 def load_panelapp_panel(
