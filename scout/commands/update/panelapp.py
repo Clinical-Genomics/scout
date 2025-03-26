@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Force update even if updated panel contains less genes",
 )
-@click.option("--panel-id", help="Use a custom ID", default="PANELAPP-GREEN", show_default=True)
+@click.option("--panel-id", help="Panel ID", default="PANELAPP-GREEN", show_default=True)
 @click.option(
     "--panel-display-name",
     help="Use a custom display name",
