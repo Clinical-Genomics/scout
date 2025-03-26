@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.99]
 ### Added
 - De novo assembly alignment file load and display (#5284)
 - Paraphase bam-let alignment file load and display (#5284)
@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for the Google login functionality (#5335)
 - Support for login using Keycloak (#5337)
 - Documentation on Keycloak login system integration (#5342)
-- Integrity check for genes/transcripts/exons file downloaded from Ensembl
+- Integrity check for genes/transcripts/exons files downloaded from Ensembl (#5353)
 - Options for custom ID/display name for PanelApp Green updates (#5355)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
