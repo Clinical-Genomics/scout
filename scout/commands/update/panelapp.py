@@ -32,7 +32,12 @@ LOG = logging.getLogger(__name__)
     help="Force update even if updated panel contains less genes",
 )
 @click.option("--panel-id", help="Use a custom ID", default="PANELAPP-GREEN", show_default=True)
-@click.option("--panel-display-name", help="Use a custom display name", default="PanelApp Green Genes", show_default=True)
+@click.option(
+    "--panel-display-name",
+    help="Use a custom display name",
+    default="PanelApp Green Genes",
+    show_default=True,
+)
 @with_appcontext
 def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
     """
