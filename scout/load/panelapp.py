@@ -1,7 +1,7 @@
 import logging
 import math
 from datetime import datetime
-from typing import List, Optional, Set
+from typing import List, Set
 
 from click import progressbar
 
