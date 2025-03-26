@@ -271,7 +271,11 @@ def set_tracks(name_list, file_list):
     for name, track in zip(name_list, file_list):
         if track == "missing":
             continue
-        track_list.append({"name": name, "url": track, "min": 0.0, "max": 30.0})
+        track_config = {"name": name, "url": track, "min": 0.0, "max": 30.0}
+        index = find_index(track)
+        if index:
+            track_config["index"] = index
+        track_list.append(track_config)
     return track_list
 
 
@@ -355,6 +359,7 @@ def set_case_specific_tracks(display_obj, case_obj):
 
         labels = [f"{label} - {sample}" for sample in case_obj.get("sample_names")]
 
+        set_tracks(labels, case_obj.get(track))
         track_info = set_tracks(labels, case_obj.get(track))
         display_obj[track] = track_info
 

@@ -309,12 +309,19 @@ def case_append_alignments(case_obj: dict):
     """Deconvolute information about files to case_obj.
 
     This function prepares bam/cram files and their indexes for easy access in templates.
+
+    index is set only if it is expected as a separate key on the indiviudal: an
+    attempt at discovery is still made for files with index: None.
     """
     unwrap_settings = [
         {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},
-        {"path": "assembly_alignment_path", "append_to": "bam_files", "index": "bai_files"},
+        {"path": "assembly_alignment_path", "append_to": "assembly_alignments", "index": None},
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
-        {"path": "paraphase_alignment_path", "append_to": "bam_files", "index": "bai_files"},
+        {
+            "path": "paraphase_alignment_path",
+            "append_to": "paraphase_alignments",
+            "index": None,
+        },
         {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": None},
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
         {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},

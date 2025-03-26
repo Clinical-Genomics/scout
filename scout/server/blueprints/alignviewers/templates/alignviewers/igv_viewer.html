@@ -86,6 +86,30 @@
                           {% endif %}
                         },
                       {% endfor %}
+                      {% for ptrack in paraphase_alignments %}
+                      {
+                        type: "{{ ptrack.type }}",
+                        name: "{{ ptrack.name }}",
+                        url: '{{ url_for("alignviewers.remote_static", file=ptrack.url) }}',
+                        format: 'bw',
+                         indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
+                        min: '{{ ptrack.min }}',
+                        max: '{{ ptrack.max }}',
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
+                      {% for atrack in assembly_alignments %}
+                      {
+                        type: "{{ atrack.type }}",
+                        name: "{{ atrack.name }}",
+                        url: '{{ url_for("alignviewers.remote_static", file=atrack.url) }}',
+                        format: 'bw',
+                         indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
+                        min: '{{ atrack.min }}',
+                        max: '{{ atrack.max }}',
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for wtrack in rhocall_wigs %}
                       {
                         type: "wig",
@@ -96,7 +120,7 @@
                         color: "rgb(60, 37, 17)",
                         min: '{{ wtrack.min }}',
                         max: '{{ wtrack.max }}',
-                        sourceType: 'file'
+                        sourceType: 'file',
                       },
                       {% endfor %}
                       {% for btrack in rhocall_beds %}

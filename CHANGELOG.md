@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored the liftover functionality to avoid using the old Ensembl REST API (#5326)
 - Downloading of Ensembl resources by fixing the URL to the schug server, pointing to the production instance instead of the staging one (#5348)
 - Missing MT genes from the IGV track (#5339)
+- Paraphase and de novo assembly tracks could mismatch alignment sample labels - refactor to case specific tracks (#5357)
 
 ## [4.98]
 ### Added
