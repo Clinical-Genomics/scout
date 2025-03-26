@@ -77,8 +77,8 @@ def load_panelapp_green_panel(
     institute: str,
     force: bool,
     signed_off: bool,
-    custom_id: Optional[str],
-    custom_display_name: Optional[str],
+    panel_id: str,
+    panel_display_name: str,
 ):
     """Load/Update the panel containing all Panelapp Green genes."""
 
@@ -92,11 +92,6 @@ def load_panelapp_green_panel(
         return [available_types[i] for i in index_list]
 
     # check and set panel version
-    panel_id = custom_id if custom_id is not None else PANEL_NAME
-    panel_display_name = (
-        custom_display_name if custom_display_name is not None else "PanelApp Green Genes"
-    )
-
     old_panel = adapter.gene_panel(panel_id=panel_id)
     green_panel = {
         "panel_name": panel_id,
