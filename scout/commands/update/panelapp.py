@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 @click.option("--panel-id", help="Panel ID", default="PANELAPP-GREEN", show_default=True)
 @click.option(
     "--panel-display-name",
-    help="Use a custom display name",
+    help="Panel display name",
     default="PanelApp Green Genes",
     show_default=True,
 )
