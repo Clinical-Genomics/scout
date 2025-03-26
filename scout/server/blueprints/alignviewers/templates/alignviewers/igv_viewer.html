@@ -88,10 +88,10 @@
                       {% endfor %}
                       {% for ptrack in paraphase_alignments %}
                       {
-                        type: "{{ ptrack.type }}",
+                        type: "alignment",
                         name: "{{ ptrack.name }}",
                         url: '{{ url_for("alignviewers.remote_static", file=ptrack.url) }}',
-                        format: 'bw',
+                        format: "{{ ptrack.format }}",
                          indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
                         min: '{{ ptrack.min }}',
                         max: '{{ ptrack.max }}',
@@ -100,10 +100,10 @@
                       {% endfor %}
                       {% for atrack in assembly_alignments %}
                       {
-                        type: "{{ atrack.type }}",
+                        type: "alignment",
                         name: "{{ atrack.name }}",
                         url: '{{ url_for("alignviewers.remote_static", file=atrack.url) }}',
-                        format: 'bw',
+                        format: "{{ atrack.format }}",
                          indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
                         min: '{{ atrack.min }}',
                         max: '{{ atrack.max }}',

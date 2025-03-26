@@ -275,6 +275,9 @@ def set_tracks(name_list, file_list):
         index = find_index(track)
         if index:
             track_config["indexURL"] = index
+        file_format_ending = track.split(".")[-1]
+        if file_format_ending in ["bam", "cram"]:
+            track_config["format"] = file_format_ending
         track_list.append(track_config)
     return track_list
 
