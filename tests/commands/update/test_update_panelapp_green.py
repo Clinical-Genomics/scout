@@ -5,13 +5,13 @@ import json
 import responses
 
 from scout.commands import cli
+from scout.constants.panels import PANELAPPGREEN_NAME
 from scout.demo import panelapp_panel_path, panelapp_panels_reduced_path
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
 DEMO_PANEL = "522"
 PANELAPP_GET_PANEL_URL = f"{API_PANELS_URL}{DEMO_PANEL}"
-PANEL_NAME = "PANELAPP-GREEN"
 
 
 def test_update_panelapp_green_non_existing_institute(empty_mock_app):
@@ -36,7 +36,7 @@ def test_update_green_panel(mock_app):
     """Tests the CLI that creates/updates PANELAPP-GREEN panel in database"""
 
     # GIVEN that no PANELAPP-GREEN panel exists in database:
-    assert store.gene_panel(panel_id=PANEL_NAME) is None
+    assert store.gene_panel(panel_id=PANELAPPGREEN_NAME) is None
 
     # GIVEN a mocked response from PanelApp list_panels endpoint
     with open(panelapp_panels_reduced_path) as f:
@@ -71,22 +71,22 @@ def test_update_green_panel(mock_app):
     assert result.exit_code == 0
 
     # AND the panel should have been saved in database
-    green_panel = store.gene_panel(panel_id=PANEL_NAME)
+    green_panel = store.gene_panel(panel_id=PANELAPPGREEN_NAME)
 
     # GIVEN that the old saved panel contains one extra gene
     extra_gene = {"hgnc_id": 7227, "symbol": "MRAS"}
     store.panel_collection.find_one_and_update(
-        {"panel_name": PANEL_NAME}, {"$push": {"genes": extra_gene}}
+        {"panel_name": PANELAPPGREEN_NAME}, {"$push": {"genes": extra_gene}}
     )
 
     # WHEN panel is updated without the force flag
     runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"], input="1")
 
     # THEN PanelApp Green panel should NOT be updated
-    assert store.gene_panel(panel_id=PANEL_NAME)["version"] == green_panel["version"]
+    assert store.gene_panel(panel_id=PANELAPPGREEN_NAME)["version"] == green_panel["version"]
 
     # WHEN updating the panel with the force flag
     runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000", "-f"], input="1")
 
     # THEN PanelApp Green panel should be updated
-    assert store.gene_panel(panel_id=PANEL_NAME)["version"] > green_panel["version"]
+    assert store.gene_panel(panel_id=PANELAPPGREEN_NAME)["version"] > green_panel["version"]
