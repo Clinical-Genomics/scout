@@ -58,8 +58,8 @@ def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
             institute=institute,
             force=force,
             signed_off=signed_off,
-            custom_id=panel_id,
-            custom_display_name=panel_display_name,
+            panel_id=panel_id,
+            panel_display_name=panel_display_name,
         )
     except Exception as err:
         LOG.error(err)
