@@ -106,6 +106,8 @@
                         url: '{{ url_for("alignviewers.remote_static", file=atrack.url) }}',
                         format: "{{ atrack.format }}",
                         groupBy: "tag:HP",
+                        height: 140,
+                        showCoverage: false,
                         indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
                         min: '{{ atrack.min }}',
                         max: '{{ atrack.max }}',
