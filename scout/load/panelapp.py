@@ -11,7 +11,6 @@ from scout.parse.panelapp import parse_panelapp_panel
 from scout.server.extensions import panelapp
 
 LOG = logging.getLogger(__name__)
-PANEL_NAME = "PANELAPP-GREEN"
 
 
 def load_panelapp_panel(
@@ -72,7 +71,14 @@ def get_panelapp_genes(
     return genes
 
 
-def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool, signed_off: bool):
+def load_panelapp_green_panel(
+    adapter: MongoAdapter,
+    institute: str,
+    force: bool,
+    signed_off: bool,
+    panel_id: str,
+    panel_display_name: str,
+):
     """Load/Update the panel containing all Panelapp Green genes."""
 
     def parse_types_filter(types_filter: str, available_types: List[str]) -> List[str]:
@@ -85,10 +91,10 @@ def load_panelapp_green_panel(adapter: MongoAdapter, institute: str, force: bool
         return [available_types[i] for i in index_list]
 
     # check and set panel version
-    old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
+    old_panel = adapter.gene_panel(panel_id=panel_id)
     green_panel = {
-        "panel_name": PANEL_NAME,
-        "display_name": "PanelApp Green Genes",
+        "panel_name": panel_id,
+        "display_name": panel_display_name,
         "institute": institute,
         "version": float(math.floor(old_panel["version"]) + 1) if old_panel else 1.0,
         "date": datetime.now(),
