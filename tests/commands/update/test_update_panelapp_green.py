@@ -6,13 +6,12 @@ import responses
 
 from scout.commands import cli
 from scout.demo import panelapp_panel_path, panelapp_panels_reduced_path
-from scout.load.panelapp import PANEL_NAME
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
 DEMO_PANEL = "522"
 PANELAPP_GET_PANEL_URL = f"{API_PANELS_URL}{DEMO_PANEL}"
-
+PANEL_NAME = "PANELAPP-GREEN"
 
 def test_update_panelapp_green_non_existing_institute(empty_mock_app):
     """Tests the CLI that updates PANELAPP-GREEN panel in database, when provided institute id doesn't exist"""
