@@ -92,7 +92,8 @@
                         name: "{{ ptrack.name }}",
                         url: '{{ url_for("alignviewers.remote_static", file=ptrack.url) }}',
                         format: "{{ ptrack.format }}",
-                         indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
+                        groupBy: "tag:HP",
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
                         min: '{{ ptrack.min }}',
                         max: '{{ ptrack.max }}',
                         sourceType: 'file'
@@ -104,7 +105,8 @@
                         name: "{{ atrack.name }}",
                         url: '{{ url_for("alignviewers.remote_static", file=atrack.url) }}',
                         format: "{{ atrack.format }}",
-                         indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
+                        groupBy: "tag:HP",
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
                         min: '{{ atrack.min }}',
                         max: '{{ atrack.max }}',
                         sourceType: 'file'
