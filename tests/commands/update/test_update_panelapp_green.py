@@ -13,6 +13,7 @@ DEMO_PANEL = "522"
 PANELAPP_GET_PANEL_URL = f"{API_PANELS_URL}{DEMO_PANEL}"
 PANEL_NAME = "PANELAPP-GREEN"
 
+
 def test_update_panelapp_green_non_existing_institute(empty_mock_app):
     """Tests the CLI that updates PANELAPP-GREEN panel in database, when provided institute id doesn't exist"""
 
