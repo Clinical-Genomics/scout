@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Style of Alamut button on variant page
+
 ## [4.99]
 ### Added
 - De novo assembly alignment file load and display (#5284)
