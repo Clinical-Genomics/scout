@@ -274,7 +274,7 @@ def set_tracks(name_list, file_list):
         track_config = {"name": name, "url": track, "min": 0.0, "max": 30.0}
         index = find_index(track)
         if index:
-            track_config["index"] = index
+            track_config["indexURL"] = index
         track_list.append(track_config)
     return track_list
 
