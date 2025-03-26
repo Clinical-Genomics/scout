@@ -41,8 +41,6 @@ samples:
         'vcf': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat.vcf'
         'catalog': 'scout/demo/REViewer_test_data/catalog_test.json'
     omics_sample_id: RNA1059A2
-    assembly_alignment_path: scout/demo/reduced_mt.bam
-    paraphase_alignment_path: scout/demo/reduced_mt.bam
     rna_alignment_path: scout/demo/reduced_mt.bam
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
