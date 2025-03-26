@@ -132,6 +132,34 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
+                      {% for ptrack in paraphase_alignments %}
+                      {
+                        type: "alignment",
+                        name: "{{ ptrack.name }}",
+                        url: '{{ url_for("alignviewers.remote_static", file=ptrack.url) }}',
+                        format: "{{ ptrack.format }}",
+                        groupBy: "tag:HP",
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
+                        min: '{{ ptrack.min }}',
+                        max: '{{ ptrack.max }}',
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
+                      {% for atrack in assembly_alignments %}
+                      {
+                        type: "alignment",
+                        name: "{{ atrack.name }}",
+                        url: '{{ url_for("alignviewers.remote_static", file=atrack.url) }}',
+                        format: "{{ atrack.format }}",
+                        groupBy: "tag:HP",
+                        height: 140,
+                        showCoverage: false,
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
+                        min: '{{ atrack.min }}',
+                        max: '{{ atrack.max }}',
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for rtrack in upd_regions_beds %}
                       {
                         type: 'annotation',

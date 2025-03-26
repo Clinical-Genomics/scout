@@ -124,6 +124,8 @@ HUMAN_GENES_38 = {
 }
 
 CASE_SPECIFIC_TRACKS = {
+    "paraphase_alignments": "Paraphase Alignment",
+    "assembly_alignments": "de novo Assembly Alignment",
     "rhocall_beds": "Rhocall Zygosity",
     "rhocall_wigs": "Rhocall Regions",
     "tiddit_coverage_wigs": "TIDDIT Coverage",
