@@ -5,6 +5,7 @@ import logging
 import click
 from flask.cli import current_app, with_appcontext
 
+from scout.constants.panels import PANELAPPGREEN_DISPLAY_NAME, PANELAPPGREEN_NAME
 from scout.load.panelapp import load_panelapp_green_panel
 from scout.server.extensions import store
 
@@ -31,8 +32,15 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Force update even if updated panel contains less genes",
 )
+@click.option("--panel-id", help="Panel ID", default=PANELAPPGREEN_NAME, show_default=True)
+@click.option(
+    "--panel-display-name",
+    help="Panel display name",
+    default=PANELAPPGREEN_DISPLAY_NAME,
+    show_default=True,
+)
 @with_appcontext
-def panelapp_green(institute, force, signed_off):
+def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
     """
@@ -47,7 +55,12 @@ def panelapp_green(institute, force, signed_off):
 
     try:
         load_panelapp_green_panel(
-            adapter=store, institute=institute, force=force, signed_off=signed_off
+            adapter=store,
+            institute=institute,
+            force=force,
+            signed_off=signed_off,
+            panel_id=panel_id,
+            panel_display_name=panel_display_name,
         )
     except Exception as err:
         LOG.error(err)

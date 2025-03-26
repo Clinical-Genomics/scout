@@ -25,3 +25,6 @@ PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS = [
     "gms-signed-off",
     "rare-disease-100k",
 ]
+
+PANELAPPGREEN_NAME = "PANELAPP-GREEN"
+PANELAPPGREEN_DISPLAY_NAME = "PanelApp Green Genes"
