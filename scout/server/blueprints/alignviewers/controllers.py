@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from flask import flash, session
 from flask_login import current_user
@@ -265,8 +265,8 @@ def make_locus_from_gene(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     return f"{chrom}:{locus_start}-{locus_end}"
 
 
-def get_tracks(name_list, file_list):
-    """Return a dict according to IGV track format.
+def get_tracks(name_list: list, file_list: list) -> List[Dict]:
+    """Return a list of dict according to IGV track format.
 
     If an index can be found (e.g. for bam, cram files), use it explicitly.
     If the format is one of those two alignment types, set it explicitly: it will need to be dynamically
@@ -365,10 +365,9 @@ def set_case_specific_tracks(display_obj, case_obj):
         if None in [case_obj.get(track), case_obj.get("sample_names")]:
             continue
 
-        labels = [f"{label} - {sample}" for sample in case_obj.get("sample_names")]
-
-        track_info = get_tracks(labels, case_obj.get(track))
-        display_obj[track] = track_info
+        display_obj[track] = get_tracks(
+            [f"{label} - {sample}" for sample in case_obj.get("sample_names")], case_obj.get(track)
+        )
 
 
 def set_config_custom_tracks(display_obj: dict, build: str):
