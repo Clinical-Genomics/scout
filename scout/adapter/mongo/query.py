@@ -790,7 +790,9 @@ class QueryHandler(object):
 
             if criterion == "svtype":
                 svtype = query["svtype"]
-                mongo_secondary_query.append({"sub_category": {"$in": svtype}})
+                mongo_secondary_query.append(
+                    {"sub_category": {"$in": [re.compile(sub_category) for sub_category in svtype]}}
+                )
 
             if criterion == "decipher":
                 mongo_query["decipher"] = EXISTS
