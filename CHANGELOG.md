@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Allow matching compounded subcategories from SV callers e.g. DUP:INV (#4057)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 
