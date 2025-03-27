@@ -80,6 +80,7 @@ def add_gene_links(
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
     gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
+    gene_obj["cancer_hotspots_link"] = cancer_hotspots_gene(hgnc_symbol)
     if institute:
         gene_obj["alamut_link"] = alamut_gene_link(institute, gene_obj, build)
 
@@ -88,6 +89,12 @@ def decipher_gene(hgnc_symbol: str) -> Optional[str]:
     """Create link to Decipher gene."""
     if hgnc_symbol:
         return f"https://www.deciphergenomics.org/gene/{hgnc_symbol}/overview/clinical-info"
+
+
+def cancer_hotspots_gene(hgnc_symbol: str) -> Optional[str]:
+    """Create link to Decipher gene."""
+    if hgnc_symbol:
+        return f"https://www.cancerhotspots.org/#/home?search={hgnc_symbol}"
 
 
 def panelapp_gene(hgnc_symbol):
