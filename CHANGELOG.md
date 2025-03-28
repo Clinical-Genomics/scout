@@ -5,8 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
+- Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
 ### Changed
-- Allow matching compounded subcategories from SV callers e.g. DUP:INV (#4057)
+- Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 
@@ -23,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation on Keycloak login system integration (#5342)
 - Integrity check for genes/transcripts/exons files downloaded from Ensembl (#5353)
 - Options for custom ID/display name for PanelApp Green updates (#5355)
-- Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
 ### Changed
 - Allow ACMG criteria strength modification to Very strong/Stand-alone (#5297)
 - Mocked the Ensembl liftover service in igv tracks tests (#5319)
