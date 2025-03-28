@@ -108,8 +108,9 @@
     <!-- external links -->
     <div class="card panel-default mt-3">
       <div class="card-body">
+        Search ClinGen Criteria Specifications (CSPEC):
         {% for gene in variant.genes %}
-          <a href="{{ gene.cspec_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Search {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }} ClinGen CSPEC</a>
+          <a href="{{ gene.cspec_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</a>
         {% endfor %}
       </div>
     </div>
