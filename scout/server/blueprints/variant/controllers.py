@@ -653,6 +653,12 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
         store, variant_obj, institute_id, case_name
     )
 
+    genome_build = str(case_obj.get("genome_build", "37"))
+    if genome_build not in ["37", "38"]:
+        genome_build = "37"
+
+    add_gene_info(store, variant_obj, genome_build=genome_build)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
