@@ -28,18 +28,15 @@ from scout.server.blueprints.variant.controllers import (
 )
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import (
+    get_gene_has_full_coverage,
     observations,
     str_variant_reviewer,
 )
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
-from scout.server.blueprints.variant.controllers import (
-    variant_acmg_post,
-)
+from scout.server.blueprints.variant.controllers import variant_acmg_post
 from scout.server.blueprints.variant.controllers import variant_ccv as ccv_controller
-from scout.server.blueprints.variant.controllers import (
-    variant_ccv_post,
-)
+from scout.server.blueprints.variant.controllers import variant_ccv_post
 from scout.server.blueprints.variant.verification_controllers import (
     MissingVerificationRecipientError,
     variant_verification,
@@ -421,6 +418,16 @@ def acmg():
     acmg_bayesian = get_acmg_temperature(criteria)
     acmg_conflicts = get_acmg_conflicts(criteria)
     return jsonify({"classification": classification, "conflicts": acmg_conflicts, **acmg_bayesian})
+
+
+@variant_bp.route("/api/v1/gene_has_full_coverage/<institute_id>/<case_name>/<variant_id>/")
+def gene_has_full_coverage(institute_id, case_name, variant_id):
+    """Check if gene has full coverage using chanjo2 endpoint"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return jsonify(
+        {"gene_has_full_coverage": get_gene_has_full_coverage(institute_obj, case_obj, variant_obj)}
+    )
 
 
 @variant_bp.route("/ccv_evaluations/<evaluation_id>", methods=["GET", "POST"])
