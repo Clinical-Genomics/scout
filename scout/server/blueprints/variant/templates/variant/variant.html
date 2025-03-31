@@ -433,7 +433,10 @@
     set_scrolly_table('transcripts_panel_table')
 
     function update_gene_has_full_coverage() {
-      $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant.variant_id) }}', function (data) {
+      $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
+        if($.isEmptyObject(data.gene_has_full_coverage)) {
+          $('.coverage-complete-indicator').style.display = "none"
+        }
         for (const [hgnc_id, has_complete_coverage] of Object.entries(data.gene_has_full_coverage)) {
           // reset the temp color and icon
           let coverage_indicator_span = $('#coverage-indicator-'+hgnc_id)

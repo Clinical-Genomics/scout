@@ -418,6 +418,7 @@ def get_gene_has_full_coverage(institute_obj, case_obj, variant_obj) -> Dict[int
     Query chanjo2, if configured and d4 files are available for this case,
     for coverage completeness on the genes touching this variant.
     """
+    case_has_chanjo2_coverage(case_obj)
     if not case_obj.get("chanjo2_coverage"):
         return {}
 
