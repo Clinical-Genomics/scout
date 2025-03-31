@@ -875,7 +875,7 @@ class CaseHandler(object):
 
         if keep_actions:
             # collect eventual phenotype-related data already existing for the case
-            update_case_phenotypes(old_case=existing_case, new_case=case_obj)
+            self.update_case_phenotypes(old_case=existing_case, new_case=case_obj)
 
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
