@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
+- If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels.
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 

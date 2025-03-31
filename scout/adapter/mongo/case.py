@@ -831,20 +831,11 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
-    def check_existing_data(self, case_obj, existing_case, institute_obj, update, keep_actions):
-        """Make sure data from case to be loaded/reuploaded conforms to case data already saved in database.
-           Return eventual evaluated variants to be propagated to the updated case if keep_actions is True
-
-        Args:
-            case_obj(dict): case dictionary to be loaded/reuploaded
-            existing_case(dict): a case with same _id or same display_name and institute_id as case_obj
-            institute_obj(dict): institute dictionary
-            update(bool): If existing case should be updated
-            keep_actions(bool): If old evaluated variants should be kept when case is updated
-
-        Returns:
-            previous_evaluated_variants(list): list of variants evaluated in previous case
-                or None if case is not already present in the database.
+    def check_existing_data(
+        self, case_obj: dict, existing_case: dict, institute_obj: dict, update, keep_actions: bool
+    ) -> Optional[List[dict]]:
+        """Make sure data from case to be loaded/re-uploaded conforms to case data already saved in database.
+        Return eventual evaluated variants to be propagated to the updated case if keep_actions is True.
         """
 
         if existing_case is None:
@@ -883,8 +874,24 @@ class CaseHandler(object):
             )
 
         if keep_actions:
+            # collect eventual phenotype-related data already existing for the case
+            update_case_phenotypes(old_case=existing_case, new_case=case_obj)
+
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
+
+    def update_case_phenotypes(self, old_case: dict, new_case: dict):
+        """If case is re-runned/re-uploaded, remember phenotype-related settings from the old case, including assigned diseases, HPO terms, phenotype groups and HPO panels."""
+        for key in [
+            "phenotype_terms",
+            "phenotype_groups",
+            "diagnosis_phenotypes",
+            "dynamic_panel_phenotypes",
+            "dynamic_gene_list",
+            "dynamic_gene_list_edited",
+        ]:
+            if key in old_case:
+                new_case[key] = old_case[key]
 
     def update_case_data_sharing(self, old_case: dict, new_case: dict):
         """Update data sharing info for a case that is re-runned/re-uploaded."""
@@ -1017,7 +1024,6 @@ class CaseHandler(object):
                     institute_id=institute_obj["_id"],
                     force_update_case=True,
                 )
-
                 self.update_case_cli(case_obj, institute_obj)
                 # update Sanger status for the new inserted variants
                 self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
