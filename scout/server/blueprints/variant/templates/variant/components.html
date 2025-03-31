@@ -162,7 +162,7 @@
     <div class="d-flex flex-wrap ms-1" data-bs-toggle="tooltip" title="Chanjo2 coverage reports">
       {% for gene in variant.genes %}
         {{ chanjo2_report_form(institute, case, gene.hgnc_symbol, 'overview', gene.hgnc_id, "Gene coverage " + (gene.common.hgnc_symbol if gene.common else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
-        <span class="bg-info fa-solid fa-circle-question coverage-complete-indicator" id="coverage-indicator-{{gene.common.hgnc_id}}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Checking Chanjo2 coverage completeness..."></span>
+        <span class="bg-info fa-solid fa-circle-question complete-coverage-indicator" style="display:block" id="coverage-indicator-{{gene.common.hgnc_id}}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Checking Chanjo2 coverage completeness..."></span>
       {% endfor %}
     </div>
   {% endif %}
