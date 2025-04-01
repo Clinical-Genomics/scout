@@ -13,7 +13,9 @@ from scout.constants import (
 )
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
+CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
 CLNSIG_NULL = {"clnsig": {"$eq": None}}
+CLNSIG_ONC_NULL = {"clnsig_onc": {"$eq": None}}
 CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
 EXISTS = {"$exists": True}
 NOT_EXISTS = {"$exists": False}
@@ -849,6 +851,25 @@ class QueryHandler(object):
                 for caller in query.get("fusion_caller", []):
                     fusion_caller_query.append({caller: "Pass"})
                 mongo_secondary_query.append({"$or": fusion_caller_query})
+
+            if criterion == "clinsig_onc":
+
+                elem_match = {"value": re.compile("|".join(query.get("clinsig_onc")))}
+
+                if query.get("clinsig_onc_exclude"):
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {
+                                    "clinsig_onc": {"$not": elem_match["value"]}
+                                },  # Exclude values in `elem_match`
+                                CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
+                                CLNSIG_ONC_NULL,  # Field is null
+                            ]
+                        }
+                    )
+                else:
+                    mongo_secondary_query.append({"clinsig_onc": elem_match})
 
         return mongo_secondary_query
 

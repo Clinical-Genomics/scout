@@ -39,7 +39,7 @@ from scout.constants import (
 LOG = logging.getLogger(__name__)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
-ONC_CLNSIG_OPTIONS = [(term, term.lower) for term in ONC_CLNSIG]
+ONC_CLNSIG_OPTIONS = [(term.lower().replace(" ", "_"), term) for term in ONC_CLNSIG]
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
@@ -114,7 +114,7 @@ class VariantFiltersForm(FlaskForm):
     compound_rank_score = IntegerField("Compound rank score")
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("ClinVar significance", choices=CLINSIG_OPTIONS)
     clinsig_exclude = BooleanField("Exclude")
     clinvar_tag = BooleanField("ClinVar hits only")
     prioritise_clinvar = BooleanField("Prioritise ClinVar")
