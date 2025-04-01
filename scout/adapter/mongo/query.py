@@ -855,14 +855,14 @@ class QueryHandler(object):
 
             if criterion == "clinsig_onc":
 
-                elem_match = {"value": re.compile("|".join(query.get("clinsig_onc")))}
+                elem_match = re.compile("|".join(query.get("clinsig_onc")))
 
                 if query.get("clinsig_onc_exclude"):
                     mongo_secondary_query.append(
                         {
                             "$or": [
                                 {
-                                    "clnsig_onc": {"$not": elem_match["value"]}
+                                    "clnsig_onc.value": {"$not": elem_match}
                                 },  # Exclude values in `elem_match`
                                 CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
                                 CLNSIG_ONC_NULL,  # Field is null
@@ -870,7 +870,7 @@ class QueryHandler(object):
                         }
                     )
                 else:
-                    mongo_secondary_query.append({"clnsig_onc": elem_match})
+                    mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
         return mongo_secondary_query
 
