@@ -387,6 +387,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
@@ -861,7 +862,7 @@ class QueryHandler(object):
                         {
                             "$or": [
                                 {
-                                    "clinsig_onc": {"$not": elem_match["value"]}
+                                    "clnsig_onc": {"$not": elem_match["value"]}
                                 },  # Exclude values in `elem_match`
                                 CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
                                 CLNSIG_ONC_NULL,  # Field is null
@@ -869,7 +870,7 @@ class QueryHandler(object):
                         }
                     )
                 else:
-                    mongo_secondary_query.append({"clinsig_onc": elem_match})
+                    mongo_secondary_query.append({"clnsig_onc": elem_match})
 
         return mongo_secondary_query
 
