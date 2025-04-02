@@ -16,16 +16,19 @@
         {{ institute.display_name }}
       </a>
     </li>
-    <li class="nav-item active d-flex align-items-center">
-      <span class="navbar-text">{{ case.display_name }}</span>
+    <li class="nav-item d-flex align-items-center">
+      <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+        {{ case.display_name }}
+      </a>
+    </li>
+  {% else %}
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('panels.panels') }}">Gene Panels</a>
     </li>
   {% endif %}
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('panels.panels') }}">Gene Panels</a>
-  </li>
-  <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">{{ panel.display_name }} {{ panel.version }} {% if case%} ({{case.display_name}}) {% endif %}</span>
-  </li>
+    <li class="nav-item active d-flex align-items-center">
+      <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
+    </li>
 {% endblock %}
 
 {% block content_main %}

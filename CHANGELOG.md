@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
+- Gene panels open in new tabs from case panels and display case name on top
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 
