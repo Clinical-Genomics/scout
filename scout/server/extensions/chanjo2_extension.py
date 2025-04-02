@@ -66,6 +66,8 @@ class Chanjo2Client:
             "interval_type": "genes",
             "samples": [],
         }
+        analysis_types = []
+
         for ind in individuals:
             if not ind.get("d4_file"):
                 continue
@@ -73,6 +75,12 @@ class Chanjo2Client:
             gene_cov_query["samples"].append(
                 {"coverage_file_path": ind["d4_file"], "name": ind["individual_id"]}
             )
+            analysis_types.append(ind.get("analysis_type"))
+
+        if "wes" in analysis_types:
+            gene_cov_query["interval_type"] = "exons"
+        elif "wts" in analysis_types:
+            gene_cov_query["interval_type"] = "transcripts"
 
         resp = requests.post(chanjo2_gene_cov_url, json=gene_cov_query)
         gene_cov = resp.json()
