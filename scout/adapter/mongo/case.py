@@ -835,7 +835,7 @@ class CaseHandler(object):
         self, case_obj: dict, existing_case: dict, institute_obj: dict, update, keep_actions: bool
     ) -> Optional[List[dict]]:
         """Make sure data from a case to be loaded/re-uploaded conforms to any case data already saved in the database.
-        Return eventual evaluated variants to be propagated to the updated case if keep_actions is True.
+        If keep_actions is True, return any evaluated variants to be propagated to the updated case. The flag indicates that old evaluated variants should be kept when the case is updated.
         """
 
         if existing_case is None:
