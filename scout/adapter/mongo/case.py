@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 import operator
 import re
@@ -880,15 +881,25 @@ class CaseHandler(object):
     def update_case_phenotypes(self, old_case: dict, new_case: dict):
         """If case has been re-run/re-uploaded, remember phenotype-related settings from the old case, including assigned diseases, HPO terms, phenotype groups and HPO panels."""
         for key in [
-            "phenotype_terms",
-            "phenotype_groups",
-            "diagnosis_phenotypes",
             "dynamic_panel_phenotypes",
             "dynamic_gene_list",
             "dynamic_gene_list_edited",
-        ]:
+        ]:  # Remember key/values from old case
             if key in old_case:
                 new_case[key] = old_case[key]
+
+        for key in [
+            "phenotype_terms",
+            "phenotype_groups",
+            "diagnosis_phenotypes",
+        ]:  # Remember key/values from old case and integrate with info provided on case config file
+            if key not in old_case:
+                continue
+            new_case[key] = list(
+                {
+                    json.dumps(d, sort_keys=True): d for d in new_case.get(key, []) + old_case[key]
+                }.values()
+            )
 
     def update_case_data_sharing(self, old_case: dict, new_case: dict):
         """Update data sharing info for a case that is re-runned/re-uploaded."""
