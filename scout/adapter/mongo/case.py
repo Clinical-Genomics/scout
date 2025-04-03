@@ -834,7 +834,7 @@ class CaseHandler(object):
     def check_existing_data(
         self, case_obj: dict, existing_case: dict, institute_obj: dict, update, keep_actions: bool
     ) -> Optional[List[dict]]:
-        """Make sure data from case to be loaded/re-uploaded conforms to case data already saved in database.
+        """Make sure data from a case to be loaded/re-uploaded conforms to any case data already saved in the database.
         Return eventual evaluated variants to be propagated to the updated case if keep_actions is True.
         """
 
