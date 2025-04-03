@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter cancer SNV by ClinVar oncogenicity
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
+- Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 
