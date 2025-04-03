@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
 - Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples
+- Gene panels open in new tabs from case panels and display case name on the top of the page
 - If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels.
 ### Fixed
 - Style of Alamut button on variant page (#5358)
