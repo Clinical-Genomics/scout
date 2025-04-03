@@ -874,9 +874,6 @@ class CaseHandler(object):
             )
 
         if keep_actions:
-            # collect eventual phenotype-related data already existing for the case
-            self.update_case_phenotypes(old_case=existing_case, new_case=case_obj)
-
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
@@ -1015,6 +1012,7 @@ class CaseHandler(object):
         finally:
             if existing_case:
                 self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
+                self.update_case_phenotypes(old_case=existing_case, new_case=case_obj)
                 case_obj["rerun_requested"] = False
                 if case_obj["status"] in ["active", "archived"]:
                     case_obj["status"] = "inactive"
