@@ -881,7 +881,7 @@ class CaseHandler(object):
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
     def update_case_phenotypes(self, old_case: dict, new_case: dict):
-        """If case is re-runned/re-uploaded, remember phenotype-related settings from the old case, including assigned diseases, HPO terms, phenotype groups and HPO panels."""
+        """If case has been re-run/re-uploaded, remember phenotype-related settings from the old case, including assigned diseases, HPO terms, phenotype groups and HPO panels."""
         for key in [
             "phenotype_terms",
             "phenotype_groups",
