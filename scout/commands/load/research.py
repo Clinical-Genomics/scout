@@ -10,6 +10,7 @@ from scout.adapter import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.server.extensions import store
 
+DEFAULT_RANK_THRESHOLD = 8
 LOG = logging.getLogger(__name__)
 
 
@@ -85,7 +86,6 @@ def research(case_id, institute, force):
         # Fetch all cases that have requested research
         case_objs = adapter.cases(research_requested=True)
 
-    default_threshold = 8
     files = False
     raise_file_not_found = False
     for case_obj in case_objs:
@@ -107,7 +107,7 @@ def research(case_id, institute, force):
                     case_obj=case_obj,
                     variant_type="research",
                     category=ORDERED_FILE_TYPE_MAP[file_type]["category"],
-                    rank_treshold=default_threshold,
+                    rank_treshold=case_obj.get("rank_score_threshold", DEFAULT_RANK_THRESHOLD),
                 )
 
         if not files:
