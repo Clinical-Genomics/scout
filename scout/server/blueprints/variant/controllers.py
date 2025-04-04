@@ -371,8 +371,8 @@ def variant(
     if get_overlapping:
         overlapping_dna, overlapping_wts = map(list, store.hgnc_overlapping(variant_obj))
 
-    for var in overlapping_dna:
-        var.update(predictions(var.get("genes", [])))
+        for var in overlapping_dna:
+            var.update(predictions(var.get("genes", [])))
 
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
