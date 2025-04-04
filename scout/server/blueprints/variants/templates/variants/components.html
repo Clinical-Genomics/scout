@@ -440,10 +440,10 @@
     data-bs-html="true" data-bs-trigger="hover click"
     {% if variant.category == "SNV" %}
       data-bs-content="<div>Gene overlapping non-SNVs</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">DNA Gene matches</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">DNA gene matches</a>
     {% else %}
       data-bs-content="<div>Gene overlapping variants</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">DNA Gene matches</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">DNA gene matches</a>
     {% endif %}
   {% endif %}
 
