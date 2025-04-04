@@ -243,7 +243,7 @@
             {{ pretty_link_variant(variant, case) }}
           </td>
           <td class='text-end'>{{ variant.sub_category }}</td>
-          <td class='text-end'>{{ variant.length if variant.length < 100000000000 else '-' }}</td>
+          <td class='text-end'>{{ variant.length if variant.length and variant.length < 100000000000 else '-' }}</td>
           <td class='text-end'>{{ variant.rank_score }}</td>
         </tr>
       {% endfor %}

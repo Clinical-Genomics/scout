@@ -367,11 +367,11 @@ def variant(
     if variant_id in case_clinvars:
         variant_obj["clinvar_clinsig"] = case_clinvars.get(variant_id)["clinsig"]
 
-    overlapping_vars = []
-    if get_overlapping:
-        for var in store.hgnc_overlapping(variant_obj):
-            var.update(predictions(var.get("genes", [])))
-            overlapping_vars.append(var)
+    overlapping_dna, overlapping_wts = map(list, store.hgnc_overlapping(variant_obj))
+
+    for var in overlapping_dna:
+        var.update(predictions(var.get("genes", [])))
+
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
@@ -395,7 +395,8 @@ def variant(
         "causatives": other_causatives,
         "managed_variant": managed_variant,
         "events": events,
-        "overlapping_vars": overlapping_vars,
+        "overlapping_vars": overlapping_dna,
+        "overlapping_wts": overlapping_wts,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
         "dismiss_variant_options": dismiss_options,

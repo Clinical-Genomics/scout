@@ -2,7 +2,7 @@
 # stdlib modules
 import logging
 import re
-from typing import Any, Dict, Iterable, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 # Third party modules
 import pymongo
@@ -706,7 +706,9 @@ class VariantHandler(VariantLoader):
                We sort to offer the LIMIT most severe overlapping variants.
         """
 
-        def dna_overlapping(hgnc_ids, limit) -> Iterable[Dict]:
+        def dna_overlapping(
+            hgnc_ids: List[int], variant_type: str, limit: Optional[int]
+        ) -> Iterable[Dict]:
             """Return DNA other categories of DNA variants matching the genes of the DNA variant in question."""
             category = (
                 {"$in": ["sv", "mei"]}
@@ -714,7 +716,6 @@ class VariantHandler(VariantLoader):
                 else {"$in": ["sv", "snv", "mei", "cancer", "cancer_sv"]}
             )
 
-            variant_type = variant_obj.get("variant_type", "clinical")
             if not limit:
                 limit = 30 if variant_obj["category"] == "snv" else 45
 
@@ -730,18 +731,22 @@ class VariantHandler(VariantLoader):
             sort_key = [("rank_score", pymongo.DESCENDING)]
             return self.variant_collection.find(query).sort(sort_key).limit(limit)
 
-        def wts_overlapping(hgnc_ids) -> Iterable[Dict]:
+        def wts_overlapping(hgnc_ids: List[int], variant_type: str) -> Iterable[Dict]:
             """Return WTS outliers matching the genes of the DNA variant in question."""
             query = {
                 "$and": [
                     {"case_id": variant_obj["case_id"]},
+                    {"variant_type": variant_type},
                     {"hgnc_ids": {"$in": hgnc_ids}},
                 ]
             }
             return self.omics_variant_collection.find(query)
 
         hgnc_ids = variant_obj.get("hgnc_ids", [])
-        return dna_overlapping(hgnc_ids, limit), wts_overlapping(hgnc_ids)
+        variant_type = variant_obj.get("variant_type", "clinical")
+        return dna_overlapping(
+            hgnc_ids=hgnc_ids, variant_type=variant_type, limit=limit
+        ), wts_overlapping(hgnc_ids=hgnc_ids, variant_type=variant_type)
 
     def evaluated_variant_ids_from_events(self, case_id, institute_id):
         """Returns variant ids for variants that have been evaluated
