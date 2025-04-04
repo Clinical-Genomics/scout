@@ -367,7 +367,9 @@ def variant(
     if variant_id in case_clinvars:
         variant_obj["clinvar_clinsig"] = case_clinvars.get(variant_id)["clinsig"]
 
-    overlapping_dna, overlapping_wts = map(list, store.hgnc_overlapping(variant_obj))
+    overlapping_dna, overlapping_wts = [], []
+    if get_overlapping:
+        overlapping_dna, overlapping_wts = map(list, store.hgnc_overlapping(variant_obj))
 
     for var in overlapping_dna:
         var.update(predictions(var.get("genes", [])))
