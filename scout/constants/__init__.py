@@ -37,7 +37,7 @@ from .clinvar import (
     GERMLINE_CLASSIF_TERMS,
     MULTIPLE_CONDITION_EXPLANATION,
 )
-from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
+from .clnsig import CLINSIG_MAP, ONC_CLNSIG, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .disease_parsing import (
     DISEASE_INHERITANCE_TERMS,
     ENTRY_PATTERN,
@@ -68,7 +68,12 @@ from .gene_tags import (
     PANEL_GENE_INFO_TRANSCRIPTS,
     UPDATE_GENES_RESOURCES,
 )
-from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
+from .igv_tracks import (
+    CASE_SPECIFIC_TRACKS,
+    HUMAN_REFERENCE,
+    IGV_TRACKS,
+    USER_DEFAULT_TRACKS,
+)
 from .indexes import ID_PROJECTION, INDEXES
 from .panels import PANELAPP_CONFIDENCE_EXCLUDE
 from .phenotype import (

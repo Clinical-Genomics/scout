@@ -757,6 +757,36 @@ def test_build_decipher(adapter):
     assert mongo_query["decipher"] == {"$exists": True}
 
 
+def test_build_query_clnsig_oncogenicity(adapter, case_obj):
+    """Test building a query for variants with oncogenicity."""
+    case_id = case_obj["_id"]
+    # GIVEN a user query with oncogenicity criteria
+    query = {"clinsig_onc": ["oncogenic", "likely_oncogenic"]}
+    # WHEN building thw query
+    mongo_query = adapter.build_query(case_id, query=query)
+    # THEN it should contain the expected search criteria
+    assert mongo_query["$and"] == [{"clnsig_onc.value": re.compile("oncogenic|likely_oncogenic")}]
+
+
+def test_build_query_exclude_clnsig_oncogenicity(adapter, case_obj):
+    """Test building a query that exclude the selected oncogenicity criteria."""
+    case_id = case_obj["_id"]
+    # GIVEN a user query with oncogenicity criteria
+    query = {"clinsig_onc": ["benign", "likely_benign"], "clinsig_onc_exclude": True}
+    # WHEN building thw query
+    mongo_query = adapter.build_query(case_id, query=query)
+    # THEN it should contain the expected search criteria
+    assert mongo_query["$and"] == [
+        {
+            "$or": [
+                {"clnsig_onc.value": {"$not": re.compile("benign|likely_benign")}},
+                {"clnsig_onc": {"$exists": False}},
+                {"clnsig_onc": {"$eq": None}},
+            ]
+        }
+    ]
+
+
 def test_build_range(adapter):
     case_id = "cust000"
     chrom = "1"
