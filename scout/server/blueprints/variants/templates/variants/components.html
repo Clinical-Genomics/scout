@@ -440,16 +440,16 @@
     data-bs-html="true" data-bs-trigger="hover click"
     {% if variant.category == "SNV" %}
       data-bs-content="<div>Gene overlapping non-SNVs</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">DNA gene matches</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">Gene overlappings (DNA)</a>
     {% else %}
       data-bs-content="<div>Gene overlapping variants</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">DNA gene matches</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">Gene overlappings (DNA)</a>
     {% endif %}
   {% endif %}
 
   {% if variant.overlapping_wts %}
     <a href="#" class="badge bg-success text-white" data-bs-toggle="popover" data-bs-placement="left"
     data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene overlapping WTS outliers</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping_wts[:40]) }}">WTS Gene matches</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping_wts[:40]) }}">Gene overlappings (WTS)</a>
   {% endif %}
 {% endmacro %}
