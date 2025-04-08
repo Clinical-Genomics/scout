@@ -62,4 +62,5 @@ SECONDARY_CRITERIA = [
     "split_reads",
     "fusion_caller",
     "rank_score",
+    "clinsig_onc",
 ]

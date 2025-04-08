@@ -28,6 +28,7 @@ from scout.constants import (
     CLINSIG_MAP,
     FEATURE_TYPES,
     GENETIC_MODELS,
+    ONC_CLNSIG,
     OUTLIER_TYPES,
     SO_TERMS,
     SPIDEX_LEVELS,
@@ -38,6 +39,7 @@ from scout.constants import (
 LOG = logging.getLogger(__name__)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
+ONC_CLNSIG_OPTIONS = [(term.lower().replace(" ", "_"), term) for term in ONC_CLNSIG]
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
@@ -112,8 +114,9 @@ class VariantFiltersForm(FlaskForm):
     compound_rank_score = IntegerField("Compound rank score")
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("ClinVar significance", choices=CLINSIG_OPTIONS)
     clinsig_exclude = BooleanField("Exclude")
+    clinvar_tag = BooleanField("ClinVar hits only")
     prioritise_clinvar = BooleanField("Prioritise ClinVar")
 
     gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
@@ -183,7 +186,6 @@ class FiltersForm(VariantFiltersForm):
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     clinical_filter = SubmitField(label="Clinical filter")
-    clinvar_tag = BooleanField("ClinVar hits only")
 
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE
@@ -196,8 +198,11 @@ class CancerFiltersForm(VariantFiltersForm):
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField("Normal alt AF <", validators=[validators.Optional()])
     tumor_frequency = BetterDecimalField("Tumor alt AF >", validators=[validators.Optional()])
-    clinvar_tag = BooleanField("ClinVar hits only")
     cosmic_tag = BooleanField("Cosmic hits")
+    clinsig_onc = NonValidatingSelectMultipleField(
+        "ClinVar oncogenicity", choices=ONC_CLNSIG_OPTIONS
+    )
+    clinsig_onc_exclude = BooleanField("Exclude")
     mvl_tag = BooleanField("Managed Variants hits")
     local_obs_cancer_somatic_old = IntegerField(
         "Local somatic obs. (archive)", validators=[validators.Optional()]
