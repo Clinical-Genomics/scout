@@ -3,7 +3,7 @@
 There are many scenarios where users may want to export information from Scout.
 This document outlines the available export options and how to use them via the command line.
 
-## Main command:
+## Main `export` command:
 
 ```
 scout export
