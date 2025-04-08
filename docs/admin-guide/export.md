@@ -35,9 +35,9 @@ Each command is described in detail below.
 
 ---
 
-## Exporting Cases
+## Exporting Cases (`cases`)
 
-Export case information based on institute, status, or various filters.
+Export case information based on institute, status, or various filters. When exporting cases, it is possible to restrict the list of he exported data by adding optional parameters:
 
 ```
 Options:
@@ -55,9 +55,11 @@ Options:
   --json                          Output result in JSON format
 ```
 
+The command's output is a list of case documents in the same format as they are saved into the database (dictionaries). By specifying the `--json`, documents are printed in json format.
+
 ---
 
-## Exporting the Database
+## Exporting the Database (`database`)
 
 Dump the entire Scout MongoDB database (or subsets).
 
@@ -71,9 +73,9 @@ Options:
 
 ---
 
-## Exporting Exons
+## Exporting Exons (`exons`)
 
-Export all exons or limit to a specific gene.
+Export all exons or limit to a specific gene. Default format is a .bed file, but they can be exported as a json file by using the `--json` option.
 
 ```
 Options:
@@ -91,9 +93,9 @@ A tab-delimited list with the following header:
 
 ---
 
-## Exporting Genes
+## Exporting Genes (`genes`)
 
-Export all genes from the database.
+Export all genes from the database. Default format is a .bed file, but they can be exported as a json file by using the `--json` option.
 
 ```
 Options:
@@ -102,6 +104,7 @@ Options:
 ```
 
 **Output Format:**
+A tab-delimited list with the following header:
 
 ```
 #Chromosome	Start	End	Hgnc_id	Hgnc_symbol
@@ -119,9 +122,20 @@ Export HGNC IDs for all genes associated with a given HPO term.
 scout export hpo_genes HP:0000371
 ```
 
+Result:
+
+```
+#Gene_id	Count
+9986	1
+9987	1
+9988	1
+6193	1
+7067	1
+```
+
 ---
 
-## Exporting Managed Variants
+## Exporting Managed Variants (`managed`)
 
 Export managed variants in VCF format.
 
@@ -151,7 +165,7 @@ Options:
 
 ---
 
-## Exporting Gene Panels
+## Exporting Gene Panels (`panel`)
 
 Export gene panels with clinical annotation in BED format.
 
@@ -170,7 +184,7 @@ Options:
 
 ---
 
-## Exporting Transcripts
+## Exporting Transcripts (`transcripts`)
 
 Export a list of transcripts in BED format. Use the following command: `scout export transcripts`
 
@@ -196,7 +210,7 @@ Options:
 
 ## Exporting Verified Variants (`verified`)
 
-Similar to the `variants` export, but limited to verified variants.
+Similar to the `variants` export, but limited to verified variants. Output is VCF by default, or JSON if specified.
 
 ```
 Options:
