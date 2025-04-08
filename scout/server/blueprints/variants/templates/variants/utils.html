@@ -218,7 +218,7 @@
           <td>
             {% for annotation in compound.functional_annotations %}
               {{ annotation }}<br>
-            {% endfor %}
+            {% endfor %}x
           </td>
         </tr>
       {% endfor %}
@@ -332,7 +332,7 @@
       {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
-      <span>{{ form.clinsig.label(class="control-label") }}</span>
+      <span>{{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}</span>
       <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
       {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
     </div>
@@ -621,7 +621,7 @@
     </div>
   </div>
   <div class="col-2">
-    {{ form.clinsig.label(class="control-label") }}
+    {{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}
     {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
   </div>
   <div class="col-1">
@@ -722,26 +722,17 @@
         {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
-        <span>{{ form.clinsig.label(class="control-label") }}</span>
+        <span>{{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}</span>
         <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
         {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
-        <div class="form-check d-flex justify-content-start">
-          {{ form.mvl_tag(class="form-check-input",type="checkbox") }}
-          {{ form.mvl_tag.label(class="ms-2 form-check-label") }}
-        </div>
-        <div class="form-check d-flex justify-content-start">
-          {{ form.clinvar_tag(class="form-check-input",type="checkbox") }}
-          {{ form.clinvar_tag.label(class="ms-2 form-check-label") }}
-        </div>
-        <div class="form-check d-flex justify-content-start">
-          {{ form.cosmic_tag(class="form-check-input",type="checkbox") }}
-          {{ form.cosmic_tag.label(class="ms-2 form-check-label") }}
-        </div>
+        <span>{{ form.clinsig_onc.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="ClinVar oncogenicity criteria will be applied alongside the other search criteria, not as an alternative. Oncogenicity annotations are still sparse in ClinVar, so relying solely on them could be too restrictive.") }}</span>
+        <span style="float:right;">{{ form.clinsig_onc_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with oncogenicity among the selected categories.") }} {{form.clinsig_onc_exclude}}</span>
+        {{ form.clinsig_onc(class="selectpicker", data_style="btn-secondary") }}
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-2">
       <div class="col-4">
         {{ form.hgnc_symbols.label(class="control-label") }}
         {{ form.hgnc_symbols(class="form-control") }}
@@ -762,13 +753,27 @@
         {{ form.alt_count.label(class="control-label") }}
         {{ form.alt_count(class="form-control") }}
       </div>
-      <div class="col-2">
+      <div class="col-1">
         {{ form.tumor_frequency.label(class="control-label") }}
         {{ form.tumor_frequency(class="form-control", min="0", max=1) }}
       </div>
-      <div class="col-2">
+      <div class="col-1">
         {{ form.control_frequency.label(class="control-label") }}
         {{ form.control_frequency(class="form-control", min="0", max=1) }}
+      </div>
+      <div class="col-2">
+        <div class="form-check d-flex justify-content-start">
+          {{ form.mvl_tag(class="form-check-input",type="checkbox") }}
+          {{ form.mvl_tag.label(class="ms-2 form-check-label") }}
+        </div>
+        <div class="form-check d-flex justify-content-start">
+          {{ form.clinvar_tag(class="form-check-input",type="checkbox") }}
+          {{ form.clinvar_tag.label(class="ms-2 form-check-label") }}
+        </div>
+        <div class="form-check d-flex justify-content-start">
+          {{ form.cosmic_tag(class="form-check-input",type="checkbox") }}
+          {{ form.cosmic_tag.label(class="ms-2 form-check-label") }}
+        </div>
       </div>
     </div>
     <div class="form" id="chromosome_search">
@@ -861,7 +866,7 @@
         {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
-        {{ form.clinsig.label(class="control-label") }}
+        {{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}
         {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
       </div>
     </div>
