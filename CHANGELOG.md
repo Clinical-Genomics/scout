@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
+- Documentation on how to export data from the scout database using the command line
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
 - Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples
