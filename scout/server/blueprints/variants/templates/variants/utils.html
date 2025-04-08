@@ -727,7 +727,7 @@
         {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
-        <span>{{ form.clinsig_onc.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Oncogenicity annotations are still sparse in ClinVar, so relying solely on them could be too restrictive.") }}</span>
+        <span>{{ form.clinsig_onc.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="ClinVar oncogenicity criteria will be applied alongside the other search criteria, not as an alternative. Oncogenicity annotations are still sparse in ClinVar, so relying solely on them could be too restrictive.") }}</span>
         <span style="float:right;">{{ form.clinsig_onc_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with oncogenicity among the selected categories.") }} {{form.clinsig_onc_exclude}}</span>
         {{ form.clinsig_onc(class="selectpicker", data_style="btn-secondary") }}
       </div>
