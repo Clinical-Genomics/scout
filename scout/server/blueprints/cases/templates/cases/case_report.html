@@ -845,7 +845,8 @@
                 <th class="w-5"></th>
                 <th class="w-25"><strong>Variant</strong></th>
                 <th class="w-5"><strong>Category</strong></th>
-  	            <th class="w-25"><strong>Genes</strong></th>
+  	            <th class="w-20"><strong>Genes</strong></th>
+                <th class="w-5"><strong>Classification</strong></th>
                 <th class="w-45"><strong>Dismissed description</strong></th>
             </tr>
           </thead>
@@ -867,7 +868,14 @@
               <td style="width:15%;"
                 {{ dismissed_gene_list(variant) }}
               </td>
-
+              <td>
+                {% if variant.acmg_classification %}
+                  <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
+                {% endif %}
+                {% if variant.ccv_classification %}
+                  <span class="badge rounded-pill bg-{{variant.ccv_classification['color'] if variant.ccv_classification['color'] else 'secondary'}}" title="{{variant.ccv_classification['code']}}">{{variant.ccv_classification['short'] }}</span>
+                {% endif %}
+              </td>
               <td rowspan="2">
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
@@ -1531,7 +1539,11 @@
   <td>
     {% if variant.acmg_classification %}
       <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
-    {% elif variant.manual_rank %}
+    {% endif %}
+    {% if variant.ccv_classification%}
+      <span class="badge rounded-pill bg-{{variant.ccv_classification['color'] if variant.ccv_classification['color'] else 'secondary'}}" title="{{variant.ccv_classification['code']}}">{{variant.ccv_classification['short'] }}</span>
+    {% endif%}
+    {% if variant.manual_rank %}
       <span class="badge rounded-pill bg-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
     {% else %}
       -
