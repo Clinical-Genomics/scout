@@ -383,7 +383,7 @@
     {% set duplicated_variants = [] %}
     {% if variants.classified_detailed %}
       {% for variant in variants.classified_detailed|sort(attribute='variant_rank') %}
-        {% if variant['_id'] not in printed_vars %}
+        {% if variant['_id'] not in printed_vars and variant not in variants.dismissed_detailed %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
           <br>
@@ -395,7 +395,7 @@
       No ACMG-classified variants available for this case
     {% endif %}
     {% if variants.classified_detailed and duplicated_variants|length == variants.classified_detailed|length %}
-      All ACMG-classified variants are already described in the previous views
+      All ACMG-classified variants are already described in the other panels
     {% endif %}
   </div>
 </div>
@@ -410,7 +410,7 @@
     {% set duplicated_variants = [] %}
     {% if variants.ccv_classified_detailed %}
       {% for variant in variants.ccv_classified_detailed|sort(attribute='variant_rank') %}
-        {% if variant['_id'] not in printed_vars %}
+        {% if variant['_id'] not in printed_vars and variant not in variants.dismissed_detailed %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
           <br>
@@ -422,7 +422,7 @@
       No ClinGen-CGC-VICC-classified variants available for this case
     {% endif %}
     {% if variants.ccv_classified_detailed and duplicated_variants|length == variants.ccv_classified_detailed|length %}
-      All ClinGen-CGC-VICC-classified variants are already described in the previous views
+      All ClinGen-CGC-VICC-classified variants are already described in the other panels
     {% endif %}
   </div>
 </div>
@@ -437,7 +437,7 @@
     {% set duplicated_variants = [] %}
     {% if variants.tagged_detailed %}
       {% for variant in variants.tagged_detailed|sort(attribute='variant_rank') %}
-        {% if variant['_id'] not in printed_vars %}
+        {% if variant['_id'] not in printed_vars and variant not in variants.dismissed_detailed %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
           <br>
@@ -461,7 +461,7 @@
       No tagged variants for this case
     {% endif %}
     {% if (variants.tagged_detailed or variants.tier_detailed) and duplicated_variants|length == (variants.tagged_detailed|length+variants.tier_detailed|length) %}
-      All tagged variants are already described in the previous views
+      All tagged variants are already described in the other panels
     {% endif %}
   </div>
 </div>
@@ -500,7 +500,7 @@
     {% set duplicated_variants = [] %}
     {% if variants.commented_detailed %}
       {% for variant in variants.commented_detailed|sort(attribute='variant_rank') %}
-        {% if variant['_id'] not in printed_vars %}
+        {% if variant['_id'] not in printed_vars and variant not in variants.dismissed_detailed %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
@@ -520,7 +520,7 @@
       No commented variants for this case
     {% endif %}
     {% if variants.commented_detailed and duplicated_variants|length == variants.commented_detailed|length %}
-      All commented variants are already described in the previous views
+      All commented variants are already described in the other panels
     {% endif %}
   </div>
 </div>
