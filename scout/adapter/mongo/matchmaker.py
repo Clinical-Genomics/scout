@@ -8,9 +8,6 @@ LOG = logging.getLogger(__name__)
 class MMEHandler(object):
     """Class to handle case submissions to MatchMaker Exchange"""
 
-    def institute_mme_cases(self, institute_obj):
-        """ "Return a set of all case _ids submitted to the Matchmaker Exchange for the given institute."""
-
     def user_mme_submissions(self, user_obj):
         """Return a set of all case _ids submitted to the Matchmaker Exchange by a user.
 
