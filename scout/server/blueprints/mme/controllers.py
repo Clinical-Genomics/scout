@@ -14,5 +14,5 @@ def institute_mme_cases(institute_id: str) -> List[dict]:
         case_obj = store.case(case_id=case_id)
         if not case_obj or not case_obj.get("mme_submission"):
             continue
-            mme_cases.append(case_obj)
+        mme_cases.append(case_obj)
     return mme_cases
