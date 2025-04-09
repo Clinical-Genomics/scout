@@ -7,6 +7,7 @@
 
 {% block css %}
 {{ super() }}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -33,10 +34,9 @@
 {% endblock %}
 
 {% macro mme_submitted() %}
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped" id="mmeTable">
   <thead>
     <tr>
-      <th>Case ID</th>
       <th>Case Name</th>
       <th>Synopsis</th>
       <th>Status</th>
@@ -50,7 +50,6 @@
   <tbody>
     {% for case in mme_cases %}
       <tr>
-        <td>{{ case._id }}</td>
         <td>
           <a class="me-2" href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}" target="_blank" rel="noopener">
           {{ case.display_name }}
@@ -105,10 +104,25 @@
 
 {% block scripts %}
   {{ super() }}
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
   <script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    $(document).ready(function () {
+    $('#mmeTable').DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      responsive: true,
+      language: {
+        search: "Search all fields:",
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ cases",
+      },
+      columnDefs: [
+        { orderable: false, targets: [3, 5, 6, 7] }  // Disable sorting for multi-line complex columns
+      ]
+    });
+  });
   </script>
 {% endblock %}
