@@ -36,14 +36,14 @@
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Display Name</th>
+      <th>Case ID</th>
+      <th>Case Name</th>
       <th>Synopsis</th>
       <th>Status</th>
       <th>Assignees</th>
-      <th>Updated At</th>
+      <th>Submission Updated</th>
       <th>Patient(s)</th>
-      <th>Disorders</th>
+      <th>Phenotypes</th>
       <th>Genomic Features</th>
     </tr>
   </thead>
@@ -51,7 +51,11 @@
     {% for case in mme_cases %}
       <tr>
         <td>{{ case._id }}</td>
-        <td>{{ case.display_name }}</td>
+        <td>
+          <a class="me-2" href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}" target="_blank" rel="noopener">
+          {{ case.display_name }}
+          </a>
+        </td>
         <td>{{ case.synopsis }}</td>
         <td>{{ case.status }}</td>
         <td>
@@ -60,13 +64,13 @@
           {% endfor %}
         </td>
         <td>
-          {{ case.mme_submission.updated_at['$date'] if case.mme_submission and case.mme_submission.updated_at }}
+          {{ case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M') }}
         </td>
         <td>
           {% for patient in case.mme_submission.patients %}
             <div>
               <strong>{{ patient.label }}</strong> ({{ patient.sex }})<br>
-              <small>{{ patient.contact.name }} - <a href="{{ patient.contact.href }}">{{ patient.contact.href }}</a></small>
+              <small>Contact: {{ patient.contact.name }} - <a href="{{ patient.contact.href }}">{{ patient.contact.href }}</a></small>
             </div>
           {% endfor %}
         </td>
