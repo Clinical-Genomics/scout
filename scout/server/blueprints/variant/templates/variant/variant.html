@@ -432,6 +432,22 @@
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
 
+
+    const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
+    for(let complete_coverage_indicator of complete_coverage_indicator_elements) {
+        complete_coverage_indicator.addEventListener('click', function (event) {
+          event.preventDefault()
+
+          var $btn = $(this).button('loading')
+          title="Checking Chanjo2 coverage completeness..."
+          $btn.button('reset')
+
+          update_gene_has_full_coverage()
+      })
+    })
+
+
+
     function update_gene_has_full_coverage() {
       $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
         if($.isEmptyObject(data.gene_has_full_coverage)) {
