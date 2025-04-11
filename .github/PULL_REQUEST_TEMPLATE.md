@@ -12,7 +12,7 @@ This PR marks a new Scout release. We apply semantic versioning. This is a major
 1. `sudo -iu hiseq.clinical`
 1. `ssh localhost`
 1. (optional) Find out which scout branch is currently deployed on cg-vm1: `podman ps`
-1. Stop the service with current deployed branch: `systemctl --user stop scout.target`
+1. Stop the service with current deployed branch: `systemctl --user stop scout@<name_of_currently_deployed_branch>`
 1. Start the scout service with the branch to test: `systemctl --user start scout@<this_branch>`
 1. Make sure the branch is deployed: `systemctl --user status scout.target`
 1. After testing is done, repeat procedure at [https://pax.scilifelab.se/](https://pax.scilifelab.se), which will release the allocated resource (`scout-stage`) to be used for testing by other users.
