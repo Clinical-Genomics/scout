@@ -216,7 +216,7 @@ class OmicsVariantHandler:
         query = self.build_query(
             case_id, query=query, variant_ids=variant_ids, category=category, build=build
         )
-        return self.get_omics_variant_collection.count_documents(query)
+        return self.omics_variant_collection.count_documents(query)
 
     def get_omics_variants_hgnc_overlapping(
         self, hgnc_ids: List[int], variant_type: str, variant_obj: dict
