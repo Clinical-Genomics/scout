@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, Iterable, List, Optional
 
 from pymongo import ASCENDING, DESCENDING
 
