@@ -731,7 +731,7 @@ class VariantHandler(VariantLoader):
             sort_key = [("rank_score", pymongo.DESCENDING)]
             return self.variant_collection.find(query).sort(sort_key).limit(limit)
 
-        def wts_overlapping(hgnc_ids: List[int], variant_type: str) -> Iterable[Dict]:
+        def omics_overlapping(hgnc_ids: List[int], variant_type: str) -> Iterable[Dict]:
             """Return WTS outliers matching the genes of the DNA variant in question."""
             query = {
                 "$and": [
@@ -746,7 +746,7 @@ class VariantHandler(VariantLoader):
         variant_type = variant_obj.get("variant_type", "clinical")
         return dna_overlapping(
             hgnc_ids=hgnc_ids, variant_type=variant_type, limit=limit
-        ), wts_overlapping(hgnc_ids=hgnc_ids, variant_type=variant_type)
+        ), omics_overlapping(hgnc_ids=hgnc_ids, variant_type=variant_type)
 
     def evaluated_variant_ids_from_events(self, case_id, institute_id):
         """Returns variant ids for variants that have been evaluated
