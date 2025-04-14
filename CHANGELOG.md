@@ -8,14 +8,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
-- Documentation on how to export data from the scout database using the command line
-- Filter cancer SNVs by ClinVar oncogenicity. OBS: since annotations are still sparse in ClinVar, relying solely on them could be too restrictive.
+- Documentation on how to export data from the scout database using the command line (#5373)
+- Filter cancer SNVs by ClinVar oncogenicity. OBS: since annotations are still sparse in ClinVar, relying solely on them could be too restrictive (#5367)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
-- Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples
-- Gene panels open in new tabs from case panels and display case name on the top of the page
-- When uploading research variants, use rank threshold defined in case settings, if available, otherwise use the default threshold of 8
-- Display genome build version on case general report
+- Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples (#5368)
+- Gene panels open in new tabs from case panels and display case name on the top of the page (#5369)
+- When uploading research variants, use rank threshold defined in case settings, if available, otherwise use the default threshold of 8 (#5370)
+- Display genome build version on case general report (#5381)
+- On pull request template, fixed instructions on how to deploy a branch to the development server (#5382)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 
