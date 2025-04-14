@@ -20,7 +20,7 @@ HG19GENES_FORMAT = "refgene"
 
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
 HG19CLINVAR_URL = (
-    "http://hgdownload.soe.ucsc.edu/goldenPath/archive/hg19/clinvar/2025-01-13/clinvarMain.bb"
+    "https://hgdownload.soe.ucsc.edu/goldenPath/archive/hg19/clinvar/2025-01-13/clinvarMain.bb"
 )
 
 HG38CLINVAR_SVS_URL = (
