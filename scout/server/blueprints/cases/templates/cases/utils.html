@@ -313,6 +313,22 @@
 
       {{ display_genes|join(", ") }}
 
+    {% elif variant.category == "outlier" %}
+      {{ variant.sub_category|upper }} - {% if variant.genes %}
+        {% for gene in variant.genes %}
+           {% if gene.hgnc_symbol %}
+             {{ gene.hgnc_symbol }}
+           {% else %}
+             {{gene.hgnc_id}}
+           {% endif %}
+        {% endfor %} - {%  if variant.sub_category == "splicing" %}
+          {{ variant.delta_psi }}&Delta;&psi;  {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
+        {% else %}
+          {{ variant.l2fc }}{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}
+        {% endif %}
+      {% else %}
+        {{ variant.gene_name_orig }}
+      {% endif %}
     {% else %} <!-- structural variants -->
       {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
     {% endif %}
@@ -335,6 +351,9 @@
                    case_name=case.display_name,
                    variant_id=variant._id) }}' target='_blank'>
     {% endif %}
+  {% elif variant.category == "outlier" %}
+    <a href='{{ url_for('omics_variants.outliers',
+       institute_id=variant.institute, case_name=case.display_name) }}' target='_blank'>
   {% else %} <!-- structural variants -->
     <a href='{{ url_for('variant.sv_variant',
                               institute_id=variant.institute,

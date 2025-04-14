@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Call coverage completeness indicator via API after window loading completes (#5366)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
+- Scope of overlapping functions (#5385)
 
 ## [4.99]
 ### Added

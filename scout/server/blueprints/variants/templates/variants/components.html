@@ -447,9 +447,9 @@
     {% endif %}
   {% endif %}
 
-  {% if variant.overlapping_wts %}
+  {% if variant.overlapping_outliers %}
     <a href="#" class="badge bg-success text-white" data-bs-toggle="popover" data-bs-placement="left"
     data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene overlapping WTS outliers</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping_wts[:40]) }}">Gene overlapping (WTS)</a>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping_outliers[:40]) }}">Gene overlapping (WTS)</a>
   {% endif %}
 {% endmacro %}
