@@ -736,7 +736,7 @@ class VariantHandler(VariantLoader):
             self.get_variants_hgnc_overlapping(
                 hgnc_ids=hgnc_ids, variant_type=variant_type, limit=limit, variant_obj=variant_obj
             ),
-            self.get_omics_variants_hgvs_overlapping(
+            self.get_omics_variants_hgnc_overlapping(
                 hgnc_ids=hgnc_ids, variant_type=variant_type, variant_obj=variant_obj
             ),
         )
