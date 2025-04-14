@@ -164,8 +164,9 @@
 	              <td class="text-end">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
                 <td class="text-end">{{ overlapping_variant.rank_score }}</td>
               {% else %}
-                <td class="text-end">-</td>
+                <td class="text-end">-</td><td class="text-end">-</td>
               {% endif %}
+
               <td class="text-end">{{ overlapping_variant.length }}</td>
               <td>
                 {{ overlapping_variant.region_annotations|join(', ')|truncate(40, True) }}
