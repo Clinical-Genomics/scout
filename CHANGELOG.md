@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - When uploading research variants, use rank threshold defined in case settings, if available, otherwise use the default threshold of 8 (#5370)
 - Display genome build version on case general report (#5381)
 - On pull request template, fixed instructions on how to deploy a branch to the development server (#5382)
+- On case general report, when a variant is classified (ACMG or CCV), tagged, commented and also dismissed, will only be displayed among the dismissed variants (#5377)
 - If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels (#5365)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
