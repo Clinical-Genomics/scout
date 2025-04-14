@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples (#5368)
 - Gene panels open in new tabs from case panels and display case name on the top of the page (#5369)
 - When uploading research variants, use rank threshold defined in case settings, if available, otherwise use the default threshold of 8 (#5370)
+- Display genome build version on case general report
 - On pull request template, fixed instructions on how to deploy a branch to the development server (#5382)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
