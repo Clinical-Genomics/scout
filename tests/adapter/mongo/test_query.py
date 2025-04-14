@@ -974,7 +974,7 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
     )
 
     # THEN the function that finds overlapping variants to the snv_variant
-    results = adapter.hgnc_overlapping(updated_snv_variant, limit=10000)
+    results, _ = adapter.hgnc_overlapping(updated_snv_variant, limit=10000)
     for res in results:
         # SHOULD return the SV variant
         assert res["category"] == "sv"
@@ -982,6 +982,6 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
 
     # The function should also work the other way around:
     # and return snv variants that overlaps with sv variants
-    result_vars = list(adapter.hgnc_overlapping(updated_sv_variant, limit=10000))
+    result_vars, _ = list(adapter.hgnc_overlapping(updated_sv_variant, limit=10000))
     result_ids = [result_var["_id"] for result_var in result_vars]
     assert updated_snv_variant["_id"] in result_ids
