@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels (#5365)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
+- Scope of overlapping functions (#5385)
 
 ## [4.99]
 ### Added
