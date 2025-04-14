@@ -19,7 +19,9 @@ HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.
 HG19GENES_FORMAT = "refgene"
 
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
-HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
+HG19CLINVAR_URL = (
+    "http://hgdownload.soe.ucsc.edu/goldenPath/archive/hg19/clinvar/2025-03-11/clinvarMain.bb"
+)
 
 HG38CLINVAR_SVS_URL = (
     "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhub/hg38/clinvar_pathogenic.bb"
