@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, Iterable, List, Optional
 
 from pymongo import ASCENDING, DESCENDING
 
@@ -217,3 +217,16 @@ class OmicsVariantHandler:
             case_id, query=query, variant_ids=variant_ids, category=category, build=build
         )
         return self.omics_variant_collection.count_documents(query)
+
+    def get_omics_variants_hgnc_overlapping(
+        self, hgnc_ids: List[int], variant_type: str, variant_obj: dict
+    ) -> Iterable[Dict]:
+        """Return WTS outliers matching the genes of the DNA variant in question."""
+        query = {
+            "$and": [
+                {"case_id": variant_obj["case_id"]},
+                {"variant_type": variant_type},
+                {"hgnc_ids": {"$in": hgnc_ids}},
+            ]
+        }
+        return self.omics_variant_collection.find(query)

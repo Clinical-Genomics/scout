@@ -116,7 +116,7 @@
 </div>
 {% endmacro %}
 
-{% macro overlapping_panel(variant, overlapping_vars, overlapping_wts, case, institute) %}
+{% macro overlapping_panel(variant, overlapping_vars, overlapping_outliers, case, institute) %}
   <div class="card panel-default">
     {% if variant.category != "snv" %}
       <div class="panel-heading">Gene overlapping variants</div>
@@ -141,7 +141,7 @@
             </tr>
           </thead>
           <tbody>
-          {% for overlapping_variant in overlapping_vars + overlapping_wts %}
+          {% for overlapping_variant in overlapping_vars + overlapping_outliers %}
             <tr>
               <td>
                 {% if overlapping_variant.category in ("sv", "cancer_sv") %}
@@ -164,8 +164,9 @@
 	              <td class="text-end">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
                 <td class="text-end">{{ overlapping_variant.rank_score }}</td>
               {% else %}
-                <td class="text-end">-</td>
+                <td class="text-end">-</td><td class="text-end">-</td>
               {% endif %}
+
               <td class="text-end">{{ overlapping_variant.length }}</td>
               <td>
                 {{ overlapping_variant.region_annotations|join(', ')|truncate(40, True) }}
