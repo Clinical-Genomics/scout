@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On case general report, when a variant is classified (ACMG or CCV), tagged, commented and also dismissed, will only be displayed among the dismissed variants (#5377)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
+- Scope of overlapping functions (#5384)
 
 ## [4.99]
 ### Added
