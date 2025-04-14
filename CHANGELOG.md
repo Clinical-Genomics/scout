@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)
-- Temporarily freeze IGV.js ClinVar SNV track to archive version from 250311 - the live release is currently broken (#5387)
+- Temporarily freeze IGV.js ClinVar SNV track to an archive version from earlier this year - the live release is currently broken (#5387)
 
 ## [4.99]
 ### Added
