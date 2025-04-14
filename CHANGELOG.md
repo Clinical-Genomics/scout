@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
 - Documentation on how to export data from the scout database using the command line (#5373)
 - Filter cancer SNVs by ClinVar oncogenicity. OBS: since annotations are still sparse in ClinVar, relying solely on them could be too restrictive (#5367)
+- Include eventual gene-matching WTS outliers on variantS page (Overlap column) and variant page (Gene overlapping non-SNVs table) (#5371)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
 - Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples (#5368)
