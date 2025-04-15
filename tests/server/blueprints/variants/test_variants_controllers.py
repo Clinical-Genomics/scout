@@ -451,6 +451,10 @@ def test_variants_assessment_shared_with_group(
         return_value=[{"_id": "cust000"}],
     )
 
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -487,7 +491,6 @@ def test_variants_assessment_shared_with_group(
     variants_query_res = adapter.variants(
         other_case_id, query=variants_query, category=variant["category"]
     )
-
     res = variants(adapter, institute_obj, other_case_obj, variants_query_res, 1000)
     res_variants = res["variants"]
 
@@ -502,6 +505,10 @@ def test_variants_research_no_shadow_clinical_assessments(
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
+    )
+
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
     )
 
     # GIVEN a db with variants,
@@ -546,6 +553,10 @@ def test_variants_research_shadow_clinical_assessments(
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
+    )
+
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
     )
 
     # GIVEN a db with variants,
@@ -601,6 +612,10 @@ def test_sv_variants_research_shadow_clinical_assessments(
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
+    )
+
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
     )
 
     # GIVEN a db with variants,
