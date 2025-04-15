@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+{{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Cases in MatchMaker Exchange</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row mt-3" id="body-row"> <!--sidebar and main container are on the same row-->
+    <div class="col">
+      {{ mme_submitted() }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% macro mme_submitted() %}
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Display Name</th>
+      <th>Synopsis</th>
+      <th>Status</th>
+      <th>Assignees</th>
+      <th>Updated At</th>
+      <th>Patient(s)</th>
+      <th>Disorders</th>
+      <th>Genomic Features</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for case in mme_cases %}
+      <tr>
+        <td>{{ case._id }}</td>
+        <td>{{ case.display_name }}</td>
+        <td>{{ case.synopsis }}</td>
+        <td>{{ case.status }}</td>
+        <td>
+          {% for assignee in case.assignees %}
+            <div>{{ assignee }}</div>
+          {% endfor %}
+        </td>
+        <td>
+          {{ case.mme_submission.updated_at['$date'] if case.mme_submission and case.mme_submission.updated_at }}
+        </td>
+        <td>
+          {% for patient in case.mme_submission.patients %}
+            <div>
+              <strong>{{ patient.label }}</strong> ({{ patient.sex }})<br>
+              <small>{{ patient.contact.name }} - <a href="{{ patient.contact.href }}">{{ patient.contact.href }}</a></small>
+            </div>
+          {% endfor %}
+        </td>
+        <td>
+          {% for disorder in case.mme_submission.disorders %}
+            <div>{{ disorder.label }} ({{ disorder.id }})</div>
+          {% endfor %}
+        </td>
+        <td>
+          {% for patient in case.mme_submission.patients %}
+            {% for gf in patient.genomicFeatures %}
+              <div>
+                <strong>{{ gf.gene.id }}</strong><br>
+                Chr{{ gf.variant.referenceName }}:
+                {{ gf.variant.start }} → {{ gf.variant.end }}<br>
+                {{ gf.variant.referenceBases }} → {{ gf.variant.alternateBases }}<br>
+                Assembly: {{ gf.variant.assembly }}<br>
+                Zygosity: {{ gf.zygosity }}
+              </div>
+              <hr>
+            {% endfor %}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  </script>
+{% endblock %}

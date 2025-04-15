@@ -51,7 +51,15 @@
           </div>
       </a>
 
-    <!-- Variant filters -->
+     <!-- MME data menu item -->
+      <a href="{{ url_for('mme.mme_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fas fa-people-arrows me-3"></span>
+              <span class="menu-collapsed">MME submissions</span>
+          </div>
+      </a>
+
+     <!-- Variant filters -->
       <a href="{{ url_for('overview.filters', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-start align-items-center">
               <span class="fa fa-filter me-3"></span>
