@@ -444,14 +444,12 @@ def test_gene_panel_choices(app, institute_obj, case_obj):
 
 
 def test_variants_assessment_shared_with_group(
-    mocker, real_variant_database, institute_obj, case_obj
+    app, mocker, real_variant_database, institute_obj, case_obj
 ):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
     )
-
-    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -498,14 +496,12 @@ def test_variants_assessment_shared_with_group(
 
 
 def test_variants_research_no_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
+    app, mocker, real_variant_database, institute_obj, case_obj
 ):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
     )
-
-    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -544,14 +540,12 @@ def test_variants_research_no_shadow_clinical_assessments(
 
 
 def test_variants_research_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
+    app, mocker, real_variant_database, institute_obj, case_obj
 ):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
     )
-
-    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -601,14 +595,12 @@ def test_variants_research_shadow_clinical_assessments(
 
 
 def test_sv_variants_research_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
+    app, mocker, real_variant_database, institute_obj, case_obj
 ):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
     )
-
-    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
