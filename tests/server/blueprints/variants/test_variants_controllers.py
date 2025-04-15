@@ -451,9 +451,7 @@ def test_variants_assessment_shared_with_group(
         return_value=[{"_id": "cust000"}],
     )
 
-    mocker.patch(
-        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
-    )
+    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -507,9 +505,7 @@ def test_variants_research_no_shadow_clinical_assessments(
         return_value=[{"_id": "cust000"}],
     )
 
-    mocker.patch(
-        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
-    )
+    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -555,9 +551,7 @@ def test_variants_research_shadow_clinical_assessments(
         return_value=[{"_id": "cust000"}],
     )
 
-    mocker.patch(
-        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
-    )
+    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
@@ -614,9 +608,7 @@ def test_sv_variants_research_shadow_clinical_assessments(
         return_value=[{"_id": "cust000"}],
     )
 
-    mocker.patch(
-        "scout.server.blueprints.variants.controllers.set_overlapping_variants", return_value=None
-    )
+    mocker.patch("scout.server.blueprints.variants.controllers.set_overlapping_variants")
 
     # GIVEN a db with variants,
     adapter = real_variant_database
