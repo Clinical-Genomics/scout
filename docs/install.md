@@ -24,6 +24,12 @@ cd scout
 uv sync --frozen
 uv run scout
 ```
+
+To install the libraries defined in the pyproject.toml under the optional-dependencies groups such as dev, docs, and linting (useful for development), run the following command:
+```
+uv sync --frozen --all-groups
+```
+
 Or if you rather, the project definition is compatible with pip, so instead of the `uv` statement above you can just
 
 ```
