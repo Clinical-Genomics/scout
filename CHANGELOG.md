@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [unreleased]
 ### Added
 - Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
@@ -19,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display genome build version on case general report (#5381)
 - On pull request template, fixed instructions on how to deploy a branch to the development server (#5382)
 - On case general report, when a variant is classified (ACMG or CCV), tagged, commented and also dismissed, will only be displayed among the dismissed variants (#5377)
+- If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels (#5365)
 - Call coverage completeness indicator via API after window loading completes (#5366)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
