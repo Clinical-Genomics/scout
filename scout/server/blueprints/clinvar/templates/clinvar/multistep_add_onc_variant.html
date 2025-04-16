@@ -12,32 +12,135 @@
 {% endblock head %}
 
 {% block content %}
+{% if variant_data.var_obj.category in ["snv", "cancer"]%}
+  {% set var_category = 'snv' %}
+{% else %}
+  {% set var_category = 'sv' %}
+{% endif %}
 <div class="container-fluid">
   <!-- MultiStep Form -->
   <div class="row d-flex justify-content-center">
       <div class="col-md-10">
-          <form id="clinVarOncAdd" method="POST" action="" id="{{variant_data.var_id}}_form">
+          <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
               <!-- progressbar -->
               <ul id="progressbar">
                   <li class="active">Start</li>
-                  <li>Type of Somatic submission</li> <!-- oncogenicitySubmission or clinicalImpactSubmission -->
+                  <li>Assertion Criteria</li>
+                  <li>Step 3</li>
+                  <li>Step 4</li>
+                  <li>Step 5</li>
+                  <li>Step 6</li>
+                  <li>Step 7</li>
               </ul>
               <!-- fieldsets -->
               <fieldset data-step="1">
-                <legend class="text-dark">ClinVar Somatic variant submission form</legend>
+                <legend class="text-dark">ClinVar oncogenic variant submission form</legend>
                 <p class="text-dark">
                 The form present on this page mirrors the fields on the ClinVar submission spreadsheets.<br>
-                After collecting the required fields, this variant gets saved in an open ClinVar somatic submission object.<br>
+                After collecting the required fields, this variant gets saved in an open ClinVar oncogenic submission object.<br>
                 </p>
+
+                <!-- hidden fields -->
+                {{ variant_data.var_form.record_status }}
+
+
                 <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="previous action-button-previous" style="text-decoration: none;">Back to Case</a>
                 <input type="button" name="next" class="next action-button" value="Start"/>
               </fieldset>
 
               <fieldset data-step="2">
-                <legend class="text-dark">Type of Somatic submission <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
-                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></legend>
-
+                <legend class="text-dark">Assertion criteria</legend>
+                {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
+                {{variant_data.var_form.last_evaluated(class="bg-white")}}
+                <br><br>
+                <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
+                  {{variant_data.var_form.assertion_method_cit_db.label(class="fw-bold text-dark my-2 mx-lg-2")}}
+                  {{variant_data.var_form.assertion_method_cit_db(class="btn-secondary my-2 mx-lg-2")}}
+                  <div class="my-2 mx-lg-2">{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}}
+                    <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format">
+                      <strong>?</strong>
+                    </span>
+                  </div>
+                  <div class="my-2 mx-lg-2" style="width:30%; display: inline">{{variant_data.var_form.assertion_method_cit_id(class="bg-white")}}</div>
+                </div>
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
+              <fieldset data-step="3">
+                  <legend class="text-dark">Variant Details</legend>
+
+
+
+
+
+
+
+                  <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                  <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset data-step="4">
+                <legend class="text-dark">Inheritance model</legend>
+                <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
+
+
+
+
+
+
+
+
+                <br>
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset data-step="5">
+                <legend class="text-dark">Germline Classification</legend>
+                <h3 class="fs-subtitle">Represents a variant-level classification for a disease, rather than an interpretation of the clinical significance of a variant for a specific patient.</h3>
+
+
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset data-step="6">
+                <legend class="text-dark">Associated Conditions</legend>
+                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a></h3>
+
+                <div class="row">
+                  <div class="col-6" id="clinvar_condition_container">
+
+
+
+
+
+
+
+
+
+
+                  </div>
+                </div>
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset data-step="7">
+                <legend class="text-dark">Observation Data</legend>
+                <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
+
+
+
+
+
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="submit" name="submit" class="submit action-button" value="Add to submission"/>
+              </fieldset>
+
           </form>
       </div>
   </div>
@@ -59,11 +162,30 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 })
 
 
+var current_fs, next_fs, previous_fs; //fieldsets
+var left, opacity, scale; //fieldset properties which we will animate
+var animating; //flag to prevent quick multi-click glitches
+
 $(".next").click(function(){
-  if(animating) return false;
+	if(animating) return false;
 	animating = true;
 
 	current_fs = $(this).parent();
+
+	// run the validations on the input for the current step
+	var validationPassed = true;
+
+  if(current_fs.data('step') == 6){
+    validationPassed = validateConditions();
+  }
+
+  // check to see if the validator for the specific step we are on passed or not.
+  if(validationPassed == false){
+    // do not proceed
+    animating = false;
+    return;
+  }
+
 	next_fs = $(this).parent().next();
 
 	//activate next step on progressbar using the index of next_fs
@@ -133,3 +255,4 @@ $(".previous").click(function(){
 });
 </script>
 {% endblock %}
+

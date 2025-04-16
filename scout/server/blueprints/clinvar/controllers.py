@@ -25,7 +25,6 @@ from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import (
     CancerSNVariantForm,
-    CancerSVariantForm,
     CaseDataForm,
     SNVariantForm,
     SVariantForm,
@@ -93,7 +92,6 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.alt.data = variant_obj.get("alternative")
     if variant_obj.get("category") in ["snv", "cancer"]:
         var_form.gene_symbol.data = ",".join(variant_obj.get("hgnc_symbols", []))
-    var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
         (
             hpo.get("phenotype_id").replace("HP:", ""),
@@ -159,14 +157,13 @@ def _get_sv_var_form(variant_obj, case_obj):
 
 def _populate_variant_form(
     variant_obj: dict, case_obj: dict
-) -> Union[SNVariantForm, SVariantForm, CancerSNVariantForm, CancerSVariantForm]:
+) -> Union[SNVariantForm, SVariantForm, CancerSNVariantForm]:
     """Populate the Flaskform associated to a variant. This form will be used in the multistep ClinVar submission form."""
 
     form_getters = {
         "snv": _get_snv_var_form,
         "sv": _get_sv_var_form,
         "cancer": _get_cancer_snv_var_form,
-        "cancer_sv": _get_cancer_sv_var_form,
     }
 
     category = variant_obj["category"]
@@ -646,12 +643,6 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
 def _get_cancer_snv_var_form(variant_obj: dict, case_obj: dict) -> CancerSNVariantForm:
     """Sets up values for a Cancer SNV variant form."""
     var_form = CancerSNVariantForm()
-    return var_form
-
-
-def _get_cancer_sv_var_form(variant_obj: dict, case_obj: dict) -> CancerSVariantForm:
-    """Sets up values for a Cancer SNV variant form."""
-    var_form = CancerSVariantForm()
     return var_form
 
 

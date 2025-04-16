@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -18,8 +19,10 @@ from wtforms import (
 from scout.constants import (
     AFFECTED_STATUS,
     ALLELE_OF_ORIGIN,
-    ASSERTION_METHOD,
-    ASSERTION_METHOD_CIT,
+    ASSERTION_METHOD_GERMLINE,
+    ASSERTION_METHOD_GERMLINE_CIT,
+    ASSERTION_METHOD_ONCOGENIC_ID,
+    CLINVAR_API_ASSERTION_METHOD_CIT_DB_OPTIONS,
     CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SV_TYPES,
@@ -37,12 +40,31 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 
-class ClinVarVariantForm(FlaskForm):
+class BaseClinVarVariantForm(FlaskForm):
+    """Contains form fields common to all classes of ClinVar variant Submission Forms."""
+
+    assertion_method_cit_db = SelectField("Assertion method citation type", choices=[])
+    assertion_method_cit_id = StringField("Assertion method citation id")
+    category = HiddenField()
+    last_evaluated = DateField("Date evaluated", default=datetime.now())
+    record_status = HiddenField(default="novel")
+
+
+class ClinVarVariantForm(BaseClinVarVariantForm):
     """Contains the key/values to fill in to specify a single general variant in the ClinVar submssion creation page"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.assertion_method_cit_db.choices = [
+            (item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS
+        ]
+        self.assertion_method_cit_db.data = "PMID"
+        self.assertion_method_cit_id.data = ASSERTION_METHOD_GERMLINE_CIT.split(":")[1]
+
+    assertion_method = StringField("Assertion method", default=ASSERTION_METHOD_GERMLINE)
 
     # Variant-specific fields
     case_id = HiddenField()
-    category = HiddenField()
     local_id = HiddenField()
     linking_id = HiddenField()
     ref = HiddenField()
@@ -57,7 +79,6 @@ class ClinVarVariantForm(FlaskForm):
     )
     clinsig_comment = TextAreaField("Comment on classification")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
-    last_evaluated = DateField("Date evaluated")
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
@@ -69,19 +90,6 @@ class ClinVarVariantForm(FlaskForm):
     multiple_condition_explanation = SelectField(
         "Explanation for multiple conditions",
         choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
-    )
-
-    # Extra fields:
-    assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
-    # assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
-    assertion_method_cit_db = SelectField(
-        "Assertion method citation type",
-        choices=[(item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS],
-        default=ASSERTION_METHOD_CIT.split(":")[0],
-    )
-    assertion_method_cit_id = StringField(
-        "Assertion method citation id",
-        default=ASSERTION_METHOD_CIT.split(":")[1],
     )
 
 
@@ -142,9 +150,11 @@ class CaseDataForm(FlaskForm):
 ### Cancer variant - related forms
 
 
-class CancerSNVariantForm(FlaskForm):
-    category = HiddenField()
-
-
-class CancerSVariantForm(FlaskForm):
-    category = HiddenField()
+class CancerSNVariantForm(BaseClinVarVariantForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.assertion_method_cit_id.data = "25741868"  # Richards 2015
+        self.assertion_method_cit_db.choices = [
+            (item, item) for item in CLINVAR_API_ASSERTION_METHOD_CIT_DB_OPTIONS
+        ]
+        self.assertion_method_cit_db.data = "PubMed"

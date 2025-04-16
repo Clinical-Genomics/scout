@@ -629,7 +629,7 @@
         </form>
     {% elif variant._id and variant.category in ["cancer", "cancer_sv"] %}
         <form id="clinvar_onc_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_onc_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-          <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
+          <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle='tooltip' title="Variant will be included in a ClinVar oncogenicity submission">Report ClinVar Oncogenicity</button>
         </form>
     {% endif %}
 {% endmacro %}

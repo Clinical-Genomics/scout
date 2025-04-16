@@ -2,9 +2,6 @@ from scout.constants.clnsig import ONC_CLNSIG
 
 CLINVAR_API_URL_DEFAULT = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
 PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
-
-ASSERTION_METHOD = "ACMG Guidelines, 2015"
-ASSERTION_METHOD_CIT = "PMID:25741868"
 NOT_PROVIDED = "not provided"
 
 # Header used to create the Variant .CSV file for the manual ClinVar submission
@@ -190,6 +187,11 @@ CONDITION_PREFIX = {
 }
 
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
+ASSERTION_METHOD_GERMLINE = "ACMG Guidelines, 2015"
+ASSERTION_METHOD_GERMLINE_CIT = "PMID:25741868"
+
+CLINVAR_API_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PubMed"}
+ASSERTION_METHOD_ONCOGENIC_ID = "25741868"  # Richards 2015
 
 MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]
 
