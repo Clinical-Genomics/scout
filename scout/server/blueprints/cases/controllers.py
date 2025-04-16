@@ -66,6 +66,7 @@ from scout.server.utils import (
     case_has_mt_alignments,
     case_has_mtdna_report,
     case_has_rna_tracks,
+    get_case_mito_chromosome,
     institute_and_case,
 )
 from scout.utils.acmg import get_acmg_temperature
@@ -797,7 +798,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     elif case_obj.get("chanjo_coverage"):
         coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(individuals=samples)
 
-    query = {"chrom": "M" if "38" in case_obj.get("genome_build", "37") else "MT"}
+    query = {"chrom": get_case_mito_chromosome(case_obj)}
     mt_variants = list(
         store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
     )
