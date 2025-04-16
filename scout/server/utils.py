@@ -208,7 +208,7 @@ def user_institutes(store, login_user):
 
 def get_case_genome_build(case_obj: dict) -> str:
     """returns the genome build of a case, as a string."""
-    return "38" if case_obj.get("genome_build", "37") else "37"
+    return "38" if "38" in case_obj.get("genome_build", "37") else "37"
 
 
 def get_case_mito_chromosome(case_obj: dict) -> str:
