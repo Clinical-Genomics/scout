@@ -206,6 +206,19 @@ def user_institutes(store, login_user):
     return institutes
 
 
+def get_case_genome_build(case_obj: dict) -> str:
+    """returns the genome build of a case, as a string."""
+    return "38" if "38" in case_obj.get("genome_build", "37") else "37"
+
+
+def get_case_mito_chromosome(case_obj: dict) -> str:
+    """Returns MT or M, according to the genome build of a case."""
+    case_build = get_case_genome_build(case_obj)
+    if case_build == "38":
+        return "M"
+    return "MT"
+
+
 def case_has_mtdna_report(case_obj: dict):
     """Display mtDNA report on the case sidebar only for some specific cases."""
     if case_obj.get("track", "rare") == "cancer":
