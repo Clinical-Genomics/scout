@@ -137,3 +137,14 @@ class CaseDataForm(FlaskForm):
         default="clinical testing",
         choices=[(item, item) for item in COLLECTION_METHOD],
     )
+
+
+### Cancer variant - related forms
+
+
+class CancerSNVariantForm(FlaskForm):
+    category = HiddenField()
+
+
+class CancerSVariantForm(FlaskForm):
+    category = HiddenField()
