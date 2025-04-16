@@ -40,7 +40,12 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import (
@@ -792,7 +797,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     elif case_obj.get("chanjo_coverage"):
         coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(individuals=samples)
 
-    query = {"chrom": "MT"}
+    query = {"chrom": "M" if "38" in case_obj.get("genome_build", "37") else "MT"}
     mt_variants = list(
         store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
     )
