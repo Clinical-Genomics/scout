@@ -16,6 +16,7 @@ UPDATE_DICT = {
     "chromograph_images.coverage": "str",
     "chromograph_images.upd_regions": "str",
     "chromograph_images.upd_sites": "str",
+    "minor_allele_frequency_bigwig": "path",
     "mt_bam": "path",
     "paraphase_alignment_path": "path",
     "reviewer.alignment": "path",

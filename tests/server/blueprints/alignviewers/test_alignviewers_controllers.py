@@ -131,12 +131,14 @@ def set_case_specific_tracks():
     form_data = {
         "rhocall_bed": "rhocall.bed",
         "tiddit_coverage_wig": "tiddit_coverage.wig",
+        "minor_allele_frequency_wig": "minor_allele_frequency.wig",
     }
     # THE case_specific_tracks function should return the expected tracks
     display_obj = {}
     controllers.set_case_specific_tracks(display_obj, form_data)
     assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
     assert display_obj["tiddit_coverage_wig"] == form_data["tiddit_coverage_wig"]
+    assert display_obj["minor_allele_frequency_wig"] == form_data["minor_allele_frequency_wig"]
 
 
 def test_make_omics_locus(app, case_obj):

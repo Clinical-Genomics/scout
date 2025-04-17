@@ -28,6 +28,7 @@ SAMPLES_FILE_PATH_CHECKS = [
     "assembly_alignment_path",
     "bam_file",
     "d4_file",
+    "minor_allele_frequency_bigwig",
     "mitodel_file",
     "paraphase_alignment_path",
     "rhocall_bed",
@@ -219,6 +220,7 @@ class SampleLoader(BaseModel):
     individual_id: str = Field(alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
+    minor_allele_frequency_bigwig: Optional[str] = None
     mitodel_file: Optional[str] = None
     mitodel: Optional[Mitodel] = Mitodel()
     mother: Optional[str] = None
@@ -241,7 +243,7 @@ class SampleLoader(BaseModel):
     smn_27134_cn: Optional[int] = None
     splice_junctions_bed: Optional[str] = None
     subject_id: Optional[str] = None
-    tiddit_coverage_wig: Optional[str] = None
+    tiddit_coverage_wig: Optional[str] = Field(None, alias="coverage_wig")
     tissue_type: Optional[str] = None
     tmb: Optional[str] = None
     tumor_purity: Optional[float] = 0.0
