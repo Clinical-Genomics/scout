@@ -33,9 +33,9 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **madeline** _String_ Path to a madeline pedigree file in XML format.
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
 - **multiqc_rna** _String_ Path to a [nf-core/rnafusion multiqc][rna-multiqc] report with arbitrary information.
-- **omics_files** _List_
-  - **fraser**: _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
-  - **outrider**: _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
+- **omics_files** _List_ List of multiomics results files for the case:
+    - **fraser** _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
+    - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
@@ -89,7 +89,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
     - **samlple_id(*)** _String_ Identifyer for a sample.
     - **sample_name**: _String_ Name of sample.
-    - **sex (*)**: _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
+    - **sex (*)** _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
     - **smn1_cn** _Int_ Copynumber.
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
