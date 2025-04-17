@@ -28,7 +28,7 @@ SAMPLES_FILE_PATH_CHECKS = [
     "assembly_alignment_path",
     "bam_file",
     "d4_file",
-    "minor_allele_frequency_bigwig",
+    "minor_allele_frequency_wig",
     "mitodel_file",
     "paraphase_alignment_path",
     "rhocall_bed",
@@ -220,7 +220,7 @@ class SampleLoader(BaseModel):
     individual_id: str = Field(alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
-    minor_allele_frequency_bigwig: Optional[str] = None
+    minor_allele_frequency_wig: Optional[str] = None
     mitodel_file: Optional[str] = None
     mitodel: Optional[Mitodel] = Mitodel()
     mother: Optional[str] = None

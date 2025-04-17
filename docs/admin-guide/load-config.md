@@ -69,7 +69,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **hrd** _Int_ Homologous recombination deficiency.
     - **is_sma** _Bool/None_ if SMA status determined - None if not done.
     - **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
-    - **minor_allele_frequency_bigwig** _String_ Path to minor allele frequency bigwig [Reference][hificnv].
+    - **minor_allele_frequency_wig** _String_ Path to minor allele frequency bigwig [Reference][hificnv].
     - **mitodel** _String_ Path to mitodel file.
     - **mother** _String/Int_ Sample ID for mother or 0.
     - **msi** _Int_ Microsatellite instability [0-60].
