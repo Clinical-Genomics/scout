@@ -32,6 +32,7 @@ And the tracks that can be updated are the following:
 - rhocall_bed
 - rhocall_wig
 - tiddit_coverage_wig
+- minor_allele_frequency_wig
 - upd_regions_bed
 - upd_sites_bed
 - rna_coverage_bigwig
@@ -56,6 +57,7 @@ The following files are used by the [igv.js](https://github.com/igvteam/igv.js/w
 | --------------------|:------------------------------------------------------------|
 | bam_file            | path to a bam/cram alignment file                           |
 | mt_bam              | path to a downsampled mitochondrial bam/cram alignment file |
+| minor_allele_frequency_wig | path to hificnv maf wig file                         |
 | rhocall_bed         | path to rhocall output bed file                             |
 | rhocall_wig         | path to rhocall output wig file                             |
 | tiddit_coverage_wig | path to tiddit wig coverage file                            |
@@ -65,7 +67,8 @@ The following files are used by the [igv.js](https://github.com/igvteam/igv.js/w
 `rhocall_bed` and `rhocall_wig` files are both obtained from [rhocall](https://github.com/dnil/rhocall),
 a software that calls and annotates autozygosity from VCF files.
 
-`tiddit_coverage_wig` files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT), a software which in turn is used to call structural variants.
+`tiddit_coverage_wig` files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT) or [HiFiCNV](https://github.com/PacificBiosciences/HiFiCNV), software which in turn is used to call structural variants.
+Similarly, `minor_allele_frequency_wig` files are obtained from [HiFiCNV](https://github.com/PacificBiosciences/HiFiCNV), a software which is also used to call structural variants.
 
 `upd_regions_bed` and `upd_sites_bed` files are created from VCF files using the [upd tool](https://github.com/bjhall/upd).
 

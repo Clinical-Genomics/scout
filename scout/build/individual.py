@@ -9,6 +9,7 @@ BUILD_INDIVIDUAL_FILES = [
     "assembly_alignment_path",
     "bam_file",
     "d4_file",
+    "minor_allele_frequency_wig",
     "mt_bam",
     "paraphase_alignment_path",
     "rhocall_bed",
@@ -41,9 +42,10 @@ def build_individual(ind: dict) -> dict:
         mother = str, # Individual id of mother
         capture_kits = list, # List of names of capture kits
         bam_file = str, # Path to bam file,
+        minor_allele_frequency_wig = str, # Path to a HiFiCNV MAF wig
         rhocall_wig = str, # Path to a rhocall wig file showing heterozygosity levels
         rhocall_bed = str, # Path to a rhocall bed file marking LOH regions
-        tiddit_coverage_wig = str, # Path to a TIDDIT coverage wig - overview coverage
+        tiddit_coverage_wig = str, # Path to a TIDDIT or HiFiCNV coverage wig - overview coverage
         upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
         upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
         vcf2cytosure = str, # Path to CGH file
