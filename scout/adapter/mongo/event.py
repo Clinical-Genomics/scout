@@ -240,7 +240,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return self.event_collection.find(query)
 
-    def events_by_institute(
+    def institute_events_by_verb(
         self, category: str, institute_id: dict, verb: str
     ) -> pymongo.cursor.Cursor:
         """Return events with a specific verb for an institute from the newest."""
