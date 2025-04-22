@@ -105,7 +105,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"  integrity="sha384-VP1oT+9TxQ6aD1lqD3e6ZIXkDrRYW0HhP8F+HId3IFVd0W07I2D4x4Ao4y+zDJTc" crossorigin="anonymous"></script>
+    {{ db_table_external_scripts() }}
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" integrity="sha384-aMQNm81m1H+DJ4rJ+XLXKha3vcgxP6cojDJQqRuW2hdJ1GbRaTW9Ff8TxwFcPtSB" crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" integrity="sha384-YourGeneratedHashHere" crossorigin="anonymous"></script>
   <script>
