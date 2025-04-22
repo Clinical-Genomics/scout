@@ -794,7 +794,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
     # Check if coverage and MT copy number stats are available via chanjo2 or chanjo
     if case_obj.get("chanjo2_coverage"):
-        coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(individuals=samples)
+        coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(case_obj=case_obj)
     elif case_obj.get("chanjo_coverage"):
         coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(individuals=samples)
 
