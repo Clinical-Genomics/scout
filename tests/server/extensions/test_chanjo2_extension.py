@@ -29,7 +29,7 @@ def test_chanjo2_mt_coverage_stats(case_obj):
 
     with test_app.app_context():
         # WHEN POST requests are sent to chanjo2 to retrieve MT vs autosomal coverage stats
-        coverage_stats = chanjo2.mt_coverage_stats(individuals=case_obj["individuals"])
+        coverage_stats = chanjo2.mt_coverage_stats(case_obj=case_obj)
 
         # THEN coverage stats should contain the expected key/values
         for ind in case_obj["individuals"]:
