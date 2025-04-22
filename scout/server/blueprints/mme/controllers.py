@@ -5,7 +5,7 @@ from scout.server.extensions import store
 
 def institute_mme_cases(institute_id: str) -> List[dict]:
     """Retrieves all cases for a given institute with an active MatchMaker Exchange submission."""
-    institute_mme_events = store.events_by_institute(
+    institute_mme_events = store.institute_events_by_verb(
         category="case", institute_id=institute_id, verb="mme_add"
     )
     unique_case_ids = set([event["case"] for event in institute_mme_events])
