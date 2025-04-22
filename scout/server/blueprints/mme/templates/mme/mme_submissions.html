@@ -56,24 +56,22 @@
           {{ case.display_name }}
           </a>
         </td>
-        <td class="synopsis-cell">
-          {% set synopsis_id = 'synopsis-' + case._id %}
+        <td class="synopsis-cell" style="max-width: 300px;">
           {% set collapse_id = 'collapse-' + case._id %}
           {% set max_chars = 300 %}
 
           {% if case.synopsis|length > max_chars %}
-            <div class="clamped-text">
+            <div>
               {{ case.synopsis[:max_chars] }}…
             </div>
 
             <a
-              class="btn btn-link p-0 toggle-link"
+              class="btn btn-link p-0"
               data-bs-toggle="collapse"
               href="#{{ collapse_id }}"
               role="button"
               aria-expanded="false"
               aria-controls="{{ collapse_id }}"
-              data-text-toggle="Less…,More…"
             >More…</a>
 
             <div class="collapse mt-1" id="{{ collapse_id }}">
