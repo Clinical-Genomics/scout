@@ -4,8 +4,9 @@ from typing import Dict
 import requests
 from flask import current_app
 
+from scout.server.utils import get_case_mito_chromosome
+
 REF_CHROM = "14"
-MT_CHROM = "MT"
 LOG = logging.getLogger(__name__)
 
 CHANJO_BUILD_37 = "GRCh37"
@@ -15,14 +16,15 @@ CHANJO_BUILD_38 = "GRCh38"
 class Chanjo2Client:
     """Runs requests to chanjo2 and returns results in the expected format."""
 
-    def mt_coverage_stats(self, individuals: dict) -> Dict[str, dict]:
+    def mt_coverage_stats(self, case_obj: dict) -> Dict[str, dict]:
         """Sends a POST requests to the chanjo2 coverage/d4/interval to collect stats for the MT case report."""
 
         chanjo2_chrom_cov_url: str = "/".join(
             [current_app.config.get("CHANJO2_URL"), "coverage/d4/interval/"]
         )
         coverage_stats = {}
-        for ind in individuals:
+        case_mt_chrom = get_case_mito_chromosome(case_obj)
+        for ind in case_obj.get("individuals", []):
 
             if not ind.get("d4_file"):
                 continue
@@ -34,7 +36,7 @@ class Chanjo2Client:
             autosome_cov = resp.json().get("mean_coverage")
 
             # Get mean coverage over chrMT
-            chrom_cov_query["chromosome"] = MT_CHROM
+            chrom_cov_query["chromosome"] = case_mt_chrom
             resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
 
             mt_cov = resp.json().get("mean_coverage")
