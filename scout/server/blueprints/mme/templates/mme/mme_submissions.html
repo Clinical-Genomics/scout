@@ -7,7 +7,7 @@
 
 {% block css %}
 {{ super() }}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+ {{ db_table_external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
