@@ -126,11 +126,12 @@ HUMAN_GENES_38 = {
 CASE_SPECIFIC_TRACKS = {
     "paraphase_alignments": "Paraphase Alignment",
     "assembly_alignments": "de novo Assembly Alignment",
+    "minor_allele_frequency_wigs": "SV Caller Minor Allele Frequency",
     "rhocall_beds": "Rhocall Zygosity",
     "rhocall_wigs": "Rhocall Regions",
-    "tiddit_coverage_wigs": "TIDDIT Coverage",
-    "upd_regions_beds": "UPD regions",
-    "upd_sites_beds": "UPD sites",
+    "tiddit_coverage_wigs": "SV Caller Coverage",
+    "upd_regions_beds": "UPD Regions",
+    "upd_sites_beds": "UPD Sites",
 }
 
 HUMAN_REFERENCE = {"37": HUMAN_REFERENCE_37, "38": HUMAN_REFERENCE_38}

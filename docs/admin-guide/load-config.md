@@ -22,6 +22,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **coverage_qc_report** _String_ Path to HTML file with coverage and QC report.
 - **default_gene_panels** _List of strings_ List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout.
 - **delivery_report** _String_: Path to HTML delivery report.
+- **exe_ver**: Pipeline detailed software versions (YAML)
 - **family(*)**  _String_ Unique ID of the case.
 - **family_name**  _String_ Optional name of the case.
 - **gene_fusion_report** _String_ Path to a static gene fusion report produced by [Arriba][arriba] containing only clinical fusions (a subset of all detected fusions).
@@ -32,9 +33,9 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **madeline** _String_ Path to a madeline pedigree file in XML format.
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
 - **multiqc_rna** _String_ Path to a [nf-core/rnafusion multiqc][rna-multiqc] report with arbitrary information.
-- **omics_files** _List_
-  - **fraser**: _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
-  - **outrider**: _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
+- **omics_files** _List_ List of multiomics results files for the case:
+    - **fraser** _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
+    - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
@@ -42,6 +43,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **phenotype_terms** _List of strings_ List of phenotype terms.
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
+- **reference_info**: Pipeline detailed reference file versions (YAML)
 - **RNAfusion_inspector** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing only clinical fusions (a subset of all detected fusions).
 - **RNAfusion_inspector_research** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing all detected fusions.
 - **RNAfusion_report** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing only clinical fusions (a subset of all detected fusions).
@@ -67,11 +69,12 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **hrd** _Int_ Homologous recombination deficiency.
     - **is_sma** _Bool/None_ if SMA status determined - None if not done.
     - **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
+    - **minor_allele_frequency_wig** _String_ Path to minor allele frequency bigwig [Reference][hificnv].
     - **mitodel** _String_ Path to mitodel file.
     - **mother** _String/Int_ Sample ID for mother or 0.
     - **msi** _Int_ Microsatellite instability [0-60].
     - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
-    - **paraphase_alignment_path** _String_ Path to BAM/CRAM file to view Paraphase alignments.
+    - **paraphase_alignment_path** _String_ Path to BAM/CRAM file to view Paraphase alignments [Reference][paraphase].
     - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
     - **reviewer** _List_ [Reference][srs]
       - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
@@ -86,13 +89,13 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
     - **samlple_id(*)** _String_ Identifyer for a sample.
     - **sample_name**: _String_ Name of sample.
-    - **sex (*)**: _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
+    - **sex (*)** _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
     - **smn1_cn** _Int_ Copynumber.
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
     - **subject_id** _String_ Individual identifier - multiple samples could belong to the same individual
-    - **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
+    - **tiddit_coverage_wig** or **coverage_wig** _String_ Path to WIG file to view alignment coverage overview from e.g. [Reference][tiddit] or [Reference][hificnv].
     - **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
     - **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
     - **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0] (tumor case only).
@@ -146,7 +149,9 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [arriba]: https://arriba.readthedocs.io/en/latest/
 [d4_file]: https://github.com/38/d4-format
 [drop]: https://github.com/gagneurlab/drop
+[hificnv]: https://github.com/PacificBiosciences/HiFiCNV
 [multiqc]: https://github.com/ewels/multiqc
+[paraphase]: https://github.com/PacificBiosciences/paraphase
 [peddy]: https://github.com/brentp/peddy
 [rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
 [rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
@@ -158,3 +163,5 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [tomte]: https://github.com/genomic-medicine-sweden/tomte
 [upd]: https://github.com/bjhall/upd
 [yaml]: https://yaml.org
+
+
