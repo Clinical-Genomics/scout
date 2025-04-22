@@ -85,7 +85,7 @@
                 <strong>{{ gf.gene.id }}</strong><br>
                 {% if gf.variant %}
                   Chr{{ gf.variant.referenceName }}:
-                  {{ gf.variant.start }} → {{ gf.variant.end }}<br>
+                  {{ gf.variant.start|human_longint|safe }}-{{ gf.variant.end|human_longint|safe }}<br>
                   {{ gf.variant.referenceBases }} → {{ gf.variant.alternateBases }}<br>
                   Assembly: {{ gf.variant.assembly }}<br>
                   Zygosity: {{ gf.zygosity }}
