@@ -7,7 +7,6 @@ from flask import current_app
 from scout.server.utils import get_case_mito_chromosome
 
 REF_CHROM = "14"
-MT_CHROM = "MT"
 LOG = logging.getLogger(__name__)
 
 CHANJO_BUILD_37 = "GRCh37"
