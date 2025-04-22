@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## [unreleased]
+## [4.100]
 ### Added
 - Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
