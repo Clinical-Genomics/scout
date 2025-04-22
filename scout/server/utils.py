@@ -326,6 +326,11 @@ def case_append_alignments(case_obj: dict):
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
         {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},
         {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": None},
+        {
+            "path": "minor_allele_frequency_wig",
+            "append_to": "minor_allele_frequency_wigs",
+            "index": None,
+        },
         {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": None},
     ]
 

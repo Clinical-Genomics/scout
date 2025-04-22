@@ -132,6 +132,16 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
+                      {% for maftrack in minor_allele_frequency_wigs %}
+                      {
+                        type: "wig",
+                        format: 'bw',
+                        name: '{{ maftrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=maftrack.url) }}',
+                        color: "rgb(60, 60, 140)",
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for ptrack in paraphase_alignments %}
                       {
                         type: "alignment",
