@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+
+{% block title %}
+{{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+ {{ db_table_external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Cases in MatchMaker Exchange</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row mt-3" id="body-row"> <!--sidebar and main container are on the same row-->
+    <div class="col">
+      {{ mme_submitted() }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% macro mme_submitted() %}
+<table class="table table-bordered table-striped" id="mmeTable">
+  <thead>
+    <tr>
+      <th>Case Name</th>
+      <th>Synopsis</th>
+      <th>Status</th>
+      <th>Case Assignees</th>
+      <th>MME Submission Updated</th>
+      <th>MME Patient(s)</th>
+      <th>MME Phenotype Features</th>
+      <th>MME Genomic Features</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for case in mme_cases %}
+      <tr>
+        <td>
+          <a class="me-2" href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}" target="_blank" rel="noopener">
+          {{ case.display_name }}
+          </a>
+        </td>
+        <td class="synopsis-cell" style="max-width: 300px;">
+          {% set collapse_id = 'collapse-' + case._id %}
+          {% set max_chars = 300 %}
+
+          {% if case.synopsis|length > max_chars %}
+            <div>
+              {{ case.synopsis[:max_chars] }}…
+            </div>
+
+            <a
+              class="btn btn-link p-0"
+              data-bs-toggle="collapse"
+              href="#{{ collapse_id }}"
+              role="button"
+              aria-expanded="false"
+              aria-controls="{{ collapse_id }}"
+            >More…</a>
+
+            <div class="collapse mt-1" id="{{ collapse_id }}">
+              <div class="card card-body p-2">
+                {{ case.synopsis }}
+              </div>
+            </div>
+          {% else %}
+            {{ case.synopsis }}
+          {% endif %}
+        </td>
+        <td>{{ case.status }}</td>
+        <td>
+          {% for assignee in case.assignees %}
+            <div>{{ assignee }}</div>
+          {% endfor %}
+        </td>
+        <td>
+          {{ case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M') }}
+        </td>
+        <td>
+          {% for patient in case.mme_submission.patients %}
+            <div>
+              <strong>{{ patient.label }}</strong> ({{ patient.sex }})<br>
+              <small>Contact: {{ patient.contact.name }} - <a href="{{ patient.contact.href }}">{{ patient.contact.href }}</a></small>
+            </div>
+          {% endfor %}
+        </td>
+        <td>
+          {% for disorder in case.mme_submission.disorders %}
+            <div>{{ disorder.label }} ({{ disorder.id }})</div>
+          {% endfor %}
+        </td>
+        <td>
+          {% for patient in case.mme_submission.patients %}
+            {% for gf in patient.genomicFeatures %}
+              <div>
+                <strong>{{ gf.gene.id }}</strong><br>
+                {% if gf.variant %}
+                  Chr{{ gf.variant.referenceName }}:
+                  {{ gf.variant.start|human_longint|safe }}-{{ gf.variant.end|human_longint|safe }}<br>
+                  {{ gf.variant.referenceBases }} → {{ gf.variant.alternateBases }}<br>
+                  Assembly: {{ gf.variant.assembly }}<br>
+                  Zygosity: {{ gf.zygosity }}
+                {% endif %}
+              </div>
+              <hr>
+            {% endfor %}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+    {{ db_table_external_scripts() }}
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" integrity="sha384-aMQNm81m1H+DJ4rJ+XLXKha3vcgxP6cojDJQqRuW2hdJ1GbRaTW9Ff8TxwFcPtSB" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" integrity="sha384-YourGeneratedHashHere" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+    $('#mmeTable').DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      responsive: true,
+      language: {
+        search: "Search all fields:",
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ cases",
+      },
+      columnDefs: [
+        { orderable: false, targets: [3, 5, 6, 7] }  // Disable sorting for multi-line complex columns
+      ]
+    });
+  });
+  </script>
+{% endblock %}
