@@ -59,10 +59,10 @@
         <td class="synopsis-cell">
           {% set synopsis_id = 'synopsis-' + case._id %}
           <div class="text-truncate" style="max-width: 300px;">
-            {{ case.synopsis[:100] }}{% if case.synopsis|length > 100 %}...{% endif %}
+            {{ case.synopsis[:300] }}{% if case.synopsis|length > 300 %}...{% endif %}
           </div>
 
-          {% if case.synopsis|length > 100 %}
+          {% if case.synopsis|length > 300 %}
             <a
               class="btn btn-link p-0"
               data-bs-toggle="collapse"
