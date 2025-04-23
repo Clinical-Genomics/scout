@@ -53,12 +53,19 @@ class Chanjo2Client:
             chrom_cov_query["chromosome"] = REF_CHROM
 
             autosome_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
-            autosome_cov = autosome_cov_json.get("mean_coverage")
+            if autosome_cov_json.get("status_code") != 200:
+                raise ValueError(
+                    f"Chanjo2 get autosome coverage failed: {autosome_cov_json.get('message')}"
+                )
+
+            autosome_cov = autosome_cov_json.get("content", {}).get("mean_coverage")
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = case_mt_chrom
             mt_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
-            mt_cov = mt_cov_json.get("mean_coverage")
+            if mt_cov_json.get("status_code") != 200:
+                raise ValueError(f"Chanjo2 get MT coverage failed: {mt_cov_json.get('message')}")
+            mt_cov = mt_cov_json.get("content", {}).get("mean_coverage")
 
             coverage_info = dict(
                 mt_coverage=mt_cov,
@@ -103,11 +110,14 @@ class Chanjo2Client:
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
 
-        gene_cov = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
+        gene_cov_json = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
 
-        if gene_cov.get("status_code") != 200:
-            raise Exception(f"Chanjo2 get complete coverage failed: {gene_cov.get('message')}")
+        if gene_cov_json.get("status_code") != 200:
+            raise ValueError(
+                f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}"
+            )
 
+        gene_cov = gene_cov_json.get("content")
         full_coverage = bool(gene_cov)
         for sample in gene_cov.keys():
             if gene_cov[sample]["coverage_completeness_percent"] < 100:

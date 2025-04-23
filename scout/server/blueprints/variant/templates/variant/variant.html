@@ -433,7 +433,6 @@
     set_scrolly_table('transcripts_panel_table')
 
     function update_gene_has_full_coverage() {
-      console.log("update gene coverage...")
       $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
         if($.isEmptyObject(data.gene_has_full_coverage)) {
             const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
@@ -452,12 +451,10 @@
           coverage_indicator_icon.removeClass('blink_me fa-circle-question');
 
           if (has_complete_coverage) {
-            console.log("complete coverage set!")
             coverage_indicator_button.addClass('btn-success');
             coverage_indicator_button.attr('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
             coverage_indicator_button.addClass('fa-circle-check');
           } else {
-            console.log("incomplete coverage set!")
             coverage_indicator_icon.addClass('btn-warning');
             coverage_indicator_icon.attr('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
             coverage_indicator_icon.addClass('fa-triangle-exclamation');
