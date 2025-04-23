@@ -445,6 +445,7 @@
           console.log()
           var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'-button');
           var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'-icon');
+          var coverage_indicator_text = document.getElementById('coverage-indicator-'+hgnc_id+'-text');
 
           // this is the outer, button span
           coverage_indicator_button.classList.remove('btn-info');
@@ -455,10 +456,12 @@
             coverage_indicator_button.classList.add('btn-success');
             coverage_indicator_button.setAttribute('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
             coverage_indicator_icon.classList.add('fa-circle-check');
+            coverage_indicator_text.textContent = "Complete"
           } else {
             coverage_indicator_button.classList.add('btn-warning');
             coverage_indicator_button.setAttribute('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
             coverage_indicator_icon.classList.add('fa-triangle-exclamation');
+            coverage_indicator_text.textContent = "Incomplete"
           }
         }
       }).fail(function() {
