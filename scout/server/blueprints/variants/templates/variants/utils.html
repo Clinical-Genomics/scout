@@ -193,9 +193,9 @@
         {% endif %}
           <td>
               {% if compound.not_loaded %}
-                {{ compound.display_name }} <small>(not loaded)</small>
+                {{ compound.display_name|truncate(20, True) }} <small>(not loaded)</small>
               {% elif is_popover %}
-                {{ compound.display_name }}
+                {{ compound.display_name|truncate(20, True) }}
               {% else %}
                 <a href='{{ url_for("variant.variant",
                 institute_id=institute._id,
