@@ -456,9 +456,9 @@
             coverage_indicator_button.setAttribute('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
             coverage_indicator_button.classList.add('fa-circle-check');
           } else {
-            coverage_indicator_icon.addClass('btn-warning');
-            coverage_indicator_icon.attr('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
-            coverage_indicator_icon.addClass('fa-triangle-exclamation');
+            coverage_indicator_icon.classList.add('btn-warning');
+            coverage_indicator_icon.setAttribute('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
+            coverage_indicator_icon.classList.add('fa-triangle-exclamation');
           }
         }
       }).fail(function() {
