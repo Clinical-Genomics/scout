@@ -135,7 +135,14 @@ function initialiseTable(data) {
     $('#diagnoses_table').DataTable({
         data: data,
         paging: true,
-        dom: 'Brtip',
+        layout: {
+					topStart: 'buttons',
+					topEnd: {
+							search: {
+									placeholder: 'Filter further...'
+							}
+					}
+				},
         buttons: [
             {
                 extend: 'excelHtml5',
