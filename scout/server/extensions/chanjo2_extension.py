@@ -5,7 +5,7 @@ import requests
 from flask import Flask, current_app
 
 from scout.server.utils import get_case_mito_chromosome
-from scout.utils.scout_requests import get_request_json
+from scout.utils.scout_requests import get_request_json, post_request_json
 
 REF_CHROM = "14"
 LOG = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class Chanjo2Client:
             )
             return json_resp
 
-        LOG.info(f"{resp.get('content',{}).get('message')}")
+        LOG.info(f"{json_resp.get('content',{}).get('message')}")
         return json_resp
 
     def mt_coverage_stats(self, case_obj: dict) -> Dict[str, dict]:
@@ -51,14 +51,14 @@ class Chanjo2Client:
 
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
-            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
-            autosome_cov = resp.json().get("mean_coverage")
+
+            autosome_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            autosome_cov = autosome_cov_json.get("mean_coverage")
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = case_mt_chrom
-            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
-
-            mt_cov = resp.json().get("mean_coverage")
+            mt_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            mt_cov = mt_cov_json.get("mean_coverage")
 
             coverage_info = dict(
                 mt_coverage=mt_cov,
@@ -103,8 +103,10 @@ class Chanjo2Client:
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
 
-        resp = requests.post(chanjo2_gene_cov_url, json=gene_cov_query)
-        gene_cov = resp.json()
+        gene_cov = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
+
+        if gene_cov.get("status_code") != 200:
+            return False
 
         full_coverage = bool(gene_cov)
         for sample in gene_cov.keys():

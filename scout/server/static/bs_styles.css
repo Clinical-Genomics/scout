@@ -386,9 +386,20 @@ option {
 }
 
 .str-variants-reviewer-container {
-   padding: 20px 5px;
- }
- .str-variants-reviewer-container svg {
-   width: 100%;
-   height: auto;
- }
+	padding: 20px 5px;
+}
+
+.str-variants-reviewer-container svg {
+	width: 100%;
+	height: auto;
+}
+
+.blink_me {
+	animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+	 50% {
+    opacity: 0;
+  }
+}
