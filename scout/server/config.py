@@ -50,7 +50,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
 
 # URL to an instance of Chanjo2, for generating coverage report
-CHANJO2_URL = "http://localhost:8000"
+# CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
 
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
