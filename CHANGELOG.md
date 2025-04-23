@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - If case is re-runned/re-uploaded with the `--keep-actions` tag, remember also previously assigned diseases, HPO terms, phenotype groups and HPO panels (#5365)
 - Case load config alias and updated track label for TIDDIT coverage tracks to accomodate HiFiCNV dito (#5401)
 - On variants page, compounds popup table, truncate the display name of compound variants with display name that exceeds 20 characters (#5404)
+- Update dataTables js (#5407)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)

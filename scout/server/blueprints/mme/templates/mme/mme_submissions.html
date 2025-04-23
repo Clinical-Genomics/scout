@@ -132,8 +132,6 @@
 {% block scripts %}
   {{ super() }}
     {{ db_table_external_scripts() }}
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" integrity="sha384-aMQNm81m1H+DJ4rJ+XLXKha3vcgxP6cojDJQqRuW2hdJ1GbRaTW9Ff8TxwFcPtSB" crossorigin="anonymous"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" integrity="sha384-YourGeneratedHashHere" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function () {
     $('#mmeTable').DataTable({
