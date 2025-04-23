@@ -442,8 +442,8 @@
         }
         for (const [hgnc_id, has_complete_coverage] of Object.entries(data.gene_has_full_coverage)) {
           // reset the temp color for the outer span and icon of the inner span
-          var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'button');
-          var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'icon');
+          var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'-button');
+          var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'-icon');
 
           // this is the outer, button span
           coverage_indicator_button.removeClass('btn-info');
