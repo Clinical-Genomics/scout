@@ -101,13 +101,12 @@ def research(case_id, institute, force):
                     raise_file_not_found = True
                     continue
                 files = True
-                category = ORDERED_FILE_TYPE_MAP[file_type]["category"]
-                LOG.info(f"Loading '{file_type}' variants, for {case_obj['_id']}")
+                LOG.info(f"\nLoading '{file_type}' variants, for {case_obj['_id']}")
                 upload_research_variants(
                     adapter=adapter,
                     case_obj=case_obj,
                     variant_type="research",
-                    category=category,
+                    category=ORDERED_FILE_TYPE_MAP[file_type]["category"],
                     rank_treshold=case_obj.get("rank_score_threshold", DEFAULT_RANK_THRESHOLD),
                 )
 
