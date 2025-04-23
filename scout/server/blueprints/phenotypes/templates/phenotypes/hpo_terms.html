@@ -56,7 +56,14 @@
       $('#phenotypes_table').DataTable( {
           paging: true,
           pageLength: 50,
-          dom: 'fBrtip',
+          layout: {
+            topStart: 'buttons',
+            topEnd: {
+                search: {
+                    placeholder: 'Filter...'
+                }
+            }
+          },
           buttons: [
             {
               extend: 'excelHtml5',
