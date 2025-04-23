@@ -433,6 +433,7 @@
     set_scrolly_table('transcripts_panel_table')
 
     function update_gene_has_full_coverage() {
+      console.log("update gene coverage...")
       $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
         if($.isEmptyObject(data.gene_has_full_coverage)) {
             const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
@@ -441,33 +442,27 @@
             }
         }
         for (const [hgnc_id, has_complete_coverage] of Object.entries(data.gene_has_full_coverage)) {
-          // reset the temp color and icon
+          // reset the temp color for the outer span and icon of the inner span
+          var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'button');
+          var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'icon');
 
-          var coverage_indicator_spans = [].slice.call(document.querySelectorAll('#coverage-indicator-'+hgnc_id))
-          for(let coverage_indicator_span of coverage_indicator_spans) {
-            if (coverage_indicator_span.classList.contains('button')) {
-              // this is the outer, button span
-              coverage_indicator_span.removeClass('btn-info');
-              // add new selection
-              if (has_complete_coverage) {
-                coverage_indicator_span.addClass('btn-success');
-                coverage_indicator_span.attr('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
-              } else {
-                coverage_indicator_span.addClass('btn-warning');
-                coverage_indicator_span.attr('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
-              }
-            } else {
-              // this is the inner, icon span
-              coverage_indicator.removeClass('blink_me fa-circle-question');
-              // add new selection
-              if (has_complete_coverage) {
-                coverage_indicator_span.addClass('fa-circle-check');
-              } else {
-                coverage_indicator_span.addClass('fa-triangle-exclamation');
-              }
-            }
+          // this is the outer, button span
+          coverage_indicator_button.removeClass('btn-info');
+          // this is the inner, icon span
+          coverage_indicator_icon.removeClass('blink_me fa-circle-question');
+
+          if (has_complete_coverage) {
+            console.log("complete coverage set!")
+            coverage_indicator_button.addClass('btn-success');
+            coverage_indicator_button.attr('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
+            coverage_indicator_button.addClass('fa-circle-check');
+          } else {
+            console.log("incomplete coverage set!")
+            coverage_indicator_icon.addClass('btn-warning');
+            coverage_indicator_icon.attr('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
+            coverage_indicator_icon.addClass('fa-triangle-exclamation');
           }
-        })
+        }
       }).fail(function() {
           const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
           for(let complete_coverage_indicator of complete_coverage_indicator_elements) {

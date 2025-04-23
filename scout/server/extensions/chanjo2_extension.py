@@ -106,7 +106,7 @@ class Chanjo2Client:
         gene_cov = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
 
         if gene_cov.get("status_code") != 200:
-            return False
+            raise Exception(f"Chanjo2 get complete coverage failed: {gene_cov.get('message')}")
 
         full_coverage = bool(gene_cov)
         for sample in gene_cov.keys():
