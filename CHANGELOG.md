@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests involving the variants controllers, which failed when not run in a specific order (#5391)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
+- Load research variants command prints more clearly which categories of variants are being loaded
 
 ## [4.99]
 ### Added

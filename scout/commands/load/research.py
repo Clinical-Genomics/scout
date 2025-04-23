@@ -24,7 +24,6 @@ def upload_research_variants(
     """Delete existing variants and upload new variants"""
     adapter.delete_variants(case_id=case_obj["_id"], variant_type=variant_type, category=category)
 
-    LOG.info("Load %s %s for: %s", variant_type, category.upper(), case_obj["_id"])
     adapter.load_variants(
         case_obj=case_obj,
         variant_type=variant_type,
@@ -102,11 +101,13 @@ def research(case_id, institute, force):
                     raise_file_not_found = True
                     continue
                 files = True
+                category = ORDERED_FILE_TYPE_MAP[file_type]["category"]
+                LOG.info(f"Loading '{file_type}' variants, for {case_obj['_id']}")
                 upload_research_variants(
                     adapter=adapter,
                     case_obj=case_obj,
                     variant_type="research",
-                    category=ORDERED_FILE_TYPE_MAP[file_type]["category"],
+                    category=category,
                     rank_treshold=case_obj.get("rank_score_threshold", DEFAULT_RANK_THRESHOLD),
                 )
 
