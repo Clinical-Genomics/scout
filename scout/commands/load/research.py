@@ -101,7 +101,6 @@ def research(case_id, institute, force):
                     raise_file_not_found = True
                     continue
                 files = True
-                LOG.info(f"\nLoading '{file_type}' variants, for {case_obj['_id']}")
                 upload_research_variants(
                     adapter=adapter,
                     case_obj=case_obj,

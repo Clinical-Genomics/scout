@@ -664,7 +664,7 @@ class VariantLoader(object):
             if vcf_dict["category"] != category:
                 continue
 
-            LOG.debug("Attempt to load %s %s VCF.", variant_type, category.upper())
+            LOG.info(f"\nLoading'{vcf_file_key}' variants")
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
             if variant_file:
                 variant_files.append(variant_file)
