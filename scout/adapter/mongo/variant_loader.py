@@ -415,6 +415,8 @@ class VariantLoader(object):
             managed = self._is_managed(variant, category)
             causative = self._is_causative_other_cases(variant, category)
 
+            LOG.warning(f"Variant's rank: {rank_score} - rank_threshold:{rank_threshold}")
+
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
             # Otherwise we load all variants above a rank score treshold
