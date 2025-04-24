@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
+import sys
 from datetime import datetime
 from typing import Dict, Iterable, Optional
 
@@ -391,7 +392,9 @@ class VariantLoader(object):
         current_region = None
 
         LOG.info(f"Number of variants present on the VCF file:{nr_variants}")
-        with progressbar(variants, label="Loading variants") as bar:
+        with progressbar(
+            variants, label="Loading variants", length=nr_variants, file=sys.stdout
+        ) as bar:
             for idx, variant in enumerate(bar):
                 # All MT variants are loaded
                 mt_variant = "MT" in variant.CHROM
@@ -511,8 +514,6 @@ class VariantLoader(object):
                     if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
                         LOG.info("%s variants inserted", nr_inserted)
                         inserted += 1
-
-                    bar.update(1)
 
         # If the variants are in a coding region we update the compounds
         if current_region:
