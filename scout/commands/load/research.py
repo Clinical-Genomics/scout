@@ -24,7 +24,6 @@ def upload_research_variants(
     """Delete existing variants and upload new variants"""
     adapter.delete_variants(case_id=case_obj["_id"], variant_type=variant_type, category=category)
 
-    LOG.info("Load %s %s for: %s", variant_type, category.upper(), case_obj["_id"])
     adapter.load_variants(
         case_obj=case_obj,
         variant_type=variant_type,
