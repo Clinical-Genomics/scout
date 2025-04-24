@@ -4,19 +4,42 @@ from urllib.parse import urlencode
 import pymongo
 from flask import url_for
 
-from scout.server.extensions import store
+
+def test_variants(app, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the variants page
+        resp = client.get(
+            url_for(
+                "variants.variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
 
 
-def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
+def test_variants_clinical_filter(
+    app, real_variant_database, institute_obj, case_obj, mocker, mock_redirect
+):
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
+    adapter = real_variant_database
     # GIVEN a variant without clinVar annotations
-    test_var = store.variant_collection.find_one(
+    test_var = adapter.variant_collection.find_one(
         {
             "clnsig": {"$exists": False},
             "variant_type": "clinical",
             "category": "snv",
             "panels": {"$in": ["panel1"]},
+            "hgnc_ids": {"$in": [234, 1968]},
         }
     )
     assert test_var
@@ -28,7 +51,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         "revstat": "criteria_provided,multiple_submitters,no_conflicts",
     }
 
-    updated_var = store.variant_collection.find_one_and_update(
+    updated_var = adapter.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
         {
             "$set": {
@@ -66,30 +89,9 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
 
         # THEN it should return a page
         assert resp.status_code == 200
-
+        print(resp.data)
         # containing the variant above
-        assert updated_var["_id"] in str(resp.data)
-
-
-def test_variants(app, institute_obj, case_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN accessing the variants page
-        resp = client.get(
-            url_for(
-                "variants.variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # THEN it should return a page
-        assert resp.status_code == 200
+        assert updated_var["document_id"] in str(resp.data)
 
 
 def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj, mocker, mock_redirect):

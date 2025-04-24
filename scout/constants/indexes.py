@@ -100,7 +100,7 @@ INDEXES = {
                 ("case_id", ASCENDING),
                 ("variant_type", ASCENDING),
                 ("hgnc_ids", ASCENDING),
-                ("rank_score", ASCENDING),
+                ("rank_score", DESCENDING),
             ],
             name="category_caseid_varianttype_hgncids_rankscore",
         ),
