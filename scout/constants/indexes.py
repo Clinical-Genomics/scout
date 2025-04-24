@@ -57,12 +57,12 @@ INDEXES = {
         IndexModel(
             # Filterish index
             [
-                ("case_id", ASCENDING),
                 ("variant_type", ASCENDING),
+                ("case_id", ASCENDING),
                 ("sub_category", ASCENDING),
                 ("hgnc_ids", ASCENDING),
             ],
-            name="case_id_variant_type_sub_category_hgnc_ids",
+            name="variant_type_case_id_sub_category_hgnc_ids",
         ),
     ],
     "variant": [
@@ -100,15 +100,16 @@ INDEXES = {
                 ("case_id", ASCENDING),
                 ("variant_type", ASCENDING),
                 ("rank_score", ASCENDING),
+                ("hgnc_ids", ASCENDING),
             ],
-            name="category_caseid_varianttype_rankscore",
+            name="category_caseid_varianttype_rankscore-hgncids",
         ),
         IndexModel(
             [
+                ("chromosome", ASCENDING),
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
                 ("variant_type", ASCENDING),
-                ("chromosome", ASCENDING),
                 ("start", ASCENDING),
                 ("end", ASCENDING),
             ],
