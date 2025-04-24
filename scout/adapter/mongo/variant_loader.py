@@ -2,7 +2,9 @@
 # stdlib modules
 import logging
 from datetime import datetime
+from typing import Dict, Iterable, Optional
 
+import click
 import cyvcf2
 
 # Third party modules
@@ -349,46 +351,28 @@ class VariantLoader(object):
 
     def _load_variants(
         self,
-        variants,
-        variant_type,
-        case_obj,
-        individual_positions,
-        rank_threshold,
-        institute_id,
-        build=None,
-        rank_results_header=None,
-        vep_header=None,
-        category="snv",
-        sample_info=None,
-        custom_images=None,
-        local_archive_info=None,
-        gene_to_panels=None,
-        hgncid_to_gene=None,
-        genomic_intervals=None,
-    ):
+        variants: Iterable[cyvcf2.Variant],
+        nr_variants: int,
+        variant_type: str,
+        case_obj: dict,
+        individual_positions: dict,
+        rank_threshold: int,
+        institute_id: str,
+        build: Optional[str] = None,
+        rank_results_header: Optional[list] = None,
+        vep_header: Optional[list] = None,
+        category: str = "snv",
+        sample_info: Optional[dict] = None,
+        custom_images: Optional[dict] = None,
+        local_archive_info: Optional[dict] = None,
+        gene_to_panels: Optional[Dict[str, set]] = None,
+        hgncid_to_gene: Optional[Dict[int, dict]] = None,
+        genomic_intervals: Optional[Dict[str, IntervalTree]] = None,
+    ) -> int:
         """Perform the loading of variants
 
         This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
-
-        Args:
-            variants(iterable(cyvcf2.Variant))
-            variant_type(str): ['clinical', 'research']
-            case_obj(dict)
-            individual_positions(dict): How individuals are positioned in vcf
-            rank_treshold(int): Only load variants with a rank score > than this
-            institute_id(str)
-            build(str): Genome build
-            rank_results_header(list): Rank score categories
-            vep_header(list)
-            category(str): ['snv','sv','cancer','str']
-            sample_info(dict): A dictionary with info about samples.
-                               Strictly for cancer to tell which is tumor
-           custom_images(dict): A dict with custom images for a case.
-           local_archive_info(dict): A dict with info about the local archive used for annotation
-
-        Returns:
-            nr_inserted(int)
         """
         build = build or "37"
 
@@ -414,8 +398,6 @@ class VariantLoader(object):
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
             causative = self._is_causative_other_cases(variant, category)
-
-            LOG.warning(f"Variant's rank: {rank_score} - rank_threshold:{rank_threshold}")
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
@@ -719,6 +701,7 @@ class VariantLoader(object):
             try:
                 nr_inserted = self._load_variants(
                     variants=variants,
+                    nr_variants=sum(1 for _ in vcf_obj(region)),
                     variant_type=variant_type,
                     case_obj=case_obj,
                     individual_positions=individual_positions,
