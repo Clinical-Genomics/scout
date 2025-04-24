@@ -26,13 +26,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case load config alias and updated track label for TIDDIT coverage tracks to accomodate HiFiCNV dito (#5401)
 - On variants page, compounds popup table, truncate the display name of compound variants with display name that exceeds 20 characters (#5404)
 - Update dataTables js (#5407)
+- Load variants command prints more clearly which categories of variants are being loaded (#5409)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)
 - Tests involving the variants controllers, which failed when not run in a specific order (#5391)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
-- Load variants command prints more clearly which categories of variants are being loaded (#5409)
+- Loading of MT research variants
 
 ## [4.99]
 ### Added

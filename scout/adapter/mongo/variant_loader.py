@@ -657,7 +657,11 @@ class VariantLoader(object):
 
         nr_inserted = 0
 
-        variant_files = []
+        gene_to_panels = self.gene_to_panels(case_obj)
+        genes = list(self.all_genes(build=build))
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
         for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
             if vcf_dict["variant_type"] != variant_type:
                 continue
@@ -666,21 +670,8 @@ class VariantLoader(object):
 
             LOG.info(f"\nLoading'{vcf_file_key}' variants")
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
-            if variant_file:
-                variant_files.append(variant_file)
 
-        if not variant_files:
-            raise SyntaxError(
-                "VCF files for {} {} does not seem to exist".format(category, variant_type)
-            )
-
-        gene_to_panels = self.gene_to_panels(case_obj)
-        genes = list(self.all_genes(build=build))
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
-
-        for variant_file in variant_files:
-            if not self._has_variants_in_file(variant_file):
+            if not variant_file or not self._has_variants_in_file(variant_file):
                 continue
 
             vcf_obj = VCF(variant_file)
