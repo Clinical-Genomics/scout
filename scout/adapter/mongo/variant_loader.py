@@ -392,7 +392,6 @@ class VariantLoader(object):
         """
         build = build or "37"
 
-        LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
         # These are the number of parsed varaints
@@ -668,7 +667,7 @@ class VariantLoader(object):
             if vcf_dict["category"] != category:
                 continue
 
-            LOG.info(f"\nLoading'{vcf_file_key}' variants")
+            LOG.info(f"Loading'{vcf_file_key}' variants")
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
 
             if not variant_file or not self._has_variants_in_file(variant_file):
