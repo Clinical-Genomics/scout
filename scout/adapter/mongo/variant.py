@@ -708,11 +708,15 @@ class VariantHandler(VariantLoader):
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
-                {"variant_id": {"$ne": variant_obj["variant_id"]}},
             ]
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
-        return self.variant_collection.find(query).sort(sort_key).limit(limit)
+
+        return [
+            variant
+            for variant in self.variant_collection.find(query).sort(sort_key).limit(limit)
+            if variant["variant_id"] != variant_obj["variant_id"]
+        ]
 
     def hgnc_overlapping(
         self, variant_obj: dict, limit: int = None
