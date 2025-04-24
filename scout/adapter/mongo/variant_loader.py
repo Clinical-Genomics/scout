@@ -4,11 +4,11 @@ import logging
 from datetime import datetime
 from typing import Dict, Iterable, Optional
 
-import click
 import cyvcf2
 
 # Third party modules
 import pymongo
+from click import progressbar
 from cyvcf2 import VCF, Variant
 from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
@@ -376,12 +376,9 @@ class VariantLoader(object):
         """
         build = build or "37"
 
-        LOG.error(nr_variants)
-
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
-        # These are the number of parsed varaints
-        nr_variants = 0
+
         # These are the number of variants that meet the criteria and gets inserted
         nr_inserted = 0
         # This is to keep track of blocks of inserted variants
@@ -393,8 +390,9 @@ class VariantLoader(object):
         bulk = {}
         current_region = None
 
-        with click.progressbar(variants, label="Loading variants") as bar:
-            for nr_variants, variant in enumerate(bar):
+        LOG.info(f"Number of variants present on the VCF file:{nr_variants}")
+        with progressbar(variants, label="Loading variants") as bar:
+            for idx, variant in enumerate(bar):
                 # All MT variants are loaded
                 mt_variant = "MT" in variant.CHROM
                 rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
@@ -513,6 +511,8 @@ class VariantLoader(object):
                     if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
                         LOG.info("%s variants inserted", nr_inserted)
                         inserted += 1
+
+                    bar.update(1)
 
         # If the variants are in a coding region we update the compounds
         if current_region:
