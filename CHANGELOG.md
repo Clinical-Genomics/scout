@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include eventual gene-matching WTS outliers on variantS page (Overlap column) and variant page (Gene overlapping non-SNVs table) (#5371)
 - Minor Allele Frequency (HiFiCNV) IGV.js track for Nallo cases (#5401)
 - A page showing all cases submitted to the Matchmaker Exchange, accessible from the institute's sidebar (#5378)
+- Variants' loader progress bar (#5411)
 ### Changed
 - Allow matching compounded subcategories from SV callers e.g. DUP:INV (#5360)
 - Adjust the link to the chanjo2 gene coverage report to reflect the type of analyses used for the samples (#5368)
@@ -33,7 +34,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests involving the variants controllers, which failed when not run in a specific order (#5391)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
-- Loading of MT research variants (#5411)
 
 ## [4.99]
 ### Added
