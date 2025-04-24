@@ -102,7 +102,7 @@ INDEXES = {
                 ("rank_score", ASCENDING),
                 ("hgnc_ids", ASCENDING),
             ],
-            name="category_caseid_varianttype_rankscore-hgncids",
+            name="category_caseid_varianttype_rankscore_hgncids",
         ),
         IndexModel(
             [
@@ -113,7 +113,7 @@ INDEXES = {
                 ("start", ASCENDING),
                 ("end", ASCENDING),
             ],
-            name="caseid_category_chromosome_start_end",
+            name="chromosome_caseid_category_start_end",
         ),
         IndexModel(
             [("variant_id", ASCENDING), ("institute", ASCENDING)],
