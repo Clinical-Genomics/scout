@@ -370,7 +370,7 @@ class VariantLoader(object):
         hgncid_to_gene: Optional[Dict[int, dict]] = None,
         genomic_intervals: Optional[Dict[str, IntervalTree]] = None,
     ) -> int:
-        """This is the function that loops over the variants, parse them and build the variant
+        """This is the function that loops over the variants, parses them and builds the variant
         objects so they are ready to be inserted into the database.
         All variants with rank score above rank_threshold are loaded. All MT, pathogenic, managed or variants causative in other cases are also loaded.
         individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
