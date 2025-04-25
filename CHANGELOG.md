@@ -33,7 +33,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
 - Load variants command prints more clearly which categories of variants are being loaded (#5409)
+- Fixed some more tests accessing database in and out of app context (#5415)
 - Speed up query for gene overlapping variants (#5413)
+
 
 ## [4.99]
 ### Added
