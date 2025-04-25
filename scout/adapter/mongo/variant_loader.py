@@ -370,10 +370,11 @@ class VariantLoader(object):
         hgncid_to_gene: Optional[Dict[int, dict]] = None,
         genomic_intervals: Optional[Dict[str, IntervalTree]] = None,
     ) -> int:
-        """Perform the loading of variants
-
-        This is the function that loops over the variants, parse them and build the variant
+        """This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
+        Only variants with rank score above rank_threshold are loaded. All MT, pathogenic, managed or variants causative in other cases are loaded.
+        individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
+        local_archive_info contains info about the local archive used for annotation.
         """
         build = build or "37"
 
@@ -477,6 +478,9 @@ class VariantLoader(object):
                         ]
                         if len(images) > 0:
                             variant_obj["custom_images"] = images
+
+                    nr_inserted += 1
+
                     # Load the variant object
                     if load:
                         # If the variant bulk contains coding variants we want to update the compounds
@@ -528,8 +532,6 @@ class VariantLoader(object):
             )
         )
 
-        if nr_variants:
-            nr_variants += 1
         LOG.info("Nr variants parsed: %s", nr_variants)
         LOG.info("Nr variants inserted: %s", nr_inserted)
         LOG.debug("Nr bulks inserted: %s", nr_bulks)
