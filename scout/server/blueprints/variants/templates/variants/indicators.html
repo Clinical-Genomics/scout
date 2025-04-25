@@ -41,20 +41,22 @@
 
 {% macro other_tiered_variants(variant) %}
   {% if variant.matching_tiered %}
-    <span class="badge bg-dark" data-bs-toggle="tooltip" data-bs-html="true"
-          title="<b>Previously <b>T</b>iered as
+    <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
+          data-original-title="Previously <b>T</b>iered as"
+          data-bs-content="
           {% for tier, tiered_info in variant.matching_tiered.items() %}
-            <span class='badge bg-{{tiered_info.label}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
+            <span class='badge bg-{{tiered_info.label_class}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
           {% endfor %}">T</span>
   {% endif %} <!-- end of if variant.matching_tiered -->
 {% endmacro %}
 
 {% macro matching_manual_rank(variant) %}
   {% if variant.matching_ranked %}
-    <span class="badge bg-dark" data-bs-toggle="tooltip" data-bs-html="true"
-        title="Previously <b>M</b>anually ranked as
+    <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
+        data-original-title="Previously <b>M</b>anually ranked as"
+          data-bs-content="
           {% for manual_rank, manual_rank_info in variant.matching_ranked.items() %}
-            <div>{{manual_rank_info.label}} - {{manual_rank_info.description}} ({{manual_rank_info.links|length}}x)</div>
+            <div><span class='badge bg-{{ manual_rank_info.label_class }}'>{{manual_rank_info.label}}</span> - {{manual_rank_info.description}} ({{manual_rank_info.links|length}}x)</div>
           {% endfor %}">M</span>
   {% endif %}
 {% endmacro %}
