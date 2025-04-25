@@ -398,7 +398,7 @@ class VariantLoader(object):
         ) as bar:
             for idx, variant in enumerate(bar):
                 # All MT variants are loaded
-                mt_variant = "MT" in variant.CHROM
+                mt_variant = variant.CHROM in ["M", "MT"]
                 rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
                 pathogenic = is_pathogenic(variant)
                 managed = self._is_managed(variant, category)
