@@ -74,7 +74,7 @@
        {% if variant.category == "cancer_sv" %}
         {{matching_variants(managed_variant, causatives, variant.matching_tiered) }}
        {% else %}
-        {{matching_variants(managed_variant, causatives) }}
+        {{matching_variants(managed_variant, causatives, variant.matching_ranked) }}
        {% endif %}
       </div>
    </div>
