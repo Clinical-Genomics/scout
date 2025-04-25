@@ -6,44 +6,60 @@ from flask import url_for
 
 from scout.server.extensions import store
 
+CARRIER = r"[12]"
+
 
 def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
-    # GIVEN a variant without clinVar annotations
-    test_var = store.variant_collection.find_one(
-        {
-            "clnsig": {"$exists": False},
-            "variant_type": "clinical",
-            "category": "snv",
-            "panels": {"$in": ["panel1"]},
-        }
-    )
-    assert test_var
-
-    # IF the variant receives a fake clinsig annotation compatible with the clinical filter
-    clinsig_criteria = {
-        "value": 5,
-        "accession": 345986,
-        "revstat": "criteria_provided,multiple_submitters,no_conflicts",
-    }
-
-    updated_var = store.variant_collection.find_one_and_update(
-        {"_id": test_var["_id"]},
-        {
-            "$set": {
-                "clnsig": [clinsig_criteria],
-                "panels": ["panel1"],
-                "rank_score": 100,
-                "variant_rank": 1,
-            },
-        },
-        return_document=pymongo.ReturnDocument.AFTER,
-    )
-
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
+
+        # GIVEN an affected individual in the case
+        affected_ids = []
+        for ind in case_obj.get("individuals"):
+            if ind.get("phenotype") in [2, "affected"]:
+                affected_ids.append(ind.get("individual_id"))
+
+        # GIVEN a variant without clinVar annotations
+        test_var = store.variant_collection.find_one(
+            {
+                "clnsig": {"$exists": False},
+                "variant_type": "clinical",
+                "category": "snv",
+                "panels": {"$in": ["panel1"]},
+                "case_id": case_obj["_id"],
+                "samples": {
+                    "$elemMatch": {  # Condition for samples to match default variants query: individual/sample should be carrier
+                        "sample_id": {"$in": affected_ids},
+                        "genotype_call": {"$regex": CARRIER},
+                    }
+                },
+            }
+        )
+        assert test_var
+
+        # IF the variant receives a fake clinsig annotation compatible with the clinical filter
+        clinsig_criteria = {
+            "value": 5,
+            "accession": 345986,
+            "revstat": "criteria_provided,multiple_submitters,no_conflicts",
+        }
+
+        updated_var = store.variant_collection.find_one_and_update(
+            {"_id": test_var["_id"]},
+            {
+                "$set": {
+                    "clnsig": [clinsig_criteria],
+                    "panels": ["panel1"],
+                    "rank_score": 100,
+                    "variant_rank": 1,
+                },
+            },
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
@@ -412,27 +428,27 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
 def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, cancer_variant_obj):
     """Tests the cancer form filter by VAF"""
 
-    # GIVEN a database containing a cancer case
-    assert store.case_collection.insert_one(cancer_case_obj)
-
-    # with a variant with a given tumor VAF
-    cancer_variant_obj["tumor"] = {"alt_freq": 0.49}
-    assert store.variant_collection.insert_one(cancer_variant_obj)
-
-    # GIVEN a variant belonging to the case that has tumor alternate frequency
-    assert store.variant_collection.find_one_and_update(
-        {"_id": cancer_variant_obj["_id"]},
-        {
-            "$set": {
-                "case_id": cancer_case_obj["_id"],
-                "category": "cancer",
-                "tumor": {"alt_freq": 0.49},
-            }
-        },
-    )
-
     # GIVEN an initialized app
     with app.test_client() as client:
+        # GIVEN a database containing a cancer case
+        assert store.case_collection.insert_one(cancer_case_obj)
+
+        # with a variant with a given tumor VAF
+        cancer_variant_obj["tumor"] = {"alt_freq": 0.49}
+        assert store.variant_collection.insert_one(cancer_variant_obj)
+
+        # GIVEN a variant belonging to the case that has tumor alternate frequency
+        assert store.variant_collection.find_one_and_update(
+            {"_id": cancer_variant_obj["_id"]},
+            {
+                "$set": {
+                    "case_id": cancer_case_obj["_id"],
+                    "category": "cancer",
+                    "tumor": {"alt_freq": 0.49},
+                }
+            },
+        )
+
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
@@ -471,12 +487,12 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, canc
 def test_sv_cancer_variants(app, institute_obj, cancer_case_obj):
     """Test the SVs page for a cancer case"""
 
-    # GIVEN a database containing a cancer case
-    assert store.case_collection.insert_one(cancer_case_obj)
-
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
+        # GIVEN a database containing a cancer case
+        assert store.case_collection.insert_one(cancer_case_obj)
+
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
