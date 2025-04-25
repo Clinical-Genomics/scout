@@ -479,8 +479,6 @@ class VariantLoader(object):
                         if len(images) > 0:
                             variant_obj["custom_images"] = images
 
-                    nr_inserted += 1
-
                     # Load the variant object
                     if load:
                         # If the variant bulk contains coding variants we want to update the compounds
