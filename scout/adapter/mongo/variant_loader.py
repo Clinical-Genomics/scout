@@ -372,7 +372,7 @@ class VariantLoader(object):
     ) -> int:
         """This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
-        Only variants with rank score above rank_threshold are loaded. All MT, pathogenic, managed or variants causative in other cases are loaded.
+        All variants with rank score above rank_threshold are loaded. All MT, pathogenic, managed or variants causative in other cases are also loaded.
         individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
         local_archive_info contains info about the local archive used for annotation.
         """
