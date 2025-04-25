@@ -8,6 +8,7 @@ from scout.server.extensions import store
 
 CARRIER = r"[12]"
 
+
 def test_variants(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -28,7 +29,6 @@ def test_variants(app, institute_obj, case_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-        
 
 def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
