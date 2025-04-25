@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
+import sys
 from datetime import datetime
+from typing import Dict, Iterable, Optional
 
 import cyvcf2
 
 # Third party modules
 import pymongo
+from click import progressbar
 from cyvcf2 import VCF, Variant
 from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
@@ -349,54 +352,35 @@ class VariantLoader(object):
 
     def _load_variants(
         self,
-        variants,
-        variant_type,
-        case_obj,
-        individual_positions,
-        rank_threshold,
-        institute_id,
-        build=None,
-        rank_results_header=None,
-        vep_header=None,
-        category="snv",
-        sample_info=None,
-        custom_images=None,
-        local_archive_info=None,
-        gene_to_panels=None,
-        hgncid_to_gene=None,
-        genomic_intervals=None,
-    ):
-        """Perform the loading of variants
-
-        This is the function that loops over the variants, parse them and build the variant
+        variants: Iterable[cyvcf2.Variant],
+        nr_variants: int,
+        variant_type: str,
+        case_obj: dict,
+        individual_positions: dict,
+        rank_threshold: int,
+        institute_id: str,
+        build: Optional[str] = None,
+        rank_results_header: Optional[list] = None,
+        vep_header: Optional[list] = None,
+        category: str = "snv",
+        sample_info: Optional[dict] = None,
+        custom_images: Optional[dict] = None,
+        local_archive_info: Optional[dict] = None,
+        gene_to_panels: Optional[Dict[str, set]] = None,
+        hgncid_to_gene: Optional[Dict[int, dict]] = None,
+        genomic_intervals: Optional[Dict[str, IntervalTree]] = None,
+    ) -> int:
+        """This is the function that loops over the variants, parses them and builds the variant
         objects so they are ready to be inserted into the database.
-
-        Args:
-            variants(iterable(cyvcf2.Variant))
-            variant_type(str): ['clinical', 'research']
-            case_obj(dict)
-            individual_positions(dict): How individuals are positioned in vcf
-            rank_treshold(int): Only load variants with a rank score > than this
-            institute_id(str)
-            build(str): Genome build
-            rank_results_header(list): Rank score categories
-            vep_header(list)
-            category(str): ['snv','sv','cancer','str']
-            sample_info(dict): A dictionary with info about samples.
-                               Strictly for cancer to tell which is tumor
-           custom_images(dict): A dict with custom images for a case.
-           local_archive_info(dict): A dict with info about the local archive used for annotation
-
-        Returns:
-            nr_inserted(int)
+        All variants with rank score above rank_threshold are loaded. All MT, pathogenic, managed or variants causative in other cases are also loaded.
+        individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
+        local_archive_info contains info about the local archive used for annotation.
         """
         build = build or "37"
 
-        LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
-        # These are the number of parsed varaints
-        nr_variants = 0
+
         # These are the number of variants that meet the criteria and gets inserted
         nr_inserted = 0
         # This is to keep track of blocks of inserted variants
@@ -408,123 +392,131 @@ class VariantLoader(object):
         bulk = {}
         current_region = None
 
-        for nr_variants, variant in enumerate(variants):
-            # All MT variants are loaded
-            mt_variant = "MT" in variant.CHROM
-            rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
-            pathogenic = is_pathogenic(variant)
-            managed = self._is_managed(variant, category)
-            causative = self._is_causative_other_cases(variant, category)
+        LOG.info(f"Number of variants present on the VCF file:{nr_variants}")
+        with progressbar(
+            variants, label="Loading variants", length=nr_variants, file=sys.stdout
+        ) as bar:
+            for idx, variant in enumerate(bar):
+                # All MT variants are loaded
+                mt_variant = variant.CHROM in ["M", "MT"]
+                rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
+                pathogenic = is_pathogenic(variant)
+                managed = self._is_managed(variant, category)
+                causative = self._is_causative_other_cases(variant, category)
 
-            # Check if the variant should be loaded at all
-            # if rank score is None means there are no rank scores annotated, all variants will be loaded
-            # Otherwise we load all variants above a rank score treshold
-            # Except for MT variants where we load all variants
-            if (
-                (rank_score is None)
-                or (rank_score > rank_threshold)
-                or mt_variant
-                or pathogenic
-                or causative
-                or managed
-                or category in ["str"]
-            ):
-                nr_inserted += 1
-                # Parse the vcf variant
-                parsed_variant = parse_variant(
-                    variant=variant,
-                    case=case_obj,
-                    variant_type=variant_type,
-                    rank_results_header=rank_results_header,
-                    vep_header=vep_header,
-                    individual_positions=individual_positions,
-                    category=category,
-                    local_archive_info=local_archive_info,
-                )
-
-                # Build the variant object
-                variant_obj = build_variant(
-                    variant=parsed_variant,
-                    institute_id=institute_id,
-                    gene_to_panels=gene_to_panels,
-                    hgncid_to_gene=hgncid_to_gene,
-                    sample_info=sample_info,
-                )
-
-                # Check if the variant is in a genomic region
-                var_chrom = variant_obj["chromosome"]
-                var_start = variant_obj["position"]
-                # We need to make sure that the interval has a length > 0
-                var_end = variant_obj["end"] + 1
-                var_id = variant_obj["_id"]
-                # If the bulk should be loaded or not
-                load = True
-                new_region = None
-
-                intervals = genomic_intervals.get(var_chrom, IntervalTree())
-                genomic_regions = intervals.overlap(var_start, var_end)
-
-                # If the variant is in a coding region
-                if genomic_regions:
-                    # We know there is data here so get the interval id
-                    new_region = genomic_regions.pop().data
-                    # If the variant is in the same region as previous
-                    # we add it to the same bulk
-                    if new_region == current_region:
-                        load = False
-
-                # This is the case where the variant is intergenic
-                else:
-                    # If the previous variant was also intergenic we add the variant to the bulk
-                    if not current_region:
-                        load = False
-                    # We need to have a max size of the bulk
-                    if len(bulk) > 10000:
-                        load = True
-                # Associate variant with image
-                if custom_images:
-                    images = [
-                        img for img in custom_images if img["str_repid"] == variant_obj["str_repid"]
-                    ]
-                    if len(images) > 0:
-                        variant_obj["custom_images"] = images
-                # Load the variant object
-                if load:
-                    # If the variant bulk contains coding variants we want to update the compounds
-                    if current_region:
-                        self.update_compounds(bulk)
-                    try:
-                        # Load the variants
-                        self.load_variant_bulk(list(bulk.values()))
-                        nr_bulks += 1
-                    except IntegrityError as error:
-                        pass
-                    bulk = {}
-
-                current_region = new_region
-                if var_id in bulk:
-                    LOG.warning(
-                        "Duplicated variant %s detected in same bulk. Attempting separate upsert.",
-                        variant_obj.get("simple_id"),
+                # Check if the variant should be loaded at all
+                # if rank score is None means there are no rank scores annotated, all variants will be loaded
+                # Otherwise we load all variants above a rank score treshold
+                # Except for MT variants where we load all variants
+                if (
+                    (rank_score is None)
+                    or (rank_score > rank_threshold)
+                    or mt_variant
+                    or pathogenic
+                    or causative
+                    or managed
+                    or category in ["str"]
+                ):
+                    nr_inserted += 1
+                    # Parse the vcf variant
+                    parsed_variant = parse_variant(
+                        variant=variant,
+                        case=case_obj,
+                        variant_type=variant_type,
+                        rank_results_header=rank_results_header,
+                        vep_header=vep_header,
+                        individual_positions=individual_positions,
+                        category=category,
+                        local_archive_info=local_archive_info,
                     )
-                    try:
-                        self.upsert_variant(variant_obj)
-                    except IntegrityError as err:
-                        pass
-                else:
-                    bulk[var_id] = variant_obj
 
-                if nr_variants != 0 and nr_variants % 5000 == 0:
-                    LOG.info("%s variants parsed", str(nr_variants))
-                    LOG.info(
-                        "Time to parse variants: %s",
-                        (datetime.now() - start_five_thousand),
+                    # Build the variant object
+                    variant_obj = build_variant(
+                        variant=parsed_variant,
+                        institute_id=institute_id,
+                        gene_to_panels=gene_to_panels,
+                        hgncid_to_gene=hgncid_to_gene,
+                        sample_info=sample_info,
                     )
-                    start_five_thousand = datetime.now()
 
-                if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
-                    LOG.info("%s variants inserted", nr_inserted)
-                    inserted += 1
+                    # Check if the variant is in a genomic region
+                    var_chrom = variant_obj["chromosome"]
+                    var_start = variant_obj["position"]
+                    # We need to make sure that the interval has a length > 0
+                    var_end = variant_obj["end"] + 1
+                    var_id = variant_obj["_id"]
+                    # If the bulk should be loaded or not
+                    load = True
+                    new_region = None
+
+                    intervals = genomic_intervals.get(var_chrom, IntervalTree())
+                    genomic_regions = intervals.overlap(var_start, var_end)
+
+                    # If the variant is in a coding region
+                    if genomic_regions:
+                        # We know there is data here so get the interval id
+                        new_region = genomic_regions.pop().data
+                        # If the variant is in the same region as previous
+                        # we add it to the same bulk
+                        if new_region == current_region:
+                            load = False
+
+                    # This is the case where the variant is intergenic
+                    else:
+                        # If the previous variant was also intergenic we add the variant to the bulk
+                        if not current_region:
+                            load = False
+                        # We need to have a max size of the bulk
+                        if len(bulk) > 10000:
+                            load = True
+                    # Associate variant with image
+                    if custom_images:
+                        images = [
+                            img
+                            for img in custom_images
+                            if img["str_repid"] == variant_obj["str_repid"]
+                        ]
+                        if len(images) > 0:
+                            variant_obj["custom_images"] = images
+
+                    # Load the variant object
+                    if load:
+                        # If the variant bulk contains coding variants we want to update the compounds
+                        if current_region:
+                            self.update_compounds(bulk)
+                        try:
+                            # Load the variants
+                            self.load_variant_bulk(list(bulk.values()))
+                            nr_bulks += 1
+                        except IntegrityError as error:
+                            pass
+                        bulk = {}
+
+                    current_region = new_region
+                    if var_id in bulk:
+                        LOG.warning(
+                            "Duplicated variant %s detected in same bulk. Attempting separate upsert.",
+                            variant_obj.get("simple_id"),
+                        )
+                        try:
+                            self.upsert_variant(variant_obj)
+                        except IntegrityError as err:
+                            pass
+                    else:
+                        bulk[var_id] = variant_obj
+
+                    if nr_variants != 0 and nr_variants % 5000 == 0:
+                        LOG.info("%s variants parsed", str(nr_variants))
+                        LOG.info(
+                            "Time to parse variants: %s",
+                            (datetime.now() - start_five_thousand),
+                        )
+                        start_five_thousand = datetime.now()
+
+                    if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
+                        LOG.info("%s variants inserted", nr_inserted)
+                        inserted += 1
+
         # If the variants are in a coding region we update the compounds
         if current_region:
             self.update_compounds(bulk)
@@ -538,8 +530,6 @@ class VariantLoader(object):
             )
         )
 
-        if nr_variants:
-            nr_variants += 1
         LOG.info("Nr variants parsed: %s", nr_variants)
         LOG.info("Nr variants inserted: %s", nr_inserted)
         LOG.debug("Nr bulks inserted: %s", nr_bulks)
@@ -657,30 +647,21 @@ class VariantLoader(object):
 
         nr_inserted = 0
 
-        variant_files = []
+        gene_to_panels = self.gene_to_panels(case_obj)
+        genes = list(self.all_genes(build=build))
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
         for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
             if vcf_dict["variant_type"] != variant_type:
                 continue
             if vcf_dict["category"] != category:
                 continue
 
-            LOG.info(f"\nLoading'{vcf_file_key}' variants")
+            LOG.info(f"Loading'{vcf_file_key}' variants")
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
-            if variant_file:
-                variant_files.append(variant_file)
 
-        if not variant_files:
-            raise SyntaxError(
-                "VCF files for {} {} does not seem to exist".format(category, variant_type)
-            )
-
-        gene_to_panels = self.gene_to_panels(case_obj)
-        genes = list(self.all_genes(build=build))
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
-
-        for variant_file in variant_files:
-            if not self._has_variants_in_file(variant_file):
+            if not variant_file or not self._has_variants_in_file(variant_file):
                 continue
 
             vcf_obj = VCF(variant_file)
@@ -722,11 +703,13 @@ class VariantLoader(object):
             else:
                 rank_threshold = rank_threshold or 0
 
-            variants = vcf_obj(region)
+            nr_variants = sum(1 for _ in vcf_obj(region))
+            vcf_obj = VCF(variant_file)
 
             try:
                 nr_inserted = self._load_variants(
-                    variants=variants,
+                    variants=vcf_obj(region),
+                    nr_variants=nr_variants,
                     variant_type=variant_type,
                     case_obj=case_obj,
                     individual_positions=individual_positions,
