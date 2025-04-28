@@ -117,6 +117,10 @@ def configure_extensions(app):
         extensions.chanjo_report.init_app(app)
         LOG.info("Chanjo extension enabled")
 
+    if app.config.get("CHANJO2_URL"):
+        LOG.info("Chanjo2 extension enabled")
+        extensions.chanjo2.init_app(app)
+
     if app.config.get("LOQUSDB_SETTINGS"):
         LOG.info("LoqusDB enabled")
         # setup LoqusDB

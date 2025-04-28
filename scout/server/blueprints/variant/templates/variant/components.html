@@ -138,21 +138,25 @@
         {% endif %}
         </div>
       {% endfor %}
-      {{ gene_coverage(institute, variant, case, config) }}
     </li>
     <li class="list-group-item">
       <div>
         {{ igv_track_selection(igv_tracks, current_user) }}
       </div>
     </li>
+    {% if (case.chanjo_coverage and config.chanjo_report) or case.chanjo2_coverage %}
+      <li class="list-group-item d-flex justify-content-between">
+        {{ gene_coverage(institute, variant, case, config) }}
+      </li>
+    {% endif %}
   </ul>
 {% endmacro %}
 
 {% macro gene_coverage(institute, variant, case, config) %}
   {% if case.chanjo_coverage and config.chanjo_report %}
-    <div class="d-flex flex-wrap ms-1">
+    <div class="d-flex flex-wrap ms-1" data-bs-toggle="tooltip" title="Chanjo coverage reports">
       {% for gene in variant.genes %}
-        <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}" data-bs-toggle="tooltip" title="Chanjo coverage report">
+        <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
           Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
         </a>
       {% endfor %}
@@ -160,14 +164,12 @@
   {% endif %}
   {% if case.chanjo2_coverage %}
     <div class="d-flex flex-wrap ms-1" data-bs-toggle="tooltip" title="Chanjo2 coverage reports">
-      {% for gene in variant.genes %}
-        {{ chanjo2_report_form(institute, case, gene.hgnc_symbol, 'overview', gene.hgnc_id, "Gene coverage " + (gene.common.hgnc_symbol if gene.common else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
-        {% if gene.common.hgnc_id in gene_has_full_coverage and gene.common.hgnc_id[gene.common.hgnc_id] %}
-          <span class="bg-success fa-solid fa-circle-check" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Chanjo2 coverage is at 100% completeness."></span>
-        {% else %}
-          <span class="bg-warning fa-solid fa-triangle-exclamation" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Note that Chanjo2 coverage is below 100% completeness."></span>
-        {% endif %}
-      {% endfor %}
+        {% for gene in variant.genes %}
+          <div class="btn-group" style="display:flex">
+            {{ chanjo2_report_form(institute, case, gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id, 'overview', gene.hgnc_id, "Gene coverage " ~ (gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
+          <span class="btn complete-coverage-indicator align-items-center btn-info text-white btn-sm" style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-loading-text="Checking completeness..." title="Checking completeness..."><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-icon" class='align-self-center blink_me fa-solid fa-circle-question'></span><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-text" class='align-self-center'>Checking</span></span>
+          </div>
+        {% endfor %}
     </div>
   {% endif %}
 {% endmacro %}
