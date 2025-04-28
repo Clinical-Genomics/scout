@@ -163,7 +163,7 @@
       <div class="btn-group">
         {% for gene in variant.genes %}
           {{ chanjo2_report_form(institute, case, gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id, 'overview', gene.hgnc_id, "Gene coverage " ~ (gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
-          <span class="button complete-coverage-indicator btn-info text-white btn-sm" style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-loading-text="Checking completeness..." title="Checking completeness..."><span id="coverage-indicator-{{gene.hgnc_id}}-icon" class='align-baseline blink_me fa-solid fa-circle-question'></span><span id="coverage-indicator-{{gene.hgnc_id}}-text">Checking</span>&nbsp;{{gene.hgnc_symbol}}</span>
+          <span class="button complete-coverage-indicator btn-info text-white btn-sm" style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-loading-text="Checking completeness..." title="Checking completeness..."><span id="coverage-indicator-{{gene.hgnc_id}}-icon" class='align-middle blink_me fa-solid fa-circle-question'></span><span id="coverage-indicator-{{gene.hgnc_id}}-text">Checking</span></span>
         {% endfor %}
       </div>
     </div>
