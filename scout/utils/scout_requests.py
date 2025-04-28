@@ -3,12 +3,11 @@
 import logging
 import urllib.request
 import zlib
-from typing import Dict, List, Optional
+from typing import Dict, List
 from urllib.error import HTTPError
 
 import requests
 from defusedxml import ElementTree
-from flask import flash
 
 from scout.constants import HPO_URL, HPOTERMS_URL, ORPHA_URLS
 
@@ -344,7 +343,7 @@ def fetch_constraint():
         return exac_lines
 
 
-def fetch_refseq_version(refseq_acc: str) -> Optional[str]:
+def fetch_refseq_version(refseq_acc: str) -> str:
     """Fetch refseq version from entrez and return refseq version
 
     Args:
