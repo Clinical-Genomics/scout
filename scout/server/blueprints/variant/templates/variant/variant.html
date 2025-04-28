@@ -432,5 +432,46 @@
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
 
+    function update_gene_has_full_coverage() {
+      $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
+        if($.isEmptyObject(data.gene_has_full_coverage)) {
+            const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
+            for(let complete_coverage_indicator of complete_coverage_indicator_elements) {
+              complete_coverage_indicator.style.display = "none"
+            }
+        }
+        for (const [hgnc_id, has_complete_coverage] of Object.entries(data.gene_has_full_coverage)) {
+          // reset the temp color for the outer span and icon of the inner span
+          console.log()
+          var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'-button');
+          var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'-icon');
+          var coverage_indicator_text = document.getElementById('coverage-indicator-'+hgnc_id+'-text');
+
+          // this is the outer, button span
+          coverage_indicator_button.classList.remove('btn-info');
+          // this is the inner, icon span
+          coverage_indicator_icon.classList.remove('blink_me','fa-circle-question');
+
+          if (has_complete_coverage) {
+            coverage_indicator_button.classList.add('btn-success');
+            coverage_indicator_button.setAttribute('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
+            coverage_indicator_icon.classList.add('fa-circle-check');
+            coverage_indicator_text.textContent = "Complete"
+          } else {
+            coverage_indicator_button.classList.add('btn-warning');
+            coverage_indicator_button.setAttribute('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
+            coverage_indicator_icon.classList.add('fa-triangle-exclamation');
+            coverage_indicator_text.textContent = "Incomplete"
+          }
+        }
+      }).fail(function() {
+          const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
+          for(let complete_coverage_indicator of complete_coverage_indicator_elements) {
+            complete_coverage_indicator.style.display = "none"
+          }
+      });
+    };
+
+    $( window ).on( "load", function() { update_gene_has_full_coverage(); })
   </script>
 {% endblock %}

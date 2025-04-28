@@ -1,6 +1,6 @@
 {% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type, hgnc_ids, link_text, link_class = "link-primary") %}
 
-  {% set form_name = "chanjo2_"+panel_name+"_"+report_type %}
+  {% set form_name = "chanjo2_" ~ panel_name ~ "_" ~ report_type %}
   {% set form_action = config.CHANJO2_URL+"/"+report_type %}
   {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
   {% set default_level = institute_obj.coverage_cutoff %}
