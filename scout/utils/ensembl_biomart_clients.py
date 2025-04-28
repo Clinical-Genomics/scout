@@ -7,6 +7,7 @@ LOG = logging.getLogger(__name__)
 SCHUG_BASE = "https://schug.scilifelab.se"
 
 BUILDS: Dict[str, str] = {"37": "GRCh37", "38": "GRCh38"}
+CHROM_SEPARATOR = "[success]"
 
 SCHUG_RESOURCE_URL: Dict[str, str] = {
     "genes": "/genes/ensembl_genes/?build=",

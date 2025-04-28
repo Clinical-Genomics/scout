@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List
 
-from scout.commands.download.ensembl import CHROM_SEPARATOR
+from scout.utils.ensembl_biomart_clients import CHROM_SEPARATOR
 
 LOG = logging.getLogger(__name__)
 
