@@ -29,13 +29,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update dataTables js (#5407)
 - Load variants command prints more clearly which categories of variants are being loaded (#5409)
 - Call chanjo2 coverage completeness indicator via API after window loading completes (#5366)
+- Tooltips instead of popovers (no click needed) for matching indicators on variantS page (#5419)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)
 - Tests involving the variants controllers, which failed when not run in a specific order (#5391)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
-- Fixed some more tests accessing database in and out of app context (#5415)
+- Fixed some variantS view tests accessing database out of app context (#5415)
+- Display of matching manual rank on the SV variant page (#5419)
 
 ## [4.99]
 ### Added

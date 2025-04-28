@@ -371,6 +371,23 @@ body {
 }
 /* end of sidebar-related stuff */
 
+/* A collapse icon for button use */
+.btn[aria-expanded="false"] .collapse-button-icon::before {
+  content: " \f0da";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
+  display: inline;
+  text-align: left;
+}
+
+.btn[aria-expanded="true"] .collapse-button-icon::before {
+  content: " \f0d7";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
+  display: inline;
+  text-align: left;
+
+
 option {
   width: 100%;
 }
