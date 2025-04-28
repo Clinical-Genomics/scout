@@ -362,7 +362,7 @@ def fetch_refseq_version(refseq_acc: str) -> Optional[str]:
     try:
         resp = get_request(base_url.format(refseq_acc))
         if resp is None:
-            return
+            return version
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
