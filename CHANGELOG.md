@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants page, compounds popup table, truncate the display name of compound variants with display name that exceeds 20 characters (#5404)
 - Update dataTables js (#5407)
 - Load variants command prints more clearly which categories of variants are being loaded (#5409)
+- On ClinVar multistep submission form, silence warnings coming from missing HGVS version using Entrez Eutils
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)

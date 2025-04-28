@@ -3,7 +3,7 @@
 import logging
 import urllib.request
 import zlib
-from typing import Dict, List
+from typing import Dict, List, Optional
 from urllib.error import HTTPError
 
 import requests
@@ -344,7 +344,7 @@ def fetch_constraint():
         return exac_lines
 
 
-def fetch_refseq_version(refseq_acc):
+def fetch_refseq_version(refseq_acc: str) -> Optional(str):
     """Fetch refseq version from entrez and return refseq version
 
     Args:
@@ -362,8 +362,7 @@ def fetch_refseq_version(refseq_acc):
     try:
         resp = get_request(base_url.format(refseq_acc))
         if resp is None:
-            flash(f"Error: could not retrieve HGVS version for {refseq_acc} from Entrez eutils!")
-            return version
+            return
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
