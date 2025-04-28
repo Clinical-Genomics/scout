@@ -41,25 +41,23 @@
 
 {% macro other_tiered_variants(variant) %}
   {% if variant.matching_tiered %}
-    <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true" title=""
-        data-bs-content="
+    <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
+          data-bs-title="Previously <b>T</b>iered as"
+          data-bs-content="
           {% for tier, tiered_info in variant.matching_tiered.items() %}
-            <span class='badge bg-{{tiered_info.label}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
-          {% endfor %}
-        "
-       data-original-title="Previously tiered as">T</span>
+            <span class='badge bg-{{tiered_info.label_class}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
+          {% endfor %}">T</span>
   {% endif %} <!-- end of if variant.matching_tiered -->
 {% endmacro %}
 
 {% macro matching_manual_rank(variant) %}
   {% if variant.matching_ranked %}
-    <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true"
-        data-bs-content="
+    <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
+        data-bs-title="Previously <b>M</b>anually ranked as"
+          data-bs-content="
           {% for manual_rank, manual_rank_info in variant.matching_ranked.items() %}
-            <div>{{manual_rank_info.label}} - {{manual_rank_info.description}} ({{manual_rank_info.links|length}}x)</div>
-          {% endfor %}
-        "
-       data-original-title="Previously ranked as">M</span>
+            <div><span class='badge bg-{{ manual_rank_info.label_class }}'>{{manual_rank_info.label}}</span> - {{manual_rank_info.description}} ({{manual_rank_info.links|length}}x)</div>
+          {% endfor %}">M</span>
   {% endif %}
 {% endmacro %}
 
@@ -120,7 +118,7 @@
 {% macro group_assessments_badge(variant) %}
   {% if variant.group_assessments %}
     {% for assessment in (variant.group_assessments or []) %}
-      <span class="badge bg-{{ assessment.display_class }}" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right"
+      <span class="badge bg-{{ assessment.display_class }}<b>" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Cohort {{ assessment.title }}">
         {{ assessment.label }}</span>
     {% endfor %}
