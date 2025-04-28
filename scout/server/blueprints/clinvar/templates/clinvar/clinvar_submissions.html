@@ -137,7 +137,7 @@
                         {% if "N/A" not in case_name %}
                           <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
                         {% else %}
-                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }}
+                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') ("N/A") }}
                         {% endif %}
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
@@ -152,7 +152,7 @@
                         {% if "N/A" not in case_name %}
                           <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
                         {% else %}
-                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }}
+                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') ("N/A") }}
                         {% endif %}
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
