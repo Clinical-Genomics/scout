@@ -218,48 +218,40 @@ class ClinVarHandler(object):
 
         return sorted_case_data or case_data_list
 
+    def _basic_submission_info(self, result: dict) -> dict:
+        """Extracts the basic submission fields."""
+        user = self.user(user_id=result.get("created_by"))
+        return {
+            "_id": result.get("_id"),
+            "status": result.get("status"),
+            "institute_id": result.get("institute_id"),
+            "created_at": result.get("created_at"),
+            "created_by": user["name"] if user else None,
+            "updated_at": result.get("updated_at"),
+        }
+
     def clinvar_submissions(self, institute_id):
-        """Collect all open and closed clinvar submissions for an institute
-
-        Args:
-            institute_id(str): an institute ID
-
-        Returns:
-            submissions(list): a list of clinvar submission objects
-        """
-        # get first all submission objects
+        """Collect all open and closed clinvar submissions for an institute"""
         query = dict(institute_id=institute_id)
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
         )
 
         submissions = []
-        # Loop over all ClinVar submissions for an institute
         for result in results:
-            submission = {}
+            submission = self._basic_submission_info(result)
             cases = {}
-            user: dict = self.user(user_id=result.get("created_by"))
-            submission["_id"] = result.get("_id")
-            submission["status"] = result.get("status")
-            submission["institute_id"] = result.get("institute_id")
-            submission["created_at"] = result.get("created_at")
-            submission["created_by"] = user["name"] if user else None
-            submission["updated_at"] = result.get("updated_at")
 
-            if "clinvar_subm_id" in result:
+            if result.get("clinvar_subm_id"):
                 submission["clinvar_subm_id"] = result["clinvar_subm_id"]
 
-            # If submission has variants registered
             if result.get("variant_data"):
                 submission["variant_data"] = list(
                     self.clinvar_collection.find({"_id": {"$in": result["variant_data"]}}).sort(
                         "last_evaluated", pymongo.ASCENDING
                     )
                 )
-
-                # Loop over variants contained in a single ClinVar submission
                 for var_info in submission["variant_data"]:
-                    # get case_id from variant id (caseID_variant_ID)
                     case_id = var_info["_id"].rsplit("_", 1)[0]
                     CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
                     case_obj = self.case(
@@ -268,15 +260,12 @@ class ClinVarHandler(object):
                     if not case_obj:
                         continue
                     cases[case_id] = case_obj.get("display_name")
-
-                    # retrieve user responsible for adding the variant to the submission
                     var_info["added_by"] = self.clinvar_variant_submitter(
                         institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
                     )
 
             submission["cases"] = cases
 
-            # If submission has case data registered
             if result.get("case_data"):
                 unsorted_case_data = list(
                     self.clinvar_collection.find({"_id": {"$in": result["case_data"]}})
