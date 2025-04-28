@@ -2,9 +2,10 @@ import logging
 from typing import Dict
 
 import requests
-from flask import current_app
+from flask import Flask, current_app
 
 from scout.server.utils import get_case_mito_chromosome
+from scout.utils.scout_requests import get_request_json, post_request_json
 
 REF_CHROM = "14"
 LOG = logging.getLogger(__name__)
@@ -15,6 +16,24 @@ CHANJO_BUILD_38 = "GRCh38"
 
 class Chanjo2Client:
     """Runs requests to chanjo2 and returns results in the expected format."""
+
+    def init_app(self, app: Flask):
+        """The chanjo2 client has nothing to init, just check chanjo2 heartbeat."""
+        self.get_status(app)
+
+    def get_status(self, app: Flask) -> dict:
+        """Check Chanjo2 heartbeat, LOG status and return status."""
+        chanjo2_heartbeat_url: str = app.config.get("CHANJO2_URL")
+        json_resp = get_request_json(chanjo2_heartbeat_url)
+
+        if not json_resp:
+            LOG.warning(
+                f"Chanjo2 is configured at {chanjo2_heartbeat_url} but does not return heartbeat."
+            )
+            return json_resp
+
+        LOG.info(f"{json_resp.get('content',{}).get('message')}")
+        return json_resp
 
     def mt_coverage_stats(self, case_obj: dict) -> Dict[str, dict]:
         """Sends a POST requests to the chanjo2 coverage/d4/interval to collect stats for the MT case report."""
@@ -32,14 +51,21 @@ class Chanjo2Client:
 
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
-            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
-            autosome_cov = resp.json().get("mean_coverage")
+
+            autosome_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            if autosome_cov_json.get("status_code") != 200:
+                raise ValueError(
+                    f"Chanjo2 get autosome coverage failed: {autosome_cov_json.get('message')}"
+                )
+
+            autosome_cov = autosome_cov_json.get("content", {}).get("mean_coverage")
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = case_mt_chrom
-            resp = requests.post(chanjo2_chrom_cov_url, json=chrom_cov_query)
-
-            mt_cov = resp.json().get("mean_coverage")
+            mt_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            if mt_cov_json.get("status_code") != 200:
+                raise ValueError(f"Chanjo2 get MT coverage failed: {mt_cov_json.get('message')}")
+            mt_cov = mt_cov_json.get("content", {}).get("mean_coverage")
 
             coverage_info = dict(
                 mt_coverage=mt_cov,
@@ -84,9 +110,14 @@ class Chanjo2Client:
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
 
-        resp = requests.post(chanjo2_gene_cov_url, json=gene_cov_query)
-        gene_cov = resp.json()
+        gene_cov_json = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
 
+        if gene_cov_json.get("status_code") != 200:
+            raise ValueError(
+                f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}"
+            )
+
+        gene_cov = gene_cov_json.get("content")
         full_coverage = bool(gene_cov)
         for sample in gene_cov.keys():
             if gene_cov[sample]["coverage_completeness_percent"] < 100:
