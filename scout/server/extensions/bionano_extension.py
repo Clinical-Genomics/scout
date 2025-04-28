@@ -7,7 +7,6 @@ For further development, the server has a Swagger-like demo interface at https:/
 which is useful for details, and for sniffing actual message content structure, required cookie variable names etc.
 """
 
-import json
 import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
