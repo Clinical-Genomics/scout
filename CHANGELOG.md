@@ -35,7 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to return to the previous step in each of the steps of the ClinVar submission form (#5393)
 - chanjo2 MT report for cases in build 38 (#5397)
 - Fixed some more tests accessing database in and out of app context (#5415)
-- Broken `scout setup database` command
+- Broken `scout setup database` command (#5422)
 
 ## [4.99]
 ### Added
