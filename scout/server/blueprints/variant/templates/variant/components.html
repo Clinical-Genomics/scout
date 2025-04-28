@@ -138,19 +138,21 @@
         {% endif %}
         </div>
       {% endfor %}
-      {{ gene_coverage(institute, variant, case, config) }}
     </li>
     <li class="list-group-item">
       <div>
         {{ igv_track_selection(igv_tracks, current_user) }}
       </div>
     </li>
+    <li class="list-group-item d-flex justify-content-between">
+      {{ gene_coverage(institute, variant, case, config) }}
+    </li>
   </ul>
 {% endmacro %}
 
 {% macro gene_coverage(institute, variant, case, config) %}
   {% if case.chanjo_coverage and config.chanjo_report %}
-    <div class="d-flex flex-wrap ms-1">
+    <div class="d-flex flex-wrap ms-1" data-bs-toggle="tooltip" title="Chanjo coverage reports">
       {% for gene in variant.genes %}
         <a class="btn btn-sm btn-secondary text-white" rel="noopener noreferrer" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}" data-bs-toggle="tooltip" title="Chanjo coverage report">
           Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
@@ -163,7 +165,7 @@
       <div class="btn-group">
         {% for gene in variant.genes %}
           {{ chanjo2_report_form(institute, case, gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id, 'overview', gene.hgnc_id, "Gene coverage " ~ (gene.hgnc_symbol if gene.hgnc_symbol else gene.hgnc_id), "btn btn-sm btn-secondary text-white") }} <!--chanjo2 genes overview -->
-          <span class="button complete-coverage-indicator btn-info text-white btn-sm" style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-loading-text="Checking completeness..." title="Checking completeness..."><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-icon" class='align-items-center blink_me fa-solid fa-circle-question'></span><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-text" class='align-items-center'>Checking</span></span>
+          <span class="button complete-coverage-indicator align-items-center btn-info text-white btn-sm" style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-loading-text="Checking completeness..." title="Checking completeness..."><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-icon" class='align-self-center blink_me fa-solid fa-circle-question'></span><span style="display:flex" id="coverage-indicator-{{gene.hgnc_id}}-text" class='align-self-center'>Checking</span></span>
         {% endfor %}
       </div>
     </div>
