@@ -265,6 +265,8 @@ class ClinVarHandler(object):
                     case_obj = self.case(
                         case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
                     )
+                    if not case_obj:
+                        continue
                     cases[case_id] = case_obj.get("display_name")
 
                     # retrieve user responsible for adding the variant to the submission
