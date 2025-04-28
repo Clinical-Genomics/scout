@@ -126,13 +126,19 @@
             </thead>
             <tbody>
               {% set var_key_name = {} %}
+
               {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
+                {% set case_name = subm_obj.cases[subm_variant.case_id] %}
                 <tr>
                   <td>{{loop.index}}</td>
                     {% if subm_variant.category == 'sv' %}
                       {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
                       <td>
-                        <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+                        {% if "N/A" not in case_name %}
+                          <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+                        {% else %}
+                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }}
+                        {% endif %}
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                       <td><div class="badge bg-warning">SV</div></td>
@@ -143,21 +149,29 @@
                         {% do var_key_name.update({subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
                       {% endif %}
                       <td>
-                        <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+                        {% if "N/A" not in case_name %}
+                          <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+                        {% else %}
+                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }}
+                        {% endif %}
                       </td>
                       <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                       <td><div class="badge bg-success">SNV</div></td>
                     {% endif %}
                   </td>
-                  <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
+                  <td>{{ case_link(institute_id=institute._id, case_name=case_name) }}</td>
                   <td>{{subm_variant.ref_seq or '-'}}</td>
                   <td>{{subm_variant.gene_symbol or '-'}}</td>
                   <td>{{subm_variant.hgvs|truncate(100,true,'..') or '-'}}</td>
                   <td>{{subm_variant.clinsig}}</td>
                   <td>{{subm_variant.added_by or "N/A"}}</td>
-                  <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
-                    <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button></td>
-                  </form>
+                  <td>
+                  {% if "N/A" not in case_name %}
+                      <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
+                      <button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+                      </form>
+                  {% endif %}
+                  </td>
                 </tr>
                 <tr>
                   <td colspan=11>
@@ -193,7 +207,7 @@
                   <th></th>
                   <th>Individual ID</th>
                   <th></th>
-                  <th>Case ID</th>
+                  <th>Case</th>
                   <th>Variant</th>
                   <th>Allele origin</th>
                   <th></th>
@@ -209,12 +223,16 @@
                     </td>
                     </form>
                     <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                    <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[case.case_id]}}</a></td>
+                    <td>{{ case_link(institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}</td>
                     <td>{{var_key_name[case.linking_id]|truncate(100,true,'..')}}</td>
                     <td>{{case.allele_origin}}</td>
-                    <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
-                      <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button></td>
-                    </form>
+                    <td>
+                    {% if "N/A" not in subm_obj.cases[case.case_id] %}
+                      <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
+                        <button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+                      </form>
+                    {% endif %}
+                    </td>
                   </tr>
                   <tr>
                     <td colspan=8>
@@ -240,6 +258,14 @@
     </div>
   </div>
 </div>
+{% endmacro %}
+
+{% macro case_link(institute_id, case_name) %}
+{% if "N/A" in case_name %}
+  {{ case_name }}
+{% else %}
+  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank" rel="noopener">{{case_name}}</a>
+{% endif %}
 {% endmacro %}
 
 {% macro action_modal(action_type, subm_id) %}

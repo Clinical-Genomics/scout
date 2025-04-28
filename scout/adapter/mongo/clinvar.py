@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 import pymongo
 from bson import ObjectId
@@ -230,7 +230,7 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def clinvar_submissions(self, institute_id):
+    def clinvar_submissions(self, institute_id: str) -> List[dict]:
         """Collect all open and closed clinvar submissions for an institute"""
         query = dict(institute_id=institute_id)
         results = list(
@@ -254,15 +254,16 @@ class ClinVarHandler(object):
                 for var_info in submission["variant_data"]:
                     case_id = var_info["_id"].rsplit("_", 1)[0]
                     CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
+                    var_info["added_by"] = self.clinvar_variant_submitter(
+                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
+                    )
                     case_obj = self.case(
                         case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
                     )
                     if not case_obj:
+                        cases[case_id] = f"{case_id} (N/A)"
                         continue
                     cases[case_id] = case_obj.get("display_name")
-                    var_info["added_by"] = self.clinvar_variant_submitter(
-                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
-                    )
 
             submission["cases"] = cases
 
