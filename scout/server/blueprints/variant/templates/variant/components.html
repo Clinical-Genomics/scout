@@ -144,7 +144,7 @@
         {{ igv_track_selection(igv_tracks, current_user) }}
       </div>
     </li>
-    {% if case.chanjo_coverage or case.chanjo2_coverage %}
+    {% if (case.chanjo_coverage and config.chanjo_report) or case.chanjo2_coverage %}
       <li class="list-group-item d-flex justify-content-between">
         {{ gene_coverage(institute, variant, case, config) }}
       </li>
