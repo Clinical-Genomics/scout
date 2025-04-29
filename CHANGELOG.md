@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load variants command prints more clearly which categories of variants are being loaded (#5409)
 - Tooltips instead of popovers (no click needed) for matching indicators on variantS page (#5419)
 - Call chanjo2 coverage completeness indicator via API after window loading completes (#5366)
+- On ClinVar multistep submission form, silence warnings coming from missing HGVS version using Entrez Eutils (#5424)
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)
