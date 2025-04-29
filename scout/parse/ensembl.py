@@ -3,6 +3,8 @@
 import logging
 from typing import Any, Dict, List
 
+from scout.utils.ensembl_biomart_clients import CHROM_SEPARATOR
+
 LOG = logging.getLogger(__name__)
 
 
@@ -120,8 +122,8 @@ def parse_ensembl_genes(lines):
         if index == 0:
             header = line.rstrip().split("\t")
             continue
-        # After that each line represents a gene
-
+        elif line == CHROM_SEPARATOR:
+            continue
         yield parse_ensembl_line(line, header)
 
 
@@ -143,7 +145,8 @@ def parse_ensembl_transcripts(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
-        # After that each line represents a transcript
+        elif line == CHROM_SEPARATOR:
+            continue
         else:
             yield parse_ensembl_line(line, header)
 
@@ -164,6 +167,8 @@ def parse_ensembl_exons(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
+            continue
+        elif line == CHROM_SEPARATOR:
             continue
 
         exon_info = parse_ensembl_line(line, header)
