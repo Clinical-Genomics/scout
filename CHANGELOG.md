@@ -41,7 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display of matching manual rank on the SV variant page (#5419)
 - Broken `scout setup database` command (#5422)
 - Collecting submission data for cases which have been removed (#5421)
-- Removing submission data for cases which have been removed ()
+- Removing submission data for cases which have been removed (#5430)
 
 ## [4.99]
 ### Added
