@@ -38,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - chanjo2 MT report for cases in build 38 (#5397)
 - Fixed some variantS view tests accessing database out of app context (#5415)
 - Display of matching manual rank on the SV variant page (#5419)
+- Broken `scout setup database` command (#5422)
 
 ## [4.99]
 ### Added

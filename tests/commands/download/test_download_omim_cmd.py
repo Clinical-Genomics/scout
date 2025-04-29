@@ -7,7 +7,6 @@ import tempfile
 import responses
 
 from scout.commands.download.omim import omim as omim_cmd
-from scout.commands.download.omim import print_omim
 from scout.demo.resources import genemap2_reduced_path, mim2gene_reduced_path
 
 

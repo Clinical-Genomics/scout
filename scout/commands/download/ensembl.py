@@ -6,9 +6,8 @@ from typing import List, Optional
 
 import click
 
-from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
+from scout.utils.ensembl_biomart_clients import CHROM_SEPARATOR, EnsemblBiomartHandler
 
-CHROM_SEPARATOR = "[success]"
 NR_EXPECTED_CHROMS = 24
 
 LOG = logging.getLogger(__name__)
