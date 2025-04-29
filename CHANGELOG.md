@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Removed an extra `x` from compounds functional annotation cells
+- Removed an extra `x` from compounds functional annotation cells (#5432)
 
 ## [4.100]
 ### Added
