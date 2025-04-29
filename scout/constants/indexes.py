@@ -57,12 +57,12 @@ INDEXES = {
         IndexModel(
             # Filterish index
             [
-                ("variant_type", ASCENDING),
                 ("case_id", ASCENDING),
+                ("variant_type", ASCENDING),
                 ("sub_category", ASCENDING),
                 ("hgnc_ids", ASCENDING),
             ],
-            name="variant_type_case_id_sub_category_hgnc_ids",
+            name="case_id_variant_type_sub_category_hgnc_ids",
         ),
     ],
     "variant": [
