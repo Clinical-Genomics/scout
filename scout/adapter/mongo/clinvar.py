@@ -261,7 +261,7 @@ class ClinVarHandler(object):
                         case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
                     )
                     if not case_obj:
-                        cases[case_id] = f"{case_id} (N/A)"
+                        cases[case_id] = f"{case_id} (N/A)"  # Situation when case has been removed
                         continue
                     cases[case_id] = case_obj.get("display_name")
 
