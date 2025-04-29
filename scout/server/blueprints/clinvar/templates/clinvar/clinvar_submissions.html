@@ -260,7 +260,7 @@
 {% if "N/A" in case_name %}
   {{ case_name }}
 {% else %}
-  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank" rel="noopener">{{case_name}}</a>
+  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank">{{case_name}}</a>
 {% endif %}
 {% endmacro %}
 
