@@ -49,9 +49,15 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
             mane_plus_clinical = tx.get("mane_plus_clinical_transcript")
 
             for refseq in tx.get("refseq_identifiers", []):
-                needs_version = mane_select or mane_plus_clinical or case_has_build_37
-                refseq_version = fetch_refseq_version(refseq) if needs_version else refseq
-
+                refseq_version: str = (
+                    mane_select
+                    if mane_select
+                    else (
+                        mane_plus_clinical
+                        if mane_plus_clinical
+                        else fetch_refseq_version(refseq) if case_has_build_37 else refseq
+                    )
+                )
                 hgvs_simple = f"{refseq_version}:{coding_seq_name}"
                 refseq_is_mane_select = mane_select == refseq_version
                 refseq_is_mane_plus_clinical = mane_plus_clinical == refseq_version
