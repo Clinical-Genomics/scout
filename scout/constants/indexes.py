@@ -99,10 +99,10 @@ INDEXES = {
                 ("category", ASCENDING),
                 ("case_id", ASCENDING),
                 ("variant_type", ASCENDING),
-                ("hgnc_ids", ASCENDING),
                 ("rank_score", DESCENDING),
+                ("hgnc_ids", ASCENDING),
             ],
-            name="category_caseid_varianttype_hgncids_rankscore",
+            name="category_caseid_varianttype_rankscore_hgncids",
         ),
         IndexModel(
             [
