@@ -40,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed some variantS view tests accessing database out of app context (#5415)
 - Display of matching manual rank on the SV variant page (#5419)
 - Broken `scout setup database` command (#5422)
+- Collecting and removing ClinVar submission data for cases which have been removed (#5421)
 
 ## [4.99]
 ### Added
