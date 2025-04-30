@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+# [unreleased]
+### Changed
+- Institites are now sorted by display name on gene panels page ()
+
 ## [4.100.2]
 ### Fixed
 - Keyerror 'ensembl_transcript_id' when loading transcripts from a pre-downloaded Ensembl transcripts file (#5435)

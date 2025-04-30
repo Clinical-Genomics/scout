@@ -3,7 +3,16 @@ import datetime
 import json
 import logging
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
+from flask import (
+    Blueprint,
+    Response,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_login import current_user
 from markupsafe import escape
 
@@ -96,7 +105,7 @@ def panels():
 
         panel_groups.append((institute_obj, institute_panels))
     return dict(
-        panel_groups=panel_groups,
+        panel_groups=sorted(panel_groups, key=lambda x: x[0].get("display_name", "_id")),
         panel_names=panel_names,
         panel_versions=panel_versions,
         institutes=institutes,
