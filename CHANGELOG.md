@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 # [unreleased]
 ### Changed
-- Institutes are now sorted by ID name on gene panels page (#5436)
+- Institutes are now sorted by ID on gene panels page (#5436)
 
 ## [4.100.2]
 ### Fixed
