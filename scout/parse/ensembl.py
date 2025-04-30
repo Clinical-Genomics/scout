@@ -142,10 +142,11 @@ def parse_ensembl_transcripts(lines):
     header = []
     LOG.info("Parsing ensembl transcripts from file")
     for index, line in enumerate(lines):
+        LOG.warning(line)
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
-        elif line == CHROM_SEPARATOR:
+        elif CHROM_SEPARATOR in line:
             continue
         else:
             yield parse_ensembl_line(line, header)
