@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 # [unreleased]
 ### Changed
-- Institites are now sorted by display name on gene panels page ()
+- Institites are now sorted by display name on gene panels page (#5436)
 
 ## [4.100.2]
 ### Fixed
