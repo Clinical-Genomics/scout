@@ -142,7 +142,6 @@ def parse_ensembl_transcripts(lines):
     header = []
     LOG.info("Parsing ensembl transcripts from file")
     for index, line in enumerate(lines):
-        LOG.warning(line)
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
