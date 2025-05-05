@@ -4,8 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+# [unreleased]
+### Changed
+- Institutes are now sorted by ID on gene panels page (#5436)
 
-## [unreleased]
+## [4.100.2]
+### Fixed
+- Keyerror 'ensembl_transcript_id' when loading transcripts from a pre-downloaded Ensembl transcripts file (#5435)
+
+## [4.100.1]
+### Fixed
+- Removed an extra `x` from compounds functional annotation cells (#5432)
+
+## [4.100]
 ### Added
 - Button with link to cancerhotspots.org on variant page for cancer cases (#5359)
 - Link to ClinGen ACMG CSPEC Criteria Specification Registry from ACMG classification page (#5364)
@@ -41,8 +52,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed some variantS view tests accessing database out of app context (#5415)
 - Display of matching manual rank on the SV variant page (#5419)
 - Broken `scout setup database` command (#5422)
-- Collecting and removing ClinVar submission data for cases which have been removed (#5421)
+- Collecting submission data for cases which have been removed (#5421)
 - Speed up query for gene overlapping variants (#5413)
+- Removing submission data for cases which have been removed (#5430)
 
 ## [4.99]
 ### Added

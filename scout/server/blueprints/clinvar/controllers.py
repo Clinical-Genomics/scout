@@ -621,8 +621,10 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
     if object_type == "variant_data":
         variant_id: str = subm_variant_id.split("_")[-1]
         variant_obj: dict = store.variant(document_id=variant_id)
-        case_obj: dict = store.case(case_id=variant_obj["case_id"])
-        if not case_obj or not variant_obj:
+        if not variant_obj:
+            return
+        case_obj = store.case(case_id=variant_obj["case_id"])
+        if not case_obj:
             return
         institute_obj: dict = store.institute(institute_id=variant_obj["institute"])
         user_obj: dict = store.user(user_id=current_user._id)
