@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 # [unreleased]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
-- Simplified visualization of previous ACMG classifications for a variant on variantS page ()
+- Simplified visualization of previous ACMG classifications for a variant on variantS page (#5439)
 
 ## [4.100.2]
 ### Fixed
