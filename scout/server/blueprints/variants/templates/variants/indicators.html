@@ -61,7 +61,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro generic_evaluation_badge(evaluations) %}
+{% macro evaluations_badge(evaluations) %}
   {% if evaluations %}
     {% set classification_counts = {} %}
     {% for evaluation in evaluations %}
@@ -84,14 +84,6 @@
       </span>
     {% endfor %}
   {% endif %}
-{% endmacro %}
-
-{% macro evaluations_badge(variant) %}
-  {{ generic_evaluation_badge(variant.evaluations) }}
-{% endmacro %}
-
-{% macro ccv_evaluations_badge(variant) %}
-  {{ generic_evaluation_badge(variant.ccv_evaluations) }}
 {% endmacro %}
 
 {% macro dismissals_badge(variant) %}
