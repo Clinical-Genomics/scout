@@ -61,20 +61,22 @@
   {% endif %}
 {% endmacro %}
 
-{% macro evaluations_badge(variant) %}
-  {% if variant.evaluations %}
-    {# Create a dictionary to count classifications #}
+{% macro generic_evaluation_badge(evaluations) %}
+  {% if evaluations %}
     {% set classification_counts = {} %}
-    {% for evaluation in variant.evaluations %}
-      {% set short = evaluation.classification.short %}
-      {% set label = evaluation.classification.label %}
-      {% set classification_counts = classification_counts.update({short: {
-        'count': (classification_counts[short].count if classification_counts[short] is defined else 0) + 1,
-        'label': label
-      }}) or classification_counts %}
+    {% for evaluation in evaluations %}
+      {% set c = evaluation.classification if evaluation.classification is defined else evaluation.ccv_classification %}
+      {% if c %}
+        {% set short = c.short %}
+        {% set label = c.label %}
+        {% set current = classification_counts.get(short, {'count': 0, 'label': label}) %}
+        {% set _ = classification_counts.update({short: {
+          'count': current.count + 1,
+          'label': label
+        }}) %}
+      {% endif %}
     {% endfor %}
 
-    {# Render the badge(s) #}
     {% for short, data in classification_counts.items() | sort(attribute='1.count', reverse=true) %}
       <span class="badge bg-secondary ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
             title="Previously classified as {{ data.label }} ({{ data.count }} times)">
@@ -84,15 +86,12 @@
   {% endif %}
 {% endmacro %}
 
+{% macro evaluations_badge(variant) %}
+  {{ generic_evaluation_badge(variant.evaluations) }}
+{% endmacro %}
+
 {% macro ccv_evaluations_badge(variant) %}
-  {% if variant.ccv_evaluations %}
-    {% for evaluation in (variant.ccv_evaluations or []) %}
-      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="Previously classified as {{ evaluation.ccv_classification.label }}">
-        {{ evaluation.ccv_classification.short }}
-      </span>
-    {% endfor %}
-  {% endif %}
+  {{ generic_evaluation_badge(variant.ccv_evaluations) }}
 {% endmacro %}
 
 {% macro dismissals_badge(variant) %}
