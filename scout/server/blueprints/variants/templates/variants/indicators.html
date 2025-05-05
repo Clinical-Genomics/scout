@@ -63,10 +63,22 @@
 
 {% macro evaluations_badge(variant) %}
   {% if variant.evaluations %}
-    {% for evaluation in (variant.evaluations or []) %}
-      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="Previously classified as {{ evaluation.classification.label }}">
-        {{ evaluation.classification.short }}
+    {# Create a dictionary to count classifications #}
+    {% set classification_counts = {} %}
+    {% for evaluation in variant.evaluations %}
+      {% set short = evaluation.classification.short %}
+      {% set label = evaluation.classification.label %}
+      {% set classification_counts = classification_counts.update({short: {
+        'count': (classification_counts[short].count if classification_counts[short] is defined else 0) + 1,
+        'label': label
+      }}) or classification_counts %}
+    {% endfor %}
+
+    {# Render the badge(s) #}
+    {% for short, data in classification_counts.items() | sort(attribute='1.count', reverse=true) %}
+      <span class="badge bg-secondary ms-1" data-bs-toggle="tooltip" data-bs-placement="right"
+            title="Previously classified as {{ data.label }} ({{ data.count }} times)">
+        {{ short }} ×{{ data.count }}
       </span>
     {% endfor %}
   {% endif %}
