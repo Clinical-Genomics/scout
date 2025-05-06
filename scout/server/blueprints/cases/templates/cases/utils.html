@@ -627,7 +627,7 @@
                 (included in ClinVar submission)
             {% elif variant.category in ('cancer', 'cancer_sv') %}
                 <button data-bs-toggle='tooltip' data-bs-placement="bottom" title="Submission of somatic variants from Scout is temporarily suspended. We are working to harmonize submissions with changes introduced by ClinVar for this variant category." disabled >Add to ClinVar submission</button>
-            {% else %}
+            {% elif variant.category in ('snv', 'sv') %}
                 <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
             {% endif %}
         </form>
