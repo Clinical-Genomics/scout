@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified visualization of previous ACMG and CCV classifications for a variant on variantS page (#5439 & #5440)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
+- Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
 
 ## [4.100.2]
 ### Fixed
