@@ -38,37 +38,28 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     for gene in variant_obj.get("genes", []):
         transcripts = gene.get("transcripts", [])
-
         for tx in transcripts:
-            refseq_id = tx.get("refseq_id")
-            coding_seq_name = tx.get("coding_sequence_name")
-            if not (refseq_id and coding_seq_name):
-                continue  # Skip transcripts missing required fields
+            if case_has_build_37:
+                refseq_id = tx.get("refseq_id")
+                coding_seq_name = tx.get("coding_sequence_name")
+                if not (refseq_id and coding_seq_name):
+                    continue  # Skip transcripts missing required fields
 
-            mane_select = tx.get("mane_select_transcript")
-            mane_plus_clinical = tx.get("mane_plus_clinical_transcript")
+                for refseq in tx.get("refseq_identifiers", []):
+                    refseq_version = fetch_refseq_version(refseq)
+                    hgvs_simple = f"{refseq_version}:{coding_seq_name}"
+                    validated = validate_hgvs(build, hgvs_simple)
+                    label = f"{hgvs_simple}{'_validated_' if validated else ''}"
+                    tx_hgvs_list.append((hgvs_simple, label))
 
-            for refseq in tx.get("refseq_identifiers", []):
-                refseq_version: str = (
-                    mane_select
-                    or mane_plus_clinical
-                    or (fetch_refseq_version(refseq) if case_has_build_37 else refseq)
-                )
-                hgvs_simple = f"{refseq_version}:{coding_seq_name}"
-                refseq_is_mane_select = mane_select == refseq_version
-                refseq_is_mane_plus_clinical = mane_plus_clinical == refseq_version
-
-                # Transcript is validate only when conditions are met
-                validated = (
-                    validate_hgvs(build, hgvs_simple)
-                    if (case_has_build_37 or refseq_is_mane_select or refseq_is_mane_plus_clinical)
-                    else ""
-                )
-
-                label = f"{hgvs_simple}{'_validated_' if validated else ''}{'_mane-select_' if refseq_is_mane_select else ''}{'_mane-plus-clinical_' if refseq_is_mane_plus_clinical else ''}"
-
+            else:  # build 38, collect only MANE Select or MANE Plus Clinical
+                mane_select = tx.get("mane_select_transcript")
+                mane_plus_clinical = tx.get("mane_plus_clinical_transcript")
+                if mane_select is None and mane_plus_clinical is None:
+                    continue
+                hgvs_simple = f"{mane_select or mane_plus_clinical}:{coding_seq_name}"
+                label = f"{hgvs_simple}{'_mane-select_' if mane_select else ''}{'_mane-plus-clinical_' if mane_plus_clinical else ''}"
                 tx_hgvs_list.append((hgvs_simple, label))
-
     return tx_hgvs_list
 
 
