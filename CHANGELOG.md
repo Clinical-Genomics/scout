@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
 - Simplified visualization of previous ACMG and CCV classifications for a variant on variantS page (#5439 & #5440)
+- On ClinVar multistep submission form, skip fetching transcript versions for build 38 transcripts which are not MANE Select or MANE Plus Clinical (#5426)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
 
@@ -45,7 +46,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tooltips instead of popovers (no click needed) for matching indicators on variantS page (#5419)
 - Call chanjo2 coverage completeness indicator via API after window loading completes (#5366)
 - On ClinVar multistep submission form, silence warnings coming from missing HGVS version using Entrez Eutils (#5424)
-- On ClinVar multistep submission form, skip fetching transcript versions for build 38 transcripts which are not MANE Select or MANE Plus Clinical ()
 ### Fixed
 - Style of Alamut button on variant page (#5358)
 - Scope of overlapping functions (#5385)
