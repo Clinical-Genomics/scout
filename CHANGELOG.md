@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On ClinVar multistep submission form, skip fetching transcript versions for build 38 transcripts which are not MANE Select or MANE Plus Clinical (#5426)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
+- Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
 
 ## [4.100.2]
 ### Fixed
