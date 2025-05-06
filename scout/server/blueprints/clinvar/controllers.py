@@ -38,13 +38,14 @@ def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]
 
     for gene in variant_obj.get("genes", []):
         transcripts = gene.get("transcripts", [])
-        for tx in transcripts:
-            if case_has_build_37:
-                refseq_id = tx.get("refseq_id")
-                coding_seq_name = tx.get("coding_sequence_name")
-                if not (refseq_id and coding_seq_name):
-                    continue  # Skip transcripts missing required fields
 
+        for tx in transcripts:
+            refseq_id = tx.get("refseq_id")
+            coding_seq_name = tx.get("coding_sequence_name")
+            if not (refseq_id and coding_seq_name):
+                continue  # Skip transcripts missing required fields
+
+            if case_has_build_37:
                 for refseq in tx.get("refseq_identifiers", []):
                     refseq_version = fetch_refseq_version(refseq)
                     hgvs_simple = f"{refseq_version}:{coding_seq_name}"
