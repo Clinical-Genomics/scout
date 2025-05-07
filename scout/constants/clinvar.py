@@ -1,3 +1,5 @@
+from scout.constants.clnsig import ONC_CLNSIG
+
 CLINVAR_API_URL_DEFAULT = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
 PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
@@ -95,6 +97,8 @@ GERMLINE_CLASSIF_TERMS = [
     NOT_PROVIDED,
 ]
 
+ONCOGENIC_CLASSIF_TERMS = ONC_CLNSIG
+
 REVSTAT_TERMS = {
     "conflicting_interpretations",
     "multiple_submitters",
@@ -188,5 +192,6 @@ CONDITION_PREFIX = {
 }
 
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
+CITATION_DBS_API = ["PubMed", "BookShelf", "DOI", "pmc"]
 
 MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]

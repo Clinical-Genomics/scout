@@ -2,13 +2,14 @@ import csv
 import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flask import flash
 from flask_login import current_user
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
+from scout.constants.ccv import CCV_MAP
 from scout.constants.clinvar import (
     CASEDATA_HEADER,
     CLINVAR_HEADER,
@@ -22,7 +23,12 @@ from scout.server.extensions import clinvar_api, store
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .form import CaseDataForm, SNVariantForm, SVariantForm
+from .form import (
+    CancerSNVariantForm,
+    CaseDataForm,
+    SNVariantForm,
+    SVariantForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -144,25 +150,18 @@ def _get_sv_var_form(variant_obj, case_obj):
     return var_form
 
 
-def _populate_variant_form(variant_obj, case_obj):
-    """Populate the Flaskform associated to a variant
+def _populate_variant_form(
+    variant_obj: dict, case_obj: dict
+) -> Union[SNVariantForm, SVariantForm, CancerSNVariantForm]:
+    """Populate the Flaskform associated to a variant. This form will be used in the multistep ClinVar submission form."""
 
-    Args:
-        variant_obj(dict) scout.models.Variant
-        case_obj(dict) scout.models.Case
-
-    Return:
-        var_form(scout.server.blueprints.clinvar.form.SVariantForm or
-                 scout.server.blueprints.clinvar.form.SNVariantForm )
-
-    """
-    if variant_obj["category"] in ["snv", "cancer"]:
-        var_form = _get_snv_var_form(variant_obj, case_obj)
-        var_form.category.data = "snv"
-
-    elif variant_obj["category"] in ["sv", "cancer_sv"]:
-        var_form = _get_sv_var_form(variant_obj, case_obj)
-        var_form.category.data = "sv"
+    form_getters = {
+        "snv": _get_snv_var_form,
+        "sv": _get_sv_var_form,
+        "cancer": _get_cancer_snv_var_form,
+    }
+    category = variant_obj["category"]
+    var_form = form_getters[category](variant_obj, case_obj)
 
     return var_form
 
@@ -191,7 +190,7 @@ def _populate_case_data_form(variant_obj, case_obj):
     return cdata_form_list
 
 
-def _variant_classification(var_obj):
+def _variant_classification(var_obj: dict):
     """Set a 'classified_as' key/header_value in the variant object, to be displayed on
     form page with the aim of aiding setting the mandatory 'clinsig' form field
 
@@ -203,6 +202,8 @@ def _variant_classification(var_obj):
     """
     if "acmg_classification" in var_obj:
         return ACMG_MAP[var_obj["acmg_classification"]]
+    elif "ccv_classification" in var_obj:
+        return CCV_MAP[var_obj["ccv_classification"]]
     elif "manual_rank" in var_obj:
         return MANUAL_RANK_OPTIONS[var_obj["manual_rank"]]["name"]
 
@@ -631,3 +632,30 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
                 variant=variant_obj,
                 subject=variant_obj["display_name"],
             )
+
+
+### ClinVar oncogenicity variants submissions controllers
+
+
+def _get_cancer_snv_var_form(variant_obj: dict, case_obj: dict) -> CancerSNVariantForm:
+    """Sets up values for a Cancer SNV variant form."""
+    var_form = CancerSNVariantForm()
+    return var_form
+
+
+def set_onc_clinvar_form(var_id: str, data: dict):
+    """Adds form key/values to the form used in ClinVar to create a multistep submission page for an oncogenic variant."""
+
+    var_obj = store.variant(var_id)
+    if not var_obj:
+        return
+
+    var_obj["classification"] = _variant_classification(var_obj)
+
+    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
+    variant_data = {
+        "var_id": var_id,
+        "var_obj": var_obj,
+        "var_form": var_form,
+    }
+    data["variant_data"] = variant_data

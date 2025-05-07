@@ -1,6 +1,11 @@
 from datetime import date, datetime
+from enum import Enum
+from typing import List, Optional
 
 from bson.objectid import ObjectId
+from pydantic import BaseModel, constr
+
+from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
 
 """Model of the document that gets saved/updated in the clinvar_submission collection
  for each institute that has cases with ClinVar submission objects"""
@@ -76,3 +81,75 @@ clinvar_casedata = {
     "method_purpose": str,  # default: "discovery"
     "reported_at": date,
 }
+
+### Models used for oncogenocity submissions via API
+
+
+CitationDB = Enum("CitationDB", CITATION_DBS_API)
+OncogenicityClassificationDescription = Enum(
+    "OncogenicityClassificationDescription", ONCOGENIC_CLASSIF_TERMS
+)
+
+
+class Citation(BaseModel):
+    db: CitationDB
+    id: str
+
+
+class OncogenicityClassification(BaseModel):
+    oncogenicityClassificationDescription: OncogenicityClassificationDescription
+    dateLastEvaluated: str
+    comment: str
+    citation: Optional[List[Citation]] = None
+
+
+class ObservedIn(BaseModel):
+    alleleOrigin: str
+    affectedStatus: str
+    collectionMethod: str
+    numberOfIndividuals: int
+    presenceOfSomaticVariantInNormalTissue: str
+    somaticVariantAlleleFraction: Optional[float] = None
+
+
+class Gene(BaseModel):
+    id: int
+
+
+class Variant(BaseModel):
+    hgvs: str
+    gene: Optional[List[Gene]] = None
+
+
+class VariantSet(BaseModel):
+    variant: List[Variant]
+
+
+class Condition(BaseModel):
+    db: Optional[str] = None
+    id: Optional[str] = None
+    name: Optional[str] = None
+
+
+class ConditionSet(BaseModel):
+    condition: List[Condition]
+
+
+class OncogenicitySubmissionItem(BaseModel):
+    recordStatus: str
+    oncogenicityClassification: OncogenicityClassification
+    observedIn: List[ObservedIn]
+    variantSet: VariantSet
+    conditionSet: ConditionSet
+
+
+class AssertionCriteria(BaseModel):
+    db: str
+    id: str
+
+
+class OncogenicitySubmissionDocument(BaseModel):
+    submissionName: str
+    assertionCriteria: AssertionCriteria
+    behalfOrgID: int
+    oncogenicitySubmission: List[OncogenicitySubmissionItem]

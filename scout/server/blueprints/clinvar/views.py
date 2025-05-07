@@ -18,6 +18,7 @@ from scout.constants.clinvar import (
     CASEDATA_HEADER,
     CLINVAR_HEADER,
     GERMLINE_CLASSIF_TERMS,
+    ONCOGENIC_CLASSIF_TERMS,
 )
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case
@@ -152,3 +153,19 @@ def clinvar_download_json(submission, clinvar_id):
     else:
         flash(f"JSON file could not be crated for ClinVar submission: {clinvar_id} ", "warning")
         return redirect(request.referrer)
+
+
+### ClinVar oncogenicity variants submissions views
+
+
+@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
+def clinvar_add_onc_variant(institute_id, case_name):
+    """Create a ClinVar submission document in database for one or more variants from a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "onc_classif_terms": ONCOGENIC_CLASSIF_TERMS,
+    }
+    controllers.set_onc_clinvar_form(request.form.get("var_id"), data)
+    return render_template("clinvar/multistep_add_onc_variant.html", **data)

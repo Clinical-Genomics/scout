@@ -28,6 +28,7 @@ from scout.constants import (
     GERMLINE_CLASSIF_TERMS,
     MULTIPLE_CONDITION_EXPLANATION,
 )
+from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
 
 LOG = logging.getLogger(__name__)
 
@@ -137,3 +138,22 @@ class CaseDataForm(FlaskForm):
         default="clinical testing",
         choices=[(item, item) for item in COLLECTION_METHOD],
     )
+
+
+### Cancer variant - related forms
+
+
+class CancerSNVariantForm(FlaskForm):
+    record_status = HiddenField(default="novel")
+    classification = SelectField(
+        "Oncogenicity classification",
+        choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
+    )
+    last_evaluated = DateField("Date evaluated")
+    comment = StringField("Comment")
+    citation_db = SelectField(
+        "Citation DB",
+        default="clinical testing",
+        choices=[(item, item) for item in CITATION_DBS_API],
+    )
+    citation_id = StringField("Citation ID")

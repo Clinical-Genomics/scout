@@ -2,7 +2,7 @@
 
 {% block css %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"></link>
+  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"/>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
   <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 {% endblock %}
@@ -23,14 +23,14 @@
       <div class="col-md-10">
           <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
               <!-- progressbar -->
-              <ul id="progressbar">
+              <ul id="progressbar" class="steps-7">
                   <li class="active">Start</li>
                   <li>Assertion Criteria</li>
                   <li>Variant Details</li>
                   <li>Inheritance Model</li>
                   <li>Germline Classification</li>
                   <li>Associated conditions</li>
-                   <li>Observation Data</li>
+                  <li>Observation Data</li>
               </ul>
               <!-- fieldsets -->
               <fieldset data-step="1">
