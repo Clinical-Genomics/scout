@@ -150,7 +150,7 @@ class CancerSNVariantForm(FlaskForm):
         choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
     )
     last_evaluated = DateField("Date evaluated")
-    comment = StringField("Comment")
+    comment = TextAreaField("Comment")
     citation_db = SelectField(
         "Citation DB",
         default="clinical testing",

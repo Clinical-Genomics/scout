@@ -32,18 +32,42 @@
               </ul>
               <!-- fieldsets -->
               <fieldset data-step="1">
-                <legend class="text-dark">ClinVar oncogeno submission form</legend>
+                <legend class="text-dark">ClinVar oncogenic submission form</legend>
+                <br><br>
                 <p class="text-dark">
-                Use this form to add a variant to a ClinVar <b>oncogenicity</b> submission object in Scout. The submission will be formatted as a JSON document, ready to be sent to ClinVar via their API.<br>
+                Use this form to add a variant to an oncogenicity submission object. The submission will be formatted as a JSON document, ready to be sent to ClinVar via their API.<br>
                 </p>
                 <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="previous action-button-previous" style="text-decoration: none;">Back to Case</a>
                 <input type="button" name="next" class="next action-button" value="Start"/>
               </fieldset>
 
               <fieldset data-step="2">
-                <legend class="text-dark">Oncogenicity classification <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
-                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></legend>
+                <legend class="text-dark">Oncogenicity classification</legend>
+                  <br><br>
+                  <div class="mb-3">
+                    {{ variant_data.var_form.classification.label }}
+                    {{ variant_data.var_form.classification }}
+                  </div>
+                  <br><br>
+                  <div class="mb-3 col-md-2 offset-md-5">
+                    {{ variant_data.var_form.last_evaluated.label }}
+                    {{ variant_data.var_form.last_evaluated }}
+                  </div>
 
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.comment.label }}
+                    {{ variant_data.var_form.comment(rows=4, class="form-control") }}
+                  </div>
+                  <br><br>
+                  <div class="mb-3">
+                    {{ variant_data.var_form.citation_db.label }}
+                    {{ variant_data.var_form.citation_db }}
+                  </div>
+
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.citation_id.label }}
+                    {{ variant_data.var_form.citation_id }}
+                  </div>
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
@@ -171,6 +195,12 @@ $(".previous").click(function(){
 		easing: 'easeInOutBack'
 	});
 });
+
+document.querySelector('form').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+    }
+  });
 
 </script>
 {% endblock %}
