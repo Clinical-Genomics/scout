@@ -12,7 +12,6 @@ from scout.server.utils import (
     case_append_alignments,
     find_index,
     get_case_genome_build,
-    get_case_mito_chromosome,
 )
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
@@ -143,7 +142,7 @@ def make_sashimi_tracks(
     """
 
     locus = "All"
-    build = get_case_genome_build(case_obj)
+    build = "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
 
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
