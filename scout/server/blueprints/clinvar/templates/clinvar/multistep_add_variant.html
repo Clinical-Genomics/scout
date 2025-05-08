@@ -226,36 +226,6 @@
 
 <script>
 
-// Validates fields for conditions associated to a variant
-function validateConditions(){
-
-  if ($("#condition_tags option:selected").length == 0) {
-    alert("Please provide at least one condition ID");
-    return false;
-  }
-
-  if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
-    alert("When multiple condition IDs are provided then an option for 'Explanation for multiple conditions' must be provided");
-    return false;
-  }
-
-  if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
-    alert("Please deselect the selected option in 'Explanation for multiple conditions' since only one condition ID was provided.");
-    return false;
-  }
-
-  // Make sure that provided conditions are numbers, except when condition type is MeSH or MedGen
-  var selectedConditionsValues = $('#condition_tags').val();
-  for (let i = 0; i < selectedConditionsValues.length; i++) {
-    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
-      alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
-      return false;
-    }
-  }
-
-  return true;
-}
-
 //Function definition for keeping the tooltip updated for each Assertion method database option
 function updateTooltip(){
       let selectedDBId = $("#assertion_method_cit_db option:selected").text();

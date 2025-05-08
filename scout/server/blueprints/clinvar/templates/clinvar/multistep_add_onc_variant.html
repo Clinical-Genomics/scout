@@ -113,17 +113,9 @@
 
               <fieldset data-step="4">
                 <legend class="text-dark">Associated Conditions</legend>
-                <h3 class="fs-subtitle">The condition must be provided as either a database identifier or a name, but not both. A database identifier is preferred by ClinVar; a name should be provided only if there is no database identifier available.</h3>
+                <h3 class="fs-subtitle">The condition must be provided as a database identifier. Assigning a condition name if the database identifier can't be found is not yet supported.</h3>
 
                 {{ condition_identifiers(variant_data.var_form) }}
-
-                <div class="mb-3">
-                  {{ variant_data.var_form.condition_name.label(
-                        id="citation_tooltip",
-                        **{'data-bs-toggle': 'tooltip', 'title': 'Provide a condition name only if there is no database identifier available.'}
-                    ) }}
-                  {{ variant_data.var_form.condition_name }}
-                </div>
 
                 <br>
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>

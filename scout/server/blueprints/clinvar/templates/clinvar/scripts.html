@@ -16,6 +16,26 @@ $(".next").click(function(){
 
 	current_fs = $(this).parent();
 
+	// run the validations on the input for the current step
+	var validationPassed = true;
+
+  {% if variant_data.var_obj.category == "snv" %}
+    if(current_fs.data('step') == 6){
+      validationPassed = validateConditions();
+    }
+  {% elif variant_data.var_obj.category == "cancer" %}
+    if(current_fs.data('step') == 4){
+      validationPassed = validateConditions();
+    }
+  {% endif %}
+
+  // check to see if the validator for the specific step we are on passed or not.
+  if(validationPassed == false){
+    // do not proceed
+    animating = false;
+    return;
+  }
+
 	next_fs = $(this).parent().next();
 
 	//activate next step on progressbar using the index of next_fs
@@ -84,6 +104,8 @@ $(".previous").click(function(){
 	});
 });
 
+// Conditions-asociated code
+
 var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
 
 // Set selected condition type on page load
@@ -138,4 +160,34 @@ $(function(){
     }
   });
 });
+
+// Validates fields for conditions associated to a variant
+function validateConditions(){
+
+  if ($("#condition_tags option:selected").length == 0) {
+    alert("Please provide at least one condition ID");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
+    alert("When multiple condition IDs are provided then an option for 'Explanation for multiple conditions' must be provided");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
+    alert("Please deselect the selected option in 'Explanation for multiple conditions' since only one condition ID was provided.");
+    return false;
+  }
+
+  // Make sure that provided conditions are numbers, except when condition type is MeSH or MedGen
+  var selectedConditionsValues = $('#condition_tags').val();
+  for (let i = 0; i < selectedConditionsValues.length; i++) {
+    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
+      alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
+      return false;
+    }
+  }
+
+  return true;
+}
 </script>

@@ -158,6 +158,3 @@ class CancerSNVariantForm(SNVariantForm):
         choices=[(item, item) for item in CITATION_DBS_API],
     )
     assertion_method_cit_id = StringField("Citation ID")  # No default values
-
-    # Form step 3
-    condition_name = StringField("Condition name")
