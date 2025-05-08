@@ -55,17 +55,22 @@
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
-                    {{ variant_data.var_form.comment.label }}
+                    {{ variant_data.var_form.comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
                     {{ variant_data.var_form.comment(rows=4, class="form-control") }}
                   </div>
                   <br><br>
                   <div class="mb-3">
                     {{ variant_data.var_form.citation_db.label }}
                     {{ variant_data.var_form.citation_db }}
+                    <span class="text-danger" data-bs-toggle='tooltip' title="This citation is specific to this variant only. Leave blanc if unsure. Note the whole submission, containing one or more variants, will be already containing the following citation reference: 'Horak P. et al. Standards for the classification of pathogenicity of somatic variants in cancer (oncogenicity): Joint recommendations of Clinical Genome Resource (ClinGen), Cancer Genomics Consortium (CGC), and Variant Interpretation for Cancer Consortium (VICC). Genet Med. 2022 (PubMed:36063163)'."><strong>?</strong></span>
+                    <span data-bs-toggle='tooltip' title="Optional field."><strong>*</strong></span>
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
-                    {{ variant_data.var_form.citation_id.label }}
+                    {{ variant_data.var_form.citation_id.label(
+                        id="citation_tooltip",
+                        **{'data-bs-toggle': 'tooltip', 'title': 'Original tooltip text'}
+                    ) }}
                     {{ variant_data.var_form.citation_id }}
                   </div>
 
@@ -201,6 +206,39 @@ document.querySelector('form').addEventListener('keydown', function(e) {
       e.preventDefault();
     }
   });
+
+//Function definition for keeping the tooltip updated for each citation database option
+function updateTooltip(){
+      alert("here bitches")
+      let selectedDBId = $("#citation_db option:selected").text();
+      let tooltipText=undefined
+      let defaultValue=undefined
+      switch (selectedDBId) {
+          case "PubMed":
+              tooltipText = "PubMed ID (PMID) is written as digits only, e.g. 21084639"
+              break
+          case "DOI":
+              tooltipText = "DOI ID is written including prefix, forward slash, and suffix, e.g. 10.1038/gim.2015.30"
+              break
+          case "BookShelf":
+              tooltipText = "Bookshelf ID including the prefix, e.g. NBK1384"
+              break
+          case "pmc":
+              tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 4544753"
+              break
+          default:
+            return
+      }
+     const $el = $("#citation_tooltip");
+     $el.attr("data-bs-original-title", tooltipText).tooltip("dispose").tooltip("show");
+}
+
+//Add eventhandler for change of the DB id, keeping the tooltip updated
+$(function () {
+    $("#citation_db").change(function () {
+        updateTooltip()
+    })
+});
 
 </script>
 {% endblock %}
