@@ -106,7 +106,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     ]
 
 
-def _get_snv_var_form(variant_obj, case_obj):
+def _get_snv_var_form(variant_obj: dict, case_obj: dict):
     """Sets up values for a SNV variant form
     Args:
         variant_obj(dict) scout.models.Variant
@@ -115,7 +115,10 @@ def _get_snv_var_form(variant_obj, case_obj):
     Returns:
         var_form(scout.server.blueprints.clinvar.form.SNVariantForm)
     """
-    var_form = SNVariantForm()
+    if case_obj.get("track") == "cancer":
+        var_form = CancerSNVariantForm()
+    else:
+        var_form = SNVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(case_obj, variant_obj)
     var_ids = variant_obj.get("dbsnp_id") or ""
@@ -158,7 +161,7 @@ def _populate_variant_form(
     form_getters = {
         "snv": _get_snv_var_form,
         "sv": _get_sv_var_form,
-        "cancer": _get_cancer_snv_var_form,
+        "cancer": _get_snv_var_form,
     }
     category = variant_obj["category"]
     var_form = form_getters[category](variant_obj, case_obj)
@@ -186,6 +189,9 @@ def _populate_case_data_form(variant_obj, case_obj):
         ind_form.include_ind.data = affected
         ind_form.individual_id.data = ind.get("display_name")
         ind_form.linking_id.data = variant_obj["_id"]
+        ind_form.allele_of_origin.data = (
+            "somatic" if case_obj.get("track") == "cancer" else "germline"
+        )
         cdata_form_list.append(ind_form)
     return cdata_form_list
 
@@ -637,12 +643,6 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
 ### ClinVar oncogenicity variants submissions controllers
 
 
-def _get_cancer_snv_var_form(variant_obj: dict, case_obj: dict) -> CancerSNVariantForm:
-    """Sets up values for a Cancer SNV variant form."""
-    var_form = CancerSNVariantForm()
-    return var_form
-
-
 def set_onc_clinvar_form(var_id: str, data: dict):
     """Adds form key/values to the form used in ClinVar to create a multistep submission page for an oncogenic variant."""
 
@@ -653,9 +653,11 @@ def set_onc_clinvar_form(var_id: str, data: dict):
     var_obj["classification"] = _variant_classification(var_obj)
 
     var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
+    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
     variant_data = {
         "var_id": var_id,
         "var_obj": var_obj,
         "var_form": var_form,
+        "cdata_forms": cdata_forms,
     }
     data["variant_data"] = variant_data

@@ -143,17 +143,21 @@ class CaseDataForm(FlaskForm):
 ### Cancer variant - related forms
 
 
-class CancerSNVariantForm(FlaskForm):
+class CancerSNVariantForm(SNVariantForm):
+    """Contains the form element to add a cancer variant to a ClinVar oncogenicity submission object."""
+
+    # Form step 1: Oncogenicity classification
     record_status = HiddenField(default="novel")
-    classification = SelectField(
+    onc_classification = SelectField(
         "Oncogenicity classification",
         choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
     )
-    last_evaluated = DateField("Date evaluated")
-    comment = TextAreaField("Comment")
-    citation_db = SelectField(
+    assertion_method_cit_db = SelectField(  # Overriding default values
         "Citation DB",
         default="clinical testing",
         choices=[(item, item) for item in CITATION_DBS_API],
     )
-    citation_id = StringField("Citation ID")
+    assertion_method_cit_id = StringField("Citation ID")  # No default values
+
+    # Form step 3
+    condition_name = StringField("Condition name")
