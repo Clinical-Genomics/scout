@@ -1,0 +1,159 @@
+{% macro hgvs_choices(tx_hgvs)%}
+<!-- Transcripts & HGVS:(optional) -->
+{{ tx_hgvs.label(class="fw-bold, text-dark") }}
+
+<span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
+<span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
+<br><br>
+
+<table style="width:100%; table-layout: auto; border-collapse: collapse;">
+  <caption></caption>
+  <tr><th></th></tr>
+  {% for item_row in tx_hgvs | batch(3) %}
+    <tr>
+    {% for item in item_row %}
+      {% set ns = namespace(label='', validated=false, mane_select=false, mane_plus_clinical=false) %}
+      {% if "_validated_" in item.label.text %}
+        {% set ns.validated = true %}
+      {% endif %}
+      {% if "_mane-select_" in item.label.text %}
+        {% set ns.mane_select = true %}
+      {% endif %}
+      {% if "_mane-plus-clinical_" in item.label.text %}
+         {% set ns.mane_plus_clinical = true %}
+      {% endif %}
+
+      {% set ns.label = item.label.text | replace("_validated_", "") | replace("_mane-select_", "")  %}
+
+      <td style="width: 3%; text-align: right; vertical-align: baseline;">
+        <input type="radio" name="tx_hgvs" value="{{ ns.label }}"
+          {% if ns.mane_select %}checked{% endif %}>
+      </td>
+
+      <td style="width: 30%; text-align: left; ">
+        <p class="text-dark"
+        {% if ns.label|length > 50 %}
+         data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}
+        {% else %}
+          >{{ ns.label }}
+        {% endif %}
+        {% if ns.mane_select %}
+          <span class='badge bg-dark'>MANE SELECT</span>
+        {% endif %}
+        {% if ns.mane_plus_clinical %}
+          <span class='badge bg-dark'>MANE PLUS CLINICAL</span>
+        {% endif %}
+        {% if ns.validated %}
+          <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>
+        {% endif %}
+        </p>
+      </td>
+    {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
+{% endmacro %}
+
+{% macro condition_identifiers(var_form) %}
+<div class="row">
+  <div class="col-6" id="clinvar_condition_container">
+    {{ var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
+
+    <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
+      {% for dbtype, _ in var_form.condition_type.choices %}
+        <option value="{{dbtype}}">{{dbtype}}</option>
+      {% endfor %}
+    </select>
+
+    <br><br>
+    {{ var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc). If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features. If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records."><strong>*?</strong></span>
+    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
+      {% if var_form.omim_terms.choices %}
+        {% for term, _ in var_form.omim_terms.choices %}
+          <option value="{{term}}" selected>{{term}}</option>
+        {% endfor %}
+      {% elif var_form.orpha_terms.choices %}
+        {% for term, _ in var_form.orpha_terms.choices %}
+          <option value="{{term}}" selected>{{term}}</option>
+        {% endfor %}
+      {% elif var_form.hpo_terms.choices %}
+        {% for term, _ in var_form.hpo_terms.choices %}
+          <option value="{{term}}" selected>{{term}}</option>
+        {% endfor %}
+      {% endif %}
+    </select>
+
+    <div class="mt-3">
+      {{ var_form.multiple_condition_explanation.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required if you provide more than one condition ID."><strong>?</strong></span>
+      <select name="multiple_condition_explanation" id="multiple_condition_explanation" class="form-control, btn-secondary">
+        <option selected value>-</option>
+        {% for choice, _ in var_form.multiple_condition_explanation.choices %}
+          <option value="{{choice}}">{{choice}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+
+  </div>
+  <div class="col-6">
+    {{ var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
+    <ul class="list-group">
+    {% for term in var_form.omim_terms %}
+      <li class="list-group-item">{{ term.label }}</li>
+    {% else %}
+      <span class="text-dark">N/A</span>
+    {% endfor %}
+    </ul>
+    <br><br>
+    {{ var_form.orpha_terms.label(class="fw-bold, text-dark") }}<br>
+    <ul class="list-group">
+    {% for term in var_form.orpha_terms %}
+      <li class="list-group-item">{{ term.label }}</li>
+    {% else %}
+      <span class="text-dark">N/A</span>
+    {% endfor %}
+    </ul>
+    <br><br>
+    {{ var_form.hpo_terms.label(class="fw-bold, text-dark" )}}<br>
+    <ul class="list-group">
+    {% for term in var_form.hpo_terms %}
+      <li class="list-group-item">{{ term.label }}</li>
+    {% else %}
+    N/A
+    </ul>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro observations(cdata_forms) %}
+<ul class="list-group">
+{% for cdata in cdata_forms %}
+  {{cdata.linking_id(class="fw-bold, text-dark")}} <!-- hidden field -->
+  <li class="list-group-item bg-white">
+    <div class="row">
+      <div class="col-2">
+        {{ cdata.include_ind.label(class="fw-bold, text-dark") }}
+        {{ cdata.include_ind() }}
+      </div>
+      <div class="col-2">
+        {{ cdata.individual_id.label(class="fw-bold, text-dark") }}
+        {{ cdata.individual_id(class="form-control, bg-white", readonly=true) }}
+      </div>
+      <div class="col-2">
+        {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
+        {{ cdata.affected_status(class="form-control, btn-secondary") }}
+      </div>
+      <div class="col-2">
+        {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
+        {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
+      </div>
+      <div class="col-2">
+        {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
+        {{ cdata.collection_method(class="form-control, btn-secondary") }}
+      </div>
+    </div>
+  </li>
+{% endfor %}
+</ul>
+{% endmacro %}

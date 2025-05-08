@@ -1,4 +1,5 @@
 {% extends "bootstrap_global.html" %}
+{% from "clinvar/components.html" import condition_identifiers, hgvs_choices, observations %}
 
 {% block css %}
   {{ super() }}
@@ -26,10 +27,15 @@
               <ul id="progressbar" class="steps-5">
                   <li class="active">Start</li>
                   <li>Oncogenicity classification</li>
+                  <li>Observation Data</li>
                   <li>Variant Details</li>
                   <li>Associated conditions</li>
-                  <li>Observation Data</li>
+
               </ul>
+
+              <!-- hidden fields -->
+                {{ variant_data.var_form.csrf_token }}
+
               <!-- fieldsets -->
               <fieldset data-step="1">
                 <legend class="text-dark">ClinVar oncogenic submission form</legend>
@@ -45,8 +51,8 @@
                 <legend class="text-dark">Oncogenicity classification</legend>
                   <br><br>
                   <div class="mb-3">
-                    {{ variant_data.var_form.classification.label }}
-                    {{ variant_data.var_form.classification }}
+                    {{ variant_data.var_form.onc_classification.label }}
+                    {{ variant_data.var_form.onc_classification }}
                   </div>
                   <br><br>
                   <div class="mb-3 col-md-2 offset-md-5">
@@ -55,51 +61,83 @@
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
-                    {{ variant_data.var_form.comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
-                    {{ variant_data.var_form.comment(rows=4, class="form-control") }}
+                    {{ variant_data.var_form.clinsig_comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
+                    {{ variant_data.var_form.clinsig_comment(rows=4, class="form-control") }}
                   </div>
                   <br><br>
                   <div class="mb-3">
-                    {{ variant_data.var_form.citation_db.label }}
-                    {{ variant_data.var_form.citation_db }}
+                    {{ variant_data.var_form.assertion_method_cit_db.label }}
+                    {{ variant_data.var_form.assertion_method_cit_db }}
                     <span class="text-danger" data-bs-toggle='tooltip' title="This citation is specific to this variant only. Leave blanc if unsure. Note the whole submission, containing one or more variants, will be already containing the following citation reference: 'Horak P. et al. Standards for the classification of pathogenicity of somatic variants in cancer (oncogenicity): Joint recommendations of Clinical Genome Resource (ClinGen), Cancer Genomics Consortium (CGC), and Variant Interpretation for Cancer Consortium (VICC). Genet Med. 2022 (PubMed:36063163)'."><strong>?</strong></span>
-                    <span data-bs-toggle='tooltip' title="Optional field."><strong>*</strong></span>
+                    <span data-bs-toggle='tooltip' title="Optional field"><strong>*</strong></span>
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
-                    {{ variant_data.var_form.citation_id.label(
+                    {{ variant_data.var_form.assertion_method_cit_id.label(
                         id="citation_tooltip",
                         **{'data-bs-toggle': 'tooltip', 'title': 'Original tooltip text'}
                     ) }}
-                    {{ variant_data.var_form.citation_id }}
+                    {{ variant_data.var_form.assertion_method_cit_id }}
                   </div>
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
-              <fieldset data-step="3">
-                  <legend class="text-dark">Variant Details</legend>
 
-                  <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                  <input type="button" name="next" class="next action-button" value="Next"/>
+              <fieldset data-step="5">
+                <legend class="text-dark">Variant Details</legend>
+
+                {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
+                {{variant_data.var_form.gene_symbol(class="bg-white")}}
+
+                <!-- Cancer SNV -->
+                <!-- SNVs only -->
+                {% if variant_data.var_obj.category == 'cancer' %}
+                  {{ variant_data.var_form.chromosome() }}
+                  {{ variant_data.var_form.start() }}
+                  {{ variant_data.var_form.stop() }}
+                {% endif %}
+
+                {{hgvs_choices(variant_data.var_form.tx_hgvs)}}
+
+                <br><br>
+                <!-- dbSNP identifier -->
+                {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.variations_ids(class="bg-white")}}
+                <!-- Cancer SNV - end -->
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
+
 
               <fieldset data-step="4">
                 <legend class="text-dark">Associated Conditions</legend>
-                <h3 class="fs-subtitle">The condition for which the variant is interpreted.</h3>
+                <h3 class="fs-subtitle">The condition must be provided as either a database identifier or a name, but not both. A database identifier is preferred by ClinVar; a name should be provided only if there is no database identifier available.</h3>
+
+                {{ condition_identifiers(variant_data.var_form) }}
+
+                <div class="mb-3">
+                  {{ variant_data.var_form.condition_name.label(
+                        id="citation_tooltip",
+                        **{'data-bs-toggle': 'tooltip', 'title': 'Provide a condition name only if there is no database identifier available.'}
+                    ) }}
+                  {{ variant_data.var_form.condition_name }}
+                </div>
 
                 <br>
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
+
               <fieldset data-step="5">
-                <legend class="text-dark">Observation Data</legend>
-                <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
+                  <legend class="text-dark">Observation Data</legend>
 
+                  {{ observations(variant_data.cdata_forms) }}
 
-                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                <input type="submit" name="submit" class="submit action-button" value="Add to submission"/>
+                  <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                  <input type="submit" name="submit" class="submit action-button" value="Add to submission"/>
               </fieldset>
 
           </form>
@@ -209,7 +247,7 @@ document.querySelector('form').addEventListener('keydown', function(e) {
 
 //Function definition for keeping the tooltip updated for each citation database option
 function updateTooltip(){
-      let selectedDBId = $("#citation_db option:selected").text();
+      let selectedDBId = $("#assertion_method_cit_db option:selected").text();
       let tooltipText=undefined
       let defaultValue=undefined
       switch (selectedDBId) {
@@ -234,7 +272,7 @@ function updateTooltip(){
 
 //Add eventhandler for change of the DB id, keeping the tooltip updated
 $(function () {
-    $("#citation_db").change(function () {
+    $("#assertion_method_cit_db").change(function () {
         updateTooltip()
     })
 });
