@@ -77,8 +77,8 @@ def clinvar_add_variant(institute_id, case_name):
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
-def clinvar_save(institute_id, case_name):
-    """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
+def clinvar_save(institute_id: str, case_name: str):
+    """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.add_variant_to_submission(
         institute_obj=institute_obj, case_obj=case_obj, form=request.form
@@ -159,7 +159,7 @@ def clinvar_download_json(submission, clinvar_id):
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
-def clinvar_add_onc_variant(institute_id, case_name):
+def clinvar_add_onc_variant(institute_id: str, case_name: str):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {
@@ -169,3 +169,12 @@ def clinvar_add_onc_variant(institute_id, case_name):
     }
     controllers.set_onc_clinvar_form(request.form.get("var_id"), data)
     return render_template("clinvar/multistep_add_onc_variant.html", **data)
+
+
+@clinvar_bp.route(
+    "/<institute_id>/<case_name>/clinvar_onc/clinvar_save_onc_variant", methods=["POST"]
+)
+def clinvar_onc_save(institute_id, case_name):
+    """Adds one somatic variant with eventual CaseData observations to an open (or new) ClinVar congenicity submission"""
+    LOG.warning(f"IN CLINVAR ONC SAVE ---->{request.form}")
+    return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
