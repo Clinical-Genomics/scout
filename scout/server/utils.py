@@ -145,7 +145,7 @@ def institute_and_case(store, institute_id, case_name=None):
             return abort(404)
 
         # Make sure build is either "37" or "38"
-        case_obj["genome_build"] = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+        case_obj["genome_build"] = get_case_genome_build(case_obj)
 
     # validate that user has access to the institute
 
@@ -208,7 +208,7 @@ def user_institutes(store, login_user):
 
 def get_case_genome_build(case_obj: dict) -> str:
     """returns the genome build of a case, as a string."""
-    return "38" if "38" in case_obj.get("genome_build", "37") else "37"
+    return "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
 
 
 def get_case_mito_chromosome(case_obj: dict) -> str:

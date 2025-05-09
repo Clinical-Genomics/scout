@@ -45,6 +45,7 @@ from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
+    get_case_genome_build,
     institute_and_case,
     user_institutes,
 )
@@ -106,7 +107,7 @@ def populate_persistent_filters_choices(
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select according to the case genome build"""
     # Populate chromosome choices
-    chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+    chromosomes = CHROMOSOMES if get_case_genome_build(case_obj) == "37" else CHROMOSOMES_38
     form.chrom.choices = [(chrom, chrom) for chrom in chromosomes]
 
 
@@ -139,9 +140,7 @@ def variants(
     more_variants = variant_count > (skip_count + per_page)
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
@@ -237,9 +236,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
     more_variants = variant_count > (skip_count + per_page)
     variants = []
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
@@ -285,9 +282,7 @@ def mei_variants(
 
     more_variants = variant_count > (skip_count + per_page)
     variants = []
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
@@ -353,9 +348,7 @@ def fusion_variants(
 
     more_variants = variant_count > (skip_count + per_page)
     variants = []
-    genome_build = str(case_obj.get("genome_build", "38"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "38"
+    genome_build = get_case_genome_build(case_obj)
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
@@ -1502,7 +1495,9 @@ def upload_panel(store, institute_id, case_name, stream):
     hgnc_symbols = set()
     for raw_symbol in raw_symbols:
         matching_genes = list(
-            store.gene_by_symbol_or_aliases(symbol=raw_symbol, build=case_obj.get("genome_build"))
+            store.gene_by_symbol_or_aliases(
+                symbol=raw_symbol, build=get_case_genome_build(case_obj)
+            )
         )
         if not matching_genes:
             flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
@@ -1983,10 +1978,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
     genome_build = None
     case_obj = case_obj or {}
 
-    for build in ["37", "38"]:
-        if build in str(case_obj.get("genome_build", "")):
-            genome_build = build
-            break
+    genome_build = get_case_genome_build(case_obj)
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:

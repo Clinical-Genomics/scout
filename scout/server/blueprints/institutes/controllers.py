@@ -25,7 +25,11 @@ from scout.server.blueprints.variant.utils import (
     update_representative_gene,
 )
 from scout.server.extensions import beacon, store
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import (
+    get_case_genome_build,
+    institute_and_case,
+    user_institutes,
+)
 
 from .forms import BeaconDatasetForm, CaseFilterForm
 
@@ -821,7 +825,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         case_display_name = variant_case_obj.get("display_name")
         variant_obj["case_display_name"] = case_display_name
 
-        genome_build = get_genome_build(variant_case_obj)
+        genome_build = get_case_genome_build(variant_case_obj)
         update_variant_genes(store, variant_obj, genome_build)
         variants.append(variant_obj)
 
@@ -883,14 +887,6 @@ def update_variant_genes(store, variant_obj, genome_build):
     variant_obj["hgvs"] = hgvs_str(gene_symbols, canonical_transcripts, hgvs_p, hgvs_c)
     variant_obj["region_annotations"] = get_annotations(gene_symbols, region_annotations)
     variant_obj["functional_annotations"] = get_annotations(gene_symbols, functional_annotations)
-
-
-def get_genome_build(variant_case_obj):
-    """Find genom build in `variant_case_obj`. If not found use build #37"""
-    build = str(variant_case_obj.get("genome_build"))
-    if build in ["37", "38"]:
-        return build
-    return "37"
 
 
 def get_hgvs(gene_obj: Dict) -> Tuple[str, str, str]:

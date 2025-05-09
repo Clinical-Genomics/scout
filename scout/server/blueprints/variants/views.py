@@ -19,7 +19,7 @@ from scout.constants import (
     SEVERE_SO_TERMS_SV,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import get_case_genome_build, institute_and_case, templated
 
 from . import controllers
 from .forms import (
@@ -129,7 +129,7 @@ def variants(institute_id, case_name):
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     variants_query = store.variants(
@@ -220,7 +220,7 @@ def str_variants(institute_id, case_name):
 
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     query = form.data
@@ -302,7 +302,7 @@ def sv_variants(institute_id, case_name):
     # Populate custom soft filters
     controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
@@ -397,7 +397,7 @@ def mei_variants(institute_id, case_name):
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
@@ -509,7 +509,7 @@ def cancer_variants(institute_id, case_name):
 
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
@@ -587,7 +587,7 @@ def cancer_sv_variants(institute_id, case_name):
     # Populate custom soft filters
     controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
@@ -671,7 +671,7 @@ def fusion_variants(institute_id, case_name):
     # Populate custom soft filters
     controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)

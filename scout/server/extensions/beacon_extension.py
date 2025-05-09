@@ -8,7 +8,12 @@ import logging
 from flask import flash, url_for
 from flask_login import current_user
 
-from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
+from scout.server.utils import get_case_genome_build
+from scout.utils.scout_requests import (
+    delete_request_json,
+    get_request_json,
+    post_request_json,
+)
 
 LOG = logging.getLogger(__name__)
 DATASET_BUILDS = ["GRCh37", "GRCh38"]
@@ -58,7 +63,7 @@ class Beacon:
             data(dict): a dictionary with base info to be used as json data in beacon add request (lacks path to VCF file to extract variants from)
         """
         # Initialize key/values to be sent in request:
-        assembly = "GRCh38" if "38" in str(case_obj.get("genome_build", "37")) else "GRCh37"
+        assembly = "GRCh38" if get_case_genome_build(case_obj) == "38" else "GRCh37"
         dataset_id = "_".join([case_obj["owner"], case_obj.get("build", assembly)])
 
         samples = []
