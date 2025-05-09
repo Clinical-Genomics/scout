@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
 - Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
+- Clinical variant files could once again be read in arbitrary order on load (#5452)
 
 ## [4.100.2]
 ### Fixed
