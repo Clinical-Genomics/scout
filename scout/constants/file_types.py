@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-# Variants in Scout will be loadedfor a case  in the same order as these ordered dictionaries
+# Variants in Scout will be loaded for a case in the same order as these ordered dictionaries
 ORDERED_FILE_TYPE_MAP = OrderedDict(
     [
         ("vcf_cancer", {"category": "cancer", "variant_type": "clinical"}),
