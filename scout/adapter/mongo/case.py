@@ -935,12 +935,17 @@ class CaseHandler(object):
             for key, value in ORDERED_FILE_TYPE_MAP.items()
             if value["variant_type"] != "research"
         )
-        load_type_cat = set()
+
+        load_type_cat = []
+        cat_seen = set()
         for file_name, vcf_dict in CLINICAL_ORDERED_FILE_TYPE_MAP.items():
             if not case_obj["vcf_files"].get(file_name):
                 LOG.debug("didn't find {}, skipping".format(file_name))
                 continue
-            load_type_cat.add((vcf_dict["variant_type"], vcf_dict["category"]))
+            pair = (vcf_dict["variant_type"], vcf_dict["category"])
+            if pair not in cat_seen:
+                cat_seen.add(pair)
+                load_type_cat.append(pair)
 
         for variant_type, category in load_type_cat:
             if update:
