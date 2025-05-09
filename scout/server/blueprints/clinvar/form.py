@@ -28,7 +28,11 @@ from scout.constants import (
     GERMLINE_CLASSIF_TERMS,
     MULTIPLE_CONDITION_EXPLANATION,
 )
-from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
+from scout.constants.clinvar import (
+    CITATION_DBS_API,
+    ONCOGENIC_CLASSIF_TERMS,
+    PRESENCE_IN_NORMAL_TISSUE,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -125,7 +129,7 @@ class CaseDataForm(FlaskForm):
     Schema available here: https://github.com/Clinical-Genomics/preClinVar/blob/718905521590196dc84fd576bc43d9fac418b97a/preClinVar/resources/submission_schema.json#L288
     """
 
-    include_ind = BooleanField("Include individual")
+    include_ind = BooleanField("Include")
     individual_id = StringField("Individual ID")
     linking_id = HiddenField()
     affected_status = SelectField(
@@ -138,6 +142,12 @@ class CaseDataForm(FlaskForm):
         "Collection method",
         default="clinical testing",
         choices=[(item, item) for item in COLLECTION_METHOD],
+    )
+    somatic_allele_fraction = IntegerField("Somatic allele fraction")
+    somatic_allele_in_normal = SelectField(  # Overriding default values
+        "Allele present in normal tissue",
+        default="absent",
+        choices=[(item, item) for item in PRESENCE_IN_NORMAL_TISSUE],
     )
 
 
@@ -158,4 +168,4 @@ class CancerSNVariantForm(SNVariantForm):
         default="clinical testing",
         choices=[(item, item) for item in CITATION_DBS_API],
     )
-    assertion_method_cit_id = StringField("Citation ID")  # No default values
+    assertion_method_cit_id = StringField("Citation ID")  # Overriding default values

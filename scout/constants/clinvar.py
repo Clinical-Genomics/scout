@@ -195,3 +195,4 @@ CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
 CITATION_DBS_API = ["PubMed", "BookShelf", "DOI", "pmc"]
 
 MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]
+PRESENCE_IN_NORMAL_TISSUE = ["present", "absent", "not tested"]

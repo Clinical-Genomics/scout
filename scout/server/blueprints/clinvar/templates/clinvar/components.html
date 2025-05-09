@@ -126,34 +126,49 @@
 </div>
 {% endmacro %}
 
-{% macro observations(cdata_forms) %}
+{% macro observations(cdata_forms, var_type) %}
 <ul class="list-group">
-{% for cdata in cdata_forms %}
-  {{cdata.linking_id(class="fw-bold, text-dark")}} <!-- hidden field -->
-  <li class="list-group-item bg-white">
-    <div class="row">
-      <div class="col-2">
-        {{ cdata.include_ind.label(class="fw-bold, text-dark") }}
-        {{ cdata.include_ind() }}
+  {% for cdata in cdata_forms %}
+    {{ cdata.linking_id() }} {# Hidden field #}
+    <li class="list-group-item bg-white">
+      <div class="row align-items-start">
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark d-block">{{ cdata.include_ind.label.text }}</label>
+          <div class="form-check pt-1">
+            {{ cdata.include_ind(class="form-check-input", id="include_ind_" ~ loop.index) }}
+          </div>
+        </div>
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.individual_id.label.text }}</label>
+          {{ cdata.individual_id(class="form-control bg-white", readonly=true) }}
+        </div>
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.affected_status.label.text }}</label>
+          {{ cdata.affected_status(class="form-select") }}
+        </div>
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.allele_of_origin.label.text }}</label>
+          {{ cdata.allele_of_origin(class="form-select") }}
+        </div>
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.collection_method.label.text }}</label>
+          {{ cdata.collection_method(class="form-select") }}
+        </div>
       </div>
-      <div class="col-2">
-        {{ cdata.individual_id.label(class="fw-bold, text-dark") }}
-        {{ cdata.individual_id(class="form-control, bg-white", readonly=true) }}
+
+      {% if var_type == "cancer" %}
+      <div class="row align-items-start">
+        <div class="col-md-2 offset-md-6 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.somatic_allele_fraction.label.text }}</label>
+          {{ cdata.somatic_allele_fraction(class="form-control") }}
+        </div>
+        <div class="col-md-2 mb-3">
+          <label class="form-label fw-bold text-dark">{{ cdata.somatic_allele_in_normal.label.text }}</label>
+          {{ cdata.somatic_allele_in_normal(class="form-control") }}
+        </div>
       </div>
-      <div class="col-2">
-        {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
-        {{ cdata.affected_status(class="form-control, btn-secondary") }}
-      </div>
-      <div class="col-2">
-        {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
-        {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
-      </div>
-      <div class="col-2">
-        {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
-        {{ cdata.collection_method(class="form-control, btn-secondary") }}
-      </div>
-    </div>
-  </li>
-{% endfor %}
+      {% endif %}
+    </li>
+  {% endfor %}
 </ul>
 {% endmacro %}

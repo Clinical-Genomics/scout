@@ -264,7 +264,9 @@ def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
         [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
     )
     if bool(form.get("multiple_condition_explanation")):
-        clinvar_var["explanation_for_multiple_conditions"] = form["multiple_condition_explanation"]
+        clinvar_var["explanation_for_multiple_conditions"] = form.get(
+            "multiple_condition_explanation"
+        )
 
 
 def parse_variant_form_fields(form):
@@ -675,8 +677,10 @@ def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
     onc_item["dateLastEvaluated"] = form.get("last_evaluated")
     onc_item["comment"] = form.get("clinsig_comment")
     if form.get("assertion_method_cit_id"):
-        onc_item["citation"]["db"] = form.get("assertion_method_cit_db")
-        onc_item["citation"]["id"] = form.get("assertion_method_cit_id")
+        onc_item["citation"] = {
+            "db": form["assertion_method_cit_db"],
+            "id": form["assertion_method_cit_id"],
+        }
 
 
 def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
@@ -697,8 +701,44 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
 
 
 def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
-    """Associate one or more phenotype conditions to a somatic variant of an oncogenicity submission."""
-    pass
+    """Associate one or more phenotype conditions to a variant of a ClinVar submission."""
+    onc_item["conditionSet"] = {"condition": []}
+    selected_db = form.get("condition_type")
+    selected_conditions: List[str] = form.getlist("conditions")
+    for cond in selected_conditions:
+        onc_item["conditionSet"]["condition"].append({"db": selected_db, "id": cond})
+    if form.get("multiple_condition_explanation"):
+        onc_item["conditionSet"]["multipleConditionExplanation"] = form.get(
+            "multiple_condition_explanation"
+        )
+
+
+def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
+    """Associates observations to a variant of a ClinVar submission."""
+    onc_item["observedIn"] = []
+    include_inds = form.getlist("include_ind")
+    ind_list = form.getlist("individual_id")
+    affected_status_list = form.getlist("affected_status")
+    allele_origin_list = form.getlist("allele_of_origin")
+    collection_method_list = form.getlist("collection_method")
+    somatic_fraction = form.getlist("somatic_allele_fraction")
+    somatic_in_normal = form.getlist("somatic_allele_in_normal")
+
+    for idx, ind_id in enumerate(ind_list):
+        if ind_id not in include_inds:
+            continue
+
+        obs = {
+            "alleleOrigin": allele_origin_list[idx],
+            "affectedStatus": affected_status_list[idx],
+            "collectionMethod": collection_method_list[idx],
+            "numberOfIndividuals": 1,
+            "presenceOfSomaticVariantInNormalTissue": somatic_in_normal[idx],
+        }
+        if somatic_fraction[idx]:
+            obs["somaticVariantAlleleFraction"] = somatic_fraction[idx]
+
+        onc_item["observedIn"].append(obs)
 
 
 def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionItem:
@@ -708,9 +748,11 @@ def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionIt
     _parse_onc_assertion(onc_item, form)
     _parse_variant_set(onc_item, form)
     _parse_condition_set(onc_item, form)
+    _parse_observations(onc_item, form)
+
+    LOG.error(onc_item)
 
 
 def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
-    LOG.warning(form)
     onc_item: dict = parse_clinvar_onc_item(form)
