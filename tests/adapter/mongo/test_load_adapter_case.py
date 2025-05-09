@@ -48,3 +48,13 @@ def test_load_case_empty_vcf(real_panel_database, parsed_case, empty_sv_clinical
 
     ## THEN assert that the empty VCF was used
     assert existing_case["vcf_files"]["vcf_sv"] == empty_sv_clinical_file
+
+
+def test_get_load_order(adapter, cancer_case_obj):
+    ### GIVEN a database adapter and a parsed case
+
+    ### WHEN determining variant load order
+    load_type_cat = adapter.get_load_type_categories(cancer_case_obj)
+
+    ### THEN cancer SNVs are taken before cancer SVs
+    assert load_type_cat == [("clinical", "cancer"), ("clinical", "cancer_sv")]

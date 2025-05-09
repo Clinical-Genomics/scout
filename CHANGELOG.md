@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
 - Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
+- Clinical variant files could once again be read in arbitrary order on load (#5452)
+- Fix test_sanger_validation test to be run with a mock app instantiated (#5453)
 - Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL ()
 
 ## [4.100.2]

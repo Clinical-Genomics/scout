@@ -6,7 +6,7 @@ import operator
 import re
 from collections import OrderedDict
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import pymongo
 from bson import ObjectId
@@ -928,21 +928,35 @@ class CaseHandler(object):
 
             self.load_omics_variants(case_obj=case_obj, build=build, file_type=omics_file)
 
-    def _load_clinical_variants(self, case_obj: dict, build: str, update: bool = False):
-        """Load variants in the order specified by CLINICAL_ORDERED_FILE_TYPE_MAP."""
+    def get_load_type_categories(self, case_obj: dict) -> List[Tuple[str, str]]:
+        """Return an (ordered) list of tuples pairing variant type and category for loading.
+
+        It is important for predictable variant collisions to retain the order specified in
+        the file type map CLINICAL_ORDERED_FILE_TYPE_MAP. Hence the set operation is made in parallel
+        with the list construction."""
+
         CLINICAL_ORDERED_FILE_TYPE_MAP = OrderedDict(
             (key, value)
             for key, value in ORDERED_FILE_TYPE_MAP.items()
             if value["variant_type"] != "research"
         )
-        load_type_cat = set()
+
+        load_type_cat = []
+        cat_seen = set()
         for file_name, vcf_dict in CLINICAL_ORDERED_FILE_TYPE_MAP.items():
             if not case_obj["vcf_files"].get(file_name):
                 LOG.debug("didn't find {}, skipping".format(file_name))
                 continue
-            load_type_cat.add((vcf_dict["variant_type"], vcf_dict["category"]))
+            pair = (vcf_dict["variant_type"], vcf_dict["category"])
+            if pair not in cat_seen:
+                cat_seen.add(pair)
+                load_type_cat.append(pair)
+        return load_type_cat
 
-        for variant_type, category in load_type_cat:
+    def _load_clinical_variants(self, case_obj: dict, build: str, update: bool = False):
+        """Load variants in the order specified by CLINICAL_ORDERED_FILE_TYPE_MAP."""
+
+        for variant_type, category in self.get_load_type_categories(case_obj):
             if update:
                 self.delete_variants(
                     case_id=case_obj["_id"],
