@@ -1,10 +1,11 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from bson.objectid import ObjectId
 from pydantic import BaseModel, constr
 
+from scout.constants import CHROMOSOMES
 from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
 
 """Model of the document that gets saved/updated in the clinvar_submission collection
@@ -116,9 +117,21 @@ class Gene(BaseModel):
     id: int
 
 
+Chromosome = Enum(
+    "Chromosome", {c: c for c in CHROMOSOMES}
+)  # ClinVar API accepts only 'MT' chromosome
+
+
 class Variant(BaseModel):
-    hgvs: str
+    """It's defined by either coordinates or hgvs."""
+
+    alternateAllele: Optional[str] = None
+    assembly: Optional[Literal["GRCh37", "GRCh38"]] = None
+    chromosome: Optional[Chromosome] = None
     gene: Optional[List[Gene]] = None
+    hgvs: Optional[str] = None
+    start: Optional[int] = None
+    stop: Optional[int] = None
 
 
 class VariantSet(BaseModel):

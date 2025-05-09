@@ -174,7 +174,10 @@ def clinvar_add_onc_variant(institute_id: str, case_name: str):
 @clinvar_bp.route(
     "/<institute_id>/<case_name>/clinvar_onc/clinvar_save_onc_variant", methods=["POST"]
 )
-def clinvar_onc_save(institute_id, case_name):
+def clinvar_onc_save(institute_id: str, case_name: str):
     """Adds one somatic variant with eventual CaseData observations to an open (or new) ClinVar congenicity submission"""
-    LOG.warning(f"IN CLINVAR ONC SAVE ---->{request.form}")
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.add_onc_variant_to_submission(
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+    )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))

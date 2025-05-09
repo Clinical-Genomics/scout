@@ -17,9 +17,10 @@ from scout.constants.clinvar import (
     SCOUT_CLINVAR_SV_TYPES_MAP,
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import clinvar_variant
+from scout.models.clinvar import OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
+from scout.server.utils import get_case_genome_build
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
@@ -81,6 +82,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.case_id.data = case_obj["_id"]
     var_form.local_id.data = variant_obj["_id"]
     var_form.linking_id.data = variant_obj["_id"]
+    var_form.assembly.data = "GRCh38" if get_case_genome_build(case_obj) == "38" else "GRCh37"
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
@@ -661,3 +663,54 @@ def set_onc_clinvar_form(var_id: str, data: dict):
         "cdata_forms": cdata_forms,
     }
     data["variant_data"] = variant_data
+
+
+def _parse_onc_classification(onc_item: dict, form: ImmutableMultiDict):
+    """Assigns an oncogenicity classification to a submission item based on the user form."""
+    onc_item["oncogenicityClassificationDescription"] = form.get("onc_classification")
+
+
+def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
+    """Adds to an oncogenicity classification item the specifics of the user classification."""
+    onc_item["dateLastEvaluated"] = form.get("last_evaluated")
+    onc_item["comment"] = form.get("clinsig_comment")
+    if form.get("assertion_method_cit_id"):
+        onc_item["citation"]["db"] = form.get("assertion_method_cit_db")
+        onc_item["citation"]["id"] = form.get("assertion_method_cit_id")
+
+
+def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
+    """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
+
+    variant = {}
+    if form.get("tx_hgvs"):
+        variant["hgvs"] = form["tx_hgvs"]
+    else:  # Use coordinates
+        variant["assembly"] = form.get("assembly")
+        variant["chromosome"] = "MT" if form.get("chromosome") == "M" else form.get("chromosome")
+        variant["star"] = form.get("start")
+        variant["stop"] = form.get("stop")
+        variant["alternateAllele"] = form.get("alt")
+
+    if form.get("gene_symbol"):
+        variant["gene"] = [{"symbol": form["gene_symbol"]}]
+
+
+def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
+    """Associate one or more phenotype conditions to a somatic variant of an oncogenicity submission."""
+    pass
+
+
+def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionItem:
+    """Parse form fields for an oncogenic classication of a variant and converts it into the format extected by ClinVar (json dict)."""
+    onc_item = {"record_status": "novel"}
+    _parse_onc_classification(onc_item, form)
+    _parse_onc_assertion(onc_item, form)
+    _parse_variant_set(onc_item, form)
+    _parse_condition_set(onc_item, form)
+
+
+def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
+    """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
+    LOG.warning(form)
+    onc_item: dict = parse_clinvar_onc_item(form)

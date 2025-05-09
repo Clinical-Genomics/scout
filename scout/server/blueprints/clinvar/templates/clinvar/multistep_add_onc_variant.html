@@ -90,20 +90,18 @@
                 {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
                 {{variant_data.var_form.gene_symbol(class="bg-white")}}
 
-                <!-- Cancer SNV -->
-                <!-- SNVs only -->
+                <!-- Cancer SNVs only. Collect coordinates if user doesn't provide any HGVS choice-->
                 {% if variant_data.var_obj.category == 'cancer' %}
                   {{ variant_data.var_form.chromosome() }}
                   {{ variant_data.var_form.start() }}
                   {{ variant_data.var_form.stop() }}
+                  {{ variant_data.var_form.alt() }}
+                  {{ variant_data.var_form.assembly() }}
                 {% endif %}
 
-                {{hgvs_choices(variant_data.var_form.tx_hgvs)}}
+                {{ hgvs_choices(variant_data.var_form.tx_hgvs) }}
 
                 <br><br>
-                <!-- dbSNP identifier -->
-                {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
-                {{variant_data.var_form.variations_ids(class="bg-white")}}
                 <!-- Cancer SNV - end -->
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>

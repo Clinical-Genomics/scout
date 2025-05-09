@@ -48,6 +48,7 @@ class ClinVarVariantForm(FlaskForm):
     linking_id = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
+    assembly = HiddenField()
     gene_symbol = StringField("Gene symbols, comma-separated")
     inheritance_mode = SelectField(
         "Inheritance model",
