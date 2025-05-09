@@ -90,7 +90,7 @@ def test_case_sanger_and_verified_variants(adapter, institute_obj, case_obj, use
 
 
 def test_get_sanger_unevaluated(
-    real_populated_database, variant_objs, institute_obj, case_obj, user_obj
+    mock_app, real_populated_database, variant_objs, institute_obj, case_obj, user_obj
 ):
     """Test get all sanger ordered but not evaluated for an institute"""
 
