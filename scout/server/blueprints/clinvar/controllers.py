@@ -2,13 +2,14 @@ import csv
 import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from flask import flash
 from flask_login import current_user
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
+from scout.constants.ccv import CCV_MAP
 from scout.constants.clinvar import (
     CASEDATA_HEADER,
     CLINVAR_HEADER,
@@ -16,13 +17,19 @@ from scout.constants.clinvar import (
     SCOUT_CLINVAR_SV_TYPES_MAP,
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import clinvar_variant
+from scout.models.clinvar import OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
+from scout.server.utils import get_case_genome_build
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .form import CaseDataForm, SNVariantForm, SVariantForm
+from .form import (
+    CancerSNVariantForm,
+    CaseDataForm,
+    SNVariantForm,
+    SVariantForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -75,6 +82,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.case_id.data = case_obj["_id"]
     var_form.local_id.data = variant_obj["_id"]
     var_form.linking_id.data = variant_obj["_id"]
+    var_form.assembly.data = "GRCh38" if get_case_genome_build(case_obj) == "38" else "GRCh37"
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
@@ -100,7 +108,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     ]
 
 
-def _get_snv_var_form(variant_obj, case_obj):
+def _get_snv_var_form(variant_obj: dict, case_obj: dict):
     """Sets up values for a SNV variant form
     Args:
         variant_obj(dict) scout.models.Variant
@@ -109,7 +117,10 @@ def _get_snv_var_form(variant_obj, case_obj):
     Returns:
         var_form(scout.server.blueprints.clinvar.form.SNVariantForm)
     """
-    var_form = SNVariantForm()
+    if case_obj.get("track") == "cancer":
+        var_form = CancerSNVariantForm()
+    else:
+        var_form = SNVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(case_obj, variant_obj)
     var_ids = variant_obj.get("dbsnp_id") or ""
@@ -144,25 +155,18 @@ def _get_sv_var_form(variant_obj, case_obj):
     return var_form
 
 
-def _populate_variant_form(variant_obj, case_obj):
-    """Populate the Flaskform associated to a variant
+def _populate_variant_form(
+    variant_obj: dict, case_obj: dict
+) -> Union[SNVariantForm, SVariantForm, CancerSNVariantForm]:
+    """Populate the Flaskform associated to a variant. This form will be used in the multistep ClinVar submission form."""
 
-    Args:
-        variant_obj(dict) scout.models.Variant
-        case_obj(dict) scout.models.Case
-
-    Return:
-        var_form(scout.server.blueprints.clinvar.form.SVariantForm or
-                 scout.server.blueprints.clinvar.form.SNVariantForm )
-
-    """
-    if variant_obj["category"] in ["snv", "cancer"]:
-        var_form = _get_snv_var_form(variant_obj, case_obj)
-        var_form.category.data = "snv"
-
-    elif variant_obj["category"] in ["sv", "cancer_sv"]:
-        var_form = _get_sv_var_form(variant_obj, case_obj)
-        var_form.category.data = "sv"
+    form_getters = {
+        "snv": _get_snv_var_form,
+        "sv": _get_sv_var_form,
+        "cancer": _get_snv_var_form,
+    }
+    category = variant_obj["category"]
+    var_form = form_getters[category](variant_obj, case_obj)
 
     return var_form
 
@@ -187,11 +191,14 @@ def _populate_case_data_form(variant_obj, case_obj):
         ind_form.include_ind.data = affected
         ind_form.individual_id.data = ind.get("display_name")
         ind_form.linking_id.data = variant_obj["_id"]
+        ind_form.allele_of_origin.data = (
+            "somatic" if case_obj.get("track") == "cancer" else "germline"
+        )
         cdata_form_list.append(ind_form)
     return cdata_form_list
 
 
-def _variant_classification(var_obj):
+def _variant_classification(var_obj: dict):
     """Set a 'classified_as' key/header_value in the variant object, to be displayed on
     form page with the aim of aiding setting the mandatory 'clinsig' form field
 
@@ -203,6 +210,8 @@ def _variant_classification(var_obj):
     """
     if "acmg_classification" in var_obj:
         return ACMG_MAP[var_obj["acmg_classification"]]
+    elif "ccv_classification" in var_obj:
+        return CCV_MAP[var_obj["ccv_classification"]]
     elif "manual_rank" in var_obj:
         return MANUAL_RANK_OPTIONS[var_obj["manual_rank"]]["name"]
 
@@ -255,7 +264,9 @@ def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
         [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
     )
     if bool(form.get("multiple_condition_explanation")):
-        clinvar_var["explanation_for_multiple_conditions"] = form["multiple_condition_explanation"]
+        clinvar_var["explanation_for_multiple_conditions"] = form.get(
+            "multiple_condition_explanation"
+        )
 
 
 def parse_variant_form_fields(form):
@@ -631,3 +642,117 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
                 variant=variant_obj,
                 subject=variant_obj["display_name"],
             )
+
+
+### ClinVar oncogenicity variants submissions controllers
+
+
+def set_onc_clinvar_form(var_id: str, data: dict):
+    """Adds form key/values to the form used in ClinVar to create a multistep submission page for an oncogenic variant."""
+
+    var_obj = store.variant(var_id)
+    if not var_obj:
+        return
+
+    var_obj["classification"] = _variant_classification(var_obj)
+
+    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
+    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
+    variant_data = {
+        "var_id": var_id,
+        "var_obj": var_obj,
+        "var_form": var_form,
+        "cdata_forms": cdata_forms,
+    }
+    data["variant_data"] = variant_data
+
+
+def _parse_onc_classification(onc_item: dict, form: ImmutableMultiDict):
+    """Assigns an oncogenicity classification to a submission item based on the user form."""
+    onc_item["oncogenicityClassificationDescription"] = form.get("onc_classification")
+
+
+def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
+    """Adds to an oncogenicity classification item the specifics of the user classification."""
+    onc_item["dateLastEvaluated"] = form.get("last_evaluated")
+    onc_item["comment"] = form.get("clinsig_comment")
+    if form.get("assertion_method_cit_id"):
+        onc_item["citation"] = {
+            "db": form["assertion_method_cit_db"],
+            "id": form["assertion_method_cit_id"],
+        }
+
+
+def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
+    """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
+
+    variant = {}
+    if form.get("tx_hgvs"):
+        variant["hgvs"] = form["tx_hgvs"]
+    else:  # Use coordinates
+        variant["assembly"] = form.get("assembly")
+        variant["chromosome"] = "MT" if form.get("chromosome") == "M" else form.get("chromosome")
+        variant["star"] = form.get("start")
+        variant["stop"] = form.get("stop")
+        variant["alternateAllele"] = form.get("alt")
+
+    if form.get("gene_symbol"):
+        variant["gene"] = [{"symbol": form["gene_symbol"]}]
+
+
+def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
+    """Associate one or more phenotype conditions to a variant of a ClinVar submission."""
+    onc_item["conditionSet"] = {"condition": []}
+    selected_db = form.get("condition_type")
+    selected_conditions: List[str] = form.getlist("conditions")
+    for cond in selected_conditions:
+        onc_item["conditionSet"]["condition"].append({"db": selected_db, "id": cond})
+    if form.get("multiple_condition_explanation"):
+        onc_item["conditionSet"]["multipleConditionExplanation"] = form.get(
+            "multiple_condition_explanation"
+        )
+
+
+def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
+    """Associates observations to a variant of a ClinVar submission."""
+    onc_item["observedIn"] = []
+    include_inds = form.getlist("include_ind")
+    ind_list = form.getlist("individual_id")
+    affected_status_list = form.getlist("affected_status")
+    allele_origin_list = form.getlist("allele_of_origin")
+    collection_method_list = form.getlist("collection_method")
+    somatic_fraction = form.getlist("somatic_allele_fraction")
+    somatic_in_normal = form.getlist("somatic_allele_in_normal")
+
+    for idx, ind_id in enumerate(ind_list):
+        if ind_id not in include_inds:
+            continue
+
+        obs = {
+            "alleleOrigin": allele_origin_list[idx],
+            "affectedStatus": affected_status_list[idx],
+            "collectionMethod": collection_method_list[idx],
+            "numberOfIndividuals": 1,
+            "presenceOfSomaticVariantInNormalTissue": somatic_in_normal[idx],
+        }
+        if somatic_fraction[idx]:
+            obs["somaticVariantAlleleFraction"] = somatic_fraction[idx]
+
+        onc_item["observedIn"].append(obs)
+
+
+def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionItem:
+    """Parse form fields for an oncogenic classication of a variant and converts it into the format extected by ClinVar (json dict)."""
+    onc_item = {"record_status": "novel"}
+    _parse_onc_classification(onc_item, form)
+    _parse_onc_assertion(onc_item, form)
+    _parse_variant_set(onc_item, form)
+    _parse_condition_set(onc_item, form)
+    _parse_observations(onc_item, form)
+
+    LOG.error(onc_item)
+
+
+def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
+    """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
+    onc_item: dict = parse_clinvar_onc_item(form)
