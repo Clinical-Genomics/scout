@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Literal, Optional
 
 from bson.objectid import ObjectId
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 from scout.constants import CHROMOSOMES
 from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS

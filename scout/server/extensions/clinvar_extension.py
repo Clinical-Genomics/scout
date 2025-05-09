@@ -138,5 +138,3 @@ class ClinVarApi:
 
         except Exception as ex:
             return 500, str(ex)
-
-    # def build_oncogenic_submission(self):
