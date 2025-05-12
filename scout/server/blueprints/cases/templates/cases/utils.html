@@ -301,7 +301,7 @@
         {% for gene in variant.genes %} {{ gene.symbol }} {% endfor %}
       {% endif %}
       {% if variant.str_mc %}
-        {{ variant.str_mc }}
+        STR{{ variant.str_mc }}
       {% else %}
         {{ variant.alternative|truncate(20,True) }}
       {% endif %}

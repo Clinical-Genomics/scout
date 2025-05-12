@@ -35,6 +35,7 @@ from scout.server.blueprints.variant.utils import (
     clinsig_human,
     get_callers,
     get_filters,
+    get_str_mc,
     predictions,
     update_representative_gene,
     update_variant_case_panels,
@@ -995,28 +996,6 @@ def parse_variant(
     variant_obj["filters"] = get_filters(variant_obj)
 
     return variant_obj
-
-
-def get_str_mc(variant_obj: dict) -> Optional[int]:
-    """Return variant Short Tandem Repeat motif count, either as given by its ALT MC value
-    from the variant FORMAT field, or as a number given in the ALT on the form
-    '<STR123>'.
-    """
-    alt_mc = None
-    if variant_obj["alternative"] == ".":
-        return alt_mc
-
-    for sample in variant_obj["samples"]:
-        if sample["genotype_call"] in ["./.", ".|", "0/0", "0|0"]:
-            continue
-        alt_mc = sample.get("alt_mc")
-    if alt_mc:
-        return alt_mc
-
-    alt_num = NUM.search(variant_obj["alternative"])
-    if alt_num:
-        alt_mc = int(alt_num.group())
-        return alt_mc
 
 
 def download_str_variants(case_obj, variant_objs):

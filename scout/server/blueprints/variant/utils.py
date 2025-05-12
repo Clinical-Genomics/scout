@@ -683,3 +683,25 @@ def associate_variant_genes_with_case_panels(case_obj: Dict, variant_obj: Dict) 
             geneid_gene[hgnc_id]["associated_gene_panels"] = matching_panels
 
     variant_obj["genes"] = list(geneid_gene.values())
+
+
+def get_str_mc(variant_obj: dict) -> Optional[int]:
+    """Return variant Short Tandem Repeat motif count, either as given by its ALT MC value
+    from the variant FORMAT field, or as a number given in the ALT on the form
+    '<STR123>'.
+    """
+    alt_mc = None
+    if variant_obj["alternative"] == ".":
+        return alt_mc
+
+    for sample in variant_obj["samples"]:
+        if sample["genotype_call"] in ["./.", ".|", "0/0", "0|0"]:
+            continue
+        alt_mc = sample.get("alt_mc")
+    if alt_mc:
+        return alt_mc
+
+    alt_num = NUM.search(variant_obj["alternative"])
+    if alt_num:
+        alt_mc = int(alt_num.group())
+        return alt_mc
