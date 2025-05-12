@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Dict, List, Optional, Tuple
 
 from scout.adapter import MongoAdapter
