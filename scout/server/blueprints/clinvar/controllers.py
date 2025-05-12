@@ -586,8 +586,8 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
     casedata_list: List[dict] = parse_casedata_form_fields(form)
     institute_id = institute_obj["_id"]
 
-    # retrieve or create an open ClinVar submission:
-    subm: dict = store.get_open_clinvar_submission(institute_id, current_user._id)
+    # retrieve or create an open germline ClinVar submission:
+    subm: dict = store.get_open_germline_clinvar_submission(institute_id, current_user._id)
     # save submission objects in submission:
     result: Optional[dict] = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
     if result:
@@ -752,9 +752,13 @@ def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionIt
     _parse_condition_set(onc_item, form)
     _parse_observations(onc_item, form)
 
-    LOG.error(onc_item)
-
 
 def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
-    onc_item: dict = parse_clinvar_onc_item(form)
+    onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
+
+    # retrieve or create an open ClinVar submission:
+    onc_subm: dict = store.get_open_onc_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=current_user._id
+    )
+    LOG.warning(onc_subm)
