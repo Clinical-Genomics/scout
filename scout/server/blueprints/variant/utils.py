@@ -15,8 +15,6 @@ from scout.server.links import add_gene_links, add_tx_links
 
 LOG = logging.getLogger(__name__)
 
-NUM = re.compile(r"\d+")
-
 
 def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     """Adds manually curated information from a gene panel to a gene
@@ -693,6 +691,8 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
     from the variant FORMAT field, or as a number given in the ALT on the form
     '<STR123>'.
     """
+    NUM = re.compile(r"\d+")
+
     alt_mc = None
     if variant_obj["alternative"] == ".":
         return alt_mc
