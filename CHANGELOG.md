@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions
+
+## [4.101]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
 - Simplified visualization of previous ACMG and CCV classifications for a variant on variantS page (#5439 & #5440)
@@ -16,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
 - Clinical variant files could once again be read in arbitrary order on load (#5452)
 - Fix test_sanger_validation test to be run with a mock app instantiated (#5453)
-
 
 ## [4.100.2]
 ### Fixed
