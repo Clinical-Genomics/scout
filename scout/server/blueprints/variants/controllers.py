@@ -58,8 +58,6 @@ from .forms import (
 )
 from .utils import update_case_panels
 
-NUM = re.compile(r"\d+")
-
 LOG = logging.getLogger(__name__)
 
 
