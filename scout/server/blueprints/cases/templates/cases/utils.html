@@ -615,7 +615,6 @@
         </li>
       {% endfor %}
     </ul>
-    {{ clinvar_vars_summary(suspects, case, institute) }}
       </div>
   </div>
 {% endmacro %}
@@ -631,26 +630,6 @@
         <form id="clinvar_onc_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_onc_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
         </form>
-    {% endif %}
-{% endmacro %}
-
-{% macro clinvar_vars_summary(suspects, case, institute) %}
-    {% if case.clinvar_variants %}
-        {% if case.clinvar_variants_not_in_suspects | length >0 %}
-            <div class="d-flex align-content-center flex-wrap">
-                <div class="col-auto d-flex align-items-center wrap">
-                    <h6 class="m-2">&nbsp;Variants present in a ClinVar submission, no longer pinned:</h6>
-                </div>
-                {% for entry in case.clinvar_variants_not_in_suspects %}
-                    <div class="m-2">{{ pretty_link_variant(entry, case) }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-            <div class="card-footer d-flex justify-content-center pb-0" style="background-color:inherit;">
-                <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}"
-                    class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar
-                    submissions <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
     {% endif %}
 {% endmacro %}
 

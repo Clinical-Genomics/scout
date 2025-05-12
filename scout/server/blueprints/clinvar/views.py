@@ -86,14 +86,14 @@ def clinvar_save(institute_id: str, case_name: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<institute_id>/clinvar_submissions", methods=["GET"])
-def clinvar_submissions(institute_id):
+@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET"])
+def clinvar_germline_submissions(institute_id):
     """Handle clinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     data = {
-        "submissions": store.clinvar_submissions(institute_id),
+        "submissions": store.get_clinvar_germline_submissions(institute_id),
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,

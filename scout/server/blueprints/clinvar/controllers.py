@@ -579,6 +579,24 @@ def _clinvar_submission_header(submission_objs, csv_type):
     return custom_header
 
 
+def add_clinvar_events(institute_obj: dict, case_obj: dict, variant_id: str):
+    """Create case and variant-related events when a variants gets added to a ClinVar submission object."""
+
+    variant_obj: dict = store.variant(document_id=variant_id)
+    user_obj: dict = store.user(user_id=current_user._id)
+    for category in ["case", "variant"]:
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=f"/{institute_obj['_id']}/{case_obj['display_name']}/{variant_obj['_id']}",
+            category=category,
+            verb="clinvar_add",
+            variant=variant_obj,
+            subject=variant_obj["display_name"],
+        )
+
+
 def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
     """It is invoked by the 'clinvar_save' endpoint. Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission."""
 
@@ -595,20 +613,11 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
             "An open ClinVar submission was updated correctly with submitted data",
             "success",
         )
+
         # Create user-related events
-        variant_obj: dict = store.variant(document_id=variant_data.get("local_id"))
-        user_obj: dict = store.user(user_id=current_user._id)
-        for category in ["case", "variant"]:
-            store.create_event(
-                institute=institute_obj,
-                case=case_obj,
-                user=user_obj,
-                link=f"/{institute_id}/{case_obj['display_name']}/{variant_obj['_id']}",
-                category=category,
-                verb="clinvar_add",
-                variant=variant_obj,
-                subject=variant_obj["display_name"],
-            )
+        add_clinvar_events(
+            institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
+        )
 
 
 def remove_item_from_submission(submission: str, object_type: str, subm_variant_id: str):
@@ -761,4 +770,12 @@ def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: Imm
     onc_subm: dict = store.get_open_onc_clinvar_submission(
         institute_id=institute_obj["_id"], user_id=current_user._id
     )
-    LOG.warning(onc_subm)
+    # Add variant to submission object
+    onc_subm["oncogenicitySubmission"].append(onc_item)
+    onc_subm["updated_at"] = datetime.now()
+    store.clinvar_submission_collection.replace_one({"_id": onc_subm["_id"]}, onc_subm)
+
+    # update case with submission info
+    add_clinvar_events(
+        institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
+    )

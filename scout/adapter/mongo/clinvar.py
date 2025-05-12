@@ -35,9 +35,11 @@ class ClinVarHandler(object):
             "status": "open",
             "type": "oncogenicity",
             "created_at": datetime.now(),
+            "updated_at": datetime.now(),
             "institute_id": institute_id,
             "created_by": user_id,
             "assertionCriteria": {"db": ASSERTION_ONC_ONC_DB, "id": ASSERTION_CRITERIA_ONC_ID},
+            "oncogenicitySubmission": [],
         }
         LOG.info("Creating a new ClinVar oncogenicity submission for institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
@@ -259,9 +261,9 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def clinvar_submissions(self, institute_id: str) -> List[dict]:
-        """Collect all open and closed clinvar submissions for an institute"""
-        query = dict(institute_id=institute_id)
+    def get_clinvar_germline_submissions(self, institute_id: str) -> List[dict]:
+        """Collect all open and closed ClinVar germline submissions for an institute"""
+        query = {"institute_id": institute_id, "type": {"$exists": False}}
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
         )
