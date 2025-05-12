@@ -4,18 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Refactored and simplified code that fetches case's genome build (#5443)
+
 ## [4.101]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
 - Simplified visualization of previous ACMG and CCV classifications for a variant on variantS page (#5439 & #5440)
 - On ClinVar multistep submission form, skip fetching transcript versions for build 38 transcripts which are not MANE Select or MANE Plus Clinical (#5426)
-- Refactored and simplified code that fetches case's genome build (#5443)
 ### Fixed
 - Malformatted table cell for analysis date on caseS page (#5438)
 - Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
 - Clinical variant files could once again be read in arbitrary order on load (#5452)
 - Fix test_sanger_validation test to be run with a mock app instantiated (#5453)
-
 
 ## [4.100.2]
 ### Fixed
