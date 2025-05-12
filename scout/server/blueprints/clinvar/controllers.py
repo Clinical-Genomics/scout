@@ -699,6 +699,8 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
 
+    onc_item["variantSet"] = [variant]
+
 
 def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
     """Associate one or more phenotype conditions to a variant of a ClinVar submission."""
