@@ -183,7 +183,7 @@ def _populate_case_groups(
             case_group_label[group] = store.case_group_label(group)
 
 
-def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
+def _get_partial_causatives(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> List[Dict]:
     """Check for partial causatives and associated phenotypes.
     Return any partial causatives a case has, populated as causative objs.
     """
@@ -191,8 +191,13 @@ def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
     partial_causatives = []
     if case_obj.get("partial_causatives"):
         for var_id, values in case_obj["partial_causatives"].items():
+            variant_obj = store.variant(var_id)
+            if variant_obj:
+                decorated_variant_obj = _get_decorated_var(
+                    store, var_obj=variant_obj, institute_obj=institute_obj, case_obj=case_obj
+                )
             causative_obj = {
-                "variant": store.variant(var_id) or var_id,
+                "variant": decorated_variant_obj or var_id,
                 "disease_terms": values.get("diagnosis_phenotypes"),
                 "hpo_terms": values.get("phenotype_terms"),
             }
@@ -361,7 +366,7 @@ def case(
     evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
     _populate_assessments(evaluated_variants)
 
-    partial_causatives = _get_partial_causatives(store, case_obj)
+    partial_causatives = _get_partial_causatives(store, institute_obj, case_obj)
     _populate_assessments(partial_causatives)
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])

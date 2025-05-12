@@ -458,21 +458,7 @@
               <div class="row">
                 <div class="col">
                   <i class="far fa-check-circle"></i>
-                  {% if variant.category == "snv" %}
-                    <a href="{{ url_for('variant.variant',
-                                        institute_id=variant.institute,
-                                        case_name=case.display_name,
-                                        variant_id=variant._id) }}">
-                          {{ variant.hgnc_symbols|join(', ') }} (partial causative)
-  		             {% else %}
-          		      <a href="{{ url_for('variant.sv_variant',
-                                              institute_id=variant.institute,
-                                              case_name=case.display_name,
-                                              variant_id=variant._id) }}">
-  		              {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-                    (partial causative)
-  		             {% endif %}
-                   </a>
+                  {{ pretty_link_variant(variant, case) }} (partial causative)
                 </div>
                 <div class="col-2" style="width:fit-content;">
                   {{ remove_form(url_for('cases.mark_causative',
