@@ -8,7 +8,11 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import config_igv_tracks, store
-from scout.server.utils import case_append_alignments, find_index
+from scout.server.utils import (
+    case_append_alignments,
+    find_index,
+    get_case_genome_build,
+)
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -88,7 +92,8 @@ def make_igv_tracks(
         display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set genome build for displaying alignments:
-    if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
+
+    if get_case_genome_build(case_obj) == "38" or chromosome == "M":
         build = "38"
     else:
         build = "37"
@@ -137,10 +142,7 @@ def make_sashimi_tracks(
     """
 
     locus = "All"
-
-    build = "38"
-    if "37" in str(case_obj.get("rna_genome_build", "38")):
-        build = "37"
+    build = "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
 
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)

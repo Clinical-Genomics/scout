@@ -5,9 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Refactored and simplified code that fetches case's genome build (#5443)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
-
 
 ## [4.101]
 ### Changed
@@ -19,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove "Add to ClinVar submission" button for pinned MEI variants as submission is not supported at the moment (#5442)
 - Clinical variant files could once again be read in arbitrary order on load (#5452)
 - Fix test_sanger_validation test to be run with a mock app instantiated (#5453)
-
 
 ## [4.100.2]
 ### Fixed
