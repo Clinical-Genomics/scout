@@ -310,7 +310,7 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
     return data
 
 
-def _get_marked_variants(
+def _get_suspects_or_causatives(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, kind: str = "suspects"
 ) -> list:
     """Fetch the variant objects for suspects and causatives and decorate them.
@@ -357,10 +357,10 @@ def case(
     case_group_label = {}
     _populate_case_groups(store, case_obj, case_groups, case_group_label)
 
-    suspects = _get_marked_variants(store, institute_obj, case_obj, "suspects")
+    suspects = _get_suspects_or_causatives(store, institute_obj, case_obj, "suspects")
     _populate_assessments(suspects)
 
-    causatives = _get_marked_variants(store, institute_obj, case_obj, "causatives")
+    causatives = _get_suspects_or_causatives(store, institute_obj, case_obj, "causatives")
     _populate_assessments(causatives)
 
     evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
