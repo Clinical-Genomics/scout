@@ -41,6 +41,7 @@ from scout.server.utils import (
     case_has_chanjo_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
+    get_case_genome_build,
     user_institutes,
     variant_institute_and_case,
 )
@@ -233,9 +234,7 @@ def variant(
 
     variant_id = variant_obj["variant_id"]
 
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     # is variant located on the mitochondria
     variant_obj["is_mitochondrial"] = any(
@@ -429,9 +428,7 @@ def get_gene_has_full_coverage(institute_obj, case_obj, variant_obj) -> Dict[int
     if not case_obj.get("chanjo2_coverage"):
         return {}
 
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     gene_has_full_coverage: dict = {
         hgnc_id: chanjo2.get_gene_complete_coverage(
@@ -660,9 +657,7 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
         store, variant_obj, institute_id, case_name
     )
 
-    genome_build = str(case_obj.get("genome_build", "37"))
-    if genome_build not in ["37", "38"]:
-        genome_build = "37"
+    genome_build = get_case_genome_build(case_obj)
 
     add_gene_info(store, variant_obj, genome_build=genome_build)
 

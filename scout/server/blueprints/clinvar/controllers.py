@@ -37,7 +37,7 @@ LOG = logging.getLogger(__name__)
 def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
     """Retrieve all transcripts / HGVS for a given variant."""
 
-    build = str(case_obj.get("genome_build", "37"))
+    build = get_case_genome_build(case_obj)
     tx_hgvs_list = [("", "Do not specify")]
     case_has_build_37 = "37" in case_obj.get("genome_build", "37")
 
@@ -410,7 +410,7 @@ def json_api_submission(submission_id):
 
     # Retrieve genome build for the case submitted
     case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
-    extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
+    extra_params["assembly"] = "GRCh37" if "37" in get_case_genome_build(case_obj) else "GRCh38"
 
     def _write_file(afile, header, lines):  # Write temp CSV file
         writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
