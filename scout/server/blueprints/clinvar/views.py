@@ -158,6 +158,22 @@ def clinvar_download_json(submission, clinvar_id):
 ### ClinVar oncogenicity variants submissions views
 
 
+@clinvar_bp.route("/<institute_id>/clinvar_onc_submissions", methods=["GET"])
+def clinvar_onc_submissions(institute_id):
+    """Handle clinVar submission objects and files"""
+
+    institute_obj = institute_and_case(store, institute_id)
+    institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
+    data = {
+        "submissions": store.get_clinvar_onc_submissions(institute_id),
+        "institute": institute_obj,
+        "show_submit": current_user.email in institute_clinvar_submitters
+        or not institute_clinvar_submitters,
+    }
+    return str(data)
+    # return render_template("clinvar/clinvar_submissions.html", **data)
+
+
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
 def clinvar_add_onc_variant(institute_id: str, case_name: str):
     """Create a ClinVar submission document in database for one or more variants from a case."""

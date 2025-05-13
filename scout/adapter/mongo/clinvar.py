@@ -261,8 +261,15 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
+    def get_clinvar_onc_submissions(self, institute_id: str) -> List[dict]:
+        """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
+        query = {"institute_id": institute_id, "type": "oncogenicity"}
+        appo = self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+        LOG.warning(type(appo))
+        return appo
+
     def get_clinvar_germline_submissions(self, institute_id: str) -> List[dict]:
-        """Collect all open and closed ClinVar germline submissions for an institute"""
+        """Collect all open and closed ClinVar germline submissions for an institute."""
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
