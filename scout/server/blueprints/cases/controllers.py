@@ -158,7 +158,12 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     return html_body_content
 
 
-def _populate_case_groups(store, case_obj, case_groups, case_group_label):
+def _populate_case_groups(
+    store: MongoAdapter,
+    case_obj: dict,
+    case_groups: Dict[str, List[str]],
+    case_group_label: Dict[str, str],
+):
     """Case groups allow display of information about user linked cases together on one case.
     Notably variantS lists show shared annotations and alignment views show all alignments
     available for the group.
@@ -179,20 +184,21 @@ def _populate_case_groups(store, case_obj, case_groups, case_group_label):
             case_group_label[group] = store.case_group_label(group)
 
 
-def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
-    """Return any partial causatives a case has, populated as causative objs.
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(models.Case)
-    Returns:
-        partial(list(dict))
+def _get_partial_causatives(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> List[Dict]:
+    """Check for partial causatives and associated phenotypes.
+    Return any partial causatives a case has, populated as causative objs.
     """
 
     partial_causatives = []
     if case_obj.get("partial_causatives"):
         for var_id, values in case_obj["partial_causatives"].items():
+            variant_obj = store.variant(var_id)
+            if variant_obj:
+                decorated_variant_obj = _get_decorated_var(
+                    store, var_obj=variant_obj, institute_obj=institute_obj, case_obj=case_obj
+                )
             causative_obj = {
-                "variant": store.variant(var_id) or var_id,
+                "variant": decorated_variant_obj or var_id,
                 "disease_terms": values.get("diagnosis_phenotypes"),
                 "hpo_terms": values.get("phenotype_terms"),
             }
@@ -288,7 +294,7 @@ def bionano_case(store, institute_obj, case_obj) -> Dict:
     return data
 
 
-def sma_case(store, institute_obj, case_obj):
+def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
     """Preprocess a case for tabular view, SMA."""
 
     _populate_case_individuals(case_obj)
@@ -303,6 +309,26 @@ def sma_case(store, institute_obj, case_obj):
         "region": GENOME_REGION[get_case_genome_build(case_obj)],
     }
     return data
+
+
+def _get_suspects_or_causatives(
+    store: MongoAdapter, institute_obj: dict, case_obj: dict, kind: str = "suspects"
+) -> list:
+    """Fetch the variant objects for suspects and causatives and decorate them.
+    If no longer available, append variant_id instead."""
+
+    marked_vars = []
+    for variant_id in case_obj.get(kind, []):
+        variant_obj = store.variant(variant_id)
+        if variant_obj:
+            marked_vars.append(
+                _get_decorated_var(
+                    store, var_obj=variant_obj, institute_obj=institute_obj, case_obj=case_obj
+                )
+            )
+        else:
+            marked_vars.append(variant_id)
+    return marked_vars
 
 
 def case(
@@ -332,22 +358,16 @@ def case(
     case_group_label = {}
     _populate_case_groups(store, case_obj, case_groups, case_group_label)
 
-    # Fetch the variant objects for suspects and causatives
-    suspects = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
-    ]
+    suspects = _get_suspects_or_causatives(store, institute_obj, case_obj, "suspects")
     _populate_assessments(suspects)
-    causatives = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
-    ]
+
+    causatives = _get_suspects_or_causatives(store, institute_obj, case_obj, "causatives")
     _populate_assessments(causatives)
 
-    # get evaluated variants
     evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
     _populate_assessments(evaluated_variants)
 
-    # check for partial causatives and associated phenotypes
-    partial_causatives = _get_partial_causatives(store, case_obj)
+    partial_causatives = _get_partial_causatives(store, institute_obj, case_obj)
     _populate_assessments(partial_causatives)
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
@@ -677,7 +697,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
             add_bayesian_acmg_classification(var_obj)
             add_bayesian_ccv_classification(var_obj)
             evaluated_variants_by_type[eval_category].append(
-                _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
+                _get_decorated_var(
+                    store, var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj
+                )
             )
 
     for var_obj in store.evaluated_variants(
@@ -690,7 +712,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     data["variants"] = evaluated_variants_by_type
 
 
-def _get_decorated_var(var_obj: dict, institute_obj: dict, case_obj: dict) -> dict:
+def _get_decorated_var(
+    store: MongoAdapter, var_obj: dict, institute_obj: dict, case_obj: dict
+) -> dict:
     """Decorate a variant object for display using the variant controller"""
     return variant_decorator(
         store=store,
@@ -720,7 +744,9 @@ def _append_evaluated_variant_by_type(
             add_bayesian_ccv_classification(var_obj)
 
             evaluated_variants_by_type[eval_category].append(
-                _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
+                _get_decorated_var(
+                    store, var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj
+                )
             )
 
 

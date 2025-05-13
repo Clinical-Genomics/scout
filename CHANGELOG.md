@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Refactored and simplified code that fetches case's genome build (#5443)
+### Fixed
+- Fix long STR variant pinned display on case page (#5455)
 
 ## [4.101]
 ### Changed
