@@ -776,8 +776,6 @@ def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: Imm
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
     onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
 
-    LOG.warning(f"ONC ITEM---->{onc_item}")
-
     # Validate oncogenicity item model
     try:
         OncogenicitySubmissionItem(**onc_item)
@@ -797,4 +795,9 @@ def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: Imm
     # update case with submission info
     add_clinvar_events(
         institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
+    )
+
+    flash(
+        "An open ClinVar submission was updated correctly with the variant details.",
+        "success",
     )
