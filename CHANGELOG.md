@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Fix long STR variant pinned display on case page (#5455)
+
+
 ## [4.101]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
