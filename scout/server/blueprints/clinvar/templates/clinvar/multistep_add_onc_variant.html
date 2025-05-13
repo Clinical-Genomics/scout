@@ -156,8 +156,6 @@ document.querySelector('form').addEventListener('keydown', function(e) {
 //Function definition for keeping the tooltip updated for each citation database option
 function updateTooltip(){
       let selectedDBId = $("#assertion_method_cit_db option:selected").text();
-      let tooltipText=undefined
-      let defaultValue=undefined
       switch (selectedDBId) {
           case "PubMed":
               tooltipText = "PubMed ID (PMID) is written as digits only, e.g. 21084639"

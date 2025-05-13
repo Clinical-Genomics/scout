@@ -171,7 +171,6 @@ def clinvar_onc_submissions(institute_id):
         or not institute_clinvar_submitters,
     }
     return str(data)
-    # return render_template("clinvar/clinvar_submissions.html", **data)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
