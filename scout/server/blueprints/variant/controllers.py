@@ -28,6 +28,7 @@ from scout.constants import (
     VERBS_MAP,
 )
 from scout.server.blueprints.variant.utils import (
+    get_str_mc,
     update_representative_gene,
     update_variant_case_panels,
 )
@@ -313,6 +314,9 @@ def variant(
         )
 
     variant_obj["end_position"] = end_position(variant_obj)
+
+    # common motif count for STR variants
+    variant_obj["str_mc"] = get_str_mc(variant_obj)
 
     # Add general variant links
     variant_obj.update(get_variant_links(institute_obj, variant_obj, int(genome_build)))
