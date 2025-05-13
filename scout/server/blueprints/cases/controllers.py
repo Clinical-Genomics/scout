@@ -66,6 +66,7 @@ from scout.server.utils import (
     case_has_mt_alignments,
     case_has_mtdna_report,
     case_has_rna_tracks,
+    get_case_genome_build,
     get_case_mito_chromosome,
     institute_and_case,
 )
@@ -305,7 +306,7 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
         "case": case_obj,
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "events": _get_events(store, institute_obj, case_obj),
-        "region": GENOME_REGION[case_obj.get("genome_build", "38")],
+        "region": GENOME_REGION[get_case_genome_build(case_obj)],
     }
     return data
 
@@ -491,7 +492,7 @@ def case(
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
-        "gens_info": gens.connection_settings(case_obj.get("genome_build")),
+        "gens_info": gens.connection_settings(get_case_genome_build(case_obj)),
         "display_rerunner": rerunner.connection_settings.get("display", False),
         "hide_matching": hide_matching,
         "audits": store.case_events_by_verb(
