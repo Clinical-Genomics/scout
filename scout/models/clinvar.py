@@ -86,9 +86,10 @@ clinvar_casedata = {
 ### Models used for oncogenocity submissions via API
 
 
-CitationDB = Enum("CitationDB", CITATION_DBS_API)
+CitationDB = Enum("CitationDB", {db.upper(): db for db in CITATION_DBS_API})
 OncogenicityClassificationDescription = Enum(
-    "OncogenicityClassificationDescription", ONCOGENIC_CLASSIF_TERMS
+    "OncogenicityClassificationDescription",
+    {term.upper().replace(" ", "_"): term for term in ONCOGENIC_CLASSIF_TERMS},
 )
 
 
@@ -114,7 +115,7 @@ class ObservedIn(BaseModel):
 
 
 class Gene(BaseModel):
-    id: int
+    symbol: str
 
 
 Chromosome = Enum(

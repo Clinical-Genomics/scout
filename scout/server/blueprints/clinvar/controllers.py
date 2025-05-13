@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple, Union
 
 from flask import flash
 from flask_login import current_user
+from pydantic_core._pydantic_core import ValidationError
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
@@ -678,18 +679,25 @@ def set_onc_clinvar_form(var_id: str, data: dict):
 
 def _parse_onc_classification(onc_item: dict, form: ImmutableMultiDict):
     """Assigns an oncogenicity classification to a submission item based on the user form."""
-    onc_item["oncogenicityClassificationDescription"] = form.get("onc_classification")
+    onc_item["oncogenicityClassification"] = {
+        "oncogenicityClassificationDescription": form.get("onc_classification"),
+        "dateLastEvaluated": form.get("last_evaluated"),
+    }
+    onc_item["dateLastEvaluated"] = form.get("last_evaluated")
+    if form.get("clinsig_comment"):
+        onc_item["oncogenicityClassification"]["comment"] = form.get("clinsig_comment")
 
 
 def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
     """Adds to an oncogenicity classification item the specifics of the user classification."""
-    onc_item["dateLastEvaluated"] = form.get("last_evaluated")
-    onc_item["comment"] = form.get("clinsig_comment")
+
     if form.get("assertion_method_cit_id"):
-        onc_item["citation"] = {
-            "db": form["assertion_method_cit_db"],
-            "id": form["assertion_method_cit_id"],
-        }
+        onc_item["oncogenicityClassification"]["citation"] = [
+            {
+                "db": form.get("assertion_method_cit_db"),
+                "id": form.get("assertion_method_cit_id"),
+            }
+        ]
 
 
 def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
@@ -708,7 +716,7 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
 
-    onc_item["variantSet"] = [variant]
+    onc_item["variantSet"] = {"variant": [variant]}
 
 
 def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
@@ -747,33 +755,44 @@ def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
             "presenceOfSomaticVariantInNormalTissue": somatic_in_normal[idx],
         }
         if somatic_fraction[idx]:
-            obs["somaticVariantAlleleFraction"] = somatic_fraction[idx]
+            obs["somaticVariantAlleleFraction"] = int(somatic_fraction[idx])
 
         onc_item["observedIn"].append(obs)
 
 
-def parse_clinvar_onc_item(form: ImmutableMultiDict) -> OncogenicitySubmissionItem:
+def parse_clinvar_onc_item(form: ImmutableMultiDict) -> dict:
     """Parse form fields for an oncogenic classication of a variant and converts it into the format extected by ClinVar (json dict)."""
-    onc_item = {"record_status": "novel"}
+    onc_item = {"recordStatus": "novel"}
     _parse_onc_classification(onc_item, form)
     _parse_onc_assertion(onc_item, form)
     _parse_variant_set(onc_item, form)
     _parse_condition_set(onc_item, form)
     _parse_observations(onc_item, form)
 
+    return onc_item
+
 
 def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
     onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
+
+    LOG.warning(f"ONC ITEM---->{onc_item}")
+
+    # Validate oncogenicity item model
+    try:
+        OncogenicitySubmissionItem(**onc_item)
+    except ValidationError as ve:
+        flash(str(ve), "warning")
+        return
 
     # retrieve or create an open ClinVar submission:
     onc_subm: dict = store.get_open_onc_clinvar_submission(
         institute_id=institute_obj["_id"], user_id=current_user._id
     )
     # Add variant to submission object
-    onc_subm["oncogenicitySubmission"].append(onc_item)
+    onc_subm.setdefault("oncogenicitySubmission", []).append(onc_item)
     onc_subm["updated_at"] = datetime.now()
-    store.clinvar_submission_collection.replace_one({"_id": onc_subm["_id"]}, onc_subm)
+    store.clinvar_submission_collection.find_one_and_replace({"_id": onc_subm["_id"]}, onc_subm)
 
     # update case with submission info
     add_clinvar_events(
