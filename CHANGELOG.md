@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions
+### Fixed
+- Fix long STR variant pinned display on case page (#5455)
 
 ## [4.101]
 ### Changed
