@@ -622,7 +622,7 @@
 {% endmacro %}
 
 {% macro clinvar_var_status(variant, case, institute) %}
-    {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() or case.clinvar_onc_variants and variant._id in case.clinvar_onc_variants.keys() %}
+    {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
       (included in a ClinVar submission)
     {% elif variant._id and variant.category in ["snv", "sv"] %}
         <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">

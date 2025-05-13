@@ -165,7 +165,7 @@ def clinvar_onc_submissions(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     data = {
-        "submissions": store.get_clinvar_onc_submissions(institute_id),
+        "submissions": list(store.get_clinvar_onc_submissions(institute_id)),
         "institute": institute_obj,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,

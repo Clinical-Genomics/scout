@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
@@ -261,12 +261,10 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_onc_submissions(self, institute_id: str) -> List[dict]:
+    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.synchronous.cursor.Cursor:
         """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
-        query = {"institute_id": institute_id, "type": "oncogenicity"}
-        appo = self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
-        LOG.warning(type(appo))
-        return appo
+        query = {"institute_id": institute_id}
+        return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
     def get_clinvar_germline_submissions(self, institute_id: str) -> List[dict]:
         """Collect all open and closed ClinVar germline submissions for an institute."""
@@ -441,20 +439,13 @@ class ClinVarHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-    def case_to_clinVars(self, case_id):
-        """Get all variants included in clinvar submissions for a case
-
-        Args:
-            case_id(str): a case _id
-
-        Returns:
-            submission_variants(dict): keys are variant ids and values are variant submission objects
-
-        """
+    def case_to_clinvars(self, case_id: str) -> Dict[str, dict]:
+        """Get all variants included in ClinVar submissions for a case. Returns a dictionary with variant IDs as keys and submissions as values."""
         query = dict(case_id=case_id, csv_type="variant")
-        clinvar_objs = list(self.clinvar_collection.find(query))
+        germline_clinvar_objs = list(self.clinvar_collection.find(query))
+        oncogenic_clinvar_objs = []
         submitted_vars = {}
-        for clinvar in clinvar_objs:
+        for clinvar in germline_clinvar_objs + oncogenic_clinvar_objs:
             submitted_vars[clinvar.get("local_id")] = clinvar
 
         return submitted_vars

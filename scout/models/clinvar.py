@@ -150,11 +150,18 @@ class ConditionSet(BaseModel):
 
 
 class OncogenicitySubmissionItem(BaseModel):
+    # Field necessary for the API submissions:
     recordStatus: str
     oncogenicityClassification: OncogenicityClassification
     observedIn: List[ObservedIn]
     variantSet: VariantSet
     conditionSet: ConditionSet
+
+    # Fields necessary to map the variant to a variant in Scout:
+    institute_id: str
+    case_id: str
+    case_name: str
+    variant_id: str
 
 
 class AssertionCriteria(BaseModel):
@@ -165,5 +172,4 @@ class AssertionCriteria(BaseModel):
 class OncogenicitySubmissionDocument(BaseModel):
     submissionName: str
     assertionCriteria: AssertionCriteria
-    behalfOrgID: int
     oncogenicitySubmission: List[OncogenicitySubmissionItem]

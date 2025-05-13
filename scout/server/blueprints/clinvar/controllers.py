@@ -776,10 +776,17 @@ def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: Imm
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
     onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
 
+    # Add case specifics to the submission item
+    onc_item["institute_id"] = institute_obj["_id"]
+    onc_item["case_id"] = case_obj["_id"]
+    onc_item["case_name"] = case_obj.get("display_name", "_id")
+    onc_item["variant_id"] = form.get("linking_id")
+
     # Validate oncogenicity item model
     try:
         OncogenicitySubmissionItem(**onc_item)
     except ValidationError as ve:
+        LOG.error(ve)
         flash(str(ve), "warning")
         return
 
