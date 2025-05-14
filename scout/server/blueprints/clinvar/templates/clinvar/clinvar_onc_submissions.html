@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -15,21 +14,18 @@
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
   <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">Clinvar germline submissions</span>
+    <span class="navbar-text">Clinvar oncogenicity submissions</span>
   </li>
 {% endblock %}
 
 
 {% macro submissions_macro(submissions) %}
 <div class="container-float">
-  <h3 class="mt-3">ClinVar submissions page</h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a><br>
-  <!-- Modal -->
-  {{ clinvar_howto_modal() }}
-  <!-- Modal end -->
+  <h3 class="mt-3">Oncogenicity submissions</h3>
   <br>
   {% if submissions %}
     <div style="overflow-y: auto; height: 1000px;">
-    {% for status in ['open', 'closed', 'submitted'] %}
+     {% for status in ['open', 'closed', 'submitted'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
           {{ submission_panel(submission) }}
@@ -106,85 +102,35 @@
         </div>
         <div> <!--variant data div -->
           <h4>Variant data:</h4>
-          {% if subm_obj.variant_data and subm_obj.variant_data | length > 0 %}
+          {% if subm_obj.oncogenicitySubmission and subm_obj.oncogenicitySubmission | length > 0 %}
           <table class="table table-striped">
             <caption></caption>
             <thead>
               <tr>
-                <th></th>
-                <th>Name</th>
-                <th></th>
-                <th>Type</th>
                 <th>Case</th>
-                <th>Refseq</th>
-                <th>Gene</th>
-                <th>HGVS</th>
+                <th>Variant</th>
                 <th>Classification</th>
-                <th>Added by</th>
+                <th>Last evaluated</th>
+                <th>Comment</th>
+                <th>Citation</th>
+                <th>Variant</th>
+                <th>Associated conditions</th>
+                <th>Observations</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {% set var_key_name = {} %}
-
-              {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
-                {% set case_name = subm_obj.cases[subm_variant.case_id] %}
+              {% for onc_var in subm_obj.oncogenicitySubmission %}
                 <tr>
-                  <td>{{loop.index}}</td>
-                    {% if subm_variant.category == 'sv' %}
-                      {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
-                      <td>
-                        {% if "N/A" not in case_name %}
-                          <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
-                        {% else %}
-                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
-                        {% endif %}
-                      </td>
-                      <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                      <td><div class="badge bg-warning">SV</div></td>
-                    {% else %} <!-- SNV -->
-                      {% if subm_variant.ref_seq and subm_variant.hgvs %}
-                        {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.ref_seq, subm_variant.hgvs])} ) %}
-                      {% else %}
-                        {% do var_key_name.update({subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
-                      {% endif %}
-                      <td>
-                        {% if "N/A" not in case_name %}
-                          <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
-                        {% else %}
-                          {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
-                        {% endif %}
-                      </td>
-                      <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                      <td><div class="badge bg-success">SNV</div></td>
-                    {% endif %}
-                  </td>
-                  <td>{{ case_link(institute_id=institute._id, case_name=case_name) }}</td>
-                  <td>{{subm_variant.ref_seq or '-'}}</td>
-                  <td>{{subm_variant.gene_symbol or '-'}}</td>
-                  <td>{{subm_variant.hgvs|truncate(100,true,'..') or '-'}}</td>
-                  <td>{{subm_variant.clinsig}}</td>
-                  <td>{{subm_variant.added_by or "N/A"}}</td>
-                  <td>
-                    <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
-                      <button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
-                    </form>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan=11>
-                    <div class="vardata">
-                      <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
-                          <ul class="list-group">
-                          {% for key, value in variant_header_fields.items() %}
-                            {% if subm_variant[key]%}
-                              <li class="list-group-item">{{ value }}: <strong>{{ subm_variant[key]}}</strong></li>
-                              {% endif %}
-                          {% endfor %}
-                          </ul>
-                      </div>
-                    </div>
-                  </td>
+                  <td><a href="{{ url_for('cases.case', institute_id=onc_var.institute_id, case_name=onc_var.case_name) }}" target="_blank">{{onc_var.case_name}}</a></td>
+                  <td><a href="{{ url_for('variant.cancer_variant', institute_id=onc_var.institute_id, case_name=onc_var.case_name, variant_id=onc_var.variant_id) }}" target="_blank">link</a></td>
+                  <td>{{onc_var.oncogenicityClassification.oncogenicityClassificationDescription}}</td>
+                  <td>{{onc_var.oncogenicityClassification.dateLastEvaluated}}</td>
+                  <td>{{onc_var.oncogenicityClassification.comment}}</td>
+                  <td>{{render_dict_array(onc_var.oncogenicityClassification.citation)}}</td>
+                  <td>{{render_dict_array(onc_var.variantSet.variant)}}</td>
+                  <td>{{render_dict_array(onc_var.conditionSet.condition)}}</td>
+                  <td>{{render_dict_array(onc_var.observedIn)}}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -193,75 +139,19 @@
             <p>This submission is open but has no variants yet.</p>
           {% endif %}
         </div> <!--variant data div end -->
-        {% if subm_obj.case_data and subm_obj.case_data | length > 0 %}
-          <div id="cdata_{{subm_obj._id}}"> <!--case data div -->
-            <h4>Observation data:</h4>
-            <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
-            <input type="hidden" name="newSampleName" id="newSampleName" value="">
-            <table class="table table-striped">
-              <caption></caption>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Individual</th>
-                  <th></th>
-                  <th>Case</th>
-                  <th>Variant</th>
-                  <th>Allele origin</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for case in subm_obj.case_data %}
-                  <tr>
-                    <td>{{loop.index}}</td>
-                    <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
-                    <td>
-                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pen-square" aria-hidden="true"></span></button>
-                    </td>
-                    </form>
-                    <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                    <td>{{ case_link(institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}</td>
-                    <td>{{var_key_name[case.linking_id]|truncate(100,true,'..')}}</td>
-                    <td>{{case.allele_origin}}</td>
-                    <td>
-                      <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
-                        <button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
-                      </form>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan=8>
-                      <div id="cddiv{{case._id}}" class="panel-body" style="display:none;">
-                        <ul class="list-group">
-                        {% for key, value in casedata_header_fields.items() %}
-                          {% if case[key]%}
-                            <li class="list-group-item">{{ value }}: <strong>{{ case[key] }}</strong></li>
-                          {% endif %}
-                        {% endfor %}
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <p>No case data provided for the above variants</p>
-        {% endif %}
       </div>
     </div>
   </div>
 </div>
 {% endmacro %}
 
-{% macro case_link(institute_id, case_name) %}
-{% if "N/A" in case_name %}
-  {{ case_name }}
-{% else %}
-  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank">{{case_name}}</a>
-{% endif %}
+{% macro render_dict_array(list_of_dicts) %}
+  {% for item in list_of_dicts %}
+    {% for key, value in item.items() %}
+      {{key}}:{{value}}<br>
+    {% endfor %}
+  {% endfor %}
+  {% if list_of_dicts|length > 1%}<br>{% endif %}
 {% endmacro %}
 
 {% macro action_modal(action_type, subm_id) %}
@@ -319,34 +209,5 @@
 
 {% block scripts %}
   {{ super() }}
-  <script type="text/javascript">
-
-  $(function () {
-      $('.casedata  div').hide();
-      $('.vardata  div').hide();
-      $('.cd_btn').on('click', function(){
-          var bid = $(this)[0].id;
-          var sel = '#cddiv' + bid;
-          if($(sel).is(':visible')){
-            $(sel).hide();
-          }
-          else{
-            $('.casedata  div').hide();
-            $(sel).fadeToggle();
-          }
-      });
-      $('.var_btn').on('click', function(){
-          var bid = $(this)[0].id;
-          var sel = '#vardiv' + bid;
-          if($(sel).is(':visible')){
-            $(sel).hide();
-          }
-          else{
-            $('.vardata div').hide();
-            $(sel).fadeToggle();
-          }
-      });
-  });
-</script>
 
 {% endblock %}
