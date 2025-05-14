@@ -8,10 +8,19 @@ import zipfile
 from functools import wraps
 from io import BytesIO
 from typing import Dict, Optional, Tuple
+from urllib.parse import urlparse
 
 import pdfkit
 from bson.objectid import ObjectId
-from flask import abort, current_app, flash, render_template, request
+from flask import (
+    Response,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+)
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
@@ -100,6 +109,20 @@ def public_endpoint(function):
     """Renders public endpoint"""
     function.is_public = True
     return function
+
+
+def trusted_redirect_referrer(request_referrer: Optional[str]) -> Response:
+    """Avoid untrusted URL redirection by parsing the request.referrer and allowing redirections only to relative URLs."""
+
+    if request_referrer:
+        parsed_url = urlparse(request_referrer)
+        if parsed_url.hostname in ("localhost", "127.0.0.1"):
+            return redirect(request_referrer)
+        if not parsed_url.netloc and not parsed_url.scheme:
+            return redirect(request_referrer)
+
+    # Redirect to a safe default if referrer is invalid
+    return redirect("/")
 
 
 def variant_institute_and_case(
