@@ -59,12 +59,12 @@
                 </a>
               </li>
               {% if subm_obj.status=='open'%}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs" disabled>Close submission</button></li>
               {% else %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs" disabled>Re-open submission</button></li>
               {% endif %}
               {% if subm_obj.status != 'submitted' %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs"disabled>Mark as submitted</button></li>
               {% endif %}
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission from Scout</button></li>
             </ol>
@@ -79,12 +79,12 @@
               <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
               <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
               <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id or ""}}"></td>
-              <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
+              <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id" disabled>Update ID manually</button></td>
               </form>
               {% if subm_obj.status == 'open' and show_submit  %}
                 <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
                 {{ submit_modal() }}
-                  <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
+                  <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal" disabled>Submit to ClinVar</button></td>
                 </form>
               {% endif %}
               {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
@@ -131,6 +131,11 @@
                   <td>{{render_dict_array(onc_var.variantSet.variant)}}</td>
                   <td>{{render_dict_array(onc_var.conditionSet.condition)}}</td>
                   <td>{{render_dict_array(onc_var.observedIn)}}</td>
+                  <td>
+                    <form id="delete_onc_var_item_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_object', submission=subm_obj._id, object_type='variant') }}" method="POST">
+                      <button type="submit" name="delete_object" value="{{onc_var.variant_id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+                    </form>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -148,7 +153,7 @@
 {% macro render_dict_array(list_of_dicts) %}
   {% for item in list_of_dicts %}
     {% for key, value in item.items() %}
-      {{key}}:{{value}}<br>
+      {{key}} : {{value}}<br>
     {% endfor %}
   {% endfor %}
   {% if list_of_dicts|length > 1%}<br>{% endif %}

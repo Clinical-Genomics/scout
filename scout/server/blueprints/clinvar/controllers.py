@@ -683,7 +683,6 @@ def _parse_onc_classification(onc_item: dict, form: ImmutableMultiDict):
         "oncogenicityClassificationDescription": form.get("onc_classification"),
         "dateLastEvaluated": form.get("last_evaluated"),
     }
-    onc_item["dateLastEvaluated"] = form.get("last_evaluated")
     if form.get("clinsig_comment"):
         onc_item["oncogenicityClassification"]["comment"] = form.get("clinsig_comment")
 
