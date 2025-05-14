@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
-import jwt
 
+import jwt
 from flask import current_app
 
 from scout.utils.convert import amino_acid_residue_change_3_to_1
