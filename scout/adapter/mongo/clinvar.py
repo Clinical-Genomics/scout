@@ -492,3 +492,27 @@ class ClinVarHandler(object):
         for clinvar_var in clinvar_vars_for_case:
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
+
+    def get_onc_submission_json(self, submission: str) -> Optional[dict]:
+        """Returns a json oncogenicity submission file, as a json."""
+
+        submission_dict = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission)})
+        if not submission_dict:
+            return
+
+        for key in [
+            "_id",
+            "status",
+            "type",
+            "created_at",
+            "updated_at",
+            "created_by",
+            "institute_id",
+        ]:
+            submission_dict.pop(key, None)
+
+        for var in submission_dict.get("oncogenicitySubmission", []):
+            for key in ["institute_id", "case_id", "case_name", "variant_id"]:
+                var.pop(key, None)
+
+        return submission_dict

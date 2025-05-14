@@ -54,7 +54,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb align-items-center">
               <li class="breadcrumb-item">
-                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
+                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download', submission=subm_obj._id) }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                   Download submission json file
                 </a>
               </li>

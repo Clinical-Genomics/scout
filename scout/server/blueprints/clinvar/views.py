@@ -206,3 +206,10 @@ def clinvar_delete_onc_variant(submission: str):
         variant_id=request.form.get("delete_object"),
     )
     return redirect(request.referrer)
+
+
+@clinvar_bp.route("/<submission>/download", methods=["GET"])
+def clinvar_download(submission):
+    """Download a json file for a clinVar submission. This function is only used for oncogenocity submissions for the time being"""
+
+    return store.get_onc_submission_json(submission)
