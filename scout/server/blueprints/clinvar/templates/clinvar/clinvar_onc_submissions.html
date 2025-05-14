@@ -132,7 +132,7 @@
                   <td>{{render_dict_array(onc_var.conditionSet.condition)}}</td>
                   <td>{{render_dict_array(onc_var.observedIn)}}</td>
                   <td>
-                    <form id="delete_onc_var_item_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_object', submission=subm_obj._id, object_type='variant') }}" method="POST">
+                    <form id="delete_onc_var_item_{{subm_obj._id}}_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_object', submission=subm_obj._id, object_type='variant') }}" method="POST">
                       <button type="submit" name="delete_object" value="{{onc_var.variant_id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
                     </form>
                   </td>

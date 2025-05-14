@@ -198,13 +198,12 @@ def clinvar_onc_save(institute_id: str, case_name: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
+@clinvar_bp.route("/<submission>/<object_type>/delete", methods=["POST"])
 def clinvar_delete_onc_object(submission: str, object_type: str):
     """Delete a single object (submission or variant) from the ClinVar submissions collection."""
-
     store.delete_clinvar_onc_object(
-        submission_id=request.form.get("submission"),
-        object_type=request.form.get("object_type"),
+        submission=submission,
+        object_type=object_type,
         remove_id=request.form.get("delete_object"),
     )
     return redirect(request.referrer)
