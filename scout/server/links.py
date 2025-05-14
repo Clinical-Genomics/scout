@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
+import jwt
 
 from flask import current_app
 
@@ -889,6 +890,54 @@ def alamut_gene_link(
         build_str=build_str,
         hgvs_identifier=quote(hgvs_raw),
     )
+
+
+def alamut_file_links(
+    institute_obj: Dict[str, Any],
+    case_obj: Dict[str, Any],
+):
+    """Compose a link which loads an alignment file in the Alamut software.
+    Alamut links require some settings from the institute object.
+
+    Args:
+        institute_obj(scout.models.Institute)
+        case_obj(scout.models.Case)
+    Returns:
+        dict url_template(str): link to Alamut browser
+        links(dict): {
+            sample_display_name: url_template(str)}
+    """
+
+    if current_app.config.get("HIDE_ALAMUT_LINK"):
+        return False
+
+    if not institute_obj:
+        return False
+
+    (search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
+
+    if alamut_key_arg == "":
+        return False
+
+    url_template = (
+        "http://localhost:10000/open?{alamut_key_arg}{alamut_inst_arg}filetype={file_type}&path="
+    )
+    links = {}
+    for ind in case_obj.get("individuals"):
+        file = ind.get("bam_file")
+        if file is not None:
+            file_type = file.split(".")[-1]
+            link = url_template.format(
+                alamut_key_arg=alamut_key_arg,
+                alamut_inst_arg=alamut_inst_arg,
+                file_type=file_type,
+            )
+            payload = {"file": file}
+            token = jwt.encode(
+                payload=payload, key=current_app.config["SECRET_KEY"], algorithm="HS256"
+            )
+            links[ind.get("display_name")] = (link, token)
+    return links
 
 
 def _get_alamut_config(institute_obj: dict) -> Tuple[str, ...]:

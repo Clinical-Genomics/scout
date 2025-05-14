@@ -34,7 +34,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, chanjo2, config_igv_tracks, gens
-from scout.server.links import disease_link, get_variant_links
+from scout.server.links import alamut_file_links, disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_chanjo2_coverage,
@@ -337,6 +337,8 @@ def variant(
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
+
+    case_obj["alamut_file_links"] = alamut_file_links(institute_obj, case_obj)
 
     if variant_obj.get("genetic_models"):
         variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])

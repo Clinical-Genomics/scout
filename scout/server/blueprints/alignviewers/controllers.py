@@ -19,6 +19,19 @@ LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
+def check_user_authentication():
+    """Make sure that a user requesting a resource is authenticated
+
+    Returns
+        True is user has access to resource else False
+    """
+    # Check that user is logged in or that file extension is valid
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static_whole")
+        return False
+    return True
+
+
 def check_session_tracks(resource):
     """Make sure that a user requesting a resource is authenticated and resource is in session IGV tracks
 
