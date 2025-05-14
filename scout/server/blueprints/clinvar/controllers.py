@@ -703,7 +703,7 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
 
     variant = {}
-    if form.get("tx_hgvs"):
+    if form.get("tx_hgvs") not in [None, "Do not specify"]:
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
         variant["assembly"] = form.get("assembly")
@@ -773,6 +773,7 @@ def parse_clinvar_onc_item(form: ImmutableMultiDict) -> dict:
 
 def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
     """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
+
     onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
 
     # Add case specifics to the submission item

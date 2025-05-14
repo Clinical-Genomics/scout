@@ -59,9 +59,9 @@
                 </a>
               </li>
               {% if subm_obj.status=='open'%}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs" disabled>Close submission</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
               {% else %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs" disabled>Re-open submission</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
               {% endif %}
               {% if subm_obj.status != 'submitted' %}
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs"disabled>Mark as submitted</button></li>
@@ -132,7 +132,7 @@
                   <td>{{render_dict_array(onc_var.conditionSet.condition)}}</td>
                   <td>{{render_dict_array(onc_var.observedIn)}}</td>
                   <td>
-                    <form id="delete_onc_var_item_{{subm_obj._id}}_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_object', submission=subm_obj._id, object_type='variant') }}" method="POST">
+                    <form id="delete_onc_var_item_{{subm_obj._id}}_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_variant', submission=subm_obj._id) }}" method="POST">
                       <button type="submit" name="delete_object" value="{{onc_var.variant_id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
                     </form>
                   </td>

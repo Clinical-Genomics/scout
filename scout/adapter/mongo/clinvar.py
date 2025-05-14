@@ -439,16 +439,14 @@ class ClinVarHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-    def delete_clinvar_onc_object(self, submission: str, object_type: str, remove_id: str):
+    def delete_clinvar_onc_var(self, submission: str, variant_id: str) -> dict:
         """Removes an oncogenicity submission or one or its variants."""
 
-        if object_type == "submission":
-            self.clinvar_collection.delete_one({"_id": remove_id})
-        elif object_type == "variant":
-            self.clinvar_submission_collection.find_one_and_update(
-                {"_id": ObjectId(submission)},
-                {"$pull": {"oncogenicitySubmission": {"variant_id": remove_id}}},
-            )
+        return self.clinvar_submission_collection.find_one_and_update(
+            {"_id": ObjectId(submission)},
+            {"$pull": {"oncogenicitySubmission": {"variant_id": variant_id}}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
 
     def case_to_clinvars(self, case_id: str) -> Dict[str, dict]:
         """Get all variants included in ClinVar submissions for a case. Returns a dictionary with variant IDs as keys and submissions as values."""
