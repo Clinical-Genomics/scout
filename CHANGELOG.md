@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
 - Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL (#5447)
+- Show assignees in case list when user ID is different from email (#5460)
 
 ## [4.101]
 ### Changed
