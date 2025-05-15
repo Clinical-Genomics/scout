@@ -706,11 +706,13 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     if form.get("tx_hgvs") not in [None, "Do not specify"]:
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
-        variant["assembly"] = form.get("assembly")
-        variant["chromosome"] = "MT" if form.get("chromosome") == "M" else form.get("chromosome")
-        variant["star"] = form.get("start")
-        variant["stop"] = form.get("stop")
-        variant["alternateAllele"] = form.get("alt")
+        variant["chromosomeCoordinates"] = {
+            "assembly": form.get("assembly"),
+            "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),
+            "start": int(form.get("start")),
+            "stop": int(form.get("stop")),
+            "alternateAllele": form.get("alt"),
+        }
 
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
