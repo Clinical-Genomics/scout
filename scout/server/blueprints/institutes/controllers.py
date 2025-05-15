@@ -619,7 +619,7 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
         analysis_types = set(["mixed"])
     case_obj["analysis_types"] = list(analysis_types)
 
-    case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+    case_obj["assignees"] = [store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])]
 
     last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
     all_analyses_dates = {
