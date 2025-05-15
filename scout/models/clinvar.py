@@ -162,14 +162,3 @@ class OncogenicitySubmissionItem(BaseModel):
     case_id: str
     case_name: str
     variant_id: str
-
-
-class AssertionCriteria(BaseModel):
-    db: str
-    id: str
-
-
-class OncogenicitySubmissionDocument(BaseModel):
-    submissionName: str
-    assertionCriteria: AssertionCriteria
-    oncogenicitySubmission: List[OncogenicitySubmissionItem]
