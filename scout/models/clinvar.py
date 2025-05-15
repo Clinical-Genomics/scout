@@ -1,6 +1,12 @@
 from datetime import date, datetime
+from enum import Enum
+from typing import List, Literal, Optional
 
 from bson.objectid import ObjectId
+from pydantic import BaseModel
+
+from scout.constants import CHROMOSOMES
+from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
 
 """Model of the document that gets saved/updated in the clinvar_submission collection
  for each institute that has cases with ClinVar submission objects"""
@@ -76,3 +82,83 @@ clinvar_casedata = {
     "method_purpose": str,  # default: "discovery"
     "reported_at": date,
 }
+
+### Models used for oncogenocity submissions via API
+
+
+CitationDB = Enum("CitationDB", {db.upper(): db for db in CITATION_DBS_API})
+OncogenicityClassificationDescription = Enum(
+    "OncogenicityClassificationDescription",
+    {term.upper().replace(" ", "_"): term for term in ONCOGENIC_CLASSIF_TERMS},
+)
+
+
+class Citation(BaseModel):
+    db: CitationDB
+    id: str
+
+
+class OncogenicityClassification(BaseModel):
+    oncogenicityClassificationDescription: OncogenicityClassificationDescription
+    dateLastEvaluated: str
+    comment: Optional[str] = None
+    citation: Optional[List[Citation]] = None
+
+
+class ObservedIn(BaseModel):
+    alleleOrigin: str
+    affectedStatus: str
+    collectionMethod: str
+    numberOfIndividuals: int
+    presenceOfSomaticVariantInNormalTissue: str
+    somaticVariantAlleleFraction: Optional[float] = None
+
+
+class Gene(BaseModel):
+    symbol: str
+
+
+Chromosome = Enum(
+    "Chromosome", {c: c for c in CHROMOSOMES}
+)  # ClinVar API accepts only 'MT' chromosome
+
+
+class Variant(BaseModel):
+    """It's defined by either coordinates or hgvs."""
+
+    alternateAllele: Optional[str] = None
+    assembly: Optional[Literal["GRCh37", "GRCh38"]] = None
+    chromosome: Optional[Chromosome] = None
+    gene: Optional[List[Gene]] = None
+    hgvs: Optional[str] = None
+    start: Optional[int] = None
+    stop: Optional[int] = None
+
+
+class VariantSet(BaseModel):
+    variant: List[Variant]
+
+
+class Condition(BaseModel):
+    db: Optional[str] = None
+    id: Optional[str] = None
+    name: Optional[str] = None
+
+
+class ConditionSet(BaseModel):
+    condition: List[Condition]
+
+
+class OncogenicitySubmissionItem(BaseModel):
+    # Field necessary for the API submissions:
+    recordStatus: str
+    oncogenicityClassification: OncogenicityClassification
+    observedIn: List[ObservedIn]
+    variantSet: VariantSet
+    conditionSet: ConditionSet
+
+    # Fields necessary to map the variant to a variant in Scout:
+    institute_id: str
+    case_id: str
+    case_name: str
+    variant_id: str

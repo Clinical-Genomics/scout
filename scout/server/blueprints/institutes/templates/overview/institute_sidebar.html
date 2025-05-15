@@ -44,12 +44,38 @@
       </a>
 
       <!-- ClinVar data menu item -->
-      <a href="{{ url_for('clinvar.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+      <a href="#submenu1" aria-controls="submenu1" data-bs-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-start align-items-center">
               <span class="fas fa-file-medical me-3"></span>
               <span class="menu-collapsed">ClinVar submissions</span>
+              <span class="submenu-icon ms-auto"></span>
           </div>
       </a>
+      <div id='submenu1' class="collapse sidebar-submenu">
+        <div href="#" class="bg-dark list-group-item text-white">
+
+          <div class="d-flex flex-row flex-fill bd-highlight">
+            <div>
+              <span class="menu-collapsed">Germline</span>
+            </div>
+            <div>
+              <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" target="_blank" rel="noopener">
+                    <span class="fa fa-link"></span></a>
+            </div>
+          </div>
+
+          <div class="d-flex flex-row flex-fill bd-highlight">
+            <div>
+              <span class="menu-collapsed">Oncogenic</span>
+            </div>
+            <div>
+              <a href="{{ url_for('clinvar.clinvar_onc_submissions', institute_id=institute._id) }}" target="_blank" rel="noopener">
+                    <span class="fa fa-link"></span></a>
+            </div>
+          </div>
+
+         </div>
+      </div>
 
      <!-- MME data menu item -->
       <a href="{{ url_for('mme.mme_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
