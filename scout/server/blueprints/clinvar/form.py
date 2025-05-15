@@ -30,6 +30,7 @@ from scout.constants import (
 )
 from scout.constants.clinvar import (
     CITATION_DBS_API,
+    CONDITION_DBS_API,
     ONCOGENIC_CLASSIF_TERMS,
     PRESENCE_IN_NORMAL_TISSUE,
 )
@@ -169,3 +170,7 @@ class CancerSNVariantForm(SNVariantForm):
         choices=[(item, item) for item in CITATION_DBS_API],
     )
     assertion_method_cit_id = StringField("Citation ID")  # Overriding default values
+
+    condition_type = SelectField(
+        "Condition ID type", choices=[(item, item) for item in CONDITION_DBS_API]
+    )

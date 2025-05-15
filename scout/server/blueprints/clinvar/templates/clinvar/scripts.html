@@ -106,7 +106,7 @@ $(".previous").click(function(){
 
 // Conditions-asociated code
 
-var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
+var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "HP": "e.g. 0002839, .." , "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
 
 // Set selected condition type on page load
 window.onload = function() {
@@ -151,7 +151,7 @@ $(function(){
     if ($('#condition_type').val() == 'Orphanet'){
       choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|safe }};
     }
-    if ($('#condition_type').val() == 'HPO'){
+    if ($('#condition_type').val() == 'HPO' || $('#condition_type').val() == 'HP'){
       choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
     }
     for (var key in choices) {

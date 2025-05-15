@@ -101,7 +101,7 @@ class Citation(BaseModel):
 class OncogenicityClassification(BaseModel):
     oncogenicityClassificationDescription: OncogenicityClassificationDescription
     dateLastEvaluated: str
-    comment: str
+    comment: Optional[str] = None
     citation: Optional[List[Citation]] = None
 
 

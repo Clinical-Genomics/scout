@@ -193,6 +193,8 @@ CONDITION_PREFIX = {
     "Orphanet": "ORPHA",
 }
 
+CONDITION_DBS_API = ["HP", "MedGen", "MeSH", "MONDO", "OMIM", "Orphanet"]
+
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
 CITATION_DBS_API = ["PubMed", "BookShelf", "DOI", "pmc"]
 
