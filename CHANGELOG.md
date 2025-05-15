@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Add cancer SNVs to Oncogenicity ClinVar submissions
+- Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 ### Changed
 - Refactored and simplified code that fetches case's genome build (#5443)
 ### Fixed
