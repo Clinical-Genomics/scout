@@ -556,6 +556,7 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
                 f"Could not find a Loqus instance with id:{loqus_id}",
                 "warning",
             )
+            obs_data[loqus_id] = {"observations": "N/A"}
             continue
 
         if obs_data[loqus_id] == {}:  # Variant was not found
