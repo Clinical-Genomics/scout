@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored and simplified code that fetches case's genome build (#5443)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
+- Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL (#5447)
 - Introduced a function that checks redirect URLs to avoid redirection to external sites (#5458)
 
 ## [4.101]
