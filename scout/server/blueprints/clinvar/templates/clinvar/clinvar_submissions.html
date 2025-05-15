@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
+{% from "clinvar/components.html" import update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "clinvar/components.html" import update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -50,26 +51,7 @@
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
       <div class="accordion-body">
         <div class="row">
-        <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb align-items-center">
-              <li class="breadcrumb-item">
-                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download', submission=subm_obj._id) }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
-                  Download submission json file
-                </a>
-              </li>
-              {% if subm_obj.status=='open'%}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
-              {% else %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
-              {% endif %}
-              {% if subm_obj.status != 'submitted' %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs"disabled>Mark as submitted</button></li>
-              {% endif %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission from Scout</button></li>
-            </ol>
-          </nav>
-          </form>
+          {{ update_submission_status_form(institute, subm_obj) }}
         </div>
         <div class="row">
           <table>
