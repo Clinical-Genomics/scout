@@ -394,16 +394,13 @@ class ClinVarHandler(object):
 
         # in any case remove reference to it in the submission object 'case_data' list field
 
-        self.clinvar_submission_collection.find_one_and_update(
-            {"_id": ObjectId(submission_id)},
-            {"$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}}},
-            return_document=ReturnDocument.AFTER,
-        )
-
         return self.clinvar_submission_collection.find_one_and_update(
-            {"_id": submission_id},
-            {"$set": {"updated_at": datetime.now()}},
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": ObjectId(submission_id)},
+            {
+                "$set": {"updated_at": datetime.now()},
+                "$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}},
+            },
+            return_document=ReturnDocument.AFTER,
         )
 
     def case_to_clinVars(self, case_id):
