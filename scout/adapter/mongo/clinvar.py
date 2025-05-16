@@ -397,7 +397,7 @@ class ClinVarHandler(object):
         self.clinvar_submission_collection.find_one_and_update(
             {"_id": ObjectId(submission_id)},
             {"$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}}},
-            return_document=ReturnDocument.AFTER,  # Or BEFORE, depending on what you want
+            return_document=ReturnDocument.AFTER,
         )
 
         return self.clinvar_submission_collection.find_one_and_update(
