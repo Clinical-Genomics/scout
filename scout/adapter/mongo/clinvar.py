@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
 from datetime import datetime
 from typing import List, Optional
 
 import pymongo
-from bson import ObjectId
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
@@ -393,14 +393,14 @@ class ClinVarHandler(object):
             self.clinvar_collection.delete_one({"_id": object_id})
 
         # in any case remove reference to it in the submission object 'case_data' list field
-        self.clinvar_submission_collection.find_one_and_update(
-            {"_id": ObjectId(submission_id)}, {"$pull": {"case_data": object_id}}
-        )
 
         return self.clinvar_submission_collection.find_one_and_update(
-            {"_id": submission_id},
-            {"$set": {"updated_at": datetime.now()}},
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": ObjectId(submission_id)},
+            {
+                "$set": {"updated_at": datetime.now()},
+                "$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}},
+            },
+            return_document=ReturnDocument.AFTER,
         )
 
     def case_to_clinVars(self, case_id):
