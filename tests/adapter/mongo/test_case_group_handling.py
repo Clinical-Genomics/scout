@@ -1,7 +1,5 @@
 from bson.objectid import ObjectId
 
-logger = logging.getLogger(__name__)
-
 
 def test_init_case_group(adapter, institute_obj):
     # given a database and an institute
