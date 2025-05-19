@@ -573,6 +573,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
             populate_case_obj(case_obj, store)
+            case_obj["dimmed_in_search"] = True
             case_groups[status].append(case_obj)
             nr_cases_showall_statuses += 1
 
@@ -597,7 +598,11 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     # Process additional cases for the remaining statuses
     nr_cases = 0
     for case_obj in all_cases:
-        if case_obj["status"] not in status_show_all_cases:
+        if case_obj["status"] in status_show_all_cases:
+            for group_case in case_groups[status]:
+                if group_case["_id"] == case_obj["_id"]:
+                    group_case["dimmed_in_search"] = False
+        else:
             if nr_cases == limit:
                 break
             populate_case_obj(case_obj, store)

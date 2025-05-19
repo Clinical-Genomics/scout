@@ -63,7 +63,7 @@
 
 
 {% macro case_row(case) %}
-  <tr class="{% if case.status == 'solved' %}causative{% endif %}">
+  <tr class="{% if case.status == 'solved' %}causative{% elif case.dimmed_in_search %}dismiss{% endif %}">
     <td>
       <a class="me-2"
          {% if case.individuals|length == 1 %} data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}" {% endif %}
