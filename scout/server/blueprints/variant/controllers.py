@@ -439,7 +439,7 @@ def get_gene_has_full_coverage(institute_obj, case_obj, variant_obj) -> Dict[int
             individuals=case_obj.get("individuals"),
             build=genome_build,
         )
-        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes")]
+        for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes", [])]
     }
     return gene_has_full_coverage
 

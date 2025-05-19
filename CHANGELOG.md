@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL (#5447)
 - Show assignees in case list when user ID is different from email (#5460)
 - When removing a germline variant from a ClinVar submission, make sure to remove also its associated observations from the database (#5463)
+- Chanjo2 genes full coverage check when variant has no genes (#5468)
 
 ## [4.101]
 ### Changed
