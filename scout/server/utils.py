@@ -111,17 +111,15 @@ def public_endpoint(function):
     return function
 
 
-def trusted_redirect_referrer(request_referrer: Optional[str]) -> Response:
-    """Avoid untrusted URL redirection by parsing the request.referrer and allowing redirections only to relative URLs."""
-
-    if request_referrer:
-        parsed_url = urlparse(request_referrer)
-        if parsed_url.hostname in ("localhost", "127.0.0.1"):
-            return redirect(request_referrer)
-        if not parsed_url.netloc and not parsed_url.scheme:
-            return redirect(request_referrer)
-
-    # Redirect to a safe default if referrer is invalid
+def safe_redirect_back(request, link: str = None) -> Response:
+    """Safely redirects the user back to the referring URL, if it originates from the same host.
+    Otherwise, the user is redirected to a default '/'."""
+    LOG.warning(type(request))
+    referrer = request.referrer
+    if referrer:
+        parsed_referrer = urlparse(referrer)
+        if parsed_referrer.netloc == request.host:
+            return redirect(link or referrer)
     return redirect("/")
 
 

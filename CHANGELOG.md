@@ -16,7 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Full Flask user logout blocked by session clear (#5470)
 - Introduced a function that checks redirect URLs to avoid redirection to external sites (#5458)
 
-
 ## [4.101]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
