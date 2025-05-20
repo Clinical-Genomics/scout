@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show assignees in case list when user ID is different from email (#5460)
 - When removing a germline variant from a ClinVar submission, make sure to remove also its associated observations from the database (#5463)
 - Chanjo2 genes full coverage check when variant has no genes (#5468)
+- Full Flask user logout blocked by session clear (#5470)
 
 ## [4.101]
 ### Changed
