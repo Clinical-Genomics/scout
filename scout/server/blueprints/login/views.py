@@ -106,7 +106,6 @@ def logout():
     for provider in ["GOOGLE", "KEYCLOAK"]:
         if current_app.config.get(provider):
             controllers.logout_oidc_user(session, provider)
-    session.clear()
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
