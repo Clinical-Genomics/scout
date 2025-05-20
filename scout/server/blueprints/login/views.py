@@ -13,7 +13,7 @@ from flask import (
     session,
     url_for,
 )
-from flask_login import login_user, logout_user
+from flask_login import logout_user
 
 from scout.server.extensions import login_manager, oauth_client, store
 from scout.server.utils import public_endpoint
