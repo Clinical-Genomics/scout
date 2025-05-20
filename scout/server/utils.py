@@ -22,6 +22,7 @@ from flask import (
     request,
 )
 from flask_login import current_user
+from werkzeug.local import LocalProxy
 
 LOG = logging.getLogger(__name__)
 
@@ -111,10 +112,9 @@ def public_endpoint(function):
     return function
 
 
-def safe_redirect_back(request, link: str = None) -> Response:
+def safe_redirect_back(request: LocalProxy, link: Optional[str] = None) -> Response:
     """Safely redirects the user back to the referring URL, if it originates from the same host.
     Otherwise, the user is redirected to a default '/'."""
-    LOG.warning(type(request))
     referrer = request.referrer
     if referrer:
         parsed_referrer = urlparse(referrer)
