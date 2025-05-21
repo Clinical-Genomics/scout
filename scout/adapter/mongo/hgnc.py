@@ -44,7 +44,7 @@ class GeneHandler(object):
 
         return result
 
-    def hgnc_gene_caption(self, hgnc_identifier, build=None):
+    def hgnc_gene_caption(self, hgnc_identifier: Optional[int], build=None) -> Optional[dict]:
         """Fetch the current hgnc gene symbol and similar caption info for a gene in a lightweight dict
         Avoid populating transcripts, exons etc that would be added on a full gene object. Use hgnc_gene() if
         you need to use those.
@@ -56,6 +56,9 @@ class GeneHandler(object):
         Returns:
             gene_caption(dict): light pymongo document with keys "hgnc_symbol", "description", "chromosome", "start", "end".
         """
+
+        if not hgnc_identifier:
+            return
 
         query = {"hgnc_id": int(hgnc_identifier)}
 
