@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Set
+from typing import Dict, Optional, Set
 
 import intervaltree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
