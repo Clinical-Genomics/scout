@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"  # Prevent session timeout when user closes browser
-# INSTANCE_NAME = "Development" # Name will be displayed on the top navidation meny
+# INSTANCE_NAME = "Development" # Name will be displayed on the top navigation menu
 # INSTANCE_HEX_COLOR = "#800000" # Color of the top navigation menu
 
 # SESSION_TIMEOUT_MINUTES = 60  # Minutes of inactivity before session times out
