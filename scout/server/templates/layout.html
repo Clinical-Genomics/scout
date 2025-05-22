@@ -21,9 +21,11 @@
       <div class="container-fluid rounded-bottom">
         <a class="navbar-brand" href="{{ url_for('cases.index') }}">
           <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top text-white" alt="">Scout</a>
-          <span class="badge bg-light text-dark">
-            {{ config.INSTANCE_NAME }}
-          </span>
+          {% if config.INSTANCE_NAME %}
+            <span class="badge bg-light text-dark">
+              {{ config.INSTANCE_NAME }}
+            </span>
+          {% endif %}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
