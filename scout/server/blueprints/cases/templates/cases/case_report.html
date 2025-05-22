@@ -672,7 +672,6 @@
             {% if not cancer %}
               <th>Inheritance models</th>
             {% endif %}
-            <th>ClinVar</th>
             <th>ACMG classification</th>
             <th>Bayesian classification</th>
             {% if cancer %}
@@ -719,9 +718,6 @@
                 </span>
               </td>
             {% endif %}
-            <td>
-
-            </td>
             <td>
               {% if variant.acmg_classification %}
                 <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['label']}}">{{variant.acmg_classification['label'] }}</span>
