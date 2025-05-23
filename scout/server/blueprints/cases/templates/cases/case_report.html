@@ -2,6 +2,7 @@
 {% from "utils.html" import comments_table, variant_related_comments_table %}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import fusion_variants_header, default_fusion_variant_cells %}
+{% from "variant/variant_details.html" import frequencies_table %}
 {% from "variant/components.html" import clinsig_table %}
 
 {% extends "report_base.html" %}
@@ -593,75 +594,9 @@
           </td>
           <td style="width:3%"></td>
           <td>
-            {{ clinsig_table(variant) }}
-            <table id="panel-table" class="table table-sm" style="background-color: transparent">
-              <thead>
-                <tr>
-                  <th>Pop. frequency
-                    {% if variant.frequency == 'common' %}
-                      <span class="badge bg-danger">{{variant.frequency}}</span>
-                    {% elif variant.frequency == 'uncommon' %}
-                      <span class="badge bg-warning text-dark">{{variant.frequency}}</span>
-                    {% else %}
-                      <span class="badge bg-success">{{variant.frequency}}</span>
-                    {% endif %}
-                  </th>
-                  <th>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    {% if variant.dbsnp_id %}
-                      <a style="text-decoration:none;" href="{{ variant.thousandg_link }}" rel="noopener" target="_blank">1000G</a>
-                    {% else %}
-                      1000G
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if variant.max_thousand_genomes_frequency %}
-                      {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
-                    {% endif %}
-                    {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
-                    {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
-                      <span class="text-muted">Not annotated</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                <tr>
-                  <td><a style="text-decoration:none;" title="Exome Aggregation Consortium" rel="noopener" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
-                  <td>
-                    {% if variant.max_exac_frequency %}
-                      {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
-                    {% endif %}
-                    {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
-                    {% if not variant.max_exac_frequency and not variant.exac_frequency %}
-                      <span class="text-muted">Not annotated</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                <tr>
-                  <td><a style="text-decoration:none;" title="genome Aggregation Database" rel="noopener" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
-                  <td>
-                    {% if 'gnomad_frequency' in variant%}
-                      {% if variant.max_gnomad_frequency %}
-                        {{ variant.max_gnomad_frequency|human_decimal }}
-                        <small>(max)</small> |
-                      {% endif %}
-                      {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
-                    {% else %}
-                      <span class="text-muted">Not annotated</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          {{ frequencies_table(variant) }}
+          {{ clinsig_table(variant) }}
           </td>
-        </tr>
-      </table>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
