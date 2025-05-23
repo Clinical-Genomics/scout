@@ -1,8 +1,12 @@
+from scout.constants.clnsig import ONC_CLNSIG
+
 CLINVAR_API_URL_DEFAULT = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
 PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
+ASSERTION_ONC_ONC_DB = "PubMed"
+ASSERTION_CRITERIA_ONC_ID = "36063163"
 NOT_PROVIDED = "not provided"
 
 # Header used to create the Variant .CSV file for the manual ClinVar submission
@@ -94,6 +98,8 @@ GERMLINE_CLASSIF_TERMS = [
     "other",
     NOT_PROVIDED,
 ]
+
+ONCOGENIC_CLASSIF_TERMS = ONC_CLNSIG
 
 REVSTAT_TERMS = {
     "conflicting_interpretations",
@@ -187,6 +193,10 @@ CONDITION_PREFIX = {
     "Orphanet": "ORPHA",
 }
 
+CONDITION_DBS_API = ["HP", "MedGen", "MeSH", "MONDO", "OMIM", "Orphanet"]
+
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
+CITATION_DBS_API = ["PubMed", "BookShelf", "DOI", "pmc"]
 
 MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]
+PRESENCE_IN_NORMAL_TISSUE = ["present", "absent", "not tested"]

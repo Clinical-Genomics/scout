@@ -1,0 +1,187 @@
+{% extends "bootstrap_global.html" %}
+{% from "clinvar/components.html" import condition_identifiers, hgvs_choices, observations %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"/>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock head %}
+
+{% block content %}
+{% if variant_data.var_obj.category in ["snv", "cancer"]%}
+  {% set var_category = 'snv' %}
+{% else %}
+  {% set var_category = 'sv' %}
+{% endif %}
+<div class="container-fluid">
+  <!-- MultiStep Form -->
+  <div class="row d-flex justify-content-center">
+      <div class="col-md-10">
+          <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_onc_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
+              <!-- progressbar -->
+              <ul id="progressbar" class="steps-5">
+                  <li class="active">Start</li>
+                  <li>Oncogenicity classification</li>
+                  <li>Observation Data</li>
+                  <li>Variant Details</li>
+                  <li>Associated conditions</li>
+
+              </ul>
+
+              <!-- hidden fields -->
+                {{ variant_data.var_form.csrf_token }}
+
+              <!-- fieldsets -->
+              <fieldset data-step="1">
+                <legend class="text-dark">ClinVar oncogenic submission form</legend>
+                <br><br>
+                <p class="text-dark">
+                Use this form to add a variant to an oncogenicity submission object. The submission will be formatted as a JSON document, ready to be sent to ClinVar via their API.<br>
+                </p>
+                <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="previous action-button-previous" style="text-decoration: none;">Back to Case</a>
+                <input type="button" name="next" class="next action-button" value="Start"/>
+              </fieldset>
+
+              <fieldset data-step="2">
+                <legend class="text-dark">Oncogenicity classification</legend>
+                  <br><br>
+                  <div class="mb-3">
+                    {{ variant_data.var_form.onc_classification.label }}
+                    {{ variant_data.var_form.onc_classification }}
+                  </div>
+                  <br><br>
+                  <div class="mb-3 col-md-2 offset-md-5">
+                    {{ variant_data.var_form.last_evaluated.label }}
+                    {{ variant_data.var_form.last_evaluated }}
+                  </div>
+
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.clinsig_comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
+                    {{ variant_data.var_form.clinsig_comment(rows=4, class="form-control") }}
+                  </div>
+                  <br><br>
+                  <div class="mb-3">
+                    {{ variant_data.var_form.assertion_method_cit_db.label }}
+                    {{ variant_data.var_form.assertion_method_cit_db }}
+                    <span class="text-danger" data-bs-toggle='tooltip' title="This citation is specific to this variant only. Leave blanc if unsure. Note the whole submission, containing one or more variants, will be already containing the following citation reference: 'Horak P. et al. Standards for the classification of pathogenicity of somatic variants in cancer (oncogenicity): Joint recommendations of Clinical Genome Resource (ClinGen), Cancer Genomics Consortium (CGC), and Variant Interpretation for Cancer Consortium (VICC). Genet Med. 2022 (PubMed:36063163)'."><strong>?</strong></span>
+                    <span data-bs-toggle='tooltip' title="Optional field"><strong>*</strong></span>
+                  </div>
+
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.assertion_method_cit_id.label(
+                        id="citation_tooltip",
+                        **{'data-bs-toggle': 'tooltip', 'title': 'Original tooltip text'}
+                    ) }}
+                    {{ variant_data.var_form.assertion_method_cit_id }}
+                  </div>
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset data-step="5">
+                <legend class="text-dark">Variant Details</legend>
+
+                {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
+                {{variant_data.var_form.gene_symbol(class="bg-white")}}
+
+                <!-- Cancer SNVs only. Collect coordinates if user doesn't provide any HGVS choice-->
+                {% if variant_data.var_obj.category == 'cancer' %}
+                  {{ variant_data.var_form.chromosome() }}
+                  {{ variant_data.var_form.start() }}
+                  {{ variant_data.var_form.stop() }}
+                  {{ variant_data.var_form.alt() }}
+                  {{ variant_data.var_form.assembly() }}
+                {% endif %}
+
+                {{ hgvs_choices(variant_data.var_form.tx_hgvs) }}
+
+                <br><br>
+                <!-- Cancer SNV - end -->
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+
+              <fieldset data-step="4">
+                <legend class="text-dark">Associated Conditions</legend>
+                <h3 class="fs-subtitle">The condition must be provided as a database identifier. Assigning a condition name if the database identifier can't be found is not yet supported.</h3>
+
+                {{ condition_identifiers(variant_data.var_form) }}
+
+                <br>
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+
+              <fieldset data-step="5">
+                  <legend class="text-dark">Observation Data</legend>
+
+                  {{ observations(variant_data.cdata_forms, variant_data.var_obj.category) }}
+
+                  <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                  <input type="submit" name="submit" class="submit action-button" value="Add to submission"/>
+              </fieldset>
+
+          </form>
+      </div>
+  </div>
+  <!-- /.MultiStep Form -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% include "clinvar/scripts.html" %}
+<script>
+
+
+
+document.querySelector('form').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+    }
+  });
+
+//Function definition for keeping the tooltip updated for each citation database option
+function updateTooltip(){
+      let selectedDBId = $("#assertion_method_cit_db option:selected").text();
+      switch (selectedDBId) {
+          case "PubMed":
+              tooltipText = "PubMed ID (PMID) is written as digits only, e.g. 21084639"
+              break
+          case "DOI":
+              tooltipText = "DOI ID is written including prefix, forward slash, and suffix, e.g. 10.1038/gim.2015.30"
+              break
+          case "BookShelf":
+              tooltipText = "Bookshelf ID including the prefix, e.g. NBK1384"
+              break
+          case "pmc":
+              tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 4544753"
+              break
+          default:
+            return
+      }
+     const $el = $("#citation_tooltip");
+     $el.attr("data-bs-original-title", tooltipText).tooltip("dispose").tooltip("show");
+}
+
+//Add eventhandler for change of the DB id, keeping the tooltip updated
+$(function () {
+    $("#assertion_method_cit_db").change(function () {
+        updateTooltip()
+    })
+});
+
+</script>
+{% endblock %}

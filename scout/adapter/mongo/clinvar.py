@@ -2,11 +2,13 @@
 import logging
 import re
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pymongo
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
+
+from scout.constants.clinvar import ASSERTION_CRITERIA_ONC_ID, ASSERTION_ONC_ONC_DB
 
 LOG = logging.getLogger(__name__)
 
@@ -14,8 +16,8 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
-    def create_submission(self, institute_id: str, user_id: str) -> ObjectId:
-        """Create an open ClinVar submission for an institute."""
+    def create_germline_submission(self, institute_id: str, user_id: str) -> ObjectId:
+        """Create an open ClinVar germline submission for an institute."""
 
         submission_obj = {
             "status": "open",
@@ -23,7 +25,24 @@ class ClinVarHandler(object):
             "institute_id": institute_id,
             "created_by": user_id,
         }
-        LOG.info("Creating a new ClinVar submission for institute %s", institute_id)
+        LOG.info("Creating a new ClinVar germline submission for institute %s", institute_id)
+        result = self.clinvar_submission_collection.insert_one(submission_obj)
+        return result.inserted_id
+
+    def create_oncogenicity_submission(self, institute_id: str, user_id: str) -> ObjectId:
+        """Create an open ClinVar oncogenicity submission for an institute."""
+
+        submission_obj = {
+            "status": "open",
+            "type": "oncogenicity",
+            "created_at": datetime.now(),
+            "updated_at": datetime.now(),
+            "institute_id": institute_id,
+            "created_by": user_id,
+            "assertionCriteria": {"db": ASSERTION_ONC_ONC_DB, "id": ASSERTION_CRITERIA_ONC_ID},
+            "oncogenicitySubmission": [],
+        }
+        LOG.info("Creating a new ClinVar oncogenicity submission for institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
         return result.inserted_id
 
@@ -65,18 +84,31 @@ class ClinVarHandler(object):
         # return deleted_count, deleted_submissions
         return deleted_objects, deleted_submissions
 
-    def get_open_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
-        """Retrieve the database id of an open ClinVar submission for an institute,
+    def get_open_germline_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
+        """Retrieve the database id of an open ClinVar germline submission for an institute,
         if none is available then creates a new submission dictionary and returns it.
         """
 
-        LOG.info("Retrieving an open clinvar submission for institute %s", institute_id)
         query = dict(institute_id=institute_id, status="open")
         submission = self.clinvar_submission_collection.find_one(query)
 
         # If there is no open submission for this institute, create one
         if submission is None:
-            submission_id = self.create_submission(institute_id, user_id)
+            submission_id = self.create_germline_submission(institute_id, user_id)
+            submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
+
+        return submission
+
+    def get_open_onc_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
+        """Retrieve the database id of an open ClinVar oncogenicity submission for an institute,
+        if none is available then creates a new submission dictionary and returns it.
+        """
+
+        query = dict(institute_id=institute_id, status="open", type="oncogenicity")
+        submission = self.clinvar_submission_collection.find_one(query)
+        # If there is no open submission for this institute, create one
+        if submission is None:
+            submission_id = self.create_oncogenicity_submission(institute_id, user_id)
             submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
 
         return submission
@@ -230,9 +262,14 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def clinvar_submissions(self, institute_id: str) -> List[dict]:
-        """Collect all open and closed clinvar submissions for an institute"""
-        query = dict(institute_id=institute_id)
+    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.synchronous.cursor.Cursor:
+        """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
+        query = {"institute_id": institute_id, "type": "oncogenicity"}
+        return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+
+    def get_clinvar_germline_submissions(self, institute_id: str) -> List[dict]:
+        """Collect all open and closed ClinVar germline submissions for an institute."""
+        query = {"institute_id": institute_id, "type": {"$exists": False}}
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
         )
@@ -403,20 +440,22 @@ class ClinVarHandler(object):
             return_document=ReturnDocument.AFTER,
         )
 
-    def case_to_clinVars(self, case_id):
-        """Get all variants included in clinvar submissions for a case
+    def delete_clinvar_onc_var(self, submission: str, variant_id: str) -> dict:
+        """Removes an oncogenicity submission or one or its variants."""
 
-        Args:
-            case_id(str): a case _id
+        return self.clinvar_submission_collection.find_one_and_update(
+            {"_id": ObjectId(submission)},
+            {"$pull": {"oncogenicitySubmission": {"variant_id": variant_id}}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
 
-        Returns:
-            submission_variants(dict): keys are variant ids and values are variant submission objects
-
-        """
+    def case_to_clinvars(self, case_id: str) -> Dict[str, dict]:
+        """Get all variants included in ClinVar submissions for a case. Returns a dictionary with variant IDs as keys and submissions as values."""
         query = dict(case_id=case_id, csv_type="variant")
-        clinvar_objs = list(self.clinvar_collection.find(query))
+        germline_clinvar_objs = list(self.clinvar_collection.find(query))
+        oncogenic_clinvar_objs = []
         submitted_vars = {}
-        for clinvar in clinvar_objs:
+        for clinvar in germline_clinvar_objs + oncogenic_clinvar_objs:
             submitted_vars[clinvar.get("local_id")] = clinvar
 
         return submitted_vars
@@ -454,3 +493,27 @@ class ClinVarHandler(object):
         for clinvar_var in clinvar_vars_for_case:
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
+
+    def get_onc_submission_json(self, submission: str) -> Optional[dict]:
+        """Returns a json oncogenicity submission file, as a json."""
+
+        submission_dict = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission)})
+        if not submission_dict:
+            return
+
+        for key in [
+            "_id",
+            "status",
+            "type",
+            "created_at",
+            "updated_at",
+            "created_by",
+            "institute_id",
+        ]:
+            submission_dict.pop(key, None)
+
+        for var in submission_dict.get("oncogenicitySubmission", []):
+            for key in ["institute_id", "case_id", "case_name", "variant_id"]:
+                var.pop(key, None)
+
+        return submission_dict

@@ -1,0 +1,193 @@
+<script>
+
+// Enable tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+
+var current_fs, next_fs, previous_fs; //fieldsets
+var left, opacity, scale; //fieldset properties which we will animate
+var animating; //flag to prevent quick multi-click glitches
+
+$(".next").click(function(){
+	if(animating) return false;
+	animating = true;
+
+	current_fs = $(this).parent();
+
+	// run the validations on the input for the current step
+	var validationPassed = true;
+
+  {% if variant_data.var_obj.category == "snv" %}
+    if(current_fs.data('step') == 6){
+      validationPassed = validateConditions();
+    }
+  {% elif variant_data.var_obj.category == "cancer" %}
+    if(current_fs.data('step') == 4){
+      validationPassed = validateConditions();
+    }
+  {% endif %}
+
+  // check to see if the validator for the specific step we are on passed or not.
+  if(validationPassed == false){
+    // do not proceed
+    animating = false;
+    return;
+  }
+
+	next_fs = $(this).parent().next();
+
+	//activate next step on progressbar using the index of next_fs
+	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+	//show the next fieldset
+	next_fs.show();
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale current_fs down to 80%
+			scale = 1 - (1 - now) * 0.2;
+			//2. bring next_fs from the right(50%)
+			left = (now * 50)+"%";
+			//3. increase opacity of next_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({
+        'transform': 'scale('+scale+')',
+        'position': 'absolute'
+      });
+			next_fs.css({'left': left, 'opacity': opacity});
+		},
+		duration: 800,
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		},
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+$(".previous").click(function(){
+	if(animating) return false;
+	animating = true;
+
+	current_fs = $(this).parent();
+	previous_fs = $(this).parent().prev();
+
+	//de-activate current step on progressbar
+	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+	//show the previous fieldset
+	previous_fs.show();
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale previous_fs from 80% to 100%
+			scale = 0.8 + (1 - now) * 0.2;
+			//2. take current_fs to the right(50%) - from 0%
+			left = ((1-now) * 50)+"%";
+			//3. increase opacity of previous_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({'left': left});
+			previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
+		},
+		duration: 800,
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		},
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+// Conditions-asociated code
+
+var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "HP": "e.g. 0002839, .." , "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
+
+// Set selected condition type on page load
+window.onload = function() {
+  const selectedCondId = document.getElementById('condition_type');
+  {% if variant_data.var_form.omim_terms.choices %}
+    selectedCondId.options.selectedIndex = 4;
+  {% elif variant_data.var_form.orpha_terms.choices %}
+    selectedCondId.options.selectedIndex = 5;
+  {% elif variant_data.var_form.hpo_terms.choices %}
+    selectedCondId.options.selectedIndex = 0;
+  {% endif %}
+};
+
+// Populate condition list
+$('#condition_tags').select2({
+  tags: true,
+  theme: 'bootstrap-5',
+  tokenSeparators: [','],
+  allowClear: true,
+});
+
+// reset and modify conditions field's placeholder when condition ID type changes
+$(function(){
+  $("#condition_type").change(function(){
+    $('#condition_tags')[0].options.length = 0; // reset conditions multiselect
+
+    // Change placeholder
+    selectedCondId = $("#condition_type option:selected").text();
+    $('#condition_tags').select2({
+      placeholder: conditionsPlaceHolders[selectedCondId],
+      theme: 'bootstrap-5',
+      tags: true,
+      tokenSeparators: [','],
+      allowClear: true,
+    });
+
+    // repopulate option values according to the selected condition ID
+    choices = {};
+    if ($('#condition_type').val() == 'OMIM'){
+      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe}};
+    }
+    if ($('#condition_type').val() == 'Orphanet'){
+      choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|safe }};
+    }
+    if ($('#condition_type').val() == 'HPO' || $('#condition_type').val() == 'HP'){
+      choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
+    }
+    for (var key in choices) {
+      var newOption = new Option(key, key, true, true);
+      $('#condition_tags').append(newOption).trigger('change');
+    }
+  });
+});
+
+// Validates fields for conditions associated to a variant
+function validateConditions(){
+
+  if ($("#condition_tags option:selected").length == 0) {
+    alert("Please provide at least one condition ID");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
+    alert("When multiple condition IDs are provided then an option for 'Explanation for multiple conditions' must be provided");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
+    alert("Please deselect the selected option in 'Explanation for multiple conditions' since only one condition ID was provided.");
+    return false;
+  }
+
+  // Make sure that provided conditions are numbers, except when condition type is MeSH or MedGen
+  var selectedConditionsValues = $('#condition_tags').val();
+  for (let i = 0; i < selectedConditionsValues.length; i++) {
+    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
+      alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
+      return false;
+    }
+  }
+
+  return true;
+}
+</script>
