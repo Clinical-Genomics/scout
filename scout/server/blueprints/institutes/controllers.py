@@ -607,10 +607,10 @@ def get_and_set_cases_by_status(
 ) -> dict:
     """Process cases for statuses that require all cases to be shown.
     Group cases by status, process additional cases for the remaining statuses
-    and ensure that we don't dim cases that already appeared in query search results (are on the all_cases).
+    and ensure that we don't dim cases that already appeared in query search results.
     """
 
-    status_show_all_cases = institute_obj.get("show_all_cases_status") or ["prioritized"]
+    status_show_all_cases = institute_obj.get("show_all_cases_status", ["prioritized"])
     nr_cases_showall_statuses = 0
 
     # Group cases by status
@@ -628,15 +628,15 @@ def get_and_set_cases_by_status(
             nr_cases_showall_statuses += 1
 
     nr_name_query_matching_displayed_cases = 0
-    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
+    limit = int(request.form.get("search_limit", 100))
     for case_obj in previous_query_result_cases:
         if case_obj["status"] in status_show_all_cases:
             for group_case in case_groups[status]:
                 if group_case["_id"] == case_obj["_id"]:
                     group_case["dimmed_in_search"] = False
+        elif nr_name_query_matching_displayed_cases == limit:
+            break
         else:
-            if nr_name_query_matching_displayed_cases == limit:
-                break
             populate_case_obj(case_obj, store)
             case_groups[case_obj["status"]].append(case_obj)
             nr_name_query_matching_displayed_cases += 1
