@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Dict, Iterable, List, Optional
 
 from pymongo import ASCENDING, DESCENDING
@@ -129,6 +130,13 @@ class OmicsVariantHandler:
         omics_file_type: dict = ORDERED_OMICS_FILE_TYPE_MAP.get(file_type)
 
         nr_inserted = 0
+
+        file_path = case_obj["omics_files"].get(file_type)
+        if file_path is None or os.path.exists(file_path) is False:
+            LOG.warning(
+                f"File '{file_path}' not found on disk. Please update case {case_obj['_id']} with a valid file path for {file_type}."
+            )
+            return
 
         file_handle = open(case_obj["omics_files"].get(file_type), "r")
 
