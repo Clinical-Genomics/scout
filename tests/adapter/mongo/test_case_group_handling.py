@@ -1,11 +1,4 @@
-import copy
-import logging
-
-import pymongo
-import pytest
 from bson.objectid import ObjectId
-
-logger = logging.getLogger(__name__)
 
 
 def test_init_case_group(adapter, institute_obj):
