@@ -2,6 +2,7 @@ from typing import Union
 
 from flask import Blueprint, jsonify, request
 
+from scout.constants import HPO_LINK_URL
 from scout.server.extensions import store
 from scout.server.utils import public_endpoint, templated
 
@@ -30,8 +31,7 @@ def diagnosis(disease_id):
 def count_diagnoses():
     """Display the diagnosis counts for each coding system available in database"""
 
-    data = {"counts": store.disease_terminology_count()}
-    return data
+    return {"counts": store.disease_terminology_count(), "hpo_link_url": HPO_LINK_URL}
 
 
 @omim_bp.route("/api/v1/diagnoses")

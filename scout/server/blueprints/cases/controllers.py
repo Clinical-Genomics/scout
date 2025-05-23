@@ -22,6 +22,7 @@ from scout.constants import (
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
     GENOME_REGION,
+    HPO_LINK_URL,
     INHERITANCE_PALETTE,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
@@ -388,9 +389,7 @@ def case(
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
     ):
-        hpo_term["hpo_link"] = "http://hpo.jax.org/app/browse/term/{}".format(
-            hpo_term["phenotype_id"]
-        )
+        hpo_term["hpo_link"] = f"{HPO_LINK_URL}{hpo_term['phenotype_id']}"
 
     _set_rank_model_links(case_obj)
 
@@ -792,6 +791,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     data["current_scout_version"] = __version__
+    data["hpo_link_url"] = HPO_LINK_URL
 
     case_report_variants(store, case_obj, institute_obj, data)
 
@@ -1422,6 +1422,7 @@ def matchmaker_matches(request, institute_id, case_name):
             pat_matches = parse_matches(patient_id, server_resp["content"]["matches"])
         matches[patient_id] = pat_matches
 
+    data["hpo_link_url"] = HPO_LINK_URL
     data["matches"] = matches
     return data
 

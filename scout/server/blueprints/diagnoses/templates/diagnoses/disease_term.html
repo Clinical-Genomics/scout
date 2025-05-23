@@ -47,7 +47,7 @@
           <ul class="list-group list-group-flush">
             {% for pheno in hpo_complete %}
               <li class="list-group-item">
-                <a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a>
+                <a href="{{hpo_link_url}}{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a>
                 {{pheno.description}}
               </li>
             {% else %}
