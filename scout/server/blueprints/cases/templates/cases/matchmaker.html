@@ -85,7 +85,7 @@
         <ul class="list-group list-group-flush">
           {% for hpo in case.mme_submission.features %}
             <li class="list-group-item">
-              <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
+              <a class="text-white" target="_blank" href="{{hpo_link_url}}{{hpo.id}}">
               <span class="badge bg-sm bg-info">{{hpo.id}}</span>
               </a>{{hpo.label}}
             </li>
