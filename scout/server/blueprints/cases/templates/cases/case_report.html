@@ -2,7 +2,7 @@
 {% from "utils.html" import comments_table, variant_related_comments_table %}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import fusion_variants_header, default_fusion_variant_cells %}
-{% from "variant/variant_details.html" import frequencies_table %}
+{% from "variant/variant_details.html" import frequencies_table, old_observations_table %}
 {% from "variant/components.html" import clinsig_table %}
 
 {% extends "report_base.html" %}
@@ -590,12 +590,13 @@
       <table class="table table-sm">
         <tr>
           <td style="width:60%;">
-            {{ genotype_table(variant) }}
+            {{ genotype_table(variant) }}<br>
+            {{ clinsig_table(variant) }}
           </td>
           <td style="width:3%"></td>
           <td>
           {{ frequencies_table(variant) }}
-          {{ clinsig_table(variant) }}
+          {{ old_observations_table(variant) }}
           </td>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
