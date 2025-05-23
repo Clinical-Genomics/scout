@@ -165,33 +165,33 @@
 {% endmacro %}
 
 {% macro frequencies_table(variant) %}
-<table class="table">
-    <thead class="thead table-light">
+<table class="table table-sm align-middle mb-1" style="font-size: 0.875rem;">
+  <thead class="table-light">
+    <tr>
+      <th scope="col" class="py-1 px-2">Source</th>
+      <th scope="col" class="py-1 px-2">Frequency</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for freq_name, value, link in variant.frequencies %}
       <tr>
-        <th scope="col">Source</th>
-        <th scope="col">Frequency</th>
+        <td class="py-1 px-2">
+          {% if link %}
+            <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
+          {% else %}
+            {{ freq_name }}
+          {% endif %}
+        </td>
+        <td class="py-1 px-2">
+          {% if value %}
+            <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ value|human_decimal }}</span>
+          {% else %}
+            -
+          {% endif %}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% for freq_name, value, link in variant.frequencies %}
-        <tr>
-          <td>
-            {% if link %}
-              <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
-            {% else %}
-              {{ freq_name }}
-            {% endif %}
-          </td>
-          <td>
-            {% if value %}
-              <span class="badge bg-secondary">{{ value|human_decimal }}</span>
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
+    {% endfor %}
+  </tbody>
 </table>
 {% endmacro %}
 

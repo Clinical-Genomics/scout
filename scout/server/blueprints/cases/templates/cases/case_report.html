@@ -1012,25 +1012,8 @@
         </td>
         <td style="width:3%"></td>
         <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
-              <th colspan=2>Pop. frequency</th>
-            </thead>
-            <tbody>
-              {% for freq_name, value, link in variant.frequencies %}
-                <tr>
-                  <td>{{ freq_name }}</td>
-                  <td>
-                    {% if value %}
-                      <span class="badge bg-secondary">{{ value|human_decimal }}</span>
-                    {% else %}
-                      <span class="text-muted">Not annotated</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{ frequencies_table(variant) }}
+          {{ old_observations_table(variant) }}
         </td>
       </tr>
     </table>
