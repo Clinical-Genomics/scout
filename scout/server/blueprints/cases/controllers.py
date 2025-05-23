@@ -791,6 +791,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     data["current_scout_version"] = __version__
+    data["hpo_link_url"] = HPO_LINK_URL
 
     case_report_variants(store, case_obj, institute_obj, data)
 
@@ -1421,6 +1422,7 @@ def matchmaker_matches(request, institute_id, case_name):
             pat_matches = parse_matches(patient_id, server_resp["content"]["matches"])
         matches[patient_id] = pat_matches
 
+    data["hpo_link_url"] = HPO_LINK_URL
     data["matches"] = matches
     return data
 
