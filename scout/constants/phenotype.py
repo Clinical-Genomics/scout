@@ -2,6 +2,7 @@ HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
 HPOTERMS_URL = (
     "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
 )
+HPO_LINK_URL = "https://hpo.jax.org/browse/term/"
 
 ORPHA_URLS = {
     "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product4.xml",
