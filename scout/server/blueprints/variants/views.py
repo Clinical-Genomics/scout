@@ -231,6 +231,7 @@ def str_variants(institute_id, case_name):
     ).sort(
         [
             ("str_repid", pymongo.ASCENDING),
+            ("str_trid", pymongo.ASCENDING),
             ("chromosome", pymongo.ASCENDING),
             ("position", pymongo.ASCENDING),
         ]
