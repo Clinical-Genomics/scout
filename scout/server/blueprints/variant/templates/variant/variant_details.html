@@ -165,33 +165,33 @@
 {% endmacro %}
 
 {% macro frequencies_table(variant) %}
-<table class="table">
-    <thead class="thead table-light">
+<table class="table table-sm align-middle mb-1" style="font-size: 0.875rem;">
+  <thead class="table-light">
+    <tr>
+      <th scope="col" class="py-1 px-2">Source</th>
+      <th scope="col" class="py-1 px-2">Frequency</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for freq_name, value, link in variant.frequencies %}
       <tr>
-        <th scope="col">Source</th>
-        <th scope="col">Frequency</th>
+        <td class="py-1 px-2">
+          {% if link %}
+            <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
+          {% else %}
+            {{ freq_name }}
+          {% endif %}
+        </td>
+        <td class="py-1 px-2">
+          {% if value %}
+            <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ value|human_decimal }}</span>
+          {% else %}
+            -
+          {% endif %}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% for freq_name, value, link in variant.frequencies %}
-        <tr>
-          <td>
-            {% if link %}
-              <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
-            {% else %}
-              {{ freq_name }}
-            {% endif %}
-          </td>
-          <td>
-            {% if value %}
-              <span class="badge bg-secondary">{{ value|human_decimal }}</span>
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
+    {% endfor %}
+  </tbody>
 </table>
 {% endmacro %}
 
@@ -286,6 +286,41 @@
   </div>
 {% endmacro %}
 
+{% macro old_observations_table(variant) %}
+<table class="table">
+  <thead class="thead table-light">
+    <tr>
+      <th scope="col">Local archive</th>
+      <th scope="col">Nr obs.</th>
+      <th scope="col">Nr homo.</th>
+      <th scope="col">Frequency</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RD</td>
+      <td>{{ variant.local_obs_old|default('N/A') }}</td>
+      <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
+      <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% elif variant.local_obs_old_nr_cases and variant.local_obs_old %} {{ (variant.local_obs_old/variant.local_obs_old_nr_cases)|round(5) }} {% elif variant.local_obs_old_nr_cases %} 0 / {{variant.local_obs_old_nr_cases}} {% else %} N/A {% endif %}</td>
+    </tr>
+    {% if variant.category in ['cancer', 'cancer_sv'] %}
+      <tr>
+        <td>Cancer Germline</td>
+        <td>{{ variant.local_obs_cancer_germline_old|default('N/A') }}</td>
+        <td>{{ variant.local_obs_cancer_germline_hom_old|default('N/A') }}</td>
+        <td>{% if variant.local_obs_cancer_germline_old_freq %} {{variant.local_obs_cancer_germline_old_freq|round(6)}} {% elif variant.local_obs_cancer_germline_old_nr_cases and variant.local_obs_cancer_germline_old %} {{ (variant.local_obs_cancer_germline_old/variant.local_obs_cancer_germline_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_germline_old_nr_cases %} 0 / {{variant.local_obs_cancer_germline_old_nr_cases}} {% else %} N/A {% endif %}</td>
+      </tr>
+      <tr>
+        <td>Cancer Somatic</td>
+        <td>{{ variant.local_obs_cancer_somatic_old|default('N/A') }}</td>
+        <td>{{ variant.local_obs_cancer_somatic_hom_old|default('N/A') }}</td>
+        <td>{% if variant.local_obs_cancer_somatic_old_freq %} {{variant.local_obs_cancer_somatic_old_freq|round(6)}} {% elif variant.local_obs_cancer_somatic_old_nr_cases and variant.local_obs_cancer_somatic_old %} {{ (variant.local_obs_cancer_somatic_old/variant.local_obs_cancer_somatic_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_somatic_old_nr_cases %} 0 / {{variant.local_obs_cancer_somatic_old_nr_cases}} {% else %} N/A {% endif %}</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endmacro %}
+
 {% macro old_observations(variant, obs_date) %}
 {% if "SHOW_OBSERVED_VARIANT_ARCHIVE" in config and config["SHOW_OBSERVED_VARIANT_ARCHIVE"] == true %}
   <div class="card panel-default">
@@ -293,38 +328,7 @@
       <a href="https://github.com/moonso/loqusdb" target="_blank" data-bs-toggle="tooltip" title="Local observations annotated from an archive copy of the loqusdb local frequency database. Only variants above a quality threshold are included, and each case is included only once. {% if variant.local_obs_old_desc %} {{variant.local_obs_old_desc}} {% endif %}">Local observations (archive {{ obs_date or variant.local_obs_old_date or "version"}})</a>
     </div>
     <div class="card-body">
-      <table class="table">
-        <thead class="thead table-light">
-          <tr>
-            <th scope="col">Archive</th>
-            <th scope="col">Nr obs.</th>
-            <th scope="col">Nr homo.</th>
-            <th scope="col">Frequency</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>RD</td>
-            <td>{{ variant.local_obs_old|default('N/A') }}</td>
-            <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
-            <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% elif variant.local_obs_old_nr_cases and variant.local_obs_old %} {{ (variant.local_obs_old/variant.local_obs_old_nr_cases)|round(5) }} {% elif variant.local_obs_old_nr_cases %} 0 / {{variant.local_obs_old_nr_cases}} {% else %} N/A {% endif %}</td>
-          </tr>
-          {% if variant.category in ['cancer', 'cancer_sv'] %}
-            <tr>
-              <td>Cancer Germline</td>
-              <td>{{ variant.local_obs_cancer_germline_old|default('N/A') }}</td>
-              <td>{{ variant.local_obs_cancer_germline_hom_old|default('N/A') }}</td>
-              <td>{% if variant.local_obs_cancer_germline_old_freq %} {{variant.local_obs_cancer_germline_old_freq|round(6)}} {% elif variant.local_obs_cancer_germline_old_nr_cases and variant.local_obs_cancer_germline_old %} {{ (variant.local_obs_cancer_germline_old/variant.local_obs_cancer_germline_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_germline_old_nr_cases %} 0 / {{variant.local_obs_cancer_germline_old_nr_cases}} {% else %} N/A {% endif %}</td>
-            </tr>
-            <tr>
-              <td>Cancer Somatic</td>
-              <td>{{ variant.local_obs_cancer_somatic_old|default('N/A') }}</td>
-              <td>{{ variant.local_obs_cancer_somatic_hom_old|default('N/A') }}</td>
-              <td>{% if variant.local_obs_cancer_somatic_old_freq %} {{variant.local_obs_cancer_somatic_old_freq|round(6)}} {% elif variant.local_obs_cancer_somatic_old_nr_cases and variant.local_obs_cancer_somatic_old %} {{ (variant.local_obs_cancer_somatic_old/variant.local_obs_cancer_somatic_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_somatic_old_nr_cases %} 0 / {{variant.local_obs_cancer_somatic_old_nr_cases}} {% else %} N/A {% endif %}</td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
+      {{ old_observations_table(variant) }}
     </div>
   </div>
 {% endif %}
