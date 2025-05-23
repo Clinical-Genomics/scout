@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored and simplified code that fetches case's genome build (#5443)
 - On caseS page, dim cases only included from the always display cases with status option (#5464)
 - Reuse the variant frequencies table from variant page on case reports (#5478)
+- Loading of outliers files (Fraser and Outrider) do not raise error when path to these files is missing or wrong, just a warning (#5485)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
 - Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL (#5447)
