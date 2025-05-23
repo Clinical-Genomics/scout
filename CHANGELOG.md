@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chanjo2 genes full coverage check when variant has no genes (#5468)
 - Full Flask user logout blocked by session clear (#5470)
 - SV page UCSC link for breakpoints did not detect genome build 38 (#5489)
+- HPO term deep link URL updated to a working one (#5488)
 
 ## [4.101]
 ### Changed
