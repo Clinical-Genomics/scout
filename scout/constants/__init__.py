@@ -78,6 +78,7 @@ from .indexes import ID_PROJECTION, INDEXES
 from .panels import PANELAPP_CONFIDENCE_EXCLUDE
 from .phenotype import (
     COHORT_TAGS,
+    HPO_LINK_URL,
     HPO_URL,
     HPOTERMS_URL,
     ORPHA_URLS,

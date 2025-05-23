@@ -22,6 +22,7 @@ from scout.constants import (
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
     GENOME_REGION,
+    HPO_LINK_URL,
     INHERITANCE_PALETTE,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
@@ -388,9 +389,7 @@ def case(
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
     ):
-        hpo_term["hpo_link"] = "http://hpo.jax.org/app/browse/term/{}".format(
-            hpo_term["phenotype_id"]
-        )
+        hpo_term["hpo_link"] = f"{HPO_LINK_URL}{hpo_term['phenotype_id']}"
 
     _set_rank_model_links(case_obj)
 
