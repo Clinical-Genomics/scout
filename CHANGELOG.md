@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - When removing a germline variant from a ClinVar submission, make sure to remove also its associated observations from the database (#5463)
 - Chanjo2 genes full coverage check when variant has no genes (#5468)
 - Full Flask user logout blocked by session clear (#5470)
+- SV page UCSC link for breakpoints did not detect genome build 38 (#5489)
 - HPO term deep link URL updated to a working one (#5488)
 
 ## [4.101]

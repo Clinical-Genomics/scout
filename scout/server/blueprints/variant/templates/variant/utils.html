@@ -396,7 +396,7 @@
     <div class="col-1">
       <!--Define build variable to be used in the UCSC link-->
       {% set build = "hg19" %}
-      {% if case.genome_build == 38 or variant.chromosome == "MT" %}
+      {% if case.genome_build == "38" or variant.chromosome == "MT" %}
         {% set build = "hg38" %}
       {% endif %}
 
