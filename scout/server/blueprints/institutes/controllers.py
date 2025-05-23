@@ -545,11 +545,10 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
     )
 
 
-def get_and_set_cases_by_query(
+def get_cases_by_query(
     store: MongoAdapter,
     request: request,
     institute_id: str,
-    data: dict,
 ) -> list:
     """Fetch additional cases based on filters given in request query form.
 
@@ -567,35 +566,7 @@ def get_and_set_cases_by_query(
         has_clinvar_submission=request.form.get("clinvar_submitted"),
         projection=ALL_CASES_PROJECTION,
     )
-    all_cases = _sort_cases(data, request, all_cases)
     return all_cases
-
-
-def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
-    """Preprocess case objects for the 'cases' view."""
-    data = {}
-
-    # Initialize data (institute info, filters, and case counts)
-    institute_obj = institute_and_case(store, institute_id)
-    data["institute"] = institute_obj
-    data["form"] = CaseFilterForm(request.form)
-    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
-    data["nr_cases"] = sum(data["status_ncases"].values())
-
-    # Fetch Sanger unevaluated and validated cases
-    sanger_ordered_not_validated = get_sanger_unevaluated(store, institute_id, current_user.email)
-    data["sanger_unevaluated"], data["sanger_validated_by_others"] = sanger_ordered_not_validated
-
-    all_cases = get_and_set_cases_by_query(store, request, institute_id, data)
-
-    if request.form.get("export"):
-        return export_case_samples(institute_id, all_cases)
-
-    case_groups = get_and_set_cases_by_status(store, request, institute_obj, all_cases, data)
-
-    # Compile the final data
-    data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
-    return data
 
 
 def get_and_set_cases_by_status(
@@ -644,6 +615,37 @@ def get_and_set_cases_by_status(
     data["found_cases"] = nr_name_query_matching_displayed_cases + nr_cases_showall_statuses
     data["limit"] = limit
     return case_groups
+
+
+def cases(store: MongoAdapter, request: request, institute_id: str):
+    """Preprocess case objects for the 'cases' view.
+
+    Returns data dict for view display, or response in case of file export.
+    """
+    data = {}
+
+    # Initialize data (institute info, filters, and case counts)
+    institute_obj = institute_and_case(store, institute_id)
+    data["institute"] = institute_obj
+    data["form"] = CaseFilterForm(request.form)
+    data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
+    data["nr_cases"] = sum(data["status_ncases"].values())
+
+    # Fetch Sanger unevaluated and validated cases
+    sanger_ordered_not_validated = get_sanger_unevaluated(store, institute_id, current_user.email)
+    data["sanger_unevaluated"], data["sanger_validated_by_others"] = sanger_ordered_not_validated
+
+    all_cases = get_cases_by_query(store, request, institute_id)
+    all_cases = _sort_cases(data, request, all_cases)
+
+    if request.form.get("export"):
+        return export_case_samples(institute_id, all_cases)
+
+    case_groups = get_and_set_cases_by_status(store, request, institute_obj, all_cases, data)
+
+    # Compile the final data
+    data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
+    return data
 
 
 def populate_case_obj(case_obj: dict, store: MongoAdapter):
