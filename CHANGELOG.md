@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Refactored and simplified code that fetches case's genome build (#5443)
+- On caseS page, dim cases only included from the always display cases with status option (#5464)
 - Loading of outliers files (Fraser and Outrider) do not raise error when path to these files is missing or wrong, just a warning (#5485)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
