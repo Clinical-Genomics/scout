@@ -51,6 +51,28 @@ VAR_SPECIFIC_EVENTS = [
     "cancel_sanger",
 ]
 
+# Projection for fetching cases
+ALL_CASES_PROJECTION = {
+    "analysis_date": 1,
+    "assignees": 1,
+    "beacon": 1,
+    "case_id": 1,
+    "display_name": 1,
+    "genome_build": 1,
+    "individuals": 1,
+    "is_rerun": 1,
+    "is_research": 1,
+    "mme_submission": 1,
+    "owner": 1,
+    "panels": 1,
+    "phenotype_terms": 1,
+    "rank_model_version": 1,
+    "status": 1,
+    "sv_rank_model_version": 1,
+    "track": 1,
+    "vcf_files": 1,
+}
+
 
 def get_timeline_data(limit):
     """Retrieve chronologially ordered events from the database to display them in the timeline page
@@ -523,8 +545,83 @@ def export_case_samples(institute_id, filtered_cases) -> Response:
     )
 
 
-def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
-    """Preprocess case objects for the 'cases' view."""
+def get_cases_by_query(
+    store: MongoAdapter,
+    request: request,
+    institute_id: str,
+) -> list:
+    """Fetch additional cases based on filters given in request query form.
+
+    Sets metadata in data, e.g. sort order.
+    """
+
+    name_query = request.form
+    all_cases = store.cases(
+        collaborator=institute_id,
+        name_query=name_query,
+        skip_assigned=request.form.get("skip_assigned"),
+        is_research=request.form.get("is_research"),
+        has_rna_data=request.form.get("has_rna"),
+        verification_pending=request.form.get("validation_ordered"),
+        has_clinvar_submission=request.form.get("clinvar_submitted"),
+        projection=ALL_CASES_PROJECTION,
+    )
+    return all_cases
+
+
+def get_and_set_cases_by_status(
+    store: MongoAdapter,
+    request: request,
+    institute_obj: dict,
+    previous_query_result_cases: list,
+    data: dict,
+) -> dict:
+    """Process cases for statuses that require all cases to be shown.
+    Group cases by status, process additional cases for the remaining statuses
+    and ensure that we don't dim cases that already appeared in query search results.
+    """
+
+    status_show_all_cases = institute_obj.get("show_all_cases_status", ["prioritized"])
+    nr_cases_showall_statuses = 0
+
+    # Group cases by status
+    case_groups = {status: [] for status in CASE_STATUSES}
+
+    for status in status_show_all_cases:
+        cases_in_status = store.cases_by_status(
+            institute_id=institute_obj["_id"], status=status, projection=ALL_CASES_PROJECTION
+        )
+        cases_in_status = _sort_cases(data, request, cases_in_status)
+        for case_obj in cases_in_status:
+            populate_case_obj(case_obj, store)
+            case_obj["dimmed_in_search"] = True
+            case_groups[status].append(case_obj)
+            nr_cases_showall_statuses += 1
+
+    nr_name_query_matching_displayed_cases = 0
+    limit = int(request.form.get("search_limit", 100))
+    for case_obj in previous_query_result_cases:
+        if case_obj["status"] in status_show_all_cases:
+            for group_case in case_groups[status]:
+                if group_case["_id"] == case_obj["_id"]:
+                    group_case["dimmed_in_search"] = False
+        elif nr_name_query_matching_displayed_cases == limit:
+            break
+        else:
+            populate_case_obj(case_obj, store)
+            case_groups[case_obj["status"]].append(case_obj)
+            nr_name_query_matching_displayed_cases += 1
+
+    data["found_cases"] = nr_name_query_matching_displayed_cases + nr_cases_showall_statuses
+    data["limit"] = limit
+    return case_groups
+
+
+def cases(store: MongoAdapter, request: request, institute_id: str):
+    """Preprocess case objects for the 'cases' view.
+
+    Returns data dict for view display, or response in case of file export.
+    """
     data = {}
 
     # Initialize data (institute info, filters, and case counts)
@@ -538,77 +635,16 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     sanger_ordered_not_validated = get_sanger_unevaluated(store, institute_id, current_user.email)
     data["sanger_unevaluated"], data["sanger_validated_by_others"] = sanger_ordered_not_validated
 
-    # Projection for fetching cases
-    ALL_CASES_PROJECTION = {
-        "analysis_date": 1,
-        "assignees": 1,
-        "beacon": 1,
-        "case_id": 1,
-        "display_name": 1,
-        "genome_build": 1,
-        "individuals": 1,
-        "is_rerun": 1,
-        "is_research": 1,
-        "mme_submission": 1,
-        "owner": 1,
-        "panels": 1,
-        "phenotype_terms": 1,
-        "rank_model_version": 1,
-        "status": 1,
-        "sv_rank_model_version": 1,
-        "track": 1,
-        "vcf_files": 1,
-    }
-
-    # Group cases by status
-    case_groups = {status: [] for status in CASE_STATUSES}
-    nr_cases_showall_statuses = 0
-    status_show_all_cases = institute_obj.get("show_all_cases_status") or ["prioritized"]
-
-    # Process cases for statuses that require all cases to be shown
-    for status in status_show_all_cases:
-        cases_in_status = store.cases_by_status(
-            institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
-        )
-        cases_in_status = _sort_cases(data, request, cases_in_status)
-        for case_obj in cases_in_status:
-            populate_case_obj(case_obj, store)
-            case_groups[status].append(case_obj)
-            nr_cases_showall_statuses += 1
-
-    # Fetch additional cases based on filters
-    name_query = request.form
-    limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=request.form.get("skip_assigned"),
-        is_research=request.form.get("is_research"),
-        has_rna_data=request.form.get("has_rna"),
-        verification_pending=request.form.get("validation_ordered"),
-        has_clinvar_submission=request.form.get("clinvar_submitted"),
-        projection=ALL_CASES_PROJECTION,
-    )
+    all_cases = get_cases_by_query(store, request, institute_id)
     all_cases = _sort_cases(data, request, all_cases)
 
     if request.form.get("export"):
         return export_case_samples(institute_id, all_cases)
 
-    # Process additional cases for the remaining statuses
-    nr_cases = 0
-    for case_obj in all_cases:
-        if case_obj["status"] not in status_show_all_cases:
-            if nr_cases == limit:
-                break
-            populate_case_obj(case_obj, store)
-            case_groups[case_obj["status"]].append(case_obj)
-            nr_cases += 1
+    case_groups = get_and_set_cases_by_status(store, request, institute_obj, all_cases, data)
 
     # Compile the final data
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
-    data["found_cases"] = nr_cases + nr_cases_showall_statuses
-    data["limit"] = limit
-
     return data
 
 
