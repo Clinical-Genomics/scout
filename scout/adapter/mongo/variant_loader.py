@@ -642,7 +642,6 @@ class VariantLoader(object):
         Returns:
             nr_inserted(int)
         """
-
         institute_id = case_obj["owner"]
 
         nr_inserted = 0
@@ -662,6 +661,9 @@ class VariantLoader(object):
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
 
             if not variant_file or not self._has_variants_in_file(variant_file):
+                LOG.warning(
+                    f"File '{variant_file}' not found on disk. Please update case {case_obj['_id']} with a valid file path for variant category: '{category}'."
+                )
                 continue
 
             vcf_obj = VCF(variant_file)
