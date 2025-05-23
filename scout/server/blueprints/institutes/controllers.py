@@ -591,7 +591,25 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     if request.form.get("export"):
         return export_case_samples(institute_id, all_cases)
 
-    # Process cases for statuses that require all cases to be shown
+    case_groups = get_and_set_cases_by_status(store, request, institute_obj, all_cases, data)
+
+    # Compile the final data
+    data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
+    return data
+
+
+def get_and_set_cases_by_status(
+    store: MongoAdapter,
+    request: request,
+    institute_obj: dict,
+    previous_query_result_cases: list,
+    data: dict,
+) -> dict:
+    """Process cases for statuses that require all cases to be shown.
+    Group cases by status, process additional cases for the remaining statuses
+    and ensure that we don't dim cases that already appeared in query search results (are on the all_cases).
+    """
+
     status_show_all_cases = institute_obj.get("show_all_cases_status") or ["prioritized"]
     nr_cases_showall_statuses = 0
 
@@ -600,7 +618,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
 
     for status in status_show_all_cases:
         cases_in_status = store.cases_by_status(
-            institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
+            institute_id=institute_obj["_id"], status=status, projection=ALL_CASES_PROJECTION
         )
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
@@ -609,28 +627,23 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
             case_groups[status].append(case_obj)
             nr_cases_showall_statuses += 1
 
-    # Process additional cases for the remaining statuses
-    nr_cases = 0
+    nr_name_query_matching_displayed_cases = 0
     limit = int(request.form.get("search_limit")) if request.form.get("search_limit") else 100
-    for case_obj in all_cases:
-        # Don't dim cases that already appeared in query search results
+    for case_obj in previous_query_result_cases:
         if case_obj["status"] in status_show_all_cases:
             for group_case in case_groups[status]:
                 if group_case["_id"] == case_obj["_id"]:
                     group_case["dimmed_in_search"] = False
         else:
-            if nr_cases == limit:
+            if nr_name_query_matching_displayed_cases == limit:
                 break
             populate_case_obj(case_obj, store)
             case_groups[case_obj["status"]].append(case_obj)
-            nr_cases += 1
+            nr_name_query_matching_displayed_cases += 1
 
-    # Compile the final data
-    data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
-    data["found_cases"] = nr_cases + nr_cases_showall_statuses
+    data["found_cases"] = nr_name_query_matching_displayed_cases + nr_cases_showall_statuses
     data["limit"] = limit
-
-    return data
+    return case_groups
 
 
 def populate_case_obj(case_obj: dict, store: MongoAdapter):
