@@ -36,6 +36,7 @@ from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
     jsonconverter,
+    safe_redirect_back,
     templated,
     user_cases,
     user_institutes,
@@ -148,7 +149,7 @@ def beacon_add_variants(institute_id, case_name):
         store, institute_id, case_name
     )  # This function checks if user has permissions to access the case
     beacon.add_variants(store, case_obj, request.form)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/beacon_remove_variants/<institute_id>/<case_name>", methods=["GET"])
@@ -158,7 +159,7 @@ def beacon_remove_variants(institute_id, case_name):
         store, institute_id, case_name
     )  # This function checks if user has permissions to access the case
     beacon.remove_variants(store, institute_id, case_obj)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])
@@ -175,7 +176,7 @@ def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     match_results = controllers.matchmaker_match(request, target, institute_id, case_name)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_add", methods=["POST"])
@@ -183,7 +184,7 @@ def matchmaker_add(institute_id, case_name):
     """Add or update a case in MatchMaker"""
     # Call matchmaker_delete controller to add a patient to MatchMaker
     controllers.matchmaker_add(request, institute_id, case_name)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_delete", methods=["POST"])
@@ -191,7 +192,7 @@ def matchmaker_delete(institute_id, case_name):
     """Remove a case from MatchMaker"""
     # Call matchmaker_delete controller to delete a patient from MatchMaker
     controllers.matchmaker_delete(request, institute_id, case_name)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/individuals", methods=["POST"])
@@ -212,7 +213,7 @@ def update_individual(institute_id, case_name):
         age=age,
         tissue=tissue,
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/samples", methods=["POST"])
@@ -237,7 +238,7 @@ def update_cancer_sample(institute_id, case_name):
         tumor_type=tumor_type,
         tumor_purity=tumor_purity,
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/synopsis", methods=["POST"])
@@ -247,7 +248,7 @@ def case_synopsis(institute_id, case_name):
     user_obj = store.user(current_user.email)
     new_synopsis = request.form.get("synopsis")
     controllers.update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
@@ -344,7 +345,7 @@ def mt_report(institute_id, case_name):
     shutil.rmtree(temp_excel_dir)
 
     flash("No MT report excel file could be exported for this sample", "warning")
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
@@ -366,7 +367,7 @@ def case_diagnosis(institute_id, case_name):
         affected_inds=affected_inds,
         remove=True if request.args.get("remove") == "yes" else False,
     )
-    return redirect("#".join([link, "disease_assign"]))
+    return safe_redirect_back(request, "#".join([link, "disease_assign"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
@@ -414,7 +415,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
             )
             return redirect(case_url)
 
-    return redirect("#".join([case_url, "phenotypes_panel"]))
+    return safe_redirect_back(request, "#".join([case_url, "phenotypes_panel"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotype_export", methods=["POST"])
@@ -526,7 +527,7 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
-    return redirect("#".join([case_url, "phenotypes_panel"]))
+    return safe_redirect_back(request, "#".join([case_url, "phenotypes_panel"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/events", methods=["POST"])
@@ -567,7 +568,7 @@ def events(institute_id, case_name, event_id=None):
             # create a case comment
             store.comment(institute_obj, case_obj, user_obj, link, content=content)
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/status", methods=["POST"])
@@ -588,7 +589,7 @@ def status(institute_id, case_name):
     if tags or case_obj.get("tags") and tags != case_obj.get("tags"):
         store.tag_case(institute_obj, case_obj, user_obj, tags, link)
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/assign", methods=["POST"])
@@ -605,7 +606,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
         store.unassign(institute_obj, case_obj, user_obj, link, inactivate)
     else:
         store.assign(institute_obj, case_obj, user_obj, link)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/api/v1/cases", defaults={"institute_id": None})
@@ -688,7 +689,7 @@ def pin_variant(institute_id, case_name, variant_id):
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
         store.unpin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
-    return redirect(request.referrer or link)
+    return safe_redirect_back(request, request.referrer or link)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<variant_id>/validate", methods=["POST"])
@@ -705,7 +706,7 @@ def mark_validation(institute_id, case_name, variant_id):
         variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
-    return redirect(request.referrer or link)
+    return safe_redirect_back(request, request.referrer or link)
 
 
 @cases_bp.route(
@@ -748,8 +749,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
             store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
 
     # send the user back to the case that was marked as solved
-    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
@@ -761,7 +761,7 @@ def check_case(institute_id, case_name):
     store.case_collection.find_one_and_update(
         {"_id": case_obj["_id"]}, {"$set": {"needs_check": False}}
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/report/<report_type>")
@@ -835,7 +835,7 @@ def share(institute_id, case_name):
     except ValueError as ex:
         flash(str(ex), "warning")
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/update_rerun_status")
@@ -846,7 +846,7 @@ def update_rerun_status(institute_id, case_name):
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
 
     store.update_rerun_status(institute_obj, case_obj, user_obj, link)
-    return redirect(link)
+    return safe_redirect_back(request, link)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/monitor", methods=["POST"])
@@ -860,7 +860,7 @@ def rerun_monitor(institute_id, case_name):
     else:
         store.unmonitor(institute_obj, case_obj, user_obj, link)
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
@@ -876,7 +876,7 @@ def reanalysis(institute_id, case_name):
         LOG.error(msg)
         flash(msg, "danger")
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/research", methods=["POST"])
@@ -886,7 +886,7 @@ def research(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     store.open_research(institute_obj, case_obj, user_obj, link)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/reset_research", methods=["GET"])
@@ -895,7 +895,7 @@ def reset_research(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     store.reset_research(institute_obj, case_obj, user_obj, link)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/cohorts", methods=["POST"])
@@ -909,7 +909,7 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
-    return redirect("#".join([request.referrer, "cohorts"]))
+    return safe_redirect_back(request, "#".join([request.referrer, "cohorts"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/default-panels", methods=["POST"])
@@ -917,7 +917,7 @@ def default_panels(institute_id, case_name):
     """Update default panels for a case."""
     panel_ids = request.form.getlist("panel_ids")
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"])
@@ -928,7 +928,7 @@ def update_clinical_filter_hpo(institute_id, case_name):
     controllers.update_clinical_filter_hpo(
         store, current_user, institute_obj, case_obj, hpo_clinical_filter
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods=["GET", "POST"])
@@ -943,8 +943,7 @@ def add_case_group(institute_id, case_name):
         case_name = request.form.get("other_case_name")
 
     controllers.add_case_group(store, current_user, institute_id, case_name, group_id)
-
-    return redirect(request.referrer + "#case_groups")
+    return safe_redirect_back(request, request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
@@ -952,7 +951,7 @@ def remove_case_group(institute_id, case_name, case_group):
     """Unbind a case group from a case. Remove the group if it is no longer in use."""
     controllers.remove_case_group(store, current_user, institute_id, case_name, case_group)
 
-    return redirect(request.referrer + "#case_groups")
+    return safe_redirect_back(request, request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<case_group>/case_group_update_label", methods=["POST"])
@@ -962,7 +961,7 @@ def case_group_update_label(case_group):
 
     controllers.case_group_update_label(store, case_group, label)
 
-    return redirect(request.referrer + "#case_groups")
+    return safe_redirect_back(request, request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes/<category>", methods=["GET"])
