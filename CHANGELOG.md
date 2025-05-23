@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ClinVar data with link to ClinVar for variants present on the general case report (#5478)
+- Customise Scout instance color and name, by adding INSTANCE_NAME and INSTANCE_HEX_COLOR parameters in the app config file (#5479)
 ### Changed
 - Refactored and simplified code that fetches case's genome build (#5443)
 - On caseS page, dim cases only included from the always display cases with status option (#5464)
