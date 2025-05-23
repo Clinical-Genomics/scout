@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from scout.adapter import MongoAdapter
+from scout.constants import HPO_LINK_URL
 from scout.server.links import disease_link
 
 
-def disease_entry(store, disease_id) -> dict:
+def disease_entry(store: MongoAdapter, disease_id: str) -> dict:
     """Retrieve specific info for a disease term
-
-    Args:
-        store(obj): an adapter to the scout database
-        disease_id(str): a disease_id
 
     Returns:
         disease_obj(obj): a disease term containing description and genes
@@ -21,6 +18,7 @@ def disease_entry(store, disease_id) -> dict:
         store.hpo_term(hpo_id) for hpo_id in disease_obj.get("hpo_terms", [])
     ]
     disease_obj["disease_link"] = disease_link(disease_id=disease_obj["disease_id"])
+    disease_obj["hpo_link_url"] = HPO_LINK_URL
     return disease_obj
 
 
@@ -43,6 +41,4 @@ def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
             )
         disease.update({"genes": gene_ids_symbols})
 
-    data = {"terms": list(disease_data)}
-
-    return data
+    return {"terms": list(disease_data)}

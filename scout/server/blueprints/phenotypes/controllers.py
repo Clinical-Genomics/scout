@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 
-def hpo_terms(store, query=None, limit=None, page=None):
+from scout.adapter import MongoAdapter
+from scout.constants import HPO_LINK_URL
+
+
+def hpo_terms(
+    store: MongoAdapter,
+    query: Optional[str] = None,
+    limit: Optional[str] = None,
+    page: Optional[str] = None,
+) -> dict:
     """Retrieves a list of HPO terms from scout database
 
     Args:
@@ -29,4 +39,7 @@ def hpo_terms(store, query=None, limit=None, page=None):
         hpo_phenotypes["phenotypes"] = list(store.hpo_terms(query=query, limit=limit, skip=skip))
     else:
         hpo_phenotypes["phenotypes"] = list(store.hpo_terms(limit=limit, skip=skip))
-    return hpo_phenotypes
+
+    data = hpo_phenotypes
+    data["hpo_link_url"] = HPO_LINK_URL
+    return data
