@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.102]
 ### Added
 - ClinVar data with link to ClinVar for variants present on the general case report (#5478)
 - Customise Scout instance color and name, by adding INSTANCE_NAME and INSTANCE_HEX_COLOR parameters in the app config file (#5479)
@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On caseS page, dim cases only included from the always display cases with status option (#5464)
 - Reuse the variant frequencies table from variant page on case reports (#5478)
 - Loading of outliers files (Fraser and Outrider) do not raise error when path to these files is missing or wrong, just a warning (#5485)
+- Updated libraries on uv lock file (#5494)
 ### Fixed
 - Fix long STR variant pinned display on case page (#5455)
 - Variant page crashing when Loqusdb instance is chosen on institute settings but is not found at the given URL (#5447)
