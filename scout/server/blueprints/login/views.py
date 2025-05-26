@@ -107,6 +107,7 @@ def logout():
         if current_app.config.get(provider):
             controllers.logout_oidc_user(session, provider)
     logout_user()  # logs out user from scout
+    session.clear()
     flash(f"session after logout:{dict(session)}")
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
