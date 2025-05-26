@@ -102,12 +102,11 @@ def authorized():
 
 @login_bp.route("/logout")
 def logout():
-    logging.warning(f"Session before logout: {dict(session)}")
     logout_user()  # logs out user from scout
     for provider in ["GOOGLE", "KEYCLOAK"]:
         if current_app.config.get(provider):
             controllers.logout_oidc_user(session, provider)
-    logging.warning(f"Session after logout: {dict(session)}")
+    session.clear()
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
