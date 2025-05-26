@@ -152,6 +152,9 @@ def perform_flask_login(user_dict: "LoginUser") -> Response:
 def logout_oidc_user(session, provider: str):
     """Log out a user from an OIDC login provider-"""
 
+    for key in ("userinfo", "id_token", "google_token"):
+        session.pop(key, None)
+
     if current_app.config.get("GOOGLE"):
         logout_url = (
             "https://accounts.google.com/Logout?"
