@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO term deep link URL updated to a working one (#5488)
 - Add `str_trid` as a sorting criterion when selecting STRs. This fixes the sort order problem of STRs from cases with genome build 38 (#5491)
 - Always use GitHub "backup" URL for igv.js genomes.json config (#5496)
-- Update igv.js to v3.3.0
+- Update igv.js to v3.3.0 (#5496)
 
 ## [4.101]
 ### Changed
