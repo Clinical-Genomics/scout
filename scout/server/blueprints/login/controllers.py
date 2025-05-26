@@ -98,7 +98,9 @@ def google_login() -> Optional[Response]:
 
     redirect_uri: str = url_for("login.authorized", _external=True)
     try:
-        return oauth_client.google.authorize_redirect(redirect_uri, prompt="select_account")
+        return oauth_client.google.authorize_redirect(
+            redirect_uri, prompt="select_account", login_hint=""
+        )
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
         return None
@@ -151,9 +153,6 @@ def perform_flask_login(user_dict: "LoginUser") -> Response:
 
 def logout_oidc_user(session, provider: str):
     """Log out a user from an OIDC login provider-"""
-
-    for key in ("userinfo", "id_token", "google_token"):
-        session.pop(key, None)
 
     if current_app.config.get("GOOGLE"):
         logout_url = (
