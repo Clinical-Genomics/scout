@@ -160,8 +160,7 @@ def logout_oidc_user(session, provider: str):
         )
         return redirect(logout_url)
 
-    if current_app.config[provider].get("logout_url"):
-        logout_url = current_app.config[provider]["logout_url"]
+    logout_url = current_app.config[provider].get("logout_url")
 
     if not logout_url or not session.get("token_response"):
         return
