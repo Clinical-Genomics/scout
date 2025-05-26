@@ -2,12 +2,22 @@ import logging
 from typing import Dict, Set
 
 import intervaltree
+import pymongo
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 QUERY_FIELD_EXISTS = {"$exists": True, "$ne": None}
+
+CAPTION_PROJECTION = {
+    "hgnc_id": 1,
+    "hgnc_symbol": 1,
+    "description": 1,
+    "chromosome": 1,
+    "start": 1,
+    "end": 1,
+}
 
 
 class GeneHandler(object):
@@ -62,11 +72,7 @@ class GeneHandler(object):
         if build in ["37", "38"]:
             query["build"] = build
 
-        projection = {}  # fields to return in query results
-        for item in ["hgnc_id", "hgnc_symbol", "description", "chromosome", "start", "end"]:
-            projection[item] = 1
-
-        return self.hgnc_collection.find_one(query, projection)
+        return self.hgnc_collection.find_one(query, CAPTION_PROJECTION)
 
     def hgnc_gene(self, hgnc_identifier, build="37"):
         """Fetch a hgnc gene
@@ -444,6 +450,21 @@ class GeneHandler(object):
                         gene["hgnc_symbol"],
                     )
                 gene["hgnc_id"] = ",".join([str(hgnc_id) for hgnc_id in id_info["ids"]])
+
+    def get_genes_at_coordinate(
+        self, chromosome: str, position: int, build: str = "37"
+    ) -> pymongo.cursor.Cursor:
+        """Return genes at a position. Allow a small window around the gene for regulatory elements."""
+
+        return self.hgnc_collection.find(
+            {
+                "chromosome": chromosome,
+                "build": build,
+                "start": {"$lte": position + 500},
+                "end": {"$gte": position - 500},
+            },
+            CAPTION_PROJECTION,
+        )
 
     def get_coding_intervals(self, build="37", genes=None):
         """Return a dictionary with chromosomes as keys and interval trees as values
