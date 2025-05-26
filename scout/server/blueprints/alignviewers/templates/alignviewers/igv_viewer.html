@@ -35,6 +35,8 @@
   $(document).ready(function () {
       var div = $("#igvDiv")[0],
               options = {
+                    loadDefaultGenomes: false,
+                    genomeList: "https://raw.githubusercontent.com/igvteam/igv-data/main/genomes/web/genomes.json",
                     showNavigation: true,
                     showRuler: true,
                     {% if display_center_guide %}
