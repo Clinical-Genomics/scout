@@ -24,7 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SV page UCSC link for breakpoints did not detect genome build 38 (#5489)
 - HPO term deep link URL updated to a working one (#5488)
 - Add `str_trid` as a sorting criterion when selecting STRs. This fixes the sort order problem of STRs from cases with genome build 38 (#5491)
-- Always use GitHub "backup" URL for igv.js genomes.json config (#5496)
+- Always use GitHub original for igv.js genomes.json config - it is intended as official backup URL already (#5496)
 - Update igv.js to v3.3.0 (#5496)
 
 ## [4.101]
