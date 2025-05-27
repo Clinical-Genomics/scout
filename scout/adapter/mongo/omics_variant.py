@@ -131,7 +131,7 @@ class OmicsVariantHandler:
 
         nr_inserted = 0
 
-        file_path = case_obj["omics_files"].get(file_type)
+        file_path = case_obj["omics_files"].get(file_type) if case_obj.get("omics_files") else None
         if file_path is None or os.path.exists(file_path) is False:
             LOG.warning(
                 f"File '{file_path}' not found on disk. Please update case {case_obj['_id']} with a valid file path for {file_type}."
