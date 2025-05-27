@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Always use GitHub original for igv.js genomes.json config - it is intended as official backup URL already (#5496)
 - Update igv.js to v3.3.0 (#5496)
 - Introduced a function that checks redirect URLs to avoid redirection to external sites (#5458)
+- Loading of missing outliers files should also not raise error if key exists but is unset (#5497)
 
 ## [4.101]
 ### Changed
