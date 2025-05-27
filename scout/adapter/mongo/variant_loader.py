@@ -659,7 +659,7 @@ class VariantLoader(object):
 
             LOG.info(f"Loading'{vcf_file_key}' variants")
             variant_file = (
-                case_obj["vcf_files"].get(vcf_file_key) if case_obj["vcf_files"] else None
+                case_obj["vcf_files"].get(vcf_file_key) if case_obj.get("vcf_files") else None
             )
 
             if not variant_file or not self._has_variants_in_file(variant_file):
