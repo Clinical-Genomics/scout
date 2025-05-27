@@ -8,11 +8,21 @@ import zipfile
 from functools import wraps
 from io import BytesIO
 from typing import Dict, Optional, Tuple
+from urllib.parse import urlparse
 
 import pdfkit
 from bson.objectid import ObjectId
-from flask import abort, current_app, flash, render_template, request
+from flask import (
+    Response,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+)
 from flask_login import current_user
+from werkzeug.local import LocalProxy
 
 LOG = logging.getLogger(__name__)
 
@@ -100,6 +110,17 @@ def public_endpoint(function):
     """Renders public endpoint"""
     function.is_public = True
     return function
+
+
+def safe_redirect_back(request: LocalProxy, link: Optional[str] = None) -> Response:
+    """Safely redirects the user back to the referring URL, if it originates from the same host.
+    Otherwise, the user is redirected to a default '/'."""
+    referrer = request.referrer
+    if referrer:
+        parsed_referrer = urlparse(referrer)
+        if parsed_referrer.netloc == request.host:
+            return redirect(link or referrer)
+    return redirect("/")
 
 
 def variant_institute_and_case(
