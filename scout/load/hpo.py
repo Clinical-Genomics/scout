@@ -48,7 +48,10 @@ def load_hpo_terms(
         if gene_info["true"] is not None:
             hgnc_id = gene_info["true"]
         elif len(gene_info["ids"]) == 1:
+            # unique aliases can be used
             hgnc_id = list(gene_info["ids"])[0]
+        else:
+            continue
 
         if hpo_id not in hpo_terms:
             continue
