@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Introduced a function that checks redirect URLs to avoid redirection to external sites (#5458)
 - Loading of missing outliers files should also not raise error if key exists but is unset (#5497)
 - Do not add null references to HPO-associated genes when parsing errors occur (#5472)
+- Possibility to change user immediately after logging out from Google Oauth or Keycloak (#5493)
 
 ## [4.101]
 ### Changed
