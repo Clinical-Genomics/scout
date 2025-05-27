@@ -98,7 +98,7 @@ def google_login() -> Optional[Response]:
 
     redirect_uri: str = url_for("login.authorized", _external=True)
     try:
-        return oauth_client.google.authorize_redirect(redirect_uri, prompt="select_account", hd="")
+        return oauth_client.google.authorize_redirect(redirect_uri, prompt="select_account")
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
         return None
@@ -109,7 +109,7 @@ def keycloak_login() -> Optional[Response]:
 
     redirect_uri: str = url_for("login.authorized", _external=True)
     try:
-        return oauth_client.keycloak.authorize_redirect(redirect_uri, prompt="select_account")
+        return oauth_client.keycloak.authorize_redirect(redirect_uri)
     except Exception:
         flash("An error has occurred while logging in user using Keycloak", "warning")
         return None
