@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, Optional
+from typing import Iterable, Optional
 
 from click import progressbar
 
