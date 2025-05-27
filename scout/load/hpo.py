@@ -42,10 +42,13 @@ def load_hpo_terms(
 
         # Fetch gene info to get correct HGNC id
         gene_info = alias_genes.get(hgnc_symbol)
-        if not gene_info or gene_info["true"] is None:
+        if not gene_info:
             continue
 
-        hgnc_id = gene_info["true"]
+        if gene_info["true"] is not None:
+            hgnc_id = gene_info["true"]
+        elif len(gene_info["ids"]) == 1:
+            hgnc_id = list(gene_info["ids"])[0]
 
         if hpo_id not in hpo_terms:
             continue
