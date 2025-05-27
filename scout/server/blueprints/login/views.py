@@ -107,8 +107,10 @@ def logout():
             controllers.logout_oidc_user(session, provider)
     logout_user()  # logs out user from scout
     session.clear()
+    resp = redirect(url_for("public.index"))
+    resp.set_cookie("session", "", expires=0)
     flash("you logged out", "success")
-    return redirect(url_for("public.index"))
+    return resp
 
 
 @login_bp.route("/users")
