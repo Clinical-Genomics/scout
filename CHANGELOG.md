@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add `str_trid` as a sorting criterion when selecting STRs. This fixes the sort order problem of STRs from cases with genome build 38 (#5491)
 - Always use GitHub original for igv.js genomes.json config - it is intended as official backup URL already (#5496)
 - Update igv.js to v3.3.0 (#5496)
+- Introduced a function that checks redirect URLs to avoid redirection to external sites (#5458)
 - Force logout and user selecting when logging out from Google Oauth (#5493)
 
 ## [4.101]
