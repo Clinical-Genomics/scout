@@ -5,8 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-###
+### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+### Fixed
+- More clearly dim cases for empty queries (#5507)
 
 ## [4.102]
 ### Added
