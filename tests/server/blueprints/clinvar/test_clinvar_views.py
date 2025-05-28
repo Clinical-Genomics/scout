@@ -58,7 +58,7 @@ def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
         # THEN clinVar_submissions endpoint should return a valid page
         resp = client.get(
             url_for(
-                "clinvar.clinvar_submissions",
+                "clinvar.clinvar_germline_submissions",
                 institute_id=institute_obj["internal_id"],
             ),
         )
@@ -94,7 +94,9 @@ def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
         )
 
         # WHEN the form to rename a submission's individual is used
-        referer = url_for("clinvar.clinvar_submissions", institute_id=institute_obj["internal_id"])
+        referer = url_for(
+            "clinvar.clinvar_germline_submissions", institute_id=institute_obj["internal_id"]
+        )
         client.post(
             url_for(
                 f"clinvar.clinvar_rename_casedata",

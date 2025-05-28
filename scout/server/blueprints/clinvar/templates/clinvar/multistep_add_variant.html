@@ -1,8 +1,9 @@
 {% extends "bootstrap_global.html" %}
+{% from "clinvar/components.html" import condition_identifiers, hgvs_choices, observations %}
 
 {% block css %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"></link>
+  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"/>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
   <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 {% endblock %}
@@ -23,14 +24,14 @@
       <div class="col-md-10">
           <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
               <!-- progressbar -->
-              <ul id="progressbar">
+              <ul id="progressbar" class="steps-7">
                   <li class="active">Start</li>
                   <li>Assertion Criteria</li>
                   <li>Variant Details</li>
                   <li>Inheritance Model</li>
                   <li>Germline Classification</li>
                   <li>Associated conditions</li>
-                   <li>Observation Data</li>
+                  <li>Observation Data</li>
               </ul>
               <!-- fieldsets -->
               <fieldset data-step="1">
@@ -91,69 +92,7 @@
                   <br>
                   {% if var_category == 'snv' %}
                     <br><br>
-                    <!-- Transcripts & HGVS:(optional) -->
-                    {{ variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark") }}
-
-                    <span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
-                    <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
-                    <br><br>
-
-                    {% with messages = get_flashed_messages() %}
-                      {% if messages %}
-                        {% for message in messages %}
-                          <span class="ml-3">{{ message }}</span><br>
-                        {% endfor %}
-                        <br><br>
-                      {% endif %}
-                    {% endwith %}
-
-                    <table style="width:100%; table-layout: auto; border-collapse: collapse;">
-                      <caption></caption>
-                      <tr><th></th></tr>
-                    {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
-                      <tr>
-                      {% for item in item_row %}
-                        {% set ns = namespace(label='', validated=false, mane_select=false, mane_plus_clinical=false) %}
-                        {% if "_validated_" in item.label.text %}
-                          {% set ns.validated = true %}
-                        {% endif %}
-                        {% if "_mane-select_" in item.label.text %}
-                          {% set ns.mane_select = true %}
-                        {% endif %}
-                        {% if "_mane-plus-clinical_" in item.label.text %}
-                           {% set ns.mane_plus_clinical = true %}
-                        {% endif %}
-
-                        {% set ns.label = item.label.text | replace("_validated_", "") | replace("_mane-select_", "")  %}
-
-                        <td style="width: 3%; text-align: right; vertical-align: baseline;">
-                          <input type="radio" name="tx_hgvs" value="{{ ns.label }}"
-                            {% if ns.mane_select %}checked{% endif %}>
-                        </td>
-
-                        <td style="width: 30%; text-align: left; ">
-                          <p class="text-dark"
-                          {% if ns.label|length > 50 %}
-                           data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}
-                          {% else %}
-                            >{{ ns.label }}
-                          {% endif %}
-                          {% if ns.mane_select %}
-                            <span class='badge bg-dark'>MANE SELECT</span>
-                          {% endif %}
-                          {% if ns.mane_plus_clinical %}
-                            <span class='badge bg-dark'>MANE PLUS CLINICAL</span>
-                          {% endif %}
-                          {% if ns.validated %}
-                            <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>
-                          {% endif %}
-                          </p>
-                        </td>
-                      {% endfor %}
-                      </tr>
-                    {% endfor %}
-                    </table>
-
+                    {{hgvs_choices(variant_data.var_form.tx_hgvs)}}
                     <br><br>
                     <!-- dbSNP identifier -->
                     {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
@@ -255,75 +194,7 @@
                 <legend class="text-dark">Associated Conditions</legend>
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a></h3>
 
-                <div class="row">
-                  <div class="col-6" id="clinvar_condition_container">
-                    {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
-
-                    <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
-                      {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
-                        <option value="{{dbtype}}">{{dbtype}}</option>
-                      {% endfor %}
-                    </select>
-
-                    <br><br>
-                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc). If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features. If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records."><strong>*?</strong></span>
-                    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
-                      {% if variant_data.var_form.omim_terms.choices %}
-                        {% for term, _ in variant_data.var_form.omim_terms.choices %}
-                          <option value="{{term}}" selected>{{term}}</option>
-                        {% endfor %}
-                      {% elif variant_data.var_form.orpha_terms.choices %}
-                        {% for term, _ in variant_data.var_form.orpha_terms.choices %}
-                          <option value="{{term}}" selected>{{term}}</option>
-                        {% endfor %}
-                      {% elif variant_data.var_form.hpo_terms.choices %}
-                        {% for term, _ in variant_data.var_form.hpo_terms.choices %}
-                          <option value="{{term}}" selected>{{term}}</option>
-                        {% endfor %}
-                      {% endif %}
-                    </select>
-
-                    <div class="mt-3">
-                      {{variant_data.var_form.multiple_condition_explanation.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required if you provide more than one condition ID."><strong>?</strong></span>
-                      <select name="multiple_condition_explanation" id="multiple_condition_explanation" class="form-control, btn-secondary">
-                        <option selected value>-</option>
-                        {% for choice, _ in variant_data.var_form.multiple_condition_explanation.choices %}
-                          <option value="{{choice}}">{{choice}}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-
-
-                  </div>
-                  <div class="col-6">
-                    {{ variant_data.var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
-                    <ul class="list-group">
-                    {% for term in variant_data.var_form.omim_terms %}
-                      <li class="list-group-item">{{ term.label }}</li>
-                    {% else %}
-                      <span class="text-dark">N/A</span>
-                    {% endfor %}
-                    </ul>
-                    <br><br>
-                    {{variant_data.var_form.orpha_terms.label(class="fw-bold, text-dark")}}<br>
-                    <ul class="list-group">
-                    {% for term in variant_data.var_form.orpha_terms %}
-                      <li class="list-group-item">{{ term.label }}</li>
-                    {% else %}
-                      <span class="text-dark">N/A</span>
-                    {% endfor %}
-                    </ul>
-                    <br><br>
-                    {{variant_data.var_form.hpo_terms.label(class="fw-bold, text-dark")}}<br>
-                    <ul class="list-group">
-                    {% for term in variant_data.var_form.hpo_terms %}
-                      <li class="list-group-item">{{ term.label }}</li>
-                    {% else %}
-                    N/A
-                    </ul>
-                    {% endfor %}
-                  </div>
-                </div>
+                {{ condition_identifiers(variant_data.var_form) }}
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
@@ -333,35 +204,7 @@
                 <legend class="text-dark">Observation Data</legend>
                 <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
 
-                <ul class="list-group">
-                {% for cdata in variant_data.cdata_forms %}
-                  {{cdata.linking_id(class="fw-bold, text-dark")}} <!-- hidden field -->
-                  <li class="list-group-item bg-white">
-                    <div class="row">
-                      <div class="col-2">
-                        {{ cdata.include_ind.label(class="fw-bold, text-dark") }}
-                        {{ cdata.include_ind() }}
-                      </div>
-                      <div class="col-2">
-                        {{ cdata.individual_id.label(class="fw-bold, text-dark") }}
-                        {{ cdata.individual_id(class="form-control, bg-white", readonly=true) }}
-                      </div>
-                      <div class="col-2">
-                        {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
-                        {{ cdata.affected_status(class="form-control, btn-secondary") }}
-                      </div>
-                      <div class="col-2">
-                        {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
-                        {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
-                      </div>
-                      <div class="col-2">
-                        {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
-                        {{ cdata.collection_method(class="form-control, btn-secondary") }}
-                      </div>
-                    </div>
-                  </li>
-                {% endfor %}
-                </ul>
+                {{ observations(variant_data.cdata_forms) }}
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="submit" name="submit" class="submit action-button" value="Add to submission"/>
@@ -379,135 +222,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% include "clinvar/scripts.html" %}
+
 <script>
-
-// Enable tooltips
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-  return new bootstrap.Tooltip(tooltipTriggerEl)
-})
-
-// Validates fields for conditions associated to a variant
-function validateConditions(){
-
-  if ($("#condition_tags option:selected").length == 0) {
-    alert("Please provide at least one condition ID");
-    return false;
-  }
-
-  if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
-    alert("When multiple condition IDs are provided then an option for 'Explanation for multiple conditions' must be provided");
-    return false;
-  }
-
-  if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
-    alert("Please deselect the selected option in 'Explanation for multiple conditions' since only one condition ID was provided.");
-    return false;
-  }
-
-  // Make sure that provided conditions are numbers, except when condition type is MeSH or MedGen
-  var selectedConditionsValues = $('#condition_tags').val();
-  for (let i = 0; i < selectedConditionsValues.length; i++) {
-    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
-      alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
-      return false;
-    }
-  }
-
-  return true;
-}
-
-var current_fs, next_fs, previous_fs; //fieldsets
-var left, opacity, scale; //fieldset properties which we will animate
-var animating; //flag to prevent quick multi-click glitches
-
-$(".next").click(function(){
-	if(animating) return false;
-	animating = true;
-
-	current_fs = $(this).parent();
-
-	// run the validations on the input for the current step
-	var validationPassed = true;
-
-  if(current_fs.data('step') == 6){
-    validationPassed = validateConditions();
-  }
-
-  // check to see if the validator for the specific step we are on passed or not.
-  if(validationPassed == false){
-    // do not proceed
-    animating = false;
-    return;
-  }
-
-	next_fs = $(this).parent().next();
-
-	//activate next step on progressbar using the index of next_fs
-	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-
-	//show the next fieldset
-	next_fs.show();
-	//hide the current fieldset with style
-	current_fs.animate({opacity: 0}, {
-		step: function(now, mx) {
-			//as the opacity of current_fs reduces to 0 - stored in "now"
-			//1. scale current_fs down to 80%
-			scale = 1 - (1 - now) * 0.2;
-			//2. bring next_fs from the right(50%)
-			left = (now * 50)+"%";
-			//3. increase opacity of next_fs to 1 as it moves in
-			opacity = 1 - now;
-			current_fs.css({
-        'transform': 'scale('+scale+')',
-        'position': 'absolute'
-      });
-			next_fs.css({'left': left, 'opacity': opacity});
-		},
-		duration: 800,
-		complete: function(){
-			current_fs.hide();
-			animating = false;
-		},
-		//this comes from the custom easing plugin
-		easing: 'easeInOutBack'
-	});
-});
-
-$(".previous").click(function(){
-	if(animating) return false;
-	animating = true;
-
-	current_fs = $(this).parent();
-	previous_fs = $(this).parent().prev();
-
-	//de-activate current step on progressbar
-	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-
-	//show the previous fieldset
-	previous_fs.show();
-	//hide the current fieldset with style
-	current_fs.animate({opacity: 0}, {
-		step: function(now, mx) {
-			//as the opacity of current_fs reduces to 0 - stored in "now"
-			//1. scale previous_fs from 80% to 100%
-			scale = 0.8 + (1 - now) * 0.2;
-			//2. take current_fs to the right(50%) - from 0%
-			left = ((1-now) * 50)+"%";
-			//3. increase opacity of previous_fs to 1 as it moves in
-			opacity = 1 - now;
-			current_fs.css({'left': left});
-			previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
-		},
-		duration: 800,
-		complete: function(){
-			current_fs.hide();
-			animating = false;
-		},
-		//this comes from the custom easing plugin
-		easing: 'easeInOutBack'
-	});
-});
 
 //Function definition for keeping the tooltip updated for each Assertion method database option
 function updateTooltip(){
@@ -540,62 +257,6 @@ $(function () {
     $("#assertion_method_cit_db").change(function () {
         updateTooltip()
     })
-});
-
-
-var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
-
-// Populate condition list
-$('#condition_tags').select2({
-  tags: true,
-  theme: 'bootstrap-5',
-  tokenSeparators: [','],
-  allowClear: true,
-});
-
-// Set selected condition type on page load
-window.onload = function() {
-  const selectedCondId = document.getElementById('condition_type');
-  {% if variant_data.var_form.omim_terms.choices %}
-    selectedCondId.options.selectedIndex = 4;
-  {% elif variant_data.var_form.orpha_terms.choices %}
-    selectedCondId.options.selectedIndex = 5;
-  {% elif variant_data.var_form.hpo_terms.choices %}
-    selectedCondId.options.selectedIndex = 0;
-  {% endif %}
-};
-
-// reset and modify conditions field's placeholder when condition ID type changes
-$(function(){
-  $("#condition_type").change(function(){
-    $('#condition_tags')[0].options.length = 0; // reset conditions multiselect
-
-    // Change placeholder
-    selectedCondId = $("#condition_type option:selected").text();
-    $('#condition_tags').select2({
-      placeholder: conditionsPlaceHolders[selectedCondId],
-      theme: 'bootstrap-5',
-      tags: true,
-      tokenSeparators: [','],
-      allowClear: true,
-    });
-
-    // repopulate option values according to the selected condition ID
-    choices = {};
-    if ($('#condition_type').val() == 'OMIM'){
-      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe}};
-    }
-    if ($('#condition_type').val() == 'Orphanet'){
-      choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|safe }};
-    }
-    if ($('#condition_type').val() == 'HPO'){
-      choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
-    }
-    for (var key in choices) {
-      var newOption = new Option(key, key, true, true);
-      $('#condition_tags').append(newOption).trigger('change');
-    }
-  });
 });
 
 // Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
