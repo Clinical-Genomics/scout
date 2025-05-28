@@ -205,7 +205,7 @@ def clinvar_delete_onc_variant(submission: str):
         submission=submission,
         variant_id=request.form.get("delete_object"),
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/<submission>/download", methods=["GET"])
