@@ -51,6 +51,10 @@ VAR_SPECIFIC_EVENTS = [
     "cancel_sanger",
 ]
 
+NONSPECIFIC_QUERY_TERMS = [
+    "collaborators",
+]
+
 # Projection for fetching cases
 ALL_CASES_PROJECTION = {
     "analysis_date": 1,
@@ -566,6 +570,18 @@ def get_cases_by_query(
         has_clinvar_submission=request.form.get("clinvar_submitted"),
         projection=ALL_CASES_PROJECTION,
     )
+
+    cases_query = store.cases(
+        collaborator=institute_id,
+        name_query=name_query,
+        skip_assigned=request.form.get("skip_assigned"),
+        is_research=request.form.get("is_research"),
+        has_rna_data=request.form.get("has_rna"),
+        verification_pending=request.form.get("validation_ordered"),
+        has_clinvar_submission=request.form.get("clinvar_submitted"),
+        yield_query=True,
+    )
+    LOG.warning(f"Case query was {cases_query}")
     return all_cases
 
 
@@ -598,13 +614,27 @@ def get_and_set_cases_by_status(
             case_groups[status].append(case_obj)
             nr_cases_showall_statuses += 1
 
+    def get_specific_query(form):
+        """Check if only non-specific query terms were used in query.
+        If so we assume this is a default query, and dim all cases
+        that match the "show_all_cases_status", highlighting the
+        (max limit number) other cases that were return.
+        """
+        for key, value in form.items():
+            if key not in ["collaborators"] and value not in [None, ""]:
+                return False
+        return True
+
+    specific_query_asked = get_specific_query(request.form)
+
     nr_name_query_matching_displayed_cases = 0
     limit = int(request.form.get("search_limit", 100))
     for case_obj in previous_query_result_cases:
         if case_obj["status"] in status_show_all_cases:
-            for group_case in case_groups[status]:
-                if group_case["_id"] == case_obj["_id"]:
-                    group_case["dimmed_in_search"] = False
+            if specific_query_asked:
+                for group_case in case_groups[status]:
+                    if group_case["_id"] == case_obj["_id"]:
+                        group_case["dimmed_in_search"] = False
         elif nr_name_query_matching_displayed_cases == limit:
             break
         else:
