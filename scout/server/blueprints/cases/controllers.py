@@ -371,7 +371,7 @@ def case(
     partial_causatives = _get_partial_causatives(store, institute_obj, case_obj)
     _populate_assessments(partial_causatives)
 
-    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+    case_obj["clinvar_variants"] = store.case_to_clinvars(case_obj["_id"])
 
     # check for variants submitted to clinVar but not present in suspects for the case
     clinvar_variants_not_in_suspects = [

@@ -668,7 +668,7 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
         all_analyses_dates
     )
 
-    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+    case_obj["clinvar_variants"] = store.case_to_clinvars(case_obj["_id"])
     case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
 
 
