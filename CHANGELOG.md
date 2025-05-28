@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 ### Fixed
-- Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger ordered status to them. (#5504)
+- Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
 
 ## [4.102]
 ### Added
