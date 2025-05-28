@@ -22,7 +22,7 @@
         <a class="navbar-brand" href="{{ url_for('cases.index') }}">
           <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top text-white" alt="">Scout</a>
           {% if config.INSTANCE_NAME %}
-            <span class="badge bg-light text-dark">
+            <span class="navbar-text badge bg-light text-dark">
               {{ config.INSTANCE_NAME }}
             </span>
           {% endif %}
