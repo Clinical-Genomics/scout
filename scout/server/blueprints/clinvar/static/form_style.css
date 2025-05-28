@@ -126,10 +126,17 @@ padding: 0;
     color: white;
     text-transform: uppercase;
     font-size: 12px;
-    width: 14.28%;
     float: left;
     position: relative;
     letter-spacing: 1px;
+}
+
+#progressbar.steps-5 li {
+  width: 20%;
+}
+
+#progressbar.steps-7 li {
+  width: 14.28%;
 }
 
 #progressbar li:before {

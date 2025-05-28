@@ -28,6 +28,12 @@ from scout.constants import (
     GERMLINE_CLASSIF_TERMS,
     MULTIPLE_CONDITION_EXPLANATION,
 )
+from scout.constants.clinvar import (
+    CITATION_DBS_API,
+    CONDITION_DBS_API,
+    ONCOGENIC_CLASSIF_TERMS,
+    PRESENCE_IN_NORMAL_TISSUE,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -47,6 +53,7 @@ class ClinVarVariantForm(FlaskForm):
     linking_id = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
+    assembly = HiddenField()
     gene_symbol = StringField("Gene symbols, comma-separated")
     inheritance_mode = SelectField(
         "Inheritance model",
@@ -123,7 +130,7 @@ class CaseDataForm(FlaskForm):
     Schema available here: https://github.com/Clinical-Genomics/preClinVar/blob/718905521590196dc84fd576bc43d9fac418b97a/preClinVar/resources/submission_schema.json#L288
     """
 
-    include_ind = BooleanField("Include individual")
+    include_ind = BooleanField("Include")
     individual_id = StringField("Individual ID")
     linking_id = HiddenField()
     affected_status = SelectField(
@@ -136,4 +143,34 @@ class CaseDataForm(FlaskForm):
         "Collection method",
         default="clinical testing",
         choices=[(item, item) for item in COLLECTION_METHOD],
+    )
+    somatic_allele_fraction = IntegerField("Somatic allele fraction")
+    somatic_allele_in_normal = SelectField(  # Overriding default values
+        "Allele present in normal tissue",
+        default="absent",
+        choices=[(item, item) for item in PRESENCE_IN_NORMAL_TISSUE],
+    )
+
+
+### Cancer variant - related forms
+
+
+class CancerSNVariantForm(SNVariantForm):
+    """Contains the form element to add a cancer variant to a ClinVar oncogenicity submission object."""
+
+    # Form step 1: Oncogenicity classification
+    record_status = HiddenField(default="novel")
+    onc_classification = SelectField(
+        "Oncogenicity classification",
+        choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
+    )
+    assertion_method_cit_db = SelectField(  # Overriding default values
+        "Citation DB",
+        default="clinical testing",
+        choices=[(item, item) for item in CITATION_DBS_API],
+    )
+    assertion_method_cit_id = StringField("Citation ID")  # Overriding default values
+
+    condition_type = SelectField(
+        "Condition ID type", choices=[(item, item) for item in CONDITION_DBS_API]
     )

@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
+{% from "clinvar/components.html" import update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -15,14 +16,14 @@
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
   <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">Clinvar submissions</span>
+    <span class="navbar-text">Clinvar germline submissions</span>
   </li>
 {% endblock %}
 
 
 {% macro submissions_macro(submissions) %}
 <div class="container-float">
-  <h3 class="mt-3">ClinVar submissions page<h5></h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a><br>
+  <h3 class="mt-3">ClinVar submissions page</h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a><br>
   <!-- Modal -->
   {{ clinvar_howto_modal() }}
   <!-- Modal end -->

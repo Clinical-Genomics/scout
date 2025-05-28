@@ -617,42 +617,21 @@
         </li>
       {% endfor %}
     </ul>
-    {{ clinvar_vars_summary(suspects, case, institute) }}
       </div>
   </div>
 {% endmacro %}
 
 {% macro clinvar_var_status(variant, case, institute) %}
-    {% if variant._id and variant.category != 'str' %}
+    {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
+      (included in a ClinVar submission)
+    {% elif variant._id and variant.category in ["snv", "sv"] %}
         <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-            {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
-                (included in ClinVar submission)
-            {% elif variant.category in ('cancer', 'cancer_sv') %}
-                <button data-bs-toggle='tooltip' data-bs-placement="bottom" title="Submission of somatic variants from Scout is temporarily suspended. We are working to harmonize submissions with changes introduced by ClinVar for this variant category." disabled >Add to ClinVar submission</button>
-            {% elif variant.category in ('snv', 'sv') %}
-                <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
-            {% endif %}
+          <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
         </form>
-    {% endif %}
-{% endmacro %}
-
-{% macro clinvar_vars_summary(suspects, case, institute) %}
-    {% if case.clinvar_variants %}
-        {% if case.clinvar_variants_not_in_suspects | length >0 %}
-            <div class="d-flex align-content-center flex-wrap">
-                <div class="col-auto d-flex align-items-center wrap">
-                    <h6 class="m-2">&nbsp;Variants present in a ClinVar submission, no longer pinned:</h6>
-                </div>
-                {% for entry in case.clinvar_variants_not_in_suspects %}
-                    <div class="m-2">{{ pretty_link_variant(entry, case) }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-            <div class="card-footer d-flex justify-content-center pb-0" style="background-color:inherit;">
-                <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}"
-                    class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar
-                    submissions <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
+    {% elif variant.category in ('cancer') %}
+        <form id="clinvar_onc_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_onc_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+          <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
+        </form>
     {% endif %}
 {% endmacro %}
 
