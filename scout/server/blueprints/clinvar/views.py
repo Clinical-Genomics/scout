@@ -21,7 +21,7 @@ from scout.constants.clinvar import (
     ONCOGENIC_CLASSIF_TERMS,
 )
 from scout.server.extensions import clinvar_api, store
-from scout.server.utils import institute_and_case
+from scout.server.utils import institute_and_case, safe_redirect_back
 
 from . import controllers
 
