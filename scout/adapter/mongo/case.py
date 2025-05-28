@@ -1393,14 +1393,6 @@ class CaseHandler(object):
                 'ccv_classification': [list of variant ids]
                 'is_commented': [list of variant ids]
         """
-
-        def update_new_variant_key(variant_id: str, key: str, value: str) -> Optional[dict]:
-            """Update the given variant kwy with the provided value."""
-            return self.variant_collection.find_one_and_update(
-                {"_id": variant_id},
-                {"$set": {key: value}},
-            )
-
         ACTION_KEYS = [
             "manual_rank",
             "dismiss_variant",
@@ -1410,7 +1402,6 @@ class CaseHandler(object):
             "ccv_classification",
         ]
         updated_variants = {action: [] for action in ACTION_KEYS}
-
         LOG.debug(
             "Updating action status for {} variants in case:{}".format(
                 len(old_eval_variants), case_obj["_id"]
@@ -1418,7 +1409,6 @@ class CaseHandler(object):
         )
         n_status_updated = 0
         for old_var in old_eval_variants:
-
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
             new_var = self.variant_collection.find_one(
@@ -1432,8 +1422,9 @@ class CaseHandler(object):
 
             for action in ACTION_KEYS:
                 if old_var.get(action):
-                    updated_variant = update_new_variant_key(
-                        variant_id=new_var["_id"], key=action, value=old_var[action]
+                    updated_variant = self.variant_collection.find_one_and_update(
+                        {"_id": new_var["_id"]},
+                        {"$set": {action: old_var.get(action)}},
                     )
                     if updated_variant:
                         n_status_updated += 1
