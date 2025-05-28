@@ -620,7 +620,7 @@ def get_and_set_cases_by_status(
             yield_query=True,
         )
         LOG.warning(f"Case query was {cases_query}")
-        for key, value in cases_query():
+        for key, value in cases_query.items():
             if key not in ["collaborators"] and value not in [None, ""]:
                 return False
         return True
