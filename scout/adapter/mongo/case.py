@@ -1052,7 +1052,7 @@ class CaseHandler(object):
                 self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
                 if keep_actions and old_evaluated_variants:
-                    self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
+                    self.update_variant_actions(case_obj, old_evaluated_variants)
 
         return case_obj
 
@@ -1373,15 +1373,10 @@ class CaseHandler(object):
         return case_verif_variants
 
     def update_variant_actions(
-        self, institute_obj: dict, case_obj: dict, old_eval_variants: List[dict]
+        self, case_obj: dict, old_eval_variants: List[dict]
     ) -> Dict[str, List[str]]:
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
-
-        Accepts:
-            institute_obj(dict): an institute object
-            case_obj(dict): a case object
-            old_eval_variants(list(Variant))
 
         Returns:
             updated_variants(dict): a dictionary like this:
