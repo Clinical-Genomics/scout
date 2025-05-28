@@ -571,17 +571,6 @@ def get_cases_by_query(
         projection=ALL_CASES_PROJECTION,
     )
 
-    cases_query = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=request.form.get("skip_assigned"),
-        is_research=request.form.get("is_research"),
-        has_rna_data=request.form.get("has_rna"),
-        verification_pending=request.form.get("validation_ordered"),
-        has_clinvar_submission=request.form.get("clinvar_submitted"),
-        yield_query=True,
-    )
-    LOG.warning(f"Case query was {cases_query}")
     return all_cases
 
 
@@ -620,7 +609,18 @@ def get_and_set_cases_by_status(
         that match the "show_all_cases_status", highlighting the
         (max limit number) other cases that were return.
         """
-        for key, value in form.items():
+        cases_query = store.cases(
+            collaborator=institute_obj["_id"],
+            name_query=request.form,
+            skip_assigned=request.form.get("skip_assigned"),
+            is_research=request.form.get("is_research"),
+            has_rna_data=request.form.get("has_rna"),
+            verification_pending=request.form.get("validation_ordered"),
+            has_clinvar_submission=request.form.get("clinvar_submitted"),
+            yield_query=True,
+        )
+        LOG.warning(f"Case query was {cases_query}")
+        for key, value in cases_query():
             if key not in ["collaborators"] and value not in [None, ""]:
                 return False
         return True
