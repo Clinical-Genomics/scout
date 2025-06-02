@@ -603,7 +603,7 @@ def get_and_set_cases_by_status(
             case_groups[status].append(case_obj)
             nr_cases_showall_statuses += 1
 
-    def get_specific_query(form):
+    def get_specific_query(request):
         """Check if only non-specific query terms were used in query.
         If so we assume this is a default query, and dim all cases
         that match the "show_all_cases_status", highlighting the
@@ -625,7 +625,7 @@ def get_and_set_cases_by_status(
                 return False
         return True
 
-    specific_query_asked = get_specific_query(request.form)
+    specific_query_asked = get_specific_query(request)
 
     nr_name_query_matching_displayed_cases = 0
     limit = int(request.form.get("search_limit", 100))
