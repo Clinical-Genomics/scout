@@ -39,7 +39,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to change user immediately after logging out from Google Oauth or Keycloak (#5493)
 - Trust hgnc_id for unique aliases for HPO-associated genes (#5498)
 
-
 ## [4.101]
 ### Changed
 - Institutes are now sorted by ID on gene panels page (#5436)
