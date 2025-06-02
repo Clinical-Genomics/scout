@@ -5,8 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-###
+### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+### Fixed
+- Instance badge class and config option documentation (#5500)
 
 ## [4.102]
 ### Added
@@ -36,7 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not add null references to HPO-associated genes when parsing errors occur (#5472)
 - Possibility to change user immediately after logging out from Google Oauth or Keycloak (#5493)
 - Trust hgnc_id for unique aliases for HPO-associated genes (#5498)
-- Instance badge class and config option documentation (#5500)
+
 
 ## [4.101]
 ### Changed
