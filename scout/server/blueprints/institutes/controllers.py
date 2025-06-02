@@ -603,11 +603,14 @@ def get_and_set_cases_by_status(
             case_groups[status].append(case_obj)
             nr_cases_showall_statuses += 1
 
-    def get_specific_query(request):
+    def get_specific_query(request: request) -> bool:
         """Check if only (non-)specific query terms were used in query.
         If so we assume this is a default query, and dim all cases
         that match the "show_all_cases_status", highlighting the
         (max limit number) other cases that were returned.
+
+        If this is a specific query, cases returned by this query part will be highlighted even
+        if they have a status that matches "show_all_cases_status".
         """
         cases_query = store.cases(
             collaborator=institute_obj["_id"],
