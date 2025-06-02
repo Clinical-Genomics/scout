@@ -619,7 +619,6 @@ def get_and_set_cases_by_status(
             has_clinvar_submission=request.form.get("clinvar_submitted"),
             yield_query=True,
         )
-        LOG.warning(f"Case query was {cases_query}")
         for key, value in cases_query.items():
             if key not in NONSPECIFIC_QUERY_TERMS and value not in [None, ""]:
                 return True
