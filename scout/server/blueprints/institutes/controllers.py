@@ -604,10 +604,10 @@ def get_and_set_cases_by_status(
             nr_cases_showall_statuses += 1
 
     def get_specific_query(request):
-        """Check if only non-specific query terms were used in query.
+        """Check if only (non-)specific query terms were used in query.
         If so we assume this is a default query, and dim all cases
         that match the "show_all_cases_status", highlighting the
-        (max limit number) other cases that were return.
+        (max limit number) other cases that were returned.
         """
         cases_query = store.cases(
             collaborator=institute_obj["_id"],
@@ -622,8 +622,8 @@ def get_and_set_cases_by_status(
         LOG.warning(f"Case query was {cases_query}")
         for key, value in cases_query.items():
             if key not in NONSPECIFIC_QUERY_TERMS and value not in [None, ""]:
-                return False
-        return True
+                return True
+        return False
 
     specific_query_asked = get_specific_query(request)
 
