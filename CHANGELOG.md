@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+- Instance badge class and config option documentation (#5500)
 - Add Alamut alignment view (#5457)
 
 ## [4.102]
