@@ -14,8 +14,6 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
 from scout.constants import (
-    ACMG_MAP,
-    CCV_MAP,
     ID_PROJECTION,
     ORDERED_FILE_TYPE_MAP,
     ORDERED_OMICS_FILE_TYPE_MAP,
