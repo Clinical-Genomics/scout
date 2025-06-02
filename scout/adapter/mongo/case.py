@@ -1395,6 +1395,7 @@ class CaseHandler(object):
             "cancer_tier",
             "acmg_classification",
             "ccv_classification",
+            "is_commented",
         ]
         updated_variants = {action: [] for action in ACTION_KEYS}
         LOG.debug(
