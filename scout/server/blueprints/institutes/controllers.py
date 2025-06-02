@@ -51,6 +51,7 @@ VAR_SPECIFIC_EVENTS = [
     "cancel_sanger",
 ]
 
+# Query terms in default, non-specific queries for cases
 NONSPECIFIC_QUERY_TERMS = [
     "collaborators",
 ]
@@ -604,15 +605,17 @@ def get_and_set_cases_by_status(
             nr_cases_showall_statuses += 1
 
     def get_specific_query(request: request) -> bool:
-        """Check if only (non-)specific query terms were used in query.
+        """Check if only non-specific query terms were used in query,
+        by yielding the query without actually executing it.
+
         If so we assume this is a default query, and dim all cases
         that match the "show_all_cases_status", highlighting the
         (max limit number) other cases that were returned.
 
-        If this is a specific query, cases returned by this query part will be highlighted even
-        if they have a status that matches "show_all_cases_status".
+        If this is a specific query, cases returned by this query part will be explicitly
+        highlighted even if they have a status that matches "show_all_cases_status".
         """
-        cases_query = store.cases(
+        cases_query: dict = store.cases(
             collaborator=institute_obj["_id"],
             name_query=request.form,
             skip_assigned=request.form.get("skip_assigned"),
