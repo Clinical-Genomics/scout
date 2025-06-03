@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
-- Automatic ClinVar oncogenicity submissions via ClinVar API ()
+- Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 
