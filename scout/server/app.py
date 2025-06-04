@@ -288,9 +288,10 @@ def register_filters(app):
         def truncate_string(s, length=20):
             return s if not s or len(s) <= length else s[: length - 3] + "..."
 
-        lines = []
+        lines = set()
+        genes = variant.get("genes") or []
 
-        for gene in variant.get("genes", []):
+        for gene in genes:
             transcripts = gene.get("transcripts") or []
             for tx in transcripts:
                 if not tx.get("is_canonical"):
@@ -308,9 +309,9 @@ def register_filters(app):
                 if protein:
                     line_components.append(truncate_string(protein))
 
-                lines.append(" ".join(line_components))
+                lines.add(" ".join(line_components))
 
-        return lines
+        return list(lines)
 
     @app.template_filter()
     def upper_na(string):
