@@ -207,6 +207,9 @@ def register_blueprints(app):
 
 
 def register_filters(app):
+    """Creates methods that can be invoked from jinja2 or views/controllers, given that they are included app.custom_filters."""
+    app.custom_filters = type("CustomFilters", (), {})()  # Create an empty object as namespace
+
     @app.template_filter()
     def human_longint(value: Union[int, str]) -> str:
         """Convert a long integers int or string representation into a human easily readable number."""
@@ -312,6 +315,8 @@ def register_filters(app):
                 lines.add(" ".join(line_components))
 
         return list(lines)
+
+    app.custom_filters.format_variant_canonical_transcripts = format_variant_canonical_transcripts
 
     @app.template_filter()
     def upper_na(string):
