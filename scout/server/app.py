@@ -297,14 +297,14 @@ def register_filters(app):
         for gene in genes:
             transcripts = gene.get("transcripts") or []
             for tx in transcripts:
-                if not tx.get("is_canonical"):
+                if not tx.get("is_primary"):
                     continue
 
                 line_components = [
-                    f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                    f"{gene.get('transcript_id', '')} ({gene.get('hgnc_symbol', '')})"
                 ]
 
-                hgvs = gene.get("hgvs_identifier")
+                hgvs = gene.get("coding_sequence_name")
                 if hgvs:
                     line_components.append(truncate_string(hgvs))
 
