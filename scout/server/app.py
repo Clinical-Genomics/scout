@@ -286,26 +286,29 @@ def register_filters(app):
         """Formats canonical transcripts for all genes in a variant."""
 
         def truncate_string(s, length=20):
-            if s and len(s) > length:
-                return s[: length - 3] + "..."
-            return s
+            return s if not s or len(s) <= length else s[: length - 3] + "..."
 
         lines = []
 
         for gene in variant.get("genes", []):
-            for tx in gene.get("transcripts", []):
+            transcripts = gene.get("transcripts") or []
+            for tx in transcripts:
                 if not tx.get("is_canonical"):
                     continue
 
-                line = f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                line_components = [
+                    f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                ]
+
                 hgvs = gene.get("hgvs_identifier")
                 if hgvs:
-                    line += " " + truncate_string(hgvs)
+                    line_components.append(truncate_string(hgvs))
+
                 protein = tx.get("protein_sequence_name")
                 if protein:
-                    line += " " + truncate_string(protein)
+                    line_components.append(truncate_string(protein))
 
-                lines.append(line)
+                lines.append(" ".join(line_components))
 
         return lines
 
