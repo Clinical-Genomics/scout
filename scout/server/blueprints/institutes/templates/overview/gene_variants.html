@@ -98,18 +98,9 @@
   {% else %}
       <a href="{{ url_for('variant.variant', institute_id=variant.institute,
             case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-      {% for gene in variant.genes %}
-        {% for tx in gene.transcripts %}
-          {% if tx.is_canonical %}
-            {% set output = gene.canonical_transcript + " (" + gene.hgnc_symbol + ") " + (gene.hgvs_identifier | truncate(20, True)) %}
-            {% if tx.protein_sequence_name %}
-              {{ output + " " + (tx.protein_sequence_name | truncate(20, True)) }}
-            {% else %}
-              {{ output }}
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-    {% endfor %}
+      {% for line in variant | format_variant_canonical_transcripts %}
+        {{ line }}
+      {% endfor %}
   {% endif %}
    </a>
 {% endmacro %}

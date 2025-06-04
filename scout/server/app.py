@@ -282,6 +282,31 @@ def register_filters(app):
         return cosmicId
 
     @app.template_filter()
+    def format_variant_canonical_transcripts(variant):
+        """Formats canonical transcripts for all genes in a variant."""
+
+        def truncate_string(s, length):
+            if s and len(s) > length:
+                return s[: length - 3] + "..."
+            return s
+
+        output_lines = []
+
+        for gene in variant.get("genes", []):
+            for tx in gene.get("transcripts", []):
+                if tx.get("is_canonical"):
+                    line = f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                    hgvs = gene.get("hgvs_identifier")
+                    if hgvs:
+                        line += " " + truncate_string(hgvs, 20)
+                    protein = tx.get("protein_sequence_name")
+                    if protein:
+                        line += " " + truncate_string(protein, 20)
+                    output_lines.append(line)
+
+        return output_lines
+
+    @app.template_filter()
     def upper_na(string):
         """
         Uppercase ocurences of "dna" and "rna" for nice display.
