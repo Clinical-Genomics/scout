@@ -285,26 +285,29 @@ def register_filters(app):
     def format_variant_canonical_transcripts(variant):
         """Formats canonical transcripts for all genes in a variant."""
 
-        def truncate_string(s, length):
+        def truncate_string(s, length=20):
             if s and len(s) > length:
                 return s[: length - 3] + "..."
             return s
 
-        output_lines = []
+        lines = []
 
         for gene in variant.get("genes", []):
             for tx in gene.get("transcripts", []):
-                if tx.get("is_canonical"):
-                    line = f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
-                    hgvs = gene.get("hgvs_identifier")
-                    if hgvs:
-                        line += " " + truncate_string(hgvs, 20)
-                    protein = tx.get("protein_sequence_name")
-                    if protein:
-                        line += " " + truncate_string(protein, 20)
-                    output_lines.append(line)
+                if not tx.get("is_canonical"):
+                    continue
 
-        return output_lines
+                line = f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                hgvs = gene.get("hgvs_identifier")
+                if hgvs:
+                    line += " " + truncate_string(hgvs)
+                protein = tx.get("protein_sequence_name")
+                if protein:
+                    line += " " + truncate_string(protein)
+
+                lines.append(line)
+
+        return lines
 
     @app.template_filter()
     def upper_na(string):
