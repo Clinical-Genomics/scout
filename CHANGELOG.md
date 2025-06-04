@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 ### Changed
-- On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has mpre than one gene ()
+- On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has more than one gene (#5513)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 
