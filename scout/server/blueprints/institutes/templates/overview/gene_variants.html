@@ -98,10 +98,12 @@
   {% else %}
       <a href="{{ url_for('variant.variant', institute_id=variant.institute,
             case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-      {% for line in variant | format_variant_canonical_transcripts %}
-        {{ line }}
-      {% endfor %}
-  {% endif %}
+      {% set lines = variant | format_variant_canonical_transcripts %}
+      {% if lines | length > 1 %}
+        {{ lines | join('<br>') | safe }}
+      {% elif lines %}
+        {{ lines[0] }}
+      {% endif %}
    </a>
 {% endmacro %}
 
