@@ -298,7 +298,9 @@ def register_filters(app):
                     "coding_sequence_name"
                 ):  # hgvs_identifier comes from the canonical transcript
                     continue
-                line_components = [f"{tx.get('transcript_id', '')} ({gene.get('hgnc_symbol', '')})"]
+                line_components = [
+                    f"{gene.get('canonical_transcript', '')} ({gene.get('hgnc_symbol', '')})"
+                ]
                 hgvs = gene.get("hgvs_identifier")
                 if hgvs:
                     line_components.append(hgvs)
