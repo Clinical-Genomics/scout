@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import timedelta
-from typing import Dict, Union
+from typing import Dict, List, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from flask import Flask, redirect, request, url_for
@@ -285,11 +285,8 @@ def register_filters(app):
         return cosmicId
 
     @app.template_filter()
-    def format_variant_canonical_transcripts(variant):
+    def format_variant_canonical_transcripts(variant: dict) -> List[str]:
         """Formats canonical transcripts for all genes in a variant."""
-
-        def truncate_string(s, length=20):
-            return s if not s or len(s) <= length else s[: length - 3] + "..."
 
         lines = set()
         genes = variant.get("genes") or []
@@ -297,22 +294,20 @@ def register_filters(app):
         for gene in genes:
             transcripts = gene.get("transcripts") or []
             for tx in transcripts:
-                if not tx.get("is_primary"):
+                if gene.get("hgvs_identifier") != tx.get(
+                    "coding_sequence_name"
+                ):  # hgvs_identifier comes from the canonical transcript
                     continue
-
-                line_components = [
-                    f"{gene.get('transcript_id', '')} ({gene.get('hgnc_symbol', '')})"
-                ]
-
-                hgvs = gene.get("coding_sequence_name")
+                line_components = [f"{tx.get('transcript_id', '')} ({gene.get('hgnc_symbol', '')})"]
+                hgvs = gene.get("hgvs_identifier")
                 if hgvs:
-                    line_components.append(truncate_string(hgvs))
+                    line_components.append(hgvs)
 
                 protein = tx.get("protein_sequence_name")
                 if protein:
-                    line_components.append(truncate_string(protein))
+                    line_components.append(protein)
 
-                lines.add(" ".join(line_components))
+            lines.add(" ".join(line_components))
 
         return list(lines)
 
