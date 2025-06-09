@@ -4,7 +4,7 @@ from datetime import datetime
 from tempfile import NamedTemporaryFile
 from typing import List, Optional, Tuple, Union
 
-from flask import flash
+from flask import flash, request
 from flask_login import current_user
 from pydantic_core._pydantic_core import ValidationError
 from werkzeug.datastructures import ImmutableMultiDict
