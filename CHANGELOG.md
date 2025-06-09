@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
+- Fix incorrect reference to non-existent pymongo.synchronous (#5517)
 - Case search form enforces numeric input for number of results returned (`Limit` field) (#5519)
 
 ## [4.102]
