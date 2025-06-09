@@ -403,7 +403,7 @@ def json_api_submission(submission_id):
     variant_data: list = store.clinvar_objs(submission_id, "variant_data")
     obs_data: list = store.clinvar_objs(submission_id, "case_data")
 
-    if variant_data == [] or obs_data == []:
+    if not variant_data or not obs_data:
         flash("Submission must contain both Variant and CaseData info", "warning")
         return safe_redirect_back(request)
 
