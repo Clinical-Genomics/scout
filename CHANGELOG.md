@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
 - More clearly dim cases for empty queries (#5507)
 - Case search form enforces numeric input for number of results returned (`Limit` field) (#5519)
+- Parsing of canonical transcript in variants genes when variant is outside the coding sequence (#5515)
 - Do not create new variant-associated events, when re-uploading a case. New variant inherits key/values from old evaluated variants (#5507)
 
 ## [4.102]
