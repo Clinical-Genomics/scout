@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
+- More clearly dim cases for empty queries (#5507)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
 
 ## [4.102]
