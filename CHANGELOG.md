@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
+- More clearly dim cases for empty queries (#5507)
 - Parsing of canonical transcript in variants genes when variant is outside the coding sequence (#5515)
 
 ## [4.102]
