@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
+- Fix incorrect reference to non-existent pymongo.synchronous (#5517)
 
 ## [4.102]
 ### Added
