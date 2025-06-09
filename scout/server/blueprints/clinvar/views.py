@@ -152,7 +152,10 @@ def clinvar_download_json(submission: str, clinvar_id: str):
             as_attachment=True,
         )
     else:
-        flash(f"JSON file could not be crated for ClinVar submission: {filename} ", "warning")
+        flash(
+            f"JSON file could not be crated for ClinVar submission: {filename}: {conversion_res}",
+            "warning",
+        )
         return redirect(request.referrer)
 
 
