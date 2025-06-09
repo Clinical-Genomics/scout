@@ -262,7 +262,7 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.synchronous.cursor.Cursor:
+    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.cursor.Cursor:
         """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
         query = {"institute_id": institute_id, "type": "oncogenicity"}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
