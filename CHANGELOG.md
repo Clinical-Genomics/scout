@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 - Instance badge class and config option documentation (#5500)
+- Fix incorrect reference to non-existent pymongo.synchronous (#5517)
 - Add Alamut alignment view (#5457)
 
 ## [4.102]
