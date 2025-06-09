@@ -400,13 +400,10 @@ def json_api_submission(submission_id):
     Returns:
         A tuple: code(int), conversion_res(dict) - corresponding to response.status and response.__dict__ from preClinVar
     """
-    variant_data = store.clinvar_objs(submission_id, "variant_data")
-    obs_data = store.clinvar_objs(submission_id, "case_data")
+    variant_data: list = store.clinvar_objs(submission_id, "variant_data")
+    obs_data: list = store.clinvar_objs(submission_id, "case_data")
 
-    LOG.warning(variant_data)
-    LOG.error(obs_data)
-
-    if None in [variant_data, obs_data]:
+    if variant_data == [] or obs_data == []:
         flash("Submission must contain both Variant and CaseData info", "warning")
         return safe_redirect_back(request)
 
