@@ -48,10 +48,6 @@ def parse_genes(transcripts):
     # List with all genes and their transcripts
     genes = []
 
-    hgvs_identifier = None
-    canonical_transcript = None
-    exon = None
-
     # Loop over all genes
     for gene_id in genes_to_transcripts:
         # Get the transcripts for a gene
@@ -78,8 +74,7 @@ def parse_genes(transcripts):
             hgnc_symbol = transcript["hgnc_symbol"]
             if not hgvs_identifier:
                 hgvs_identifier = transcript.get("coding_sequence_name")
-            if not canonical_transcript:
-                canonical_transcript = transcript["transcript_id"]
+
             if not exon:
                 exon = transcript["exon"]
 
@@ -102,10 +97,11 @@ def parse_genes(transcripts):
                 most_severe_spliceai_position = transcript["spliceai_delta_position"]
                 spliceai_prediction = transcript["spliceai_prediction"]
 
-            if transcript["is_canonical"] and transcript.get("coding_sequence_name"):
-                hgvs_identifier = transcript.get("coding_sequence_name")
+            if transcript["is_canonical"]:
                 canonical_transcript = transcript["transcript_id"]
-                exon = transcript["exon"]
+                if transcript.get("coding_sequence_name"):
+                    hgvs_identifier = transcript.get("coding_sequence_name")
+                    exon = transcript["exon"]
 
         gene = {
             "transcripts": gene_transcripts,
