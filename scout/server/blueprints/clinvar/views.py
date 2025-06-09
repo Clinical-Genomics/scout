@@ -132,26 +132,27 @@ def clinvar_update_submission(institute_id, submission):
 
 
 @clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
-def clinvar_download_json(submission, clinvar_id):
+def clinvar_download_json(submission: str, clinvar_id: str):
     """Download a json for a clinVar submission"""
+    filename = clinvar_id if clinvar_id != "None" else submission
 
     code, conversion_res = controllers.json_api_submission(submission_id=submission)
 
     if code in [200, 201]:
         # Write temp CSV file and serve it in response
-        tmp_json = NamedTemporaryFile(mode="a+", prefix=clinvar_id, suffix=".json")
+        tmp_json = NamedTemporaryFile(mode="a+", prefix=filename, suffix=".json")
         tmp_json.write(dumps(conversion_res, indent=4))
 
         tmp_json.flush()
         tmp_json.seek(0)
         return send_file(
             tmp_json.name,
-            download_name=f"{clinvar_id}.json",
+            download_name=f"{filename}.json",
             mimetype="application/json",
             as_attachment=True,
         )
     else:
-        flash(f"JSON file could not be crated for ClinVar submission: {clinvar_id} ", "warning")
+        flash(f"JSON file could not be crated for ClinVar submission: {filename} ", "warning")
         return redirect(request.referrer)
 
 

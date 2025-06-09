@@ -404,8 +404,7 @@ def json_api_submission(submission_id):
     obs_data: list = store.clinvar_objs(submission_id, "case_data")
 
     if not variant_data or not obs_data:
-        flash("Submission must contain both Variant and CaseData info", "warning")
-        return safe_redirect_back(request)
+        return (400, "Submission must contain both Variant and CaseData info")
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
