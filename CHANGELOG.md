@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has more than one gene (#5513)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
+- Fix incorrect reference to non-existent pymongo.synchronous (#5517)
 
 ## [4.102]
 ### Added
