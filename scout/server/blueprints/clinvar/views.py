@@ -1,7 +1,7 @@
 import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from flask import (
     Blueprint,
