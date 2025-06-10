@@ -4,7 +4,7 @@ from datetime import datetime
 from tempfile import NamedTemporaryFile
 from typing import List, Optional, Tuple, Union
 
-from flask import flash
+from flask import flash, request
 from flask_login import current_user
 from pydantic_core._pydantic_core import ValidationError
 from werkzeug.datastructures import ImmutableMultiDict
@@ -21,7 +21,7 @@ from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
-from scout.server.utils import get_case_genome_build
+from scout.server.utils import get_case_genome_build, safe_redirect_back
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
@@ -395,16 +395,17 @@ def json_api_submission(submission_id: str) -> Tuple[int, dict]:
     Germline submission objects (Variant and Casedata database documents) are converted to a json submission using
     the PreClinVar service.
     """
+
     json_submission: dict = store.get_onc_submission_json(
         submission=submission_id
     )  # Oncogenocity submissions are already saved in the desired format
     if json_submission:
         return 200, json_submission
 
-    variant_data = store.clinvar_objs(submission_id, "variant_data")
-    obs_data = store.clinvar_objs(submission_id, "case_data")
+    variant_data: list = store.clinvar_objs(submission_id, "variant_data")
+    obs_data: list = store.clinvar_objs(submission_id, "case_data")
 
-    if None in [variant_data, obs_data]:
+    if not variant_data or not obs_data:
         return (400, "Submission must contain both Variant and CaseData info")
 
     # Retrieve eventual assertion criteria for the submission
