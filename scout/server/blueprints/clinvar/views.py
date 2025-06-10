@@ -42,8 +42,13 @@ def clinvar_submission_status(submission_id):
     """Sends a request to ClinVar to retrieve and display the status of a submission."""
 
     # flash a message with current submission status for a ClinVar submission
+    clinvar_resp_status = dict(
+        clinvar_api.json_submission_status(
+            submission_id=submission_id, api_key=request.form.get("apiKey")
+        )
+    )
     flash(
-        f'Response from ClinVar: {clinvar_api.json_submission_status( submission_id=submission_id, api_key=request.form.get("apiKey"))}',
+        f"Response from ClinVar: {clinvar_resp_status}",
         "primary",
     )
     return redirect(request.referrer)
