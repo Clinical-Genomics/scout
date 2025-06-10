@@ -992,7 +992,7 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
         assert res["_id"] == sv_variant["_id"]
 
     for res in overlapping_wts:
-        # SHOULD return the SV variant
+        # SHOULD return the omics variant
         assert res["category"] == "outlier"
         assert res["_id"] == omics_variant["_id"]
 
