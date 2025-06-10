@@ -335,8 +335,8 @@ class ClinVarHandler(object):
             criteria = {"assertionCriteriaDB": amc_db, "assertionCriteriaID": amc_id}
             return criteria
 
-    def clinvar_objs(self, submission_id, key_id):
-        """Collects a list of objects from the clinvar collection (variants of case data) as specified by the key_id in the clinvar submission
+    def clinvar_objs(self, submission_id: str, key_id: str) -> list:
+        """Collects a list of objects from the ClinVar collection (variants of case data) as specified by the key_id in the submission.
 
         Args:
             submission_id(str): the _id key of a clinvar submission
@@ -345,8 +345,8 @@ class ClinVarHandler(object):
 
         Returns:
             clinvar_objects(list) : a list of clinvar objects (either variants of casedata)
-
         """
+
         # Get a submission object
         submission = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission_id)})
 
@@ -356,7 +356,7 @@ class ClinVarHandler(object):
             clinvar_objects = self.clinvar_collection.find({"_id": {"$in": clinvar_obj_ids}})
             return list(clinvar_objects)
 
-        return None
+        return []
 
     def rename_casedata_samples(self, submission_id, case_id, old_name, new_name):
         """Rename all samples associated to a clinVar submission
