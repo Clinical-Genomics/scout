@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 from flask import (
     Blueprint,
+    Response,
     flash,
     redirect,
     render_template,
@@ -132,8 +133,14 @@ def clinvar_update_submission(institute_id, submission):
 
 
 @clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
-def clinvar_download_json(submission: str, clinvar_id: str):
-    """Download a json for a clinVar submission"""
+def clinvar_download_json(submission: str, clinvar_id: Optional[str]) -> Response:
+    """Download a json for a clinVar submission.
+
+    Accepts:
+        submission:. It's the _id of the submission in the database
+        clinvar_id: It's the submission number (i.e. SUB123456). Might be available or not in the submission dictionary
+
+    """
     filename = clinvar_id if clinvar_id != "None" else submission
 
     code, conversion_res = controllers.json_api_submission(submission_id=submission)
