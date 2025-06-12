@@ -27,6 +27,7 @@ def user(
     add_institute: Tuple[str, ...],
     remove_institute: Tuple[str, ...],
 ) -> None:
+    """Update roles and institutes for a user in the database."""
     adapter = store
     user_obj = adapter.user(user_id)
     if not user_obj:
@@ -57,6 +58,7 @@ def process_roles(
     remove_admin: bool,
     user_id: str,
 ) -> List[str]:
+    """Define the list of roles for a user in the database."""
     roles = set(current_roles)
 
     if add_role:
@@ -88,6 +90,7 @@ def process_institutes(
     adapter: MongoAdapter,
     user_id: str,
 ) -> List[str]:
+    """Define the list of institutes for a user in the database."""
     institutes = set(current_institutes)
 
     for inst in add_institutes:
