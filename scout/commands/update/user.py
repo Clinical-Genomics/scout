@@ -57,7 +57,7 @@ def process_roles(
     remove_admin: bool,
     user_id: str,
 ) -> List[str]:
-    roles: Set[str] = set(current_roles)
+    roles = set(current_roles)
 
     if add_role:
         if add_role in roles:
