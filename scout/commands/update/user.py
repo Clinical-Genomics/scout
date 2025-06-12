@@ -1,86 +1,107 @@
 import logging
+from typing import List, Optional, Tuple
 
 import click
 from flask.cli import with_appcontext
 
+from scout.adapter import MongoAdapter
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
 
 
-@click.command("user", short_help="Update a user")
-@click.option("--user-id", "-u", help="A email adress that identifies the user", required=True)
-@click.option(
-    "--update-role",
-    "-r",
-    # There will be more roles in the future
-    type=click.Choice(USER_ROLES),
-    help="Add a role to the user",
-)
-@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
-@click.option(
-    "--remove-role", multiple=True, help="Specify one or more roles to remove from the user"
-)
-@click.option("--add-institute", "-i", multiple=True, help="Specify one or more institutes to add")
-@click.option("--remove-institute", multiple=True, help="Specify one or more institutes to remove")
-@with_appcontext
-def user(user_id, update_role, add_institute, remove_admin, remove_role, remove_institute):
-    """
-    Update a user in the database
-    """
-    adapter = store
-    user_obj = adapter.user(user_id)
+def process_roles(
+    current_roles: List[str],
+    add_role: Optional[str],
+    remove_roles: Tuple[str, ...],
+    remove_admin: bool,
+    user_id: str,
+) -> List[str]:
+    roles: Set[str] = set(current_roles)
 
-    if not user_obj:
-        LOG.warning("User %s could not be found", user_id)
-        raise click.Abort()
-
-    # ----- Handle roles -----
-    roles = set(user_obj.get("roles", []))
-
-    # Add role
-    if update_role:
-        if update_role in roles:
-            LOG.warning("User already has role '%s'", update_role)
+    if add_role:
+        if add_role in roles:
+            LOG.warning("User already has role '%s'", add_role)
         else:
-            roles.add(update_role)
-            LOG.info("Adding role '%s' to user '%s'", update_role, user_id)
+            roles.add(add_role)
+            LOG.info("Adding role '%s' to user '%s'", add_role, user_id)
 
-    # Support deprecated --remove-admin
-    all_roles_to_remove = set(remove_role)
-    if remove_admin and "admin" not in all_roles_to_remove:
+    all_remove = set(remove_roles)
+    if remove_admin and "admin" not in all_remove:
         click.echo("⚠️ --remove-admin is deprecated. Use --remove-role admin instead.")
-        all_roles_to_remove.add("admin")
+        all_remove.add("admin")
 
-    # Remove roles
-    for role in all_roles_to_remove:
+    for role in all_remove:
         if role in roles:
             roles.remove(role)
             LOG.info("Removing role '%s' from user '%s'", role, user_id)
         else:
             LOG.info("User does not have role '%s'", role)
 
-    user_obj["roles"] = list(roles)
+    return list(roles)
 
-    # ----- Handle institutes -----
-    institutes = set(user_obj.get("institutes", []))
 
-    for inst_id in add_institute:
-        if adapter.institute(inst_id):
-            institutes.add(inst_id)
-            LOG.info("Adding institute '%s' to user '%s'", inst_id, user_id)
+def process_institutes(
+    current_institutes: List[str],
+    add_institutes: Tuple[str, ...],
+    remove_institutes: Tuple[str, ...],
+    adapter: MongoAdapter,
+    user_id: str,
+) -> List[str]:
+    institutes = set(current_institutes)
+
+    for inst in add_institutes:
+        if adapter.institute(inst):
+            institutes.add(inst)
+            LOG.info("Adding institute '%s' to user '%s'", inst, user_id)
         else:
-            LOG.warning("Institute '%s' could not be found", inst_id)
+            LOG.warning("Institute '%s' could not be found", inst)
 
-    for inst_id in remove_institute:
-        if inst_id in institutes:
-            institutes.remove(inst_id)
-            LOG.info("Removing institute '%s' from user '%s'", inst_id, user_id)
+    for inst in remove_institutes:
+        if inst in institutes:
+            institutes.remove(inst)
+            LOG.info("Removing institute '%s' from user '%s'", inst, user_id)
         else:
-            LOG.info("User does not have access to institute '%s'", inst_id)
+            LOG.info("User does not have access to institute '%s'", inst)
 
-    user_obj["institutes"] = list(institutes)
+    return list(institutes)
 
-    # ----- Save updated user -----
+
+@click.command("user", short_help="Update a user")
+@click.option("--user-id", "-u", required=True, help="An email address that identifies the user")
+@click.option("--update-role", "-r", type=click.Choice(USER_ROLES), help="Add a role to the user")
+@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
+@click.option("--remove-role", multiple=True, help="Specify roles to remove from the user")
+@click.option("--add-institute", "-i", multiple=True, help="Specify institutes to add")
+@click.option("--remove-institute", multiple=True, help="Specify institutes to remove")
+@with_appcontext
+def user(
+    user_id: str,
+    update_role: Optional[str],
+    remove_admin: bool,
+    remove_role: Tuple[str, ...],
+    add_institute: Tuple[str, ...],
+    remove_institute: Tuple[str, ...],
+) -> None:
+    adapter = store
+    user_obj = adapter.user(user_id)
+    if not user_obj:
+        LOG.warning("User %s could not be found", user_id)
+        raise click.Abort()
+
+    user_obj["roles"] = process_roles(
+        current_roles=user_obj.get("roles", []),
+        add_role=update_role,
+        remove_roles=remove_role,
+        remove_admin=remove_admin,
+        user_id=user_id,
+    )
+    user_obj["institutes"] = process_institutes(
+        current_institutes=user_obj.get("institutes", []),
+        add_institutes=add_institute,
+        remove_institutes=remove_institute,
+        adapter=adapter,
+        user_id=user_id,
+    )
     adapter.update_user(user_obj)
