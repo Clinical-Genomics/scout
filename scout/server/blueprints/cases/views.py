@@ -1119,8 +1119,9 @@ def submit_chanjo2_form(report_type: str) -> Response:
     """Sends a POST request to chanjo2 containing a form and an access token. This way chanjo2 can authenticate the user session before returning a response."""
 
     form_data = request.form.to_dict()
-    access_token = session.get("access_token")
+    access_token = session.get("token_response")
     headers = {"Authorization": f"Bearer {access_token}"}
+
     try:
         response = requests.post(
             f"{current_app.config.get('CHANJO2_URL')}/{report_type}",
