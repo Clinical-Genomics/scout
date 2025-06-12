@@ -8,6 +8,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
 
+
 @click.command("user", short_help="Update a user")
 @click.option("--user-id", "-u", help="A email adress that identifies the user", required=True)
 @click.option(
@@ -18,7 +19,9 @@ USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
     help="Add a role to the user",
 )
 @click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
-@click.option("--remove-role", multiple=True, help="Specify one or more roles to remove from the user")
+@click.option(
+    "--remove-role", multiple=True, help="Specify one or more roles to remove from the user"
+)
 @click.option("--add-institute", "-i", multiple=True, help="Specify one or more institutes to add")
 @click.option("--remove-institute", multiple=True, help="Specify one or more institutes to remove")
 @with_appcontext
