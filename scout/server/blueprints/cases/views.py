@@ -10,6 +10,7 @@ from operator import itemgetter
 from tempfile import NamedTemporaryFile, mkdtemp
 from typing import Generator, Optional, Union
 
+import requests
 from cairosvg import svg2png
 from flask import (
     Blueprint,
@@ -23,6 +24,7 @@ from flask import (
     request,
     send_file,
     send_from_directory,
+    session,
     url_for,
 )
 from flask_login import current_user
@@ -1110,3 +1112,27 @@ def _generate_csv(header, lines):
     yield header + "\n"
     for line in lines:  # lines have already quoted fields
         yield line + "\n"
+
+
+@cases_bp.route("/chanjo2/<report_type>/submit", methods=["POST"])
+def submit_chanjo2_form(report_type: str) -> Response:
+    """Sends a POST request to chanjo2 containing a form and an access token. This way chanjo2 can authenticate the user session before returning a response."""
+
+    form_data = request.form.to_dict()
+    access_token = session.get("access_token")
+    headers = {"Authorization": f"Bearer {access_token}"}
+    try:
+        response = requests.post(
+            f"{current_app.config.get('CHANJO2_URL')}/{report_type}",
+            data=form_data,
+            headers=headers,
+        )
+        if response.status_code == 200:
+            LOG.info("Data submitted successfully to Chanjo2")
+        else:
+            LOG.warning(f"Error from Chanjo2: {response.text}")
+
+    except Exception as e:
+        LOG.error(f"Request failed: {e}")
+
+    return redirect(url_for("cases.index"))
