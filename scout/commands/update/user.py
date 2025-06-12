@@ -11,6 +11,45 @@ LOG = logging.getLogger(__name__)
 USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
 
 
+@click.command("user", short_help="Update a user")
+@click.option("--user-id", "-u", required=True, help="An email address that identifies the user")
+@click.option("--update-role", "-r", type=click.Choice(USER_ROLES), help="Add a role to the user")
+@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
+@click.option("--remove-role", multiple=True, help="Specify roles to remove from the user")
+@click.option("--add-institute", "-i", multiple=True, help="Specify institutes to add")
+@click.option("--remove-institute", multiple=True, help="Specify institutes to remove")
+@with_appcontext
+def user(
+    user_id: str,
+    update_role: Optional[str],
+    remove_admin: bool,
+    remove_role: Tuple[str, ...],
+    add_institute: Tuple[str, ...],
+    remove_institute: Tuple[str, ...],
+) -> None:
+    adapter = store
+    user_obj = adapter.user(user_id)
+    if not user_obj:
+        LOG.warning("User %s could not be found", user_id)
+        raise click.Abort()
+
+    user_obj["roles"] = process_roles(
+        current_roles=user_obj.get("roles", []),
+        add_role=update_role,
+        remove_roles=remove_role,
+        remove_admin=remove_admin,
+        user_id=user_id,
+    )
+    user_obj["institutes"] = process_institutes(
+        current_institutes=user_obj.get("institutes", []),
+        add_institutes=add_institute,
+        remove_institutes=remove_institute,
+        adapter=adapter,
+        user_id=user_id,
+    )
+    adapter.update_user(user_obj)
+
+
 def process_roles(
     current_roles: List[str],
     add_role: Optional[str],
@@ -66,42 +105,3 @@ def process_institutes(
             LOG.info("User does not have access to institute '%s'", inst)
 
     return list(institutes)
-
-
-@click.command("user", short_help="Update a user")
-@click.option("--user-id", "-u", required=True, help="An email address that identifies the user")
-@click.option("--update-role", "-r", type=click.Choice(USER_ROLES), help="Add a role to the user")
-@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
-@click.option("--remove-role", multiple=True, help="Specify roles to remove from the user")
-@click.option("--add-institute", "-i", multiple=True, help="Specify institutes to add")
-@click.option("--remove-institute", multiple=True, help="Specify institutes to remove")
-@with_appcontext
-def user(
-    user_id: str,
-    update_role: Optional[str],
-    remove_admin: bool,
-    remove_role: Tuple[str, ...],
-    add_institute: Tuple[str, ...],
-    remove_institute: Tuple[str, ...],
-) -> None:
-    adapter = store
-    user_obj = adapter.user(user_id)
-    if not user_obj:
-        LOG.warning("User %s could not be found", user_id)
-        raise click.Abort()
-
-    user_obj["roles"] = process_roles(
-        current_roles=user_obj.get("roles", []),
-        add_role=update_role,
-        remove_roles=remove_role,
-        remove_admin=remove_admin,
-        user_id=user_id,
-    )
-    user_obj["institutes"] = process_institutes(
-        current_institutes=user_obj.get("institutes", []),
-        add_institutes=add_institute,
-        remove_institutes=remove_institute,
-        adapter=adapter,
-        user_id=user_id,
-    )
-    adapter.update_user(user_obj)
