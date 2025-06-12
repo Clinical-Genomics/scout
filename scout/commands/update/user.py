@@ -49,10 +49,9 @@ def user(user_id, update_role, add_institute, remove_admin, remove_role, remove_
 
     # Support deprecated --remove-admin
     all_roles_to_remove = set(remove_role)
-    if remove_admin:
-        if "admin" not in all_roles_to_remove:
-            click.echo("⚠️ --remove-admin is deprecated. Use --remove-role admin instead.")
-            all_roles_to_remove.add("admin")
+    if remove_admin and "admin" not in all_roles_to_remove:
+        click.echo("⚠️ --remove-admin is deprecated. Use --remove-role admin instead.")
+        all_roles_to_remove.add("admin")
 
     # Remove roles
     for role in all_roles_to_remove:
