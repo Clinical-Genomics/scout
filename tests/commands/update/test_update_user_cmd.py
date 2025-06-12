@@ -50,10 +50,10 @@ def test_update_user_role(role, mock_app, user_obj):
     assert "admin" not in updated_user["roles"]
 
     # THEN it should be possible to add/remove any role to it
-    result = runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "-r", role])
+    runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "-r", role])
     updated_user = store.user_collection.find_one()
     assert role in updated_user["roles"]
 
-    result = runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "--remove-role", role])
+    runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "--remove-role", role])
     updated_user = store.user_collection.find_one()
     assert role not in updated_user["roles"]
