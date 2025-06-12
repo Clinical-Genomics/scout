@@ -6,7 +6,7 @@ from flask.cli import with_appcontext
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
-
+USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
 
 @click.command("user", short_help="Update a user")
 @click.option("--user-id", "-u", help="A email adress that identifies the user", required=True)
@@ -14,59 +14,71 @@ LOG = logging.getLogger(__name__)
     "--update-role",
     "-r",
     # There will be more roles in the future
-    type=click.Choice(["admin", "mme_submitter", "beacon_submitter"]),
+    type=click.Choice(USER_ROLES),
     help="Add a role to the user",
 )
-@click.option("--remove-admin", is_flag=True, help="Remove admin rights from user")
-@click.option("--add-institute", "-i", multiple=True, help="Specify the institutes to add")
-@click.option("--remove-institute", multiple=True, help="Specify the institutes to remove")
+@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
+@click.option("--remove-role", multiple=True, help="Specify one or more roles to remove from the user")
+@click.option("--add-institute", "-i", multiple=True, help="Specify one or more institutes to add")
+@click.option("--remove-institute", multiple=True, help="Specify one or more institutes to remove")
 @with_appcontext
-def user(user_id, update_role, add_institute, remove_admin, remove_institute):
+def user(user_id, update_role, add_institute, remove_admin, remove_role, remove_institute):
     """
     Update a user in the database
     """
     adapter = store
-
     user_obj = adapter.user(user_id)
 
     if not user_obj:
         LOG.warning("User %s could not be found", user_id)
         raise click.Abort()
 
-    existing_roles = set(user_obj.get("roles", []))
+    # ----- Handle roles -----
+    roles = set(user_obj.get("roles", []))
+
+    # Add role
     if update_role:
-        if not update_role in user_obj["roles"]:
-            existing_roles = set(user_obj["roles"])
-            existing_roles.add(update_role)
-            LOG.info("Adding role %s to user", update_role)
+        if update_role in roles:
+            LOG.warning("User already has role '%s'", update_role)
         else:
-            LOG.warning("User already have role %s", update_role)
+            roles.add(update_role)
+            LOG.info("Adding role '%s' to user '%s'", update_role, user_id)
 
+    # Support deprecated --remove-admin
+    all_roles_to_remove = set(remove_role)
     if remove_admin:
-        try:
-            existing_roles.remove("admin")
-            LOG.info("Removing admin rights from user %s", user_id)
-        except KeyError as err:
-            LOG.info("User %s does not have admin rights", user_id)
+        if "admin" not in all_roles_to_remove:
+            click.echo("⚠️ --remove-admin is deprecated. Use --remove-role admin instead.")
+            all_roles_to_remove.add("admin")
 
-    user_obj["roles"] = list(existing_roles)
-
-    existing_institutes = set(user_obj.get("institutes", []))
-    for institute_id in add_institute:
-        institute_obj = adapter.institute(institute_id)
-        if not institute_obj:
-            LOG.warning("Institute %s could not be found", institute_id)
+    # Remove roles
+    for role in all_roles_to_remove:
+        if role in roles:
+            roles.remove(role)
+            LOG.info("Removing role '%s' from user '%s'", role, user_id)
         else:
-            existing_institutes.add(institute_id)
-            LOG.info("Adding institute %s to user", institute_id)
+            LOG.info("User does not have role '%s'", role)
 
-    for institute_id in remove_institute:
-        try:
-            existing_institutes.remove(institute_id)
-            LOG.info("Removing institute %s from user", institute_id)
-        except KeyError as err:
-            LOG.info("User does not have access to institute %s", institute_id)
+    user_obj["roles"] = list(roles)
 
-    user_obj["institutes"] = list(existing_institutes)
+    # ----- Handle institutes -----
+    institutes = set(user_obj.get("institutes", []))
 
+    for inst_id in add_institute:
+        if adapter.institute(inst_id):
+            institutes.add(inst_id)
+            LOG.info("Adding institute '%s' to user '%s'", inst_id, user_id)
+        else:
+            LOG.warning("Institute '%s' could not be found", inst_id)
+
+    for inst_id in remove_institute:
+        if inst_id in institutes:
+            institutes.remove(inst_id)
+            LOG.info("Removing institute '%s' from user '%s'", inst_id, user_id)
+        else:
+            LOG.info("User does not have access to institute '%s'", inst_id)
+
+    user_obj["institutes"] = list(institutes)
+
+    # ----- Save updated user -----
     adapter.update_user(user_obj)
