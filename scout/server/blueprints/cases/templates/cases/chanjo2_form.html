@@ -58,7 +58,7 @@
       }
 
       try {
-        const token = "{{ session.token_response.access_token | safe }}";
+        const token = "{{ session.token_response.access_token if session.token_response else "NA" | safe }}";
         const response = await fetch(form.action, {
           method: 'POST',
           headers: {
