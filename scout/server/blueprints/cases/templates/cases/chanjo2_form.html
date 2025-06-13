@@ -58,7 +58,7 @@
       }
 
       try {
-        const token = "{{ session.token_response.access_token | safe }}";  // Token passed in from Flask context
+        const token = "{{ session.token_response.access_token | safe }}";
         const response = await fetch(form.action, {
           method: 'POST',
           headers: {

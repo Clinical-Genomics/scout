@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
-- Include authentication token in requests to Chanjo2 for secure endpoint access (#5525)
+- Include authentication token in requests to Chanjo2 for secure endpoint access (#5527)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
