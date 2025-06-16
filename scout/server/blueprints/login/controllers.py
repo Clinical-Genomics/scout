@@ -1,11 +1,10 @@
 import logging
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Optional
 
 import requests
 from flask import Response, current_app, flash, redirect, session, url_for
 from flask_login import login_user
-from jose import ExpiredSignatureError, JWTError, jwt
 
 from scout.server.extensions import ldap_manager, oauth_client, store
 
@@ -165,64 +164,3 @@ def logout_oidc_user(session, provider: str):
             "refresh_token": refresh_token,
         },
     )
-
-
-def refresh_access_token(refresh_token: str) -> Dict[str, str]:
-    """
-    Use the refresh token to obtain a new access token from the token endpoint.
-
-    Args:
-        refresh_token (str): The refresh token to use.
-
-    Returns:
-        Dict[str, str]: A dictionary containing the new access and optionally refresh token.
-
-    Raises:
-        Exception: If the token refresh fails.
-    """
-    provider = None
-    for item in ["GOOGLE", "KEYCLOAK"]:
-        if current_app.config.get(item):
-            provider = item
-
-    TOKEN_URL = current_app.config[provider].get("client_url") + "token"
-
-    response = requests.post(
-        TOKEN_URL,
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": refresh_token,
-            "client_id": current_app.config[provider]["client_id"],
-            "client_secret": current_app.config[provider]["client_secret"],
-        },
-    )
-
-    if response.status_code != 200:
-        raise Exception(f"Failed to refresh token: {response.text}")
-
-    return response.json()
-
-
-def ensure_valid_token(access_token: str, refresh_token: str) -> str:
-    """
-    Ensure that the access token is valid. If it is expired, refresh it using the refresh token.
-
-    Args:
-        access_token (str): The current (possibly expired) access token.
-        refresh_token (str): The refresh token to use for renewing the access token.
-
-    Returns:
-        str: A valid access token.
-
-    Raises:
-        Exception: If the access token is invalid and refreshing fails.
-    """
-    try:
-        # Decode without verifying signature just to check expiry
-        jwt.decode(access_token, options={"verify_signature": False, "verify_exp": True})
-        return access_token
-    except ExpiredSignatureError:
-        new_tokens = refresh_access_token(refresh_token)
-        return new_tokens["access_token"]
-    except JWTError as e:
-        raise Exception(f"Token verification failed: {e}")
