@@ -8,15 +8,24 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import config_igv_tracks, store
-from scout.server.utils import (
-    case_append_alignments,
-    find_index,
-    get_case_genome_build,
-)
+from scout.server.utils import case_append_alignments, find_index, get_case_genome_build
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
+
+
+def check_user_authentication():
+    """Make sure that a user requesting a resource is authenticated
+
+    Returns
+        True is user has access to resource else False
+    """
+    # Check that user is logged in or that file extension is valid
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static_whole")
+        return False
+    return True
 
 
 def check_session_tracks(resource):
