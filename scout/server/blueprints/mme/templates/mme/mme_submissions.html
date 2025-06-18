@@ -60,7 +60,7 @@
           {% set collapse_id = 'collapse-' + case._id %}
           {% set max_chars = 300 %}
 
-          {% if case.synopsis|length > max_chars %}
+          {% if case.synopsis and case.synopsis|length > max_chars %}
             <div>
               {{ case.synopsis[:max_chars] }}…
             </div>
@@ -80,7 +80,7 @@
               </div>
             </div>
           {% else %}
-            {{ case.synopsis }}
+            {{ case.synopsis or 'NA' }}
           {% endif %}
         </td>
         <td>{{ case.status }}</td>
