@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 import pathlib
+import time
 import zipfile
 from functools import wraps
 from io import BytesIO
@@ -11,6 +12,9 @@ from typing import Dict, Optional, Tuple
 from urllib.parse import urlparse
 
 import pdfkit
+import requests
+from authlib.integrations.base_client.errors import OAuthError
+from authlib.integrations.requests_client import OAuth2Session
 from bson.objectid import ObjectId
 from flask import (
     Response,
@@ -20,6 +24,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
 )
 from flask_login import current_user
 from werkzeug.local import LocalProxy
@@ -227,6 +232,46 @@ def user_institutes(store, login_user):
     return institutes
 
 
+def is_token_expired(token: dict) -> bool:
+    """Check if the access token is expired."""
+    if "expires_at" not in token:
+        return True  # safer to assume expired
+    return token["expires_at"] <= time.time()
+
+
+def get_token_endpoint(discovery_url: str) -> Optional[str]:
+    """Returns the token endpoint for an OIDC provider."""
+
+    resp = requests.get(discovery_url)
+    resp.raise_for_status()
+    return resp.json()["token_endpoint"]
+
+
+def refresh_access_token_if_needed() -> None:
+    """
+    Check if access token is valid, and refresh if expired.
+    """
+    token: Optional[dict] = session.get("token_response")
+    if token is None or not is_token_expired(token):
+        return
+
+    print("Access token expired, refreshing...")
+
+    for provider in ["GOOGLE", "KEYCLOAK"]:
+        if provider not in current_app.config:
+            continue
+        client_id = current_app.config[provider]["client_id"]
+        client_secret = current_app.config[provider]["client_secret"]
+        discovery_url = current_app.config[provider]["discovery_url"]
+
+    client = OAuth2Session(client_id, client_secret, token=token)
+    try:
+        new_token = client.refresh_token(get_token_endpoint(discovery_url))
+        session["token_response"] = new_token
+    except OAuthError as oae:
+        flash(f"Failed to refresh access token: {oae}", category="warning")
+
+
 def get_case_genome_build(case_obj: dict) -> str:
     """returns the genome build of a case, as a string."""
     return "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
@@ -268,6 +313,9 @@ def case_has_chanjo2_coverage(case_obj: dict):
     chanjo2_instance: bool = bool(current_app.config.get("CHANJO2_URL"))
     if chanjo2_instance is False:
         return
+
+    refresh_access_token_if_needed()  # Needed for authorized requests in chanjo2
+
     for ind in case_obj.get("individuals", []):
         ind_d4: str = ind.get("d4_file")
         if ind_d4 and os.path.exists(ind_d4):

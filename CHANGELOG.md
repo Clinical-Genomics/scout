@@ -7,8 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+- Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 ()
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
+- Chanjo2 requests are sent with OIDC access token, if available ()
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
