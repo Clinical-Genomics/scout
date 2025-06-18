@@ -76,7 +76,7 @@
 
             <div class="collapse mt-1" id="{{ collapse_id }}">
               <div class="card card-body p-2">
-                {{ case.synopsis }}
+                {{ case.synopsis or 'NA' }}
               </div>
             </div>
           {% else %}
