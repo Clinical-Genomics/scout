@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case search form enforces numeric input for number of results returned (`Limit` field) (#5519)
 - Parsing of canonical transcript in variants genes when variant is outside the coding sequence (#5515)
 - Download of a ClinVar submission's json file when observation data is no longer present in the database (#5520)
+- Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 
 ## [4.102]
 ### Added
