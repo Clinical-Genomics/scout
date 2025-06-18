@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing of canonical transcript in variants genes when variant is outside the coding sequence (#5515)
 - Download of a ClinVar submission's json file when observation data is no longer present in the database (#5520)
 - Removed extra warnings for missing file types on case loading (#5525)
+- Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
 
 ## [4.102]
