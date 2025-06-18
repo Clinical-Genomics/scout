@@ -268,6 +268,7 @@ def refresh_access_token_if_needed() -> None:
     try:
         new_token = client.refresh_token(get_token_endpoint(discovery_url))
         session["token_response"] = new_token
+
     except OAuthError as oae:
         flash(f"Failed to refresh access token: {oae}", category="warning")
 
