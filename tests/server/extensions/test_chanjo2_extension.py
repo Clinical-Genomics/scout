@@ -1,4 +1,5 @@
 import responses
+from flask import session
 
 from scout.server.app import create_app
 from scout.server.extensions import chanjo2
@@ -68,10 +69,10 @@ def test_chanjo2_get_complete_coverage(case_obj):
     # WHEN app is created and contains the CHANJO2_URL param
     test_app = create_app(config=dict(TESTING=True, CHANJO2_URL=CHANJO2_BASE_URL))
 
-    with test_app.app_context():
-        # WHEN POST requests are sent to chanjo2 to retrieve MT vs autosomal coverage stats
-        full_coverage = chanjo2.get_gene_complete_coverage(
-            hgnc_id=17284, threshold=10, individuals=case_obj["individuals"]
-        )
-
-        assert full_coverage
+    with test_app.test_request_context():
+        with test_app.app_context():
+            # WHEN POST requests are sent to chanjo2 to retrieve MT vs autosomal coverage stats
+            full_coverage = chanjo2.get_gene_complete_coverage(
+                hgnc_id=17284, threshold=10, individuals=case_obj["individuals"]
+            )
+            assert full_coverage

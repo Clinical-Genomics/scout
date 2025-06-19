@@ -87,7 +87,7 @@ class Chanjo2Client:
         self, hgnc_id: int, threshold: int = 15, individuals: dict = {}, build: str = "38"
     ) -> bool:
         """
-        Return complete coverage for HGNC at a coverage threshold.
+        Return complete coverage for hgnc_id at a coverage threshold.
         """
         chanjo_build = CHANJO_BUILD_37 if "37" in build else CHANJO_BUILD_38
         chanjo2_gene_cov_url: str = "/".join(
@@ -121,8 +121,6 @@ class Chanjo2Client:
             gene_cov_query["interval_type"] = "exons"
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
-
-        LOG.warning(gene_cov_query)
 
         gene_cov_json = post_request_json(
             url=chanjo2_gene_cov_url, data=gene_cov_query, headers=request_headers
