@@ -27,16 +27,17 @@ def test_chanjo2_mt_coverage_stats(case_obj):
     # WHEN app is created and contains the CHANJO2_URL param
     test_app = create_app(config=dict(TESTING=True, CHANJO2_URL=CHANJO2_BASE_URL))
 
-    with test_app.app_context():
-        # WHEN POST requests are sent to chanjo2 to retrieve MT vs autosomal coverage stats
-        coverage_stats = chanjo2.mt_coverage_stats(case_obj=case_obj)
+    with test_app.test_request_context():
+        with test_app.app_context():
+            # WHEN POST requests are sent to chanjo2 to retrieve MT vs autosomal coverage stats
+            coverage_stats = chanjo2.mt_coverage_stats(case_obj=case_obj)
 
-        # THEN coverage stats should contain the expected key/values
-        for ind in case_obj["individuals"]:
-            ind_id = ind["individual_id"]
-            assert isinstance(coverage_stats[ind_id]["autosome_cov"], int)
-            assert isinstance(coverage_stats[ind_id]["mt_coverage"], int)
-            assert isinstance(coverage_stats[ind_id]["mt_copy_number"], float)
+            # THEN coverage stats should contain the expected key/values
+            for ind in case_obj["individuals"]:
+                ind_id = ind["individual_id"]
+                assert isinstance(coverage_stats[ind_id]["autosome_cov"], int)
+                assert isinstance(coverage_stats[ind_id]["mt_coverage"], int)
+                assert isinstance(coverage_stats[ind_id]["mt_copy_number"], float)
 
 
 @responses.activate
