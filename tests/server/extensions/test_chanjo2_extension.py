@@ -1,5 +1,4 @@
 import responses
-from flask import session
 
 from scout.server.app import create_app
 from scout.server.extensions import chanjo2
