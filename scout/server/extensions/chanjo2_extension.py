@@ -1,8 +1,7 @@
 import logging
 from typing import Dict
 
-import requests
-from flask import Flask, current_app
+from flask import Flask, current_app, session
 
 from scout.server.utils import get_case_mito_chromosome
 from scout.utils.scout_requests import get_request_json, post_request_json
@@ -52,7 +51,14 @@ class Chanjo2Client:
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
 
-            autosome_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            access_token = (
+                session["token_response"]["access_token"] if session.get("token_response") else ""
+            )
+            request_headers = {"Authorization": f"Bearer {access_token}"}
+
+            autosome_cov_json = post_request_json(
+                url=chanjo2_chrom_cov_url, data=chrom_cov_query, headers=request_headers
+            )
             if autosome_cov_json.get("status_code") != 200:
                 raise ValueError(
                     f"Chanjo2 get autosome coverage failed: {autosome_cov_json.get('message')}"
@@ -62,7 +68,9 @@ class Chanjo2Client:
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = case_mt_chrom
-            mt_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            mt_cov_json = post_request_json(
+                url=chanjo2_chrom_cov_url, data=chrom_cov_query, headers=request_headers
+            )
             if mt_cov_json.get("status_code") != 200:
                 raise ValueError(f"Chanjo2 get MT coverage failed: {mt_cov_json.get('message')}")
             mt_cov = mt_cov_json.get("content", {}).get("mean_coverage")

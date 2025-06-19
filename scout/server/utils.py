@@ -264,13 +264,15 @@ def refresh_access_token_if_needed() -> None:
         client_secret = current_app.config[provider]["client_secret"]
         discovery_url = current_app.config[provider]["discovery_url"]
 
-    client = OAuth2Session(client_id, client_secret, token=token)
     try:
+        client = OAuth2Session(client_id, client_secret, token=token)
         new_token = client.refresh_token(get_token_endpoint(discovery_url))
         session["token_response"] = new_token
 
+    except UnboundLocalError as ule:
+        LOG.warning(f"No OIDC provider found: {ule}")
     except OAuthError as oae:
-        flash(f"Failed to refresh access token: {oae}", category="warning")
+        LOG.warning(f"Failed to refresh access token: {oae}")
 
 
 def get_case_genome_build(case_obj: dict) -> str:
@@ -314,8 +316,6 @@ def case_has_chanjo2_coverage(case_obj: dict):
     chanjo2_instance: bool = bool(current_app.config.get("CHANJO2_URL"))
     if chanjo2_instance is False:
         return
-
-    refresh_access_token_if_needed()  # Needed for authorized requests in chanjo2
 
     for ind in case_obj.get("individuals", []):
         ind_d4: str = ind.get("d4_file")
