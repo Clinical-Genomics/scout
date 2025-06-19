@@ -42,6 +42,10 @@ class Chanjo2Client:
         )
         coverage_stats = {}
         case_mt_chrom = get_case_mito_chromosome(case_obj)
+        access_token = (
+            session["token_response"]["access_token"] if session.get("token_response") else ""
+        )
+        request_headers = {"Authorization": f"Bearer {access_token}"}
         for ind in case_obj.get("individuals", []):
 
             if not ind.get("d4_file"):
@@ -50,11 +54,6 @@ class Chanjo2Client:
 
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
-
-            access_token = (
-                session["token_response"]["access_token"] if session.get("token_response") else ""
-            )
-            request_headers = {"Authorization": f"Bearer {access_token}"}
 
             autosome_cov_json = post_request_json(
                 url=chanjo2_chrom_cov_url, data=chrom_cov_query, headers=request_headers
@@ -88,7 +87,7 @@ class Chanjo2Client:
         self, hgnc_id: int, threshold: int = 15, individuals: dict = {}, build: str = "38"
     ) -> bool:
         """
-        Return complete coverage for hgnc_id at a coverage threshold.
+        Return complete coverage for HGNC at a coverage threshold.
         """
         chanjo_build = CHANJO_BUILD_37 if "37" in build else CHANJO_BUILD_38
         chanjo2_gene_cov_url: str = "/".join(
@@ -104,6 +103,11 @@ class Chanjo2Client:
         }
         analysis_types = []
 
+        access_token = (
+            session["token_response"]["access_token"] if session.get("token_response") else ""
+        )
+        request_headers = {"Authorization": f"Bearer {access_token}"}
+
         for ind in individuals:
             if not ind.get("d4_file"):
                 continue
@@ -118,7 +122,11 @@ class Chanjo2Client:
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
 
-        gene_cov_json = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
+        LOG.warning(gene_cov_query)
+
+        gene_cov_json = post_request_json(
+            url=chanjo2_gene_cov_url, data=gene_cov_query, headers=request_headers
+        )
 
         if gene_cov_json.get("status_code") != 200:
             raise ValueError(
