@@ -700,7 +700,15 @@
         <tbody>
           <tr>
             <td>{{ variant.sift_predictions|join(', ') or '-'}}</td>
-            <td>{{ variant.revel or '-' }}</td>
+            <td>
+              {% if variant.revel %}
+                <span class="badge float-end bg-{{variant.revel|get_revel_color}}">
+                  {{ variant.revel }}
+                </span>
+              {% else %}
+                <span class="badge float-end bg-secondary">–</span>
+              {% endif %}
+            </td>
             <td>{{ variant.revel_score or '-' }}</td>
             <td>{{ variant.polyphen_predictions|join(', ') or '-' }}</td>
             <td>{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</td>
