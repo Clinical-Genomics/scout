@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import timedelta
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from flask import Flask, redirect, request, url_for
@@ -14,7 +14,7 @@ from markdown import markdown as python_markdown
 from markupsafe import Markup
 
 from scout import __version__
-from scout.constants import SPIDEX_HUMAN
+from scout.constants import REVEL_SCORE_COLOR_MAP, SPIDEX_HUMAN
 from scout.log import init_log
 
 from . import extensions
@@ -225,6 +225,17 @@ def register_filters(app):
         if abs(spidex) < SPIDEX_HUMAN["medium"]["pos"][1]:
             return "medium"
         return "high"
+
+    @app.template_filter()
+    def get_revel_color(score: Optional[float]) -> str:
+        """Returns the text color code corresponding to a REVEL score."""
+        color_map = REVEL_SCORE_COLOR_MAP
+        if score is None:
+            return color_map.get(None, {}).get("color", "#f0f0f0")
+
+        for (low, high), info in color_map.items():
+            if low is not None and low <= score <= high:
+                return info["color"]
 
     @app.template_filter()
     def human_decimal(number, ndigits=4):

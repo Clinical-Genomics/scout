@@ -19,6 +19,15 @@ CONSERVATION = {
     "phylop": {"conserved_min": 2.5, "conserved_max": 100},
 }
 
+REVEL_SCORE_COLOR_MAP = {
+    (0.75, 1.0): {"label": "Likely pathogenic", "color": "danger"},  # Red
+    (0.50, 0.74): {"label": "Possibly pathogenic", "color": "orange"},  # Orange
+    (0.25, 0.49): {"label": "Uncertain significance", "color": "yellow"},  # Yellow
+    (0.01, 0.24): {"label": "Likely benign", "color": "success"},  # Light green
+    (0.0, 0.009): {"label": "Not informative", "color": "info"},  # Gray
+    None: {"label": "No score", "color": "info"},  # Missing or None
+}
+
 FEATURE_TYPES = (
     "exonic",
     "splicing",
