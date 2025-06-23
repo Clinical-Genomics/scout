@@ -229,13 +229,10 @@ def register_filters(app):
     @app.template_filter()
     def get_revel_color(score: Optional[float]) -> str:
         """Returns the text color code corresponding to a REVEL score."""
-        color_map = REVEL_SCORE_COLOR_MAP
-        if score is None:
-            return color_map.get(None, {}).get("color", "#f0f0f0")
-
-        for (low, high), info in color_map.items():
+        for (low, high), info in REVEL_SCORE_COLOR_MAP.items():
             if low is not None and low <= score <= high:
                 return info["color"]
+        return "secondary"
 
     @app.template_filter()
     def human_decimal(number, ndigits=4):
