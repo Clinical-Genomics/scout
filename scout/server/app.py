@@ -227,6 +227,11 @@ def register_filters(app):
         return "high"
 
     @app.template_filter()
+    def l2fc_2_fc(l2fc: float) -> float:
+        """Converts Log2 fold change to fold change."""
+        return 2**l2fc
+
+    @app.template_filter()
     def human_decimal(number, ndigits=4):
         """Return a standard representation of a decimal number.
 
