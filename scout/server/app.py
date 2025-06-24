@@ -14,7 +14,7 @@ from markdown import markdown as python_markdown
 from markupsafe import Markup
 
 from scout import __version__
-from scout.constants import SPIDEX_HUMAN
+from scout.constants import REVEL_SCORE_LABEL_COLOR_MAP, SPIDEX_HUMAN
 from scout.log import init_log
 
 from . import extensions
@@ -228,6 +228,20 @@ def register_filters(app):
         if abs(spidex) < SPIDEX_HUMAN["medium"]["pos"][1]:
             return "medium"
         return "high"
+
+    @app.template_filter()
+    def get_label_or_color_by_score(
+        score: float,
+        map: str,
+        map_key: str,
+    ) -> str:
+        """Return a label or color for a given score based on predefined score ranges from the provided items_map."""
+        SCORE_ITEM_MAPS = {
+            "revel": REVEL_SCORE_LABEL_COLOR_MAP,
+        }
+        for (low, high), info in SCORE_ITEM_MAPS[map].items():
+            if low <= score <= high:
+                return info[map_key]
 
     @app.template_filter()
     def l2fc_2_fc(l2fc: float) -> float:
