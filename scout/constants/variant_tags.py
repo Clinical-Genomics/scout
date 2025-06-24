@@ -19,7 +19,7 @@ CONSERVATION = {
     "phylop": {"conserved_min": 2.5, "conserved_max": 100},
 }
 
-REVEL_SCORE_COLOR_MAP = {
+REVEL_SCORE_LABEL_COLOR_MAP = {
     (0.932, 1.0): {"label": "Likely pathogenic", "color": "danger"},  # red
     (0.644, 0.931): {"label": "Possibly pathogenic", "color": "orange"},  # orange
     (0.291, 0.643): {"label": "Uncertain significance", "color": "secondary"},  # gray
