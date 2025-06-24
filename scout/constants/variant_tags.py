@@ -20,7 +20,7 @@ CONSERVATION = {
 }
 
 REVEL_SCORE_LABEL_COLOR_MAP = {
-    (0.932, 1.0): {"label": "Likely pathogenic", "color": "danger"},  # red
+    (0.932, 1.0): {"label": "Strong pathogenic", "color": "danger"},  # very red
     (0.644, 0.931): {"label": "Possibly pathogenic", "color": "orange"},  # orange
     (0.291, 0.643): {"label": "Uncertain significance", "color": "secondary"},  # gray
     (0.017, 0.290): {"label": "Likely benign", "color": "info"},  # blue
