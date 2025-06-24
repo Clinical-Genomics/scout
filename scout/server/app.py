@@ -240,6 +240,7 @@ def register_filters(app):
             if low <= score <= high:
                 return info[map_key]
 
+    @app.template_filter()
     def l2fc_2_fc(l2fc: float) -> float:
         """Converts Log2 fold change to fold change."""
         fc = 2 ** abs(l2fc)
