@@ -702,11 +702,11 @@
             <td>{{ variant.sift_predictions|join(', ') or '-'}}</td>
             <td>
               {% if variant.revel %}
-                <span class="badge bg-{{variant.revel|get_revel_color('revel', 'color')}}">
+                <span class="badge bg-{{variant.revel|get_label_or_color_by_score('revel', 'color')}}">
                   {{ variant.revel }}
                 </span>
               {% else %}
-                <span class="badge float-end bg-secondary">–</span>
+                <span class="badge bg-secondary">–</span>
               {% endif %}
             </td>
             <td>{{ variant.revel_score or '-' }}</td>
