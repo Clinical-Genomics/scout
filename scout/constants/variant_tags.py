@@ -24,7 +24,7 @@ REVEL_SCORE_LABEL_COLOR_MAP = {
     (0.644, 0.931): {"label": "Possibly pathogenic", "color": "orange"},  # orange
     (0.291, 0.643): {"label": "Uncertain significance", "color": "secondary"},  # gray
     (0.017, 0.290): {"label": "Likely benign", "color": "info"},  # blue
-    (0.0, 0.016): {"label": "Benign", "color": "success"},  # green
+    (0.0, 0.016): {"label": "Strong to very strong benign", "color": "success"},  # green
 }
 
 FEATURE_TYPES = (
