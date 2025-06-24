@@ -702,7 +702,7 @@
             <td>{{ variant.sift_predictions|join(', ') or '-'}}</td>
             <td>
               {% if variant.revel %}
-                <span class="badge bg-{{variant.revel|get_revel_color}}">
+                <span class="badge bg-{{variant.revel|get_revel_color('revel', 'color')}}">
                   {{ variant.revel }}
                 </span>
               {% else %}
