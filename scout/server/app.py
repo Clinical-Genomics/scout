@@ -230,7 +230,7 @@ def register_filters(app):
     def get_revel_color(score: Optional[float]) -> str:
         """Returns the text color code corresponding to a REVEL score."""
         for (low, high), info in REVEL_SCORE_COLOR_MAP.items():
-            if low is not None and low <= score <= high:
+            if low <= score <= high:
                 return info["color"]
         return "secondary"
 
