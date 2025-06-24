@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+- Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - A new `institute_admin` user role, can be assigned to a user via command line (#5523)
 - Option to remove any role assigned to a user, not only the admin role (#5523)
 ### Changed
