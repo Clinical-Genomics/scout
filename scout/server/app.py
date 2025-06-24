@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import timedelta
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from flask import Flask, redirect, request, url_for
