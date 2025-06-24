@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+- Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
