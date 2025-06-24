@@ -230,7 +230,7 @@ def register_filters(app):
     def l2fc_2_fc(l2fc: float) -> float:
         """Converts Log2 fold change to fold change."""
         fc = 2 ** abs(l2fc)
-        return fc if l2fc >= 0 else -1/fc
+        return fc if l2fc >= 0 else -1 / fc
 
     @app.template_filter()
     def human_decimal(number, ndigits=4):
