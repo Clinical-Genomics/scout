@@ -239,6 +239,7 @@ def register_filters(app):
         for (low, high), info in SCORE_ITEM_MAPS[map].items():
             if low <= score <= high:
                 return info[map_key]
+
     def l2fc_2_fc(l2fc: float) -> float:
         """Converts Log2 fold change to fold change."""
         fc = 2 ** abs(l2fc)
