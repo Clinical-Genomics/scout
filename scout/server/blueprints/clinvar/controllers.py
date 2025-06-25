@@ -390,16 +390,18 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         send_api_submission(institute_id, submission_id, submitter_key)
 
 
-def json_api_submission(submission_id):
-    """Converts submission objects (Variant and Casedata database documents) to a json submission using
-    the PreClinVar service
-
-    Args:
-        submission_id(str): the database id of a clinvar submission
-
-    Returns:
-        A tuple: code(int), conversion_res(dict) - corresponding to response.status and response.__dict__ from preClinVar
+def json_api_submission(submission_id: str) -> Tuple[int, dict]:
+    """Returns an integer and a json submission object as a dict. If the submission is of type "oncogenocity" there is no need for conversion and can be used as is.
+    Germline submission objects (Variant and Casedata database documents) are converted to a json submission using
+    the PreClinVar service.
     """
+
+    json_submission: dict = store.get_onc_submission_json(
+        submission=submission_id
+    )  # Oncogenocity submissions are already saved in the desired format
+    if json_submission:
+        return 200, json_submission
+
     variant_data: list = store.clinvar_objs(submission_id, "variant_data")
     obs_data: list = store.clinvar_objs(submission_id, "case_data")
 
