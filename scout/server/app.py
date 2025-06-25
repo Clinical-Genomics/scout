@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import timedelta
-from typing import Dict, Union
+from typing import Dict, List, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from flask import Flask, redirect, request, url_for
@@ -211,6 +211,9 @@ def register_blueprints(app):
 
 
 def register_filters(app):
+    """Creates methods that can be invoked from jinja2 or views/controllers, given that they are included app.custom_filters."""
+    app.custom_filters = type("CustomFilters", (), {})()  # Create an empty object as namespace
+
     @app.template_filter()
     def human_longint(value: Union[int, str]) -> str:
         """Convert a long integers int or string representation into a human easily readable number."""
@@ -305,6 +308,33 @@ def register_filters(app):
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId
+
+    @app.template_filter()
+    def format_variant_canonical_transcripts(variant: dict) -> List[str]:
+        """Formats canonical transcripts for all genes in a variant."""
+
+        lines = set()
+        genes = variant.get("genes") or []
+
+        for gene in genes:
+            transcripts = gene.get("transcripts") or []
+            for tx in transcripts:
+                if not tx.get("is_canonical"):
+                    continue
+                canonical_tx = tx.get("transcript_id")
+                protein = tx.get("protein_sequence_name")
+            line_components = [f"{canonical_tx} ({gene.get('hgnc_symbol', '')})"]
+            hgvs = gene.get("hgvs_identifier")
+            if hgvs:
+                line_components.append(hgvs)
+            if protein:
+                line_components.append(protein)
+
+            lines.add(" ".join(line_components))
+
+        return list(lines)
+
+    app.custom_filters.format_variant_canonical_transcripts = format_variant_canonical_transcripts
 
     @app.template_filter()
     def upper_na(string):
