@@ -15,6 +15,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         "hgnc_symbols": "POT1",
         "variant_type": [],  # This will set variant type to ["clinical"] in the endpoint function
         "category": "snv",
+        "institute": ["cust000"],
         "rank_score": 5,
     }
 
@@ -47,6 +48,7 @@ def test_gene_variants_export(app, user_obj, institute_obj):
         "variant_type": [],  # This will set variant type to ["clinical"] in the endpoint function
         "category": "snv",
         "rank_score": 5,
+        "institute": ["cust000"],
         "filter_export_variants": "yes",
     }
 
