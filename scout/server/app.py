@@ -14,7 +14,11 @@ from markdown import markdown as python_markdown
 from markupsafe import Markup
 
 from scout import __version__
-from scout.constants import REVEL_SCORE_LABEL_COLOR_MAP, SPIDEX_HUMAN
+from scout.constants import (
+    REVEL_SCORE_LABEL_COLOR_MAP,
+    SPIDEX_HUMAN,
+    SPLICEAI_SCORE_LABEL_COLOR_MAP,
+)
 from scout.log import init_log
 
 from . import extensions
@@ -235,6 +239,7 @@ def register_filters(app):
         """Return a label or color for a given score based on predefined score ranges from the provided items_map."""
         SCORE_ITEM_MAPS = {
             "revel": REVEL_SCORE_LABEL_COLOR_MAP,
+            "spliceai": SPLICEAI_SCORE_LABEL_COLOR_MAP,
         }
         for (low, high), info in SCORE_ITEM_MAPS[map].items():
             if low <= score <= high:
