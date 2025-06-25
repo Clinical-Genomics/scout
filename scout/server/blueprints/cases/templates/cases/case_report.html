@@ -712,7 +712,15 @@
             <td>{{ variant.revel_score or '-' }}</td>
             <td>{{ variant.polyphen_predictions|join(', ') or '-' }}</td>
             <td>{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</td>
-            <td>{{ variant.spliceai_scores|join(', ') or '-' }}</td>
+            <td>
+              {% if variant.spliceai_scores | select('!=', None) | list %}
+                <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | list | max | get_label_or_color_by_score('spliceai', 'color') }}">
+                  {{ variant.spliceai_scores|join(', ') }}
+                </span>
+              {% else %}
+                <span class="badge bg-secondary">–</span>
+              {% endif %}
+            </td>
           </tr>
         </tbody>
       </table>
