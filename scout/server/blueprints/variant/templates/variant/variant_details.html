@@ -403,7 +403,7 @@
                 {% endfor %}
               ">
             {% if variant.spliceai_scores and variant.spliceai_scores[0] %}
-              <span class="badge bg-{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'color')}}" data-bs-toggle="tooltip" title="{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'label')}}">
+              <span class="badge bg-{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'color')}}">
                 {{ variant.spliceai_scores|join(', ') }}
               </span>
             {% else %}
