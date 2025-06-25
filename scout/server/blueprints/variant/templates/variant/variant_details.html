@@ -387,27 +387,25 @@
         </li>
         <li class="list-group-item">
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
-          <span class="float-end control-label" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
-              title="<strong>
-                {% for entry in variant.spliceai_scores %}
-                  {% if entry is not none %}
-                    SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
-                    {% if variant.spliceai_predictions[loop.index0] %}
-                      <br>All scores and positions(relative to variant):<br>
-                      {{ variant.spliceai_predictions[loop.index0] }} <br>
-                    {%  endif %}
-                    <br>
-                  {% else %}
-                    No SpliceAI positions annotated for this variant.
-                  {% endif %}
-                {% endfor %}
-              ">
-            {% if variant.spliceai_scores and variant.spliceai_scores[0] %}
-              <span class="badge bg-{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'color')}}">
+          {% if variant.spliceai_scores and variant.spliceai_scores[0] %}
+            <span class="badge bg-{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
+                title="<strong>
+                  {% for entry in variant.spliceai_scores %}
+                    {% if entry is not none %}
+                      SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
+                      {% if variant.spliceai_predictions[loop.index0] %}
+                        <br>All scores and positions(relative to variant):<br>
+                        {{ variant.spliceai_predictions[loop.index0] }} <br>
+                      {%  endif %}
+                      <br>
+                    {% else %}
+                      No SpliceAI positions annotated for this variant.
+                    {% endif %}
+                  {% endfor %}
+                ">
                 {{ variant.spliceai_scores|join(', ') }}
-              </span>
             {% else %}
-              <span class="badge float-end bg-secondary">–</span>
+              <span class="badge float-end bg-secondary">–
             {% endif %}
           </span>
         </li>
