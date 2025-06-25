@@ -387,8 +387,8 @@
         </li>
         <li class="list-group-item">
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
-          {% if variant.spliceai_scores and variant.spliceai_scores[0] %}
-            <span class="badge bg-{{variant.spliceai_scores[0]|get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
+          {% if variant.spliceai_scores | select('!=', None) | list %}
+            <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | list | max | get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
                 title="<strong>
                   {% for entry in variant.spliceai_scores %}
                     {% if entry is not none %}
