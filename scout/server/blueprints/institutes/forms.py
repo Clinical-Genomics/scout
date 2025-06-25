@@ -147,7 +147,7 @@ class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
     variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
-    category = SelectMultipleField("Institutes", choices=CATEGORY_CHOICES)
+    category = SelectMultipleField(choices=CATEGORY_CHOICES)
     hgnc_symbols = TagListField(
         "HGNC Symbols (comma-separated, case sensitive)",
         validators=[validators.InputRequired()],
