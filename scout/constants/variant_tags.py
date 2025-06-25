@@ -31,7 +31,7 @@ REVEL_SCORE_LABEL_COLOR_MAP = {
 
 SPLICEAI_SCORE_LABEL_COLOR_MAP = {
     (0.20, 1.00): {"label": "Predicted impact on splicing", "color": "warning"},
-    (0.11, 0.19): {"label": "Not informative", "color": "secondary"},
+    (0.10, 0.20): {"label": "Not informative", "color": "secondary"},
     (0.00, 0.10): {"label": "No impact on splicing", "color": "success"},
 }
 
