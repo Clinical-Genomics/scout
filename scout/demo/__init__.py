@@ -25,6 +25,7 @@ gene_fusion_report_path = str(files(BASE_PATH).joinpath("draw-fusions-example.pd
 clinical_snv_path = str(files(BASE_PATH).joinpath("643594.clinical.vcf.gz"))
 clinical_sv_path = str(files(BASE_PATH).joinpath("643594.clinical.SV.vcf.gz"))
 clinical_str_path = str(files(BASE_PATH).joinpath("643594.clinical.str.stranger.vcf.gz"))
+str_trgt_path = str(files(BASE_PATH).joinpath("NIST.trgt.stranger.vcf.gz"))
 clinical_fusion_path = str(files(BASE_PATH).joinpath("fusion_data.vcf"))
 customannotation_snv_path = str(files(BASE_PATH).joinpath("customannotations_one.vcf.gz"))
 vep_97_annotated_path = str(
