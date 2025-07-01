@@ -108,3 +108,18 @@ def test_get_alt_depth_zeroes(one_cyvcf2_fusion_variant: "Cyvcf2Variant"):
     )
     # THEN it should return 0
     assert alt_depth == 0
+
+
+def test_parse_pathologic_struc(one_trgt_variant, one_individual):
+    """Test parsing PathologicStruc from TRGT style STRs"""
+
+    # GIVEN an STR variant, with a PathologicStruc entry and a corresponding mc set
+    assert one_trgt_variant.INFO.get("PathologicStruc") == "[1]"
+    assert one_trgt_variant.format("MC") == "12_0"
+
+    # GIVEN a random individual - the keys will be used, not the id - and assuming pos 0 for a singleton.
+    pos = 0
+    gt_call = parse_genotype(one_trgt_variant, one_individual, pos)
+
+    # THEN the correct, second motif MC will be returned
+    assert gt_call["alt_mc"] == 0

@@ -34,6 +34,7 @@ from scout.demo import (
     panel_path,
     ped_path,
     rnafusion_load_path,
+    str_trgt_path,
     vep_97_annotated_path,
     vep_104_annotated_path,
 )
@@ -667,6 +668,11 @@ def case_obj(request, parsed_case):
 
 
 @pytest.fixture(scope="function")
+def one_individual(case_obj):
+    return case_obj["individuals"][0]
+
+
+@pytest.fixture(scope="function")
 def fusion_case_obj(request, fusion_parsed_case) -> dict:
     """Returns a DNA fusion case."""
     case: dict = fusion_parsed_case
@@ -1272,6 +1278,14 @@ def one_str_variant(request, str_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def one_trgt_variant(str_trgt_file):
+    variant_parser = VCF(str_trgt_file)
+
+    variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def rank_results_header(request, variant_clinical_file):
     LOG.info("Return a VCF parser with one variant")
     variants = VCF(variant_clinical_file)
@@ -1564,6 +1578,12 @@ def sv_clinical_file(request):
 def str_clinical_file(request):
     """Get the path to a variant file"""
     return clinical_str_path
+
+
+@pytest.fixture(scope="function")
+def str_trgt_file(request):
+    """Get a path to a TRGT variant file"""
+    return str_trgt_path
 
 
 @pytest.fixture(scope="function")
