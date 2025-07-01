@@ -18,6 +18,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
+import ast
 import logging
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -449,6 +450,22 @@ def _parse_format_entry(
     return (ref, alt)
 
 
+def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
+    """Check for a PathologicStruc on the variant. If not present, return None.
+    If present, and in string format, convert to a list of ints.
+    If it is already parsed to a list by a later improvement in the parser,
+    simply return it.
+    """
+
+    pathologic_struc_entry = variant.INFO.get("PathologicStruc", None)
+    if not pathologic_struc_entry:
+        return pathologic_struc_entry
+    if type(pathologic_struc_entry) is str:
+        return ast.literal_eval(pathologic_struc_entry)
+    if type(pathologic_struc_entry) is list:
+        return pathologic_struc_entry
+
+
 def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
     """Parse genotype entry for TRGT FORMAT MC
 
@@ -477,7 +494,7 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
             if allele == 0:
                 ref_idx = idx
 
-    pathologic_struc = variant.INFO.get("PathologicStruc", None)
+    pathologic_struc = _get_pathologic_struc(variant)
     pathologic_counts = 0
     for idx, allele in enumerate(mc.split(",")):
         mcs = allele.split("_")
