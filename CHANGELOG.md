@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
+- Enable insertion/deletion size display on IGV.js aligmnet tracks (#5547)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
