@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
+- Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
 - Chanjo2 requests are sent with OIDC access token, if available - tested with Keycloak authentication (#5532)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
