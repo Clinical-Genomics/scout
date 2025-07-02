@@ -119,6 +119,8 @@
                         indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
                         sourceType: "file",
                         groupBy: "tag:HP",
+                        showInsertionText: true,
+                        showDeletionText: true,
                         showSoftClips: {{track.show_soft_clips | lower }},
                         format: "{{ track.format }}",
                         height: "{{track.height}}"
