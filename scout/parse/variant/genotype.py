@@ -429,7 +429,13 @@ def _parse_format_entry(
     alt = None
     if format_entry_name in variant.FORMAT:
         try:
-            values = split_values(variant.format(format_entry_name)[pos])
+            requested_format_entry = variant.format(format_entry_name)[pos]
+
+            values = (
+                split_values(requested_format_entry)
+                if type(requested_format_entry) is str
+                else requested_format_entry
+            )
 
             ref_value = None
             alt_value = None
@@ -439,9 +445,9 @@ def _parse_format_entry(
                 alt_value = (number_format)(values[1])
             if len(values) == 1:
                 alt_value = (number_format)(values[0])
-            if ref_value >= 0:
+            if ref_value and ref_value >= 0:
                 ref = ref_value
-            if alt_value >= 0:
+            if alt_value and alt_value >= 0:
                 alt = alt_value
         except (ValueError, TypeError) as _ignore_error:
             pass
@@ -493,8 +499,9 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
                 ref_idx = idx
 
     pathologic_struc = _get_pathologic_struc(variant)
-    pathologic_counts = 0
+
     for idx, allele in enumerate(mc.split(",")):
+        pathologic_counts = 0
         mcs = allele.split("_")
 
         if len(mcs) > 1:
