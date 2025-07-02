@@ -342,12 +342,8 @@ def get_ref_depth(
     ]
 
     for items in REF_ITEMS_LIST:
-        if all(item is None for item in items):
-            continue
-        ref_depth = 0
-        for item in items:
-            if item:
-                ref_depth += item
+        if any(item is not None for item in items):
+            ref_depth = sum(item for item in items if item)
 
     if spanning_mei_ref:
         ref_depth += spanning_mei_ref
@@ -382,13 +378,8 @@ def get_alt_depth(
     ]
 
     for items in ALT_ITEMS_LIST:
-        if all(item is None for item in items):
-            continue
-        alt_depth = 0
-        for item in items:
-            if item:
-                alt_depth += item
-
+        if any(item is not None for item in items):
+            alt_depth = sum(item for item in items if item)
     return alt_depth
 
 
