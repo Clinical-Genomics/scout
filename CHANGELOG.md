@@ -21,7 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed extra warnings for missing file types on case loading (#5525)
 - Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 - Loading PathologicStruc from Stranger annotated TRGT STR files (#5542)
+- Badge color for missing REVEL and SpliceAI scores (#5546)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
+
 
 ## [4.102]
 ### Added
