@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
+- Enable insertion/deletion size display on IGV.js aligmnet tracks (#5547)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
