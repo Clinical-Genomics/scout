@@ -123,6 +123,7 @@ def parse_genotype(variant, ind, pos):
         spanning_alt,
         flanking_alt,
         inrepeat_alt,
+        sd_alt,
         clip5_alt,
         clip3_alt,
     )
@@ -136,6 +137,7 @@ def parse_genotype(variant, ind, pos):
         spanning_ref,
         flanking_ref,
         inrepeat_ref,
+        sd_ref,
         spanning_mei_ref,
     )
     gt_call["ref_depth"] = ref_depth
@@ -203,7 +205,7 @@ def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Optional[int]
             pass
 
 
-def get_paired_ends(variant, pos):
+def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
     """Get paired ends"""
     # SV specific
     paired_end_alt = None
@@ -318,21 +320,23 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
 
 
 def get_ref_depth(
-    variant,
-    pos,
-    paired_end_ref,
-    split_read_ref,
-    spanning_ref,
-    flanking_ref,
-    inrepeat_ref,
-    spanning_mei_ref,
-):
+    variant: cyvcf2.Variant,
+    pos: int,
+    paired_end_ref: int,
+    split_read_ref: int,
+    spanning_ref: int,
+    flanking_ref: int,
+    inrepeat_ref: int,
+    sd_ref: int,
+    spanning_mei_ref: int,
+) -> int:
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth != -1:
         return ref_depth
 
     REF_ITEMS_LIST: List[tuple] = [
+        (sd_ref),
         (paired_end_ref, split_read_ref),
         (spanning_ref, flanking_ref, inrepeat_ref),
     ]
@@ -351,16 +355,17 @@ def get_ref_depth(
 
 
 def get_alt_depth(
-    variant,
-    pos,
-    paired_end_alt,
-    split_read_alt,
-    spanning_alt,
-    flanking_alt,
-    inrepeat_alt,
-    clip5_alt,
-    clip3_alt,
-):
+    variant: cyvcf2.Variant,
+    pos: int,
+    paired_end_alt: int,
+    split_read_alt: int,
+    spanning_alt: int,
+    flanking_alt: int,
+    inrepeat_alt: int,
+    sd_alt: int,
+    clip5_alt: int,
+    clip3_alt: int,
+) -> int:
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth != -1:
@@ -370,6 +375,7 @@ def get_alt_depth(
         alt_depth = int(variant.format("VD")[pos][0])
 
     ALT_ITEMS_LIST: List[tuple] = [
+        (sd_alt),
         (paired_end_alt, split_read_alt),
         (clip5_alt, clip3_alt),
         (spanning_alt, flanking_alt, inrepeat_alt),
