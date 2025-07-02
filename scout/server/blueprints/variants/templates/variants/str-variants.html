@@ -93,7 +93,7 @@
 	        {% endif %}
             <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td class="str-link">{{ str_locus_info(variant) }}</td>
-	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru or variant.reference | truncate(20, True) }}</td>
+        <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.str_display_ru | truncate(12, True) or variant.str_ru | truncate(12, True) or variant.reference | truncate(12, True) }}">{{ variant.str_display_ru | truncate(12, True) or variant.str_ru | truncate(12, True) or variant.reference | truncate(12, True) }}</span></td>
             <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc }}</span></b></td>
             <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
             <td>{{ callers_cell(variant) }}</td>
