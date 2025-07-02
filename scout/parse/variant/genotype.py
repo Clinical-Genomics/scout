@@ -102,7 +102,7 @@ def parse_genotype(variant, ind, pos):
     (_, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
     gt_call["alt_mc"] = mc_alt
 
-    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
+    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", int)
     (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
     (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
 
@@ -140,6 +140,7 @@ def parse_genotype(variant, ind, pos):
         sd_ref,
         spanning_mei_ref,
     )
+
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
     gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
