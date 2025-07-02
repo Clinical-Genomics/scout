@@ -19,7 +19,7 @@
             {% elif variant.category == "sv" %}
               <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
             {% elif variant.category == "str" %}
-              <th rowspan="2" colspan="1">ExpansionHunter support</th>
+              <th rowspan="2" colspan="1">Expansion support</th>
             {% else %}
 	      {% if variant.chromosome in ["MT","M"] %}
                 <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
@@ -352,12 +352,14 @@
         <li class="list-group-item">
           <a href="https://sites.google.com/site/revelgenomics/about" target="_blank" data-bs-toggle="tooltip"
             title="An ensemble score based on 13 individual scores for predicting the pathogenicity of missense variants. Scores range from 0 to 1. The larger the score the more likely the SNP has damaging effect">REVEL score</a>
-          {% if variant.revel %}
+          {% if variant.revel and variant.revel != "-" %}
             <span class="badge float-end bg-{{variant.revel|get_label_or_color_by_score('revel', 'color')}}" data-bs-toggle="tooltip" title="{{variant.revel|get_label_or_color_by_score('revel', 'label')}}">
               {{ variant.revel }}
             </span>
           {% else %}
-            <span class="badge float-end bg-secondary">–</span>
+            <span class="float-end">
+              {{ "-" }}
+            </span>
           {% endif %}
         </li>
         <li class="list-group-item">
@@ -387,8 +389,8 @@
         </li>
         <li class="list-group-item">
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
-          {% if variant.spliceai_scores | select('!=', None) | list %}
-            <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | list | max | get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
+          {% if variant.spliceai_scores | select('!=', None) | select('!=', '-') | list %}
+            <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | select('!=', '-') | list | max | get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
                 title="<strong>
                   {% for entry in variant.spliceai_scores %}
                     {% if entry is not none %}
@@ -405,7 +407,7 @@
                 ">
                 {{ variant.spliceai_scores|join(', ') }}
             {% else %}
-              <span class="badge float-end bg-secondary">–
+              <span class="float-end">{{ "-" }}
             {% endif %}
           </span>
         </li>
