@@ -336,16 +336,16 @@ def get_ref_depth(
         return ref_depth
 
     REF_ITEMS_LIST: List[tuple] = [
-        (sd_ref),
+        (sd_ref,),
         (paired_end_ref, split_read_ref),
         (spanning_ref, flanking_ref, inrepeat_ref),
     ]
 
-    for list in REF_ITEMS_LIST:
-        if all(item is None for item in list):
+    for items in REF_ITEMS_LIST:
+        if all(item is None for item in items):
             continue
         ref_depth = 0
-        for item in list:
+        for item in items:
             if item:
                 ref_depth += item
 
@@ -375,17 +375,17 @@ def get_alt_depth(
         alt_depth = int(variant.format("VD")[pos][0])
 
     ALT_ITEMS_LIST: List[tuple] = [
-        (sd_alt),
+        (sd_alt,),
         (paired_end_alt, split_read_alt),
         (clip5_alt, clip3_alt),
         (spanning_alt, flanking_alt, inrepeat_alt),
     ]
 
-    for list in ALT_ITEMS_LIST:
-        if all(item is None for item in list):
+    for items in ALT_ITEMS_LIST:
+        if all(item is None for item in items):
             continue
         alt_depth = 0
-        for item in list:
+        for item in items:
             if item:
                 alt_depth += item
 
