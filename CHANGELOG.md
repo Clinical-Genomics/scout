@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
+- Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
 - Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
