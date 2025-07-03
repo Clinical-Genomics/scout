@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
-- Enable insertion/deletion size display on IGV.js aligmnet tracks (#5547)
+- Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
 - On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has more than one gene (#5513)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 - Loading PathologicStruc from Stranger annotated TRGT STR files (#5542)
 - Badge color for missing REVEL and SpliceAI scores (#5546)
+- Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 
 ## [4.102]
 ### Added
