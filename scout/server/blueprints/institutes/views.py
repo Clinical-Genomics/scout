@@ -149,7 +149,7 @@ def gene_variants(institute_id):
     ]
     form = GeneVariantFiltersForm()
     form.institute.choices = institute_choices
-    users_customer_ids = [choice[0] for choice in institute_choices]
+    users_institute_ids = [choice[0] for choice in institute_choices]
 
     if request.method == "GET":
         form.process(request.args)
@@ -171,7 +171,7 @@ def gene_variants(institute_id):
 
         variants_query = store.build_variant_query(
             query=form.data,
-            institute_ids=[inst for inst in form.institute.data if inst in users_customer_ids],
+            institute_ids=[inst for inst in form.institute.data if inst in users_institute_ids],
             category=category,
             variant_type=variant_type,
         )  # This is the actual query dictionary, not the cursor with results
