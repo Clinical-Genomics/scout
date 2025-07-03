@@ -135,6 +135,10 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
+        <div class="col col-md-2">
+          {{ form.institute.label(class="control-label") }}
+          {{ form.institute(class="form-control", class="selectpicker", data_style="btn-secondary") }}
+        </div>
         <div class="col col-md-1">
           <label class="control-label" for="rank_score">Rank Score</label>
           <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
