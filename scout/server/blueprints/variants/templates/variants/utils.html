@@ -3,6 +3,10 @@
 {% from "cases/utils.html" import pretty_link_variant %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
+{% macro variant_rank_score(variant) %}
+  {{ variant.rank_score|int }} {% if variant.norm_rank_score %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
+{% endmacro %}
+
 {% macro filter_script_main(cytobands) %}
   <script type="text/javascript">
     var startElem = document.getElementById("start");
