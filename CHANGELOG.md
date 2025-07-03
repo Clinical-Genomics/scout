@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 - Loading PathologicStruc from Stranger annotated TRGT STR files (#5542)
 - Badge color for missing REVEL and SpliceAI scores (#5546)
+- Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 
 ## [4.102]
 ### Added
