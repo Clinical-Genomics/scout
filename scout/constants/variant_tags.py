@@ -578,7 +578,7 @@ CALLERS = {
         {"id": "cnvpytor", "name": "CNVpytor"},
         {"id": "delly", "name": "Delly"},
         _GATK,
-        {"id": "gcnvcaller", "GATK GermlineCNV"},
+        {"id": "gcnvcaller", "name": "GATK GermlineCNV"},
         {"id": "hificnv", "name": "HiFiCNV"},
         _MANTA,
         {"id": "severus", "name": "Severus"},
