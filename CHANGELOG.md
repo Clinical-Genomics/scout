@@ -9,10 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
-- Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
+- New exome CNV caller GATK CNV (#5556)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
+- LRS STR variant read support (TRGT SD) stored and displayed on variant as ref/alt depth (#5552)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
@@ -24,7 +25,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matchmaker Exchange submissions page crashing when one or more cases have no synopsis(#5534)
 - Loading PathologicStruc from Stranger annotated TRGT STR files (#5542)
 - Badge color for missing REVEL and SpliceAI scores (#5546)
-- Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 
 ## [4.102]
 ### Added
@@ -1754,7 +1754,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `Basics` panel to `Classify` on variant page.
 - Revamped `Basics` panel to a panel dedicated to classify variants
 - Revamped the summary panel to be more compact.
-- Added dedicated template for cancer variants
+- Added dedicated temyplate for cancer variants
 - Removed Gene models, Gene annotations and Conservation panels for cancer variants
 - Reorganized the orders of panels for variant and cancer variant views
 - Added dedicated variant quality panel and removed relevant panes

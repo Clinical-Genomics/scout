@@ -1,6 +1,6 @@
 """Code to parse variant coordinates"""
 
-from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38
+from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38, SV_TYPES
 
 
 def get_cytoband_coordinates(chrom, pos, build):
@@ -144,6 +144,10 @@ def parse_coordinates(variant, category, build="37"):
         svtype = variant.INFO.get("SVTYPE")
         if svtype:
             svtype = svtype.lower()
+        else:
+            alt_type = alt.lstrip("<").rstrip(">").lower()
+            if alt_type in SV_TYPES:
+                svtype = alt_type
         sub_category = svtype
         if sub_category == "bnd":
             end_chrom = get_end_chrom(alt, chrom)
