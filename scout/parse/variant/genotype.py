@@ -228,9 +228,10 @@ def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
         values = variant.format("PR")[pos]
         try:
             alt_value = int(values[1])
-            ref_value = int(values[0])
             if alt_value >= 0:
                 paired_end_alt = alt_value
+
+            ref_value = int(values[0])
             if ref_value >= 0:
                 paired_end_ref = ref_value
         except ValueError as _ignore_error:
@@ -501,12 +502,13 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
     pathologic_struc = _get_pathologic_struc(variant)
 
     for idx, allele in enumerate(mc.split(",")):
-        pathologic_counts = 0
+
         mcs = allele.split("_")
 
         if len(mcs) > 1:
             pathologic_mcs = pathologic_struc or range(len(mcs))
 
+            pathologic_counts = 0
             for index, count in enumerate(mcs):
                 if index in pathologic_mcs:
                     pathologic_counts += int(count)
