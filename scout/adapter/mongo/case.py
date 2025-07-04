@@ -1498,14 +1498,11 @@ class CaseHandler(object):
 
                 else:
                     # old variant had Sanger validation ordered
-                    # check old event to collect user_obj that ordered the verification:
                     # set sanger ordered status for the new variant as well:
-                    updated_var = self.order_verification(
-                        institute=institute_obj,
-                        case=case_obj,
-                        user=user_obj,
-                        link=link,
-                        variant=new_var,
+                    updated_var = self.variant_collection.find_one_and_update(
+                        {"_id": new_var["_id"]},
+                        {"$set": {"sanger_ordered": True}},
+                        return_document=pymongo.ReturnDocument.AFTER,
                     )
                     if updated_var:
                         updated_variants["updated_ordered"].append(updated_var["_id"])
