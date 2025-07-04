@@ -8,7 +8,7 @@ from scout.adapter import MongoAdapter
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
-USER_ROLES = ["admin", "institute_admin", "mme_submitter", "beacon_submitter"]
+USER_ROLES = ["admin", "mme_submitter", "beacon_submitter"]
 
 
 @click.command("user", short_help="Update a user")
