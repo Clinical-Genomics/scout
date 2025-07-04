@@ -1,7 +1,7 @@
 import json
 import logging
 from io import StringIO
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import requests
 from flask import flash
@@ -80,7 +80,7 @@ class ClinVarApi:
         except Exception as ex:
             return self.submit_service_url, None, ex
 
-    def json_submission_status(self, submission_id: str, api_key=None) -> dict:
+    def json_submission_status(self, submission_id: str, api_key=None) -> Any:
         """Retrieve the status of a ClinVar submission using the https://submit.ncbi.nlm.nih.gov/api/v1/submissions/SUBnnnnnn/actions/ endpoint."""
 
         header: dict = self.set_header(api_key)
