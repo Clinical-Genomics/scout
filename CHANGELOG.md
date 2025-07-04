@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
+- New exome CNV caller GATK CNV (#5557)
 - Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
