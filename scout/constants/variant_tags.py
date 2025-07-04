@@ -551,6 +551,7 @@ CALLERS = {
         {"id": "deepvariant", "name": "DeepVariant"},
         _FREEBAYES,
         _GATK,
+        {"id": "mutect2", "name": "MuTect2"},
         {"id": "samtools", "name": "SAMtools"},
     ],
     "cancer": [
