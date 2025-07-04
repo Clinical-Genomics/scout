@@ -13,7 +13,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New exome CNV caller GATK CNV (#5557)
 - Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
 - Parse and show normalized rank scores (`RankScoreNormalized`) on SNVs (RD & cancer) and SVs (RD) pages (#5554)
-- A new `institute_admin` user role, can be assigned to a user via command line (#5523)
 - Option to remove any role assigned to a user, not only the admin role (#5523)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
