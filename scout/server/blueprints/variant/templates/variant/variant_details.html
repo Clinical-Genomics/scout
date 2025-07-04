@@ -54,6 +54,7 @@
 
               {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
                 <td>
+                  {# Using number == number as a test for NaN value numbers here. Given that they exist, NaN values are the only time a number is not considered equal to itself. #}
                   {% if sample.alt_frequency and sample.alt_frequency != -1 and sample.alt_frequency == sample.alt_frequency %}
                     {{ (100*sample.alt_frequency)|round(2) }}%
                   {% else %}
