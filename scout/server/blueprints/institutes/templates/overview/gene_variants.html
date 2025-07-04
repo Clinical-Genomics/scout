@@ -96,11 +96,16 @@
         {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
        {% endif %}
   {% else %}
-    <a href="{{ url_for('variant.variant', institute_id=variant.institute,
+      <a href="{{ url_for('variant.variant', institute_id=variant.institute,
             case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-    {{ (variant.hgvs or '')|url_decode }}
-  {% endif %}
-  </a>
+      {% set lines = variant | format_variant_canonical_transcripts %}
+      {% if lines | length > 1 %}
+        {{ lines | join('<br>') | safe }}
+      {% elif lines %}
+        {{ lines[0] }}
+      {% endif %}
+   {% endif %}
+   </a>
 {% endmacro %}
 
 {% macro cell_rank(variant) %}
