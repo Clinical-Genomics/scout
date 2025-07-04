@@ -153,7 +153,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
     new_variant = store.variant_collection.find_one({"display_name": one_variant["display_name"]})
     assert new_variant["validation"] == "True positive"
 
-    # And only 1 Sanger events should be found associated with the variants
+    # And only 1 Sanger event should be found associated with the variants
     assert (
         sum(1 for _ in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 1
     )
