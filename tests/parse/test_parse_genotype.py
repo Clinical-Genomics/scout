@@ -80,6 +80,7 @@ def test_get_ref_depth_zeroes(one_variant: "Cyvcf2Variant"):
         spanning_ref=0,
         flanking_ref=0,
         inrepeat_ref=0,
+        sd_ref=0,
         spanning_mei_ref=0,
     )
     # THEN it should return 0
@@ -103,6 +104,7 @@ def test_get_alt_depth_zeroes(one_cyvcf2_fusion_variant: "Cyvcf2Variant"):
         spanning_alt=0,
         flanking_alt=0,
         inrepeat_alt=0,
+        sd_alt=0,
         clip5_alt=0,
         clip3_alt=0,
     )
