@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell %}
+{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -58,7 +58,7 @@ onsubmit="return validateForm()">
           <tr>
             <th style="width:3%"></th>
             <th title="Rank position">Rank</th>
-            <th title="Rank score">Score</th>
+            <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)">Score</th>
             <th>Callers</th>
             <th>Type</th>
             <th title="Chromosome">Chr</th>
@@ -103,7 +103,7 @@ onsubmit="return validateForm()">
     <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-end">{{ variant.rank_score|int }}</td>
+    <td class="text-start">{{variant_rank_score(variant)}}</td>
     <td>
       {{ callers_cell(variant) }}
     </td>
