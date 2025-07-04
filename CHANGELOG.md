@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
+- New exome CNV caller GATK CNV (#5557)
 - A new `institute_admin` user role, can be assigned to a user via command line (#5523)
 - Option to remove any role assigned to a user, not only the admin role (#5523)
 ### Changed
