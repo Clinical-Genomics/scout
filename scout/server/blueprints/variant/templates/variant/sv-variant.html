@@ -7,6 +7,7 @@
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
 {% from "variant/buttons.html" import dismiss_variant_button, splice_junctions_button, variant_tag_button %}
+{% from "variants/utils.html" import variant_rank_score %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -174,7 +175,7 @@
         <li class="list-group-item">Rank <span class="badge rounded-pill bg-secondary float-end">{{ variant.variant_rank }}</span></li>
         <li class="list-group-item">
           Rank score
-          <span class="badge rounded-pill bg-secondary float-end">{{ variant.rank_score }}</span>
+          <span class="badge rounded-pill bg-secondary float-end">{{variant_rank_score(variant)}}</span>
         </li>
 
         <li class="list-group-item">

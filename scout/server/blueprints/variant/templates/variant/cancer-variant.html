@@ -8,6 +8,7 @@
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
+{% from "variants/utils.html" import variant_rank_score %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -282,7 +283,7 @@
             <strong>{{ variant.alternative }}</strong>
           {%- endif -%}
         </li>
-        <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
+        <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant_rank_score(variant) }}</span>
         </li>
         <li class="list-group-item">
           {{ clinsig_table(variant) }}
