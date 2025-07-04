@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
 - New exome CNV caller GATK CNV (#5557)
 - Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
+- Parse and show normalized rank scores (`RankScoreNormalized`) on SNVs (RD & cancer) and SVs (RD) pages (#5554)
 - Add MuTect2 SNV caller (used in nf-core/raredisease MT calling) (#5558)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)

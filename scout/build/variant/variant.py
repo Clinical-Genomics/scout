@@ -190,6 +190,7 @@ def build_variant(
     variant_obj["position"] = int(variant["position"])
     variant_obj["quality"] = float(variant["quality"]) if variant["quality"] else None
     variant_obj["rank_score"] = float(variant["rank_score"])
+    variant_obj["norm_rank_score"] = float(variant["norm_rank_score"])
     variant_obj["simple_id"] = variant["ids"].get("simple_id")
     variant_obj["sub_category"] = variant.get("sub_category")
 
