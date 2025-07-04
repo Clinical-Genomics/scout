@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
+- LRS STR variant read support (TRGT SD) stored and displayed on variant as ref/alt depth (#5552)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
