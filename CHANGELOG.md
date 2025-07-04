@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Badge color for missing REVEL and SpliceAI scores (#5546)
 - Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
+- Do not create new variant-associated events, when re-uploading a case. New variant inherits key/values from old evaluated variants (#5507)
 
 ## [4.102]
 ### Added
