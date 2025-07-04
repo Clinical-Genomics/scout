@@ -82,6 +82,8 @@ def parse_variant(
             variant_type=variant_type,
         ),
         "rank_score": parse_rank_score(variant.INFO.get("RankScore", ""), genmod_key) or 0,
+        "norm_rank_score": parse_rank_score(variant.INFO.get("RankScoreNormalized", ""), genmod_key)
+        or 0,
         "genetic_models": parse_genetic_models(variant.INFO.get("GeneticModels"), genmod_key),
         "str_swegen_mean": call_safe(float, variant.INFO.get("SweGenMean")),
         "str_swegen_std": call_safe(float, variant.INFO.get("SweGenStd")),

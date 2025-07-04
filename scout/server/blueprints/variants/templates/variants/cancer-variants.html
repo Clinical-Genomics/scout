@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
-{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell %}
+{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
 {% block title %}
@@ -56,7 +56,7 @@
               <th title="Gene">Gene</th>
               <th title="Variant" style="width:12%">HGVS[c/p]</th>
               <th title="Assessments including variant tier" style="width:8%">Assessment</th>
-              <th title="Rank scores" style="width:4%">Rank</th>
+              <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)" style="width:5%">Rank</th>
               <th title="CADD scores" style="width:4%">CADD</th>
               <th title="Genomic coordinate" style="width:8%">Chr pos</th>
               <th title="Population frequency">Pop Freq</th>
@@ -156,7 +156,9 @@
     {% elif variant.rank_score > 8 %}
       {% set label_class = 'danger' %}
     {% endif %}
-    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">{{ variant.rank_score }}</div>
+    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
+      {{ variant_rank_score(variant) }}
+    </div>
   {% endif %}
 {% endmacro %}
 
