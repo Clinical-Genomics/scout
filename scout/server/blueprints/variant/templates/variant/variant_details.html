@@ -54,7 +54,7 @@
 
               {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
                 <td>
-                  {% if sample.alt_frequency and sample.alt_frequency != -1 %}
+                  {% if sample.alt_frequency and sample.alt_frequency != -1 and sample.alt_frequency != NaN %}
                     {{ (100*sample.alt_frequency)|round(2) }}%
                   {% else %}
 		    N/A
