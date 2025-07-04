@@ -1221,5 +1221,5 @@ def test_keep_variant_comments_after_reupload(
 
     assert updated_new_vars["is_commented"] == [new_variant["_id"]]
 
-    # and np new comments should be created in the database
+    # and no new comments should be created in the database
     assert sum(1 for _ in adapter.event_collection.find()) == 2
