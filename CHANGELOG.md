@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
-- Parse and show normalized rank scores (`RankScoreNormalized`) on SMVs and SVs variants pages (rare diseases pipeline) (#5554)
+- Parse and show normalized rank scores (`RankScoreNormalized`) on SNVs and SVs pages (#5554)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
