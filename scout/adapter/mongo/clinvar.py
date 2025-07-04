@@ -497,12 +497,15 @@ class ClinVarHandler(object):
     def get_onc_submission_json(self, submission: str) -> Optional[dict]:
         """Returns a json oncogenicity submission file, as a json."""
 
-        submission_dict = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission)})
+        submission_dict = self.clinvar_submission_collection.find_one(
+            {"_id": ObjectId(submission), "type": "oncogenicity"}
+        )
         if not submission_dict:
             return
 
         for key in [
             "_id",
+            "clinvar_subm_id",
             "status",
             "type",
             "created_at",
