@@ -102,7 +102,7 @@ def parse_genotype(variant, ind, pos):
     (_, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
     gt_call["alt_mc"] = mc_alt
 
-    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
+    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", int)
     (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
     (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
 
@@ -123,6 +123,7 @@ def parse_genotype(variant, ind, pos):
         spanning_alt,
         flanking_alt,
         inrepeat_alt,
+        sd_alt,
         clip5_alt,
         clip3_alt,
     )
@@ -136,8 +137,10 @@ def parse_genotype(variant, ind, pos):
         spanning_ref,
         flanking_ref,
         inrepeat_ref,
+        sd_ref,
         spanning_mei_ref,
     )
+
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
     gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
@@ -203,7 +206,7 @@ def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Optional[int]
             pass
 
 
-def get_paired_ends(variant, pos):
+def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
     """Get paired ends"""
     # SV specific
     paired_end_alt = None
@@ -225,9 +228,10 @@ def get_paired_ends(variant, pos):
         values = variant.format("PR")[pos]
         try:
             alt_value = int(values[1])
-            ref_value = int(values[0])
             if alt_value >= 0:
                 paired_end_alt = alt_value
+
+            ref_value = int(values[0])
             if ref_value >= 0:
                 paired_end_ref = ref_value
         except ValueError as _ignore_error:
@@ -318,32 +322,30 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
 
 
 def get_ref_depth(
-    variant,
-    pos,
-    paired_end_ref,
-    split_read_ref,
-    spanning_ref,
-    flanking_ref,
-    inrepeat_ref,
-    spanning_mei_ref,
-):
+    variant: cyvcf2.Variant,
+    pos: int,
+    paired_end_ref: int,
+    split_read_ref: int,
+    spanning_ref: int,
+    flanking_ref: int,
+    inrepeat_ref: int,
+    sd_ref: int,
+    spanning_mei_ref: int,
+) -> int:
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth != -1:
         return ref_depth
 
     REF_ITEMS_LIST: List[tuple] = [
+        (sd_ref,),
         (paired_end_ref, split_read_ref),
         (spanning_ref, flanking_ref, inrepeat_ref),
     ]
 
-    for list in REF_ITEMS_LIST:
-        if all(item is None for item in list):
-            continue
-        ref_depth = 0
-        for item in list:
-            if item:
-                ref_depth += item
+    for items in REF_ITEMS_LIST:
+        if any(item is not None for item in items):
+            ref_depth = sum(item for item in items if item)
 
     if spanning_mei_ref:
         ref_depth += spanning_mei_ref
@@ -351,16 +353,17 @@ def get_ref_depth(
 
 
 def get_alt_depth(
-    variant,
-    pos,
-    paired_end_alt,
-    split_read_alt,
-    spanning_alt,
-    flanking_alt,
-    inrepeat_alt,
-    clip5_alt,
-    clip3_alt,
-):
+    variant: cyvcf2.Variant,
+    pos: int,
+    paired_end_alt: int,
+    split_read_alt: int,
+    spanning_alt: int,
+    flanking_alt: int,
+    inrepeat_alt: int,
+    sd_alt: int,
+    clip5_alt: int,
+    clip3_alt: int,
+) -> int:
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth != -1:
@@ -370,19 +373,15 @@ def get_alt_depth(
         alt_depth = int(variant.format("VD")[pos][0])
 
     ALT_ITEMS_LIST: List[tuple] = [
+        (sd_alt,),
         (paired_end_alt, split_read_alt),
         (clip5_alt, clip3_alt),
         (spanning_alt, flanking_alt, inrepeat_alt),
     ]
 
-    for list in ALT_ITEMS_LIST:
-        if all(item is None for item in list):
-            continue
-        alt_depth = 0
-        for item in list:
-            if item:
-                alt_depth += item
-
+    for items in ALT_ITEMS_LIST:
+        if any(item is not None for item in items):
+            alt_depth = sum(item for item in items if item)
     return alt_depth
 
 
@@ -431,7 +430,13 @@ def _parse_format_entry(
     alt = None
     if format_entry_name in variant.FORMAT:
         try:
-            values = split_values(variant.format(format_entry_name)[pos])
+            requested_format_entry = variant.format(format_entry_name)[pos]
+
+            values = (
+                split_values(requested_format_entry)
+                if type(requested_format_entry) is str
+                else requested_format_entry
+            )
 
             ref_value = None
             alt_value = None
@@ -441,9 +446,9 @@ def _parse_format_entry(
                 alt_value = (number_format)(values[1])
             if len(values) == 1:
                 alt_value = (number_format)(values[0])
-            if ref_value >= 0:
+            if ref_value and ref_value >= 0:
                 ref = ref_value
-            if alt_value >= 0:
+            if alt_value and alt_value >= 0:
                 alt = alt_value
         except (ValueError, TypeError) as _ignore_error:
             pass
@@ -495,13 +500,15 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
                 ref_idx = idx
 
     pathologic_struc = _get_pathologic_struc(variant)
-    pathologic_counts = 0
+
     for idx, allele in enumerate(mc.split(",")):
+
         mcs = allele.split("_")
 
         if len(mcs) > 1:
             pathologic_mcs = pathologic_struc or range(len(mcs))
 
+            pathologic_counts = 0
             for index, count in enumerate(mcs):
                 if index in pathologic_mcs:
                     pathologic_counts += int(count)
