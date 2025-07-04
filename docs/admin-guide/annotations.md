@@ -103,6 +103,11 @@ The combined rank score for a variant. For exact info see [test][rank_score_test
 - Value: `Float`
 - Tools: [genmod][genmod]
 
+#### Normalised Rank Score
+
+- Key: `RankScoreNormalized`
+- Value: `Float` (0-1)
+- Tools: [genmod][genmod]
 
 ### Conservation ###
 
