@@ -865,7 +865,9 @@ def export_gene_variants(
         )  # CADD score
         variant_line.append(" | ".join(variant.get("region_annotations", [])))  # Region
         variant_line.append(" | ".join(variant.get("functional_annotations", [])))  # Function
-        variant_line.append(variant.get("hgvs", "-"))  # HGVS
+        variant_line.append(
+            " | ".join(current_app.custom_filters.format_variant_canonical_transcripts(variant))
+        )
 
         export_lines.append(",".join(variant_line))
 
