@@ -14,8 +14,6 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
 from scout.constants import (
-    ACMG_MAP,
-    CCV_MAP,
     ID_PROJECTION,
     ORDERED_FILE_TYPE_MAP,
     ORDERED_OMICS_FILE_TYPE_MAP,
@@ -1052,7 +1050,7 @@ class CaseHandler(object):
                 self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
                 if keep_actions and old_evaluated_variants:
-                    self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
+                    self.update_variant_actions(case_obj, old_evaluated_variants)
 
         return case_obj
 
@@ -1372,14 +1370,11 @@ class CaseHandler(object):
 
         return case_verif_variants
 
-    def update_variant_actions(self, institute_obj, case_obj, old_eval_variants):
+    def update_variant_actions(
+        self, case_obj: dict, old_eval_variants: List[dict]
+    ) -> Dict[str, List[str]]:
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
-
-        Accepts:
-            institute_obj(dict): an institute object
-            case_obj(dict): a case object
-            old_eval_variants(list(Variant))
 
         Returns:
             updated_variants(dict): a dictionary like this:
@@ -1391,131 +1386,43 @@ class CaseHandler(object):
                 'ccv_classification': [list of variant ids]
                 'is_commented': [list of variant ids]
         """
-        updated_variants = {
-            "manual_rank": [],
-            "dismiss_variant": [],
-            "mosaic_tags": [],
-            "cancer_tier": [],
-            "acmg_classification": [],
-            "ccv_classification": [],
-            "is_commented": [],
-        }
-
-        update_action_map = {
-            "manual_rank": self.update_manual_rank,
-            "dismiss_variant": self.update_dismiss_variant,
-            "mosaic_tags": self.update_mosaic_tags,
-            "cancer_tier": self.update_cancer_tier,
-        }
-
+        ACTION_KEYS = [
+            "manual_rank",
+            "dismiss_variant",
+            "mosaic_tags",
+            "cancer_tier",
+            "acmg_classification",
+            "ccv_classification",
+            "is_commented",
+        ]
+        updated_variants = {action: [] for action in ACTION_KEYS}
         LOG.debug(
             "Updating action status for {} variants in case:{}".format(
                 len(old_eval_variants), case_obj["_id"]
             )
         )
-
         n_status_updated = 0
         for old_var in old_eval_variants:
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
-
             new_var = self.variant_collection.find_one(
                 {"case_id": case_obj["_id"], "display_name": display_name}
             )
-
             if new_var is None:  # same var is no more among case variants, skip it
                 LOG.warning(
                     "Trying to propagate manual action from an old variant to a new, but couldn't find same variant any more"
                 )
                 continue
 
-            for action in list(
-                updated_variants.keys()
-            ):  # manual_rank, dismiss_variant, mosaic_tags
-                # collect only the latest associated event:
-                if (
-                    old_var.get(action) is None and action != "is_commented"
-                ):  # tag new variant accordingly
-                    continue
-                verb = action
-                if action == "acmg_classification":
-                    verb = "acmg"
-                if action == "is_commented":
-                    verb = "comment"
-                if action == "ccv_classification":
-                    verb = "ccv"
-
-                old_event = self.event_collection.find_one(
-                    {
-                        "case": case_obj["_id"],
-                        "verb": verb,
-                        "variant_id": old_var["variant_id"],
-                        "category": "variant",
-                    },
-                    sort=[("updated_at", pymongo.DESCENDING)],
-                )
-
-                if old_event is None:
-                    continue
-
-                user_obj = self.user(old_event["user_id"])
-                if user_obj is None:
-                    continue
-
-                updated_variant = None
-
-                if action == "is_commented":
-                    updated_comments = self.comments_reupload(
-                        old_var, new_var, institute_obj, case_obj
+            for action in ACTION_KEYS:
+                if old_var.get(action):
+                    updated_variant = self.variant_collection.find_one_and_update(
+                        {"_id": new_var["_id"]},
+                        {"$set": {action: old_var.get(action)}},
                     )
-                    if updated_comments > 0:
-                        LOG.info(
-                            "Created {} new comments for variant {} after reupload".format(
-                                updated_comments, display_name
-                            )
-                        )
-                        updated_variant = new_var
-
-                # create a link to the new variant for the events
-                link = "/{0}/{1}/{2}".format(
-                    new_var["institute"], case_obj["display_name"], new_var["_id"]
-                )
-
-                if action == "acmg_classification":
-                    str_classif = ACMG_MAP.get(old_var.get("acmg_classification"))
-                    updated_variant = self.update_acmg(
-                        institute_obj=institute_obj,
-                        case_obj=case_obj,
-                        user_obj=user_obj,
-                        link=link,
-                        variant_obj=new_var,
-                        acmg_str=str_classif,
-                    )
-
-                if action == "ccv_classification":
-                    str_classif = CCV_MAP.get(old_var.get("ccv_classification"))
-                    updated_variant = self.update_ccv(
-                        institute_obj=institute_obj,
-                        case_obj=case_obj,
-                        user_obj=user_obj,
-                        link=link,
-                        variant_obj=new_var,
-                        ccv_str=str_classif,
-                    )
-
-                if action in update_action_map.keys():
-                    updated_variant = update_action_map[action](
-                        institute_obj,
-                        case_obj,
-                        user_obj,
-                        link,
-                        new_var,
-                        old_var.get(action),
-                    )
-
-                if updated_variant is not None:
-                    n_status_updated += 1
-                    updated_variants[action].append(updated_variant["_id"])
+                    if updated_variant:
+                        n_status_updated += 1
+                        updated_variants[action].append(new_var["_id"])
 
         LOG.info("Variant actions updated {} times".format(n_status_updated))
         return updated_variants

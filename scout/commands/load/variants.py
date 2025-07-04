@@ -274,4 +274,4 @@ def variants(
     adapter.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
     if keep_actions and old_evaluated_variants:
-        adapter.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
+        adapter.update_variant_actions(case_obj, old_evaluated_variants)

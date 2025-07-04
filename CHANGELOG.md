@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
+- LRS STR variant read support (TRGT SD) stored and displayed on variant as ref/alt depth (#5552)
 - Deprecated the `--remove-admin` flag in the update user command line (#5523)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
@@ -30,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Badge color for missing REVEL and SpliceAI scores (#5546)
 - Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
+- Do not create new variant-associated events, when re-uploading a case. New variant inherits key/values from old evaluated variants (#5507)
 
 ## [4.102]
 ### Added
