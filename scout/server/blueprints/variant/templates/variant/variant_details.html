@@ -80,7 +80,7 @@
                     <small>N/A</small>
                   {% endif %} (<small>VQ</small>
                   {% if variant.quality not in ["None", None, "-1", -1] %}
-                    {{variant.quality}}
+                    {{variant.quality|round(1)}}
                   {% else %}
                     <small>N/A</small>
                   {% endif%})
