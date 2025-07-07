@@ -367,11 +367,9 @@ def register_filters(app):
         float_values = []
         for value in values:
             if isinstance(value, str):
-                if "None" in value:
-                    continue
                 if ":" in value:  # Variant hits multiple genes
                     value = value.split(":")[1].strip()
-            if value in [None, "-"]:
+            if value in [None, "-", "None"]:
                 continue
             float_values.append(float(value))
         if float_values:
