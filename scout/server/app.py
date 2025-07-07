@@ -366,13 +366,13 @@ def register_filters(app):
         """Returns a list of SpliceAI values, extracting floats only from values like 'score:0.23'."""
         float_values = []
         for value in values:
-            if value in [None, "-"]:
-                continue
             if isinstance(value, str):
                 if "None" in value:
                     continue
                 if ":" in value:  # Variant hits multiple genes
                     value = value.split(":")[1].strip()
+            if value in [None, "-"]:
+                continue
             float_values.append(float(value))
         if float_values:
             return max(float_values)
