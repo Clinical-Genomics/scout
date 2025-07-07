@@ -14,11 +14,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Automatic ClinVar oncogenicity submissions via ClinVar API (#5510)
 - Parse and show normalized rank scores (`RankScoreNormalized`) on SNVs (RD & cancer) and SVs (RD) pages (#5554)
 - Add MuTect2 SNV caller (used in nf-core/raredisease MT calling) (#5558)
+- Option to remove any role assigned to a user, not only the admin role (#5523)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
 - LRS STR variant read support (TRGT SD) stored and displayed on variant as ref/alt depth (#5552)
 - On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has more than one gene (#5513)
+- Deprecated the `--remove-admin` flag in the update user command line (#5523)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
