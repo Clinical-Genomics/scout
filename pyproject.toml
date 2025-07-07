@@ -1,6 +1,6 @@
 [project]
 name = "scout-browser"
-version = "4.102.0"
+version = "4.103.0"
 description = "Clinical DNA variant visualizer and browser"
 authors = [{name="Chiara Rasi", email="chiara.rasi@scilifelab.se"}, {name="Daniel Nilsson", email="daniel.nilsson@ki.se"}, {name="Robin Andeer", email="robin.andeer@gmail.com"}, {name="Mans Magnuson", email="monsunas@gmail.com"}]
 license = {text = "MIT License"}
