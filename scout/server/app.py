@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from datetime import timedelta
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 from flask import Flask, redirect, request, url_for
@@ -360,6 +360,20 @@ def register_filters(app):
     def list_remove_none(in_list: list) -> list:
         """Returns a list after removing any None values from it."""
         return [item for item in in_list if item is not None]
+
+    @app.template_filter()
+    def spliceai_max(values) -> Optional[float]:
+        """Returns a list of SpliceAI values, extracting floats only from values like 'score:0.23'."""
+        float_values = []
+        for value in values:
+            if isinstance(value, str):
+                if ":" in value:  # Variant hits multiple genes
+                    value = value.split(":")[1].strip()
+            if value in [None, "-", "None"]:
+                continue
+            float_values.append(float(value))
+        if float_values:
+            return max(float_values)
 
 
 def register_tests(app):
