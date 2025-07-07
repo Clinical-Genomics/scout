@@ -389,13 +389,14 @@
           <span class="float-end">{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</span>
         </li>
         <li class="list-group-item">
+          {% set spliceai_highest = variant.spliceai_scores | spliceai_max %}
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
-          {% if variant.spliceai_scores | select('!=', None) | select('!=', '-') | list %}
-            <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | select('!=', '-') | list | max | get_label_or_color_by_score('spliceai', 'color')}} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
+          {% if spliceai_highest %}
+            <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color') }} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
                 title="<strong>
                   {% for entry in variant.spliceai_scores %}
                     {% if entry is not none %}
-                      SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant. {{ variant.spliceai_scores | select('!=', None) | list | max | get_label_or_color_by_score('spliceai', 'label')}} according to Walker et al 2023.
+                      SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant. {{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color')}} according to Walker et al 2023.
                       {% if variant.spliceai_predictions[loop.index0] %}
                         <br>All scores and positions(relative to variant):<br>
                         {{ variant.spliceai_predictions[loop.index0] }} <br>

@@ -713,8 +713,9 @@
             <td>{{ variant.polyphen_predictions|join(', ') or '-' }}</td>
             <td>{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</td>
             <td>
-              {% if variant.spliceai_scores | select('!=', None) | list %}
-                <span class="badge bg-{{variant.spliceai_scores | select('!=', None) | list | max | get_label_or_color_by_score('spliceai', 'color') }}">
+              {% set spliceai_highest = variant.spliceai_scores | spliceai_max %}
+              {% if spliceai_highest %}
+                <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color') }}">
                   {{ variant.spliceai_scores|join(', ') }}
                 </span>
               {% else %}
