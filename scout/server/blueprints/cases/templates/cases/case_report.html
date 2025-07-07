@@ -715,7 +715,7 @@
             <td>
               {% set spliceai_highest = variant.spliceai_scores | spliceai_max %}
               {% if spliceai_highest %}
-                <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color') }}">
+                <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'label') }}">
                   {{ variant.spliceai_scores|join(', ') }}
                 </span>
               {% else %}

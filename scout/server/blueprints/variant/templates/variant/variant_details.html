@@ -396,7 +396,7 @@
                 title="<strong>
                   {% for entry in variant.spliceai_scores %}
                     {% if entry is not none %}
-                      SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant. {{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color')}} according to Walker et al 2023.
+                      SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant. {{ spliceai_highest | get_label_or_color_by_score('spliceai', 'label')}} according to Walker et al 2023.
                       {% if variant.spliceai_predictions[loop.index0] %}
                         <br>All scores and positions(relative to variant):<br>
                         {{ variant.spliceai_predictions[loop.index0] }} <br>
