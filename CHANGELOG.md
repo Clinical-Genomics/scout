@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document only) (#5449)
+- Add cancer SNVs to Oncogenicity ClinVar submissions (downloadable json document) (#5449)
 - Fold changes values alongside Log2 fold changes values (l2fc) on WTS outliers page (#5536)
 - REVEL and SpliceAI scores are now displayed as multi-colored, labeled badges on the variant and report pages (#5537, #5538)
 - Filter results in `Search SNVs & SVs` page by one or more institutes (#5539)
@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Truncate long STR RepeatUnit names, from loci missing formal RU just showing ref allele (#5551)
 - Do not reorder Sanger sequencing for variants when case is re-uploaded. Just assign Sanger status = ordered to them. (#5504)
 - Do not create new variant-associated events, when re-uploading a case. New variant inherits key/values from old evaluated variants (#5507)
+- Increased bottom margin in ClinVar submission option on institute's sidebar (#5561)
 
 ## [4.102]
 ### Added
