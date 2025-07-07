@@ -897,6 +897,8 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
     for variant_obj in variant_res:
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
+        if variant_case_obj is None:
+            continue
         case_display_name = variant_case_obj.get("display_name")
         variant_obj["case_display_name"] = case_display_name
 
