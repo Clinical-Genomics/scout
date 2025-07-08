@@ -306,7 +306,7 @@
   .chevron-icon {
     transition: transform 0.3s ease;
   }
-  a[aria-expanded="true"] .chevron-icon {
+  button[aria-expanded="true"] .chevron-icon {
     transform: rotate(180deg);
   }
 </style>
@@ -319,7 +319,7 @@
           aria-expanded="false"
           aria-controls="collapseFilters">
     <strong class="me-2">Filters</strong>
-    <i class="fa fa-chevron-down chevron-icon"></i>
+    <i class="fa fa-chevron-right chevron-icon"></i>
   </button>
   <div class="text-muted">
     Filter returns {{ result_size }} / {{ total_variants }} variants.
