@@ -3,7 +3,7 @@
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general %}
-{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
+{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filters_form_header, filter_script_main %}
 
 
 {% block title %}
@@ -45,9 +45,7 @@
      enctype="multipart/form-data" onsubmit="return validateForm()">
      {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
-      <div class="card-header">
-        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
-      </div>
+      {{ filters_form_header(result_size, total_variants) }}
       <!--Expand filters form if filters were used in a previous POST request-->
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
           {{ str_filters(form, institute, case) }}
