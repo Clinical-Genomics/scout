@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
-{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
+{% from "variants/utils.html" import cancer_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
 {% block title %}
@@ -38,9 +38,7 @@
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
-      <div class="card-header">
-        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
-      </div>
+      {{ filters_form_header(result_size, total_variants) }}
       <!--Expand filters form if filters were used in a previous POST request or the previous POST request form was not validated-->
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters" >
         {{ cancer_filters(form, institute, case) }}

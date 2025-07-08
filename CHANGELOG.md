@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Display number of available/displayed variants on variantS pages without having to expand search filters (#5571)
+
 ## [4.103.1]
 ### Fixed
 - Rounding of SV VQ with undefined value (#5568)
