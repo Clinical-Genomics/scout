@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Display number of available/displayed variants on variantS pages without having to expand search filters (#5571)
+- Display number of available/displayed variants on variantS pages without having to expand search filters (#5571) with collapsing chevron (#5572)
 - Update to IGV.js v3.4.1.
 
 ## [4.103.1]
