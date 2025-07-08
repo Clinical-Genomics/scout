@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.103.1]
 ### Fixed
-- Rounding of SV VQ could fail with undefined value (#5568)
+- Rounding of SV VQ with undefined value (#5568)
 
 ## [4.103]
 ### Added
