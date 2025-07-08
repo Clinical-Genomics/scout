@@ -4,7 +4,7 @@
 
 {% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell %}
 {% from "variant/buttons.html" import splice_junctions_button %}
-{% from "variants/utils.html" import filter_script_main, pagination_footer, pagination_hidden_div, stash_filter_buttons, update_stash_filter_button_status%}
+{% from "variants/utils.html" import filter_script_main, filters_form_header, pagination_footer, pagination_hidden_div, stash_filter_buttons, update_stash_filter_button_status%}
 {% from "variant/components.html" import variant_scripts %}
 
 {% block title %}
@@ -43,9 +43,7 @@
 
       {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
-        <div class="card-header">
-          <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
-        </div>
+        {{ filters_form_header(result_size, total_variants) }}
         <!--Expand filters form if filters were used in a previous POST request-->
         <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
             {{ outlier_filters(form, institute, case) }}
@@ -271,10 +269,7 @@
       </div>
     </div>
     <div class="col-4 d-flex justify-content-center">
-      Filter returns {{result_size}} / {{ total_variants }} variants.
-    </div>
-    <div class="col-4 d-flex justify-content-end">
-      <div class="d-flex justify-content-end">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.</div>
+      Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %}
     </div>
   </div>
 </div>
