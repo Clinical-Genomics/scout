@@ -2400,7 +2400,7 @@ wheels = [
 
 [[package]]
 name = "scout-browser"
-version = "4.103.0"
+version = "4.103.1"
 source = { editable = "." }
 dependencies = [
     { name = "anytree", version = "2.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9.2'" },
