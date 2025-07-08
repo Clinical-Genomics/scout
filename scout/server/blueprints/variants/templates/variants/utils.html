@@ -135,12 +135,9 @@
         {% endif %}
       </div>
     </div>
-    <div class="col-4 d-flex justify-content-center">
-      Filter returns {{result_size}} / {{ total_variants }} variants.
-    </div>
     <div class="col-4 d-flex flex-column justify-content-end">
-      <div class="d-flex justify-content-end">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.</div>
-      <div class="d-flex justify-content-end">{{ toggle_dismiss_variants_block() }}</div>
+      <div class="d-flex justify-content-center">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %}</div>
+      <div class="d-flex justify-content-center">{{ toggle_dismiss_variants_block() }}</div>
     </div>
   </div>
 </div>
@@ -299,6 +296,17 @@
   <div class="input-group">
     {{ form.size_selector(class="form-select") }}
     {{ form.size(class="form-control") }}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro filters_form_header(result_size, total_variants) %}
+<div class="card-header d-flex justify-content-between align-items-center">
+  <strong>
+    <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a>
+  </strong>
+  <div class="text-muted">
+    Filter returns {{ result_size }} / {{ total_variants }} variants.
   </div>
 </div>
 {% endmacro %}

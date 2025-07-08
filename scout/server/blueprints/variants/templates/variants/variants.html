@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt, variant_rank_score %}
+{% from "variants/utils.html" import snv_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt, variant_rank_score %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell  %}
 
 {% block title %}
@@ -41,9 +41,7 @@
     <div class="container-float">
      {{ pagination_hidden_div(page) }}
      <div class="card panel-default" id="accordion">
-       <div class="card-header">
-         <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
-       </div>
+       {{ filters_form_header(result_size, total_variants) }}
        <!--Expand filters form if filters were used in a previous POST request-->
        <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
          {{ snv_filters(form, institute, case) }}
