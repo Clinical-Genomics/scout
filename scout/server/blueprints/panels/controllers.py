@@ -301,7 +301,7 @@ def downloaded_panel_name(panel_obj, format) -> str:
     Returns:
         a string describing the panel
     """
-    sanitized_panel_id = re.sub(r"[^a-zA-Z_\-]+", "", panel_obj["panel_name"])
+    sanitized_panel_id = re.sub(r"[^a-zA-Z0-9_\-]+", "_", panel_obj["panel_name"]).strip("_")
 
     return "_".join(
         [
