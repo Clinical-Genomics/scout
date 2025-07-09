@@ -287,13 +287,14 @@ def get_tracks(name_list: list, file_list: list) -> List[Dict]:
     for name, track in zip(name_list, file_list):
         if track == "missing":
             continue
-        track_config = {"name": name, "url": track, "min": 0.0, "max": 30.0}
+        track_config = {"name": name, "url": track, "min": 0.0}
         index = find_index(track)
         if index:
             track_config["indexURL"] = index
         file_format_ending = track.split(".")[-1]
         if file_format_ending in ["bam", "cram"]:
             track_config["format"] = file_format_ending
+            track_config["autoscaleGroup"] = "alignments"
         track_list.append(track_config)
     return track_list
 
