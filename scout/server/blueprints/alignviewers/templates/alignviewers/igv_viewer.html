@@ -97,7 +97,7 @@
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
                         color: "rgb(60, 37, 17)",
                         min: '{{ wtrack.min }}',
-                        max: '{{ wtrack.max }}',
+                        autoscaleGroup: '{{ wtrack.autoscaleGroup }}',
                         sourceType: 'file'
                       },
                       {% endfor %}
@@ -155,7 +155,7 @@
                         groupBy: "tag:HP",
                         indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL)  }}',
                         min: '{{ ptrack.min }}',
-                        max: '{{ ptrack.max }}',
+                        autoscaleGroup: '{{ ptrack.autoscaleGroup }}',
                         sourceType: 'file'
                       },
                       {% endfor %}
@@ -170,7 +170,7 @@
                         showCoverage: false,
                         indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL)  }}',
                         min: '{{ atrack.min }}',
-                        max: '{{ atrack.max }}',
+                        autoscaleGroup: '{{ atrack.autoscaleGroup }}',
                         sourceType: 'file'
                       },
                       {% endfor %}
