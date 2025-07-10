@@ -241,7 +241,7 @@
       {% endfor %}
     {%endif%}
   </div>"
-  title="">{% if variant.str_repid %} {{ variant.str_repid }} {% elif variant.str_trid %} {{ variant.hgnc_symbols | join(', ') }} {% else %}
+  title="">{% if variant.str_repid %} {{ variant.str_repid }} {% else %}
   {% for gene in variant.genes %} {{ gene.symbol }} {% endfor %} {% endif %}
   </a>
   {% for gene in variant.genes %}
