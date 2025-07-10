@@ -318,12 +318,15 @@ def register_filters(app):
 
         for gene in genes:
             transcripts = gene.get("transcripts") or []
+            canonical_tx = ""
+            gene_symbol = gene.get("hgnc_symbol") or "NA"
             for tx in transcripts:
                 if not tx.get("is_canonical"):
                     continue
-                canonical_tx = tx.get("transcript_id") or ""
+                if tx.get("transcript_id"):
+                    canonical_tx = tx["transcript_id"]
                 protein = tx.get("protein_sequence_name")
-            line_components = [f"{canonical_tx} ({gene.get('hgnc_symbol', '')})"]
+            line_components = [f"{canonical_tx} ({gene_symbol})"]
             hgvs = gene.get("hgvs_identifier")
             if hgvs:
                 line_components.append(hgvs)
