@@ -4,12 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.103.3]
 ### Changed
 - Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)
 - Always display STRs sorted by ascending gene symbol (#5580)
 ### Fixed
-- App filter, `format_variant_canonical_transcripts function`, crashing when a gene has no canonical transcript (#5582)
+- App filter `format_variant_canonical_transcripts` (used on `Search SNVs and SVs` page) crashing when a gene has no canonical transcript (#5582)
 - STRs not displaying a repeat locus (#5587)
 
 ## [4.103.2]
