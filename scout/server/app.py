@@ -319,7 +319,7 @@ def register_filters(app):
         for gene in genes:
             transcripts = gene.get("transcripts") or []
             canonical_tx = ""
-            gene_symbol = gene.get("hgnc_symbol") or "NA"
+            gene_symbol = gene.get("hgnc_symbol")
             protein = None
             for tx in transcripts:
                 if not tx.get("is_canonical"):
