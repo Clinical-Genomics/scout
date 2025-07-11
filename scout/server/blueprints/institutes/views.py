@@ -145,7 +145,9 @@ def gene_variants(institute_id):
 
     institute_choices = [
         (inst["_id"], f"{inst['display_name']} ({inst['_id']})")
-        for inst in user_institutes(store, current_user)
+        for inst in sorted(
+            user_institutes(store, current_user), key=lambda i: i["display_name"].lower()
+        )
     ]
     form = GeneVariantFiltersForm()
     form.institute.choices = institute_choices
