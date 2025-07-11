@@ -311,24 +311,28 @@ def register_filters(app):
 
     @app.template_filter()
     def format_variant_canonical_transcripts(variant: dict) -> List[str]:
-        """Formats canonical transcripts for all genes in a variant."""
-
         lines = set()
         genes = variant.get("genes") or []
 
         for gene in genes:
-            transcripts = gene.get("transcripts") or []
-            canonical_tx = ""
             gene_symbol = gene.get("hgnc_symbol", "")
+            hgvs = gene.get("hgvs_identifier")
+            transcripts = gene.get("transcripts") or []
+
+            canonical_tx = None
             protein = None
+
             for tx in transcripts:
                 if not tx.get("is_canonical"):
                     continue
-                if tx.get("transcript_id"):
-                    canonical_tx = tx["transcript_id"]
+                canonical_tx = tx.get("transcript_id") or ""
                 protein = tx.get("protein_sequence_name")
+                break
+
+            if not canonical_tx:
+                continue
+
             line_components = [f"{canonical_tx} ({gene_symbol})"]
-            hgvs = gene.get("hgvs_identifier")
             if hgvs:
                 line_components.append(hgvs)
             if protein:
