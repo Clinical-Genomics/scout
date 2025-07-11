@@ -321,21 +321,21 @@ def register_filters(app):
 
             canonical_tx = None
             primary_tx = None
-            random_tx = None
+            tx_id = None
 
             protein = None
 
             for tx in transcripts:
                 if not tx.get("is_canonical"):
-                    random_tx = tx.get("transcript_id")
+                    tx_id = tx.get("transcript_id")
                     if tx.get("is_primary"):
-                        primary_tx = tx.get("transcript_id")
+                        primary_tx = tx_id
                     continue
-                canonical_tx = tx.get("transcript_id")
+                canonical_tx = tx_id
                 protein = tx.get("protein_sequence_name")
                 break
 
-            line_components = [f"{canonical_tx or primary_tx or random_tx} ({gene_symbol})"]
+            line_components = [f"{canonical_tx or primary_tx or tx_id} ({gene_symbol})"]
             if hgvs:
                 line_components.append(hgvs)
             if protein:
