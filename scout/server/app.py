@@ -329,9 +329,6 @@ def register_filters(app):
                 protein = tx.get("protein_sequence_name")
                 break
 
-            if not canonical_tx:
-                continue
-
             line_components = [f"{canonical_tx} ({gene_symbol})"]
             if hgvs:
                 line_components.append(hgvs)
