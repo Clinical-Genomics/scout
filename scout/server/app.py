@@ -323,8 +323,10 @@ def register_filters(app):
             protein = None
 
             for tx in transcripts:
-                if not tx.get("is_canonical"):
+
+                if not canonical_tx or canonical_tx == "None":
                     continue
+
                 canonical_tx = tx.get("transcript_id") or ""
                 protein = tx.get("protein_sequence_name")
                 break
