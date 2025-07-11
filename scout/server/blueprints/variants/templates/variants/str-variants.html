@@ -241,8 +241,12 @@
       {% endfor %}
     {%endif%}
   </div>"
-  title="">{% if variant.str_repid %} {{ variant.str_repid }} {% else %}
-  {% for gene in variant.genes %} {{ gene.symbol or gene.hgnc_symbol }} {% endfor %} {% endif %}
+  title="">{% if variant.str_repid %} {{ variant.str_repid }}
+  {% elif variant.genes %}
+    {% for gene in variant.genes %} {{ gene.symbol or gene.hgnc_symbol }} {% endfor %}
+  {% else %}
+    {{ variant.str_trid }}
+  {% endif %}
   </a>
   {% for gene in variant.genes %}
       {% if variant.str_disease %}
