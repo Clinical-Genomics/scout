@@ -1023,7 +1023,7 @@ def download_str_variants(case_obj, variant_objs):
         variant_line.append(str(variant.get("variant_rank", "")))  # index
         variant_line.append(variant.get("str_repid", variant.get("str_trid", "")))  # Repeat locus
         variant_line.append(
-            variant.get("str_display_ru", variant.get("str_ru", ""))
+            variant.get("str_display_ru", variant.get("str_ru", variant.get("str_motifs", "")))
         )  # Reference repeat unit
         variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
