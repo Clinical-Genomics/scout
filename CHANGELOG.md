@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)
+
 ## [4.103.2]
 ### Changed
 - Display number of available/displayed variants on variantS pages without having to expand search filters (#5571) with collapsing chevron (#5572)
