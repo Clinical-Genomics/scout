@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - App filter, `format_variant_canonical_transcripts function`, crashing when a gene has no canonical transcript (#5582)
 ### Changed
 - Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)
+- Always display STRs sorted by ascending gene symbol (#5580)
 
 ## [4.103.2]
 ### Changed
