@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- App filter, `format_variant_canonical_transcripts function`, crashing when a gene has no canonical transcript (#5581)
+- App filter, `format_variant_canonical_transcripts function`, crashing when a gene has no canonical transcript (#5582 )
 
 ## [4.103.2]
 ### Changed
