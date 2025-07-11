@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Always display STRs by ascending gene symbol (#5580)
+- Always display STRs sorted by ascending gene symbol (#5580)
 
 ## [4.103.2]
 ### Changed
