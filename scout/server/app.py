@@ -326,8 +326,8 @@ def register_filters(app):
             protein = None
 
             for tx in transcripts:
+                tx_id = tx.get("transcript_id")
                 if not tx.get("is_canonical"):
-                    tx_id = tx.get("transcript_id")
                     if tx.get("is_primary"):
                         primary_tx = tx_id
                     continue
