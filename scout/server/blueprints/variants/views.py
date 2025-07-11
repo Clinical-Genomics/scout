@@ -230,6 +230,7 @@ def str_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=query, build=genome_build
     ).sort(
         [
+            ("genes.hgnc_symbol", pymongo.ASCENDING),
             ("str_repid", pymongo.ASCENDING),
             ("str_trid", pymongo.ASCENDING),
             ("chromosome", pymongo.ASCENDING),
