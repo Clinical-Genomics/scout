@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5582)
+- Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)
 
 ## [4.103.2]
 ### Changed
