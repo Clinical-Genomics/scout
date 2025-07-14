@@ -76,6 +76,7 @@ dependencies = [
 	# Required by scripts
 	"tabulate",
 	"flask-simpleldap>=2.0.0",
+	"python-ldap>=3.4.4",
 ]
 
 [project.optional-dependencies]
