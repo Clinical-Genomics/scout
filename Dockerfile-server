@@ -5,10 +5,19 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS python-builder
 
 WORKDIR /app
 
-# No wheel for indirect pycairo dependency so need build env for it to install
+# Install system dependencies needed
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get -y install --no-install-recommends libcairo2-dev
+    apt-get -y install --no-install-recommends \
+        libcairo2-dev \
+        libldap2-dev \
+        libsasl2-dev \
+        libssl-dev \
+        build-essential \
+        python3-dev \
+        gcc \
+        g++ \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy the project files needed to configure dependencies build into the image
 COPY --chmod=644 pyproject.toml uv.lock README.md ./
