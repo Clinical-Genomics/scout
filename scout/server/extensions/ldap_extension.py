@@ -10,13 +10,18 @@ LOG = logging.getLogger(__name__)
 
 class LdapManager:
     """
-    A minimal LDAP authentication handler for Flask using ldap3.
+    LDAP authentication handler using ldap3.
 
-    This class allows searching for a user's DN using a login attribute (e.g., mail),
-    then attempts to bind with the user's DN and password to verify credentials.
+    Supports user search by login attribute (e.g., mail),
+    followed by secure bind to validate user password.
     """
 
     def __init__(self, app: Optional[Flask] = None) -> None:
+        """
+        Optionally initialize with a Flask app.
+
+        :param app: Flask app instance (optional)
+        """
         self.server: Optional[Server] = None
         self.base_dn: Optional[str] = None
         self.login_attr: str = "uid"
@@ -27,14 +32,24 @@ class LdapManager:
         self.bind_user_dn: Optional[str] = None
         self.bind_user_pw: Optional[str] = None
 
-        if app is not None:
+        if app:
             self.init_app(app)
 
     def init_app(self, app: Flask) -> None:
-        """Initialize the LDAP client using Flask app config."""
+        """
+        Initialize LDAP settings from Flask app config.
+
+        Required config keys:
+        - LDAP_BASE_DN
+        - LDAP_HOST
+        - LDAP_PORT (optional)
+        - LDAP_USER_LOGIN_ATTR (optional, default 'uid')
+        - LDAP_USE_SSL / LDAP_USE_TLS (optional)
+        - LDAP_SERVICE_BIND_DN / LDAP_SERVICE_BIND_PASSWORD (for search auth)
+        """
         self.base_dn = app.config.get("LDAP_BASE_DN")
         if not self.base_dn:
-            raise ValueError("LDAP_BASE_DN must be set")
+            raise ValueError("Missing required config: LDAP_BASE_DN")
 
         self.login_attr = app.config.get("LDAP_USER_LOGIN_ATTR", "uid")
         self.use_ssl = app.config.get("LDAP_USE_SSL", False)
@@ -45,29 +60,33 @@ class LdapManager:
         self.bind_user_pw = app.config.get("LDAP_SERVICE_BIND_PASSWORD")
 
         host = app.config.get("LDAP_HOST", "localhost")
-
-        tls_config: Optional[Tls] = None
-        if self.use_ssl or self.use_tls:
-            tls_config = Tls(validate=ssl.CERT_NONE)
+        tls_config: Optional[Tls] = (
+            Tls(validate=ssl.CERT_NONE) if self.use_ssl or self.use_tls else None
+        )
 
         self.server = Server(
-            host,
+            host=host,
             port=self.port,
             use_ssl=self.use_ssl,
-            get_info=ALL,
             tls=tls_config,
+            get_info=ALL,
         )
 
     def authenticate(self, username: str, password: str) -> bool:
         """
-        Authenticate a user by searching for their DN and binding with their password.
-        Returns True if authentication succeeds, False otherwise.
+        Authenticate user by:
+        1. Searching for their DN using login attribute
+        2. Binding as that DN with the provided password
+
+        :param username: e.g. 'user@example.com'
+        :param password: the user's plaintext password
+        :return: True if login succeeds, False if invalid
         """
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
 
-        # 1. Search for the user
         try:
+            # Step 1: Search for user's DN
             search_conn = Connection(
                 self.server,
                 user=self.bind_user_dn,
@@ -81,12 +100,11 @@ class LdapManager:
                 search_conn.start_tls()
 
             search_filter = f"({self.login_attr}={username})"
-
             search_conn.search(
                 search_base=self.base_dn,
                 search_filter=search_filter,
                 search_scope=SUBTREE,
-                attributes=[],
+                attributes=[],  # no need to request DN directly
             )
 
             if not search_conn.entries:
@@ -94,13 +112,8 @@ class LdapManager:
 
             user_dn = search_conn.entries[0].entry_dn
             search_conn.unbind()
-        except Exception as e:
-            LOG.warning(e)
-            return False
 
-        # 2. Try binding as user
-        try:
-            print(f"[LDAP] Attempting bind with user DN: {user_dn}")
+            # Step 2: Attempt to bind as user
             user_conn = Connection(
                 self.server,
                 user=user_dn,
@@ -115,6 +128,7 @@ class LdapManager:
 
             user_conn.unbind()
             return True
+
         except Exception as e:
             LOG.warning(e)
             return False

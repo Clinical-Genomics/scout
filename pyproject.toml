@@ -75,7 +75,6 @@ dependencies = [
 	"anytree",
 	# Required by scripts
 	"tabulate",
-	"flask-simpleldap>=2.0.0",
 ]
 
 [project.optional-dependencies]

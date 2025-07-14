@@ -865,19 +865,6 @@ wheels = [
 ]
 
 [[package]]
-name = "flask-simpleldap"
-version = "2.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "flask" },
-    { name = "python-ldap" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/85/a2/ec5fe979d2272b6e05dc9015df341f7a76324e3d503ea9c6a0992eb41772/Flask-SimpleLDAP-2.0.0.tar.gz", hash = "sha256:d829f8163bae6d61d841707fa8a88bdcaae4862332c1acc13864b24ca82eaf25", size = 8825 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/9b/0d4049bd954aad961b148979f2c3fd25f1ca2d6065b30f25d7dcfc746092/Flask_SimpleLDAP-2.0.0-py3-none-any.whl", hash = "sha256:8d4ca3173cc83ed1a7b9ca6211a63c68c7e65c97e4456ca2e7916ca87a734cb3", size = 8595 },
-]
-
-[[package]]
 name = "flask-sqlalchemy"
 version = "3.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1874,27 +1861,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyasn1"
-version = "0.6.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ba/e9/01f1a64245b89f039897cb0130016d79f77d52669aae6ee7b159a6c4c018/pyasn1-0.6.1.tar.gz", hash = "sha256:6f580d2bdd84365380830acf45550f2511469f673cb4a5ae3857a3170128b034", size = 145322 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c8/f1/d6a797abb14f6283c0ddff96bbdd46937f64122b8c925cab503dd37f8214/pyasn1-0.6.1-py3-none-any.whl", hash = "sha256:0d632f46f2ba09143da3a8afe9e33fb6f92fa2320ab7e886e2d0f7672af84629", size = 83135 },
-]
-
-[[package]]
-name = "pyasn1-modules"
-version = "0.4.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyasn1" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/e6/78ebbb10a8c8e4b61a59249394a4a594c1a7af95593dc933a349c8d00964/pyasn1_modules-0.4.2.tar.gz", hash = "sha256:677091de870a80aae844b1ca6134f54652fa2c8c5a52aa396440ac3106e941e6", size = 307892 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/8d/d529b5d697919ba8c11ad626e835d4039be708a35b0d22de83a269a6682c/pyasn1_modules-0.4.2-py3-none-any.whl", hash = "sha256:29253a9207ce32b64c3ac6600edc75368f98473906e8fd1043bd6b5b1de2c14a", size = 181259 },
-]
-
-[[package]]
 name = "pycparser"
 version = "2.22"
 source = { registry = "https://pypi.org/simple" }
@@ -2244,16 +2210,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-ldap"
-version = "3.4.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyasn1" },
-    { name = "pyasn1-modules" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/fd/8b/1eeb4025dc1d3ac2f16678f38dec9ebdde6271c74955b72db5ce7a4dbfbd/python-ldap-3.4.4.tar.gz", hash = "sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828", size = 377889 }
-
-[[package]]
 name = "pytz"
 version = "2025.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2431,7 +2387,6 @@ dependencies = [
     { name = "flask-cors" },
     { name = "flask-login" },
     { name = "flask-mail" },
-    { name = "flask-simpleldap" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree" },
@@ -2502,7 +2457,6 @@ requires-dist = [
     { name = "flask-cors" },
     { name = "flask-login" },
     { name = "flask-mail" },
-    { name = "flask-simpleldap", specifier = ">=2.0.0" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree", specifier = "==3.0.2" },
