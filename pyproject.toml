@@ -39,7 +39,7 @@ dependencies = [
 	"Flask>=2.0",
 	"Flask-Bootstrap",
 	"Flask-CORS",
-"path.py", # this is deprecated
+	"path.py", # this is deprecated
 	"markdown",
 	"WTForms",
 	"Flask-WTF",
@@ -64,7 +64,6 @@ dependencies = [
 	# webapp login
 	"authlib",
 	"flask_login",
-	"flask-ldapconn",
 	# Parsing
 	"cyvcf2",
 	"configobj",
@@ -76,6 +75,7 @@ dependencies = [
 	"anytree",
 	# Required by scripts
 	"tabulate",
+	"flask-simpleldap>=2.0.0",
 ]
 
 [project.optional-dependencies]

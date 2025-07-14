@@ -1,17 +1,20 @@
-import ssl
 from typing import Optional
-
 from flask import Flask
-from ldap3 import ALL, SIMPLE, SYNC, Connection, Server, Tls
+from ldap3 import Server, Connection, SIMPLE, SYNC, Tls, ALL, SUBTREE
+import ssl
 
 
 class LdapManager:
     def __init__(self, app: Optional[Flask] = None) -> None:
         self.server: Optional[Server] = None
         self.base_dn: Optional[str] = None
-        self.user_dn_template: Optional[str] = None
+        self.login_attr: str = "uid"
         self.timeout: int = 5
         self.use_ssl: bool = False
+        self.use_tls: bool = False
+        self.port: int = 389
+        self.bind_user_dn: Optional[str] = None
+        self.bind_user_pw: Optional[str] = None
 
         if app is not None:
             self.init_app(app)
@@ -22,67 +25,79 @@ class LdapManager:
         if not self.base_dn:
             raise ValueError("LDAP_BASE_DN must be set")
 
-        host: str = app.config.get("LDAP_HOST", "localhost")
-        port: int = app.config.get("LDAP_PORT", 636 if app.config.get("LDAP_USE_SSL") else 389)
+        self.login_attr = app.config.get("LDAP_USER_LOGIN_ATTR", "uid")
         self.use_ssl = app.config.get("LDAP_USE_SSL", False)
+        self.use_tls = app.config.get("LDAP_USE_TLS", False)
         self.timeout = app.config.get("LDAP_TIMEOUT", 5)
-        self.user_dn_template = app.config.get("LDAP_BIND_USER_DN", "uid=%s")
+        self.port = app.config.get("LDAP_PORT", 636 if self.use_ssl else 389)
+        self.bind_user_dn = app.config.get("LDAP_SERVICE_BIND_DN")
+        self.bind_user_pw = app.config.get("LDAP_SERVICE_BIND_PASSWORD")
+
+        host = app.config.get("LDAP_HOST", "localhost")
 
         tls_config: Optional[Tls] = None
-        if self.use_ssl and any(
-            app.config.get(k)
-            for k in ("LDAP_TLS_CERTFILE", "LDAP_TLS_KEYFILE", "LDAP_TLS_CACERTFILE")
-        ):
-            tls_config = Tls(
-                local_certificate_file=app.config.get("LDAP_TLS_CERTFILE"),
-                local_private_key_file=app.config.get("LDAP_TLS_KEYFILE"),
-                ca_certs_file=app.config.get("LDAP_TLS_CACERTFILE"),
-                validate=(
-                    ssl.CERT_REQUIRED
-                    if app.config.get("LDAP_TLS_REQUIRE_CERT", True)
-                    else ssl.CERT_NONE
-                ),
-            )
+        if self.use_ssl or self.use_tls:
+            tls_config = Tls(validate=ssl.CERT_NONE)
 
         self.server = Server(
             host,
-            port=port,
+            port=self.port,
             use_ssl=self.use_ssl,
             get_info=ALL,
             tls=tls_config,
         )
 
     def authenticate(self, username: str, password: str) -> bool:
-        """
-        Attempt to bind with user credentials.
-        Return True if credentials are valid, else False.
-        """
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
 
-        user_dn: str = self._build_user_dn(username)
-
+        # 1. Search for the user
         try:
-            conn = Connection(
+            search_conn = Connection(
+                self.server,
+                user=self.bind_user_dn,
+                password=self.bind_user_pw,
+                auto_bind=True,
+                client_strategy=SYNC,
+                receive_timeout=self.timeout,
+            )
+
+            if self.use_tls:
+                search_conn.start_tls()
+
+            search_filter = f"({self.login_attr}={username})"
+
+            search_conn.search(
+                search_base=self.base_dn,
+                search_filter=search_filter,
+                search_scope=SUBTREE,
+                attributes=[],
+            )
+
+            if not search_conn.entries:
+                return False
+
+            user_dn = search_conn.entries[0].entry_dn
+            search_conn.unbind()
+        except Exception as e:
+            return False
+
+        # 2. Try binding as user
+        try:
+            print(f"[LDAP] Attempting bind with user DN: {user_dn}")
+            user_conn = Connection(
                 self.server,
                 user=user_dn,
                 password=password,
-                authentication=SIMPLE,
-                client_strategy=SYNC,
-                receive_timeout=self.timeout,
                 auto_bind=True,
+                authentication=SIMPLE,
+                receive_timeout=self.timeout,
             )
-            conn.unbind()
+
+            if self.use_tls:
+                user_conn.start_tls()
+
+            user_conn.unbind()
             return True
-        except Exception:
+        except Exception as e:
             return False
-
-    def _build_user_dn(self, username: str) -> str:
-        """
-        Build full distinguished name (DN) for the user.
-        Example: 'uid=username,dc=example,dc=org'
-        """
-        if not self.user_dn_template or not self.base_dn:
-            raise RuntimeError("User DN template or base DN not configured")
-
-        return f"{self.user_dn_template % username},{self.base_dn}"
