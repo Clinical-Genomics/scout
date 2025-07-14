@@ -75,6 +75,7 @@ dependencies = [
 	"anytree",
 	# Required by scripts
 	"tabulate",
+	"ldap3>=2.9.1",
 ]
 
 [project.optional-dependencies]
