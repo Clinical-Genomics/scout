@@ -1,10 +1,21 @@
-from typing import Optional
-from flask import Flask
-from ldap3 import Server, Connection, SIMPLE, SYNC, Tls, ALL, SUBTREE
+import logging
 import ssl
+from typing import Optional
+
+from flask import Flask
+from ldap3 import ALL, SIMPLE, SUBTREE, SYNC, Connection, Server, Tls
+
+LOG = logging.getLogger(__name__)
 
 
 class LdapManager:
+    """
+    A minimal LDAP authentication handler for Flask using ldap3.
+
+    This class allows searching for a user's DN using a login attribute (e.g., mail),
+    then attempts to bind with the user's DN and password to verify credentials.
+    """
+
     def __init__(self, app: Optional[Flask] = None) -> None:
         self.server: Optional[Server] = None
         self.base_dn: Optional[str] = None
@@ -48,6 +59,10 @@ class LdapManager:
         )
 
     def authenticate(self, username: str, password: str) -> bool:
+        """
+        Authenticate a user by searching for their DN and binding with their password.
+        Returns True if authentication succeeds, False otherwise.
+        """
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
 
@@ -80,6 +95,7 @@ class LdapManager:
             user_dn = search_conn.entries[0].entry_dn
             search_conn.unbind()
         except Exception as e:
+            LOG.warning(e)
             return False
 
         # 2. Try binding as user
@@ -100,4 +116,5 @@ class LdapManager:
             user_conn.unbind()
             return True
         except Exception as e:
+            LOG.warning(e)
             return False
