@@ -1,72 +1,88 @@
-import logging
 import ssl
+from typing import Optional
 
-from flask_ldapconn import LDAPConn
-from ldap3 import ALL, SYNC, Server, Tls
-
-LOG = logging.getLogger(__name__)
+from flask import Flask
+from ldap3 import ALL, SIMPLE, SYNC, Connection, Server, Tls
 
 
-class LdapManager(LDAPConn):
-    """Interface to LDAP login"""
+class LdapManager:
+    def __init__(self, app: Optional[Flask] = None) -> None:
+        self.server: Optional[Server] = None
+        self.base_dn: Optional[str] = None
+        self.user_dn_template: Optional[str] = None
+        self.timeout: int = 5
+        self.use_ssl: bool = False
 
-    def init_app(self, app):
-        ssl_defaults = ssl.get_default_verify_paths()
+        if app is not None:
+            self.init_app(app)
 
-        # Default config
-        app.config.setdefault("LDAP_SERVER", "localhost")
-        app.config.setdefault("LDAP_PORT", 389)
-        app.config.setdefault("LDAP_BINDDN", None)
-        app.config.setdefault("LDAP_SECRET", None)
-        app.config.setdefault("LDAP_CONNECT_TIMEOUT", 10)
-        app.config.setdefault("LDAP_READ_ONLY", False)
-        app.config.setdefault("LDAP_VALID_NAMES", None)
-        app.config.setdefault("LDAP_PRIVATE_KEY_PASSWORD", None)
-        app.config.setdefault("LDAP_RAISE_EXCEPTIONS", False)
+    def init_app(self, app: Flask) -> None:
+        """Initialize the LDAP client using Flask app config."""
+        self.base_dn = app.config.get("LDAP_BASE_DN")
+        if not self.base_dn:
+            raise ValueError("LDAP_BASE_DN must be set")
 
-        app.config.setdefault("LDAP_CONNECTION_STRATEGY", SYNC)
+        host: str = app.config.get("LDAP_HOST", "localhost")
+        port: int = app.config.get("LDAP_PORT", 636 if app.config.get("LDAP_USE_SSL") else 389)
+        self.use_ssl = app.config.get("LDAP_USE_SSL", False)
+        self.timeout = app.config.get("LDAP_TIMEOUT", 5)
+        self.user_dn_template = app.config.get("LDAP_BIND_USER_DN", "uid=%s")
 
-        app.config.setdefault("LDAP_USE_SSL", False)
-        app.config.setdefault("LDAP_USE_TLS", True)
-        app.config.setdefault("LDAP_TLS_VERSION", ssl.PROTOCOL_TLSv1_2)
-        app.config.setdefault("LDAP_REQUIRE_CERT", ssl.CERT_REQUIRED)
+        tls_config: Optional[Tls] = None
+        if self.use_ssl and any(
+            app.config.get(k)
+            for k in ("LDAP_TLS_CERTFILE", "LDAP_TLS_KEYFILE", "LDAP_TLS_CACERTFILE")
+        ):
+            tls_config = Tls(
+                local_certificate_file=app.config.get("LDAP_TLS_CERTFILE"),
+                local_private_key_file=app.config.get("LDAP_TLS_KEYFILE"),
+                ca_certs_file=app.config.get("LDAP_TLS_CACERTFILE"),
+                validate=(
+                    ssl.CERT_REQUIRED
+                    if app.config.get("LDAP_TLS_REQUIRE_CERT", True)
+                    else ssl.CERT_NONE
+                ),
+            )
 
-        app.config.setdefault("LDAP_CLIENT_PRIVATE_KEY", None)
-        app.config.setdefault("LDAP_CLIENT_CERT", None)
-
-        app.config.setdefault("LDAP_CA_CERTS_FILE", ssl_defaults.cafile)
-        app.config.setdefault("LDAP_CA_CERTS_PATH", ssl_defaults.capath)
-        app.config.setdefault("LDAP_CA_CERTS_DATA", None)
-
-        app.config.setdefault("FORCE_ATTRIBUTE_VALUE_AS_LIST", False)
-
-        self.tls = Tls(
-            local_private_key_file=app.config["LDAP_CLIENT_PRIVATE_KEY"],
-            local_certificate_file=app.config["LDAP_CLIENT_CERT"],
-            validate=(
-                app.config["LDAP_REQUIRE_CERT"]
-                if app.config.get("LDAP_CLIENT_CERT")
-                else ssl.CERT_NONE
-            ),
-            version=app.config["LDAP_TLS_VERSION"],
-            ca_certs_file=app.config["LDAP_CA_CERTS_FILE"],
-            valid_names=app.config["LDAP_VALID_NAMES"],
-            ca_certs_path=app.config["LDAP_CA_CERTS_PATH"],
-            ca_certs_data=app.config["LDAP_CA_CERTS_DATA"],
-            local_private_key_password=app.config["LDAP_PRIVATE_KEY_PASSWORD"],
-        )
-
-        self.ldap_server = Server(
-            host=app.config.get("LDAP_HOST") or app.config.get("LDAP_SERVER"),
-            port=app.config["LDAP_PORT"],
-            use_ssl=app.config["LDAP_USE_SSL"],
-            connect_timeout=app.config["LDAP_CONNECT_TIMEOUT"],
-            tls=self.tls,
+        self.server = Server(
+            host,
+            port=port,
+            use_ssl=self.use_ssl,
             get_info=ALL,
+            tls=tls_config,
         )
 
-        # Store ldap_conn object to extensions
-        app.extensions["ldap_conn"] = self
+    def authenticate(self, username: str, password: str) -> bool:
+        """
+        Attempt to bind with user credentials.
+        Return True if credentials are valid, else False.
+        """
+        if not self.server:
+            raise RuntimeError("LDAP server not initialized")
 
-        # Teardown appcontext
-        app.teardown_appcontext(self.teardown)
+        user_dn: str = self._build_user_dn(username)
+
+        try:
+            conn = Connection(
+                self.server,
+                user=user_dn,
+                password=password,
+                authentication=SIMPLE,
+                client_strategy=SYNC,
+                receive_timeout=self.timeout,
+                auto_bind=True,
+            )
+            conn.unbind()
+            return True
+        except Exception:
+            return False
+
+    def _build_user_dn(self, username: str) -> str:
+        """
+        Build full distinguished name (DN) for the user.
+        Example: 'uid=username,dc=example,dc=org'
+        """
+        if not self.user_dn_template or not self.base_dn:
+            raise RuntimeError("User DN template or base DN not configured")
+
+        return f"{self.user_dn_template % username},{self.base_dn}"
