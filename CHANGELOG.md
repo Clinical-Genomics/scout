@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Replaced the archived `flask-ldapconn` library with `flask-simpleldap`, which is actively maintained (#5589)
+- Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
 
 ## [4.103.3]
 ### Changed

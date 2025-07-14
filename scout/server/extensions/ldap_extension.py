@@ -19,8 +19,6 @@ class LdapManager:
     def __init__(self, app: Optional[Flask] = None) -> None:
         """
         Optionally initialize with a Flask app.
-
-        :param app: Flask app instance (optional)
         """
         self.server: Optional[Server] = None
         self.base_dn: Optional[str] = None
@@ -78,9 +76,7 @@ class LdapManager:
         1. Searching for their DN using login attribute
         2. Binding as that DN with the provided password
 
-        :param username: e.g. 'user@example.com'
-        :param password: the user's plaintext password
-        :return: True if login succeeds, False if invalid
+        Returns True if login succeeds, False if invalid
         """
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
