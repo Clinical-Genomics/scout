@@ -748,7 +748,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749 }
 wheels = [
@@ -836,19 +836,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/18/0b/19a29b9354b3c00102a475791093358a30afba43e8b676294e7d01964592/flask_debugtoolbar-0.16.0.tar.gz", hash = "sha256:3b925d4dcc09205471e5021019dfeb0eb6dabd6c184de16a3496dfb1f342afe1", size = 335258 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/17/f2a647152315561787d2dfc7dcaf452ec83930a31de9d083a7094da404de/flask_debugtoolbar-0.16.0-py3-none-any.whl", hash = "sha256:2857a58ef20b88cf022a88bb7f0c6f6be1fb91a2e8b2d9fcc9079357a692083e", size = 413047 },
-]
-
-[[package]]
-name = "flask-ldapconn"
-version = "0.10.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "flask" },
-    { name = "ldap3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/94/64d6145e297d9b5f9792ada260e53690cfd5a8167af4b226962f970b2ae8/flask_ldapconn-0.10.2.tar.gz", hash = "sha256:1df0cdeaeb9b7b996709de1283d35d60711ebb1dd5a2c935e1186d31b601d60a", size = 10576 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/7d/a4ca922fb33aa88204a51e9bbfbeddd82b3018f6b43aef724551704b020c/Flask_LDAPConn-0.10.2-py3-none-any.whl", hash = "sha256:6fa07788835fbb6ca8f9372cd5b8912155c7f33324ee1fe7924eb76e2ea56a14", size = 10393 },
 ]
 
 [[package]]
@@ -2401,7 +2388,7 @@ wheels = [
 
 [[package]]
 name = "scout-browser"
-version = "4.103.2"
+version = "4.103.3"
 source = { editable = "." }
 dependencies = [
     { name = "anytree", version = "2.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9.2'" },
@@ -2419,12 +2406,12 @@ dependencies = [
     { name = "flask-babel" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
     { name = "flask-login" },
     { name = "flask-mail" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree" },
+    { name = "ldap3" },
     { name = "livereload" },
     { name = "markdown" },
     { name = "path-py" },
@@ -2490,12 +2477,12 @@ requires-dist = [
     { name = "flask-babel", specifier = ">=3" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
     { name = "flask-login" },
     { name = "flask-mail" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree", specifier = "==3.0.2" },
+    { name = "ldap3", specifier = ">=2.9.1" },
     { name = "livereload", specifier = ">=2.7" },
     { name = "markdown" },
     { name = "path-py" },
