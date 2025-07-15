@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
+
 ## [4.103.3]
 ### Changed
 - Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)

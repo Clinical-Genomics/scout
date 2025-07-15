@@ -223,41 +223,35 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
     SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
     """
 
+    def safe_val(val):
+        """Convert -1 to None, leave other values unchanged."""
+        return None if val == -1 else val
+
+    info = variant.INFO
+
+    # RD observations (SNVs or SVs)
     local_obs_old = (
-        variant.INFO.get("Obs")
-        or variant.INFO.get("clinical_genomics_loqusObs")
-        or variant.INFO.get("clin_obs")
+        info.get("Obs") or info.get("clinical_genomics_loqusObs") or info.get("clin_obs")
     )
-    if local_obs_old:
-        parsed_variant["local_obs_old"] = int(local_obs_old)
+    parsed_variant["local_obs_old"] = safe_val(call_safe(int, local_obs_old))
+    parsed_variant["local_obs_hom_old"] = safe_val(call_safe(int, info.get("Hom")))
+    parsed_variant["local_obs_old_freq"] = safe_val(
+        call_safe(float, info.get("clinical_genomics_loqusFrq") or info.get("Frq"))
+    )
 
-    # SNVs only
-    parsed_variant["local_obs_hom_old"] = call_safe(int, variant.INFO.get("Hom"))
-
-    # SVs only
-    local_frq_old = variant.INFO.get("clinical_genomics_loqusFrq") or variant.INFO.get("Frq")
-    parsed_variant["local_obs_old_freq"] = call_safe(float, local_frq_old)
+    # Optional local archive metadata
     set_local_archive_info(parsed_variant, local_archive_info)
 
-    parsed_variant["local_obs_cancer_germline_old"] = call_safe(
-        int, variant.INFO.get("Cancer_Germline_Obs")
-    )
-    parsed_variant["local_obs_cancer_germline_hom_old"] = call_safe(
-        int, variant.INFO.get("Cancer_Germline_Hom")
-    )
-    parsed_variant["local_obs_cancer_germline_old_freq"] = call_safe(
-        float, variant.INFO.get("Cancer_Germline_Frq")
-    )
-
-    parsed_variant["local_obs_cancer_somatic_old"] = call_safe(
-        int, variant.INFO.get("Cancer_Somatic_Obs")
-    )
-    parsed_variant["local_obs_cancer_somatic_hom_old"] = call_safe(
-        int, variant.INFO.get("Cancer_Somatic_Hom")
-    )
-    parsed_variant["local_obs_cancer_somatic_old_freq"] = call_safe(
-        float, variant.INFO.get("Cancer_Somatic_Frq")
-    )
+    # Cancer observations (germline and somatic)
+    for prefix in ["Cancer_Germline", "Cancer_Somatic"]:
+        key = prefix.lower()
+        parsed_variant[f"local_obs_{key}_old"] = safe_val(call_safe(int, info.get(f"{prefix}_Obs")))
+        parsed_variant[f"local_obs_{key}_hom_old"] = safe_val(
+            call_safe(int, info.get(f"{prefix}_Hom"))
+        )
+        parsed_variant[f"local_obs_{key}_old_freq"] = safe_val(
+            call_safe(float, info.get(f"{prefix}_Frq"))
+        )
 
 
 def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):
