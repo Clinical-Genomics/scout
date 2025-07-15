@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
+### Fixed
+- Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 
 ## [4.103.3]
 ### Changed
