@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Avoid deprecated `utcnow()` deprecated code, also by install Flask-Login from main branch (#5592)
+- Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 
