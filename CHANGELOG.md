@@ -6,9 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
+- Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
-- Chanjo2 requests are sent with OIDC access token, if available - tested with Keycloak authentication (#5532)
+- Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 

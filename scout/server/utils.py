@@ -247,15 +247,15 @@ def get_token_endpoint(discovery_url: str) -> Optional[str]:
     return resp.json()["token_endpoint"]
 
 
-def refresh_access_token_if_needed() -> None:
+def refresh_token() -> None:
     """
-    Check if access token is valid, and refresh if expired.
+    Check if id token is valid, and refresh if expired.
     """
     token: Optional[dict] = session.get("token_response")
     if token is None or not is_token_expired(token):
         return
 
-    print("Access token expired, refreshing...")
+    print("Token expired, refreshing...")
 
     for provider in ["GOOGLE", "KEYCLOAK"]:
         if provider not in current_app.config:
@@ -272,7 +272,7 @@ def refresh_access_token_if_needed() -> None:
     except UnboundLocalError as ule:
         LOG.warning(f"No OIDC provider found: {ule}")
     except OAuthError as oae:
-        LOG.warning(f"Failed to refresh access token: {oae}")
+        LOG.warning(f"Failed to refresh id token: {oae}")
 
 
 def get_case_genome_build(case_obj: dict) -> str:

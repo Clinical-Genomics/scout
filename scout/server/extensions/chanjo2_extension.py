@@ -42,10 +42,8 @@ class Chanjo2Client:
         )
         coverage_stats = {}
         case_mt_chrom = get_case_mito_chromosome(case_obj)
-        access_token = (
-            session["token_response"]["access_token"] if session.get("token_response") else ""
-        )
-        request_headers = {"Authorization": f"Bearer {access_token}"}
+        id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
+        request_headers = {"Authorization": f"Bearer {id_token}"}
         for ind in case_obj.get("individuals", []):
 
             if not ind.get("d4_file"):
@@ -103,10 +101,8 @@ class Chanjo2Client:
         }
         analysis_types = []
 
-        access_token = (
-            session["token_response"]["access_token"] if session.get("token_response") else ""
-        )
-        request_headers = {"Authorization": f"Bearer {access_token}"}
+        id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
+        request_headers = {"Authorization": f"Bearer {id_token}"}
 
         for ind in individuals:
             if not ind.get("d4_file"):
