@@ -252,25 +252,21 @@ def refresh_token() -> None:
     Check if id token is valid, and refresh if expired.
     """
     token: Optional[dict] = session.get("token_response")
+    provider = session.get("provider")
     if token is None or not is_token_expired(token):
         return
 
     print("Token expired, refreshing...")
 
-    for provider in ["GOOGLE", "KEYCLOAK"]:
-        if provider not in current_app.config:
-            continue
-        client_id = current_app.config[provider]["client_id"]
-        client_secret = current_app.config[provider]["client_secret"]
-        discovery_url = current_app.config[provider]["discovery_url"]
+    client_id = current_app.config[provider]["client_id"]
+    client_secret = current_app.config[provider]["client_secret"]
+    discovery_url = current_app.config[provider]["discovery_url"]
 
     try:
         client = OAuth2Session(client_id, client_secret, token=token)
         new_token = client.refresh_token(get_token_endpoint(discovery_url))
         session["token_response"] = new_token
 
-    except UnboundLocalError as ule:
-        LOG.warning(f"No OIDC provider found: {ule}")
     except OAuthError as oae:
         LOG.warning(f"Failed to refresh id token: {oae}")
 
