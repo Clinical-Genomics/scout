@@ -9,9 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 
 ## [4.103.3]
+### Added
+- Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Sort institute multiselect alphabetically by display name on 'Search SNVs & SVs' page (#5584)
 - Always display STRs sorted by ascending gene symbol (#5580)
+- Chanjo2 requests are sent with OIDC access token, if available - tested with Keycloak authentication (#5532)
 ### Fixed
 - App filter `format_variant_canonical_transcripts` (used on `Search SNVs and SVs` page) crashing when a gene has no canonical transcript (#5582)
 - STRs not displaying a repeat locus (#5587)
@@ -39,14 +42,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and show normalized rank scores (`RankScoreNormalized`) on SNVs (RD & cancer) and SVs (RD) pages (#5554)
 - Add MuTect2 SNV caller (used in nf-core/raredisease MT calling) (#5558)
 - Option to remove any role assigned to a user, not only the admin role (#5523)
-- Code for refreshing access token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Improved test that checks code collecting other categories of variants overlapping a variant (#5521)
 - Enable insertion/deletion size display on IGV.js alignment tracks (#5547)
 - LRS STR variant read support (TRGT SD) stored and displayed on variant as ref/alt depth (#5552)
 - On `Search SNVs and SVs` page, display multiple HGVS descriptors when variant has more than one gene (#5513)
 - Deprecated the `--remove-admin` flag in the update user command line (#5523)
-- Chanjo2 requests are sent with OIDC access token, if available - tested with Keycloak authentication (#5532)
 ### Fixed
 - Instance badge class and config option documentation (#5500)
 - Fix incorrect reference to non-existent pymongo.synchronous (#5517)
