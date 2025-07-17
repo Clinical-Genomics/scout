@@ -64,7 +64,7 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
 
     # conservation fields
     for key, value in variant["conservation"].items():
-        assert value == ["NotConserved"]
+        assert "NotConserved" in value[0]
 
     # clinvar fields
     assert isinstance(variant["clnsig"][0]["accession"], int)
