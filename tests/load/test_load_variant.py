@@ -225,7 +225,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
-def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
+def test_load_sv_variants(real_populated_database, case_obj):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
