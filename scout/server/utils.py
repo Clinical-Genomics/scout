@@ -252,11 +252,16 @@ def refresh_token() -> None:
     Check if id token is valid, and refresh if expired.
     """
     token: Optional[dict] = session.get("token_response")
-    provider = session.get("provider")
-    if token is None or not is_token_expired(token):
+
+    if token is None or is_token_expired(token) is False:
         return
 
-    print("Token expired, refreshing...")
+    for key in ["KEYCLOAK", "GOOGLE"]:
+        if current_app.config.get(key):
+            provider = key
+
+    if provider is None:
+        return
 
     client_id = current_app.config[provider]["client_id"]
     client_secret = current_app.config[provider]["client_secret"]
