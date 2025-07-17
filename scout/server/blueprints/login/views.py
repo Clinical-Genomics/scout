@@ -85,17 +85,13 @@ def login() -> Response:
 @public_endpoint
 def authorized():
     """OIDC callback function."""
-    provider = None
     if current_app.config.get("GOOGLE"):
         client = oauth_client.google
-        provider = "GOOGLE"
     if current_app.config.get("KEYCLOAK"):
         client = oauth_client.keycloak
-        provider = "KEYCLOAK"
     token = client.authorize_access_token()
     user = client.parse_id_token(token, None)
 
-    session["provider"] = provider
     session["email"] = user.get("email").lower()
     session["name"] = user.get("name")
     session["locale"] = user.get("locale")
@@ -107,15 +103,15 @@ def authorized():
 @login_bp.route("/logout")
 def logout():
 
-    provider = session.get("provider")
-    session.pop("provider", None)
     session.pop("email", None)
     session.pop("name", None)
     session.pop("locale", None)
     session.pop("consent_given", None)
 
     logout_user()  # logs out user from scout
-    controllers.logout_oidc_user(session, provider)
+    for provider in ["GOOGLE", "KEYCLOAK"]:
+        if current_app.config.get(provider):
+            controllers.logout_oidc_user(session, provider)
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
