@@ -9,7 +9,7 @@ from scout.constants import CONSERVATION
 LOG = logging.getLogger(__name__)
 
 
-def parse_conservations(variant: dict, parsed_transcripts: List[dict] = None) -> List[str]:
+def parse_conservations(variant: dict, parsed_transcripts: List[dict] = None) -> dict:
     """Parse the conservation predictors
 
     Args:
