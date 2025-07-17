@@ -92,7 +92,7 @@ def parse_conservation_csq(transcript: dict, field_key: str) -> List[str]:
             if score >= CONSERVATION[field_key]["conserved_min"]:
                 conservations.append(f"Conserved ({round(score,2)})")
             else:
-                conservations.append(f"NotConserved ({round(score,2)}")
+                conservations.append(f"NotConserved ({round(score,2)})")
     except ValueError:
         LOG.warning("Error while parsing %s value:%s ", field_key, transcript.get(field_key))
 
