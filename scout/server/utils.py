@@ -249,31 +249,45 @@ def get_token_endpoint(discovery_url: str) -> Optional[str]:
 
 def refresh_token() -> None:
     """
-    Check if id token is valid, and refresh if expired.
+    Refresh the ID token if it's expired and a token is available in the session.
     """
     token: Optional[dict] = session.get("token_response")
 
-    if token is None or is_token_expired(token) is False:
+    if token is None:
+        LOG.debug("No token found in session; skipping token refresh.")
         return
 
+    if not is_token_expired(token):
+        LOG.debug("Token is still valid; no need to refresh.")
+        return
+
+    # Determine active provider from config
+    provider = None
     for key in ["KEYCLOAK", "GOOGLE"]:
         if current_app.config.get(key):
             provider = key
+            break  # use first match
 
-    if provider is None:
+    if not provider:
+        LOG.warning("No OAuth provider configured; cannot refresh token.")
         return
 
-    client_id = current_app.config[provider]["client_id"]
-    client_secret = current_app.config[provider]["client_secret"]
-    discovery_url = current_app.config[provider]["discovery_url"]
-
     try:
+        client_id = current_app.config[provider]["client_id"]
+        client_secret = current_app.config[provider]["client_secret"]
+        discovery_url = current_app.config[provider]["discovery_url"]
+
         client = OAuth2Session(client_id, client_secret, token=token)
-        new_token = client.refresh_token(get_token_endpoint(discovery_url))
+        token_endpoint = get_token_endpoint(discovery_url)
+        new_token = client.refresh_token(token_endpoint)
+
         session["token_response"] = new_token
+        LOG.info(f"Refreshed token for provider {provider}")
 
     except OAuthError as oae:
-        LOG.warning(f"Failed to refresh id token: {oae}")
+        LOG.warning(f"Failed to refresh token for provider {provider}: {oae}")
+    except Exception as e:
+        LOG.exception(f"Unexpected error while refreshing token: {e}")
 
 
 def get_case_genome_build(case_obj: dict) -> str:
