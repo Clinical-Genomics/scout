@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 from cyvcf2 import VCF
 
@@ -7,7 +5,6 @@ from scout.build.managed_variant import build_managed_variant
 from scout.constants import REV_CLINSIG_MAP
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
-from scout.server.blueprints.variants.controllers import variants
 
 
 def test_load_variant(real_populated_database, variant_obj):
@@ -64,7 +61,7 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
 
     # conservation fields
     for key, value in variant["conservation"].items():
-        assert value == ["NotConserved"]
+        assert "NotConserved" in value[0]
 
     # clinvar fields
     assert isinstance(variant["clnsig"][0]["accession"], int)
@@ -228,7 +225,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
-def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
+def test_load_sv_variants(real_populated_database, case_obj):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants

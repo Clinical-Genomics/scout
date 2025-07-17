@@ -2,13 +2,14 @@
 
 import logging
 import numbers
+from typing import List
 
 from scout.constants import CONSERVATION
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_conservations(variant, parsed_transcripts=None):
+def parse_conservations(variant: dict, parsed_transcripts: List[dict] = None) -> dict:
     """Parse the conservation predictors
 
     Args:
@@ -22,16 +23,13 @@ def parse_conservations(variant, parsed_transcripts=None):
     conservations = {}
 
     conservation_keys = {
-        "info_keys": {
-            "gerp": "dbNSFP_GERP___RS",
-            "phast": "dbNSFP_phastCons100way_vertebrate",
-            "phylop": "dbNSFP_phyloP100way_vertebrate",
-        }
+        "gerp": "dbNSFP_GERP___RS",
+        "phast": "dbNSFP_phastCons100way_vertebrate",
+        "phylop": "dbNSFP_phyloP100way_vertebrate",
     }
 
     # First check if information is in INFO
-    for key in conservation_keys["info_keys"]:
-        value = conservation_keys["info_keys"][key]
+    for key, value in conservation_keys.items():
         result = None
         if value and variant.INFO.get(value):
             result = parse_conservation_info(variant, value, key)
@@ -43,7 +41,7 @@ def parse_conservations(variant, parsed_transcripts=None):
     return conservations
 
 
-def parse_conservation_info(variant, info_key, field_key):
+def parse_conservation_info(variant: dict, info_key: str, field_key: str) -> List[str]:
     """Get the conservation prediction from the INFO field
 
     Args:
@@ -53,7 +51,7 @@ def parse_conservation_info(variant, info_key, field_key):
         field_key(str): 'gerp', 'phast' or 'phylop'
 
     Returns:
-        conservations(list): List of censervation terms
+        conservations(list): List of conservation terms
     """
     raw_score = variant.INFO.get(info_key)
     conservations = []
@@ -64,14 +62,14 @@ def parse_conservation_info(variant, info_key, field_key):
 
         for score in raw_score:
             if score >= CONSERVATION[field_key]["conserved_min"]:
-                conservations.append("Conserved")
+                conservations.append(f"Conserved ({round(score,2)})")
             else:
-                conservations.append("NotConserved")
+                conservations.append(f"NotConserved ({round(score,2)})")
 
     return conservations
 
 
-def parse_conservation_csq(transcript, field_key):
+def parse_conservation_csq(transcript: dict, field_key: str) -> List[str]:
     """Get the conservation prediction from a transcript
 
     Args:
@@ -92,9 +90,9 @@ def parse_conservation_csq(transcript, field_key):
             # fields may consist of multiple numeric values
             score = float(score)
             if score >= CONSERVATION[field_key]["conserved_min"]:
-                conservations.append("Conserved")
+                conservations.append(f"Conserved ({round(score,2)})")
             else:
-                conservations.append("NotConserved")
+                conservations.append(f"NotConserved ({round(score,2)})")
     except ValueError:
         LOG.warning("Error while parsing %s value:%s ", field_key, transcript.get(field_key))
 
