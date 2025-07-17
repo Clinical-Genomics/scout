@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 from cyvcf2 import VCF
 
@@ -7,7 +5,6 @@ from scout.build.managed_variant import build_managed_variant
 from scout.constants import REV_CLINSIG_MAP
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
-from scout.server.blueprints.variants.controllers import variants
 
 
 def test_load_variant(real_populated_database, variant_obj):
