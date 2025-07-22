@@ -230,14 +230,9 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
     info = variant.INFO
 
     # RD observations (SNVs or SVs)
-    OBS_KEYS = [
-        "Obs",
-        "clinical_genomics_loqusObs",
-        "clin_obs",
-        "Cancer_Somatic_Panel_Obs",
-    ]
-    local_obs_old = next((info.get(k) for k in OBS_KEYS if info.get(k) is not None), None)
-
+    local_obs_old = (
+        info.get("Obs") or info.get("clinical_genomics_loqusObs") or info.get("clin_obs")
+    )
     parsed_variant["local_obs_old"] = safe_val(call_safe(int, local_obs_old))
     parsed_variant["local_obs_hom_old"] = safe_val(call_safe(int, info.get("Hom")))
     parsed_variant["local_obs_old_freq"] = safe_val(
