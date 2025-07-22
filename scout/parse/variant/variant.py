@@ -260,9 +260,6 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
         )
 
 
-Cancer_Somatic_Panel_Frq
-
-
 def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):
     """
     Set severity predictions on parsed variant.
