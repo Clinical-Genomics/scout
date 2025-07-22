@@ -253,7 +253,7 @@
         {% if variant.category in ['snv', 'sv'] %}
           {{ variant.local_obs_old or 0 }}
         {% elif variant.category in ['cancer', 'cancer_sv'] %}
-          germline:{{ variant.local_obs_cancer_germline_old or 0}}, somatic:{{variant.local_obs_cancer_somatic_old or 0}}, rare-disease: {{ variant.local_obs_old or 0}},
+          germline:{{ variant.local_obs_cancer_germline_old or 'NA'}}, somatic:{{variant.local_obs_cancer_somatic_old or 'NA'}} somatic_panel: {{variant.local_obs_cancer_somatic_panel_old or 'NA'}}, rare-disease: {{ variant.local_obs_old or 'NA'}},
         {% endif %} obs.
       </div>
       {% if variant.mitomap_associated_diseases %}
