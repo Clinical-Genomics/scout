@@ -296,7 +296,7 @@
   {% endif %}
   {% if variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old or variant.local_obs_cancer_somatic_panel_old %}
     <span class="badge bg-secondary">Local {% if variant.category in ['snv', 'sv'] %}<span class="badge bg-dark text-white">
-          {{ or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old or variant.local_obs_cancer_somatic_panel_old or 0 }}</span>{% endif %}</span>
+          {{ variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old or variant.local_obs_cancer_somatic_panel_old or 0 }}</span>{% endif %}</span>
     <br>
   {% endif %}
   </div>
