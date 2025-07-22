@@ -5,7 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Fixed
+### Added
+- Parsing variant's`local_obs_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively ()
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 
 ## [4.103.3]

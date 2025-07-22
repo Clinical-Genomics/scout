@@ -230,9 +230,14 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
     info = variant.INFO
 
     # RD observations (SNVs or SVs)
-    local_obs_old = (
-        info.get("Obs") or info.get("clinical_genomics_loqusObs") or info.get("clin_obs")
-    )
+    OBS_KEYS = [
+        "Obs",
+        "clinical_genomics_loqusObs",
+        "clin_obs",
+        "Cancer_Somatic_Panel_Obs",
+    ]
+    local_obs_old = next((info.get(k) for k in OBS_KEYS if info.get(k) is not None), None)
+
     parsed_variant["local_obs_old"] = safe_val(call_safe(int, local_obs_old))
     parsed_variant["local_obs_hom_old"] = safe_val(call_safe(int, info.get("Hom")))
     parsed_variant["local_obs_old_freq"] = safe_val(
@@ -243,7 +248,8 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
     set_local_archive_info(parsed_variant, local_archive_info)
 
     # Cancer observations (germline and somatic)
-    for prefix in ["Cancer_Germline", "Cancer_Somatic"]:
+    FREQ_KEYS = ["Cancer_Germline", "Cancer_Somatic", "Cancer_Somatic_Panel"]
+    for prefix in FREQ_KEYS:
         key = prefix.lower()
         parsed_variant[f"local_obs_{key}_old"] = safe_val(call_safe(int, info.get(f"{prefix}_Obs")))
         parsed_variant[f"local_obs_{key}_hom_old"] = safe_val(
@@ -252,6 +258,9 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
         parsed_variant[f"local_obs_{key}_old_freq"] = safe_val(
             call_safe(float, info.get(f"{prefix}_Frq"))
         )
+
+
+Cancer_Somatic_Panel_Frq
 
 
 def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):
