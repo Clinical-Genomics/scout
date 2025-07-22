@@ -253,7 +253,7 @@
         {% if variant.category in ['snv', 'sv'] %}
           {{ variant.local_obs_old or 0 }}
         {% elif variant.category in ['cancer', 'cancer_sv'] %}
-          germline:{{ variant.local_obs_cancer_germline_old or 'NA'}}, somatic:{{variant.local_obs_cancer_somatic_old or 'NA'}} somatic_panel: {{variant.local_obs_cancer_somatic_panel_old or 'NA'}}, rare-disease: {{ variant.local_obs_old or 'NA'}},
+          germline:{{ variant.local_obs_cancer_germline_old or 0}}, somatic:{{variant.local_obs_cancer_somatic_old or 0}} somatic_panel: {{variant.local_obs_cancer_somatic_panel_old or 0}}, rare-disease: {{ variant.local_obs_old or 0}},
         {% endif %} obs.
       </div>
       {% if variant.mitomap_associated_diseases %}
@@ -294,9 +294,9 @@
   {% if variant.clingen_cgh_pathogenic %}
     <span class="badge bg-secondary">CGH Pathogenic</span>
   {% endif %}
-  {% if variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old %}
+  {% if variant.local_obs_old or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old or variant.local_obs_cancer_somatic_panel_old %}
     <span class="badge bg-secondary">Local {% if variant.category in ['snv', 'sv'] %}<span class="badge bg-dark text-white">
-          {{ variant.local_obs_old or 0 }}</span>{% endif %}</span>
+          {{ or variant.local_obs_cancer_germline_old or variant.local_obs_cancer_somatic_old or variant.local_obs_cancer_somatic_panel_old or 0 }}</span>{% endif %}</span>
     <br>
   {% endif %}
   </div>
