@@ -317,6 +317,12 @@
         <td>{{ variant.local_obs_cancer_somatic_hom_old|default('N/A') }}</td>
         <td>{% if variant.local_obs_cancer_somatic_old_freq %} {{variant.local_obs_cancer_somatic_old_freq|round(6)}} {% elif variant.local_obs_cancer_somatic_old_nr_cases and variant.local_obs_cancer_somatic_old %} {{ (variant.local_obs_cancer_somatic_old/variant.local_obs_cancer_somatic_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_somatic_old_nr_cases %} 0 / {{variant.local_obs_cancer_somatic_old_nr_cases}} {% else %} N/A {% endif %}</td>
       </tr>
+      <tr>
+        <td>Cancer Somatic panel</td>
+        <td>{{ variant.local_obs_cancer_somatic_panel_old|default('N/A') }}</td>
+        <td>N/A</td>
+        <td>{% if variant.local_obs_cancer_somatic_panel_old_freq %} {{variant.local_obs_cancer_somatic_panel_old_freq|round(6)}} {% else %} N/A {% endif %}</td>
+      </tr>
     {% endif %}
   </tbody>
 </table>

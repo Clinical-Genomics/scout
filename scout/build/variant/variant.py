@@ -285,6 +285,9 @@ def build_variant(
     # local observations from cancer pipeline
     variant_obj["local_obs_cancer_germline_old"] = variant.get("local_obs_cancer_germline_old")
     variant_obj["local_obs_cancer_somatic_old"] = variant.get("local_obs_cancer_somatic_old")
+    variant_obj["local_obs_cancer_somatic_panel_old"] = variant.get(
+        "local_obs_cancer_somatic_panel_old"
+    )
     variant_obj["local_obs_cancer_germline_hom_old"] = variant.get(
         "local_obs_cancer_germline_hom_old"
     )
@@ -296,6 +299,9 @@ def build_variant(
     )
     variant_obj["local_obs_cancer_somatic_old_freq"] = variant.get(
         "local_obs_cancer_somatic_old_freq"
+    )
+    variant_obj["local_obs_cancer_somatic_panel_old_freq"] = variant.get(
+        "local_obs_cancer_somatic_panel_old_freq"
     )
 
     ##### Add the severity predictors #####
