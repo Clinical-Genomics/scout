@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Parsing variant's`local_obs_cancer_somatic_panel_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively (#5594)
+### Added
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
