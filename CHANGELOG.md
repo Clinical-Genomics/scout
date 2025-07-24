@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Parsing variant's`local_obs_cancer_somatic_panel_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively (#5594)
+- Filter cancer variants by archived number of cancer somatic panel observations (#5598)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 ### Fixed
