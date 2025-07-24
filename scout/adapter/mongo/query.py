@@ -189,50 +189,14 @@ class QueryHandler(object):
         return select_cases
 
     def build_query(
-        self, case_id, query=None, variant_ids=None, category="snv", build="37"
+        self,
+        case_id: str,
+        query: Optional[dict] = None,
+        variant_ids: Optional[List[str]] = None,
+        category: str = "snv",
+        build: str = "37",
     ) -> dict:
-        """Build a mongo query
-
-        These are the different query options:
-            {
-                'thousand_genomes_frequency': float,
-                'exac_frequency': float,
-                'clingen_ngi': int,
-                'cadd_score': float,
-                'cadd_inclusive": boolean,
-                'tumor_frequency': float,
-                'genetic_models': list(str),
-                "genotypes": str,
-                'hgnc_symbols': list,
-                'region_annotations': list,
-                'functional_annotations': list,
-                'clinsig': list,
-                'clinvar_trusted_revstat': boolean,
-                'clinsig_exclude': bool,
-                'variant_type': str(('research', 'clinical')),
-                'chrom': str or list of str,
-                'start': int,
-                'end': int,
-                'svtype': list,
-                'size': int,
-                'size_selector': str,
-                'gene_panels': list(str),
-                'mvl_tag": boolean,
-                'clinvar_tag': boolean,
-                'cosmic_tag' boolean,
-                'decipher": boolean,
-                'hide_dismissed': boolean
-            }
-
-        Arguments:
-            case_id(str)
-            query(dict): a dictionary of query filters specified by the users
-            variant_ids(list(str)): A list of md5 variant ids
-
-        Returns:
-            mongo_query : A dictionary in the mongo query format
-
-        """
+        """Build a mongo query"""
         query = query or {}
         mongo_query = {}
         coordinate_query = None
@@ -643,6 +607,7 @@ class QueryHandler(object):
                 "local_obs_old",
                 "local_obs_cancer_germline_old",
                 "local_obs_cancer_somatic_old",
+                "local_obs_cancer_somatic_panel_old",
             ]:
                 if criterion == local_obs_old_type:
                     local_obs = query.get(local_obs_old_type)
