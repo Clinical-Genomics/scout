@@ -207,6 +207,9 @@ class CancerFiltersForm(VariantFiltersForm):
     local_obs_cancer_somatic_old = IntegerField(
         "Local somatic obs. (archive)", validators=[validators.Optional()]
     )
+    local_obs_cancer_somatic_panel_old = IntegerField(
+        "Local somatic panel obs. (archive)", validators=[validators.Optional()]
+    )
     local_obs_cancer_germline_old = IntegerField(
         "Local germline obs. (archive)", validators=[validators.Optional()]
     )
@@ -240,6 +243,9 @@ class SvFiltersForm(VariantFiltersForm):
 
     local_obs_cancer_somatic_old = IntegerField(
         "Local somatic obs. (archive)", validators=[validators.Optional()]
+    )
+    local_obs_cancer_somatic_panel_old = IntegerField(
+        "Local somatic panel obs. (archive)", validators=[validators.Optional()]
     )
     local_obs_cancer_germline_old = IntegerField(
         "Local germline obs. (archive)", validators=[validators.Optional()]
