@@ -34,6 +34,7 @@ SECONDARY_CRITERIA = [
     "gnomad_frequency",
     "local_obs_old",
     "local_obs_cancer_somatic_old",
+    "local_obs_cancer_somatic_panel_old",
     "local_obs_cancer_germline_old",
     "local_obs_freq",
     "clingen_ngi",
