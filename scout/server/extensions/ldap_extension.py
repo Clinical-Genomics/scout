@@ -1,72 +1,130 @@
 import logging
 import ssl
+from typing import Optional
 
-from flask_ldapconn import LDAPConn
-from ldap3 import ALL, SYNC, Server, Tls
+from flask import Flask
+from ldap3 import ALL, SIMPLE, SUBTREE, SYNC, Connection, Server, Tls
 
 LOG = logging.getLogger(__name__)
 
 
-class LdapManager(LDAPConn):
-    """Interface to LDAP login"""
+class LdapManager:
+    """
+    LDAP authentication handler using ldap3.
 
-    def init_app(self, app):
-        ssl_defaults = ssl.get_default_verify_paths()
+    Supports user search by login attribute (e.g., mail),
+    followed by secure bind to validate user password.
+    """
 
-        # Default config
-        app.config.setdefault("LDAP_SERVER", "localhost")
-        app.config.setdefault("LDAP_PORT", 389)
-        app.config.setdefault("LDAP_BINDDN", None)
-        app.config.setdefault("LDAP_SECRET", None)
-        app.config.setdefault("LDAP_CONNECT_TIMEOUT", 10)
-        app.config.setdefault("LDAP_READ_ONLY", False)
-        app.config.setdefault("LDAP_VALID_NAMES", None)
-        app.config.setdefault("LDAP_PRIVATE_KEY_PASSWORD", None)
-        app.config.setdefault("LDAP_RAISE_EXCEPTIONS", False)
+    def __init__(self, app: Optional[Flask] = None) -> None:
+        """
+        Optionally initialize with a Flask app.
+        """
+        self.server: Optional[Server] = None
+        self.base_dn: Optional[str] = None
+        self.login_attr: str = "uid"
+        self.timeout: int = 5
+        self.use_ssl: bool = False
+        self.use_tls: bool = False
+        self.port: int = 389
+        self.bind_user_dn: Optional[str] = None
+        self.bind_user_pw: Optional[str] = None
 
-        app.config.setdefault("LDAP_CONNECTION_STRATEGY", SYNC)
+        if app:
+            self.init_app(app)
 
-        app.config.setdefault("LDAP_USE_SSL", False)
-        app.config.setdefault("LDAP_USE_TLS", True)
-        app.config.setdefault("LDAP_TLS_VERSION", ssl.PROTOCOL_TLSv1_2)
-        app.config.setdefault("LDAP_REQUIRE_CERT", ssl.CERT_REQUIRED)
+    def init_app(self, app: Flask) -> None:
+        """
+        Initialize LDAP settings from Flask app config.
 
-        app.config.setdefault("LDAP_CLIENT_PRIVATE_KEY", None)
-        app.config.setdefault("LDAP_CLIENT_CERT", None)
+        Required config keys:
+        - LDAP_BASE_DN
+        - LDAP_HOST
+        - LDAP_PORT (optional)
+        - LDAP_USER_LOGIN_ATTR (optional, default 'uid')
+        - LDAP_USE_SSL / LDAP_USE_TLS (optional)
+        - LDAP_SERVICE_BIND_DN / LDAP_SERVICE_BIND_PASSWORD (for search auth)
+        """
+        self.base_dn = app.config.get("LDAP_BASE_DN")
+        if not self.base_dn:
+            raise ValueError("Missing required config: LDAP_BASE_DN")
 
-        app.config.setdefault("LDAP_CA_CERTS_FILE", ssl_defaults.cafile)
-        app.config.setdefault("LDAP_CA_CERTS_PATH", ssl_defaults.capath)
-        app.config.setdefault("LDAP_CA_CERTS_DATA", None)
+        self.login_attr = app.config.get("LDAP_USER_LOGIN_ATTR", "uid")
+        self.use_ssl = app.config.get("LDAP_USE_SSL", False)
+        self.use_tls = app.config.get("LDAP_USE_TLS", False)
+        self.timeout = app.config.get("LDAP_TIMEOUT", 5)
+        self.port = app.config.get("LDAP_PORT", 636 if self.use_ssl else 389)
+        self.bind_user_dn = app.config.get("LDAP_SERVICE_BIND_DN")
+        self.bind_user_pw = app.config.get("LDAP_SERVICE_BIND_PASSWORD")
 
-        app.config.setdefault("FORCE_ATTRIBUTE_VALUE_AS_LIST", False)
-
-        self.tls = Tls(
-            local_private_key_file=app.config["LDAP_CLIENT_PRIVATE_KEY"],
-            local_certificate_file=app.config["LDAP_CLIENT_CERT"],
-            validate=(
-                app.config["LDAP_REQUIRE_CERT"]
-                if app.config.get("LDAP_CLIENT_CERT")
-                else ssl.CERT_NONE
-            ),
-            version=app.config["LDAP_TLS_VERSION"],
-            ca_certs_file=app.config["LDAP_CA_CERTS_FILE"],
-            valid_names=app.config["LDAP_VALID_NAMES"],
-            ca_certs_path=app.config["LDAP_CA_CERTS_PATH"],
-            ca_certs_data=app.config["LDAP_CA_CERTS_DATA"],
-            local_private_key_password=app.config["LDAP_PRIVATE_KEY_PASSWORD"],
+        host = app.config.get("LDAP_HOST", "localhost")
+        tls_config: Optional[Tls] = (
+            Tls(validate=ssl.CERT_NONE) if self.use_ssl or self.use_tls else None
         )
 
-        self.ldap_server = Server(
-            host=app.config.get("LDAP_HOST") or app.config.get("LDAP_SERVER"),
-            port=app.config["LDAP_PORT"],
-            use_ssl=app.config["LDAP_USE_SSL"],
-            connect_timeout=app.config["LDAP_CONNECT_TIMEOUT"],
-            tls=self.tls,
+        self.server = Server(
+            host=host,
+            port=self.port,
+            use_ssl=self.use_ssl,
+            tls=tls_config,
             get_info=ALL,
         )
 
-        # Store ldap_conn object to extensions
-        app.extensions["ldap_conn"] = self
+    def authenticate(self, username: str, password: str) -> bool:
+        """
+        Authenticate user by:
+        1. Searching for their DN using login attribute
+        2. Binding as that DN with the provided password
 
-        # Teardown appcontext
-        app.teardown_appcontext(self.teardown)
+        Returns True if login succeeds, False if invalid
+        """
+        if not self.server:
+            raise RuntimeError("LDAP server not initialized")
+
+        try:
+            # Step 1: Search for user's DN
+            search_conn = Connection(
+                self.server,
+                user=self.bind_user_dn,
+                password=self.bind_user_pw,
+                auto_bind=True,
+                client_strategy=SYNC,
+                receive_timeout=self.timeout,
+            )
+
+            if self.use_tls:
+                search_conn.start_tls()
+
+            search_filter = f"({self.login_attr}={username})"
+            search_conn.search(
+                search_base=self.base_dn,
+                search_filter=search_filter,
+                search_scope=SUBTREE,
+                attributes=[],  # no need to request DN directly
+            )
+
+            if not search_conn.entries:
+                return False
+
+            user_dn = search_conn.entries[0].entry_dn
+            search_conn.unbind()
+
+            # Step 2: Attempt to bind as user
+            user_conn = Connection(
+                self.server,
+                user=user_dn,
+                password=password,
+                auto_bind=True,
+                authentication=SIMPLE,
+                receive_timeout=self.timeout,
+            )
+
+            if self.use_tls:
+                user_conn.start_tls()
+
+            user_conn.unbind()
+            return True
+
+        except Exception as e:
+            LOG.warning(e)
+            return False

@@ -20,9 +20,6 @@ def ldap_authorized(userid: str, password: str) -> bool:
         authorized = ldap_manager.authenticate(
             username=userid,
             password=password,
-            base_dn=current_app.config.get("LDAP_BASE_DN") or current_app.config.get("LDAP_BINDDN"),
-            attribute=current_app.config.get("LDAP_USER_LOGIN_ATTR")
-            or current_app.config.get("LDAP_SEARCH_ATTR"),
         )
     except Exception as ex:
         flash(ex, "danger")
