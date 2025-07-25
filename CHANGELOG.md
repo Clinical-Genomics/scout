@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
+- Links to SNVs and SVs from SMN CN page (#5600)
 
 ## [4.103.3]
 ### Changed
