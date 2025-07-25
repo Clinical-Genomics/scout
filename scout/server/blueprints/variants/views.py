@@ -19,7 +19,12 @@ from scout.constants import (
     SEVERE_SO_TERMS_SV,
 )
 from scout.server.extensions import store
-from scout.server.utils import get_case_genome_build, institute_and_case, templated
+from scout.server.utils import (
+    get_case_genome_build,
+    institute_and_case,
+    safe_redirect_back,
+    templated,
+)
 
 from . import controllers
 from .forms import (
@@ -49,7 +54,7 @@ def reset_dismissed(institute_id, case_name):
     """Reset all dismissed variants for a case"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.reset_all_dismissed(store, institute_obj, case_obj)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
@@ -118,7 +123,7 @@ def variants(institute_id, case_name):
             stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
         except UnicodeDecodeError as error:
             flash("Only text files are supported!", "warning")
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
@@ -725,13 +730,13 @@ def upload_panel(institute_id, case_name):
 
     if panel_file.filename == "":
         flash("No selected file", "warning")
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     try:
         stream = io.StringIO(panel_file.stream.read().decode("utf-8"), newline=None)
     except UnicodeDecodeError as error:
         flash("Only text files are supported!", "warning")
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     category = request.args.get("category")
 
@@ -778,4 +783,4 @@ def unaudit_filter():
     store.unaudit_filter(
         audit_id=request.args.get("audit_id"), user_obj=store.user(current_user.email)
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
