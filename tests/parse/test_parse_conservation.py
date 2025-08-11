@@ -11,7 +11,7 @@ def test_parse_conservation(cyvcf2_variant):
     variant.INFO["dbNSFP_GERP___RS"] = 3.7
     ## WHEN parsing conservation
     ## THEN assert that the field is parsed correct
-    assert parse_conservation_info(variant, "dbNSFP_GERP___RS", "gerp") == ["Conserved"]
+    assert parse_conservation_info(variant, "dbNSFP_GERP___RS", "gerp") == ["Conserved (3.7)"]
 
 
 def test_parse_conservation_multiple_terms(cyvcf2_variant):
@@ -22,8 +22,8 @@ def test_parse_conservation_multiple_terms(cyvcf2_variant):
     ## WHEN parsing conservation
     ## THEN assert that all terms are returned
     assert parse_conservation_info(variant, "dbNSFP_GERP___RS", "gerp") == [
-        "Conserved",
-        "NotConserved",
+        "Conserved (3.7)",
+        "NotConserved (-0.34)",
     ]
 
 
@@ -35,27 +35,26 @@ def test_parse_conservations(cyvcf2_variant):
     variant.INFO["dbNSFP_phyloP100way_vertebrate"] = 2.4
 
     ## WHEN parsing conservation
-    ## THEN assert that all terms are returned
-
     conservations = parse_conservations(variant)
 
-    assert conservations["gerp"] == ["Conserved", "NotConserved"]
-    assert conservations["phast"] == ["Conserved"]
-    assert conservations["phylop"] == ["NotConserved"]
+    ## THEN assert that all terms are returned
+    assert conservations["gerp"] == ["Conserved (4.6)", "NotConserved (0)"]
+    assert conservations["phast"] == ["Conserved (0.8)"]
+    assert conservations["phylop"] == ["NotConserved (2.4)"]
 
 
 def test_parse_conservation_csq(transcript_info):
-    ## GIVEN a trascript with multiple conservation annotations
-    keys = ["gerp", "phast", "phylop"]
-    csq_entry = """0&4.6|0.8|2.4,0&4.6|0.8|2.4"""
-    csq_header = """GERP++_RS|phastCons100way_vertebrate|phyloP100way_vertebrate"""
-
+    # GIVEN a transcript with multiple conservation annotations
     transcript_info["gerp"] = "0&4.6"
     transcript_info["phast"] = "0.8"
     transcript_info["phylop"] = "2.4"
 
-    for key in keys:
-        conservations = parse_conservation_csq(transcript_info, key)
-        assert len(conservations) > 0
-        for item in conservations:
-            assert item in ["NotConserved", "Conserved"]
+    # WHEN parsing each conservation key
+    gerp_result = parse_conservation_csq(transcript_info, "gerp")
+    phast_result = parse_conservation_csq(transcript_info, "phast")
+    phylop_result = parse_conservation_csq(transcript_info, "phylop")
+
+    # THEN assert exact output values
+    assert gerp_result == ["NotConserved (0.0)", "Conserved (4.6)"]
+    assert phast_result == ["Conserved (0.8)"]
+    assert phylop_result == ["NotConserved (2.4)"]

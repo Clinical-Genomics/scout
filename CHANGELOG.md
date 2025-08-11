@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 - Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
+- Display conservation scores for PHAST, GERP and phyloP alongside "Conserved" or "NotConserved" (#5593)
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
