@@ -23,7 +23,7 @@
     {% endif %}
   {% endfor %}
 
-  {% if "wes" in analysis_types %}
+  {% if "wes" in analysis_types or "panel" in analysis_types %}
     {% set interval_type = "exons" %}
   {% elif "wts" in analysis_types %}
     {% set interval_type = "transcripts" %}
