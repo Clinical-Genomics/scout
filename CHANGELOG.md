@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Parsing variant's`local_obs_cancer_somatic_panel_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively (#5594)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
+### Changed
+- Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
