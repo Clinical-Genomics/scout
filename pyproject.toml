@@ -63,7 +63,7 @@ dependencies = [
 	"importlib_resources",
 	# webapp login
 	"authlib",
-	"flask_login",
+	"flask-login",
 	# Parsing
 	"cyvcf2",
 	"configobj",
@@ -124,6 +124,9 @@ line-length = 100
 
 [tool.isort]
 profile = "black"
+
+[tool.uv.sources]
+flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
 
 [dependency-groups]
 dev = [
