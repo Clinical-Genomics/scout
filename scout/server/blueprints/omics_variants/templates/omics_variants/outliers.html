@@ -36,6 +36,11 @@
   </li>
 {% endblock %}
 
+{% block top_nav_right %}
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data if form.gene_panels.data and form.gene_panels.data != [""] else ['All'])|join(',') }}</p></li>
+  {{ super() }}
+{% endblock %}
+
 {% block content_main %}
   <div class="container-float">
     <form method="POST" id="filters_form" action="{{url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name)}}"
@@ -79,14 +84,14 @@
                   {% if case.vcf_files.vcf_snv %}
                     <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
                     <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
                     <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
                     </form>
                   {% endif %}
                   {% if case.vcf_files.vcf_sv %}
                     <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
                     <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
                     <button type="submit" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
                   </form>
                   {% endif %}
