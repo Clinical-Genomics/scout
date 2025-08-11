@@ -52,19 +52,19 @@
       <span class="d-flex">
         {% if case.vcf_files.vcf_snv %}
         <span class="me-3">
-          <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}">
+          <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
             <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
-            <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-            <span><button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
+            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+            <span><button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
           </form>
         </span>
         {% endif %}
         {% if case.vcf_files.vcf_sv %}
           <span class="me-3">
-            <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}">
+            <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
               <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
-              <input type="hidden" id="gene_panels" name="gene_panels" value="['']"></input>
-              <button type="submit" class="btn btn-secondary btn-sm" target="_blank" rel="noopener" data-bs-toggle="tooltip" title="Structural variants view filtered for the genes SMN1 and SMN2">SVs</button>
+              <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+              <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes SMN1 and SMN2">SVs</button>
             </form>
           </span>
         {% endif %}
