@@ -32,7 +32,7 @@
 {% endblock %}
 
 {% block top_nav_right %}
-  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data if form.gene_panels.data and form.gene_panels.data != [""] else ['All'])|join(',') }}</p></li>
   {{ super() }}
 {% endblock %}
 
