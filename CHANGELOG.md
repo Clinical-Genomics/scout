@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
+- Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
