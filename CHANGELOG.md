@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
+- Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
