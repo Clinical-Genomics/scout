@@ -128,7 +128,7 @@ def verified(collaborator, test, outpath=None):
 @build_option
 @json_option
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str, ...], build: str, json: bool):
+def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
