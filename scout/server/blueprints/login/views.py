@@ -120,6 +120,7 @@ def users():
     data = controllers.users(store)
     return render_template("login/users.html", **data)
 
+
 @login_bp.route("/add_user", methods=["POST"])
 def add_user():
     """"""
