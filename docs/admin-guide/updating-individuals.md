@@ -36,6 +36,7 @@ And the tracks that can be updated are the following:
 - upd_regions_bed
 - upd_sites_bed
 - rna_coverage_bigwig
+- spanning_alignment_path
 - splice_junctions_bed
 
 Additional sample descriptors:

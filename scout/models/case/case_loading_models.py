@@ -35,6 +35,7 @@ SAMPLES_FILE_PATH_CHECKS = [
     "rhocall_wig",
     "rna_alignment_path",
     "rna_coverage_bigwig",
+    "spanning_alignment_path",
     "splice_junctions_bed",
     "tiddit_coverage_wig",
     "upd_regions_bed",
@@ -241,6 +242,7 @@ class SampleLoader(BaseModel):
     smn2_cn: Optional[int] = None
     smn2delta78_cn: Optional[int] = None
     smn_27134_cn: Optional[int] = None
+    spanning_alignment_path: Optional[str] = None
     splice_junctions_bed: Optional[str] = None
     subject_id: Optional[str] = None
     tiddit_coverage_wig: Optional[str] = Field(None, alias="coverage_wig")
