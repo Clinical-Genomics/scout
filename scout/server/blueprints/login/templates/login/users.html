@@ -86,13 +86,13 @@
 {% endblock %}
 
 {% macro new_user_form() %}
-<form method="post" class="row g-2">
+<form method="post" class="row g-2" action="{{url_for('login.add_user')}}">
   {{ form.hidden_tag() }}
 
   <!-- Institute -->
   <div class="col-12">
     {{ form.institute.label(class="form-label mb-1") }}
-    {{ form.institute(class="selectpicker w-75") }}
+    {{ form.institute(class="selectpicker w-75", required=True) }}
     {% for error in form.institute.errors %}
       <div class="text-danger small">{{ error }}</div>
     {% endfor %}
@@ -101,7 +101,7 @@
   <!-- Full Name -->
   <div class="col-sm-6">
     {{ form.name.label(class="form-label mb-1") }}
-    {{ form.name(class="form-control form-control-sm", placeholder="John Smith") }}
+    {{ form.name(class="form-control form-control-sm", placeholder="John Smith", required=True) }}
     {% for error in form.name.errors %}
       <div class="text-danger small">{{ error }}</div>
     {% endfor %}
@@ -110,7 +110,7 @@
   <!-- Email -->
   <div class="col-sm-6">
     {{ form.email.label(class="form-label mb-1") }}
-    {{ form.email(class="form-control form-control-sm", placeholder="name@example.com") }}
+    {{ form.email(class="form-control form-control-sm", placeholder="name@example.com", required=True, type="email") }}
     {% for error in form.email.errors %}
       <div class="text-danger small">{{ error }}</div>
     {% endfor %}
