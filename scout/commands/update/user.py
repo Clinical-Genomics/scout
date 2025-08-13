@@ -5,10 +5,10 @@ import click
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
+from scout.constants.user import USER_ROLES
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
-USER_ROLES = ["admin", "mme_submitter", "beacon_submitter"]
 
 
 @click.command("user", short_help="Update a user")

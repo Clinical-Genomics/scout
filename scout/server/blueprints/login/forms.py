@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectMultipleField, StringField, validators
 
-from scout.commands.update.user import USER_ROLES
+from scout.constants.user import USER_ROLES
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
