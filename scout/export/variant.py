@@ -6,6 +6,7 @@ from pymongo import ASCENDING
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
+from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ def export_managed_variants(
     adapter: MongoAdapter,
     institute: str = None,
     build: str = None,
-    category: list = ["snv", "sv"],
+    category: list = MANAGED_CATEGORIES,
 ) -> ManagedVariant:
     """Export managed variants, optionally for a given institute or variant category (["snv", "cancer_sv", ...])"""
 
