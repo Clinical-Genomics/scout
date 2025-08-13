@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
 - Display conservation scores for PHAST, GERP and phyloP alongside "Conserved" or "NotConserved" (#5593)
 - Exporting managed variants from the command line with the `--collaborator` option will return variants from the specified institute plus those not assigned to any institute (#5607)
+- Safer redirect to previous page for variants views (#5599)
 - Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
