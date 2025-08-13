@@ -23,9 +23,26 @@
 <div class="container-float">
   <div class="card panel-default">
     <div class="card-body">
+
       {% if current_user.is_admin %}
-      {{ new_user_form() }}
+        <!-- Collapsible new user form -->
+        <div class="mb-2">
+          <button class="btn btn-outline-primary btn-sm" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#newUserForm"
+                  aria-expanded="false"
+                  aria-controls="newUserForm">
+            ➕ New User
+          </button>
+        </div>
+
+        <div class="collapse" id="newUserForm">
+          <div class="card card-body p-2">
+            {{ new_user_form() }}
+          </div>
+        </div>
       {% endif %}
+
       <table class="table table-bordered table-hover mt-3">
         <thead class="table-light thead">
           <tr>
@@ -75,7 +92,7 @@
   <!-- Institute -->
   <div class="col-12">
     {{ form.institute.label(class="form-label mb-1") }}
-    {{ form.institute(class="selectpicker") }}
+    {{ form.institute(class="selectpicker w-75") }}
     {% for error in form.institute.errors %}
       <div class="text-danger small">{{ error }}</div>
     {% endfor %}
@@ -111,7 +128,7 @@
   <!-- Role -->
   <div class="col-sm-6">
     {{ form.role.label(class="form-label mb-1") }}
-    {{ form.role(class="selectpicker", multiple=True) }}
+    {{ form.role(class="selectpicker w-100") }}
     {% for error in form.role.errors %}
       <div class="text-danger small">{{ error }}</div>
     {% endfor %}
@@ -127,8 +144,5 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  $('select[multiple]').selectpicker({
-      width: '100%'
-  });
 {% endblock %}
+
