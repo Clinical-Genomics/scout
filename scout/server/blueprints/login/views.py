@@ -15,7 +15,7 @@ from flask import (
 )
 from flask_login import current_user, logout_user
 
-from scout.commands.load.user import save_user
+from scout.load.user import save_user
 from scout.server.blueprints.login.forms import UserForm
 from scout.server.extensions import login_manager, oauth_client, store
 from scout.server.utils import public_endpoint, safe_redirect_back
