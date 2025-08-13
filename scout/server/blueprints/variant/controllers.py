@@ -594,7 +594,7 @@ def str_variant_reviewer(
     str_repid = variant_obj.get("str_repid")
     print("str_variants_reviewer", str_repid)
 
-    url = current_app.config.get("SCOUT_REVIEWER_URL")
+    base_url = current_app.config.get("SCOUT_REVIEWER_URL")
 
     display_individuals = []
     for ind in case_obj.get("individuals"):
@@ -604,7 +604,7 @@ def str_variant_reviewer(
         }
 
         ind_reviewer = ind.get("reviewer")
-        if not url or not str_repid or not ind_reviewer:
+        if not base_url or not str_repid or not ind_reviewer:
             display_individual["svg"] = Markup("<SVG></SVG>")
             display_individuals.append(display_individual)
             continue
@@ -615,6 +615,11 @@ def str_variant_reviewer(
             "catalog": ind_reviewer.get("catalog"),
             "locus": str_repid,
         }
+
+        if ind_reviewer.trgt:
+            url = base_url + "/trgt"
+        else:
+            url = base_url + "/reviewer"
 
         if ind_reviewer.get("alignment_index"):
             srs_query_data["reads_index"] = ind_reviewer.get("alignment_index")

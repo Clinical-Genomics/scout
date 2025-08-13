@@ -192,6 +192,7 @@ class REViewer(BaseModel):
     catalog: Optional[str] = None
     reference: Optional[str] = None
     reference_index: Optional[str] = None
+    trgt: Optional[bool] = None
 
     @model_validator(mode="before")
     def validate_file_path(cls, config_values: Dict) -> "SampleLoader":

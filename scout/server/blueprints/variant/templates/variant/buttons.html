@@ -133,8 +133,13 @@
       href="{{url_for('variant.reviewer_aln', institute_id=institute_id, case_name=case.display_name, variant_id=variant._id)}}"
       class="btn btn-secondary btn-sm text-white" role="button"
       target="_blank" rel="noopener"
-      title="View REViewer graph alignments for {{variant.str_repid}} using external service."
-      >REViewer</a>
+      {% if "trgt" in case.variant_individuals[0] and case.variant_individuals[0].trgt %}
+        title="View TRGT alignment plot for {{variant.str_repid}} using external service."
+        >TRGT</a>
+      {% else %}
+        title="View REViewer graph alignments for {{variant.str_repid}} using external service."
+        >REViewer</a>
+      {% endif %}
     {% else %}
       <button class="btn btn-secondary btn-sm" title="No REViewer aln" disabled>REViewer</button>
     {% endif %}
