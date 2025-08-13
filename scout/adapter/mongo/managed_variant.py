@@ -144,8 +144,11 @@ class ManagedVariantHandler(object):
         if build:
             query["build"] = build
         if institute:
-            query["institute"] = institute
-
+            query["$or"] = [
+                {"institute": institute},
+                {"institute": {"$exists": False}},
+                {"institute": None},
+            ]
         query_with_options = self.add_options(query, query_options)
         return self.managed_variant_collection.find(query_with_options)
 
