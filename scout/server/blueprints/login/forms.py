@@ -4,14 +4,21 @@ from wtforms import SelectMultipleField, StringField, validators
 from scout.commands.update.user import USER_ROLES
 
 
+class NonValidatingSelectMultipleField(SelectMultipleField):
+    """Necessary to skip validation of dynamic multiple selects in form"""
+
+    def pre_validate(self, _form):
+        pass
+
+
 class UserForm(FlaskForm):
     """Provides the form fields required to create a new user via the web interface."""
 
-    institute = SelectMultipleField("Institute(s)", choices=[])
+    institute = NonValidatingSelectMultipleField("Institute(s)", choices=[])
     name = StringField("Full name")
     email = StringField("Email")
-    user_id = StringField("ID (LDAP)", [validators.Optional()])
-    role = SelectMultipleField(
+    user_id = StringField("ID (LDAP authentication only)", [validators.Optional()])
+    role = NonValidatingSelectMultipleField(
         "Role(s)",
         [validators.Optional()],
         choices=USER_ROLES,
