@@ -4,6 +4,11 @@
   {{ super() }} - Users
 {% endblock %}
 
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -18,6 +23,9 @@
 <div class="container-float">
   <div class="card panel-default">
     <div class="card-body">
+      {% if current_user.is_admin %}
+      {{ new_user_form() }}
+      {% endif %}
       <table class="table table-bordered table-hover mt-3">
         <thead class="table-light thead">
           <tr>
@@ -58,4 +66,69 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% macro new_user_form() %}
+<form method="post" class="row g-2">
+  {{ form.hidden_tag() }}
+
+  <!-- Institute -->
+  <div class="col-12">
+    {{ form.institute.label(class="form-label mb-1") }}
+    {{ form.institute(class="selectpicker") }}
+    {% for error in form.institute.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Full Name -->
+  <div class="col-sm-6">
+    {{ form.name.label(class="form-label mb-1") }}
+    {{ form.name(class="form-control form-control-sm", placeholder="John Smith") }}
+    {% for error in form.name.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Email -->
+  <div class="col-sm-6">
+    {{ form.email.label(class="form-label mb-1") }}
+    {{ form.email(class="form-control form-control-sm", placeholder="name@example.com") }}
+    {% for error in form.email.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- LDAP ID -->
+  <div class="col-sm-6">
+    {{ form.user_id.label(class="form-label mb-1") }}
+    {{ form.user_id(class="form-control form-control-sm", placeholder="Optional") }}
+    {% for error in form.user_id.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Role -->
+  <div class="col-sm-6">
+    {{ form.role.label(class="form-label mb-1") }}
+    {{ form.role(class="selectpicker", multiple=True) }}
+    {% for error in form.role.errors %}
+      <div class="text-danger small">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Submit -->
+  <div class="col-12 text-center mt-2">
+    <button type="submit" class="btn btn-primary btn-sm">Create User</button>
+  </div>
+</form>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  $('select[multiple]').selectpicker({
+      width: '100%'
+  });
 {% endblock %}
