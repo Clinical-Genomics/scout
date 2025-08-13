@@ -5,6 +5,7 @@ from bson import ObjectId
 from pymongo.cursor import Cursor
 from pymongo.errors import DuplicateKeyError
 
+from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
@@ -128,7 +129,7 @@ class ManagedVariantHandler(object):
 
     def managed_variants(
         self,
-        category: list = ["snv", "sv", "cancer_snv", "cancer_sv"],
+        category: list = MANAGED_CATEGORIES,
         query_options: str = None,
         build: str = None,
         institute: str = None,
