@@ -17,7 +17,6 @@ def test_build_individual():
         "bam_file": "scout/demo/reduced_mt.bam",
         "paraphase_alignment_path": "scout/demo/reduced_mt.bam",
         "assembly_alignment_path": "scout/demo/reduced_mt.bam",
-        "spanning_alignment_path": "scout/demo/reduced_mt.bam",
         "capture_kits": ["Agilent"],
     }
 
@@ -34,7 +33,6 @@ def test_build_individual():
     assert ind_obj["bam_file"].endswith(ind_info["bam_file"])
     assert ind_obj["paraphase_alignment_path"].endswith(ind_info["bam_file"])
     assert ind_obj["assembly_alignment_path"].endswith(ind_info["bam_file"])
-    assert ind_obj["spanning_alignment_path"].endswith(ind_info["bam_file"])
     assert ind_obj["analysis_type"] == "unknown"
 
 

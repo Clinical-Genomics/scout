@@ -36,7 +36,6 @@ And the tracks that can be updated are the following:
 - upd_regions_bed
 - upd_sites_bed
 - rna_coverage_bigwig
-- spanning_alignment_path
 - splice_junctions_bed
 
 Additional sample descriptors:
@@ -132,12 +131,14 @@ See e.g. [User guide - Cases - Cytogenomics](../user-guide/cases.md#Cytogenomics
 
 ### Scout REViewer Service
 
-| key name                  | key value |
-|:--------------------------|:----------|
-| reviewer.alignment        | Path      |
-| reviewer.alignment_index  | Path      |
-| reviewer.vcf              | Path      |
-| reviewer.catalog          | Path      |
+| key name                 | key value |
+|:-------------------------|:----------|
+| reviewer.alignment       | Path      |
+| reviewer.alignment_index | Path      |
+| reviewer.vcf             | Path      |
+| reviewer.catalog         | Path      |
+| reviewer.reference       | Path      |
+| reviewer.trgt            | Bool      |
 
 See [Admin guide - Scout REViewer Service](reviewer_service.md) for details on SRS.
 

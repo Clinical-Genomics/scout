@@ -94,7 +94,6 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **smn1_cn** _Int_ Copynumber.
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
-    - **spanning_alignment_path** _String_ Path to BAM/CRAM for (str) spanning alignments
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
     - **subject_id** _String_ Individual identifier - multiple samples could belong to the same individual
     - **tiddit_coverage_wig** or **coverage_wig** _String_ Path to WIG file to view alignment coverage overview from e.g. [Reference][tiddit] or [Reference][hificnv].
