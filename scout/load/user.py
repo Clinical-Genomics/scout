@@ -1,7 +1,12 @@
+import logging
 from typing import Optional
+
+import click
 
 from scout.build.user import build_user
 from scout.server.extensions import store
+
+LOG = logging.getLogger(__name__)
 
 
 def save_user(user_info: dict) -> Optional[dict]:
