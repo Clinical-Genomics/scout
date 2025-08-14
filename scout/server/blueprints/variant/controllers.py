@@ -614,6 +614,8 @@ def str_variant_reviewer(
             "catalog": ind_reviewer.get("catalog"),
             "locus": str_repid,
         }
+        if ind_reviewer.get("reference"):
+            srs_query_data["genome"] = ind_reviewer.get("reference")
 
         if ind_reviewer.get("trgt"):
             url = base_url + "/trgt"
