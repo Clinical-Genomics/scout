@@ -148,7 +148,7 @@ def remove_user(email):
         )
         inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
             "assignees"
-        ] == [mail]
+        ] == [email]
         store.unassign(institute_obj, case_obj, user_obj, inactivate_action_link, inactivate_case)
 
     store.delete_user(email)
