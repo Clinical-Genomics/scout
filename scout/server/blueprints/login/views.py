@@ -145,7 +145,7 @@ def add_user():
             flash("New user successfully saved to the database", "success")
 
         except Exception:
-            flash(f"An error occurred while creating user.", "warning")
+            flash("An error occurred while creating user.", "warning")
 
     else:
         for field_name, field_errors in form.errors.items():
