@@ -152,5 +152,5 @@ def remove_user(email):
         store.unassign(institute_obj, case_obj, user_obj, inactivate_action_link, inactivate_case)
 
     store.delete_user(email)
-    LOG.warning(f"Removed user {email} from database and from case assignees.")
+    LOG.warning(f"Removed user {user_obj['email']} from database and from case assignees.")
     return safe_redirect_back(request)
