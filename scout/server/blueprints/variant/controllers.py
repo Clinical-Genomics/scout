@@ -616,7 +616,7 @@ def str_variant_reviewer(
             "locus": str_repid,
         }
 
-        if ind_reviewer.trgt:
+        if ind_reviewer.get("trgt"):
             url = base_url + "/trgt"
         else:
             url = base_url + "/reviewer"
