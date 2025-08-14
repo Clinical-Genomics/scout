@@ -13,10 +13,10 @@ from flask import (
     session,
     url_for,
 )
-from flask_login import logout_user
+from flask_login import current_user, logout_user
 
 from scout.server.extensions import login_manager, oauth_client, store
-from scout.server.utils import public_endpoint
+from scout.server.utils import public_endpoint, safe_redirect_back
 
 from . import controllers
 from .models import LoginUser
@@ -119,3 +119,38 @@ def users():
     """Show all users in the system."""
     data = controllers.users(store)
     return render_template("login/users.html", **data)
+
+
+@login_bp.route("/remove_user/<email>", methods=["GET"])
+def remove_user(email):
+    """Remove a users from the database."""
+    if current_user.is_admin is False:
+        flash("You are not authorized to remove user accounts.", "warning")
+        return safe_redirect_back(request)
+    user_obj = store.user(email)
+    if not user_obj:
+        flash("fUser {email} not found in the database", "warning")
+        return safe_redirect_back(request)
+    mme_assigned = store.user_mme_submissions(user_obj)
+    if mme_assigned:
+        flash(
+            "fUser {email} has associated Matchmaker Exchange submissions and can only be removed from the CLI.",
+            "warning",
+        )
+
+    cases_assigned = store.cases(assignee=email)
+    for case_obj in cases_assigned:
+        institute_obj = store.institute(case_obj["owner"])
+        inactivate_action_link = url_for(
+            "cases.case",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
+        )
+        inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
+            "assignees"
+        ] == [mail]
+        store.unassign(institute_obj, case_obj, user_obj, inactivate_action_link, inactivate_case)
+
+    store.delete_user(email)
+    LOG.warning(f"Removed user {email} from database and from case assignees.")
+    return safe_redirect_back(request)
