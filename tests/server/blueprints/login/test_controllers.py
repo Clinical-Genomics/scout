@@ -63,8 +63,9 @@ def test_event_rank_6000():
     assert invetigator_status == "inspector"
 
 
-def test_users_controller(user_adapter):
+def test_users_controller(app, user_adapter):
     """Test the uses controller"""
-    res = users(user_adapter)
-    user = res["users"][0]
-    assert user["events_rank"] == "aspirant"
+    with app.app_context():
+        res = users(user_adapter)
+        user = res["users"][0]
+        assert user["events_rank"] == "aspirant"
