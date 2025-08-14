@@ -592,7 +592,6 @@ def str_variant_reviewer(
     variant_obj = store.variant(variant_id)
 
     str_repid = variant_obj.get("str_repid")
-    print("str_variants_reviewer", str_repid)
 
     base_url = current_app.config.get("SCOUT_REVIEWER_URL")
 
@@ -618,6 +617,7 @@ def str_variant_reviewer(
 
         if ind_reviewer.get("trgt"):
             url = base_url + "/trgt"
+            srs_query_data["locus"] = variant_obj.get("str_trid") or str_repid
         else:
             url = base_url + "/reviewer"
 
