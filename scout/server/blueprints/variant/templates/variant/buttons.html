@@ -133,7 +133,7 @@
       href="{{url_for('variant.reviewer_aln', institute_id=institute_id, case_name=case.display_name, variant_id=variant._id)}}"
       class="btn btn-secondary btn-sm text-white" role="button"
       target="_blank" rel="noopener"
-      {% if "trgt" in case.variant_individuals[0] and case.variant_individuals[0].trgt %}
+      {% if "trgt" in case.individuals[0].reviewer and case.individuals[0].reviewer.trgt %}
         title="View TRGT alignment plot for {{variant.str_repid}} using external service."
         >TRGT</a>
       {% else %}
