@@ -52,8 +52,10 @@ def users(store):
     """Display a list of all users and which institutes they belong to."""
     user_objs = list(store.users())
     new_user_form = UserForm()
+    all_institutes = store.institutes()
     new_user_form.institute.choices = [
-        (inst["_id"], f'{inst["display_name"]} - {inst["_id"]}') for inst in store.institutes()
+        (inst["_id"], f'{inst["display_name"]} - {inst["_id"]}')
+        for inst in all_institutes.sort("display_name", 1)
     ]
     for user_obj in user_objs:
         user_institutes = user_obj.get("institutes")
