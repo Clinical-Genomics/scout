@@ -8,6 +8,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
 
     def pre_validate(self, _form):
+        """Just skip the validation."""
         pass
 
 
