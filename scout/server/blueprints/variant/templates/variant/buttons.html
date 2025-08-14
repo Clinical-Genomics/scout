@@ -128,7 +128,7 @@
 
 {% macro reviewer_button(case, variant, case_groups, institute_id) %}
   {% if config.SCOUT_REVIEWER_URL %}
-    {% if "reviewer" in case.individuals[0] %}
+    {% if "reviewer" in case.individuals[0] and case.individuals[0].reviewer %}
       <a
       href="{{url_for('variant.reviewer_aln', institute_id=institute_id, case_name=case.display_name, variant_id=variant._id)}}"
       class="btn btn-secondary btn-sm text-white" role="button"
