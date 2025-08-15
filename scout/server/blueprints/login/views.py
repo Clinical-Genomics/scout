@@ -15,6 +15,8 @@ from flask import (
 )
 from flask_login import current_user, logout_user
 
+from scout.load.user import save_user
+from scout.server.blueprints.login.forms import UserForm
 from scout.server.extensions import login_manager, oauth_client, store
 from scout.server.utils import public_endpoint, safe_redirect_back
 
@@ -120,7 +122,6 @@ def users():
     data = controllers.users(store)
     return render_template("login/users.html", **data)
 
-
 @login_bp.route("/remove_user/<email>", methods=["GET"])
 def remove_user(email):
     """Remove a users from the database."""
@@ -153,4 +154,35 @@ def remove_user(email):
 
     store.delete_user(email)
     LOG.warning(f"Removed user {user_obj['email']} from database and from case assignees.")
+    return safe_redirect_back(request)
+
+@login_bp.route("/add_user", methods=["POST"])
+def add_user():
+    """Save a new user in the database and redirect to users page."""
+    if current_user.is_admin is False:
+        flash("You are not authorized to create a new user.", "warning")
+        return safe_redirect_back(request)
+
+    form = UserForm()
+    if form.validate_on_submit():
+        user_info = {
+            "email": form.email.data,
+            "name": form.name.data,
+            "roles": form.role.data,
+            "institutes": form.institute.data,
+            "id": form.user_id.data,
+        }
+
+        try:
+            save_user(user_info=user_info)
+            flash("New user successfully saved to the database", "success")
+
+        except Exception:
+            flash("An error occurred while creating user.", "warning")
+
+    else:
+        for field_name, field_errors in form.errors.items():
+            for error in field_errors:
+                LOG.warning(f"Error in {field_name}: {error}")
+
     return safe_redirect_back(request)

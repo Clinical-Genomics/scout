@@ -4,6 +4,11 @@
   {{ super() }} - Users
 {% endblock %}
 
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -18,6 +23,25 @@
 <div class="container-float">
   <div class="card panel-default">
     <div class="card-body">
+
+      {% if current_user.is_admin %}
+        <div class="mb-2">
+          <button class="btn btn-primary btn-sm" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#newUserForm"
+                  aria-expanded="false"
+                  aria-controls="newUserForm">
+            + New User
+          </button>
+        </div>
+
+        <div class="collapse" id="newUserForm">
+          <div class="card card-body p-2">
+            {{ new_user_form() }}
+          </div>
+        </div>
+      {% endif %}
+
       <table class="table table-bordered table-hover mt-3">
         <thead class="table-light thead">
           <tr>
@@ -70,12 +94,80 @@
 </div>
 {% endblock %}
 
+{% macro new_user_form() %}
+<form method="post" class="row g-2" action="{{url_for('login.add_user')}}">
+  {{ form.hidden_tag() }}
+
+  <div class="row">
+    <!-- Institute -->
+    <div class="col-12">
+      {{ form.institute.label(class="form-label mb-1") }}
+      {{ form.institute(class="selectpicker w-75", required=True) }}
+      {% for error in form.institute.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Full Name -->
+    <div class="col-sm-6">
+      {{ form.name.label(class="form-label mb-1") }}
+      {{ form.name(class="form-control form-control-sm", placeholder="John Smith", required=True) }}
+      {% for error in form.name.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Email -->
+    <div class="col-sm-6">
+      {{ form.email.label(class="form-label mb-1") }}
+      {{ form.email(class="form-control form-control-sm", placeholder="name@example.com", required=True, type="email") }}
+      {% for error in form.email.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- LDAP ID -->
+    <div class="col-sm-6">
+      {{ form.user_id.label(class="form-label mb-1") }}
+      {{ form.user_id(class="form-control form-control-sm", placeholder="Optional") }}
+      {% for error in form.user_id.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Role -->
+    <div class="col-sm-6">
+      {{ form.role.label(class="form-label mb-1") }}
+      {{ form.role(class="selectpicker w-100") }}
+      {% for error in form.role.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Submit -->
+    <div class="col-12 text-center mt-2">
+      <button type="submit" class="btn btn-primary btn-sm">Create User</button>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
 {% block scripts %}
   {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script>
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     });
   </script>
+
 {% endblock %}
+
