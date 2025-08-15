@@ -104,10 +104,12 @@ def authorized():
 
 @login_bp.route("/logout")
 def logout():
+
     session.pop("email", None)
     session.pop("name", None)
     session.pop("locale", None)
     session.pop("consent_given", None)
+
     logout_user()  # logs out user from scout
     for provider in ["GOOGLE", "KEYCLOAK"]:
         if current_app.config.get(provider):
