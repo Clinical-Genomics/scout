@@ -175,13 +175,13 @@ def edit_user(email):
             "institutes": form.institute.data,
             "_id": edit_user["_id"],
         }
-        LOG.warning(user_info)
         try:
-            appo: store.update_user(user_obj=user_info)
-            flash("New user successfully updated", "success")
+            store.update_user(user_obj=user_info)
+            flash(f"User successfully updated", "success")
         except Exception as ex:
             flash(f"An error occurred while updating user:{ex}.", "warning")
 
-    data = controllers.users(store)
+        return redirect(url_for("login.users"))
 
+    data = controllers.users(store)
     return render_template("login/users.html", edit_user=edit_user, **data)
