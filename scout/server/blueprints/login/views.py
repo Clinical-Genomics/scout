@@ -13,10 +13,12 @@ from flask import (
     session,
     url_for,
 )
-from flask_login import logout_user
+from flask_login import current_user, logout_user
 
+from scout.load.user import save_user
+from scout.server.blueprints.login.forms import UserForm
 from scout.server.extensions import login_manager, oauth_client, store
-from scout.server.utils import public_endpoint
+from scout.server.utils import public_endpoint, safe_redirect_back
 
 from . import controllers
 from .models import LoginUser
@@ -121,3 +123,35 @@ def users():
     """Show all users in the system."""
     data = controllers.users(store)
     return render_template("login/users.html", **data)
+
+
+@login_bp.route("/add_user", methods=["POST"])
+def add_user():
+    """Save a new user in the database and redirect to users page."""
+    if current_user.is_admin is False:
+        flash("You are not authorized to create a new user.", "warning")
+        return safe_redirect_back(request)
+
+    form = UserForm()
+    if form.validate_on_submit():
+        user_info = {
+            "email": form.email.data,
+            "name": form.name.data,
+            "roles": form.role.data,
+            "institutes": form.institute.data,
+            "id": form.user_id.data,
+        }
+
+        try:
+            save_user(user_info=user_info)
+            flash("New user successfully saved to the database", "success")
+
+        except Exception:
+            flash("An error occurred while creating user.", "warning")
+
+    else:
+        for field_name, field_errors in form.errors.items():
+            for error in field_errors:
+                LOG.warning(f"Error in {field_name}: {error}")
+
+    return safe_redirect_back(request)
