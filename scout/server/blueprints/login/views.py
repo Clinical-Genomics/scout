@@ -122,6 +122,7 @@ def users():
     data = controllers.users(store)
     return render_template("login/users.html", **data)
 
+
 @login_bp.route("/remove_user/<email>", methods=["GET"])
 def remove_user(email):
     """Remove a users from the database."""
@@ -155,6 +156,7 @@ def remove_user(email):
     store.delete_user(email)
     LOG.warning(f"Removed user {user_obj['email']} from database and from case assignees.")
     return safe_redirect_back(request)
+
 
 @login_bp.route("/add_user", methods=["POST"])
 def add_user():
