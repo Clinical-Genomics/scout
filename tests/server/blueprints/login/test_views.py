@@ -3,6 +3,8 @@ import pytest
 from flask import redirect, url_for
 from flask_login import current_user
 
+from scout.server.extensions import store
+
 
 def test_unathorized_database_login(app):
     """Test failed authentication against scout database"""
@@ -101,3 +103,35 @@ def test_oauth_login(request, app_fixture, oauth_provider, user_obj, mocker):
             assert resp.status_code == 200
             # AND the user should be authenticated
             assert current_user.is_authenticated
+
+
+def test_add_user(app):
+    """Tests the endpoint that accepts a POST request with a user form and creates a new user in the database."""
+
+    with app.test_client() as client:
+        with app.test_request_context():
+            login_url = url_for("auto_login")
+
+        resp = client.get(login_url)
+        assert resp.status_code == 200
+
+        # GIVEN a user that needs to be saved in the database
+        NEW_USER_EMAIL = "thisIsATest@mail.com"
+        assert store.user(email=NEW_USER_EMAIL) is None
+
+        # GIVEN a form filler with the required info
+        user_info = {
+            "institute": ["cust000"],
+            "name": "Test User",
+            "email": NEW_USER_EMAIL,
+            "role": ["admin", "mme_submitter"],
+            "user_id": "",
+        }
+
+        # WHEN the user is saved via web form
+        client.post(
+            url_for("login.add_user"),
+            data=user_info,
+        )
+        # THEN it should be found in the database
+        assert store.user(email=NEW_USER_EMAIL)
