@@ -74,7 +74,7 @@ The following command can be used to add a create a new user into the database:
 
 Institutional directory services authentication via LDAP is supported by Scout.
 
-LDAP authentication in Scout is achieved by using the [flask-ldapconn](https://github.com/rroemhild/flask-ldapconn) library.
+LDAP authentication in Scout is achieved by using the [ldap3](https://github.com/cannatag/ldap3) library.
 
 Pre-requisites in order to authenticate users using LDAP:
 
