@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
 - Export Managed Variants: CLI now supports `--category` to filter by one or more categories (snv, sv, cancer_snv, cancer_sv). Defaults to all. (#5608)
 - New form to create users on the general users page (visible to admin users only) (#5610)
+- Scout-Reviewer-Service endpoint to visualise PacBio trgt called expansions (#5611)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
