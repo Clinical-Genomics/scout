@@ -31,13 +31,17 @@
                   data-bs-target="#newUserForm"
                   aria-expanded="false"
                   aria-controls="newUserForm">
-            + New User
+            + {% if edit_user%}Edit{% else %}New{% endif %} User
           </button>
         </div>
 
-        <div class="collapse" id="newUserForm">
+        <div class="collapse {% if edit_user %}show{% endif %}" id="newUserForm">
           <div class="card card-body p-2">
-            {{ new_user_form() }}
+            {% if edit_user %}
+              {{ new_user_form(form, url_for('login.edit_user', email=edit_user.email), "Update User") }}
+            {% else %}
+              {{ new_user_form(form, url_for('login.add_user'), "Create User") }}
+            {% endif %}
           </div>
         </div>
       {% endif %}
@@ -49,6 +53,7 @@
             <th>Email</th>
             <th>Institutes</th>
             <th>Rank</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -75,6 +80,15 @@
                 </div>
                 <img class="rank-shield float-end" src="{{ url_for('login.static', filename=(user.events_rank + '.svg')) }}" alt="{{ user.events_rank }}">
               </td>
+              <td>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('login.edit_user', email=user.email) }}"
+                   data-bs-toggle="tooltip"
+                   title="Edit user"
+                   class="btn btn-warning fa fa-pencil float-end text-white ms-1">
+                </a>
+              {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -84,26 +98,34 @@
 </div>
 {% endblock %}
 
-{% macro new_user_form() %}
-<form method="post" class="row g-2" action="{{url_for('login.add_user')}}">
+{% macro new_user_form(form, action_url, submit_label) %}
+<form method="post" class="row g-2" action="{{action_url}}">
   {{ form.hidden_tag() }}
 
   <div class="row">
     <!-- Institute -->
     <div class="col-12">
       {{ form.institute.label(class="form-label mb-1") }}
-      {{ form.institute(class="selectpicker w-75", required=True) }}
+      <select class="selectpicker w-75" name="{{ form.institute.name }}" multiple required>
+      {% for option in form.institute.choices %}
+        <option value="{{ option[0] }}"
+          {% if edit_user and option[0] in edit_user.institutes %}selected{% endif %}>
+          {{ option[1] }}
+        </option>
+      {% endfor %}
       {% for error in form.institute.errors %}
         <div class="text-danger small">{{ error }}</div>
       {% endfor %}
+      </select>
     </div>
+
   </div>
 
   <div class="row">
     <!-- Full Name -->
     <div class="col-sm-6">
       {{ form.name.label(class="form-label mb-1") }}
-      {{ form.name(class="form-control form-control-sm", placeholder="John Smith", required=True) }}
+      {{ form.name(class="form-control form-control-sm", placeholder="John Smith", required=True, value=edit_user.name if edit_user else "") }}
       {% for error in form.name.errors %}
         <div class="text-danger small">{{ error }}</div>
       {% endfor %}
@@ -112,7 +134,14 @@
     <!-- Email -->
     <div class="col-sm-6">
       {{ form.email.label(class="form-label mb-1") }}
-      {{ form.email(class="form-control form-control-sm", placeholder="name@example.com", required=True, type="email") }}
+      {{ form.email(
+      class="form-control form-control-sm",
+      placeholder="name@example.com",
+      required=True,
+      type="email",
+      value=edit_user.email if edit_user else "",
+      **({'disabled': True} if edit_user else {})
+      ) }}
       {% for error in form.email.errors %}
         <div class="text-danger small">{{ error }}</div>
       {% endfor %}
@@ -123,7 +152,12 @@
     <!-- LDAP ID -->
     <div class="col-sm-6">
       {{ form.user_id.label(class="form-label mb-1") }}
-      {{ form.user_id(class="form-control form-control-sm", placeholder="Optional") }}
+      {{ form.user_id(
+        class="form-control form-control-sm",
+        placeholder="Optional",
+        value=edit_user._id if edit_user else "",
+        **({'disabled': True} if edit_user else {})
+        ) }}
       {% for error in form.user_id.errors %}
         <div class="text-danger small">{{ error }}</div>
       {% endfor %}
@@ -132,7 +166,14 @@
     <!-- Role -->
     <div class="col-sm-6">
       {{ form.role.label(class="form-label mb-1") }}
-      {{ form.role(class="selectpicker w-100") }}
+      <select class="selectpicker w-100" name="{{ form.role.name }}" multiple>
+        {% for option in form.role.choices %}
+          <option value="{{ option }}"
+            {% if edit_user and option in edit_user.roles %}selected{% endif %}>
+            {{ option }}
+          </option>
+        {% endfor %}
+      </select>
       {% for error in form.role.errors %}
         <div class="text-danger small">{{ error }}</div>
       {% endfor %}
@@ -142,7 +183,7 @@
   <div class="row">
     <!-- Submit -->
     <div class="col-12 text-center mt-2">
-      <button type="submit" class="btn btn-primary btn-sm">Create User</button>
+      <button type="submit" class="btn btn-primary btn-sm">{{submit_label}}</button>
     </div>
   </div>
 </form>
@@ -151,5 +192,12 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+  </script>
 {% endblock %}
 
