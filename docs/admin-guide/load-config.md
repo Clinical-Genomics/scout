@@ -79,8 +79,9 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **reviewer** _List_ [Reference][srs]
       - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
       - **alignment_index** _String_ Path to BAM/CRAM index file to view STR alignments
+      - **trgt** _Bool_ Boolean indicating if individual has trgt data (indicates alignment is spanning, catalog is BED)
       - **vcf** _String_ Path to STR VCF file to view STR alignments
-      - **catalog** _String_ Path or URL to REViewer catalog JSON file to view STR alignments
+      - **catalog** _String_ Path or URL to REViewer catalog JSON or BED file to view STR alignments
       - **reference** _String_ Path or URL for REViewer to reference sequence for the individual STR alignment
     - **rna_alignment_path** _String_ Path to RNA alignment file (BAM/CRAM)
     - **rna_coverage_bigwig** _String_ Path to coverage islands file generated
