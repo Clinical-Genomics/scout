@@ -125,33 +125,40 @@ def users():
 
 @login_bp.route("/remove_user/<email>", methods=["GET"])
 def remove_user(email):
-    """Remove a users from the database."""
-    if current_user.is_admin is False:
+    """Remove a user from the database."""
+    if not current_user.is_admin:
         flash("You are not authorized to remove user accounts.", "warning")
         return safe_redirect_back(request)
+
     user_obj = store.user(email)
     if not user_obj:
-        flash("fUser {email} not found in the database", "warning")
+        flash(f"User {email} not found in the database", "warning")
         return safe_redirect_back(request)
-    mme_assigned = store.user_mme_submissions(user_obj)
-    if mme_assigned:
+
+    if store.user_mme_submissions(user_obj):
         flash(
-            "fUser {email} has associated Matchmaker Exchange submissions and can only be removed from the CLI.",
+            f"User {email} has associated Matchmaker Exchange submissions "
+            "and can only be removed from the CLI.",
             "warning",
         )
+        return safe_redirect_back(request)
 
-    cases_assigned = store.cases(assignee=email)
-    for case_obj in cases_assigned:
+    for case_obj in store.cases(assignee=email):
         institute_obj = store.institute(case_obj["owner"])
-        inactivate_action_link = url_for(
-            "cases.case",
-            institute_id=case_obj["owner"],
-            case_name=case_obj["display_name"],
-        )
         inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
             "assignees"
         ] == [email]
-        store.unassign(institute_obj, case_obj, user_obj, inactivate_action_link, inactivate_case)
+        store.unassign(
+            institute_obj,
+            case_obj,
+            user_obj,
+            url_for(
+                "cases.case",
+                institute_id=case_obj["owner"],
+                case_name=case_obj["display_name"],
+            ),
+            inactivate_case,
+        )
 
     store.delete_user(email)
     LOG.warning(f"Removed user {user_obj['email']} from database and from case assignees.")
