@@ -49,6 +49,7 @@
             <th>Email</th>
             <th>Institutes</th>
             <th>Rank</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -74,6 +75,15 @@
                   <span class="text-muted">{{ user.events }} events</span>
                 </div>
                 <img class="rank-shield float-end" src="{{ url_for('login.static', filename=(user.events_rank + '.svg')) }}" alt="{{ user.events_rank }}">
+              </td>
+              <td>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('login.remove_user', email=user.email) }}"
+                  data-bs-toggle="tooltip"
+                  title="Delete user from database and case assignees"
+                  class="btn btn-danger fa fa-trash float-end text-white">
+                </a>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
@@ -151,5 +161,13 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+  </script>
+
 {% endblock %}
 
