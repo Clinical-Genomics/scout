@@ -179,7 +179,6 @@ def edit_user(email):
             store.update_user(user_obj=user_info)
             flash(f"User successfully updated", "success")
         except Exception as ex:
-            LOG.warning(f"HERE BITCHES----{ex}")
             flash(f"An error occurred while updating user:{ex}.", "warning")
 
         return redirect(url_for("login.users"))
