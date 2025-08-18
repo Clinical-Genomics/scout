@@ -13,7 +13,7 @@ from flask import (
     session,
     url_for,
 )
-from flask_login import current_user, logout_user
+from flask_login import current_user, login_user, logout_user
 
 from scout.load.user import save_user
 from scout.server.blueprints.login.forms import UserForm
@@ -157,7 +157,7 @@ def add_user():
 
 @login_bp.route("/edit_user/<email>", methods=["GET", "POST"])
 def edit_user(email):
-    if not current_user.is_admin:
+    if current_user.is_admin is False:
         flash("Unauthorized", "warning")
         return redirect(url_for("login.users"))
 
@@ -169,7 +169,7 @@ def edit_user(email):
     form = UserForm()
     if form.validate_on_submit():
         user_info = {
-            "email": edit_user["email"],
+            "email": email,
             "name": form.name.data,
             "roles": form.role.data,
             "institutes": form.institute.data,
@@ -179,6 +179,7 @@ def edit_user(email):
             store.update_user(user_obj=user_info)
             flash(f"User successfully updated", "success")
         except Exception as ex:
+            LOG.warning(f"HERE BITCHES----{ex}")
             flash(f"An error occurred while updating user:{ex}.", "warning")
 
         return redirect(url_for("login.users"))

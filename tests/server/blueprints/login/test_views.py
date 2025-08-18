@@ -5,6 +5,15 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 
+NEW_USER_EMAIL = "thisIsATest@mail.com"
+USERS_INFO = {
+    "institute": ["cust000"],
+    "name": "Test User",
+    "email": NEW_USER_EMAIL,
+    "role": ["admin", "mme_submitter"],
+    "user_id": "",
+}
+
 
 def test_unathorized_database_login(app):
     """Test failed authentication against scout database"""
@@ -116,22 +125,39 @@ def test_add_user(app):
         assert resp.status_code == 200
 
         # GIVEN a user that needs to be saved in the database
-        NEW_USER_EMAIL = "thisIsATest@mail.com"
         assert store.user(email=NEW_USER_EMAIL) is None
 
         # GIVEN a form filler with the required info
-        user_info = {
-            "institute": ["cust000"],
-            "name": "Test User",
-            "email": NEW_USER_EMAIL,
-            "role": ["admin", "mme_submitter"],
-            "user_id": "",
-        }
-
         # WHEN the user is saved via web form
         client.post(
             url_for("login.add_user"),
-            data=user_info,
+            data=USERS_INFO,
         )
         # THEN it should be found in the database
         assert store.user(email=NEW_USER_EMAIL)
+
+
+def test_edit_user(app, user_obj):
+    """Tests the endpoint invoked to edit data from an existing user."""
+
+    with app.test_client() as client:
+        # Need a context to build URLs
+        with app.test_request_context():
+            login_url = url_for("auto_login")
+            edit_url = url_for("login.edit_user", email=user_obj["email"])
+
+        # Log in as admin
+        client.get(login_url)
+
+        # GIVEN an existing user which is to be updated (user name and roles)
+        existing_user = store.user(email=user_obj.get("email"))
+        assert existing_user["name"] != USERS_INFO["name"]
+        assert existing_user["roles"] != USERS_INFO["role"]
+
+        # WHEN the user is updated via web form
+        client.post(edit_url, data=USERS_INFO)
+
+        # THEN the existing user should be updated
+        existing_user = store.user(email=user_obj.get("email"))
+        assert existing_user["name"] == USERS_INFO["name"]
+        assert existing_user["roles"] == USERS_INFO["role"]
