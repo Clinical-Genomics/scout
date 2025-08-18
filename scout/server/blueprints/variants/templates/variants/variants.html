@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import snv_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import snv_filters, filters_form_header, cell_rank, clickable_variant_table_row_script, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt, variant_link_href, variant_rank_score %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell  %}
 
 {% block title %}
@@ -193,22 +193,7 @@
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-          if (e.target.closest("a, button")) return; // do not trigger on actual links
-          const url = row.dataset.href;
-          const target = row.dataset.target || "_self";
-
-          // respect ctrl/cmd for manual background open
-          if (e.metaKey || e.ctrlKey) {
-            window.open(url, "_blank");
-          } else {
-            window.open(url, target);
-          }
-        });
-      });
-    });
+    {{ clickable_variant_table_row_script() }}
 
     $(document).ready(function(){
       if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {

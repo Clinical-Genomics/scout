@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import cancer_sv_filters, callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
+{% from "variants/utils.html" import cancer_sv_filters, callers_cell, cell_rank, clickable_variant_table_row_script, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -161,22 +161,7 @@
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-          if (e.target.closest("a, button")) return; // do not trigger on actual links
-          const url = row.dataset.href;
-          const target = row.dataset.target || "_self";
-
-          // respect ctrl/cmd for manual background open
-          if (e.metaKey || e.ctrlKey) {
-            window.open(url, "_blank");
-          } else {
-            window.open(url, target);
-          }
-        });
-      });
-    });
+    {{ clickable_variant_table_row_script() }}
 
   </script>
 {% endblock %}

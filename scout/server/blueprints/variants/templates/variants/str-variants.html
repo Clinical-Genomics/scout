@@ -3,7 +3,7 @@
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general %}
-{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, str_filters, update_stash_filter_button_status, variant_link_href %}
+{% from "variants/utils.html" import callers_cell, cell_rank, clickable_variant_table_row_script, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, str_filters, update_stash_filter_button_status, variant_link_href %}
 
 
 {% block title %}
@@ -179,22 +179,7 @@
       })
     })
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-          if (e.target.closest("a, button")) return; // do not trigger on actual links
-          const url = row.dataset.href;
-          const target = row.dataset.target || "_self";
-
-          // respect ctrl/cmd for manual background open
-          if (e.metaKey || e.ctrlKey) {
-            window.open(url, "_blank");
-          } else {
-            window.open(url, target);
-          }
-        });
-      });
-    });
+    {{ clickable_variant_table_row_script() }}
 
   </script>
 {% endblock %}

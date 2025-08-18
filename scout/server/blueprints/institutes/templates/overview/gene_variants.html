@@ -2,7 +2,7 @@
 {% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/utils.html" import pagination_footer, pagination_hidden_div, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import clickable_variant_table_row_script, pagination_footer, pagination_hidden_div, variant_link_href, variant_rank_score %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -221,22 +221,7 @@
       return new bootstrap.Popover(popoverTriggerEl, {container: 'body'})
     })
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-          if (e.target.closest("a, button")) return; // do not trigger on actual links
-          const url = row.dataset.href;
-          const target = row.dataset.target || "_self";
-
-          // respect ctrl/cmd for manual background open
-          if (e.metaKey || e.ctrlKey) {
-            window.open(url, "_blank");
-          } else {
-            window.open(url, target);
-          }
-        });
-      });
-    });
+    {{ clickable_variant_table_row_script() }}
 
     $(function () {
       $('select[multiple]').selectpicker({
