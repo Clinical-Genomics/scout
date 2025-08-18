@@ -141,12 +141,11 @@ def test_edit_user(app, user_obj):
     """Tests the endpoint invoked to edit data from an existing user."""
 
     with app.test_client() as client:
-        # Need a context to build URLs
+        # GIVEN a user logged in
         with app.test_request_context():
             login_url = url_for("auto_login")
             edit_url = url_for("login.edit_user", email=user_obj["email"])
 
-        # Log in as admin
         client.get(login_url)
 
         # GIVEN an existing user which is to be updated (user name and roles)
