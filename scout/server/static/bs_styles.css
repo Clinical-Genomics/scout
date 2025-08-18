@@ -411,6 +411,11 @@ option {
 	height: auto;
 }
 
+/* On variantS table rows, show a pointer cursor to indicate the row is clickable */
+tr[data-href] {
+	cursor: pointer;
+}
+
 .blink_me {
 	animation: blinker 2s linear infinite;
 }

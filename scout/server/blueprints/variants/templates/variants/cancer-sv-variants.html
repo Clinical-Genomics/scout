@@ -91,7 +91,7 @@
 {% endblock %}
 
 {% macro variant_row(variant) %}
-  <tr data-href="{{ variant_link_href(variant, institute, case) }}"
+  <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
   {% if variant.dismiss_variant %}
     class="dismiss">
   {% elif 'causatives' in case and variant._id in case.causatives %}
@@ -164,13 +164,19 @@
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll("table tr[data-href]").forEach(row => {
         row.addEventListener("click", e => {
-          // Don’t trigger if the click started on an <a> or <button>
-          if (e.target.closest("a, button")) return;
-          window.location = row.dataset.href;
+          if (e.target.closest("a, button")) return; // do not trigger on actual links
+          const url = row.dataset.href;
+          const target = row.dataset.target || "_self";
+
+          // respect ctrl/cmd for manual background open
+          if (e.metaKey || e.ctrlKey) {
+            window.open(url, "_blank");
+          } else {
+            window.open(url, target);
+          }
         });
       });
     });
-
 
   </script>
 {% endblock %}
