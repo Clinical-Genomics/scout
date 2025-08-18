@@ -381,12 +381,12 @@ body {
 }
 
 .btn[aria-expanded="true"] .collapse-button-icon::before {
-  content: " \f0d7";
-  font-family: "Font Awesome 5 Free", ui-monospace;
-  font-weight: 900;
-  display: inline;
-  text-align: left;
-
+	content: " \f0d7";
+	font-family: "Font Awesome 5 Free", ui-monospace;
+	font-weight: 900;
+	display: inline;
+	text-align: left;
+}
 
 option {
   width: 100%;
@@ -413,7 +413,7 @@ option {
 
 /* On variantS table rows, show a pointer cursor to indicate the row is clickable */
 tr[data-href] {
-	cursor: pointer;
+	cursor: pointer !important;
 }
 
 .blink_me {
