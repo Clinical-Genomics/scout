@@ -178,16 +178,6 @@
       {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-        // Don’t trigger if the click started on an <a> or <button>
-        if (e.target.closest("a, button")) return;
-        window.location = row.dataset.href;
-        });
-      });
-    });
-
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
     return new bootstrap.Popover(popoverTriggerEl, {
@@ -203,6 +193,16 @@
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("table tr[data-href]").forEach(row => {
+        row.addEventListener("click", e => {
+          // Don’t trigger if the click started on an <a> or <button>
+          if (e.target.closest("a, button")) return;
+          window.location = row.dataset.href;
+        });
+      });
+    });
+
     $(document).ready(function(){
       if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
         $('#hidecompounds').collapse('show');
@@ -213,5 +213,6 @@
       var the_form = document.forms['filters_form'];
       the_form.submit();
     };
+
    </script>
 {% endblock %}

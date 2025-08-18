@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import sv_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
+{% from "variants/utils.html" import sv_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_link_href, variant_rank_score %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -90,13 +90,14 @@ onsubmit="return validateForm()">
 {% endblock %}
 
 {% macro variant_row(variant, inherit_palette) %}
-  {% if variant.dismiss_variant %}
-   <tr class="dismiss">
-  {% elif 'causatives' in case and variant._id in case.causatives %}
-   <tr class="causative">
-  {% else %}
-  <tr>
-  {% endif %}
+  <tr data-href="{{ variant_link_href(variant, institute, case) }}"
+    {% if variant.dismiss_variant %}
+      class="dismiss">
+    {% elif 'causatives' in case and variant._id in case.causatives %}
+      class="causative">
+    {% else %}
+      >
+    {% endif %}
     <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
@@ -121,7 +122,7 @@ onsubmit="return validateForm()">
       {{ variant_funct_anno_cell(variant) }}
     </td>
     <td>{{ overlapping_cell(variant, institute, case) }}</td>
-  </tr>
+  </>
 {% endmacro %}
 
 
@@ -159,5 +160,16 @@ onsubmit="return validateForm()">
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("table tr[data-href]").forEach(row => {
+        row.addEventListener("click", e => {
+          // Don’t trigger if the click started on an <a> or <button>
+          if (e.target.closest("a, button")) return;
+          window.location = row.dataset.href;
+          });
+      });
+    });
+
   </script>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general %}
-{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filters_form_header, filter_script_main %}
+{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, str_filters, update_stash_filter_button_status, variant_link_href %}
 
 
 {% block title %}
@@ -76,18 +76,19 @@
             <tr style="height:10px;"></tr>
           {% endif %}
           {% set ns.allele0 = variant.chromosome + variant.position|string %}
+            <tr data-href="{{ variant_link_href(variant, institute, case) }}"
           {% if variant.dismiss_variant %}
-              <tr class="dismiss">
+              class="dismiss">
           {% elif 'causatives' in case and variant._id in case.causatives %}
-             <tr class="causative">
+              class="causative">
           {% elif variant.str_status == 'normal' %}
-              <tr class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
+              class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           {% elif variant.str_status == 'full_mutation' %}
-              <tr class="bg-danger">
+              class="bg-danger">
           {% elif variant.str_status == 'pre_mutation' %}
-              <tr class="bg-warning">
+              class="bg-warning">
 	        {% else %}
-	            <tr>
+	            >
 	        {% endif %}
             <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td class="str-link">{{ str_locus_info(variant) }}</td>
@@ -177,6 +178,16 @@
         container: 'body',
       })
     })
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("table tr[data-href]").forEach(row => {
+        row.addEventListener("click", e => {
+          // Don’t trigger if the click started on an <a> or <button>
+          if (e.target.closest("a, button")) return;
+          window.location = row.dataset.href;
+        });
+      });
+    });
 
   </script>
 {% endblock %}
