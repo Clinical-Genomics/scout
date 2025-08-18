@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links to SNVs and SVs from SMN CN page (#5600)
 - Consistent panel display on variants pages for unselected "All" panels (#5600)
 - Bump tj-actions-branch-names GitHub action to v9 (#5605)
+- Missing variant key `tool_hits` causing fusion variants page to crash (#5614)
 
 ## [4.103.3]
 ### Changed
