@@ -13,7 +13,7 @@ from flask import (
     session,
     url_for,
 )
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, logout_user
 
 from scout.load.user import save_user
 from scout.server.blueprints.login.forms import UserForm
