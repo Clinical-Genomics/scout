@@ -48,7 +48,7 @@
 </thead>
 <tbody>
     {% for variant in variants %}
-      <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
+      <tr data-target="_blank" data-href="{{ variant_link_href(variant, variant.institute, variant.case_display_name) }}"
       {% if variant.dismiss_variant %}
         class="dismiss">
       {% else %}

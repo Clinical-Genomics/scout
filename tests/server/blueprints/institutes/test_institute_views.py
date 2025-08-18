@@ -29,6 +29,7 @@ def test_gene_variants(app, user_obj, institute_obj):
             url_for(
                 OVERVIEW_GENE_VARIANTS_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
+                case()
             ),
             data=form_data,
         )
