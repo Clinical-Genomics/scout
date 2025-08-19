@@ -216,15 +216,17 @@ def set_sv_specific_annotations(parsed_variant: dict, variant: dict):
             parsed_variant["frequencies"][key] = sv_frequencies[key]
 
 
-def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_archive_info: dict):
+def set_loqus_archive_frequencies(
+    parsed_variant: dict[str, Any], variant: Variant, local_archive_info: Optional[dict]
+) -> dict[str, Any]:
     """
-    loqusdb archive frequencies
-    Fist, RD germline, for MIP and Balsamic
-    Then, Cancer (Balsamic) Germline and Somatic loqus archives
-    SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
+    Populate a parsed variant dictionary with frequency and observation data
+    from archived LoqusDB instances annotated in the VCF INFO field.
+    The fields to be collected are custom and defined in `scout.server.config.LOQUSDB_ARCHIVE_VCF_INFO_FIELDS`.
+    A key with prefix will be saved into a variant key like this: local_obs_{key}_old", local_obs_{key}_hom_old", local_obs_{key}_old_freq"
+    These keys are mostly used for different instances of Cancer (Balsamic) Germline and Somatic loqus.
+    RD germline (for MIP and Balsamic) SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs.
     """
-
-    from scout.server import app
 
     def safe_val(val):
         """Convert -1 to None, leave other values unchanged."""
