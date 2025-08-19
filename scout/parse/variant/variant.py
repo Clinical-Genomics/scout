@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from cyvcf2 import Variant
+from flask.cli import current_app
 
 from scout.constants import CHR_PATTERN, DNA_SAMPLE_VARIANT_CATEGORIES
 from scout.exceptions import VcfError
@@ -223,36 +224,36 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
     SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
     """
 
+    from scout.server import app
+
     def safe_val(val):
         """Convert -1 to None, leave other values unchanged."""
         return None if val == -1 else val
 
     info = variant.INFO
 
-    # RD observations (SNVs or SVs)
-    local_obs_old = (
-        info.get("Obs") or info.get("clinical_genomics_loqusObs") or info.get("clin_obs")
-    )
-    parsed_variant["local_obs_old"] = safe_val(call_safe(int, local_obs_old))
-    parsed_variant["local_obs_hom_old"] = safe_val(call_safe(int, info.get("Hom")))
-    parsed_variant["local_obs_old_freq"] = safe_val(
-        call_safe(float, info.get("clinical_genomics_loqusFrq") or info.get("Frq"))
-    )
+    # --- configured INFO keys ---
+    for key, spec in current_app.config.LOQUSDB_ARCHIVE_VCF_INFO_FIELDS.items():
+        if spec.get("prefix"):  # Cancer_* expansion
+            low = key.lower()
+            parsed_variant[f"local_obs_{low}_old"] = safe_val(
+                call_safe(int, info.get(f"{key}_Obs"))
+            )
+            parsed_variant[f"local_obs_{low}_hom_old"] = safe_val(
+                call_safe(int, info.get(f"{key}_Hom"))
+            )
+            parsed_variant[f"local_obs_{low}_old_freq"] = safe_val(
+                call_safe(float, info.get(f"{key}_Frq"))
+            )
+        else:
+            value = info.get(key)
+            if value is not None:
+                parsed_variant[spec["field"]] = safe_val(call_safe(spec["type"], value))
 
-    # Optional local archive metadata
+    # --- optional local archive metadata ---
     set_local_archive_info(parsed_variant, local_archive_info)
 
-    # Cancer observations (germline and somatic)
-    FREQ_KEYS = ["Cancer_Germline", "Cancer_Somatic", "Cancer_Somatic_Panel"]
-    for prefix in FREQ_KEYS:
-        key = prefix.lower()
-        parsed_variant[f"local_obs_{key}_old"] = safe_val(call_safe(int, info.get(f"{prefix}_Obs")))
-        parsed_variant[f"local_obs_{key}_hom_old"] = safe_val(
-            call_safe(int, info.get(f"{prefix}_Hom"))
-        )
-        parsed_variant[f"local_obs_{key}_old_freq"] = safe_val(
-            call_safe(float, info.get(f"{prefix}_Frq"))
-        )
+    return parsed_variant
 
 
 def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcripts: dict):

@@ -87,6 +87,20 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
 
+LOQUSDB_ARCHIVE_VCF_INFO_FIELDS = {
+    # single keys (map VCF INFO key → target field in parsed_variant)
+    "Obs": {"field": "local_obs_old", "type": int},
+    "Hom": {"field": "local_obs_hom_old", "type": int},
+    "Frq": {"field": "local_obs_old_freq", "type": float},
+    "clinical_genomics_loqusObs": {"field": "local_obs_old", "type": int},
+    "clinical_genomics_loqusFrq": {"field": "local_obs_old_freq", "type": float},
+    "clin_obs": {"field": "local_obs_old", "type": int},
+    # prefixes → auto-expand into *_Obs, *_Hom, *_Frq
+    "Cancer_Germline": {"prefix": True},
+    "Cancer_Somatic": {"prefix": True},
+    "Cancer_Somatic_Panel": {"prefix": True},
+}
+
 # Connection details for Scout REViewer service
 # SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
