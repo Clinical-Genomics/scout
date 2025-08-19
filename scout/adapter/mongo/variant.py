@@ -703,7 +703,7 @@ class VariantHandler(VariantLoader):
             limit = 30 if variant_obj["category"] == "snv" else 45
 
         variant_carriers = [
-            s["sample_id"] for s in samples if re.search(CARRIER, s["genotype_call"])
+            s["sample_id"] for s in variant_obj["samples"] if re.search(CARRIER, s["genotype_call"])
         ]
 
         query = {
