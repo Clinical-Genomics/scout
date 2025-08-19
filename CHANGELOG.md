@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing variant's`local_obs_cancer_somatic_panel_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively (#5594)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
 - Export Managed Variants: CLI now supports `--category` to filter by one or more categories (snv, sv, cancer_snv, cancer_sv). Defaults to all. (#5608)
-- New form to create users on the general users page (visible to admin users only) (#5610)
+- New form to create/edit users on the general users page (visible to admin users only) (#5610 and #5613)
 - Scout-Reviewer-Service endpoint to visualise PacBio trgt called expansions (#5611)
 - Button to remove users from the main users page (visible to admins only) (#5612)
 ### Changed
