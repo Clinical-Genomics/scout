@@ -1136,10 +1136,24 @@
   {% endfor %}
 {% endmacro %}
 
+{% macro gene_variant_link_href(variant, institute_id, case_display_name) %}
+  {% if variant.category in ("sv", "cancer_sv") %}
+    {{ url_for('variant.sv_variant', institute_id=institute_id,
+                        case_name=case_display_name, variant_id=variant._id) }}
+  {% elif variant.category in ("cancer") %}
+    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute_id, case_name=case_display_name) }}
+  {% else %}
+    {{ url_for('variant.variant', institute_id=institute_id, case_name=case_display_name,
+                        variant_id=variant._id) }}
+  {% endif %}
+{% endmacro %}
+
 {% macro variant_link_href(variant, institute, case) %}
   {% if variant.category in ("sv", "cancer_sv") %}
     {{ url_for('variant.sv_variant', institute_id=institute._id,
                         case_name=case.display_name, variant_id=variant._id) }}
+  {% elif variant.category in ("cancer") %}
+    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute._id, case_name=case.display_name) }}
   {% else %}
     {{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                         variant_id=variant._id) }}

@@ -2,7 +2,7 @@
 {% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/utils.html" import clickable_variant_table_row_script, pagination_footer, pagination_hidden_div, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import clickable_variant_table_row_script, gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -48,7 +48,7 @@
 </thead>
 <tbody>
     {% for variant in variants %}
-      <tr data-target="_blank" data-href="{{ variant_link_href(variant, variant.institute, variant.case_display_name) }}"
+      <tr data-target="_blank" data-href="{{ gene_variant_link_href(variant, variant.institute, variant.case_display_name) }}"
       {% if variant.dismiss_variant %}
         class="dismiss">
       {% else %}
