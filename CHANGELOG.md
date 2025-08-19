@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display conservation scores for PHAST, GERP and phyloP alongside "Conserved" or "NotConserved" (#5593)
 - Exporting managed variants from the command line with the `--collaborator` option will return variants from the specified institute plus those not assigned to any institute (#5607)
 - Safer redirect to previous page for variants views (#5599)
+- Make whole caseS row clickable link for case page (#5620)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
