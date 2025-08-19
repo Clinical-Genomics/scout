@@ -1,7 +1,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "overview/utils.html" import analysis_type, cases_search_form %}
+{% from "overview/utils.html" import analysis_type, case_link_href, cases_search_form, clickable_case_table_row_script %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -63,11 +63,11 @@
 
 
 {% macro case_row(case) %}
-  <tr class="{% if case.status == 'solved' %}causative{% elif case.dimmed_in_search %}dismiss{% endif %}">
+  <tr data-target="_blank" data-href="{{ case_link_href(case) }}" class="{% if case.status == 'solved' %}causative{% elif case.dimmed_in_search %}dismiss{% endif %}">
     <td>
       <a class="me-2"
          {% if case.individuals|length == 1 %} data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}" {% endif %}
-         href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
+         href="{{ case_link_href(case) }}" target="_blank">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
@@ -268,6 +268,9 @@
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
+
+  {{ clickable_case_table_row_script() }}
+
   </script>
 {% endblock %}
 
