@@ -155,3 +155,35 @@ def add_user():
                 LOG.warning(f"Error in {field_name}: {error}")
 
     return safe_redirect_back(request)
+
+
+@login_bp.route("/edit_user/<email>", methods=["GET", "POST"])
+def edit_user(email):
+    if current_user.is_admin is False:
+        flash("Unauthorized", "warning")
+        return redirect(url_for("login.users"))
+
+    edit_user = store.user(email)
+    if not edit_user:
+        flash("User not found", "danger")
+        return safe_redirect_back(request)
+
+    form = UserForm()
+    if form.validate_on_submit():
+        user_info = {
+            "email": email,
+            "name": form.name.data,
+            "roles": form.role.data,
+            "institutes": form.institute.data,
+            "_id": edit_user["_id"],
+        }
+        try:
+            store.update_user(user_obj=user_info)
+            flash(f"User successfully updated", "success")
+        except Exception as ex:
+            flash(f"An error occurred while updating user:{ex}.", "warning")
+
+        return redirect(url_for("login.users"))
+
+    data = controllers.users(store)
+    return render_template("login/users.html", edit_user=edit_user, **data)
