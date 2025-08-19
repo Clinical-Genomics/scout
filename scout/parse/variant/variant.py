@@ -2,8 +2,8 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from cyvcf2 import Variant
-from flask.cli import current_app
 
+import scout.server.config as config
 from scout.constants import CHR_PATTERN, DNA_SAMPLE_VARIANT_CATEGORIES
 from scout.exceptions import VcfError
 from scout.utils.convert import call_safe
@@ -231,9 +231,10 @@ def set_loqus_archive_frequencies(parsed_variant: dict, variant: dict, local_arc
         return None if val == -1 else val
 
     info = variant.INFO
+    VCF_INFO_FIELDS = getattr(config, "LOQUSDB_ARCHIVE_VCF_INFO_FIELDS", {})
 
     # --- configured INFO keys ---
-    for key, spec in current_app.config.LOQUSDB_ARCHIVE_VCF_INFO_FIELDS.items():
+    for key, spec in VCF_INFO_FIELDS.items():
         if spec.get("prefix"):  # Cancer_* expansion
             low = key.lower()
             parsed_variant[f"local_obs_{low}_old"] = safe_val(
