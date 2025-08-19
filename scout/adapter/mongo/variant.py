@@ -702,12 +702,24 @@ class VariantHandler(VariantLoader):
         if not limit:
             limit = 30 if variant_obj["category"] == "snv" else 45
 
+        variant_carriers = [
+            s["sample_id"] for s in samples if re.search(CARRIER, s["genotype_call"])
+        ]
+
         query = {
             "$and": [
                 {"case_id": variant_obj["case_id"]},
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
+                {
+                    "samples": {
+                        "$elemMatch": {
+                            "sample_id": {"$in": variant_carriers},
+                            "genotype_call": {"$regex": CARRIER},
+                        }
+                    }
+                },
             ]
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
