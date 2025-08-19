@@ -142,6 +142,7 @@ def test_add_remove_user(app):
         # THEN the user should be removed from the database
         assert store.user(email=NEW_USER_EMAIL) is None
 
+
 def test_edit_user(app, user_obj):
     """Tests the endpoint invoked to edit data from an existing user."""
 
