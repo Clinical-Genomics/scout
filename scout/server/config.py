@@ -87,6 +87,8 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
 
+# Define here the VCF keys you want to be parsed for eventual custom archived LoqusDB instances.
+# Comment out if no archived LoqusDB instance is annotated in your VCF files
 LOQUSDB_ARCHIVE_VCF_INFO_FIELDS = {
     # single keys (map VCF INFO key → target field in parsed_variant)
     "Obs": {"field": "local_obs_old", "type": int},
