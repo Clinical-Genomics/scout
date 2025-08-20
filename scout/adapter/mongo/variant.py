@@ -689,6 +689,12 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
+    def get_variant_carriers(self, variant_obj: dict) -> List[str]:
+        """Given a variant, this function returns the IDs from samples that are carriers."""
+        return [
+            s["sample_id"] for s in variant_obj["samples"] if re.search(CARRIER, s["genotype_call"])
+        ]
+
     def get_variants_hgnc_overlapping(
         self, hgnc_ids: List[int], variant_type: str, limit: Optional[int], variant_obj: dict
     ) -> Iterable[Dict]:
@@ -702,9 +708,7 @@ class VariantHandler(VariantLoader):
         if not limit:
             limit = 30 if variant_obj["category"] == "snv" else 45
 
-        variant_carriers = [
-            s["sample_id"] for s in variant_obj["samples"] if re.search(CARRIER, s["genotype_call"])
-        ]
+        variant_carriers = self.get_variant_carriers(variant_obj)
 
         query = {
             "$and": [

@@ -235,3 +235,20 @@ def test_case_variants_count(real_populated_database, case_obj, institute_obj, v
     # THEN it should return the expected result
     assert vars_by_type["clinical"]["snv"] == nr_clinical
     assert vars_by_type["research"]["sv"] == nr_research
+
+
+def test_get_variant_carriers(adapter):
+    """GIVEN a variant, return all sample IDs from a trio which are variant carriers."""
+
+    # GIVEN a variant object containing carriers and not carriers
+    variant_obj = {
+        "samples": [
+            {"sample_id": "carrier1", "genotype_call": "0/1"},
+            {"sample_id": "carrier2", "genotype_call": "1/1"},
+            {"sample_id": "not_a_carrier", "genotype_call": "0/0"},
+        ]
+    }
+
+    carriers = adapter.get_variant_carriers(variant_obj)
+    # THEN the get_variant_carriers function should only return the ID of carriers
+    assert carriers == ["carrier1", "carrier2"]
