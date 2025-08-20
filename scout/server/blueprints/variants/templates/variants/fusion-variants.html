@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import fusion_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
+{% from "utils.html" import clickable_table_row_script %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, filter_script_main, fusion_filters, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, fusion_variant_gene_symbols_cell, fusion_variants_header, default_fusion_variant_cells %}
 
 {% block title %}
@@ -75,12 +76,13 @@ onsubmit="return validateForm()">
 {% endblock %}
 
 {% macro variant_row(variant) %}
+  <tr data-href="{{ variant_link_href(variant, institute, case) }}"
   {% if variant.dismiss_variant %}
-   <tr class="dismiss">
+    class="dismiss">
   {% elif 'causatives' in case and variant._id in case.causatives %}
-   <tr class="causative">
+    class="causative">
   {% else %}
-  <tr>
+    >
   {% endif %}
     <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">
@@ -124,5 +126,8 @@ onsubmit="return validateForm()">
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    {{ clickable_table_row_script() }}
+
   </script>
 {% endblock %}
