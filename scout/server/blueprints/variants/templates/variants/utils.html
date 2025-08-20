@@ -1136,17 +1136,33 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
+{% macro gene_variant_link_href(variant, institute_id, case_display_name) %}
   {% if variant.category in ("sv", "cancer_sv") %}
-    <a class="variants-row-item flex-small layout"
-        href="{{ url_for('variant.sv_variant', institute_id=institute._id,
-                         case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
+    {{ url_for('variant.sv_variant', institute_id=institute_id,
+                        case_name=case_display_name, variant_id=variant._id) }}
+  {% elif variant.category in ("cancer") %}
+    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute_id, case_name=case_display_name) }}
   {% else %}
-    <a class="variants-row-item flex-small layout"
-       href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
-                        variant_id=variant._id) }}" target='_blank'>
+    {{ url_for('variant.variant', institute_id=institute_id, case_name=case_display_name,
+                        variant_id=variant._id) }}
   {% endif %}
+{% endmacro %}
 
+{% macro variant_link_href(variant, institute, case) %}
+  {% if variant.category in ("sv", "cancer_sv") %}
+    {{ url_for('variant.sv_variant', institute_id=institute._id,
+                        case_name=case.display_name, variant_id=variant._id) }}
+  {% elif variant.category in ("cancer") %}
+    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute._id, case_name=case.display_name) }}
+  {% else %}
+    {{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                        variant_id=variant._id) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
+  <a class="variants-row-item flex-small layout"
+      href="{{ variant_link_href(variant, institute, case) }}" target='_blank'>
   {{ variant.variant_rank }}</a>&nbsp;
 
   {{ evaluations_badge(variant.evaluations) }}
