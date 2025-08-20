@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import clickable_variant_table_row_script, cell_rank, dismiss_variants_block, filter_form_footer, filter_script_main, fusion_filters, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
+{% from "utils.html" import clickable_table_row_script %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, filter_script_main, fusion_filters, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, fusion_variant_gene_symbols_cell, fusion_variants_header, default_fusion_variant_cells %}
 
 {% block title %}
@@ -126,7 +127,7 @@ onsubmit="return validateForm()">
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
-    {{ clickable_variant_table_row_script() }}
+    {{ clickable_table_row_script() }}
 
   </script>
 {% endblock %}
