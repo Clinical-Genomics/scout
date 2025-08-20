@@ -1,7 +1,8 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout.html" %}
+{% from "utils.html" import clickable_table_row_script %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "overview/utils.html" import analysis_type, case_link_href, cases_search_form, clickable_case_table_row_script %}
+{% from "overview/utils.html" import analysis_type, case_link_href, cases_search_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -269,7 +270,7 @@
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
 
-  {{ clickable_case_table_row_script() }}
+  {{ clickable_table_row_script() }}
 
   </script>
 {% endblock %}

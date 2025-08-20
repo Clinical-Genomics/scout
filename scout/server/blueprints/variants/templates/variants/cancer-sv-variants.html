@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import cancer_sv_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block, callers_cell %}
+{% from "utils.html" import clickable_table_row_script %}
+{% from "variants/utils.html" import cancer_sv_filters, callers_cell, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -91,12 +92,13 @@
 {% endblock %}
 
 {% macro variant_row(variant) %}
+  <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
   {% if variant.dismiss_variant %}
-  <tr class="dismiss">
+    class="dismiss">
   {% elif 'causatives' in case and variant._id in case.causatives %}
-  <tr class="causative">
+    class="causative">
   {% else %}
-  <tr>
+    >
   {% endif %}
     <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
@@ -159,6 +161,8 @@
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    {{ clickable_table_row_script() }}
 
   </script>
 {% endblock %}

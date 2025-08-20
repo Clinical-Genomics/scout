@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Exporting managed variants from the command line with the `--collaborator` option will return variants from the specified institute plus those not assigned to any institute (#5607)
 - Safer redirect to previous page for variants views (#5599)
 - Make whole caseS row clickable link for case page (#5620)
+- Make whole variantS row clickable link for variant page (#5618)
 - Restrict gene-overlapping variants search to variants affecting the same individuals as the original variant (#5623)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
