@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
-{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
-{% from "utils.html" import comments_table %}
+{% from "utils.html" import clickable_table_row_script, comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/utils.html" import pagination_footer, pagination_hidden_div, variant_rank_score %}
+{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
+{% from "variants/utils.html" import gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -48,10 +48,11 @@
 </thead>
 <tbody>
     {% for variant in variants %}
+      <tr data-target="_blank" data-href="{{ gene_variant_link_href(variant, variant.institute, variant.case_display_name) }}"
       {% if variant.dismiss_variant %}
-        <tr class="dismiss">
+        class="dismiss">
       {% else %}
-        <tr>
+        >
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
@@ -219,6 +220,8 @@
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
       return new bootstrap.Popover(popoverTriggerEl, {container: 'body'})
     })
+
+    {{ clickable_table_row_script() }}
 
     $(function () {
       $('select[multiple]').selectpicker({

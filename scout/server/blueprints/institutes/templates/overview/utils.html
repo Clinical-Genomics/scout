@@ -670,25 +670,6 @@
 </div>
 {% endmacro %}
 
-{% macro clickable_case_table_row_script() %}
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("table tr[data-href]").forEach(row => {
-        row.addEventListener("click", e => {
-          if (e.target.closest("a, button")) return; // do not trigger on actual links
-          const url = row.dataset.href;
-          const target = row.dataset.target || "_self";
-
-          // respect ctrl/cmd for manual background open
-          if (e.metaKey || e.ctrlKey) {
-            window.open(url, "_blank");
-          } else {
-            window.open(url, target);
-          }
-        });
-      });
-    });
-{% endmacro %}
-
 {% macro case_link_href(case) %}
   {{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}
 {% endmacro %}
