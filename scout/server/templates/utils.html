@@ -246,3 +246,22 @@
   <script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.html5.min.js" integrity="sha512-I86DAquH004N60kPVNHp+9QkC5y61C5ODHj6ewhddXnewOJ31wyOJHNlNEr8NUR3xqtGozfMb557So1pR0uDCA==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.bootstrap5.min.js" integrity="sha512-rVAaUqNTbX7lADp767RxnIMvbROobK+gn7SpbbPc+qMUPotgAkSsRhCKF5ziUEquBsdGcv3eOaZK1fIbGwh5CA==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 {% endmacro %}
+
+{% macro clickable_table_row_script() %}
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("table tr[data-href]").forEach(row => {
+        row.addEventListener("click", e => {
+          if (e.target.closest("a, button")) return; // do not trigger on actual links
+          const url = row.dataset.href;
+          const target = row.dataset.target || "_self";
+
+          // respect ctrl/cmd for manual background open
+          if (e.metaKey || e.ctrlKey) {
+            window.open(url, "_blank");
+          } else {
+            window.open(url, target);
+          }
+        });
+      });
+    });
+{% endmacro %}
