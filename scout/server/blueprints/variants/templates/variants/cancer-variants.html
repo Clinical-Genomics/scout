@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
-
+{% from "utils.html" import clickable_table_row_script %}
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
-{% from "variants/utils.html" import cancer_filters, filters_form_header, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, callers_cell, variant_rank_score %}
+{% from "variants/utils.html" import callers_cell, cancer_filters, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href, variant_rank_score %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
 {% block title %}
@@ -67,13 +67,15 @@
             </tr>
       </thead>
       <tbody>
+
         {% for variant in variants %}
+          <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
           {% if variant.dismiss_variant %}
-            <tr class="dismiss">
+            class="dismiss">
           {% elif 'causatives' in case and variant._id in case.causatives %}
-            <tr class="causative">
+            class="causative">
           {% else %}
-            <tr>
+            >
           {% endif %}
             <td>
               <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
@@ -213,6 +215,8 @@
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
+    {{ clickable_table_row_script() }}
 
   </script>
 {% endblock %}
