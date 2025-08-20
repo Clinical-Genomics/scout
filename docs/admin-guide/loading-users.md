@@ -18,7 +18,7 @@ See `scout load user --help` or the [user guide user section](../user-guide/user
 
 ## Managing users from the web interface
 
-Since **Scout v4.104**, it will be also possible for an **admin user** to add, edit, or remove users directly from the **general Users page** in the web interface.
+Since **Scout v4.104**, it is also possible for an **admin user** to add, edit, or remove users directly from the **general Users page** in the web interface.
 
 > ⚠️ Note: This page is accessible via the **top-left dropdown menu on the top bar**. Do not confuse it with the **Users link in the sidebar**, which only lists users for a specific institute.
 
