@@ -12,14 +12,12 @@ class LdapManager:
     """
     LDAP authentication handler using ldap3.
 
-    Supports user search by login attribute (e.g., mail),
-    followed by secure bind to validate user password.
+    Supports:
+    1. User search by login attribute (e.g., mail, uid) with service bind.
+    2. Direct DN bind if LDAP_USER_DN is provided.
     """
 
     def __init__(self, app: Optional[Flask] = None) -> None:
-        """
-        Optionally initialize with a Flask app.
-        """
         self.server: Optional[Server] = None
         self.base_dn: Optional[str] = None
         self.login_attr: str = "uid"
@@ -29,22 +27,12 @@ class LdapManager:
         self.port: int = 389
         self.bind_user_dn: Optional[str] = None
         self.bind_user_pw: Optional[str] = None
+        self.user_dn_base: Optional[str] = None
 
         if app:
             self.init_app(app)
 
     def init_app(self, app: Flask) -> None:
-        """
-        Initialize LDAP settings from Flask app config.
-
-        Required config keys:
-        - LDAP_BASE_DN
-        - LDAP_HOST
-        - LDAP_PORT (optional)
-        - LDAP_USER_LOGIN_ATTR (optional, default 'uid')
-        - LDAP_USE_SSL / LDAP_USE_TLS (optional)
-        - LDAP_SERVICE_BIND_DN / LDAP_SERVICE_BIND_PASSWORD (for search auth)
-        """
         self.base_dn = app.config.get("LDAP_BASE_DN")
         if not self.base_dn:
             raise ValueError("Missing required config: LDAP_BASE_DN")
@@ -54,8 +42,11 @@ class LdapManager:
         self.use_tls = app.config.get("LDAP_USE_TLS", False)
         self.timeout = app.config.get("LDAP_TIMEOUT", 5)
         self.port = app.config.get("LDAP_PORT", 636 if self.use_ssl else 389)
-        self.bind_user_dn = app.config.get("LDAP_SERVICE_BIND_DN")
-        self.bind_user_pw = app.config.get("LDAP_SERVICE_BIND_PASSWORD")
+
+        # Support your config keys
+        self.bind_user_dn = app.config.get("LDAP_BINDDN")
+        self.bind_user_pw = app.config.get("LDAP_SECRET")
+        self.user_dn_base = app.config.get("LDAP_USER_DN")
 
         host = app.config.get("LDAP_HOST", "localhost")
         tls_config: Optional[Tls] = (
@@ -71,45 +62,48 @@ class LdapManager:
         )
 
     def authenticate(self, username: str, password: str) -> bool:
-        """
-        Authenticate user by:
-        1. Searching for their DN using login attribute
-        2. Binding as that DN with the provided password
-
-        Returns True if login succeeds, False if invalid
-        """
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
 
         try:
-            # Step 1: Search for user's DN
-            search_conn = Connection(
-                self.server,
-                user=self.bind_user_dn,
-                password=self.bind_user_pw,
-                auto_bind=True,
-                client_strategy=SYNC,
-                receive_timeout=self.timeout,
-            )
+            user_dn = None
 
-            if self.use_tls:
-                search_conn.start_tls()
+            # --- Mode 1: search with service bind ---
+            if self.bind_user_dn and self.bind_user_pw:
+                search_conn = Connection(
+                    self.server,
+                    user=self.bind_user_dn,
+                    password=self.bind_user_pw,
+                    auto_bind=True,
+                    client_strategy=SYNC,
+                    receive_timeout=self.timeout,
+                )
 
-            search_filter = f"({self.login_attr}={username})"
-            search_conn.search(
-                search_base=self.base_dn,
-                search_filter=search_filter,
-                search_scope=SUBTREE,
-                attributes=[],  # no need to request DN directly
-            )
+                if self.use_tls:
+                    search_conn.start_tls()
 
-            if not search_conn.entries:
+                search_filter = f"({self.login_attr}={username})"
+                search_conn.search(
+                    search_base=self.base_dn,
+                    search_filter=search_filter,
+                    search_scope=SUBTREE,
+                    attributes=[],
+                )
+
+                if search_conn.entries:
+                    user_dn = search_conn.entries[0].entry_dn
+
+                search_conn.unbind()
+
+            # --- Mode 2: construct DN directly ---
+            if not user_dn and self.user_dn_base:
+                user_dn = f"{self.login_attr}={username},{self.user_dn_base}"
+
+            if not user_dn:
+                LOG.warning("No DN found/constructed for user %s", username)
                 return False
 
-            user_dn = search_conn.entries[0].entry_dn
-            search_conn.unbind()
-
-            # Step 2: Attempt to bind as user
+            # --- Final step: bind as user ---
             user_conn = Connection(
                 self.server,
                 user=user_dn,
@@ -125,6 +119,6 @@ class LdapManager:
             user_conn.unbind()
             return True
 
-        except Exception as e:
-            LOG.warning(e)
+        except Exception:
+            LOG.exception("LDAP authentication failed for user %s", username)
             return False
