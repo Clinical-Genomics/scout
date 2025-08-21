@@ -228,8 +228,18 @@ CCV_POTENTIAL_CONFLICTS = [
     ),
     (
         "OM1",
+        "OS1",
+        "OM1 cannot be used if OS1 is applicable.",
+    ),
+    (
+        "OM1",
+        "OS3",
+        "OM1 cannot be used if OS3 is applicable.",
+    ),
+    (
+        "OM2",
         "OVS1",
-        "OM1 cannot be used if OVS1 is applicable.",
+        "OM2 cannot be used if OVS1 is applicable.",
     ),
     (
         "OM3",
@@ -240,5 +250,20 @@ CCV_POTENTIAL_CONFLICTS = [
         "OM3",
         "OM4",
         "OM3 cannot be used if OM4 is applicable.",
+    ),
+    (
+        "OM4",
+        "OS1",
+        "OM4 cannot be used if OS1 is applicable.",
+    ),
+    (
+        "OM4",
+        "OS3",
+        "OM4 cannot be used if OS3 is applicable.",
+    ),
+    (
+        "OM4",
+        "OM1",
+        "OM4 cannot be used if OM1 is applicable.",
     ),
 ]
