@@ -68,34 +68,33 @@ class LdapManager:
         try:
             user_dn = None
 
-            # --- Mode 1: search with service bind ---
-            if self.bind_user_dn and self.bind_user_pw:
-                search_conn = Connection(
-                    self.server,
-                    user=self.bind_user_dn,
-                    password=self.bind_user_pw,
-                    auto_bind=True,
-                    client_strategy=SYNC,
-                    receive_timeout=self.timeout,
-                )
+            # --- Always try search (service bind if configured, otherwise anonymous) ---
+            search_conn = Connection(
+                self.server,
+                user=self.bind_user_dn,
+                password=self.bind_user_pw,
+                auto_bind=True,
+                client_strategy=SYNC,
+                receive_timeout=self.timeout,
+            )
 
-                if self.use_tls:
-                    search_conn.start_tls()
+            if self.use_tls:
+                search_conn.start_tls()
 
-                search_filter = f"({self.login_attr}={username})"
-                search_conn.search(
-                    search_base=self.base_dn,
-                    search_filter=search_filter,
-                    search_scope=SUBTREE,
-                    attributes=[],
-                )
+            search_filter = f"({self.login_attr}={username})"
+            search_conn.search(
+                search_base=self.base_dn,
+                search_filter=search_filter,
+                search_scope=SUBTREE,
+                attributes=[],
+            )
 
-                if search_conn.entries:
-                    user_dn = search_conn.entries[0].entry_dn
+            if search_conn.entries:
+                user_dn = search_conn.entries[0].entry_dn
 
-                search_conn.unbind()
+            search_conn.unbind()
 
-            # --- Mode 2: construct DN directly ---
+            # --- Fallback: construct DN if search gave nothing ---
             if not user_dn and self.user_dn_base:
                 user_dn = f"{self.login_attr}={username},{self.user_dn_base}"
 
