@@ -13,9 +13,12 @@ class LdapManager:
     """
     LDAP authentication handler using ldap3.
 
-    Supports:
-    1. User search by login attribute (e.g., mail, uid) with service bind.
-    2. Direct DN bind if LDAP_USER_DN is provided.
+    Features:
+    - Service bind search for user DN
+    - Optional direct DN fallback
+    - Optional group membership check
+    - TLS/SSL support
+    - Clear exception logging
     """
 
     def __init__(self, app: Optional[Flask] = None) -> None:
@@ -29,6 +32,7 @@ class LdapManager:
         self.bind_user_dn: Optional[str] = None
         self.bind_user_pw: Optional[str] = None
         self.user_dn_base: Optional[str] = None
+        self.group_object_filter: Optional[str] = None
 
         if app:
             self.init_app(app)
@@ -44,10 +48,15 @@ class LdapManager:
         self.timeout = app.config.get("LDAP_TIMEOUT", 5)
         self.port = app.config.get("LDAP_PORT", 636 if self.use_ssl else 389)
 
-        # Support your config keys
+        # Service bind
         self.bind_user_dn = app.config.get("LDAP_BINDDN")
         self.bind_user_pw = app.config.get("LDAP_SECRET")
+
+        # Optional direct DN fallback
         self.user_dn_base = app.config.get("LDAP_USER_DN")
+
+        # Optional group filter
+        self.group_object_filter = app.config.get("LDAP_GROUP_OBJECT_FILTER")
 
         host = app.config.get("LDAP_HOST", "localhost")
         tls_config: Optional[Tls] = (
@@ -66,12 +75,11 @@ class LdapManager:
         if not self.server:
             raise RuntimeError("LDAP server not initialized")
 
-        try:
-            user_dn = None
+        user_dn = None
 
-            # --- Step 1: Search for the user DN ---
+        try:
+            # --- Step 1: Service bind or anonymous bind for search ---
             if self.bind_user_dn and self.bind_user_pw:
-                # Service bind mode
                 search_conn = Connection(
                     self.server,
                     user=self.bind_user_dn,
@@ -81,10 +89,9 @@ class LdapManager:
                     receive_timeout=self.timeout,
                 )
             else:
-                # Anonymous bind mode
                 search_conn = Connection(
                     self.server,
-                    auto_bind=True,  # allow anonymous bind
+                    auto_bind=True,  # anonymous bind if allowed
                     client_strategy=SYNC,
                     receive_timeout=self.timeout,
                 )
@@ -93,7 +100,7 @@ class LdapManager:
                 search_conn.start_tls()
 
             search_filter = f"({self.login_attr}={username})"
-            LOG.debug("LDAP search with filter=%s, base=%s", search_filter, self.base_dn)
+            LOG.debug("LDAP search filter=%s, base=%s", search_filter, self.base_dn)
 
             search_conn.search(
                 search_base=self.base_dn,
@@ -108,7 +115,7 @@ class LdapManager:
 
             search_conn.unbind()
 
-            # --- Step 2: Fallback if no DN found ---
+            # --- Step 2: Fallback to direct DN if search failed ---
             if not user_dn and self.user_dn_base:
                 user_dn = f"{self.login_attr}={username},{self.user_dn_base}"
                 LOG.debug("Constructed DN for %s: %s", username, user_dn)
@@ -117,7 +124,7 @@ class LdapManager:
                 LOG.warning("No DN found/constructed for user %s", username)
                 return False
 
-            # --- Step 3: Try to bind as the actual user ---
+            # --- Step 3: Attempt bind as user ---
             user_conn = Connection(
                 self.server,
                 user=user_dn,
@@ -130,6 +137,36 @@ class LdapManager:
             if self.use_tls:
                 user_conn.start_tls()
 
+            # --- Step 4: Optional group membership check ---
+            if self.group_object_filter and self.bind_user_dn and self.bind_user_pw:
+                group_conn = Connection(
+                    self.server,
+                    user=self.bind_user_dn,
+                    password=self.bind_user_pw,
+                    auto_bind=True,
+                    client_strategy=SYNC,
+                    receive_timeout=self.timeout,
+                )
+                if self.use_tls:
+                    group_conn.start_tls()
+
+                group_search_filter = self.group_object_filter.replace("{dn}", user_dn)
+                LOG.debug("LDAP group search filter=%s", group_search_filter)
+
+                group_conn.search(
+                    search_base=self.base_dn,
+                    search_filter=group_search_filter,
+                    search_scope=SUBTREE,
+                    attributes=[],
+                )
+                if not group_conn.entries:
+                    LOG.warning("User %s is not a member of the required group", username)
+                    group_conn.unbind()
+                    user_conn.unbind()
+                    return False
+
+                group_conn.unbind()
+
             user_conn.unbind()
             return True
 
@@ -139,7 +176,7 @@ class LdapManager:
             LOG.error("LDAP connection to %s:%s failed", self.server.host, self.server.port)
         except LDAPExceptionError as e:
             LOG.error("General LDAP error for user %s: %s", username, e)
-        except Exception as e:
+        except Exception:
             LOG.exception("Unexpected error during LDAP authentication for %s", username)
 
         return False
