@@ -4,6 +4,7 @@ from typing import Optional
 
 from flask import Flask
 from ldap3 import ALL, SIMPLE, SUBTREE, SYNC, Connection, Server, Tls
+from ldap3.core.exceptions import LDAPBindError, LDAPExceptionError, LDAPSocketOpenError
 
 LOG = logging.getLogger(__name__)
 
@@ -68,20 +69,32 @@ class LdapManager:
         try:
             user_dn = None
 
-            # --- Always try search (service bind if configured, otherwise anonymous) ---
-            search_conn = Connection(
-                self.server,
-                user=self.bind_user_dn,
-                password=self.bind_user_pw,
-                auto_bind=True,
-                client_strategy=SYNC,
-                receive_timeout=self.timeout,
-            )
+            # --- Step 1: Search for the user DN ---
+            if self.bind_user_dn and self.bind_user_pw:
+                # Service bind mode
+                search_conn = Connection(
+                    self.server,
+                    user=self.bind_user_dn,
+                    password=self.bind_user_pw,
+                    auto_bind=True,
+                    client_strategy=SYNC,
+                    receive_timeout=self.timeout,
+                )
+            else:
+                # Anonymous bind mode
+                search_conn = Connection(
+                    self.server,
+                    auto_bind=True,  # allow anonymous bind
+                    client_strategy=SYNC,
+                    receive_timeout=self.timeout,
+                )
 
             if self.use_tls:
                 search_conn.start_tls()
 
             search_filter = f"({self.login_attr}={username})"
+            LOG.debug("LDAP search with filter=%s, base=%s", search_filter, self.base_dn)
+
             search_conn.search(
                 search_base=self.base_dn,
                 search_filter=search_filter,
@@ -91,18 +104,20 @@ class LdapManager:
 
             if search_conn.entries:
                 user_dn = search_conn.entries[0].entry_dn
+                LOG.debug("Found DN for %s: %s", username, user_dn)
 
             search_conn.unbind()
 
-            # --- Fallback: construct DN if search gave nothing ---
+            # --- Step 2: Fallback if no DN found ---
             if not user_dn and self.user_dn_base:
                 user_dn = f"{self.login_attr}={username},{self.user_dn_base}"
+                LOG.debug("Constructed DN for %s: %s", username, user_dn)
 
             if not user_dn:
                 LOG.warning("No DN found/constructed for user %s", username)
                 return False
 
-            # --- Final step: bind as user ---
+            # --- Step 3: Try to bind as the actual user ---
             user_conn = Connection(
                 self.server,
                 user=user_dn,
@@ -118,6 +133,13 @@ class LdapManager:
             user_conn.unbind()
             return True
 
-        except Exception:
-            LOG.exception("LDAP authentication failed for user %s", username)
-            return False
+        except LDAPBindError:
+            LOG.error("LDAP bind failed for user %s (invalid credentials)", username)
+        except LDAPSocketOpenError:
+            LOG.error("LDAP connection to %s:%s failed", self.server.host, self.server.port)
+        except LDAPExceptionError as e:
+            LOG.error("General LDAP error for user %s: %s", username, e)
+        except Exception as e:
+            LOG.exception("Unexpected error during LDAP authentication for %s", username)
+
+        return False
