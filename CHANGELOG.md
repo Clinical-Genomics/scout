@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export Managed Variants: CLI now supports `--category` to filter by one or more categories (snv, sv, cancer_snv, cancer_sv). Defaults to all. (#5608)
 - New form to create/edit users on the general users page (visible to admin users only) (#5610 and #5613)
 - Scout-Reviewer-Service endpoint to visualise PacBio trgt called expansions (#5611)
+- Updated the documentation with instructions on how, as an admin, to add/edit/remove users from the main users page (#5625)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 - Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
@@ -19,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Safer redirect to previous page for variants views (#5599)
 - Make whole caseS row clickable link for case page (#5620)
 - Make whole variantS row clickable link for variant page (#5618)
+- Refined the filtering logic for Clinical WTS variants. The clinical filter now selects variants with either `padjust` < 0.05 or (`p_adjust_gene` < 0.1 and abs(`delta_psi`) > 0.1), for OUTRIDER expression variants and FRASER splicing variants respectively (#5630)
 - Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
@@ -26,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Consistent panel display on variants pages for unselected "All" panels (#5600)
 - Bump tj-actions-branch-names GitHub action to v9 (#5605)
 - Missing variant key `tool_hits` causing fusion variants page to crash (#5614)
+- Add/fix conflicts between ClinGen-CGC-VICC classification criteria to fix discrepancies to Horak et al (#5629)
 
 ## [4.103.3]
 ### Changed
