@@ -33,5 +33,23 @@ CLINICAL_FILTER_BASE_MEI = {
 }
 
 CLINICAL_FILTER_BASE_OUTLIER = {
-    "variant_type": "clinical",
+    "$and": [
+        {"variant_type": "clinical"},
+        {
+            "$or": [
+                {"padjust": {"$lt": 0.05}},
+                {
+                    "$and": [
+                        {"p_adjust_gene": {"$lt": 0.1}},
+                        {
+                            "$or": [  # absolute(deltaPsi)
+                                {"delta_psi": {"$gt": 0.1}},
+                                {"delta_psi": {"$lt": -0.1}},
+                            ]
+                        },
+                    ]
+                },
+            ]
+        },
+    ]
 }
