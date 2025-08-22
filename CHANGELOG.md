@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New form to create/edit users on the general users page (visible to admin users only) (#5610 and #5613)
 - Scout-Reviewer-Service endpoint to visualise PacBio trgt called expansions (#5611)
 - Updated the documentation with instructions on how, as an admin, to add/edit/remove users from the main users page (#5625)
+- Button to remove users from the main users page (visible to admins only) (#5612)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
