@@ -549,6 +549,9 @@ def update_variant_genes(store, variant_obj, genome_build):
             has_changed = True
             variant_gene = {"hgnc_id": hgnc_id}
             variant_obj["genes"].append(variant_gene)
+        variant_genes = variant_obj.get(
+            "genes"
+        )  # we need update variant_genes here, to get all fixes in one call to the funcion
 
     if variant_genes is not None:
         for gene_obj in variant_genes:
