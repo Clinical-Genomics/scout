@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Safer redirect to previous page for variants views (#5599)
 - Make whole caseS row clickable link for case page (#5620)
 - Make whole variantS row clickable link for variant page (#5618)
+- Refined the filtering logic for Clinical WTS variants. The clinical filter now selects variants with either `padjust` < 0.05 or (`p_adjust_gene` < 0.1 and abs(`delta_psi`) > 0.1), for OUTRIDER expression variants and FRASER splicing variants respectively (#5630)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
