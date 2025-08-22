@@ -123,6 +123,48 @@ def users():
     return render_template("login/users.html", **data)
 
 
+@login_bp.route("/remove_user/<email>", methods=["GET"])
+def remove_user(email):
+    """Remove a user from the database."""
+    if not current_user.is_admin:
+        flash("You are not authorized to remove user accounts.", "warning")
+        return safe_redirect_back(request)
+
+    user_obj = store.user(email)
+    if not user_obj:
+        flash(f"User {email} not found in the database", "warning")
+        return safe_redirect_back(request)
+
+    if store.user_mme_submissions(user_obj):
+        flash(
+            f"User {email} has associated Matchmaker Exchange submissions "
+            "and can only be removed from the CLI.",
+            "warning",
+        )
+        return safe_redirect_back(request)
+
+    for case_obj in store.cases(assignee=email):
+        institute_obj = store.institute(case_obj["owner"])
+        inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
+            "assignees"
+        ] == [email]
+        store.unassign(
+            institute_obj,
+            case_obj,
+            user_obj,
+            url_for(
+                "cases.case",
+                institute_id=case_obj["owner"],
+                case_name=case_obj["display_name"],
+            ),
+            inactivate_case,
+        )
+
+    store.delete_user(email)
+    LOG.warning(f"Removed user {user_obj['email']} from database and from case assignees.")
+    return safe_redirect_back(request)
+
+
 @login_bp.route("/add_user", methods=["POST"])
 def add_user():
     """Save a new user in the database and redirect to users page."""
