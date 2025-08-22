@@ -114,8 +114,8 @@ def test_oauth_login(request, app_fixture, oauth_provider, user_obj, mocker):
             assert current_user.is_authenticated
 
 
-def test_add_user(app):
-    """Tests the endpoint that accepts a POST request with a user form and creates a new user in the database."""
+def test_add_remove_user(app):
+    """Tests the endpoints that allow admin to add or remove users."""
 
     with app.test_client() as client:
         with app.test_request_context():
@@ -135,6 +135,12 @@ def test_add_user(app):
         )
         # THEN it should be found in the database
         assert store.user(email=NEW_USER_EMAIL)
+
+        # WHEN the user is removed via the login.remove_user endpoint
+        client.get(url_for("login.remove_user", email=NEW_USER_EMAIL))
+
+        # THEN the user should be removed from the database
+        assert store.user(email=NEW_USER_EMAIL) is None
 
 
 def test_edit_user(app, user_obj):
