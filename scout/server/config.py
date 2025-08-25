@@ -90,17 +90,30 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # Define here the VCF keys you want to be parsed for eventual custom archived LoqusDB instances.
 # Comment out if no archived LoqusDB instance is annotated in your VCF files
 LOQUSDB_ARCHIVE_VCF_INFO_FIELDS = {
-    # single keys (map VCF INFO key → target field in parsed_variant)
     "Obs": {"field": "local_obs_old", "type": int},
+    "clin_obs": {"field": "local_obs_old", "type": int},
+    "clinical_genomics_loqusObs": {"field": "local_obs_old", "type": int},
     "Hom": {"field": "local_obs_hom_old", "type": int},
     "Frq": {"field": "local_obs_old_freq", "type": float},
-    "clinical_genomics_loqusObs": {"field": "local_obs_old", "type": int},
     "clinical_genomics_loqusFrq": {"field": "local_obs_old_freq", "type": float},
-    "clin_obs": {"field": "local_obs_old", "type": int},
-    # prefixes → auto-expand into *_Obs, *_Hom, *_Frq
-    "Cancer_Germline": {"prefix": True},
-    "Cancer_Somatic": {"prefix": True},
-    "Cancer_Somatic_Panel": {"prefix": True},
+    "local_obs_Cancer_Germline_old": {"field": "local_obs_cancer_germline_old", "type": int},
+    "local_obs_Cancer_Germline_hom_old": {
+        "field": "local_obs_cancer_germline_hom_old",
+        "type": int,
+    },
+    "Cancer_Germline_Frq": {"field": "local_obs_cancer_germline_old_freq", "type": float},
+    "local_obs_Cancer_Somatic_old": {"field": "local_obs_cancer_somatic_old", "type": int},
+    "local_obs_Cancer_Somatic_hom_old": {"field": "local_obs_cancer_somatic_hom_old", "type": int},
+    "Cancer_Somatic_Frq": {"field": "local_obs_cancer_somatic_old_freq", "type": float},
+    "local_obs_Cancer_Somatic_Panel_old": {
+        "field": "local_obs_cancer_somatic_panel_old",
+        "type": int,
+    },
+    "local_obs_Cancer_Somatic_Panel_hom_old": {
+        "field": "local_obs_cancer_somatic_panel_hom_old",
+        "type": int,
+    },
+    "Cancer_Somatic_Panel_Frq": {"field": "local_obs_cancer_somatic_panel_old_freq", "type": float},
 }
 
 # Connection details for Scout REViewer service
