@@ -223,7 +223,7 @@ def set_loqus_archive_frequencies(
     Populate a parsed variant dictionary with frequency and observation data
     from archived LoqusDB instances annotated in the VCF INFO field.
     The fields to be collected are custom and defined in `scout.server.config.LOQUSDB_ARCHIVE_VCF_INFO_FIELDS`.
-    A key with prefix will be saved into a variant key like this: local_obs_{key}_old", local_obs_{key}_hom_old", local_obs_{key}_old_freq"
+    A key with prefix will be saved into a variant key like this: local_obs_Cancer_Germline_old", local_obs_Cancer_Germline_hom_old", local_obs_Cancer_Germline_old_freq"
     These keys are mostly used for different instances of Cancer (Balsamic) Germline and Somatic loqus.
     RD germline (for MIP and Balsamic) SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs.
     """
@@ -237,21 +237,9 @@ def set_loqus_archive_frequencies(
 
     # --- configured INFO keys ---
     for key, spec in VCF_INFO_FIELDS.items():
-        if spec.get("prefix"):  # Cancer_* expansion
-            low = key.lower()
-            parsed_variant[f"local_obs_{low}_old"] = safe_val(
-                call_safe(int, info.get(f"{key}_Obs"))
-            )
-            parsed_variant[f"local_obs_{low}_hom_old"] = safe_val(
-                call_safe(int, info.get(f"{key}_Hom"))
-            )
-            parsed_variant[f"local_obs_{low}_old_freq"] = safe_val(
-                call_safe(float, info.get(f"{key}_Frq"))
-            )
-        else:
-            value = info.get(key)
-            if value is not None:
-                parsed_variant[spec["field"]] = safe_val(call_safe(spec["type"], value))
+        value = info.get(key)
+        if value is not None:
+            parsed_variant[spec["field"]] = safe_val(call_safe(spec["type"], value))
 
     # --- optional local archive metadata ---
     set_local_archive_info(parsed_variant, local_archive_info)
