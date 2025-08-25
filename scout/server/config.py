@@ -93,6 +93,8 @@ LOQUSDB_ARCHIVE_VCF_INFO_FIELDS = {
     "Obs": {"field": "local_obs_old", "type": int},
     "Hom": {"field": "local_obs_hom_old", "type": int},
     "Frq": {"field": "local_obs_old_freq", "type": float},
+    "clinical_genomics_loqusObs": {"field": "local_obs_old", "type": int},
+    "clinical_genomics_loqusFrq": {"field": "local_obs_old_freq", "type": float},
 }
 
 # Connection details for Scout REViewer service
