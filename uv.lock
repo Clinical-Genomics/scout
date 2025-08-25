@@ -846,19 +846,6 @@ wheels = [
 ]
 
 [[package]]
-name = "flask-ldapconn"
-version = "0.10.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "flask" },
-    { name = "ldap3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/94/64d6145e297d9b5f9792ada260e53690cfd5a8167af4b226962f970b2ae8/flask_ldapconn-0.10.2.tar.gz", hash = "sha256:1df0cdeaeb9b7b996709de1283d35d60711ebb1dd5a2c935e1186d31b601d60a", size = 10576 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/7d/a4ca922fb33aa88204a51e9bbfbeddd82b3018f6b43aef724551704b020c/Flask_LDAPConn-0.10.2-py3-none-any.whl", hash = "sha256:6fa07788835fbb6ca8f9372cd5b8912155c7f33324ee1fe7924eb76e2ea56a14", size = 10393 },
-]
-
-[[package]]
 name = "flask-login"
 version = "0.7.0.dev0"
 source = { git = "https://github.com/maxcountryman/flask-login.git?rev=main#019dbe3ae0fb95966682e769280722afb0a6b904" }
@@ -2445,12 +2432,12 @@ dependencies = [
     { name = "flask-babel" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
     { name = "flask-login" },
     { name = "flask-mail" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree" },
+    { name = "ldap3" },
     { name = "livereload" },
     { name = "markdown" },
     { name = "path-py" },
@@ -2516,12 +2503,12 @@ requires-dist = [
     { name = "flask-babel", specifier = ">=3" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
     { name = "flask-login", git = "https://github.com/maxcountryman/flask-login.git?rev=main" },
     { name = "flask-mail" },
     { name = "flask-wtf" },
     { name = "importlib-resources" },
     { name = "intervaltree", specifier = "==3.0.2" },
+    { name = "ldap3", specifier = ">=2.9.1" },
     { name = "livereload", specifier = ">=2.7" },
     { name = "markdown" },
     { name = "path-py" },
