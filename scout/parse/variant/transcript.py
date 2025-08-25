@@ -96,7 +96,7 @@ def parse_transcripts(raw_transcripts):
 
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get("CADD_PHRED")
-        if cadd_phred:
+        if cadd_phred is not None:
             transcript["cadd"] = float(cadd_phred)
 
         # check if mappability is available on transcript level
