@@ -241,7 +241,6 @@ def set_loqus_archive_frequencies(
         if value is not None:
             parsed_variant[spec["field"]] = safe_val(call_safe(spec["type"], value))
 
-    # --- optional local archive metadata ---
     set_local_archive_info(parsed_variant, local_archive_info)
 
     return parsed_variant
