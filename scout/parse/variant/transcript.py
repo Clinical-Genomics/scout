@@ -150,12 +150,14 @@ def parse_transcripts_spliceai(transcript, entry):
         "SPLICEAI_PRED_DS_DL": "spliceai_ds_dl",
     }
     for spliceai_tag_csq, spliceai_annotation in spliceai_positions_csq.items():
-        if entry.get(spliceai_tag_csq):
-            transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
+        if entry.get(spliceai_tag_csq) is None:
+            continue
+        transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
 
     for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores_csq.items():
-        if entry.get(spliceai_tag_csq):
-            transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
+        if entry.get(spliceai_tag_csq) is None:
+            continue
+        transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
 
     spliceai_pairs = {
         "spliceai_ds_ag": "spliceai_dp_ag",
@@ -168,7 +170,7 @@ def parse_transcripts_spliceai(transcript, entry):
     spliceai_delta_position = None
     spliceai_prediction = None
     spliceai_delta_scores = [transcript.get(tag) for tag in spliceai_pairs.keys()]
-    if any(spliceai_delta_scores):
+    if any(score is not None for score in spliceai_delta_scores):
         spliceai_delta_score = max(spliceai_delta_scores)
         index = spliceai_delta_scores.index(spliceai_delta_score)
         spliceai_delta_position = (
