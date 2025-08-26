@@ -153,12 +153,12 @@ def parse_transcripts_spliceai(transcript, entry):
     for spliceai_tag_csq, spliceai_annotation in spliceai_positions_csq.items():
         if entry.get(spliceai_tag_csq) is None:
             continue
-        transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
+        transcript[spliceai_annotation] = call_safe(int, entry.get(spliceai_tag_csq))
 
     for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores_csq.items():
         if entry.get(spliceai_tag_csq) is None:
             continue
-        transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
+        transcript[spliceai_annotation] = call_safe(float, entry.get(spliceai_tag_csq))
 
     spliceai_pairs = {
         "spliceai_ds_ag": "spliceai_dp_ag",
