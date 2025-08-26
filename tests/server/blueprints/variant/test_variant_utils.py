@@ -329,6 +329,33 @@ def test_gene_predictions_one_gene():
     }
 
 
+def test_gene_predictions_zero_value():
+    ## GIVEN a list with one gene with splice ai score 0.0
+    gene = {
+        "sift_prediction": "deleterious",
+        "polyphen_prediction": "probably_damaging",
+        "region_annotation": "exonic",
+        "functional_annotation": "missense_variant",
+        "spliceai_score": 0.0,
+        "spliceai_position": -4,
+        "spliceai_prediction": ["ds 0.0 dp -4"],
+    }
+    genes = [gene]
+
+    ## WHEN parsing the gene predictions
+    res = predictions(genes)
+    ## THEN assert the result is filled with a 0.0 value properly set
+    assert res == {
+        "sift_predictions": ["deleterious"],
+        "polyphen_predictions": ["probably_damaging"],
+        "region_annotations": ["exonic"],
+        "functional_annotations": ["missense_variant"],
+        "spliceai_scores": [0.0],
+        "spliceai_positions": [-4],
+        "spliceai_predictions": [["ds 0.0 dp -4"]],
+    }
+
+
 def test_gene_predictions_one_gene_no_sift():
     ## GIVEN a list with one gene and some missing values
     gene = {
