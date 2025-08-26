@@ -854,6 +854,19 @@ class QueryHandler(object):
                         }
                     )
 
+            if criterion == "padjust":
+                p_adjust = query.get("padjust")
+
+                if p_adjust is not None:
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"p_adjust": {"$gt": p_adjust}},
+                                {"p_adjust_gene": {"$lt": p_adjust}},
+                            ]
+                        }
+                    )
+
         return mongo_secondary_query
 
 
