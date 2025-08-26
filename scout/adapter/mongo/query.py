@@ -351,7 +351,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
