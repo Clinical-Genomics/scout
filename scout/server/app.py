@@ -88,8 +88,6 @@ def create_app(config_file=None, config=None):
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         configure_email_logging(app)
 
-    return app
-
     @app.before_request
     def check_user():
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
