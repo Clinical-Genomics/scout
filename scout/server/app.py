@@ -20,6 +20,7 @@ from scout.constants import (
     SPLICEAI_SCORE_LABEL_COLOR_MAP,
 )
 from scout.log import init_log
+from scout.utils.config import load_config
 
 from . import extensions
 from .blueprints import (
@@ -56,14 +57,18 @@ def create_app(config_file=None, config=None):
     app.jinja_env.add_extension("jinja2.ext.do")
     app.jinja_env.globals["SCOUT_VERSION"] = __version__
 
-    app.config.from_pyfile("config.py")  # Load default config file
-    if (
-        config
-    ):  # Params from an optional .yaml config file provided by the user or created by the app cli
-        app.config.update((k, v) for k, v in config.items() if v is not None)
-    if config_file:  # Params from an optional .py config file provided by the user
-        app.config.from_pyfile(config_file)
+    # 1. Always load defaults from config.py
+    app.config.from_pyfile("config.py")
 
+    # 2. Merge everything through load_config
+    merged_config = load_config(
+        cli_options=config,  # when invoked via CLI
+        cli_config=None,  # YAML handled upstream in CLI
+        flask_conf=config_file,
+    )
+    app.config.update({k: v for k, v in merged_config.items() if v is not None})
+
+    # 3. Apply session timeout if configured
     session_timeout_minutes = app.config.get("SESSION_TIMEOUT_MINUTES")
     if session_timeout_minutes:
         session_duration = timedelta(minutes=session_timeout_minutes)
@@ -72,15 +77,18 @@ def create_app(config_file=None, config=None):
 
     app.json.sort_keys = False
 
+    # 4. Register app parts
     init_log(log=LOG, app=app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
     register_tests(app)
 
+    # 5. Optional email error logging
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
-        # setup email logging of errors
         configure_email_logging(app)
+
+    return app
 
     @app.before_request
     def check_user():
