@@ -861,7 +861,7 @@ class QueryHandler(object):
                     mongo_secondary_query.append(
                         {
                             "$or": [
-                                {"p_adjust": {"$gt": p_adjust}},
+                                {"padjust": {"$lt": p_adjust}},
                                 {"p_adjust_gene": {"$lt": p_adjust}},
                             ]
                         }
