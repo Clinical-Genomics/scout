@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Scout-Reviewer-Service endpoint to visualise PacBio trgt called expansions (#5611)
 - Updated the documentation with instructions on how, as an admin, to add/edit/remove users from the main users page (#5625)
 - Button to remove users from the main users page (visible to admins only) (#5612)
+- Improved WTS outliers with new `Absolute ΔΨ` and `Adjusted p-value` filters (#5639)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 - Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
