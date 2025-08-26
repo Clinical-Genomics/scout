@@ -208,13 +208,17 @@
     {{ form.svtype.label(class="control-label") }}
     {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-2">
-    {{ form.abs_delta_psi.label(class="control-label") }}
-    {{ form.abs_delta_psi(class="form-control") }}
+  <div class="col-1">
+    {{ form.p_value.label(class="control-label") }}
+    {{ form.p_value(class="form-control") }}
   </div>
-  <div class="col-2">
-    {{ form.padjust.label(class="control-label") }}
-    {{ form.padjust(class="form-control") }}
+  <div class="col-1">
+    {{ form.l2fc.label(class="control-label") }}
+    {{ form.l2fc(class="form-control") }}
+  </div>
+  <div class="col-1">
+    {{ form.delta_psi.label(class="control-label") }}
+    {{ form.delta_psi(class="form-control") }}
   </div>
 </div>
 <div class="row">

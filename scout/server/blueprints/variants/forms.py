@@ -320,8 +320,9 @@ class OutlierFiltersForm(FlaskForm):
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
-    abs_delta_psi = FloatField("Absolute ΔΨ")
-    padjust = FloatField("Adjusted p-value <")
+    p_value = FloatField("P-value")
+    l2fc = FloatField("Abs log₂FC")
+    delta_psi = FloatField("abs ΔΨ")
 
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")

@@ -351,6 +351,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
+        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
@@ -836,36 +837,23 @@ class QueryHandler(object):
                 else:
                     mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
-            if criterion == "abs_delta_psi":
-                abs_delta_psi = query.get("abs_delta_psi")
-                if abs_delta_psi is not None:
-                    mongo_secondary_query.append(
-                        {
-                            "$or": [
-                                {"delta_psi": {"$gt": abs_delta_psi}},
-                                {"delta_psi": {"$lt": -abs_delta_psi}},
-                                {
-                                    "delta_psi": {"$exists": False}
-                                },  # Include entries with no delta_psi (expression outliers)
-                                {
-                                    "delta_psi": None
-                                },  # Include entries where delta_psi is null (expression outliers)
-                            ]
-                        }
-                    )
+            if criterion in ["l2fc", "delta_psi"]:
+                criterion_value = query.get(criterion)
+                if criterion_value is not None:
+                    abs_criterion_value = {
+                        "$or": [
+                            {criterion: {"$gt": criterion_value}},
+                            {criterion: {"$lt": -criterion_value}},
+                            {criterion: {"$exists": False}},
+                            {criterion: None},
+                        ]
+                    }
+                    mongo_secondary_query.append(abs_criterion_value)
 
-            if criterion == "padjust":
-                p_adjust = query.get("padjust")
-
-                if p_adjust is not None:
-                    mongo_secondary_query.append(
-                        {
-                            "$or": [
-                                {"padjust": {"$lt": p_adjust}},
-                                {"p_adjust_gene": {"$lt": p_adjust}},
-                            ]
-                        }
-                    )
+            if criterion == "p_value":
+                p_value = query.get("p_value")
+                if p_value is not None:
+                    mongo_secondary_query.append({"p_value": {"$lt": p_value}})
 
         return mongo_secondary_query
 
