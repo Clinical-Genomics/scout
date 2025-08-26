@@ -64,4 +64,6 @@ SECONDARY_CRITERIA = [
     "fusion_caller",
     "rank_score",
     "clinsig_onc",
+    "abs_delta_psi",
+    "padjust",
 ]

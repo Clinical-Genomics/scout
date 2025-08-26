@@ -836,6 +836,24 @@ class QueryHandler(object):
                 else:
                     mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
+            if criterion == "abs_delta_psi":
+                abs_delta_psi = query.get("abs_delta_psi")
+                if abs_delta_psi is not None:
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"delta_psi": {"$gt": abs_delta_psi}},
+                                {"delta_psi": {"$lt": -abs_delta_psi}},
+                                {
+                                    "delta_psi": {"$exists": False}
+                                },  # Include entries with no delta_psi (expression outliers)
+                                {
+                                    "delta_psi": None
+                                },  # Include entries where delta_psi is null (expression outliers)
+                            ]
+                        }
+                    )
+
         return mongo_secondary_query
 
 
