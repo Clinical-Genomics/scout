@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 
 from scout import __version__

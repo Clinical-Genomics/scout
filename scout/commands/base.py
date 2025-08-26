@@ -61,15 +61,18 @@ def get_app(ctx=None):
 
     # collect CLI options into a dict
     cli_options = {
-        "mongodb": options.params.get("mongodb"),
+        "mongodb": "scout-demo" if options.params.get("demo") else options.params.get("mongodb"),
         "host": options.params.get("host"),
         "port": options.params.get("port"),
         "username": options.params.get("username"),
         "password": options.params.get("password"),
         "mongo_uri": options.params.get("mongo_uri"),
-        # still sourced from YAML if available
         "omim_api_key": cli_config.get("omim_api_key"),
     }
+
+    # Echo the database name if demo mode is used
+    if options.params.get("demo"):
+        click.echo(f"Database name: {cli_options['mongodb']}")
 
     try:
         config = load_config(cli_options=cli_options, cli_config=cli_config, flask_conf=flask_conf)
