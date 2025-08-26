@@ -2,6 +2,7 @@
 import logging
 
 from scout.constants import SO_TERMS
+from scout.utils.convert import call_safe
 
 LOG = logging.getLogger(__name__)
 
@@ -97,7 +98,7 @@ def parse_transcripts(raw_transcripts):
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get("CADD_PHRED")
         if cadd_phred is not None:
-            transcript["cadd"] = float(cadd_phred)
+            transcript["cadd"] = call_safe(float, cadd_phred)
 
         # check if mappability is available on transcript level
         # description: http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups
