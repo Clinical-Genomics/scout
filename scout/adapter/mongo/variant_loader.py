@@ -579,10 +579,15 @@ class VariantLoader(object):
         """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
 
+        Legacy managed variants have "cancer_snv" as category.
+
         Returns true if variant is matched with a variant on the managed list.
         """
 
         coordinates = parse_coordinates(variant, category, build)
+
+        if category is "cancer_snv":
+            category = "cancer"
 
         return (
             self.find_managed_variant(
