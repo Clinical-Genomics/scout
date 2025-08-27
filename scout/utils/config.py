@@ -7,7 +7,7 @@ DEFAULT_CONFIG = {
 
 def load_config(cli_options=None, cli_config=None, flask_conf=None) -> dict:
     """Merge CLI options, YAML config, Flask config file, and defaults into one dict."""
-    config = DEFAULTS.copy()
+    config = DEFAULT_CONFIG.copy()
 
     # 1. CLI options (highest priority)
     if cli_options:
