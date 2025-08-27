@@ -29,7 +29,11 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get -y install --no-install-recommends \
+        git \
+        wkhtmltopdf \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
@@ -37,19 +41,18 @@ RUN apt-get update && \
 RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
 
 ENV PATH="/home/worker/app/.venv/bin:$PATH"
-
 WORKDIR /home/worker/app
 
-# Copy current app code to app dir
-COPY --chown=root:root --chmod=755 . /home/worker/app
+# Copy current app code to app dir (owned by worker)
+COPY --chown=worker:worker --chmod=755 . /home/worker/app
 
-# Copy virtual environment from builder
-COPY --chown=root:root --chmod=755 --from=python-builder /app/.venv /home/worker/app/.venv
+# Copy virtual environment from builder (owned by worker)
+COPY --chown=worker:worker --chmod=755 --from=python-builder /app/.venv /home/worker/app/.venv
 
-# Install only Scout app
-RUN uv pip install --no-cache-dir --editable .[coverage]
-
-# Run the app as non-root user
+# Switch to non-root user *before* installing Scout
 USER worker
+
+# Install only Scout app into venv as worker (no permission issues)
+RUN uv pip install --no-cache-dir --editable .[coverage]
 
 ENTRYPOINT ["uv", "run", "scout"]

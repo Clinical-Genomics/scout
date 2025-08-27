@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add/fix conflicts between ClinGen-CGC-VICC classification criteria to fix discrepancies to Horak et al (#5629)
 - Fix display of gene symbols for TRGT loci on variantS page (#5634)
 - Parse and store also SpliceAI, CADD scores where all scores are 0. (#5637)
+- Broken actions and deployments, caused by Git executable not found in Docker images (#5641)
 
 ## [4.103.3]
 ### Changed
