@@ -586,7 +586,7 @@ class VariantLoader(object):
 
         coordinates = parse_coordinates(variant, category, build)
 
-        if category is "cancer_snv":
+        if category == "cancer_snv":
             category = "cancer"
 
         return (
