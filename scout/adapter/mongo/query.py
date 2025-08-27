@@ -836,6 +836,22 @@ class QueryHandler(object):
                 else:
                     mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
+            if criterion in ["l2fc", "delta_psi"]:
+                criterion_value = query.get(criterion)
+                abs_criterion_value = {
+                    "$or": [
+                        {criterion: {"$gt": criterion_value}},
+                        {criterion: {"$lt": -criterion_value}},
+                        {criterion: {"$exists": False}},
+                        {criterion: None},
+                    ]
+                }
+                mongo_secondary_query.append(abs_criterion_value)
+
+            if criterion == "p_value":
+                p_value = query.get("p_value")
+                mongo_secondary_query.append({"p_value": {"$lt": p_value}})
+
         return mongo_secondary_query
 
 
