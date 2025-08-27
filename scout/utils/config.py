@@ -1,6 +1,6 @@
 import pathlib
 
-DEFAULTS = {
+DEFAULT_CONFIG = {
     "MONGO_DBNAME": "scout",
 }
 
