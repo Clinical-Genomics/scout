@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing variant key `tool_hits` causing fusion variants page to crash (#5614)
 - Add/fix conflicts between ClinGen-CGC-VICC classification criteria to fix discrepancies to Horak et al (#5629)
 - Fix display of gene symbols for TRGT loci on variantS page (#5634)
+- Parse and store also SpliceAI, CADD scores where all scores are 0. (#5637)
 - Git missing from docker bookworm slim image (#5642)
 
 ## [4.103.3]
