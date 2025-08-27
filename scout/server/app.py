@@ -50,17 +50,21 @@ USERS_LOGGER_PATH_PARAM = "USERS_ACTIVITY_LOG_PATH"
 
 
 def create_app(config_file=None, config=None):
-    """Flask app factory function."""
+    """Flask app factory function.
+    # 1. Always load defaults from config.py
+    # 2. Merge everything through load_config
+    # 3. Apply session timeout if configured
+    # 4. Register app parts
+     # 5. Optional email error logging
+    """
 
     app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
     app.jinja_env.globals["SCOUT_VERSION"] = __version__
 
-    # 1. Always load defaults from config.py
     app.config.from_pyfile("config.py")
 
-    # 2. Merge everything through load_config
     merged_config = load_config(
         cli_options=config,  # when invoked via CLI
         cli_config=None,  # YAML handled upstream - only used for pure CLI commands
@@ -68,7 +72,6 @@ def create_app(config_file=None, config=None):
     )
     app.config.update({k: v for k, v in merged_config.items() if v is not None})
 
-    # 3. Apply session timeout if configured
     session_timeout_minutes = app.config.get("SESSION_TIMEOUT_MINUTES")
     if session_timeout_minutes:
         session_duration = timedelta(minutes=session_timeout_minutes)
@@ -77,14 +80,12 @@ def create_app(config_file=None, config=None):
 
     app.json.sort_keys = False
 
-    # 4. Register app parts
     init_log(log=LOG, app=app)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
     register_tests(app)
 
-    # 5. Optional email error logging
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         configure_email_logging(app)
 
