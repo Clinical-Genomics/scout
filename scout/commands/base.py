@@ -72,7 +72,7 @@ def get_app(ctx=None):
 
     # Echo the database name if demo mode is used
     if options.params.get("demo"):
-        click.echo(f"Database name: {cli_options['mongodb']}")
+        click.echo(f"Demo mode - database name is: {cli_options['mongodb']}")
 
     try:
         config = load_config(cli_options=cli_options, cli_config=cli_config, flask_conf=flask_conf)
