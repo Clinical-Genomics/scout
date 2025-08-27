@@ -47,7 +47,7 @@ COPY --chown=root:root --chmod=755 . /home/worker/app
 # Copy virtual environment from builder
 COPY --chown=root:root --chmod=755 --from=python-builder /app/.venv /home/worker/app/.venv
 
-# NEW: remove INSTALLER files to avoid permission errors
+# Remove INSTALLER files as root to avoid permission errors
 RUN find /home/worker/app/.venv/lib/python3.12/site-packages/ -name INSTALLER -exec rm -f {} +
 
 # Install only Scout app
