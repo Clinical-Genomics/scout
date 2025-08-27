@@ -8,6 +8,7 @@ from wtforms import (
     BooleanField,
     DecimalField,
     Field,
+    FloatField,
     HiddenField,
     IntegerField,
     SelectField,
@@ -318,6 +319,10 @@ class OutlierFiltersForm(FlaskForm):
     )
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
+    p_value = FloatField("P-value")
+    l2fc = FloatField("|log₂FC|")
+    delta_psi = FloatField("|ΔΨ|")
 
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
