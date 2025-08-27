@@ -1,4 +1,5 @@
 import copy
+import importlib.util
 import pathlib
 
 DEFAULT_CONFIG = {
@@ -21,11 +22,10 @@ def load_config(cli_options=None, cli_config=None, flask_conf=None) -> dict:
     # 2. Flask config file (.py with uppercase vars)
     if flask_conf:
         flask_conf_path = pathlib.Path(flask_conf).absolute()
-        flask_conf_dict = {}
-        with open(flask_conf_path) as f:
-            code = compile(f.read(), str(flask_conf_path), "exec")
-            exec(code, {}, flask_conf_dict)
-        flask_conf_dict = {k: v for k, v in flask_conf_dict.items() if k.isupper()}
+        spec = importlib.util.spec_from_file_location("flask_conf", flask_conf_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        flask_conf_dict = {k: getattr(module, k) for k in dir(module) if k.isupper()}
         config.update(flask_conf_dict)
 
     # 3. YAML config (deprecated, but still supported)
