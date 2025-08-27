@@ -55,7 +55,7 @@ def create_app(config_file=None, config=None):
     # 2. Merge everything through load_config
     # 3. Apply session timeout if configured
     # 4. Register app parts
-     # 5. Optional email error logging
+    # 5. Optional email error logging
     """
 
     app = Flask(__name__)
