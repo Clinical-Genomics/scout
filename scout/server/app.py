@@ -63,7 +63,7 @@ def create_app(config_file=None, config=None):
     # 2. Merge everything through load_config
     merged_config = load_config(
         cli_options=config,  # when invoked via CLI
-        cli_config=None,  # YAML handled upstream in CLI
+        cli_config=None,  # YAML handled upstream - only used for pure CLI commands
         flask_conf=config_file,
     )
     app.config.update({k: v for k, v in merged_config.items() if v is not None})
