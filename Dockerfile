@@ -44,12 +44,15 @@ WORKDIR /home/worker/app
 COPY --chown=root:root --chmod=755 . /home/worker/app
 
 # Copy virtual environment from builder
-COPY --chown=root:root --chmod=755 --from=python-builder /app/.venv /home/worker/app/.venv
+COPY --from=python-builder /app/.venv /home/worker/app/.venv
 
-# Install only Scout app
-RUN uv pip install --no-cache-dir --editable .[coverage]
+# Ensure worker owns everything in venv
+RUN chown -R worker:worker /home/worker/app/.venv
 
-# Run the app as non-root user
+# Switch to non-root user
 USER worker
+
+# Install Scout app
+RUN uv pip install --no-cache-dir --editable .[coverage]
 
 ENTRYPOINT ["uv", "run", "scout"]
