@@ -57,17 +57,20 @@ def get_app(ctx=None):
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
 
+    # python config file
     flask_conf = options.params.get("flask_config")
 
     # collect CLI options into a dict
     cli_options = {
-        "mongodb": "scout-demo" if options.params.get("demo") else options.params.get("mongodb"),
-        "host": options.params.get("host"),
-        "port": options.params.get("port"),
-        "username": options.params.get("username"),
-        "password": options.params.get("password"),
-        "mongo_uri": options.params.get("mongo_uri"),
-        "omim_api_key": cli_config.get("omim_api_key"),
+        "MONGO_DBNAME": (
+            "scout-demo" if options.params.get("demo") else options.params.get("mongodb")
+        ),
+        "MONGO_HOST": options.params.get("host"),
+        "MONGO_PORT": options.params.get("port"),
+        "MONGO_USERNAME": options.params.get("username"),
+        "MONGO_PASSWORD": options.params.get("password"),
+        "MONGO_URI": options.params.get("mongo_uri"),
+        "OMIM_API_KEY": cli_config.get("omim_api_key"),
     }
 
     # Echo the database name if demo mode is used
