@@ -801,6 +801,28 @@ def test_build_range(adapter):
     assert mongo_query["end"] == {"$gte": start}
 
 
+def test_build_wts_query(adapter):
+    """Test creating a query containing parameters specific to WTS outliers."""
+
+    # GIVEN a query containing case ID and parameters specific for WTS outliers
+    case_id = "cust000"
+    query = {"p_value": 0.05, "l2fc": 1.5, "delta_psi": 0.1}
+
+    # THEN the result query should contain the expected structure
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert {"p_value": {"$lt": 0.05}} in mongo_query["$and"]
+    for param in ["l2fc", "delta_psi"]:
+        assert {
+            "$or": [
+                {param: {"$gt": query.get(param)}},
+                {param: {"$lt": -query.get(param)}},
+                {param: {"$exists": False}},
+                {param: None},
+            ]
+        } in mongo_query["$and"]
+
+
 def test_query_snvs_by_coordinates(real_populated_database, variant_objs, case_obj):
     """Run SNV variant query by coordinates"""
     adapter = real_populated_database
