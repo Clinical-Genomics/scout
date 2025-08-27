@@ -322,7 +322,7 @@ class OutlierFiltersForm(FlaskForm):
 
     p_value = FloatField("P-value")
     l2fc = FloatField("|log₂FC|")
-    delta_psi = FloatField("abs ΔΨ")
+    delta_psi = FloatField("|ΔΨ|")
 
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
