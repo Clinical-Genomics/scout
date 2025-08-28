@@ -47,7 +47,7 @@ export.add_command(causatives)
 variants_cmd = copy.copy(causatives)
 variants_cmd.hidden = True
 
-# Register the alias
+# Register the alias to maintain backward compatibility
 export.add_command(variants_cmd, "variants")
 export.add_command(verified)
 export.add_command(managed)
