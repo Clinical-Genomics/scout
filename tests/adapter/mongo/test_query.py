@@ -1007,7 +1007,9 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
     )
 
     # THEN the function that finds overlapping variants to the snv_variant
-    overlapping_dna, overlapping_wts = adapter.hgnc_overlapping(updated_snv_variant, limit=10000)
+    overlapping_dna, overlapping_wts = adapter.hgnc_overlapping(
+        case_obj, updated_snv_variant, limit=10000
+    )
     for res in overlapping_dna:
         # SHOULD return the SV variant
         assert res["category"] == "sv"
