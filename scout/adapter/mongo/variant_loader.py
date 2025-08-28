@@ -28,8 +28,8 @@ from scout.parse.variant.headers import (
     parse_vep_header,
 )
 from scout.parse.variant.ids import parse_simple_id
-from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
 
@@ -579,30 +579,31 @@ class VariantLoader(object):
         """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
 
-        Legacy managed variants have "cancer_snv" as category.
+        Legacy managed variants have "cancer_snv" as category. To avoid any category or build complications,
+        we match on positional variant ids, same as for the variant page.
 
         Returns true if variant is matched with a variant on the managed list.
         """
 
-        coordinates = parse_coordinates(variant, category, build)
-
         if category == "cancer_snv":
             category = "cancer"
 
-        return (
-            self.find_managed_variant(
-                parse_managed_variant_id(
+        coordinates = parse_coordinates(variant, category, build)
+
+        variant_id = generate_md5_key(
+            [
+                str(part)
+                for part in (
                     coordinates["chrom"],
                     coordinates["position"],
                     coordinates["ref"],
                     coordinates["alt"],
-                    category,
-                    coordinates["sub_category"],
-                    build,
+                    "clinical",
                 )
-            )
-            is not None
+            ]
         )
+
+        return self.find_managed_variant_id(variant_id) is not None
 
     def _has_variants_in_file(self, variant_file: str) -> bool:
         """Check if variant file has any variants."""
