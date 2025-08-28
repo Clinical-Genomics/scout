@@ -2,6 +2,7 @@ import re
 
 from pymongo import ReturnDocument
 
+from scout.adapter.mongo.variant import CARRIER
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
@@ -961,11 +962,15 @@ def test_query_svs_by_coordinates_bnds(adapter, case_obj):
     assert list(results)
 
 
-def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, sv_variant_obj):
+def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_obj):
     """Test function that finds SVs overlapping to a given SNV"""
 
     ## GIVEN a database with snv variants
     adapter = real_variant_database
+
+    # GIVEN an affected individual
+    case_obj = adapter.case_collection.find_one({"_id": "internal_id"})
+    affected_ind = adapter._find_affected(case_obj)[0]
 
     # load SV variants
     adapter.load_variants(
@@ -974,19 +979,33 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
     # load WTS variants
     adapter.load_omics_variants(case_obj=case_obj, file_type="fraser", build="37")
 
-    # GIVEN a SV variant in this database
-    sv_variant = adapter.variant_collection.find_one({"_id": sv_variant_obj["_id"]})
+    # GIVEN a SV variant in an affected individual
+    sv_variant = adapter.variant_collection.find_one(
+        {
+            "_id": sv_variant_obj["_id"],
+            "samples.sample_id": affected_ind,
+            "samples.genotype_call": "0/1",
+        }
+    )
     assert sv_variant
 
     # WITH a given gene on the SV
+    # GIVEN the variant hits an affected individual
+
     gene_id = 17978
     updated_sv_variant = adapter.variant_collection.find_one_and_update(
         {"_id": sv_variant["_id"]},
         {"$set": {"hgnc_ids": [gene_id]}},
         return_document=ReturnDocument.AFTER,
     )
-    # Retrieve a SNV variant occurring in the same case:
-    snv_variant = adapter.variant_collection.find_one({"_id": variant_obj["_id"]})
+    # Retrieve a SNV variant occurring in the same case, within affected individuals
+    snv_variant = adapter.variant_collection.find_one(
+        {
+            "_id": variant_obj["_id"],
+            "samples.sample_id": affected_ind,
+            "samples.genotype_call": "0/1",
+        }
+    )
     assert snv_variant
 
     # And arbitrary set its hgnc_ids to gene_id
