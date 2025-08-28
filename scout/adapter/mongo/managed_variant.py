@@ -116,9 +116,8 @@ class ManagedVariantHandler(object):
 
         Arguments:
             chromosome, position, reference, alternative, "clinical"
-            variant_id(str): md5(chrom_pos_ref_alt_category_type)
-                category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
-                type: "clinical"
+            variant_id(str): md5(chrom_pos_ref_alt_type)
+            type: "clinical"
 
         Returns:
             dict (compare scout.models.ManagedVariant)
