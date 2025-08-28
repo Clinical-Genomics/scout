@@ -17,6 +17,7 @@ LOG = logging.getLogger(__name__)
 
 MATCHQ = "$match"
 CARRIER = r"[12]"  # same as re.compile()"1|2")
+ELEM_MATCH = "$elemMatch"
 
 CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
 CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
@@ -495,7 +496,7 @@ class VariantHandler(VariantLoader):
             {"samples": {"$size": 1}},  # Condition for samples with exactly one element
             {
                 "samples": {
-                    "$elemMatch": {  # Condition for samples with more than one element: individual/sample should be carrier
+                    ELEM_MATCH: {  # Condition for samples with more than one element: individual/sample should be carrier
                         "sample_id": {"$in": affected_ids},
                         "genotype_call": {"$regex": CARRIER},
                     }
@@ -717,7 +718,7 @@ class VariantHandler(VariantLoader):
                 {"hgnc_ids": {"$in": hgnc_ids}},
                 {
                     "samples": {
-                        "$elemMatch": {
+                        ELEM_MATCH: {
                             "sample_id": {"$in": case_affected_inds},
                             "genotype_call": {"$regex": CARRIER},
                         }
@@ -973,7 +974,7 @@ class VariantHandler(VariantLoader):
                 {"category": {"$in": ["snv", "sv"]}},
                 {
                     "samples": {
-                        "$elemMatch": {
+                        ELEM_MATCH: {
                             "display_name": sample_name,
                             "genotype_call": {"$regex": CARRIER},
                         }
