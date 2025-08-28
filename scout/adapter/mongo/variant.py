@@ -689,14 +689,13 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def get_variant_carriers(self, variant_obj: dict) -> List[str]:
-        """Given a variant, this function returns the IDs from samples that are carriers."""
-        return [
-            s["sample_id"] for s in variant_obj["samples"] if re.search(CARRIER, s["genotype_call"])
-        ]
-
     def get_variants_hgnc_overlapping(
-        self, hgnc_ids: List[int], variant_type: str, limit: Optional[int], variant_obj: dict
+        self,
+        hgnc_ids: List[int],
+        case_obj: dict,
+        variant_type: str,
+        limit: Optional[int],
+        variant_obj: dict,
     ) -> Iterable[Dict]:
         """Return DNA other categories of DNA variants matching the genes of the DNA variant in question."""
         category = (
@@ -708,7 +707,7 @@ class VariantHandler(VariantLoader):
         if not limit:
             limit = 30 if variant_obj["category"] == "snv" else 45
 
-        variant_carriers = self.get_variant_carriers(variant_obj)
+        case_affected_inds: list[str] = self._find_affected(case_obj)
 
         query = {
             "$and": [
@@ -719,7 +718,7 @@ class VariantHandler(VariantLoader):
                 {
                     "samples": {
                         "$elemMatch": {
-                            "sample_id": {"$in": variant_carriers},
+                            "sample_id": {"$in": case_affected_inds},
                             "genotype_call": {"$regex": CARRIER},
                         }
                     }
@@ -735,7 +734,7 @@ class VariantHandler(VariantLoader):
         ]
 
     def hgnc_overlapping(
-        self, variant_obj: dict, limit: int = None
+        self, case_obj: dict, variant_obj: dict, limit: int = None
     ) -> Tuple[Iterable[Dict], Iterable[Dict]]:
         """Return overlapping variants.
 
@@ -746,6 +745,7 @@ class VariantHandler(VariantLoader):
         for SNVs we will only return the SVs and MEIs since the genmod compounds are way better.
 
         Do not return the present variant as matching.
+        Do not return variants present only in unaffected.
 
         limit: A maximum count of returned variants is introduced: mainly this is a problem when SVs are huge since there can be many genes and overlapping variants.
                We sort to offer the LIMIT most severe overlapping variants.
@@ -754,7 +754,11 @@ class VariantHandler(VariantLoader):
         variant_type = variant_obj.get("variant_type", "clinical")
         return (
             self.get_variants_hgnc_overlapping(
-                hgnc_ids=hgnc_ids, variant_type=variant_type, limit=limit, variant_obj=variant_obj
+                hgnc_ids=hgnc_ids,
+                case_obj=case_obj,
+                variant_type=variant_type,
+                limit=limit,
+                variant_obj=variant_obj,
             ),
             self.get_omics_variants_hgnc_overlapping(
                 hgnc_ids=hgnc_ids, variant_type=variant_type, variant_obj=variant_obj
