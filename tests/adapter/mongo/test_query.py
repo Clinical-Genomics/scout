@@ -2,7 +2,6 @@ import re
 
 from pymongo import ReturnDocument
 
-from scout.adapter.mongo.variant import CARRIER
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
