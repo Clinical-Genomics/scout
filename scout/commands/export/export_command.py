@@ -40,7 +40,6 @@ export.add_command(panel_cmd)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(exons)
-# Register normally
 export.add_command(causatives)
 
 # Create a shallow copy of the command for the alias
