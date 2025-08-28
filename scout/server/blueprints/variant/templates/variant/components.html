@@ -57,7 +57,7 @@
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
     <div class="d-flex">
       <span>
-        {% if variant.category in ["snv", "cancer_snv"] %}
+        {% if variant.category in ["snv", "cancer"] %}
           <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
             {{ data.classification.label }}
           </a>
