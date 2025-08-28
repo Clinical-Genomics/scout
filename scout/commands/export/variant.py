@@ -152,7 +152,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(variant_string)
 
 
-@click.command("variants", short_help="Export causative variants")
+@click.command("causatives", short_help="Export causative variants")
 @click.option(
     "-c",
     "--collaborator",

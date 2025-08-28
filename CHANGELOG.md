@@ -24,7 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make whole variantS row clickable link for variant page (#5618)
 - Refined the filtering logic for Clinical WTS variants. The clinical filter now selects variants with either `padjust` < 0.05 or (`p_adjust_gene` < 0.1 and abs(`delta_psi`) > 0.1), for OUTRIDER expression variants and FRASER splicing variants respectively (#5630)
 - Removing git installers when building Docker images (#5644)
-- Clearer cli command to export causative variants (#5654)
+- Renamed `scout export variants` to `scout export causatives`, but the old commands still works (#5654)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
