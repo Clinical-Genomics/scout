@@ -442,7 +442,7 @@
       data-bs-content="<div>Gene overlapping non-SNVs</div>
       {{ overlapping_tooltip_table(institute, case, variant.overlapping[:20]) }}">Gene overlapping (DNA)</a>
     {% else %}
-      data-bs-content="<div>Gene overlapping variants</div>
+      data-bs-content="<div>Gene overlapping variants in affected individuals</div>
       {{ overlapping_tooltip_table(institute, case, variant.overlapping[:40]) }}">Gene overlapping (DNA)</a>
     {% endif %}
   {% endif %}
