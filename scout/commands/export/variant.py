@@ -12,8 +12,8 @@ from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
+    export_causative_variants,
     export_managed_variants,
-    export_variants,
     export_verified_variants,
 )
 from scout.server.extensions import store
@@ -152,7 +152,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(variant_string)
 
 
-@click.command("variants", short_help="Export variants")
+@click.command("causatives", short_help="Export causative variants")
 @click.option(
     "-c",
     "--collaborator",
@@ -162,7 +162,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
 @with_appcontext
-def variants(collaborator: str, document_id: str, case_id: str, json: bool):
+def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export variants")
     adapter = store
@@ -174,7 +174,9 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
             LOG.info("Case %s does not exist", case_id)
             raise click.Abort
 
-    variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
+    variants = export_causative_variants(
+        adapter, collaborator, document_id=document_id, case_id=case_id
+    )
 
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))

@@ -4,7 +4,7 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
-def test_export_variants(mock_app, case_obj):
+def test_export_causatives(mock_app, case_obj):
     """Test the CLI command that exports causatives into vcf format"""
 
     runner = mock_app.test_cli_runner()
@@ -14,7 +14,7 @@ def test_export_variants(mock_app, case_obj):
     assert store.variant_collection.find_one() is None
 
     # Load snv variants using the cli
-    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
+    runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
     assert sum(1 for _ in store.variant_collection.find()) > 0
 
     # update case registering a causative variant
@@ -76,7 +76,7 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     assert runner
 
     # Load snv variants using the cli
-    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
+    runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
 
     assert store.variant_collection.find_one() is not None
 
@@ -98,9 +98,9 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
         validate_type="True positive",
     )
     var_res = store.variant_collection.find({"validation": "True positive"})
-    assert sum(1 for i in var_res) == 1
+    assert sum(1 for _ in var_res) == 1
     event_res = store.event_collection.find({"verb": "validate"})
-    assert sum(1 for i in event_res) == 1
+    assert sum(1 for _ in event_res) == 1
 
     # Test the cli without parameters
     result = runner.invoke(cli, ["export", "verified", "--test"])
