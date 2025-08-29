@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make whole variantS row clickable link for variant page (#5618)
 - Refined the filtering logic for Clinical WTS variants. The clinical filter now selects variants with either `padjust` < 0.05 or (`p_adjust_gene` < 0.1 and abs(`delta_psi`) > 0.1), for OUTRIDER expression variants and FRASER splicing variants respectively (#5630)
 - Removing git installers when building Docker images (#5644)
+- Refactored the parsing of the app config file so there exists only one centralized loader for both cli and web app (#5638)
 - Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
