@@ -194,7 +194,7 @@ Options:
 ```
 ---
 
-## Exporting Causative Variants (`variants`)
+## Exporting Causative Variants (`causatives`, alias: `variants`)
 
 Export causative variants for a case or an institute. Output is VCF by default, or JSON if specified.
 
