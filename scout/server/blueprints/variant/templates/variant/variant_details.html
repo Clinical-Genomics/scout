@@ -1,4 +1,4 @@
-{% macro gtcall_panel(variant) %}
+{% macro gtcall_panel(variant, case) %}
   <div class="card panel-default">
     <div class="panel-heading">
       GT call
@@ -21,7 +21,7 @@
             {% elif variant.category == "str" %}
               <th rowspan="2" colspan="1">Expansion support</th>
             {% else %}
-	      {% if variant.chromosome in ["MT","M"] %}
+	      {% if variant.chromosome in ["MT","M"] or (variant.category == "snv" and "panel" in case.analysis_types) %}
                 <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
 	      {% endif %}
               <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
@@ -52,7 +52,7 @@
                   <td class="text-end"><small>N/A</small></td>
               {% endif %}
 
-              {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
+              {% if variant.category == "snv" and (variant.chromosome in ["MT","M"] or "panel" in case.analysis_types) %}
                 <td>
                   {# Using number == number as a test for NaN value numbers here. Given that they exist, NaN values are the only time a number is not considered equal to itself. #}
                   {% if sample.alt_frequency and sample.alt_frequency != -1 and sample.alt_frequency == sample.alt_frequency %}
