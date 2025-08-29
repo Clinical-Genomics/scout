@@ -1,5 +1,5 @@
 {% from "cases/chanjo2_form.html" import chanjo2_report_form %}
-{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, variant_escat_button, dismiss_variant_button, mosaic_variant_button %}
 {% from "variants/utils.html" import compounds_table %}
 {% from "variant/buttons.html" import reviewer_button, splice_junctions_button %}
 {% from "variant/utils.html" import igv_track_selection  %}
@@ -250,14 +250,15 @@
   {% endif %}
 {% endmacro %}
 
-{% macro panel_classify(variant, institute, case, ACMG_OPTIONS, CCV_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations, ccv_evaluations) %}
+{% macro panel_classify(variant, institute, case, ACMG_OPTIONS, CCV_OPTIONS, manual_rank_options, cancer_tier_options, escat_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations, ccv_evaluations) %}
   <div class="card panel-default">
     <div class="panel-heading">Classify</div>
     <div class="card-body" style="margin-top: -30px">
       {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
       {% if case.track == "cancer" %}
-       {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
-      {% endif %}
+       {{ variant_tier_button(variant, institute, case, cancer_tier_options,) }}
+       {{ variant_escat_button(variant, institute, case, escat_tier_options) }}
+       {% endif %}
         {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
       {% if case.track != "cancer" %}
         {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
@@ -292,7 +293,7 @@
 {% endmacro %}
 
 
-{% macro matching_variants(managed_variant, causatives, matching_manual_ranked=None, matching_tiered=None) %}
+{% macro matching_variants(managed_variant, causatives, matching_manual_ranked=None, matching_tiered=None, matching_escat_tiered=None) %}
   {% if causatives %}
     <div class="card mt-3">
       <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
@@ -377,6 +378,30 @@
       </div>
     </div>
   {% endif %}
+
+  {% if matching_escat_tiered %}
+    <div class="card">
+      <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
+        Matching tiered:&nbsp;
+        {% for tier, tiered_info in matching_escat_tiered.items() %}
+        <a style="padding: 0;" class="btn btn-{{tiered_info.label_class}} btn-xs" data-bs-toggle="collapse"
+          href="#collapse_{{tier}}" aria-expanded="false" aria-controls="collapse_{{tier}}">
+          <span class="collapse-button-icon me-1"></span>{{tier}} ({{tiered_info.links|length}}x)
+        </a>
+        <div class="collapse" id="collapse_{{tier}}">
+          <div>
+            {{tier}}:
+            {% for link in tiered_info["links"] %}
+            {% set match_case = link.split('/') %}
+            <a style="padding: 0;" href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
 {% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}

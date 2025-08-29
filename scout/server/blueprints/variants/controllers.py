@@ -23,6 +23,7 @@ from scout.constants import (
     CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
+    ESCAT_TIER_OPTIONS,
     EXPORT_HEADER,
     EXPORTED_VARIANTS_LIMIT,
     FUSION_EXPORT_HEADER,
@@ -395,6 +396,7 @@ def get_manual_assessments(variant_obj):
         "ccv_classification",
         "manual_rank",
         "cancer_tier",
+        "escat_tier",
         "dismiss_variant",
         "mosaic_tags",
     ]
@@ -422,6 +424,14 @@ def get_manual_assessments(variant_obj):
                 )
                 assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
                 assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
+
+            if assessment_type == "escat_tier":
+                escat_tier = variant_obj[assessment_type]
+                assessment["title"] = "ESCAT tier: {}".format(
+                    ESCAT_TIER_OPTIONS[escat_tier]["description"]
+                )
+                assessment["label"] = ESCAT_TIER_OPTIONS[escat_tier]["label"]
+                assessment["display_class"] = ESCAT_TIER_OPTIONS[escat_tier]["label_class"]
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
@@ -936,6 +946,10 @@ def parse_variant(
     )
 
     variant_obj["matching_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user)
+    )
+
+    variant_obj["matching_escat_tiered"] = store.matching_escat_tiered(
         variant_obj, user_institutes(store, current_user)
     )
 
@@ -1460,6 +1474,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         variants=variants_list,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
+        escat_tier_options=ESCAT_TIER_OPTIONS,
         form=form,
     )
     return data

@@ -50,6 +50,18 @@
   {% endif %} <!-- end of if variant.matching_tiered -->
 {% endmacro %}
 
+
+{% macro other_escat_tiered_variants(variant) %}
+{% if variant.matching_escat_tiered %}
+<span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
+  data-bs-title="Previously <b>T</b>iered as" data-bs-content="
+          {% for tier, tiered_info in variant.matching_escat_tiered.items() %}
+            <span class='badge bg-{{tiered_info.label_class}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
+          {% endfor %}">T</span>
+{% endif %}
+{% endmacro %}
+
+
 {% macro matching_manual_rank(variant) %}
   {% if variant.matching_ranked %}
     <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
