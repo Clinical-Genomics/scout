@@ -686,7 +686,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str):
 
 def populate_case_obj(case_obj: dict, store: MongoAdapter):
     """Helper function to populate additional case information."""
-    set_case_analysis_types(case_obj)
+    set_case_analysis_type(case_obj)
 
     case_obj["assignees"] = [
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
