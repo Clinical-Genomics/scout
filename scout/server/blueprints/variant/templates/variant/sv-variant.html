@@ -100,7 +100,7 @@
   </div> <!-- end of row -->
 
   <div class="row">
-    <div class="col-md-8">{{ gtcall_panel(variant) }}</div>
+    <div class="col-md-8">{{ gtcall_panel(variant, case) }}</div>
     {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
     {% if has_pedigree %}
       <div class="col-md-4">{{ pedigree_panel(case) }}</div>
