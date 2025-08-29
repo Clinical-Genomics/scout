@@ -116,9 +116,9 @@ def populate_institute_soft_filters(form, institute_obj):
         form.institute_soft_filters.data = ",".join(institute_obj["soft_filters"])
 
 
-def set_overlapping_variants(variant_obj: dict):
+def set_overlapping_variants(case_obj: dict, variant_obj: dict):
     """Define DNA or WTS variants that are overlapping with a gene of a variant."""
-    overlapping_variants, overlapping_outliers = store.hgnc_overlapping(variant_obj)
+    overlapping_variants, overlapping_outliers = store.hgnc_overlapping(case_obj, variant_obj)
     variant_obj["overlapping"] = list(overlapping_variants) or None
     variant_obj["overlapping_outliers"] = list(overlapping_outliers) or None
 
@@ -147,7 +147,7 @@ def variants(
 
     variants = []
     for variant_obj in variant_res:
-        set_overlapping_variants(variant_obj)
+        set_overlapping_variants(case_obj, variant_obj)
 
         evaluations = []
         is_research = variant_obj["variant_type"] == "research"
@@ -240,7 +240,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
-        set_overlapping_variants(variant_obj)
+        set_overlapping_variants(case_obj, variant_obj)
 
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -286,7 +286,7 @@ def mei_variants(
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
-        set_overlapping_variants(variant_obj)
+        set_overlapping_variants(case_obj, variant_obj)
 
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -1436,7 +1436,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
 
-        set_overlapping_variants(variant_obj)
+        set_overlapping_variants(case_obj, variant_obj)
 
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
