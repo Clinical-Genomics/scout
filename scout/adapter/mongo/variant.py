@@ -461,7 +461,7 @@ class VariantHandler(VariantLoader):
             case_obj (dict): A Case object
 
         Returns:
-            affected (list): a list of affected IDs.
+            affected (list): a list of affected IDs (collected as "individual_id" and "omics_sample_id").
         """
 
         # affected is phenotype == 2; assume
@@ -470,6 +470,8 @@ class VariantHandler(VariantLoader):
             for subject in case_obj.get("individuals"):
                 if subject.get("phenotype") == 2:
                     affected_ids.append(subject.get("individual_id"))
+                    if subject.get("omics_sample_id"):
+                        affected_ids.append(subject["omics_sample_id"])
 
         return affected_ids
 
@@ -693,9 +695,9 @@ class VariantHandler(VariantLoader):
     def get_variants_hgnc_overlapping(
         self,
         hgnc_ids: List[int],
-        case_obj: dict,
         variant_type: str,
         limit: Optional[int],
+        limit_samples: List[str],
         variant_obj: dict,
     ) -> Iterable[Dict]:
         """Return DNA other categories of DNA variants matching the genes of the DNA variant in question."""
@@ -708,8 +710,6 @@ class VariantHandler(VariantLoader):
         if not limit:
             limit = 30 if variant_obj["category"] == "snv" else 45
 
-        case_affected_inds: list[str] = self._find_affected(case_obj)
-
         query = {
             "$and": [
                 {"case_id": variant_obj["case_id"]},
@@ -719,7 +719,7 @@ class VariantHandler(VariantLoader):
                 {
                     "samples": {
                         ELEM_MATCH: {
-                            "sample_id": {"$in": case_affected_inds},
+                            "sample_id": {"$in": limit_samples},
                             "genotype_call": {"$regex": CARRIER},
                         }
                     }
@@ -735,7 +735,10 @@ class VariantHandler(VariantLoader):
         ]
 
     def hgnc_overlapping(
-        self, case_obj: dict, variant_obj: dict, limit: int = None
+        self,
+        variant_obj: dict,
+        limit_samples: list,
+        limit: int = None,
     ) -> Tuple[Iterable[Dict], Iterable[Dict]]:
         """Return overlapping variants.
 
@@ -753,16 +756,20 @@ class VariantHandler(VariantLoader):
         """
         hgnc_ids = variant_obj.get("hgnc_ids", [])
         variant_type = variant_obj.get("variant_type", "clinical")
+
         return (
             self.get_variants_hgnc_overlapping(
                 hgnc_ids=hgnc_ids,
-                case_obj=case_obj,
                 variant_type=variant_type,
                 limit=limit,
+                limit_samples=limit_samples,
                 variant_obj=variant_obj,
             ),
             self.get_omics_variants_hgnc_overlapping(
-                hgnc_ids=hgnc_ids, variant_type=variant_type, variant_obj=variant_obj
+                hgnc_ids=hgnc_ids,
+                variant_type=variant_type,
+                limit_samples=limit_samples,
+                variant_obj=variant_obj,
             ),
         )
 

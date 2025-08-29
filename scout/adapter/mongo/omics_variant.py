@@ -227,7 +227,7 @@ class OmicsVariantHandler:
         return self.omics_variant_collection.count_documents(query)
 
     def get_omics_variants_hgnc_overlapping(
-        self, hgnc_ids: List[int], variant_type: str, variant_obj: dict
+        self, hgnc_ids: List[int], variant_type: str, limit_samples: List[str], variant_obj: dict
     ) -> Iterable[Dict]:
         """Return WTS outliers matching the genes of the DNA variant in question."""
         query = {
@@ -235,6 +235,7 @@ class OmicsVariantHandler:
                 {"case_id": variant_obj["case_id"]},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
+                {"omics_sample_id": {"$in": limit_samples}},
             ]
         }
         return self.omics_variant_collection.find(query)
