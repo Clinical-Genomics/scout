@@ -4,15 +4,11 @@ HG19REF_URL = (
 )
 HG19REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/1kg_v37/human_g1k_v37_decoy.fasta.fai"
 HG19CYTOBAND_URL = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/refs/heads/master/rare-disease/region/grch37_cytoband.bed"
-HG19ALIAS_URL = (
-    "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab"
-)
+HG19ALIAS_URL = "https://igv.org/genomes/data/hg19/hg19_alias.tab"
 
 HG38REF_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa"
 HG38REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
-HG38ALIAS_URL = (
-    "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg38/hg38_alias.tab"
-)
+HG38ALIAS_URL = "https://igv.org/genomes/data/hg38/hg38_alias.tab"
 HG38CYTOBAND_URL = "https://igv-genepattern-org.s3.amazonaws.com/genomes/hg38/cytoBandIdeo.txt.gz"
 
 HG38GENES_URL = "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz"
