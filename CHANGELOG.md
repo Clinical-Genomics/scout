@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removing git installers when building Docker images (#5644)
 - Refactored the parsing of the app config file so there exists only one centralized loader for both cli and web app (#5638)
 - Restrict gene-overlapping variants search to variants found in affected individuals (#5623)
+- Update command: `scout export variants` now `scout export causatives` (backward-compatible) (#5654)
 - Custom archived LoqusDB instances are now configured in the app config file. ⚠️ This requires updating the config file; otherwise, the functionality will break (#5622)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)

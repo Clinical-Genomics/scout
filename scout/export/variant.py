@@ -12,7 +12,7 @@ from scout.models.managed_variant import ManagedVariant
 LOG = logging.getLogger(__name__)
 
 
-def export_variants(
+def export_causative_variants(
     adapter: MongoAdapter, collaborator: str, document_id: str = None, case_id: str = None
 ) -> dict:
     """Export causative variants for a collaborator.
