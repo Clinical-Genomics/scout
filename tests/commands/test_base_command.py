@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 
 from scout import __version__
@@ -31,4 +30,4 @@ def test_base_cmd():
     # test the cli with --demo option
     result = runner.invoke(cli, ["--demo"])
     assert result.exit_code == 0
-    assert "Database name: scout-demo" in result.output
+    assert "Demo mode - database name is: scout-demo" in result.output
