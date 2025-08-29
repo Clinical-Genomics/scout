@@ -23,6 +23,7 @@ def ldap_app(request):
         "DEBUG": True,
         "SERVER_NAME": SERVER_NAME,
         "LDAP_HOST": "ldap://test_ldap_server",
+        "LDAP_BASE_DN": "dc=planetexpress,dc=com",
         "WTF_CSRF_ENABLED": False,
         "MONGO_DBNAME": "testdb",
     }
