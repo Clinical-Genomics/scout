@@ -153,6 +153,7 @@ def build_variant(
         gene_lists = list,
         manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
         cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
+        escat_tier = str # choices=['1A', '1B', '1C', '2A', '2B', '3A', '3B' '4A', '4B', '5', 'X]
         dismiss_variant = list,
 
         acmg_evaluation = str, # choices=ACMG_TERMS

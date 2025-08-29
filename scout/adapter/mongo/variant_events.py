@@ -4,7 +4,13 @@ from typing import Dict, List
 
 import pymongo
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, REV_ACMG_MAP, REV_CCV_MAP
+from scout.constants import (
+    CANCER_TIER_OPTIONS,
+    ESCAT_TIER_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    REV_ACMG_MAP,
+    REV_CCV_MAP,
+)
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -324,6 +330,46 @@ class VariantEventHandler(object):
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
                     "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                }
+        return tiered
+
+    def matching_escat_tiered(self, query_variant, user_institutes):
+        """Retrieve all ESCAT tiered tags assigned to a cancer variant in other cases (accessible to the user)
+        Args:
+            query_variant(dict)
+            user_institutes(list): list of dictionaries
+
+        Returns:
+            tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
+                        {'1A': {"links": ["link/to/variant1", "link/to/variant2"], "label": 'danger'}, '3': {..}, }
+        """
+        tiered = {}
+        query = {
+            "category": "variant",
+            "verb": "escat_tier",
+            "subject": query_variant["display_name"],
+            "institute": {"$in": [inst["_id"] for inst in user_institutes]},
+        }
+
+        for tiered_event in self.event_collection.find(query):
+            # Check if variant is still tiered as suggested by the event
+            tiered_matching_variant = self.variant(
+                case_id=tiered_event["case"], document_id=tiered_event["variant_id"]
+            )
+            if (
+                tiered_matching_variant is None
+                or tiered_matching_variant["_id"] == query_variant["_id"]
+                or tiered_matching_variant.get("escat_tier") is None
+            ):
+                continue
+            tier_id = tiered_matching_variant["escat_tier"]
+
+            if tier_id in tiered:
+                tiered[tier_id]["links"].add(tiered_event["link"])
+            else:
+                tiered[tier_id] = {
+                    "links": {tiered_event["link"]},
+                    "label": ESCAT_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
                 }
         return tiered
 
@@ -678,6 +724,63 @@ class VariantEventHandler(object):
         updated_variant = self.variant_collection.find_one_and_update(
             {"_id": variant["_id"]},
             {action: {"cancer_tier": cancer_tier}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        LOG.debug("Variant updated")
+        return updated_variant
+
+    def update_escat_tier(self, institute, case, user, link, variant, escat_tier):
+        """Create an event for updating the manual rank of a variant
+
+          This function will create a event and update the cancer tier
+          of the variant.
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+            escat_tier (str): The new escat tier
+
+        Return:
+            updated_variant
+
+        """
+        LOG.info(
+            "Creating event for updating ESCAT tier for "
+            "variant {0}".format(variant["display_name"])
+        )
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="variant",
+            verb="escat_tier",
+            variant=variant,
+            subject=variant["display_name"],
+        )
+
+        if escat_tier:
+            LOG.info(
+                "Setting ESCAT tier to {0} for variant {1}".format(
+                    escat_tier, variant["display_name"]
+                )
+            )
+            action = "$set"
+        else:
+            LOG.info(
+                "Reset ESCAT tier from {0} for variant {1}".format(
+                    variant.get("escat_tier", "NA"), variant["display_name"]
+                )
+            )
+            action = "$unset"
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {"_id": variant["_id"]},
+            {action: {"escat_tier": escat_tier}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
         LOG.debug("Variant updated")
