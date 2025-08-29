@@ -459,6 +459,17 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {% if variants.escat_detailed %}
+        {% for variant in variants.escat_detailed|sort(attribute='variant_rank') %}
+          {% if variant['_id'] not in printed_vars %}
+             {% do printed_vars.append(variant['_id']) %}
+             {{ variant_content(variant, loop.index) }}
+            <br>
+           {% else %}
+             {% do duplicated_variants.append(variant['_id']) %}
+           {% endif %}
+         {% endfor %}
+    {% endif %}
     {% if not (variants.tagged_detailed or variants.tier_detailed) %}
       No tagged variants for this case
     {% endif %}
