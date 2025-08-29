@@ -4,7 +4,7 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
-def test_export_variants(mock_app, case_obj):
+def test_export_causatives(mock_app, case_obj):
     """Test the CLI command that exports causatives into vcf format"""
 
     runner = mock_app.test_cli_runner()
