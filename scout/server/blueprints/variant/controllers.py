@@ -374,7 +374,9 @@ def variant(
 
     overlapping_variants, overlapping_outliers = [], []
     if get_overlapping:
-        overlapping_variants, overlapping_outliers = map(list, store.hgnc_overlapping(variant_obj))
+        overlapping_variants, overlapping_outliers = map(
+            list, store.hgnc_overlapping(case_obj, variant_obj)
+        )
 
         for var in overlapping_variants:
             var.update(predictions(var.get("genes", [])))
