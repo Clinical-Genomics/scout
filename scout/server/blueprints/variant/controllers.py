@@ -375,8 +375,9 @@ def variant(
 
     overlapping_variants, overlapping_outliers = [], []
     if get_overlapping:
+        case_affected_inds: list[str] = store._find_affected(case_obj)
         overlapping_variants, overlapping_outliers = map(
-            list, store.hgnc_overlapping(case_obj, variant_obj)
+            list, store.hgnc_overlapping(variant_obj=variant_obj, limit_samples=case_affected_inds)
         )
 
         for var in overlapping_variants:
