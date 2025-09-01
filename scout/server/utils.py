@@ -339,6 +339,16 @@ def _check_path_name(ind: Dict, path_name: str) -> bool:
     return False
 
 
+def set_case_analysis_type(case_obj: dict):
+    """Set case analysis type (sequencing modality) based on the types of the individual samples.
+    If there is more than one type in the case, type is "mixed".
+    """
+    analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
+    if len(analysis_types) > 1:
+        analysis_types = set(["mixed"])
+    case_obj["analysis_types"] = list(analysis_types)
+
+
 def case_append_alignments(case_obj: dict):
     """Deconvolute information about files to case_obj.
 
