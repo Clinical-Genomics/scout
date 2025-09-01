@@ -1039,6 +1039,49 @@ def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_ob
     assert test_variant["mosaic_tags"] == [1, 3]
 
 
+def test_keep_escat_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
+    """Test the code that updates cancer tier of new variants according to the old."""
+
+    old_variant = copy.deepcopy(variant_obj)
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN cancer tier is assigned to the variant
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_escat_tier(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="variant_link",
+        variant=old_variant,
+        escat_tier="2B",
+    )
+    assert updated_old
+
+    # THEN the variant is replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
+    )
+    assert updated_new_vars["escat_tier"] == ["new_id"]
+
+    # and the new variant should have a the same mosaic tags
+    test_variant = adapter.variant_collection.find_one({"_id": "new_id"})
+    assert test_variant["escat_tier"] == "2B"
+
+
 def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates cancer tier of new variants according to the old."""
 

@@ -33,6 +33,40 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
     assert matching_tiered == {"1A": {"label": "danger", "links": {"link"}}}
 
 
+def test_matching_escat_tiered(
+    adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj
+):
+    """Test retrieving matching tiered variants from other cancer cases"""
+
+    # GIVEN a database containing a cancer variant in another case
+    other_var = deepcopy(cancer_variant_obj)
+    other_var["_id"] = "another_id"
+    other_var["case"] = cancer_case_obj["_id"]
+    other_var["escat_tier"] = "1A"
+    other_var["owner"] = institute_obj["_id"]
+    adapter.variant_collection.insert_one(other_var)
+
+    escat_tier = "1A"
+
+    # GIVEN that the other variant is tiered
+    adapter.update_escat_tier(
+        institute=institute_obj,
+        case=cancer_case_obj,
+        user=user_obj,
+        link="link",
+        variant=other_var,
+        escat_tier=escat_tier,
+    )
+
+    # WHEN retrieving other tiered variants matching the query variant
+    matching_tiered = adapter.matching_escat_tiered(
+        query_variant=cancer_variant_obj, user_institutes=[{"_id": "cust000"}]
+    )
+
+    # THEN it should return a set with the other variant tier info
+    assert matching_tiered == {"1A": {"label": "danger", "links": {"link"}}}
+
+
 def test_matching_manual_rank(
     adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj
 ):
@@ -397,6 +431,42 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
     )
     # one dismissal is still found
     assert dismissals == 1
+
+
+def test_update_escat_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    # GIVEN a variant db with at least one variant, and no events
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
+
+    variant = adapter.variant_collection.find_one()
+
+    assert variant.get("escat_tier") == None
+
+    # WHEN upating cancer tier
+    link = "testUpdateESCATTier"
+
+    escat_tier = "1A"
+
+    updated_variant = adapter.update_escat_tier(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant,
+        escat_tier=escat_tier,
+    )
+
+    # THEN an event should be created
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj["verb"] == "escat_tier"
+
+    # THEN the variant should be given the appropriate tier
+    assert updated_variant.get("escat_tier") == escat_tier
 
 
 def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):

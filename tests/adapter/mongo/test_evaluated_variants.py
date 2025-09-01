@@ -37,6 +37,38 @@ def test_get_cancer_tier(real_variant_database):
     assert len(evaluated_variants) == 1
 
 
+def test_get_escat_tier(real_variant_database):
+    adapter = real_variant_database
+
+    ## GIVEN a database with information
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
+
+    variant = adapter.variant_collection.find_one()
+
+    ## WHEN updating variant information for a variant
+    var_id = variant["_id"]
+    variant_id = variant["variant_id"]
+    variant["escat_tier"] = "1A"
+    adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
+
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="escat_tier",
+        variant_id=variant_id,
+    )
+    adapter.event_collection.insert_one(evaluation)
+
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
+
+    ## THEN assert the variant is returned by the function evaluated variants
+    assert len(evaluated_variants) == 1
+
+
 def test_get_manual_rank(real_variant_database):
     adapter = real_variant_database
 

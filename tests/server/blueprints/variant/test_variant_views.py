@@ -338,6 +338,34 @@ def test_variant_update_cancer_tier(
         assert resp.status_code == 302
 
 
+def test_variant_update_escat_tier(
+    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
+):
+    mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # When a tier is assigned to the variant via POST request
+        data = urlencode({"escat_tier": "2C"})
+        resp = client.post(
+            url_for(
+                "variant.variant_update",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=variant_obj["_id"],
+                data=data,
+                content_type="application/x-www-form-urlencoded",
+            )
+        )
+        # THEN request should be a redirection
+        assert resp.status_code == 302
+
+
 def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
     """Test the endpoint that updates the IGV track preferences for a user"""
 
