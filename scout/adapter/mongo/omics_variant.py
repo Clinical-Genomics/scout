@@ -238,5 +238,4 @@ class OmicsVariantHandler:
                 {"sample_id": {"$in": limit_samples}},
             ]
         }
-        LOG.warning(query)
         return self.omics_variant_collection.find(query)
