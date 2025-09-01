@@ -42,6 +42,7 @@ from scout.server.utils import (
     case_has_mt_alignments,
     case_has_rna_tracks,
     get_case_genome_build,
+    set_case_analysis_type,
     user_institutes,
     variant_institute_and_case,
 )
@@ -337,6 +338,8 @@ def variant(
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
+
+    set_case_analysis_type(case_obj)
 
     case_obj["alamut_file_links"] = alamut_file_links(institute_obj, case_obj)
 
