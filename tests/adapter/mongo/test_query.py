@@ -1022,7 +1022,7 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
     # And arbitrarily set its hgnc_ids to gene_id
     updated_omics_variant = adapter.omics_variant_collection.find_one_and_update(
         {"_id": omics_variant["_id"]},
-        {"$set": {"hgnc_ids": [gene_id], "omics_sample_id": affected_inds[1]}},
+        {"$set": {"hgnc_ids": [gene_id]}},
         return_document=ReturnDocument.AFTER,
     )
 

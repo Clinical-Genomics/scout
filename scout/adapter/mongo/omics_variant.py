@@ -235,7 +235,8 @@ class OmicsVariantHandler:
                 {"case_id": variant_obj["case_id"]},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
-                {"omics_sample_id": {"$in": limit_samples}},
+                {"sample_id": {"$in": limit_samples}},
             ]
         }
+        LOG.warning(query)
         return self.omics_variant_collection.find(query)
