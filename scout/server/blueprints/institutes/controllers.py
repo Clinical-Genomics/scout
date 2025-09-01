@@ -28,6 +28,7 @@ from scout.server.extensions import beacon, store
 from scout.server.utils import (
     get_case_genome_build,
     institute_and_case,
+    set_case_analysis_type,
     user_institutes,
 )
 
@@ -685,10 +686,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str):
 
 def populate_case_obj(case_obj: dict, store: MongoAdapter):
     """Helper function to populate additional case information."""
-    analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-    if len(analysis_types) > 1:
-        analysis_types = set(["mixed"])
-    case_obj["analysis_types"] = list(analysis_types)
+    set_case_analysis_type(case_obj)
 
     case_obj["assignees"] = [
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])

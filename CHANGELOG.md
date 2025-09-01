@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored the parsing of the app config file so there exists only one centralized loader for both cli and web app (#5638)
 - Restrict gene-overlapping variants search to variants found in affected individuals (#5623)
 - Update command: `scout export variants` now `scout export causatives` (backward-compatible) (#5654)
+- Show estimated VAF% also for panel and WES SNVs, much as for MT variants (#5658)
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
