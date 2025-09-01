@@ -117,9 +117,9 @@ def populate_institute_soft_filters(form, institute_obj):
         form.institute_soft_filters.data = ",".join(institute_obj["soft_filters"])
 
 
-def set_overlapping_variants(case_obj: dict, variant_obj: dict):
+def set_overlapping_variants(variant_obj: dict, limit_samples: list):
     """Define DNA or WTS variants that are overlapping with a gene of a variant."""
-    overlapping_variants, overlapping_outliers = store.hgnc_overlapping(case_obj, variant_obj)
+    overlapping_variants, overlapping_outliers = store.hgnc_overlapping(variant_obj, limit_samples)
     variant_obj["overlapping"] = list(overlapping_variants) or None
     variant_obj["overlapping_outliers"] = list(overlapping_outliers) or None
 
@@ -147,8 +147,9 @@ def variants(
     update_case_panels(store, case_obj)
 
     variants = []
+    case_affected_inds: list[str] = store._find_affected(case_obj)
     for variant_obj in variant_res:
-        set_overlapping_variants(case_obj, variant_obj)
+        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
 
         evaluations = []
         is_research = variant_obj["variant_type"] == "research"
@@ -240,8 +241,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
+    case_affected_inds: list[str] = store._find_affected(case_obj)
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
-        set_overlapping_variants(case_obj, variant_obj)
+        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
 
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -285,9 +287,9 @@ def mei_variants(
     genome_build = get_case_genome_build(case_obj)
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
-
+    case_affected_inds: list[str] = store._find_affected(case_obj)
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
-        set_overlapping_variants(case_obj, variant_obj)
+        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
 
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -1426,6 +1428,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
+    case_affected_inds: list[str] = store._find_affected(case_obj)
     for variant in variant_res:
         variant_obj = parse_variant(
             store,
@@ -1450,7 +1453,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
 
-        set_overlapping_variants(case_obj, variant_obj)
+        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
 
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
