@@ -969,7 +969,9 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
 
     # GIVEN an affected individual
     case_obj = adapter.case_collection.find_one({"_id": "internal_id"})
-    affected_ind = adapter._find_affected(case_obj)[0]
+    affected_inds = adapter._find_affected(
+        case_obj
+    )  # contains both individual_id" and omics_sample_id from affected individuals
 
     # load SV variants
     adapter.load_variants(
@@ -982,7 +984,7 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
     sv_variant = adapter.variant_collection.find_one(
         {
             "_id": sv_variant_obj["_id"],
-            "samples.sample_id": affected_ind,
+            "samples.sample_id": affected_inds[0],
             "samples.genotype_call": "0/1",
         }
     )
@@ -1001,7 +1003,7 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
     snv_variant = adapter.variant_collection.find_one(
         {
             "_id": variant_obj["_id"],
-            "samples.sample_id": affected_ind,
+            "samples.sample_id": affected_inds[0],
             "samples.genotype_call": "0/1",
         }
     )
@@ -1014,7 +1016,7 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
         return_document=ReturnDocument.AFTER,
     )
 
-    # Retrieve an OMICS variant occurring in the same case:
+    # Retrieve an OMICS variant occurring in the same case, same affected sample
     omics_variant = adapter.omics_variant_collection.find_one()
     assert omics_variant
     # And arbitrarily set its hgnc_ids to gene_id
@@ -1026,7 +1028,7 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
 
     # THEN the function that finds overlapping variants to the snv_variant
     overlapping_dna, overlapping_wts = adapter.hgnc_overlapping(
-        case_obj, updated_snv_variant, limit=10000
+        variant_obj=updated_snv_variant, limit_samples=affected_inds, limit=10000
     )
     for res in overlapping_dna:
         # SHOULD return the SV variant
@@ -1041,7 +1043,9 @@ def test_get_overlapping_variant(real_variant_database, variant_obj, sv_variant_
     # The function should also work the other way around:
     # and return snv variants that overlaps with sv variants
     overlapping_dna, overlapping_wts = list(
-        adapter.hgnc_overlapping(case_obj, updated_sv_variant, limit=10000)
+        adapter.hgnc_overlapping(
+            variant_obj=updated_sv_variant, limit_samples=affected_inds, limit=10000
+        )
     )
     result_ids = [result_var["_id"] for result_var in overlapping_dna]
     assert updated_snv_variant["_id"] in result_ids
