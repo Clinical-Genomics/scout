@@ -1,5 +1,4 @@
 import logging
-import pathlib
 
 import click
 import coloredlogs
@@ -53,6 +52,8 @@ def get_app(ctx=None):
         )
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
+            if cli_config.get("mongodb"):
+                cli_config["mongo_dbname"] = cli_config.pop("mongodb")
 
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
