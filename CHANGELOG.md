@@ -40,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Git missing from docker bookworm slim image (#5642)
 - Matching cancer_snv managed variants failure (#5647)
 - Parsing of database name when provided on a .yaml config file (#5663)
+- Export causatives command crashing on variants that have been removed (#5665)
 
 ## [4.103.3]
 ### Changed

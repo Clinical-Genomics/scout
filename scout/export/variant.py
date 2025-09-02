@@ -35,6 +35,8 @@ def export_causative_variants(
 
     for doc_id in variant_ids:
         variant_obj = adapter.variant(doc_id)
+        if variant_obj is None:
+            continue
         chrom = variant_obj["chromosome"]
         # Convert chromosome to integer for sorting
         chrom_int = CHROMOSOME_INTEGERS.get(chrom)
