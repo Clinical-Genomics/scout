@@ -35,11 +35,13 @@ def export_causative_variants(
 
     for doc_id in variant_ids:
         variant_obj = adapter.variant(doc_id)
-        chrom = variant_obj.get("chromosome")
+        if variant_obj is None:
+            continue
+        chrom = variant_obj["chromosome"]
         # Convert chromosome to integer for sorting
         chrom_int = CHROMOSOME_INTEGERS.get(chrom)
         if not chrom_int:
-            LOG.info(f"Unknown chromosome {chrom} for variant with ID {variant_obj['_id']}")
+            LOG.info("Unknown chromosome %s", chrom)
             continue
 
         # Add chromosome and position to prepare for sorting
