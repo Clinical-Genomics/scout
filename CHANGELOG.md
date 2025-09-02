@@ -41,6 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matching cancer_snv managed variants failure (#5647)
 - Parsing of database name when provided on a .yaml config file (#5663)
 - Export causatives command crashing on variants that have been removed (#5665)
+- Parse error on REViwer.trgt case load entries (#5672)
 
 ## [4.103.3]
 ### Changed
