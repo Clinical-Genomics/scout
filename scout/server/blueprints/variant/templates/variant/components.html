@@ -357,11 +357,12 @@
     </div>
   {% endif %}
 
-  {% if matching_tiered %}
+  {% for match, name in [[matching_tiered, "AMP"], [matching_escat_tiered, "ESCAT"]] %}
+    {% if match%}
     <div class="card">
       <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
-        Matching tiered:&nbsp;
-        {% for tier, tiered_info in matching_tiered.items() %}
+        Matching {{name}} tiered:&nbsp;
+        {% for tier, tiered_info in match.items() %}
           <a style="padding: 0;" class="btn btn-{{tiered_info.label_class}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{tier}}" aria-expanded="false" aria-controls="collapse_{{tier}}">
             <span class="collapse-button-icon me-1"></span>{{tier}} ({{tiered_info.links|length}}x)
           </a>
@@ -377,30 +378,8 @@
         {% endfor %}
       </div>
     </div>
-  {% endif %}
-
-  {% if matching_escat_tiered %}
-    <div class="card">
-      <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
-        Matching tiered:&nbsp;
-        {% for tier, tiered_info in matching_escat_tiered.items() %}
-        <a style="padding: 0;" class="btn btn-{{tiered_info.label_class}} btn-xs" data-bs-toggle="collapse"
-          href="#collapse_{{tier}}" aria-expanded="false" aria-controls="collapse_{{tier}}">
-          <span class="collapse-button-icon me-1"></span>{{tier}} ({{tiered_info.links|length}}x)
-        </a>
-        <div class="collapse" id="collapse_{{tier}}">
-          <div>
-            {{tier}}:
-            {% for link in tiered_info["links"] %}
-            {% set match_case = link.split('/') %}
-            <a style="padding: 0;" href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
-            {% endfor %}
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
+    {% endif %}
+  {% endfor %}
 
 {% endmacro %}
 

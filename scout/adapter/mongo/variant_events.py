@@ -293,11 +293,12 @@ class VariantEventHandler(object):
                 }
         return ranked
 
-    def matching_tiered(self, query_variant, user_institutes):
+    def matching_tiered(self, query_variant, user_institutes, tier_field):
         """Retrieve all tiered tags assigned to a cancer variant in other cases (accessible to the user)
         Args:
             query_variant(dict)
             user_institutes(list): list of dictionaries
+            tier_field(str): "cancer_tier" or "escat_tier"
 
         Returns:
             tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
@@ -306,7 +307,7 @@ class VariantEventHandler(object):
         tiered = {}
         query = {
             "category": "variant",
-            "verb": "cancer_tier",
+            "verb": tier_field,
             "subject": query_variant["display_name"],
             "institute": {"$in": [inst["_id"] for inst in user_institutes]},
         }
@@ -319,57 +320,21 @@ class VariantEventHandler(object):
             if (
                 tiered_matching_variant is None
                 or tiered_matching_variant["_id"] == query_variant["_id"]
-                or tiered_matching_variant.get("cancer_tier") is None
+                or tiered_matching_variant.get(tier_field) is None
             ):
                 continue
-            tier_id = tiered_matching_variant["cancer_tier"]
+            tier_id = tiered_matching_variant[tier_field]
 
             if tier_id in tiered:
                 tiered[tier_id]["links"].add(tiered_event["link"])
             else:
+                if tier_field == "escat_tier":
+                    label = ESCAT_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary")
+                else:
+                    label = CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary")
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
-                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
-                }
-        return tiered
-
-    def matching_escat_tiered(self, query_variant, user_institutes):
-        """Retrieve all ESCAT tiered tags assigned to a cancer variant in other cases (accessible to the user)
-        Args:
-            query_variant(dict)
-            user_institutes(list): list of dictionaries
-
-        Returns:
-            tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
-                        {'1A': {"links": ["link/to/variant1", "link/to/variant2"], "label": 'danger'}, '3': {..}, }
-        """
-        tiered = {}
-        query = {
-            "category": "variant",
-            "verb": "escat_tier",
-            "subject": query_variant["display_name"],
-            "institute": {"$in": [inst["_id"] for inst in user_institutes]},
-        }
-
-        for tiered_event in self.event_collection.find(query):
-            # Check if variant is still tiered as suggested by the event
-            tiered_matching_variant = self.variant(
-                case_id=tiered_event["case"], document_id=tiered_event["variant_id"]
-            )
-            if (
-                tiered_matching_variant is None
-                or tiered_matching_variant["_id"] == query_variant["_id"]
-                or tiered_matching_variant.get("escat_tier") is None
-            ):
-                continue
-            tier_id = tiered_matching_variant["escat_tier"]
-
-            if tier_id in tiered:
-                tiered[tier_id]["links"].add(tiered_event["link"])
-            else:
-                tiered[tier_id] = {
-                    "links": {tiered_event["link"]},
-                    "label": ESCAT_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                    "label": label,
                 }
         return tiered
 
@@ -672,7 +637,7 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def update_cancer_tier(self, institute, case, user, link, variant, cancer_tier):
+    def update_cancer_tier(self, institute, case, user, link, variant, tier_field, tier_value):
         """Create an event for updating the manual rank of a variant
 
           This function will create a event and update the cancer tier
@@ -684,7 +649,8 @@ class VariantEventHandler(object):
             user (dict): A User object
             link (str): The url to be used in the event
             variant (dict): A variant object
-            cancer_tier (str): The new cancer tier
+            tier_field (str): which tier to update ("cancer_tier" or "escat_tier")
+            tier_value (str): The new cancer tier
 
         Return:
             updated_variant
@@ -701,86 +667,29 @@ class VariantEventHandler(object):
             user=user,
             link=link,
             category="variant",
-            verb="cancer_tier",
+            verb=tier_field,
             variant=variant,
             subject=variant["display_name"],
         )
 
-        if cancer_tier:
+        if tier_value:
             LOG.info(
-                "Setting cancer tier to {0} for variant {1}".format(
-                    cancer_tier, variant["display_name"]
+                "Setting {0} to {1} for variant {2}".format(
+                    tier_field, tier_value, variant["display_name"]
                 )
             )
             action = "$set"
         else:
             LOG.info(
-                "Reset cancer tier from {0} for variant {1}".format(
-                    variant.get("cancer_tier", "NA"), variant["display_name"]
+                "Reset {0} from {1} for variant {2}".format(
+                    tier_field, variant.get(tier_field, "NA"), variant["display_name"]
                 )
             )
             action = "$unset"
 
         updated_variant = self.variant_collection.find_one_and_update(
             {"_id": variant["_id"]},
-            {action: {"cancer_tier": cancer_tier}},
-            return_document=pymongo.ReturnDocument.AFTER,
-        )
-        LOG.debug("Variant updated")
-        return updated_variant
-
-    def update_escat_tier(self, institute, case, user, link, variant, escat_tier):
-        """Create an event for updating the manual rank of a variant
-
-          This function will create a event and update the cancer tier
-          of the variant.
-
-        Arguments:
-            institute (dict): A Institute object
-            case (dict): Case object
-            user (dict): A User object
-            link (str): The url to be used in the event
-            variant (dict): A variant object
-            escat_tier (str): The new escat tier
-
-        Return:
-            updated_variant
-
-        """
-        LOG.info(
-            "Creating event for updating ESCAT tier for "
-            "variant {0}".format(variant["display_name"])
-        )
-
-        self.create_event(
-            institute=institute,
-            case=case,
-            user=user,
-            link=link,
-            category="variant",
-            verb="escat_tier",
-            variant=variant,
-            subject=variant["display_name"],
-        )
-
-        if escat_tier:
-            LOG.info(
-                "Setting ESCAT tier to {0} for variant {1}".format(
-                    escat_tier, variant["display_name"]
-                )
-            )
-            action = "$set"
-        else:
-            LOG.info(
-                "Reset ESCAT tier from {0} for variant {1}".format(
-                    variant.get("escat_tier", "NA"), variant["display_name"]
-                )
-            )
-            action = "$unset"
-
-        updated_variant = self.variant_collection.find_one_and_update(
-            {"_id": variant["_id"]},
-            {action: {"escat_tier": escat_tier}},
+            {action: {tier_field: tier_value}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
         LOG.debug("Variant updated")

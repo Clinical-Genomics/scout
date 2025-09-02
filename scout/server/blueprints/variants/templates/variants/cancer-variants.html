@@ -109,8 +109,8 @@
               {{ group_assessments_badge(variant) }}
               {{ comments_badge(case, institute, variant) }}
               {{ causative_badge(variant, case) }}
-              {{ other_tiered_variants(variant) }}
-              {{ other_escat_tiered_variants(variant) }}
+              {{ other_tiered_variants(variant.matching_tiered) }}
+              {{ other_tiered_variants(variant.matching_escat_tiered) }}
               {{ evaluations_badge(variant.ccv_evaluations) }}
             </td>
             <td>{{ rank_cell(variant) }}</td>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlencode
 
+import pytest
 import responses
 from flask import url_for
 
@@ -310,8 +311,15 @@ def test_edit_variants_comments(
         assert updated_comment["level"] == "global"
 
 
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "2C"),
+        ("cancer_tier", "2C"),
+    ],
+)
 def test_variant_update_cancer_tier(
-    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
+    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect, tier_field, tier_value
 ):
     mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
@@ -323,41 +331,13 @@ def test_variant_update_cancer_tier(
         assert resp.status_code == 200
 
         # When a cancer tier is assigned to the variant via POST request
-        data = urlencode({"cancer_tier": "2C"})  # pathogenic
+        data = urlencode({tier_field: tier_value})
         resp = client.post(
             url_for(
                 "variant.variant_update",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
                 variant_id=variant_obj["_id"],  # let's assume this is a cancer variant
-                data=data,
-                content_type="application/x-www-form-urlencoded",
-            )
-        )
-        # THEN request should be a redirection
-        assert resp.status_code == 302
-
-
-def test_variant_update_escat_tier(
-    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
-):
-    mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # When a tier is assigned to the variant via POST request
-        data = urlencode({"escat_tier": "2C"})
-        resp = client.post(
-            url_for(
-                "variant.variant_update",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                variant_id=variant_obj["_id"],
                 data=data,
                 content_type="application/x-www-form-urlencoded",
             )

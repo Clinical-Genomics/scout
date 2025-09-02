@@ -948,11 +948,11 @@ def parse_variant(
     )
 
     variant_obj["matching_tiered"] = store.matching_tiered(
-        variant_obj, user_institutes(store, current_user)
+        variant_obj, user_institutes(store, current_user), "cancer_tier"
     )
 
-    variant_obj["matching_escat_tiered"] = store.matching_escat_tiered(
-        variant_obj, user_institutes(store, current_user)
+    variant_obj["matching_escat_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user), "escat_tier"
     )
 
     variant_obj["matching_ranked"] = store.get_matching_manual_ranked_variants(
