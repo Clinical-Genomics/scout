@@ -30,7 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update command: `scout export variants` now `scout export causatives` (backward-compatible) (#5654)
 - Show estimated VAF% also for panel and WES SNVs, much as for MT variants (#5658)
 ### Fixed
-- Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
+- Treat -1 values as None values when parsing archived LoqusDB frequencies - works retroactively on variantS page, not on variant page yet (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
 - Consistent panel display on variants pages for unselected "All" panels (#5600)
 - Bump tj-actions-branch-names GitHub action to v9 (#5605)
@@ -44,7 +44,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export causatives command crashing on variants that have been removed (#5665)
 - Don't follow row link for checkboxes or other input elements (#5668)
 - Parse error on REViewer.trgt case load entries (#5672)
-- Differentiate display SpliceAI scores that are 0 different from missing (#5675)
 
 ## [4.103.3]
 ### Changed
