@@ -100,7 +100,7 @@
   {% else %}
     >
   {% endif %}
-    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
+    <td class="no-row-click"><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>

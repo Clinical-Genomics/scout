@@ -195,11 +195,13 @@ class REViewer(BaseModel):
 
     @model_validator(mode="before")
     def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
-        """Make sure that REViewer paths associated to samples exist on disk and are absolute paths."""
-        for key in cls.model_fields:
-            item_path: str = config_values.get(key)
-            if item_path:
-                config_values[key] = _resource_abs_path(item_path)
+        """Make sure that REViewer paths associated to samples exist on disk and are absolute paths.
+        Only check actual paths."""
+        for key, field in cls.model_fields.items():
+            if field.annotation == Optional[str] or field.annotation == str:
+                item_path: str = config_values.get(key)
+                if item_path:
+                    config_values[key] = _resource_abs_path(item_path)
         return config_values
 
 
