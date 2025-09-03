@@ -44,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export causatives command crashing on variants that have been removed (#5665)
 - Don't follow row link for checkboxes or other input elements (#5668)
 - Parse error on REViewer.trgt case load entries (#5672)
+- Fix SpliceAI 0.0 score display (#5675)
 
 ## [4.103.3]
 ### Changed
