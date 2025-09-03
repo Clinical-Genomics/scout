@@ -164,7 +164,7 @@
 {% endmacro %}
 
 {% macro cadd_cell(variant) %}
-  {% if variant.cadd_score is not none %}
+  {% if variant.cadd_score %}
     {% if variant.cadd_score <= 10 %}
       {% set label_class = 'secondary' %}
     {% elif variant.cadd_score <= 20 %}
