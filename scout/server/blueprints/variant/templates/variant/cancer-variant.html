@@ -72,10 +72,10 @@
     </div>
     {% endif %}
 
-    {{ matching_variants(managed_variant, causatives, variant.matching_ranked, variant.matching_tiered) }}
+    {{ matching_variants(managed_variant, causatives, variant.matching_ranked, variant.matching_tiered, variant.matching_escat_tiered) }}
     <div class="row">
       <div class="col-sm-3">
-        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, CCV_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations, ccv_evaluations) }}
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, CCV_OPTIONS, manual_rank_options, cancer_tier_options, escat_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations, ccv_evaluations) }}
       </div>
       <div class="col-sm-4">{{ panel_summary() }}</div>
       <div class="col-sm-3">

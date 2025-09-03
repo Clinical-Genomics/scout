@@ -12,6 +12,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    ESCAT_TIER_OPTIONS,
     GENETIC_MODELS_PALETTE,
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
@@ -162,6 +163,7 @@ def variants(institute_id, case_name):
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        escat_tier_options=ESCAT_TIER_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
@@ -623,6 +625,7 @@ def cancer_sv_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
+        escat_tier_options=ESCAT_TIER_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
@@ -706,6 +709,7 @@ def fusion_variants(institute_id, case_name):
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
         },
+        escat_tier_options=ESCAT_TIER_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
