@@ -730,6 +730,7 @@ def test_api_case_report(app, institute_obj, case_obj):
             "ccv_classified_detailed": "ccv_classification",
             "tagged_detailed": "manual_rank",
             "tier_detailed": "cancer_tier",
+            "escat_detailed": "escat_tier",
             "dismissed_detailed": "dismiss_variant",
             "commented_detailed": "is_commented",
         }

@@ -37,6 +37,7 @@ from scout.constants.variant_tags import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    ESCAT_TIER_OPTIONS,
     GENETIC_MODELS,
     MANUAL_RANK_OPTIONS,
 )
@@ -491,6 +492,7 @@ def case(
         "disease_terms": disease_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "escat_tier_options": ESCAT_TIER_OPTIONS,
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
@@ -768,6 +770,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     dismiss_options = DISMISS_VARIANT_OPTIONS
     if data["cancer"]:
         data["cancer_tier_options"] = CANCER_TIER_OPTIONS
+        data["escat_tier_options"] = ESCAT_TIER_OPTIONS
         dismiss_options = {
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
