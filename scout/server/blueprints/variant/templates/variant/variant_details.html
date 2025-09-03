@@ -398,7 +398,7 @@
         <li class="list-group-item">
           {% set spliceai_highest = variant.spliceai_scores | spliceai_max %}
           <a href="{{ variant.spliceai_link }}" target="_blank" rel="noopener">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank" rel="noopener">DS max</a>
-          {% if spliceai_highest %}
+          {% if spliceai_highest is not none %}
             <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color') }} float-end" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
                 title="<strong>
                   {% for entry in variant.spliceai_scores %}
