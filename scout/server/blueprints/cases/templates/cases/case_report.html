@@ -459,6 +459,17 @@
         {% endif %}
       {% endfor %}
     {% endif %}
+    {% if variants.escat_detailed %}
+        {% for variant in variants.escat_detailed|sort(attribute='variant_rank') %}
+          {% if variant['_id'] not in printed_vars %}
+             {% do printed_vars.append(variant['_id']) %}
+             {{ variant_content(variant, loop.index) }}
+            <br>
+           {% else %}
+             {% do duplicated_variants.append(variant['_id']) %}
+           {% endif %}
+         {% endfor %}
+    {% endif %}
     {% if not (variants.tagged_detailed or variants.tier_detailed) %}
       No tagged variants for this case
     {% endif %}
@@ -624,9 +635,12 @@
               <span class="badge rounded-pill bg-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
             {% endif %}
             {% if variant.cancer_tier %}
-              <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
+              <span class="badge rounded-pill bg-secondary" title="">AMP {{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
             {% endif %}
-            {% if not (variant.manual_rank or variant.cancer_tier) %}
+            {% if variant.escat_tier %}
+              <span class="badge rounded-pill bg-secondary" title="ESCAT tier">ESCAT {{ escat_tier_options[variant.escat_tier]['label'] }}</span>
+            {% endif %}
+            {% if not (variant.manual_rank or variant.cancer_tier or variant.escat_tier) %}
               -
             {% endif %}
             </td>
@@ -1044,6 +1058,9 @@
             {% if variant.cancer_tier %}
               <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
             {% endif %}
+            {% if variant.escat_tier %}
+               <span class="badge rounded-pill bg-secondary" title="ESCAT tier">{{ escat_tier_options[variant.escat_tier]['label']}}</span>
+            {% endif %}
             {% if variant.acmg_classification %}
               <span class="badge rounded-pill bg-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
             {% endif %}
@@ -1076,7 +1093,11 @@
           {% if variant.cancer_tier %}
             <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
           {% endif %}
-          {% if not (variant.manual_rank or variant.cancer_tier) %}
+            {% if variant.escat_tier %}
+            <span class="badge rounded-pill bg-secondary" title="ESCAT tier">{{ escat_tier_options[variant.escat_tier]['label']
+              }}</span>
+            {% endif %}
+            {% if not (variant.manual_rank or variant.cancer_tier or variant.escat_tier) %}
             -
           {% endif %}
           </td>
@@ -1270,7 +1291,10 @@
           {% if variant.cancer_tier %}
             <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
           {% endif %}
-          {% if not (variant.manual_rank or variant.cancer_tier) %}
+          {% if variant.escat_tier %}
+            <span class="badge rounded-pill bg-secondary" title="ESCAT tier">{{ escat_tier_options[variant.escat_tier]['label']}}</span>
+          {% endif %}
+            {% if not (variant.manual_rank or variant.cancer_tier or variant.escat_tier) %}
             <span class="text-center">-</span>
           {% endif %}
           </td>

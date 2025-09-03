@@ -39,16 +39,17 @@
 {% endmacro %}
 
 
-{% macro other_tiered_variants(variant) %}
-  {% if variant.matching_tiered %}
+{% macro other_tiered_variants(variant_matching_tiered) %}
+  {% if variant_matching_tiered %}
     <span class="badge bg-dark" data-bs-toggle="popover" data-bs-html="true" data-bs-trigger="hover click"
           data-bs-title="Previously <b>T</b>iered as"
           data-bs-content="
-          {% for tier, tiered_info in variant.matching_tiered.items() %}
+          {% for tier, tiered_info in variant_matching_tiered.items() %}
             <span class='badge bg-{{tiered_info.label_class}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
           {% endfor %}">T</span>
-  {% endif %} <!-- end of if variant.matching_tiered -->
+  {% endif %}
 {% endmacro %}
+
 
 {% macro matching_manual_rank(variant) %}
   {% if variant.matching_ranked %}

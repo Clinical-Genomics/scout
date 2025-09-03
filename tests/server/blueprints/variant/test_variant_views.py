@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlencode
 
+import pytest
 import responses
 from flask import url_for
 
@@ -310,8 +311,15 @@ def test_edit_variants_comments(
         assert updated_comment["level"] == "global"
 
 
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "2C"),
+        ("cancer_tier", "2C"),
+    ],
+)
 def test_variant_update_cancer_tier(
-    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
+    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect, tier_field, tier_value
 ):
     mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
@@ -323,7 +331,7 @@ def test_variant_update_cancer_tier(
         assert resp.status_code == 200
 
         # When a cancer tier is assigned to the variant via POST request
-        data = urlencode({"cancer_tier": "2C"})  # pathogenic
+        data = urlencode({tier_field: tier_value})
         resp = client.post(
             url_for(
                 "variant.variant_update",

@@ -272,7 +272,9 @@ def variant_update(institute_id, case_name, variant_id):
     cancer_tier = (
         Markup.escape(request.form.get("cancer_tier")) if request.form.get("cancer_tier") else None
     )
-
+    escat_tier = (
+        Markup.escape(request.form.get("escat_tier")) if request.form.get("escat_tier") else None
+    )
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
@@ -292,18 +294,34 @@ def variant_update(institute_id, case_name, variant_id):
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
         except ValueError:
-            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
+            LOG.warning(
+                "Attempt to update AMP cancer tier with invalid value {}".format(cancer_tier)
+            )
             cancer_tier = "-1"
             new_cancer_tier = "-1"
 
         store.update_cancer_tier(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
+            institute_obj, case_obj, user_obj, link, variant_obj, "cancer_tier", new_cancer_tier
         )
         if new_cancer_tier:
-            flash("Variant tag was updated", "info")
+            flash("AMP variant tier was updated", "info")
         else:
-            flash("Variant tag was reset", "info")
+            flash("AMP variant tier was reset", "info")
+    elif escat_tier:
+        try:
+            new_escat_tier = escat_tier if escat_tier != "-1" else None
+        except ValueError:
+            LOG.warning("Attempt to update ESCAT tier with invalid value {}".format(escat_tier))
+            escat_tier = "-1"
+            new_escat_tier = "-1"
 
+        store.update_cancer_tier(
+            institute_obj, case_obj, user_obj, link, variant_obj, "escat_tier", new_escat_tier
+        )
+        if new_escat_tier:
+            flash("ESCAT variant tier was updated", "info")
+        else:
+            flash("ESCAT variant tier was reset", "info")
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
         acmg_classification = variant_obj.get("acmg_classification")

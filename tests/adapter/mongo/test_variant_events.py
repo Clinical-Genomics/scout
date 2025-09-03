@@ -1,7 +1,18 @@
 from copy import deepcopy
 
+import pytest
 
-def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
+
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "1A"),
+        ("cancer_tier", "1A"),
+    ],
+)
+def test_matching_tiered(
+    adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj, tier_field, tier_value
+):
     """Test retrieving matching tiered variants from other cancer cases"""
 
     # GIVEN a database containing a cancer variant in another case
@@ -12,8 +23,6 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
     other_var["owner"] = institute_obj["_id"]
     adapter.variant_collection.insert_one(other_var)
 
-    cancer_tier = "1A"
-
     # GIVEN that the other variant is tiared
     adapter.update_cancer_tier(
         institute=institute_obj,
@@ -21,12 +30,15 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
         user=user_obj,
         link="link",
         variant=other_var,
-        cancer_tier=cancer_tier,
+        tier_field=tier_field,
+        tier_value=tier_value,
     )
 
     # WHEN retrieving other tiered variants matching the query variant
     matching_tiered = adapter.matching_tiered(
-        query_variant=cancer_variant_obj, user_institutes=[{"_id": "cust000"}]
+        query_variant=cancer_variant_obj,
+        user_institutes=[{"_id": "cust000"}],
+        tier_field=tier_field,
     )
 
     # THEN it should return a set with the other variant tier info
@@ -399,7 +411,16 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
     assert dismissals == 1
 
 
-def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "2B"),
+        ("cancer_tier", "2C"),
+    ],
+)
+def test_update_cancer_tier(
+    adapter, institute_obj, case_obj, user_obj, variant_obj, tier_field, tier_value
+):
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -411,12 +432,10 @@ def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_
 
     variant = adapter.variant_collection.find_one()
 
-    assert variant.get("cancer_tier") == None
+    assert variant.get(tier_field) == None
 
     # WHEN upating cancer tier
     link = "testUpdateCancerTier"
-
-    cancer_tier = "1A"
 
     updated_variant = adapter.update_cancer_tier(
         institute=institute_obj,
@@ -424,15 +443,16 @@ def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_
         user=user_obj,
         link=link,
         variant=variant,
-        cancer_tier=cancer_tier,
+        tier_field=tier_field,
+        tier_value=tier_value,
     )
 
     # THEN an event should be created
     event_obj = adapter.event_collection.find_one()
-    assert event_obj["verb"] == "cancer_tier"
+    assert event_obj["verb"] == tier_field
 
     # THEN the variant should be given the appropriate tier
-    assert updated_variant.get("cancer_tier") == cancer_tier
+    assert updated_variant.get(tier_field) == tier_value
 
 
 def test_update_manual_rank(adapter, institute_obj, case_obj, user_obj, variant_obj):
