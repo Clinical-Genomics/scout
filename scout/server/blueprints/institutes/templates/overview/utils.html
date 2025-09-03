@@ -567,7 +567,7 @@
             </td>
             <td><!-- CADD score -->
               <span class="badge bg-secondary">
-              {% if variant.cadd_score %}
+              {% if variant.cadd_score is not none %}
                 {{ variant.cadd_score|round(2) }}
               {% else %}
                 -

@@ -268,7 +268,7 @@
             <td>
               CADD score
               <span><strong>
-                {% if variant.cadd_score %}
+                {% if variant.cadd_score is not none %}
                   {{ variant.cadd_score|round(1) }}
                 {% else %}
                   -

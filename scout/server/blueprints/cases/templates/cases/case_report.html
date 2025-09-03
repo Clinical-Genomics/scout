@@ -647,7 +647,7 @@
             <td>
               <span class="float-left">
                 <strong>
-                  {% if variant.cadd_score %}
+                  {% if variant.cadd_score is not none %}
                     {{ variant.cadd_score|round(1) }}
                   {% else %}
                     -
@@ -728,7 +728,7 @@
             <td>{{ variant.spidex|spidex_human if variant.spidex else none|spidex_human }}</td>
             <td>
               {% set spliceai_highest = variant.spliceai_scores | spliceai_max %}
-              {% if spliceai_highest %}
+              {% if spliceai_highest is not none %}
                 <span class="badge bg-{{ spliceai_highest | get_label_or_color_by_score('spliceai', 'color') }}">
                   {{ variant.spliceai_scores|join(', ') }}
                 </span>
