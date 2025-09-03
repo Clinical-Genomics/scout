@@ -2,7 +2,7 @@
 {% from "utils.html" import clickable_table_row_script %}
 {% from "variants/components.html" import allele_cell, external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
 {% from "variants/utils.html" import callers_cell, cancer_filters, cell_rank, dismiss_variants_block, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href, variant_rank_score %}
-{% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, other_escat_tiered_variants, research_assessments_badge %}
 
 {% block title %}
   {{ variant_type|capitalize }} somatic variants
@@ -77,7 +77,7 @@
           {% else %}
             >
           {% endif %}
-            <td>
+            <td class="no-row-click">
               <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
               {{ pin_indicator(variant, case) }}
             </td>
@@ -109,7 +109,8 @@
               {{ group_assessments_badge(variant) }}
               {{ comments_badge(case, institute, variant) }}
               {{ causative_badge(variant, case) }}
-              {{ other_tiered_variants(variant) }}
+              {{ other_tiered_variants(variant.matching_tiered) }}
+              {{ other_tiered_variants(variant.matching_escat_tiered) }}
               {{ evaluations_badge(variant.ccv_evaluations) }}
             </td>
             <td>{{ rank_cell(variant) }}</td>

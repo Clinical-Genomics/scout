@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated the documentation with instructions on how, as an admin, to add/edit/remove users from the main users page (#5625)
 - Button to remove users from the main users page (visible to admins only) (#5612)
 - New `"P-value`, `abs log₂FC` and `abs ΔΨ` WTS filters options (#5639)
+- ESCAT tiers for cancer SNVs (#5660)
 ### Changed
 - Avoid `utcnow()` deprecated code by installing Flask-Login from its main branch (#5592)
 - Compute chanjo2 coverage on exons only when at least case individual has analysis_type=panel (#5601)
@@ -41,6 +42,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matching cancer_snv managed variants failure (#5647)
 - Parsing of database name when provided on a .yaml config file (#5663)
 - Export causatives command crashing on variants that have been removed (#5665)
+- Don't follow row link for checkboxes or other input elements (#5668)
+- Parse error on REViewer.trgt case load entries (#5672)
 
 ## [4.103.3]
 ### Changed

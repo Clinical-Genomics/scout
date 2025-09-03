@@ -264,6 +264,83 @@ CANCER_TIER_OPTIONS = {
     },
 }
 
+
+ESCAT_TIER_OPTIONS = {
+    "1A": {
+        "label": "Tier I-A",
+        "description": "prospective, randomised clinical trials "
+        "show the alteration-drug match in a specific tumour type "
+        "results in a clinically meaningful improvement of a survival end point",
+        "label_class": "danger",
+    },
+    "1B": {
+        "label": "Tier I-B",
+        "description": "prospective, non-randomised clinical trials "
+        "show that the alteration-drug match in a specific tumour type, "
+        "results in clinically meaningful benefit as defined by ESMO MCBS 1.1",
+        "label_class": "danger",
+    },
+    "1C": {
+        "label": "Tier I-C",
+        "description": "clinical trials across tumour types or basket clinical "
+        "trials show clinical benefit associated with the alteration-drug match, "
+        "with similar benefit observed across tumour types",
+        "label_class": "danger",
+    },
+    "2A": {
+        "label": "Tier II-A",
+        "description": " retrospective studies show patients with the specific "
+        "alteration in a specific tumour type experience clinically meaningful "
+        "benefit with matched drug compared with alteration-negative patients",
+        "label_class": "warning",
+    },
+    "2B": {
+        "label": "Tier II-B",
+        "description": "prospective clinical trial(s) show the alteration-drug "
+        "match in a specific tumour type results in increased responsiveness when treated "
+        "with a matched drug, however, no data currently available on survival end points",
+        "label_class": "warning",
+    },
+    "3A": {
+        "label": "Tier III-A",
+        "description": "clinical benefit demonstrated in patients with the specific "
+        "alteration (as tiers I and II above) but in a different tumour type. "
+        "Limited/absence of clinical evidence available for the patient-specific "
+        "cancer type or broadly across cancer types",
+        "label_class": "primary",
+    },
+    "3B": {
+        "label": "Tier III-B",
+        "description": "an alteration that has a similar predicted functional impact "
+        "as an already studied tier I abnormality in the same gene or pathway, "
+        "but does not have associated supportive clinical data",
+        "label_class": "primary",
+    },
+    "4A": {
+        "label": "Tier IV-A",
+        "description": "evidence that the alteration or a functionally similar "
+        "alteration influences drug sensitivity in preclinical in vitro or in vivo models",
+        "label_class": "primary",
+    },
+    "4B": {
+        "label": "Tier IV-B",
+        "description": "actionability predicted in silico",
+        "label_class": "primary",
+    },
+    "5": {
+        "label": "Tier V",
+        "description": "Prospective studies show that targeted therapy is associated "
+        "with objective responses, but this does not lead to improved outcome",
+        "label_class": "info",
+    },
+    "X": {
+        "label": "Tier X",
+        "description": "No evidence that the genomic alteration is therapeutically actionable",
+        "label_class": "success",
+    },
+}
+
+
 MANUAL_RANK_OPTIONS = OrderedDict(
     [
         (

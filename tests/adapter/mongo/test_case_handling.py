@@ -1039,7 +1039,16 @@ def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_ob
     assert test_variant["mosaic_tags"] == [1, 3]
 
 
-def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "2B"),
+        ("cancer_tier", "2C"),
+    ],
+)
+def test_keep_cancer_tier_after_reupload(
+    adapter, case_obj, variant_obj, user_obj, institute_obj, tier_field, tier_value
+):
     """Test the code that updates cancer tier of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -1059,7 +1068,8 @@ def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_ob
         user=user_obj,
         link="variant_link",
         variant=old_variant,
-        cancer_tier="2C",
+        tier_field=tier_field,
+        tier_value=tier_value,
     )
     assert updated_old
 
@@ -1075,11 +1085,11 @@ def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_ob
         case_obj=case_obj,
         old_eval_variants=[updated_old],
     )
-    assert updated_new_vars["cancer_tier"] == ["new_id"]
+    assert updated_new_vars[tier_field] == ["new_id"]
 
     # and the new variant should have a the same mosaic tags
     test_variant = adapter.variant_collection.find_one({"_id": "new_id"})
-    assert test_variant["cancer_tier"] == "2C"
+    assert test_variant[tier_field] == tier_value
 
 
 def test_keep_manual_acmg_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
