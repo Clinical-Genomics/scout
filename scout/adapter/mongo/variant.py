@@ -777,7 +777,7 @@ class VariantHandler(VariantLoader):
         """Returns variant ids for variants that have been evaluated
            Return all variants, snvs/indels and svs from case case_id
             which have an event entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
-            'cancer_tier', 'mosaic_tags'.
+            'cancer_tier', 'escat_tier', 'mosaic_tags'.
         Args:
             case_id(str)
 
@@ -791,6 +791,7 @@ class VariantHandler(VariantLoader):
             "manual_rank",
             "cancer_tier",
             "dismiss_variant",
+            "escat_tier",
             "mosaic_tags",
         ]
 
@@ -815,7 +816,7 @@ class VariantHandler(VariantLoader):
 
         Return all variants, snvs/indels and svs from case case_id and institute_id
         which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
-        'cancer_tier' or if they are commented.
+        'cancer_tier', 'escat_tier' or if they are commented.
 
         Return only if the variants still exist and still have the assessment.
         Variants can be removed on reanalyis, and assessments can be cleared.
@@ -842,7 +843,7 @@ class VariantHandler(VariantLoader):
                         {"manual_rank": {"$exists": True}},
                         {"cancer_tier": {"$exists": True}},
                         {"dismiss_variant": {"$exists": True}},
-                        {"mosaic_tags": {"$exists": True}},
+                        {"escat_tier": {"$exists": True}},
                     ]
                 },
             ]

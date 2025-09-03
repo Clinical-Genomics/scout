@@ -5,7 +5,14 @@ import pytest
 LOG = logging.getLogger(__name__)
 
 
-def test_get_cancer_tier(real_variant_database):
+@pytest.mark.parametrize(
+    "tier_field, tier_value",
+    [
+        ("escat_tier", "2C"),
+        ("cancer_tier", "2C"),
+    ],
+)
+def test_get_cancer_tier(real_variant_database, tier_field, tier_value):
     adapter = real_variant_database
 
     ## GIVEN a database with information
@@ -18,7 +25,7 @@ def test_get_cancer_tier(real_variant_database):
     ## WHEN updating variant information for a variant
     var_id = variant["_id"]
     variant_id = variant["variant_id"]
-    variant["cancer_tier"] = "1A"
+    variant[tier_field] = tier_value
     adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
 
     evaluation = dict(
@@ -26,7 +33,7 @@ def test_get_cancer_tier(real_variant_database):
         case=case_id,
         link="a link",
         category="variant",
-        verb="cancer_tier",
+        verb=tier_field,
         variant_id=variant_id,
     )
     adapter.event_collection.insert_one(evaluation)
