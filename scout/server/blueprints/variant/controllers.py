@@ -21,6 +21,7 @@ from scout.constants import (
     CCV_MAP,
     CCV_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    ESCAT_TIER_OPTIONS,
     IGV_TRACKS,
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
@@ -202,6 +203,7 @@ def variant(
             'overlapping_svs': <list(overlapping svs)>,
             'manual_rank_options': MANUAL_RANK_OPTIONS,
             'cancer_tier_options': CANCER_TIER_OPTIONS,
+            'escat_tier_options': ESCAT_TIER_OPTIONS
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'CCV_OPTIONS': CCV_OPTIONS,
@@ -284,9 +286,11 @@ def variant(
 
     if variant_obj.get("category") == "cancer":
         variant_obj["matching_tiered"] = store.matching_tiered(
-            variant_obj, user_institutes(store, current_user)
+            variant_obj, user_institutes(store, current_user), "cancer_tier"
         )
-
+        variant_obj["matching_escat_tiered"] = store.matching_tiered(
+            variant_obj, user_institutes(store, current_user), "escat_tier"
+        )
     variant_obj["matching_ranked"] = store.get_matching_manual_ranked_variants(
         variant_obj,
         user_institutes(store, current_user),
@@ -410,6 +414,7 @@ def variant(
         "overlapping_outliers": overlapping_outliers,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "escat_tier_options": ESCAT_TIER_OPTIONS,
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,

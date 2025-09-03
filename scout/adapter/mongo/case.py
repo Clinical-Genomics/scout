@@ -1008,7 +1008,7 @@ class CaseHandler(object):
             update = True
 
         # Retrieve info to be propagated to eventual updated case
-        # previously evaluated variants (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
+        # previously evaluated variants (acmg, manual rank, cancer tier, escat tier, dismissed, mosaic, commented)
         existing_case = self.case(case_id=case_obj["_id"]) or self.case(
             institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
         )
@@ -1382,6 +1382,7 @@ class CaseHandler(object):
                 'dismiss_variant' : [list of variant ids],
                 'mosaic_tags' : [list of variant ids],
                 'cancer_tier': [list of variant ids],
+                'escat_tier': [list of variant ids]
                 'acmg_classification': [list of variant ids]
                 'ccv_classification': [list of variant ids]
                 'is_commented': [list of variant ids]
@@ -1391,6 +1392,7 @@ class CaseHandler(object):
             "dismiss_variant",
             "mosaic_tags",
             "cancer_tier",
+            "escat_tier",
             "acmg_classification",
             "ccv_classification",
             "is_commented",
