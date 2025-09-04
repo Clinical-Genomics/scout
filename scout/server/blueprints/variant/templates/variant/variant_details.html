@@ -290,7 +290,6 @@
 
 {% macro old_observations_table(variant) %}
 
-  {# Helper macro: render observation count #}
   {% macro render_obs(value) -%}
     {% if value is not defined or value is none or value == -1 %}
       N/A
@@ -299,7 +298,6 @@
     {% endif %}
   {%- endmacro %}
 
-  {# Helper macro: render frequency #}
   {% macro render_freq(freq, obs, nr_cases) -%}
     {% if freq is defined and freq is not none %}
       {{ freq|round(6) }}
