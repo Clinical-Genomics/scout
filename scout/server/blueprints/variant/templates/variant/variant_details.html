@@ -288,6 +288,28 @@
   </div>
 {% endmacro %}
 
+{# Helper macro: render observation count #}
+{% macro render_obs(value) -%}
+  {% if value is not defined or value is none or value == -1 %}
+    N/A
+  {% else %}
+    {{ value }}
+  {% endif %}
+{%- endmacro %}
+
+{# Helper macro: render frequency #}
+{% macro render_freq(freq, obs, nr_cases) -%}
+  {% if freq is defined and freq is not none %}
+    {{ freq|round(6) }}
+  {% elif nr_cases and obs is defined and obs is not none and obs != -1 %}
+    {{ (obs / nr_cases)|round(5) }}
+  {% elif nr_cases %}
+    0 / {{ nr_cases }}
+  {% else %}
+    N/A
+  {% endif %}
+{%- endmacro %}
+
 {% macro old_observations_table(variant) %}
 <table class="table">
   <thead class="thead table-light">
@@ -301,28 +323,28 @@
   <tbody>
     <tr>
       <td>RD</td>
-      <td>{{ variant.local_obs_old|default('N/A') }}</td>
-      <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
-      <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% elif variant.local_obs_old_nr_cases and variant.local_obs_old %} {{ (variant.local_obs_old/variant.local_obs_old_nr_cases)|round(5) }} {% elif variant.local_obs_old_nr_cases %} 0 / {{variant.local_obs_old_nr_cases}} {% else %} N/A {% endif %}</td>
+      <td>{{ render_obs(variant.local_obs_old) }}</td>
+      <td>{{ render_obs(variant.local_obs_hom_old) }}</td>
+      <td>{{ render_freq(variant.local_obs_old_freq, variant.local_obs_old, variant.local_obs_old_nr_cases) }}</td>
     </tr>
     {% if variant.category in ['cancer', 'cancer_sv'] %}
       <tr>
         <td>Cancer Germline</td>
-        <td>{{ variant.local_obs_cancer_germline_old|default('N/A') }}</td>
-        <td>{{ variant.local_obs_cancer_germline_hom_old|default('N/A') }}</td>
-        <td>{% if variant.local_obs_cancer_germline_old_freq %} {{variant.local_obs_cancer_germline_old_freq|round(6)}} {% elif variant.local_obs_cancer_germline_old_nr_cases and variant.local_obs_cancer_germline_old %} {{ (variant.local_obs_cancer_germline_old/variant.local_obs_cancer_germline_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_germline_old_nr_cases %} 0 / {{variant.local_obs_cancer_germline_old_nr_cases}} {% else %} N/A {% endif %}</td>
+        <td>{{ render_obs(variant.local_obs_cancer_germline_old) }}</td>
+        <td>{{ render_obs(variant.local_obs_cancer_germline_hom_old) }}</td>
+        <td>{{ render_freq(variant.local_obs_cancer_germline_old_freq, variant.local_obs_cancer_germline_old, variant.local_obs_cancer_germline_old_nr_cases) }}</td>
       </tr>
       <tr>
         <td>Cancer Somatic</td>
-        <td>{{ variant.local_obs_cancer_somatic_old|default('N/A') }}</td>
-        <td>{{ variant.local_obs_cancer_somatic_hom_old|default('N/A') }}</td>
-        <td>{% if variant.local_obs_cancer_somatic_old_freq %} {{variant.local_obs_cancer_somatic_old_freq|round(6)}} {% elif variant.local_obs_cancer_somatic_old_nr_cases and variant.local_obs_cancer_somatic_old %} {{ (variant.local_obs_cancer_somatic_old/variant.local_obs_cancer_somatic_old_nr_cases)|round(5) }} {% elif variant.local_obs_cancer_somatic_old_nr_cases %} 0 / {{variant.local_obs_cancer_somatic_old_nr_cases}} {% else %} N/A {% endif %}</td>
+        <td>{{ render_obs(variant.local_obs_cancer_somatic_old) }}</td>
+        <td>{{ render_obs(variant.local_obs_cancer_somatic_hom_old) }}</td>
+        <td>{{ render_freq(variant.local_obs_cancer_somatic_old_freq, variant.local_obs_cancer_somatic_old, variant.local_obs_cancer_somatic_old_nr_cases) }}</td>
       </tr>
       <tr>
         <td>Cancer Somatic panel</td>
-        <td>{{ variant.local_obs_cancer_somatic_panel_old|default('N/A') }}</td>
+        <td>{{ render_obs(variant.local_obs_cancer_somatic_panel_old) }}</td>
         <td>N/A</td>
-        <td>{% if variant.local_obs_cancer_somatic_panel_old_freq %} {{variant.local_obs_cancer_somatic_panel_old_freq|round(6)}} {% else %} N/A {% endif %}</td>
+        <td>{{ render_freq(variant.local_obs_cancer_somatic_panel_old_freq, variant.local_obs_cancer_somatic_panel_old, None) }}</td>
       </tr>
     {% endif %}
   </tbody>
