@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Typo in PR template
+
+## [4.104]
 ### Added
 - Parsing variant's`local_obs_cancer_somatic_panel_old` and `local_obs_cancer_somatic_panel_old_freq`from `Cancer_Somatic_Panel_Obs` and `Cancer_Somatic_Panel_Frq` INFO keys respectively (#5594)
 - Filter cancer variants by archived number of cancer somatic panel observations (#5598)
@@ -32,7 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show estimated VAF% also for panel and WES SNVs, much as for MT variants (#5658)
 - Chanjo2 requests are sent with OIDC id token, if available (#5532)
 ### Fixed
-- Treat -1 values as None values when parsing archived LoqusDB frequencies (#5591)
+- Treat -1 values as None values when parsing archived LoqusDB frequencies - works retroactively on variantS page, not on variant page yet (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
 - Consistent panel display on variants pages for unselected "All" panels (#5600)
 - Bump tj-actions-branch-names GitHub action to v9 (#5605)
@@ -46,7 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export causatives command crashing on variants that have been removed (#5665)
 - Don't follow row link for checkboxes or other input elements (#5668)
 - Parse error on REViewer.trgt case load entries (#5672)
-- Differentiate display SpliceAI scores that are 0 different from missing (#5675)
+- Fix SpliceAI 0.0 score display (#5675)
 
 ## [4.103.3]
 ### Changed
