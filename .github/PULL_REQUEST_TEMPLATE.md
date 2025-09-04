@@ -7,7 +7,7 @@ This PR marks a new Scout release. We apply semantic versioning. This is a major
 
 **Prepare for testing**
 1. Make sure the PR is pushed and available on [Docker Hub](https://hub.docker.com/repository/docker/clinicalgenomics/scout-server-stage)
-1. Fist book your testing time using the Pax software available at [https://pax.scilifelab.se/](https://pax.scilifelab.se). The resource you are going to call dibs on is `scout-stage` and the server is `cg-vm1`.
+1. First book your testing time using the Pax software available at [https://pax.scilifelab.se/](https://pax.scilifelab.se). The resource you are going to call dibs on is `scout-stage` and the server is `cg-vm1`.
 1. `ssh <USER.NAME>@cg-vm1.scilifelab.se`
 1. `sudo -iu hiseq.clinical`
 1. `ssh localhost`
