@@ -6,7 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Typo in PR template (#5682)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
+
 
 ## [4.104]
 ### Added
