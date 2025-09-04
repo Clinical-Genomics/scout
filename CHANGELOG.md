@@ -5,9 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-
 ### Fixed
-- Allow updating case owner on `scout load case -u`
+- Typo in PR template (#5682)
+- Allow updating case owner on `scout load case -u` (#5681)
 
 ## [4.104]
 ### Added
