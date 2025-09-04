@@ -5,10 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Changed
-- Highlight affected individuals/samples on `GT call` tables (#5682)
 ### Fixed
 - Typo in PR template
+- Highlight affected individuals/samples on `GT call` tables (#5682)
 
 ## [4.104]
 ### Added
