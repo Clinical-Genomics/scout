@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
+- Include both chanjo and chanjo2 stats on MT report (#5686)
 
 ## [4.104]
 ### Added
