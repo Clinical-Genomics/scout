@@ -891,15 +891,13 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
-        if chanjo2_coverage_stats and sample_id in chanjo2_coverage_stats:
-            row = write_coverage(
-                Report_Sheet, row, "Coverage Stats (chanjo2)", chanjo2_coverage_stats, sample_id
-            )
+        row = write_coverage(
+            Report_Sheet, row, "Coverage Stats (chanjo2)", chanjo2_coverage_stats, sample_id
+        )
 
-        if chanjo_coverage_stats and sample_id in chanjo2_coverage_stats:
-            row = write_coverage(
-                Report_Sheet, row, "Coverage Stats (chanjo)", chanjo_coverage_stats, sample_id
-            )
+        row = write_coverage(
+            Report_Sheet, row, "Coverage Stats (chanjo)", chanjo_coverage_stats, sample_id
+        )
 
         mitodel = sample.get("mitodel")
 
