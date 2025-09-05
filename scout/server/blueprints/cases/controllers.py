@@ -831,6 +831,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             The next free row after writing the section.
         """
         if stats_dict and sample_id in stats_dict:
+
+            row += 2
+
             # Section title
             sheet.write(row, 0, title)
             # Header
@@ -840,7 +843,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
                 sheet.write(row + 2, col, stats_dict[sample_id].get(item))
             return row + 4  # next free row
-        return row  # no data, row unchanged
+        return row
 
     today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     samples = case_obj.get("individuals")
