@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, url_for
 from flask_login import current_user
 from requests.auth import HTTPBasicAuth
-from xlsxwriter import Workbook
+from xlsxwriter import Workbook, Worksheet
 
 from scout import __version__
 from scout.adapter import MongoAdapter
@@ -817,7 +817,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     """
 
     def write_coverage(
-        sheet: xlsxwriter.worksheet.Worksheet,
+        sheet: Worksheet,
         row: int,
         title: str,
         stats_dict: Dict[str, Dict[str, Any]],
