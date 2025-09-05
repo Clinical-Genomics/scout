@@ -1,8 +1,7 @@
 import logging
 from typing import Dict
 
-import requests
-from flask import Flask, current_app
+from flask import Flask, current_app, session
 
 from scout.server.utils import get_case_mito_chromosome
 from scout.utils.scout_requests import get_request_json, post_request_json
@@ -43,6 +42,8 @@ class Chanjo2Client:
         )
         coverage_stats = {}
         case_mt_chrom = get_case_mito_chromosome(case_obj)
+        id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
+        request_headers = {"Authorization": f"Bearer {id_token}"}
         for ind in case_obj.get("individuals", []):
 
             if not ind.get("d4_file"):
@@ -52,7 +53,9 @@ class Chanjo2Client:
             # Get mean coverage over chr14
             chrom_cov_query["chromosome"] = REF_CHROM
 
-            autosome_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            autosome_cov_json = post_request_json(
+                url=chanjo2_chrom_cov_url, data=chrom_cov_query, headers=request_headers
+            )
             if autosome_cov_json.get("status_code") != 200:
                 raise ValueError(
                     f"Chanjo2 get autosome coverage failed: {autosome_cov_json.get('message')}"
@@ -62,7 +65,9 @@ class Chanjo2Client:
 
             # Get mean coverage over chrMT
             chrom_cov_query["chromosome"] = case_mt_chrom
-            mt_cov_json = post_request_json(chanjo2_chrom_cov_url, chrom_cov_query)
+            mt_cov_json = post_request_json(
+                url=chanjo2_chrom_cov_url, data=chrom_cov_query, headers=request_headers
+            )
             if mt_cov_json.get("status_code") != 200:
                 raise ValueError(f"Chanjo2 get MT coverage failed: {mt_cov_json.get('message')}")
             mt_cov = mt_cov_json.get("content", {}).get("mean_coverage")
@@ -96,6 +101,9 @@ class Chanjo2Client:
         }
         analysis_types = []
 
+        id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
+        request_headers = {"Authorization": f"Bearer {id_token}"}
+
         for ind in individuals:
             if not ind.get("d4_file"):
                 continue
@@ -110,7 +118,9 @@ class Chanjo2Client:
         elif "wts" in analysis_types:
             gene_cov_query["interval_type"] = "transcripts"
 
-        gene_cov_json = post_request_json(chanjo2_gene_cov_url, gene_cov_query)
+        gene_cov_json = post_request_json(
+            url=chanjo2_gene_cov_url, data=gene_cov_query, headers=request_headers
+        )
 
         if gene_cov_json.get("status_code") != 200:
             raise ValueError(
