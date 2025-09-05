@@ -3,7 +3,7 @@ import datetime
 import itertools
 import logging
 import os
-from typing import Dict, List, Set
+from typing import Any, Dict, List, Set
 
 import query_phenomizer
 import requests
@@ -815,12 +815,6 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         written_files(int): the number of files written to temp_excel_dir
 
     """
-
-    from typing import Any, Dict
-
-    import xlsxwriter  # assuming you are using xlsxwriter
-
-    bold_format = workbook.add_format({"bold": True})
 
     def write_coverage(
         sheet: xlsxwriter.worksheet.Worksheet,
