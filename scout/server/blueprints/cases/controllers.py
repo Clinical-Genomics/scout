@@ -815,18 +815,54 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         written_files(int): the number of files written to temp_excel_dir
 
     """
+
+    from typing import Any, Dict
+
+    import xlsxwriter  # assuming you are using xlsxwriter
+
+    bold_format = workbook.add_format({"bold": True})
+
+    def write_coverage(
+        sheet: xlsxwriter.worksheet.Worksheet,
+        row: int,
+        title: str,
+        stats_dict: Dict[str, Dict[str, Any]],
+        sample_id: str,
+    ) -> int:
+        """
+        Write a coverage section to the Excel sheet.
+        Can write either chanjo or chanjo2 stats.
+
+        Returns:
+            The next free row after writing the section.
+        """
+        if stats_dict and sample_id in stats_dict:
+            # Section title
+            sheet.write(row, 0, title, bold_format)
+            # Header
+            for col, field in enumerate(MT_COV_STATS_HEADER):
+                sheet.write(row + 1, col, field)
+            # Data
+            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
+                sheet.write(row + 2, col, stats_dict[sample_id].get(item))
+            return row + 4  # next free row
+        return row  # no data, row unchanged
+
     today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     samples = case_obj.get("individuals")
-    coverage_stats = None
+    chanjo2_coverage_stats = None
+    chanjo_coverage_stats = None
 
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
 
     # Check if coverage and MT copy number stats are available via chanjo2 or chanjo
     if case_obj.get("chanjo2_coverage"):
-        coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(case_obj=case_obj)
-    elif case_obj.get("chanjo_coverage"):
-        coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(individuals=samples)
+        chanjo2_coverage_stats: Dict[str, dict] = chanjo2.mt_coverage_stats(case_obj=case_obj)
+    if case_obj.get("chanjo_coverage"):
+        chanjo_coverage_stats: Dict[str, dict] = chanjo_report.mt_coverage_stats(
+            individuals=samples
+        )
 
     query = {"chrom": get_case_mito_chromosome(case_obj)}
     mt_variants = list(
@@ -855,15 +891,15 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
-        # coverage_stats is None if app is not connected to Chanjo or {} if samples are not in Chanjo db
-        if coverage_stats and sample_id in coverage_stats:
-            # Write coverage stats header after introducing 2 empty lines
-            for col, field in enumerate(MT_COV_STATS_HEADER):
-                Report_Sheet.write(row + 3, col, field)
+        if chanjo2_coverage_stats and sample_id in chanjo2_coverage_stats:
+            row = write_coverage(
+                Report_Sheet, row, "Coverage Stats (chanjo2)", chanjo2_coverage_stats, sample_id
+            )
 
-            # Write sample MT vs autosome coverage stats to excel sheet
-            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
-                Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
+        if chanjo_coverage_stats and sample_id in chanjo2_coverage_stats:
+            row = write_coverage(
+                Report_Sheet, row, "Coverage Stats (chanjo)", chanjo_coverage_stats, sample_id
+            )
 
         mitodel = sample.get("mitodel")
 
