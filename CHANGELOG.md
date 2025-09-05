@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Typo in PR template
+- Highlight affected individuals/samples on `GT call` tables (#5682)
 
 ## [4.104]
 ### Added
