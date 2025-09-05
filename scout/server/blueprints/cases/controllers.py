@@ -832,7 +832,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         """
         if stats_dict and sample_id in stats_dict:
             # Section title
-            sheet.write(row, 0, title, bold_format)
+            sheet.write(row, 0, title)
             # Header
             for col, field in enumerate(MT_COV_STATS_HEADER):
                 sheet.write(row + 1, col, field)
