@@ -77,12 +77,13 @@ class ChanjoReport:
 
         try:
             # Calculate MT coverage
-            mt_data = dict(sample_ids=",".join(ind_ids), chrom="MT")
+            mt_data = {"sample_ids": ",".join(ind_ids), "chrom": "MT"}
+
             resp = requests.post(cov_calc_url, json=mt_data)
             mt_cov_data = resp.json()  # safer than json.loads(resp.text)
 
             # Calculate autosomal coverage
-            ref_data = dict(sample_ids=",".join(ind_ids), chrom=REF_CHROM_MT_STATS)
+            ref_data = {"sample_ids": ",".join(ind_ids), "chrom": REF_CHROM_MT_STATS}
             resp = requests.post(cov_calc_url, json=ref_data)
             ref_cov_data = resp.json()
 

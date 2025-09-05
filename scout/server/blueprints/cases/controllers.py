@@ -886,7 +886,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
                 Report_Sheet.write(row, col, field)
 
         row += 3
-        
+
         row = write_coverage(
             Report_Sheet, row, "Coverage Stats (chanjo2)", chanjo2_coverage_stats, sample_id
         )
