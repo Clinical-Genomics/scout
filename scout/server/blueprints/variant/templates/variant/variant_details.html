@@ -35,7 +35,7 @@
         </thead>
         <tbody>
           {% for sample in variant.samples %}
-            <tr {{ 'class="danger"' if sample.is_affected }}>
+           <tr{% if sample.is_affected %} class="table-danger"{% endif %}>
               <td>{{ sample.display_name }}</td>
               <td class="text-center">{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
