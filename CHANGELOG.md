@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
+- Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
 - Allow updating case owner on `scout load case -u` (#5681)
 
 ## [4.104]
