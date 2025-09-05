@@ -832,7 +832,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         """
         if stats_dict and sample_id in stats_dict:
 
-            row += 2
+            row += 3
 
             # Section title
             sheet.write(row, 0, title)
