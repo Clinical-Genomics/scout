@@ -71,32 +71,34 @@ class ChanjoReport:
             coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
         """
         coverage_stats = {}
-        ind_ids = []
-        for ind in individuals:
-            ind_ids.append(ind["individual_id"])
+        ind_ids = [ind["individual_id"] for ind in individuals]
 
-        # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
         cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
-        # Prepare request data to calculate mean MT coverage
-        data = dict(sample_ids=",".join(ind_ids), chrom="MT")
-        # Send POST request with data to chanjo endpoint
-        resp = requests.post(cov_calc_url, json=data)
-        mt_cov_data = json.loads(resp.text)
 
-        # Change request data to calculate mean autosomal coverage
-        data["chrom"] = REF_CHROM_MT_STATS
-        # Send POST request with data to chanjo endpoint
-        resp = requests.post(cov_calc_url, json=data)
-        ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
+        try:
+            # Calculate MT coverage
+            mt_data = dict(sample_ids=",".join(ind_ids), chrom="MT")
+            resp = requests.post(cov_calc_url, json=mt_data)
+            mt_cov_data = resp.json()  # safer than json.loads(resp.text)
 
-        for ind in ind_ids:
-            if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
-                continue
-            coverage_info = dict(
-                mt_coverage=round(mt_cov_data[ind], 2),
-                autosome_cov=round(ref_cov_data[ind], 2),
-                mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
-            )
-            coverage_stats[ind] = coverage_info
+            # Calculate autosomal coverage
+            ref_data = dict(sample_ids=",".join(ind_ids), chrom=REF_CHROM_MT_STATS)
+            resp = requests.post(cov_calc_url, json=ref_data)
+            ref_cov_data = resp.json()
+
+            for ind in ind_ids:
+                if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
+                    continue
+                coverage_info = dict(
+                    mt_coverage=round(mt_cov_data[ind], 2),
+                    autosome_cov=round(ref_cov_data[ind], 2),
+                    mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
+                )
+                coverage_stats[ind] = coverage_info
+
+        except Exception as e:
+            # Generic catch-all for network issues, invalid JSON, etc.
+            print(f"Warning: failed to fetch MT coverage stats: {e}")
+            return {}
 
         return coverage_stats
