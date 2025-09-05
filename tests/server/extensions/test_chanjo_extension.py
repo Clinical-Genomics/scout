@@ -1,5 +1,3 @@
-import pytest
-import requests
 from flask import Blueprint
 
 from scout.server.extensions import chanjo_report  # already an instance
@@ -21,7 +19,7 @@ def test_chanjo_mt_coverage_stats(app, monkeypatch):
     # Mock requests.post to return a fake JSON response
     class MockResponse:
         def json(self):
-            # Return some dummy coverage numbers
+            # Return some random coverage numbers
             return {"sample1": 36, "sample2": 32, "sample3": 34}
 
     def mock_post(*args, **kwargs):
