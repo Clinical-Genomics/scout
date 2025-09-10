@@ -269,7 +269,6 @@ def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[floa
 
     except (ValueError, IndexError) as e:
         LOG.error(f"Error extracting CN for sample {sample_index}: {e}")
-        return None
 
 
 def get_split_reads(variant, pos):
