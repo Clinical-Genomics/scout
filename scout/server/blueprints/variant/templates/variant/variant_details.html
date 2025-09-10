@@ -76,7 +76,7 @@
                 <td class="text-center">{{ cancer_var.vaf }}</td>
               {% else %}
                 {% if variant.category == "sv" %}
-                  <td class="text-center">{{ sample.imprecise_cn or "N/A" }}</td>
+                  <td class="text-center">{{ sample.copy_number or "N/A" }}</td>
                   <td class="text-center">
                   {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
                     {{ sample.genotype_quality }}

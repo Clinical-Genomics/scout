@@ -148,7 +148,7 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
     gt_call["ffpm"] = get_ffpm_info(variant, pos)
     gt_call["split_read"] = split_read_alt
-    gt_call["imprecise_cn"] = get_copy_number(variant, pos)
+    gt_call["copy_number"] = get_copy_number(variant, pos)
 
     return gt_call
 
@@ -256,7 +256,7 @@ def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
 
 
 def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[float]:
-    """Get str SO from variant"""
+    """Return the copy number for a SV variant."""
     if "CN" not in variant.FORMAT:
         return None
     try:
