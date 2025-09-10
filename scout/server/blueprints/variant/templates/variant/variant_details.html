@@ -24,7 +24,7 @@
               <th class="text-center" rowspan="2" colspan="1">Expansion support</th>
             {% else %}
 	      {% if variant.category == "snv" and (variant.is_mitochondrial or case_has_capture) %}
-                <thclass="text-center"  rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
+                <th class="text-center"  rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
 	      {% endif %}
               <th class="text-center" rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
             {% endif %}
