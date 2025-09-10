@@ -332,6 +332,7 @@ def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_databas
     # Revstat field should be also a string (i.e. criteria_provided, ..)
     assert isinstance(first_clnsig["revstat"], str)
 
+
 def test_parse_clinsig_vep113_existing_variation(one_vep113_existing_variation_variant, case_obj):
     """Test clnsig parsing of a variant that has been annotated with VEP113 with `--existing_variation`
     and an unaltered ClinVar VCF file."""
