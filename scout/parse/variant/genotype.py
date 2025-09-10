@@ -52,6 +52,7 @@ def parse_genotype(variant, ind, pos):
     ##FORMAT=<ID=RR,Number=1,Type=Integer,Description="# high-quality reference junction reads">
     ##FORMAT=<ID=RV,Number=1,Type=Integer,Description="# high-quality variant junction reads">
     ##FORMAT=<ID=SR,Number=1,Type=Integer,Description="Number of split reads that support the event">
+    ##FORMAT=<ID=CN,Number=1,Type=Float,Description="Copy number genotype for imprecise events">
 
     STR specific format fields:
     ##FORMAT=<ID=LC,Number=1,Type=Float,Description="Locus coverage">
@@ -147,6 +148,7 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
     gt_call["ffpm"] = get_ffpm_info(variant, pos)
     gt_call["split_read"] = split_read_alt
+    gt_call["imprecise_cn"] = get_copy_number(variant, pos)
 
     return gt_call
 
@@ -251,6 +253,23 @@ def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
         if ref_value >= 0:
             paired_end_ref = ref_value
     return (paired_end_ref, paired_end_alt)
+
+
+def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[float]:
+    """Get str SO from variant"""
+    if "CN" not in variant.FORMAT:
+        return None
+    try:
+        cn_value = variant.format("CN")[sample_index][0]
+
+        if cn_value in [None, -1]:
+            return None
+
+        return int(cn_value)
+
+    except (ValueError, IndexError) as e:
+        LOG.error(f"Error extracting CN for sample {sample_index}: {e}")
+        return None
 
 
 def get_split_reads(variant, pos):

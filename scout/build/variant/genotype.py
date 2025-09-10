@@ -33,4 +33,7 @@ def build_genotype(gt_call):
         split_read=gt_call["split_read"],
     )
 
+    if gt_call["imprecise_cn"]:
+        gt_obj["imprecise_cn"] = gt_call["imprecise_cn"]
+
     return gt_obj

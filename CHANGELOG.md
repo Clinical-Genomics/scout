@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Parse and display copy number on SV page, genotype table (#5692)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
