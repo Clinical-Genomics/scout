@@ -88,8 +88,6 @@ def parse_clnsig(
             for annotation in clnsig:
                 clnsig_accessions.append({"value": annotation})
 
-            return clnsig_accessions
-
         # VEP 97+ annotated clinvar info:
         if transcripts[0].get("clinvar_clnvid"):
             acc = transcripts[0]["clinvar_clnvid"]
