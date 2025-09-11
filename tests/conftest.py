@@ -1566,8 +1566,8 @@ def vep_97_annotated_variant_clinical_file(request):
 
 @pytest.fixture(scope="function")
 def vep_113_existing_variation_file(request):
-    """Get a path to a VCF file annotated with VEP and containing conservation
-    and REVEL score in the CSQ field
+    """Get a path to a VCF file annotated with VEP 113 using `--check-existing`
+    and a custom annotation with an unmodified ClinVar VCF file.
     """
     return vep_113_existing_variation_path
 
