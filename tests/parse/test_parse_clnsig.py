@@ -331,3 +331,22 @@ def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_databas
 
     # Revstat field should be also a string (i.e. criteria_provided, ..)
     assert isinstance(first_clnsig["revstat"], str)
+
+
+def test_parse_clinsig_vep113_existing_variation(one_vep113_existing_variation_variant, case_obj):
+    """Test clnsig parsing of a variant that has been annotated with VEP113 with `--existing_variation`
+    and an unaltered ClinVar VCF file."""
+
+    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|UNIPROT_ISOFORM|REFSEQ_MATCH|SOURCE|REFSEQ_OFFSET|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|CLIN_SIG|SOMATIC|PHENO|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|TRANSCRIPTION_FACTORS|GERP++_RS|REVEL_rankscore|REVEL_score|phastCons100way_vertebrate|phyloP100way_vertebrate|rs_dbSNP|LoFtool|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|pLI_gene_value|REVEL|SpliceAI_pred_DP_AG|SpliceAI_pred_DP_AL|SpliceAI_pred_DP_DG|SpliceAI_pred_DP_DL|SpliceAI_pred_DS_AG|SpliceAI_pred_DS_AL|SpliceAI_pred_DS_DG|SpliceAI_pred_DS_DL|SpliceAI_pred_SYMBOL|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNREVSTAT"
+
+    header = [w.upper() for w in csq_header.split("|")]
+
+    variant = parse_variant(
+        variant=one_vep113_existing_variation_variant, vep_header=header, case=case_obj
+    )
+
+    # At least one of the clinvar annotations should have an accession number
+    assert any([clnsig.get("accession") for clnsig in variant["clnsig"]]), "no accession found"
+
+    # At least one of the clinvar annotations should have a review status
+    assert any([clnsig.get("revstat") for clnsig in variant["clnsig"]]), "no revstat found"
