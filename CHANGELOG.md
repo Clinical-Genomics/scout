@@ -5,10 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Support for variants annotated with an unmodified ClinVar VCF (#5691)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
+- Fix a parsing issue with VEP annotations done with `--check_existing` where the `CSQ` key `CLIN_SIG` would be prioritised over `CLINVAR` (#5691)
 - Allow updating case owner on `scout load case -u` (#5681)
 
 ## [4.104]
