@@ -132,10 +132,10 @@ def test_parse_pathologic_struc(one_trgt_variant, one_individual):
 @pytest.mark.parametrize(
     "format_keys, format_dict, expected",
     [
-        (["GT"], {}, None),  # CN not in FORMAT
-        (["CN"], {"CN": [[None]]}, None),  # CN = None
-        (["CN"], {"CN": [[-1]]}, None),  # CN = -1
-        (["CN"], {"CN": [[4]]}, 4),  # Valid CN
+        (["GT"], {}, None),
+        (["CN"], {"CN": [[None]]}, None),
+        (["CN"], {"CN": [[-1]]}, None),
+        (["CN"], {"CN": [[4]]}, 4),
     ],
 )
 def test_get_copy_number(format_keys, format_dict, expected):
@@ -146,10 +146,13 @@ def test_get_copy_number(format_keys, format_dict, expected):
             self.FORMAT = format_keys
             self._format_dict = format_dict
 
-        def format(self, key):
+        def get_format(self, key):
             return self._format_dict.get(key, [])
 
     variant = FakeVariant(format_keys, format_dict)
+
+    # Monkeypatch get_copy_number to call get_format instead of format
+    variant.format = variant.get_format
 
     result = get_copy_number(variant, 0)
 
