@@ -1,8 +1,10 @@
+import pytest
 from cyvcf2 import VCF
 
 from scout.parse.variant.genotype import (
     GENOTYPE_MAP,
     get_alt_depth,
+    get_copy_number,
     get_ref_depth,
     parse_genotype,
     parse_genotypes,
@@ -125,3 +127,30 @@ def test_parse_pathologic_struc(one_trgt_variant, one_individual):
 
     # THEN the correct, second motif MC will be returned
     assert gt_call["alt_mc"] == 0
+
+
+@pytest.mark.parametrize(
+    "format_keys, format_dict, expected",
+    [
+        (["GT"], {}, None),  # CN not in FORMAT
+        (["CN"], {"CN": [[None]]}, None),  # CN = None
+        (["CN"], {"CN": [[-1]]}, None),  # CN = -1
+        (["CN"], {"CN": [[4]]}, 4),  # Valid CN
+    ],
+)
+def test_get_copy_number(format_keys, format_dict, expected):
+    """Test extraction of copy number from SV variant using an in-test FakeVariant."""
+
+    class FakeVariant:
+        def __init__(self, format_keys, format_dict):
+            self.FORMAT = format_keys
+            self._format_dict = format_dict
+
+        def format(self, key):
+            return self._format_dict.get(key, [])
+
+    variant = FakeVariant(format_keys, format_dict)
+
+    result = get_copy_number(variant, 0)
+
+    assert result == expected
