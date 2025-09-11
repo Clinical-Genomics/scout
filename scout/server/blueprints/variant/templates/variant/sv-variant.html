@@ -253,12 +253,14 @@
             {{ sv_alignments(variant, case, "start") }}
           </div>
         </li>
+        {% if variant.sub_category != "ins" %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
           </div>
         </li>
+        {% endif %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Length</div>
