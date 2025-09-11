@@ -1202,7 +1202,6 @@ def one_vep104_annotated_variant(request, vep_104_annotated_variant_clinical_fil
 
 @pytest.fixture(scope="function")
 def one_vep113_existing_variation_variant(request, vep_113_existing_variation_file):
-    LOG.info("Return one parsed variant")
     variant_parser = VCF(vep_113_existing_variation_file)
 
     variant = next(variant_parser)
