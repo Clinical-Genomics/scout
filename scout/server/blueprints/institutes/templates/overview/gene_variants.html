@@ -80,8 +80,8 @@
         {% endif %}
 </tbody>
     </table>
-    {{ pagination_hidden_div(page) }}
-    {{ pagination_footer(more_variants, page) }}
+    {{ pagination_hidden_div(page, result_size) }}
+    {{ pagination_footer(page, result_size) }}
   </div>
 </form>
 {% endmacro %}

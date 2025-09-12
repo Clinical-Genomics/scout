@@ -65,7 +65,7 @@
 
 <form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
   <div class="container-float">
-    {{ pagination_hidden_div(page) }}
+    {{ pagination_hidden_div(page, result_size) }}
     <div id="accordion" >
        <div class="card mt-3">
         <div class="card-header">
@@ -128,7 +128,7 @@
 </div>
 
 <div class="container-fluid">
-  {{ pagination_footer(more_variants, page) }}
+  {{ pagination_footer(page, result_size) }}
 </div>
 
 {% endblock %}

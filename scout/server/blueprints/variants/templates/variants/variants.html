@@ -40,14 +40,14 @@
   <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
     <div class="container-float">
-     {{ pagination_hidden_div(page) }}
+     {{ pagination_hidden_div(page, result_size) }}
      <div class="card panel-default" id="accordion">
        {{ filters_form_header(result_size, total_variants) }}
        <!--Expand filters form if filters were used in a previous POST request-->
        <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
          {{ snv_filters(form, institute, case) }}
        </div>
-       {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
+       {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
      </div>
      <div class="card mt-3">
        <table class="table table-hover table-bordered" style="table-layout: fixed">
@@ -109,7 +109,7 @@
     {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
   </form> <!--end of form containing filters and variants' table elements -->
   <div class="container-fluid" style="padding-bottom: 100px">
-    {{ pagination_footer(more_variants, page) }}
+    {{ pagination_footer(page, result_size) }}
   </div>
 {% endblock %}
 
