@@ -1195,12 +1195,17 @@
   </div>
 {% endmacro %}
 
-Here’s the updated macro with a larger window:
-
 {% macro pagination_footer(page, total_variants) %}
   {% set per_page = 50 %}
   {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
-  {% set window = 4 %} {# number of pages around current page #}
+  {% set window = 2 %} {# pages around current page #}
+
+  {# Clamp page number #}
+  {% if page < 1 %}
+    {% set page = 1 %}
+  {% elif page > total_pages %}
+    {% set page = total_pages %}
+  {% endif %}
 
   {% if total_pages > 1 %}
   <nav aria-label="Page navigation">
