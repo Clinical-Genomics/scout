@@ -18,6 +18,7 @@
             {% if variant.category == "cancer" %}
               <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
             {% elif variant.category == "sv" %}
+              <th rowspan="2" colspan="1" title="Copy number" scope="copy_number">Copy number</th>
               <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
             {% elif variant.category == "str" %}
               <th rowspan="2" colspan="1">Expansion support</th>
@@ -37,10 +38,10 @@
           {% for sample in variant.samples %}
            <tr{% if sample.is_affected %} class="table-danger"{% endif %}>
               <td>{{ sample.display_name }}</td>
-              <td class="text-center">{{ sample.genotype_call }}</td>
+              <td>{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
-                    <td class="text-end">
+                    <td>
                       {% if number == -1 %}
                         <small>N/A</small>
                       {% else %}
@@ -49,8 +50,8 @@
                     </td>
                   {% endfor %}
               {% else %}
-                  <td class="text-end"><small>N/A</small></td>
-                  <td class="text-end"><small>N/A</small></td>
+                  <td><small>N/A</small></td>
+                  <td><small>N/A</small></td>
               {% endif %}
 
               {% if variant.category == "snv" and (variant.is_mitochondrial or case_has_capture) %}
@@ -72,10 +73,11 @@
                 {% else %}
                   {% set cancer_var.vaf = "N/A" %}
                 {% endif %}
-                <td class="text-end">{{ cancer_var.vaf }}</td>
+                <td>{{ cancer_var.vaf }}</td>
               {% else %}
-                <td class="text-end">
                 {% if variant.category == "sv" %}
+                  <td>{{ sample.copy_number or "N/A" }}</td>
+                  <td>
                   {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
                     {{ sample.genotype_quality }}
                   {% else %}
@@ -86,12 +88,12 @@
                   {% else %}
                     <small>N/A</small>
                   {% endif%})
+                  </td>
                 {% elif variant.category == "str" %}
                     <small>{{ sample.so }}</small>
                 {% else %}
-                  {{ sample.genotype_quality }}
+                  <td>{{ sample.genotype_quality }}</td>
                 {% endif %}
-                </td>
               {% endif %}
             </tr>
           {% endfor %}
