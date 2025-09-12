@@ -888,7 +888,6 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = pymongo_cursor.skip(skip_count).limit(per_page)
     variants = []
 
@@ -904,7 +903,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         update_variant_genes(store, variant_obj, genome_build)
         variants.append(variant_obj)
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def filters(store, institute_id):
