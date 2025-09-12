@@ -88,6 +88,7 @@ def managed_variants(request):
         "add_form": add_form,
         "modify_form": modify_form,
         "managed_variants": managed_variants,
+        "result_size": variant_count,
         "cytobands_37": store.cytoband_by_chrom("37"),
         "cytobands_38": store.cytoband_by_chrom("38"),
         "chromosomes_37": CHROMOSOMES,
