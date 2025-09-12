@@ -613,7 +613,7 @@ def cancer_sv_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(
+    data = controllers.sv_mei_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
 
