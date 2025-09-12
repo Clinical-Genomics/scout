@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
 - Fix a parsing issue with VEP annotations done with `--check_existing` where the `CSQ` key `CLIN_SIG` would be prioritised over `CLINVAR` (#5691)
+- Display variant rank score 0 (#5698)
 
 ## [4.104]
 ### Added
