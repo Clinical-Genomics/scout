@@ -4,7 +4,7 @@
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
 {% macro variant_rank_score(variant) %}
-  {% if variant.rank_score %}{{ variant.rank_score|int }} {% endif %} {% if variant.norm_rank_score %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
+  {% if variant.rank_score is not none %}{{ variant.rank_score|int }} {% endif %} {% if variant.norm_rank_score is not none %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
 {% endmacro %}
 
 {% macro filter_script_main(cytobands) %}
@@ -108,7 +108,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars, institute) %}
+{% macro filter_form_footer(form, result_size, total_variants, page, nvars, institute) %}
 <div class="card-footer text-center">
   <div class="row">
     <div class="col-4">
@@ -139,7 +139,7 @@
       </div>
     </div>
     <div class="col-4 d-flex flex-column justify-content-end">
-      <div class="d-flex justify-content-center">Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %}</div>
+      <div class="d-flex justify-content-center">Showing page {{page}}</div>
       <div class="d-flex justify-content-center">{{ toggle_dismiss_variants_block() }}</div>
     </div>
   </div>
@@ -1177,48 +1177,110 @@
   {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
-{% macro pagination_hidden_div(page) %}
-{# Used inside filters form to introduce submit buttons for footer pagniation #}
+{% macro pagination_hidden_div(page, total_variants) %}
+  {% set per_page = 50 %}
+  {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
   <div class="hidden">
-    <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
-    <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
-    <input type="submit" name="page" id="paginate-next" value={{page + 1}} hidden="true">
-    <input type="hidden" id="page" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
+    <input type="submit" name="page" id="paginate-first" value="1" hidden>
+    <input type="submit" name="page" id="paginate-previous" value="{{ page-1 }}" hidden>
+    <input type="submit" name="page" id="paginate-next" value="{{ page+1 }}" hidden>
+    <input type="submit" name="page" id="paginate-last" value="{{ total_pages }}" hidden>
+
+    {# Optional: hidden inputs for all page numbers if needed #}
+    {% for p in range(1, total_pages + 1) %}
+      <input type="submit" name="page" id="paginate-page-{{p}}" value="{{p}}" hidden>
+    {% endfor %}
+
+    <input type="hidden" id="page" name="page" value="{{ page }}">
   </div>
 {% endmacro %}
 
-{% macro pagination_footer(more_variants, page) %}
-{# Used outside filters form to introduce footer pagination labels #}
-  <div class="container-fluid">
-    {% if not more_variants %}
-      <div class="row justify-content-center">
-        <i class="text-muted">No more variants to display</i>
-      </div>
-    {% endif %}
-    <div class="row justify-content-center">
-        <div class="btn-group mt-1" role="group">
-          {% if page > 1 %}
-             <div>
-               <label for="paginate-first" class="btn btn-secondary mx-1" tabindex="0">
-                 First&nbsp;page
-               </label>
-             </div>
-          {% endif %}
-          {% if page > 2 %}
-            <div>
-              <label for="paginate-previous" class="btn btn-secondary mx-1" tabindex="0">
-                Previous&nbsp;page
-              </label>
-            </div>
-          {% endif %}
-          {% if more_variants %}
-            <div>
-              <label for="paginate-next" class="btn btn-secondary mx-1" tabindex="0">
-                Next&nbsp;page
-              </label>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
+{% macro pagination_footer(page, total_variants) %}
+  {% set per_page = 50 %}
+  {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
+  {% set window = 2 %} {# pages around current page #}
+
+  {# Clamp page number #}
+  {% if page < 1 %}
+    {% set page = 1 %}
+  {% elif page > total_pages %}
+    {% set page = total_pages %}
+  {% endif %}
+
+  {% if total_pages > 1 %}
+  <nav aria-label="Page navigation">
+    <ul class="pagination mt-2">
+
+      {# First page #}
+      <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+        {% if page > 1 %}
+          <label for="paginate-first" class="page-link">First</label>
+        {% else %}
+          <span class="page-link">First</span>
+        {% endif %}
+      </li>
+
+      {# Previous page #}
+      <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+        {% if page > 1 %}
+          <label for="paginate-previous" class="page-link">Previous</label>
+        {% else %}
+          <span class="page-link">Previous</span>
+        {% endif %}
+      </li>
+
+      {# Compute windowed range #}
+      {% set start_page = page - window if page - window > 2 else 2 %}
+      {% set end_page = page + window if page + window < total_pages -1 else total_pages -1 %}
+
+      {# First page number #}
+      <li class="page-item {% if page == 1 %}active{% endif %}">
+        <label for="paginate-page-1" class="page-link">1</label>
+      </li>
+
+      {# Left ellipsis #}
+      {% if start_page > 2 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# Middle pages #}
+      {% for p in range(start_page, end_page + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+          <label for="paginate-page-{{p}}" class="page-link">{{ p }}</label>
+        </li>
+      {% endfor %}
+
+      {# Right ellipsis #}
+      {% if end_page < total_pages -1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# Last page #}
+      {% if total_pages > 1 %}
+        <li class="page-item {% if page == total_pages %}active{% endif %}">
+          <label for="paginate-page-{{total_pages}}" class="page-link">{{ total_pages }}</label>
+        </li>
+      {% endif %}
+
+      {# Next page #}
+      <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+        {% if page < total_pages %}
+          <label for="paginate-next" class="page-link">Next</label>
+        {% else %}
+          <span class="page-link">Next</span>
+        {% endif %}
+      </li>
+
+      {# Last page #}
+      <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+        {% if page < total_pages %}
+          <label for="paginate-last" class="page-link">Last</label>
+        {% else %}
+          <span class="page-link">Last</span>
+        {% endif %}
+      </li>
+
+    </ul>
+  </nav>
+  {% endif %}
 {% endmacro %}
