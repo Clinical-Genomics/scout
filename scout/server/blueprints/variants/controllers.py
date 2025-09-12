@@ -231,8 +231,14 @@ def _get_group_assessments(store, case_obj, variant_obj):
 
 
 def sv_mei_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-) -> dict:
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variants_query: CursorType,
+    variant_count: int,
+    page: int = 1,
+    per_page: int = 50,
+) -> Dict[str, Any]:
     """Pre-process list of SV or MEI variants."""
     skip_count = per_page * max(page - 1, 0)
 
