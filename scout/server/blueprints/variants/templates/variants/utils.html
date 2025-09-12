@@ -1195,13 +1195,16 @@
   </div>
 {% endmacro %}
 
+Here’s the updated macro with a larger window:
+
 {% macro pagination_footer(page, total_variants) %}
   {% set per_page = 50 %}
   {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
+  {% set window = 4 %} {# number of pages around current page #}
 
   {% if total_pages > 1 %}
   <nav aria-label="Page navigation">
-    <ul class="pagination mt-2"> {# Removed justify-content-center #}
+    <ul class="pagination mt-2">
 
       {# First page #}
       <li class="page-item {% if page <= 1 %}disabled{% endif %}">
@@ -1221,12 +1224,38 @@
         {% endif %}
       </li>
 
-      {# Page numbers #}
-      {% for p in range(1, total_pages + 1) %}
+      {# Compute windowed range #}
+      {% set start_page = page - window if page - window > 2 else 2 %}
+      {% set end_page = page + window if page + window < total_pages -1 else total_pages -1 %}
+
+      {# First page number #}
+      <li class="page-item {% if page == 1 %}active{% endif %}">
+        <label for="paginate-page-1" class="page-link">1</label>
+      </li>
+
+      {# Left ellipsis #}
+      {% if start_page > 2 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# Middle pages #}
+      {% for p in range(start_page, end_page + 1) %}
         <li class="page-item {% if p == page %}active{% endif %}">
           <label for="paginate-page-{{p}}" class="page-link">{{ p }}</label>
         </li>
       {% endfor %}
+
+      {# Right ellipsis #}
+      {% if end_page < total_pages -1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+
+      {# Last page #}
+      {% if total_pages > 1 %}
+        <li class="page-item {% if page == total_pages %}active{% endif %}">
+          <label for="paginate-page-{{total_pages}}" class="page-link">{{ total_pages }}</label>
+        </li>
+      {% endif %}
 
       {# Next page #}
       <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
