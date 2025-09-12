@@ -1184,8 +1184,9 @@
     <input type="submit" name="page" id="paginate-first" value="1" hidden>
     <input type="submit" name="page" id="paginate-previous" value="{{ page-1 }}" hidden>
     <input type="submit" name="page" id="paginate-next" value="{{ page+1 }}" hidden>
+    <input type="submit" name="page" id="paginate-last" value="{{ total_pages }}" hidden>
 
-    {# Hidden inputs for all page numbers #}
+    {# Optional: hidden inputs for all page numbers if needed #}
     {% for p in range(1, total_pages + 1) %}
       <input type="submit" name="page" id="paginate-page-{{p}}" value="{{p}}" hidden>
     {% endfor %}
