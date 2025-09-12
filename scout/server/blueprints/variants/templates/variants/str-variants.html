@@ -43,7 +43,7 @@
 <div class="container-float">
   <form method="POST" id="filters_form" action="{{url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name)}}"
      enctype="multipart/form-data" onsubmit="return validateForm()">
-     {{ pagination_hidden_div(page) }}
+     {{ pagination_hidden_div(page, result_size) }}
     <div class="card panel-default" id="accordion">
       {{ filters_form_header(result_size, total_variants) }}
       <!--Expand filters form if filters were used in a previous POST request-->
@@ -133,7 +133,7 @@
   </div>
 </div> <!-- end of class="container-float"> -->
 <div class="container-fluid">
-  {{ pagination_footer(more_variants, page) }}
+  {{ pagination_footer(page, result_size) }}
 </div>
 <!--  Pedigree_panel -->
 {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
