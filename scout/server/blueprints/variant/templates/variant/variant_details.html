@@ -18,7 +18,7 @@
             {% if variant.category == "cancer" %}
               <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
             {% elif variant.category == "sv" %}
-              <th rowspan="2" colspan="1" title="Copy number">Copy number</th>
+              <th rowspan="2" colspan="1" title="Copy number" scope="copy_number">Copy number</th>
               <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
             {% elif variant.category == "str" %}
               <th rowspan="2" colspan="1">Expansion support</th>
