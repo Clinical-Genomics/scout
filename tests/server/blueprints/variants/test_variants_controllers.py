@@ -13,7 +13,7 @@ from scout.server.blueprints.variants.controllers import (
     hide_compounds_query,
     match_gene_txs_variant_txs,
     populate_chrom_choices,
-    sv_variants,
+    sv_mei_variants,
     update_form_hgnc_symbols,
     variant_export_lines,
     variants,
@@ -643,7 +643,7 @@ def test_sv_variants_research_shadow_clinical_assessments(
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
     number_variants = len(list(variants_query_res.clone()))
-    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+    res = sv_mei_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
     LOG.debug("Variants: {}".format(res_variants))

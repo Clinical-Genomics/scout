@@ -79,7 +79,6 @@ def managed_variants(request):
     )
 
     variant_count = store.count_managed_variants(category=categories, query_options=query_options)
-    more_variants = True if variant_count > (skip_count + VARS_PER_PAGE) else False
     managed_variants_res = managed_variants_query.skip(skip_count).limit(VARS_PER_PAGE)
     managed_variants = [managed_variant for managed_variant in managed_variants_res]
 
@@ -89,7 +88,7 @@ def managed_variants(request):
         "add_form": add_form,
         "modify_form": modify_form,
         "managed_variants": managed_variants,
-        "more_variants": more_variants,
+        "result_size": variant_count,
         "cytobands_37": store.cytoband_by_chrom("37"),
         "cytobands_38": store.cytoband_by_chrom("38"),
         "chromosomes_37": CHROMOSOMES,
