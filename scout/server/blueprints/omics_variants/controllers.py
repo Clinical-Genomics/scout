@@ -21,7 +21,6 @@ def outliers(
     """Pre-process list of outlier omics variants."""
     skip_count = per_page * max(page - 1, 0)
 
-    more_variants = variant_count > (skip_count + per_page)
     variants = []
 
     update_case_panels(store, case_obj)
@@ -40,7 +39,7 @@ def outliers(
 
         variants.append(parsed_variant)
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def decorate_omics_variant(
