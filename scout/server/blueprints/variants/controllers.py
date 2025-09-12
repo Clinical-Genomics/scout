@@ -230,8 +230,10 @@ def _get_group_assessments(store, case_obj, variant_obj):
     return group_assessments
 
 
-def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
-    """Pre-process list of SV variants."""
+def sv_mei_variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+) -> dict:
+    """Pre-process list of SV or MEI variants."""
     skip_count = per_page * max(page - 1, 0)
 
     variants = []
@@ -239,51 +241,6 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
-    case_affected_inds: list[str] = store._find_affected(case_obj)
-    for variant_obj in variants_query.skip(skip_count).limit(per_page):
-        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
-
-        # show previous classifications for research variants
-        clinical_var_obj = variant_obj
-        if variant_obj["variant_type"] == "research":
-            clinical_var_obj = store.variant(
-                case_id=case_obj["_id"],
-                simple_id=variant_obj["simple_id"],
-                variant_type="clinical",
-            )
-        if clinical_var_obj is not None:
-            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
-
-        variants.append(
-            parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                genome_build=genome_build,
-                case_dismissed_vars=case_dismissed_vars,
-            )
-        )
-
-    return {"variants": variants}
-
-
-def mei_variants(
-    store: MongoAdapter,
-    institute_obj: Dict,
-    case_obj: Dict,
-    variants_query: CursorType,
-    variant_count: int,
-    page: int = 1,
-    per_page: int = 50,
-) -> Dict[str, Any]:
-    """Pre-process list of MEI variants."""
-    skip_count = per_page * max(page - 1, 0)
-
-    variants = []
-    genome_build = get_case_genome_build(case_obj)
-
-    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     case_affected_inds: list[str] = store._find_affected(case_obj)
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
