@@ -137,7 +137,6 @@ def variants(
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
-    more_variants = variant_count > (skip_count + per_page)
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
     genome_build = get_case_genome_build(case_obj)
@@ -199,7 +198,7 @@ def variants(
             )
         )
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def _get_group_assessments(store, case_obj, variant_obj):
@@ -235,7 +234,6 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     """Pre-process list of SV variants."""
     skip_count = per_page * max(page - 1, 0)
 
-    more_variants = variant_count > (skip_count + per_page)
     variants = []
     genome_build = get_case_genome_build(case_obj)
 
@@ -267,7 +265,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
             )
         )
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def mei_variants(
@@ -282,7 +280,6 @@ def mei_variants(
     """Pre-process list of MEI variants."""
     skip_count = per_page * max(page - 1, 0)
 
-    more_variants = variant_count > (skip_count + per_page)
     variants = []
     genome_build = get_case_genome_build(case_obj)
 
@@ -313,7 +310,7 @@ def mei_variants(
             )
         )
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def str_variants(
@@ -348,7 +345,6 @@ def fusion_variants(
     """Pre-process list of fusion variants."""
     skip_count = per_page * max(page - 1, 0)
 
-    more_variants = variant_count > (skip_count + per_page)
     variants = []
     genome_build = get_case_genome_build(case_obj)
 
@@ -377,7 +373,7 @@ def fusion_variants(
 
         variants.append(parsed_variant)
 
-    return {"variants": variants, "more_variants": more_variants}
+    return {"variants": variants}
 
 
 def get_manual_assessments(variant_obj):
@@ -1422,7 +1418,6 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
@@ -1471,7 +1466,6 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     data = dict(
         page=page,
-        more_variants=more_variants,
         institute=institute_obj,
         case=case_obj,
         variants=variants_list,
