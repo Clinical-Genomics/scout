@@ -487,7 +487,12 @@ def test_variants_assessment_shared_with_group(
     variants_query_res = adapter.variants(
         other_case_id, query=variants_query, category=variant["category"]
     )
-    res = variants(adapter, institute_obj, other_case_obj, variants_query_res, 1000)
+    res = variants(
+        store=adapter,
+        institute_obj=institute_obj,
+        case_obj=other_case_obj,
+        variants_query=variants_query_res,
+    )
     res_variants = res["variants"]
 
     # THEN a group assessment is recalled on the other case,

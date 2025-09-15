@@ -129,7 +129,6 @@ def variants(
     institute_obj,
     case_obj,
     variants_query,
-    variant_count,
     page=1,
     per_page=50,
     query_form=None,
@@ -235,7 +234,6 @@ def sv_mei_variants(
     institute_obj: dict,
     case_obj: dict,
     variants_query: CursorType,
-    variant_count: int,
     page: int = 1,
     per_page: int = 50,
 ) -> Dict[str, Any]:
@@ -276,9 +274,7 @@ def sv_mei_variants(
     return {"variants": variants}
 
 
-def str_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-):
+def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
 
     return_view_data = {}
@@ -293,7 +289,6 @@ def str_variants(
             institute_obj,
             case_obj,
             variants_query,
-            variant_count,
             page=page,
             per_page=per_page,
         )
@@ -302,9 +297,7 @@ def str_variants(
     return return_view_data
 
 
-def fusion_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-):
+def fusion_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of fusion variants."""
     skip_count = per_page * max(page - 1, 0)
 
@@ -1370,7 +1363,7 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
+def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
