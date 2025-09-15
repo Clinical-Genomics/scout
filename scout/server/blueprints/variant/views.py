@@ -21,12 +21,16 @@ from scout.constants import (
     CCV_MAP,
     CCV_OPTIONS,
 )
-from scout.server.blueprints.variant.controllers import ccv_evaluation as ccv_evaluation_controller
+from scout.server.blueprints.variant.controllers import (
+    ccv_evaluation as ccv_evaluation_controller,
+)
 from scout.server.blueprints.variant.controllers import (
     check_reset_variant_ccv_classification,
     check_reset_variant_classification,
 )
-from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import (
+    evaluation as evaluation_controller,
+)
 from scout.server.blueprints.variant.controllers import (
     get_gene_has_full_coverage,
     observations,

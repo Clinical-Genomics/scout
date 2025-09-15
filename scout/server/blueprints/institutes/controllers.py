@@ -801,9 +801,7 @@ def get_sanger_unevaluated(
     return unevaluated, evaluated_by_others
 
 
-def export_gene_variants(
-    store: MongoAdapter, gene_symbol: str, pymongo_cursor: Cursor, variant_count: int
-) -> Response:
+def export_gene_variants(store: MongoAdapter, gene_symbol: str, pymongo_cursor: Cursor) -> Response:
     """Export 500 gene variants for an institute resulting from a customer query"""
 
     def generate(header, lines):
@@ -814,7 +812,6 @@ def export_gene_variants(
     data: dict = gene_variants(
         store=store,
         pymongo_cursor=pymongo_cursor,
-        variant_count=variant_count,
         per_page=500,
     )
 
@@ -884,7 +881,7 @@ def export_gene_variants(
     )
 
 
-def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
+def gene_variants(store, pymongo_cursor, page=1, per_page=50):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)

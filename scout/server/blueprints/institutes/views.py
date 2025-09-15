@@ -189,7 +189,6 @@ def gene_variants(institute_id):
                 store=store,
                 gene_symbol=request.form.get("hgnc_symbols").split(",")[0].strip(),
                 pymongo_cursor=results,
-                variant_count=result_size,
             )
 
         data = controllers.gene_variants(
