@@ -9,12 +9,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for variants annotated with an unmodified ClinVar VCF (#5691)
 - Parse and display copy number on SV page, genotype table (#5692)
 - Bootstrap-based pagination on variantS pages (#5697)
+### Changed
+- Better access to ALT allele for SVs (#5693)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
 - Fix a parsing issue with VEP annotations done with `--check_existing` where the `CSQ` key `CLIN_SIG` would be prioritised over `CLINVAR` (#5691)
 - Display variant rank score 0 (#5698)
+- Show only IGV link to breakpoint1 for SVs of sub-category INS (#5693)
 
 ## [4.104]
 ### Added
