@@ -276,7 +276,7 @@ def str_variants(institute_id, case_name):
 
 @variants_bp.route("/<institute_id>/<case_name>/sv/variants", methods=["GET", "POST"])
 @templated("variants/sv-variants.html")
-def sv_variants(institute_id, case_name):
+def sv_variants(institute_id: str, case_name: str):
     """Display a list of structural variants (SV)."""
 
     # form_builder defined inside the route
@@ -293,9 +293,27 @@ def sv_variants(institute_id, case_name):
     )
 
 
+@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
+@templated("variants/cancer-sv-variants.html")
+def cancer_sv_variants(institute_id: str, case_name: str):
+    """Display a list of cancer structural variants."""
+
+    # Form builder defined inside the route
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the cancer SV filters form."""
+        return controllers.populate_sv_filters_form(store, inst, case, cat, request)
+
+    return controllers.render_variants_page(
+        category="cancer_sv",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
+    )
+
+
 @variants_bp.route("/<institute_id>/<case_name>/mei/variants", methods=["GET", "POST"])
 @templated("variants/mei-variants.html")
-def mei_variants(institute_id, case_name):
+def mei_variants(institute_id: str, case_name: str):
     def form_builder(store, inst, case, cat, vtype):
         user_obj = store.user(current_user.email)
         if request.method == "POST":
@@ -427,24 +445,6 @@ def cancer_variants(institute_id, case_name):
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
         **data,
-    )
-
-
-@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
-@templated("variants/cancer-sv-variants.html")
-def cancer_sv_variants(institute_id, case_name):
-    """Display a list of cancer structural variants."""
-
-    # Form builder defined inside the route
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the cancer SV filters form."""
-        return controllers.populate_sv_filters_form(store, inst, case, cat, request)
-
-    return controllers.render_variants_page(
-        category="cancer_sv",
-        institute_id=institute_id,
-        case_name=case_name,
-        form_builder=form_builder,
     )
 
 
