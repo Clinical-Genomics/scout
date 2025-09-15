@@ -1090,6 +1090,7 @@ class CaseHandler(object):
             - mme_submission: If case was submitted to MatchMaker Exchange
             - multiqc: If there's an updated multiqc report location
             - omics_files: If there are updated OMICS files
+            - owner: If the case owner changed
             - panels: The new gene panels are added
             - pipeline_version: path to the pipeline executable version report file
             - rank_model_version: If there is a new rank model
@@ -1163,6 +1164,7 @@ class CaseHandler(object):
                 "multiqc": case_obj.get("multiqc"),
                 "multiqc_rna": case_obj.get("multiqc_rna"),
                 "omics_files": case_obj.get("omics_files"),
+                "owner": case_obj.get("owner"),
                 "panels": case_obj.get("panels", []),
                 "phenotype_groups": case_obj.get("phenotype_groups"),
                 "phenotype_terms": case_obj.get("phenotype_terms"),
