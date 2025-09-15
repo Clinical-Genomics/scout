@@ -274,9 +274,7 @@ def sv_mei_variants(
     return {"variants": variants}
 
 
-def str_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-):
+def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
 
     return_view_data = {}
@@ -291,7 +289,6 @@ def str_variants(
             institute_obj,
             case_obj,
             variants_query,
-            variant_count,
             page=page,
             per_page=per_page,
         )
