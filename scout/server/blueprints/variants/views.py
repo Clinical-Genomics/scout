@@ -17,7 +17,6 @@ from scout.constants import (
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
-    SEVERE_SO_TERMS_SV,
 )
 from scout.server.extensions import store
 from scout.server.utils import (
