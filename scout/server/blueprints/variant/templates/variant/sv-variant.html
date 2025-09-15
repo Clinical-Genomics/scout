@@ -215,13 +215,20 @@
       <ul class="list-group">
         <li class="list-group-item">
           <span class="d-inline">Position</span>
-          <span class="d-inline float-end">
+          <span>
              <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
               style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}" title="Copy to clipboard">
               </button>
               {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
           </span>
-
+          <span class="d-inline float-end">
+            Change:
+                <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
+              →
+                <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong>
+                <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.reference }}>{{ variant.alternative }}" title="Copy to clipboard">
+                </button>
+          </span>
         </li>
         <li class="list-group-item">
           <span class="d-inline">Cytoband</span>
@@ -253,12 +260,14 @@
             {{ sv_alignments(variant, case, "start") }}
           </div>
         </li>
+        {% if variant.sub_category != "ins" %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
           </div>
         </li>
+        {% endif %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Length</div>
