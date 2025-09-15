@@ -8,11 +8,7 @@ Establish a connection to the database
 import logging
 
 from pymongo import MongoClient
-from pymongo.errors import (
-    ConnectionFailure,
-    OperationFailure,
-    ServerSelectionTimeoutError,
-)
+from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 
 try:
     from urllib.parse import quote_plus
