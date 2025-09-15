@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bootstrap-based pagination on variantS pages (#5697)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
+- Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
