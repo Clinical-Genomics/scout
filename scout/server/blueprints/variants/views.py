@@ -153,7 +153,6 @@ def variants(institute_id, case_name):
         institute_obj,
         case_obj,
         variants_query,
-        result_size,
         page,
         query_form=form.data,
     )
@@ -328,9 +327,7 @@ def sv_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_mei_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
-    )
+    data = controllers.sv_mei_variants(store, institute_obj, case_obj, variants_query, page)
 
     return dict(
         case=case_obj,
@@ -423,9 +420,7 @@ def mei_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_mei_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
-    )
+    data = controllers.sv_mei_variants(store, institute_obj, case_obj, variants_query, page)
 
     return dict(
         case=case_obj,
@@ -538,7 +533,6 @@ def cancer_variants(institute_id, case_name):
         institute_id,
         case_name,
         variants_query,
-        result_size,
         form,
         page=page,
     )
@@ -698,9 +692,7 @@ def fusion_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query, category=category)
 
-    data = controllers.fusion_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
-    )
+    data = controllers.fusion_variants(store, institute_obj, case_obj, variants_query, page)
 
     return dict(
         case=case_obj,
