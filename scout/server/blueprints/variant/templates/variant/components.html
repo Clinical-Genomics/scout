@@ -551,3 +551,59 @@
 
   </script>
 {% endmacro %}
+
+{% macro variant_genes(variant) %}
+{% if variant.genes %}
+<li class="list-group-item p-1">
+  <div id="genes-{{ variant._id }}">
+    {% for gene in variant.genes %}
+      <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+        <div class="text-truncate">
+          <a class="fw-bold text-decoration-none me-1"
+             href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+            {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+          </a>
+          <small class="text-muted">{{ gene.description|title if gene.description else '' }}</small>
+          <span class="badge bg-light text-dark ms-1">{{ gene.region_annotation }}</span>
+        </div>
+        <div class="ms-auto">
+          {{ variant_transcripts(gene) }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</li>
+{% endif %}
+{% endmacro %}
+
+{% macro variant_transcripts(gene) %}
+<!-- Used in case_report template. Populate a table div with gene transcripts that are canonical, primary (max 5) or disease-associated -->
+  {% set n_primary_txs = namespace(count=0) %}
+  <ul>
+    {% for transcript in gene.transcripts %}
+      <!-- increase counter if it has associated refseq -->
+      {% if transcript.refseq_identifiers %}
+        {% set n_primary_txs.count = n_primary_txs.count + 1 %}
+      {% endif %}
+
+        <!-- show transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
+      {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
+        <li class="mb-1">{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name or '')|url_decode|truncate(20, True) }}
+          {% if transcript.is_canonical %}
+            <span class="badge rounded-pill bg-info text-white" title="canonical">C</span>
+          {% endif %}
+          {% if transcript.is_disease_associated %}
+            <span class="badge rounded-pill bg-danger text-white" title="disease_associated">D</span>
+          {% endif %}
+          {% if transcript.is_primary %}
+            <span class="badge rounded-pill bg-primary text-white" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
+          {% endif %}
+        </li>
+      {% endif %}
+
+    {% endfor %} <!-- end of { for transcript in gene.transcripts } loop -->
+  </ul>
+  {% if n_primary_txs.count > 5 %}
+  .. other transcripts available for this variant are not shown.<br><br>
+  {% endif %}
+{% endmacro %}
