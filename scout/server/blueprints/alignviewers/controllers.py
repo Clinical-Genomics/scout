@@ -60,11 +60,11 @@ def check_case_individual_file_path(resource: str, case: dict) -> bool:
         return True
 
     accepted_index_paths = [
-        individual.get(case_display_map["index"])
-        for case_display_map in CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP
-        for individual in case["individuals"]
-        if case_display_map["index"]
+        find_index(file_path)
+        for file_path in accepted_file_paths
+        if file_path and os.path.exists(file_path)
     ]
+    LOG.debug(f"accepted index paths: {accepted_index_paths}")
     if resource in accepted_index_paths:
         return True
 
@@ -103,8 +103,8 @@ def check_case_tracks(resource: str, case: dict):
     if check_case_config_custom_tracks(resource):
         return True
 
-    if check_case_individual_file_path(resource, case):
-        return True
+    #    if check_case_individual_file_path(resource, case):
+    #        return True
 
     if check_case_group_alignment_file_path(resource, case):
         return True

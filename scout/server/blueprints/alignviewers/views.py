@@ -86,10 +86,10 @@ def remote_static():
 
     # Ensure the user really has access to this case's tracks by
     # retrieving case (only allowed if user has access)
-    institute_and_case(store, institute_id, case_name)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
 
     # And ensure that the file is on the case
-    if controllers.check_case_tracks(file_path) is False:
+    if controllers.check_case_tracks(file_path, case_obj) is False:
         return abort(403)
 
     range_header = request.headers.get("Range", None)
