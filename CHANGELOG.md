@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bootstrap-based pagination on variantS pages (#5697)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
+- Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 - Authorize access to IGV track files at endpoint, not with session cookie. Allows huge case groups and many open igv sessions. (#5710)
 ### Fixed
 - Typo in PR template (#5682)
@@ -19,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix a parsing issue with VEP annotations done with `--check_existing` where the `CSQ` key `CLIN_SIG` would be prioritised over `CLINVAR` (#5691)
 - Display variant rank score 0 (#5698)
 - Show only IGV link to breakpoint1 for SVs of sub-category INS (#5693)
+- Allow updating case owner on `scout load case -u` (#5681)
 
 ## [4.104]
 ### Added
