@@ -560,8 +560,6 @@ class CaseHandler(object):
             # Return the result in order of descending phenotype similarity (the same order or the _ids provided in the query)
             return sorted(list(results), key=lambda res: result_order.index(res["_id"]))
 
-        LOG.error(query)
-
         return self.case_collection.find(query, projection).sort("updated_at", -1)
 
     def is_pheno_similarity_query(self, name_query: ImmutableMultiDict) -> bool:
