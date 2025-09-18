@@ -249,7 +249,13 @@ def str_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_str_variants(case_obj, variants_query)
 
-    data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.str_variants(
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variants_query=variants_query,
+        page=page,
+    )
 
     return dict(
         case=case_obj,
