@@ -109,7 +109,9 @@ def check_case_tracks(resource: str, case: dict):
     if check_case_group_alignment_file_path(resource, case):
         return True
 
-    LOG.warning(f"Requested resource to be displayed in IGV not in cases list of IGV tracks")
+    LOG.warning(
+        f"Requested resource to be displayed in IGV not in cases list of IGV tracks: {resource}"
+    )
     return False
 
 
