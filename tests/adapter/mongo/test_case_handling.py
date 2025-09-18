@@ -450,6 +450,69 @@ def test_variant_tags_after_reupload(
         assert test_variant[tag_field] == tag_value
 
 
+def test_keep_variant_comments_after_reupload(
+    adapter: Any,
+    case_obj: Dict[str, Any],
+    variant_obj: Dict[str, Any],
+    user_obj: Dict[str, Any],
+    institute_obj: Dict[str, Any],
+) -> None:
+    """Test that comments of old variants are preserved on new variants after re-upload."""
+
+    # Create a copy of the variant representing the old version
+    old_variant = copy.deepcopy(variant_obj)
+    old_variant["_id"] = "old_id"
+    old_variant["is_commented"] = True
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    # AND a variant with a local comment
+    adapter.comment(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="variant_link",
+        variant=old_variant,
+        content="Hello, locally",
+        comment_level="specific",
+    )
+
+    # AND a global comment
+    adapter.comment(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="variant_link",
+        variant=old_variant,
+        content="Hello, globally",
+        comment_level="global",
+    )
+
+    # Ensure the database contains exactly 2 comments
+    assert adapter.event_collection.count_documents({}) == 2
+
+    # WHEN the old variant is removed and a new one is inserted
+    adapter.variant_collection.delete_one({"_id": old_variant["_id"]})
+
+    new_variant = copy.deepcopy(variant_obj)
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THEN update_variant_actions should link comments to the new variant
+    updated_new_vars = adapter.update_variant_actions(
+        case_obj=case_obj,
+        old_eval_variants=[old_variant],
+    )
+    assert updated_new_vars["is_commented"] == [new_variant["_id"]]
+
+    # AND no additional comments should be created
+    assert adapter.event_collection.count_documents({}) == 2
+
+
 def test_update_case_collaborators_individuals(adapter: Any, case_obj: Dict[str, Any]) -> None:
     """Test updating case collaborators and individuals."""
     adapter.case_collection.insert_one(case_obj)
