@@ -25,6 +25,7 @@ def test_add_and_get_case(adapter, case_obj: Dict[str, Any], institute_obj: Dict
     assert loaded_case["owner"] == case_obj["owner"]
     assert loaded_case["rank_model_version"] == case_obj["rank_model_version"]
     assert loaded_case["sv_rank_model_version"] == case_obj["sv_rank_model_version"]
+    assert loaded_case["lims_id"] == case_obj["lims_id"]
 
     # Adding same case again raises IntegrityError
     with pytest.raises(IntegrityError):
@@ -65,6 +66,38 @@ def test_load_case_integrity(
         adapter.load_case(config_data=config2, update=True)
 
 
+def test_populate_case_query(adapter):
+    """Test creating a case query using an advanced search containing multiple parameters."""
+
+    query = {}
+    # GIVEN an advanced case search with multiple parameters:
+    name_query = ImmutableMultiDict(
+        {
+            "tags": "medical",
+            "status": "active",
+            "panel": "cardio",
+            "cohort": "test_cohort",
+            "synopsis": "fever",
+            "track": "rare",
+            "exact_pheno": "HP:0002315",
+            "pheno_group": "HP:0002567",
+            "case": "654",
+            "exact_dia": "OMIM:607745",
+        }
+    )
+    # THEN the query should be updated with multiple search terms:
+    adapter.populate_case_query(query=query, name_query=name_query)
+    assert query["tags"] == "medical"
+    assert query["status"] == "active"
+    assert query["panels"] == {"$elemMatch": {"is_default": True, "panel_name": "cardio"}}
+    assert query["cohorts"] == "test_cohort"
+    assert query["$text"] == {"$search": "fever"}
+    assert query["track"] == "rare"
+    assert query["phenotype_terms.phenotype_id"] == {"$in": ["HP:0002315"]}
+    assert query["phenotype_groups.phenotype_id"] == "HP:0002567"
+    assert query["$or"]  # Contains condition for case 'case' and 'exact_dia' options
+
+
 def test_case_queries(
     real_adapter: Any,
     hpo_database: Any,
@@ -83,6 +116,16 @@ def test_case_queries(
     adapter.institute_collection.insert_one(institute_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
+    # THEN search by display name should work
+    name_query = ImmutableMultiDict({"case": "643"})
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+    # THEN search by case individual should work
+    name_query = ImmutableMultiDict({"case": "NA1288"})
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
     # Search by synopsis should work
     updated_case = adapter.update_synopsis(
         institute=institute_obj,
@@ -93,55 +136,105 @@ def test_case_queries(
     )
 
     name_query = ImmutableMultiDict({"synopsis": "seizures"})
-    syn_cases = list(adapter.cases(collaborator=updated_case["owner"], name_query=name_query))
-    assert len(syn_cases) == 1
+    cases = list(adapter.cases(collaborator=updated_case["owner"], name_query=name_query))
+    assert len(cases) == 1
 
-    # Search by status should return work
+    # THEN search by status should return work
     adapter.update_status(institute_obj, updated_case, user_obj, "active", "reason")
     name_query = ImmutableMultiDict({"status": "active"})
-    active_cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
-    assert len(active_cases) == 1
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
 
-    # Search by research cases should work
+    # THEN search by research cases should work
     case_obj["is_research"] = True
     adapter.update_case(case_obj)
-    research_cases = list(adapter.cases(owner=case_obj["owner"], is_research=True))
-    assert len(research_cases) == 1
+    cases = list(adapter.cases(owner=case_obj["owner"], is_research=True))
+    assert len(cases) == 1
 
-    # Search by phenotype should work
+    # THEN search by phenotype should work
     case_obj["phenotype_terms"] = test_hpo_terms
     adapter.update_case(case_obj)
     name_query = ImmutableMultiDict({"exact_pheno": test_hpo_terms[0]["phenotype_id"]})
-    pheno_cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
-    assert len(pheno_cases) == 1
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
 
-    # Search by cohorts should work
+    # THEN search by cohorts should work
     TEST_COHORT = "cohort1"
     adapter.case_collection.find_one_and_update(
         {"_id": case_obj["_id"]}, {"$set": {"cohorts": [TEST_COHORT]}}
     )
-    cohort_cases = list(adapter.cases(name_query=ImmutableMultiDict({"cohort": TEST_COHORT})))
-    assert len(cohort_cases) == 1
+    cases = list(
+        adapter.cases(
+            collaborator=case_obj["owner"], name_query=ImmutableMultiDict({"cohort": TEST_COHORT})
+        )
+    )
+    assert len(cases) == 1
 
-    # Search by tags should work
+    # THEN search by tags should work
     TEST_TAG = "diagnostic"
     adapter.case_collection.find_one_and_update(
         {"_id": case_obj["_id"]}, {"$set": {"tags": [TEST_TAG]}}
     )
-    tags_cases = list(adapter.cases(name_query=ImmutableMultiDict({"tags": "diagnostic"})))
-    assert len(tags_cases) == 1
+    cases = list(
+        adapter.cases(
+            collaborator=case_obj["owner"], name_query=ImmutableMultiDict({"tags": "diagnostic"})
+        )
+    )
+    assert len(cases) == 1
 
-    # Search by solved within days should work
+    # THEN search by phenotype terms should work
+    HPO_TERM = "HP:0002315"
+    PHENO_TERM = [{"phenotype_id": HPO_TERM, "feature": "headache"}]
+    adapter.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": PHENO_TERM}}
+    )
+    name_query = ImmutableMultiDict({"exact_pheno": ",".join([HPO_TERM])})
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+    # THEN search by diagnosis should work
+    OMIM_TERM = "OMIM:607745"
+    adapter.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {
+            "$set": {
+                "diagnosis_phenotypes": [
+                    {
+                        "disease_nr": 607745,
+                        "disease_id": OMIM_TERM,
+                        "description": "Seizures, benign familial infantile, 3",
+                    }
+                ]
+            }
+        },
+    )
+    name_query = ImmutableMultiDict({"exact_dia": ",".join([OMIM_TERM])})
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+    # THEN search bu assignee should work
+    adapter.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"assignees": user_obj["email"]}}
+    )
+    name_query = ImmutableMultiDict({"user": user_obj["name"]})
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+    # THEN search by solved within days should work
     adapter.mark_causative(institute_obj, case_obj, user_obj, "link", variant_obj)
-    solved_cases = list(adapter.cases(finished=True, within_days=1))
-    assert len(solved_cases) == 1
+    cases = list(adapter.cases(collaborator=case_obj["owner"], finished=True, within_days=1))
+    assert len(cases) == 1
 
-    # Search by verification missing should work
+    # THEN search by verification missing should work
     adapter.order_verification(institute_obj, case_obj, user_obj, "link", variant_obj)
-    missing_verifications = adapter.verification_missing_cases(institute_obj["_id"])
-    assert len(missing_verifications) == 1
+    cases = adapter.verification_missing_cases(institute_obj["_id"])
+    assert len(cases) == 1
 
-    # Search by cases with associated RNS should work
+    # THEN search by cases with causative variants should work
+    cases = list(adapter.cases(has_causatives=True))
+    assert len(cases) == 1
+
+    # THEN search by cases with associated RNS should work
     assert adapter.rna_cases(owner=case_obj["owner"]) == [case_obj["_id"]]
 
 
