@@ -6,7 +6,12 @@ from typing import Dict, List, Optional
 from flask import flash, session
 from flask_login import current_user
 
-from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
+from scout.constants import (
+    CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
+    CASE_SPECIFIC_TRACKS,
+    HUMAN_REFERENCE,
+    IGV_TRACKS,
+)
 from scout.server.extensions import config_igv_tracks, store
 from scout.server.utils import (
     case_append_alignments,
@@ -19,23 +24,87 @@ LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
-def check_session_tracks(resource):
-    """Make sure that a user requesting a resource is authenticated and resource is in session IGV tracks
+def check_case_common_tracks(resource: str) -> bool:
+    """Check if requested resource is in static common annotation tracks."""
+    for igv_tracks in IGV_TRACKS:
+        if resource in igv_tracks:
+            return True
+
+
+def check_case_config_custom_tracks(resource: str) -> bool:
+    """Check if requested resource is in IGV config session custom tracks.
+    These are available from the config IGV track extension, and
+    can be both local or cloud tracks."""
+    if hasattr(config_igv_tracks, "tracks"):
+        for build in config_igv_tracks.tracks.keys():
+            build_tracks = config_igv_tracks.tracks.get(build, [])
+            if resource in build_tracks:
+                return True
+
+
+def check_case_individual_file_path(resource: str, case: dict) -> bool:
+    """Accept file requests for the requested case files, or their indexes.
+    All such file paths can be found in the CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
+    which is also used to populate the display object with these paths.
+    The individual keys are in
+    """
+
+    accepted_file_paths = [
+        individual.get(case_display_map["path"])
+        for case_display_map in CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP
+        for individual in case["individuals"]
+    ]
+    if resource in accepted_file_paths:
+        return True
+
+    accepted_index_paths = [
+        individual.get(case_display_map["index"])
+        for case_display_map in CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP
+        for individual in case["individuals"]
+        if case_display_map["index"]
+    ]
+    if resource in accepted_index_paths:
+        return True
+
+
+def check_case_group_alignment_file_path(resource: str, case: dict) -> bool:
+    """Accept file requests for the alignment paths from cases in the same case group."""
+
+    #    track_items = "mt_bams" if chromosome == "M" else "bam_files"
+    #   track_index_items = "mt_bais" if track_items == "mt_bams" else "bai_files"
+
+    grouped_cases = get_case_group(case)
+    for group_case in grouped_cases:
+        if check_case_individual_file_path(resource, group_case):
+            return True
+
+
+def check_case_tracks(resource: str, case: dict):
+    """Make sure that a user requesting a resource is authenticated and
+    the resource requested is among the tracks that a user
+    authorized to view the case is allowed to view.
 
     Args:
         resource(str): a resource on the server or on a remote URL
 
     Returns
-        True is user has access to resource else False
+        True if user has access to resource else False
     """
-    # Check that user is logged in or that file extension is valid
-    if current_user.is_authenticated is False:
-        LOG.warning("Unauthenticated user requesting resource via remote_static")
-        return False
-    if resource not in session.get("igv_tracks", []):
-        LOG.warning(f"Requested resource to be displayed in IGV not in session's IGV tracks")
-        return False
-    return True
+
+    if check_case_common_tracks(resource):
+        return True
+
+    if check_case_config_custom_tracks(resource):
+        return True
+
+    if check_case_individual_file_path(resource, case):
+        return True
+
+    if check_case_group_alignment_path(resouce, case):
+        return True
+
+    LOG.warning(f"Requested resource to be displayed in IGV not in cases list of IGV tracks")
+    return False
 
 
 def set_session_tracks(display_obj: dict):
@@ -55,6 +124,21 @@ def set_session_tracks(display_obj: dict):
             session_tracks += list(track_item.values())
 
     session["igv_tracks"] = session_tracks
+
+
+def get_case_group(case_obj: dict) -> list:
+    """Retrieve all connected cases (cases grouped with main case)"""
+
+    grouped_cases = []
+    for group in case_obj.get("group", []):
+        group_cases = list(store.cases(group=group))
+        for case in group_cases:
+            grouped_cases.append(case)
+
+    if not grouped_cases:  # Display case individuals tracks only
+        grouped_cases.append(case_obj)
+
+    return grouped_cases
 
 
 def make_igv_tracks(
@@ -77,7 +161,7 @@ def make_igv_tracks(
     Returns:
         display_obj: A display object containing case name, list of genes, locus and tracks
     """
-    display_obj = {}
+    display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
     variant_obj = store.variant(document_id=variant_id)
 
     chromosome = "All"
@@ -92,26 +176,17 @@ def make_igv_tracks(
         display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set genome build for displaying alignments:
-
     if get_case_genome_build(case_obj) == "38" or chromosome == "M":
         build = "38"
     else:
         build = "37"
 
-    # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
     set_common_tracks(display_obj, build)
 
-    # Build tracks for main case and all connected cases (cases grouped with main case)
-    grouped_cases = []
-    for group in case_obj.get("group", []):
-        group_cases = list(store.cases(group=group))
-        for case in group_cases:
-            case_append_alignments(case)  # Add track data to connected case dictionary
-            grouped_cases.append(case)
-
-    if not grouped_cases:  # Display case individuals tracks only
-        case_append_alignments(case_obj)  # Add track data to main case dictionary
-        grouped_cases.append(case_obj)
+    # Add track data to connected case dictionary
+    grouped_cases = get_case_group(case_obj)
+    for case in grouped_cases:
+        case_append_alignments(case)
 
     # Set up bam/cram alignments for case group samples:
     set_sample_tracks(display_obj, grouped_cases, chromosome)
@@ -151,7 +226,12 @@ def make_sashimi_tracks(
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
         locus = make_locus_from_variant(variant_obj, case_obj, build)
 
-    display_obj = {"locus": locus, "tracks": []}
+    display_obj = {
+        "locus": locus,
+        "tracks": [],
+        "case_display_name": case_obj["display_name"],
+        "institute_id": case_obj["owner"],
+    }
 
     set_common_tracks(display_obj, build)
 
@@ -291,7 +371,7 @@ def get_tracks(name_list: list, file_list: list) -> List[Dict]:
 
 
 def set_common_tracks(display_obj, build):
-    """Set up tracks common to all cases (Genes, ClinVar ClinVar CNVs) according to user preferences
+    """Set up general tracks common to all cases (Genes, ClinVar ClinVar CNVs) according to user preferences
 
     Add Genes and reference tracks to display object
 

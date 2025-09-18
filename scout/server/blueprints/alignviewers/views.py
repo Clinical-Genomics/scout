@@ -7,10 +7,8 @@ from flask import (
     Blueprint,
     Response,
     abort,
-    copy_current_request_context,
     render_template,
     request,
-    session,
 )
 
 from scout.server.extensions import store
@@ -72,9 +70,20 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file") or "."
+    institute_id = request.args.get("institute_id") or "."
+    case_name = request.args.get("case_name") or "."
 
-    # Check that user is logged in or that file extension is valid
-    if controllers.check_session_tracks(file_path) is False:
+    # Ensure the user really has access to this case's tracks by
+    # retrieving case (only allowed if user has access)
+    _, case_obj = institute_and_case(institute_id, case_name)
+
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static")
+        return False
+
+    # And ensure that the file is on the case
+    if controllers.check_case_tracks(file_path) is False:
         return abort(403)
 
     range_header = request.headers.get("Range", None)
@@ -112,11 +121,6 @@ def sashimi_igv(
 
     response = Response(render_template("alignviewers/igv_sashimi_viewer.html", **display_obj))
 
-    @response.call_on_close
-    @copy_current_request_context
-    def clear_session_tracks():
-        session.pop("igv_tracks", None)  # clean up igv session tracks
-
     return response
 
 
@@ -147,10 +151,4 @@ def igv(
     controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
-
-    @response.call_on_close
-    @copy_current_request_context
-    def clear_session_tracks():
-        session.pop("igv_tracks", None)  # clean up igv session tracks
-
     return response

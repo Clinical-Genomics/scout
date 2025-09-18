@@ -62,7 +62,7 @@
                                 name: "{{ track.name }}",
                                 order: {{counter.loop}},
                                 type: "alignment",
-                                url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
+                                url: "{{ url_for('alignviewers.remote_static', file=track.url, institute=institute_id, case=case_display_name) }}",
                                 indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
                                 sourceType: "file",
                                 format: "{{ track.format }}",

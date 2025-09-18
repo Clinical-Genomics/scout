@@ -142,9 +142,6 @@ def test_igv_authorized(app, user_obj, case_obj, variant_obj):
 
         # THEN the response should be a valid HTML page
         assert resp.status_code == 200
-        # AND when the response is closed case IGV tracks should be removed from session
-        resp.close()
-        assert session.get("igv_tracks") is None
 
 
 @responses.activate

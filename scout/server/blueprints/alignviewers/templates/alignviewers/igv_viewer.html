@@ -116,7 +116,7 @@
                         name: "{{ track.name }}",
                         type: "alignment",
                         url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
-                        indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
+                        indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL, institute=institute_id, case=case_display_name) }}",
                         sourceType: "file",
                         groupBy: "tag:HP",
                         showInsertionText: true,
