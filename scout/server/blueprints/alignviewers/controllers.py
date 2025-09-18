@@ -100,7 +100,7 @@ def check_case_tracks(resource: str, case: dict):
     if check_case_individual_file_path(resource, case):
         return True
 
-    if check_case_group_alignment_path(resouce, case):
+    if check_case_group_alignment_file_path(resource, case):
         return True
 
     LOG.warning(f"Requested resource to be displayed in IGV not in cases list of IGV tracks")
