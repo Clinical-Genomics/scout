@@ -10,6 +10,7 @@ from flask import (
     render_template,
     request,
 )
+from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
@@ -37,8 +38,13 @@ def remote_cors(remote_url):
     Based on code from answers to this thread:
         https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
     """
-    # Check that user is logged in or that file extension is valid
-    if controllers.check_session_tracks(remote_url) is False:
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static")
+        return False
+
+    # And that the remote resource is among user tracks
+    if controllers.check_case_config_custom_tracks(remote_url) is False:
         return abort(403)
 
     resp = requests.request(
@@ -75,7 +81,7 @@ def remote_static():
 
     # Ensure the user really has access to this case's tracks by
     # retrieving case (only allowed if user has access)
-    _, case_obj = institute_and_case(institute_id, case_name)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
 
     # Check that user is logged in
     if current_user.is_authenticated is False:
@@ -117,7 +123,6 @@ def sashimi_igv(
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_sashimi_tracks(case_obj, variant_id, omics_variant_id)
-    controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_sashimi_viewer.html", **display_obj))
 
@@ -148,7 +153,6 @@ def igv(
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
-    controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
     return response

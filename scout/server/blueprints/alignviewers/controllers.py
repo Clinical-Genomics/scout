@@ -29,6 +29,7 @@ def check_case_common_tracks(resource: str) -> bool:
     for igv_tracks in IGV_TRACKS:
         if resource in igv_tracks:
             return True
+    return False
 
 
 def check_case_config_custom_tracks(resource: str) -> bool:
@@ -40,6 +41,7 @@ def check_case_config_custom_tracks(resource: str) -> bool:
             build_tracks = config_igv_tracks.tracks.get(build, [])
             if resource in build_tracks:
                 return True
+    return False
 
 
 def check_case_individual_file_path(resource: str, case: dict) -> bool:
@@ -66,6 +68,8 @@ def check_case_individual_file_path(resource: str, case: dict) -> bool:
     if resource in accepted_index_paths:
         return True
 
+    return False
+
 
 def check_case_group_alignment_file_path(resource: str, case: dict) -> bool:
     """Accept file requests for the alignment paths from cases in the same case group."""
@@ -77,6 +81,8 @@ def check_case_group_alignment_file_path(resource: str, case: dict) -> bool:
     for group_case in grouped_cases:
         if check_case_individual_file_path(resource, group_case):
             return True
+
+    return False
 
 
 def check_case_tracks(resource: str, case: dict):
