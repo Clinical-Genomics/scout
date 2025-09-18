@@ -10,10 +10,13 @@ import copy
 import pytest
 from werkzeug.datastructures import ImmutableMultiDict
 
+from scout.adapter.mongo.base import MongoAdapter
 from scout.exceptions import IntegrityError
 
 
-def test_add_and_get_case(adapter, case_obj: Dict[str, Any], institute_obj: Dict[str, Any]) -> None:
+def test_add_and_get_case(
+    adapter: MongoAdapter, case_obj: Dict[str, Any], institute_obj: Dict[str, Any]
+) -> None:
     """Test adding, retrieving, and preventing duplicate cases."""
 
     ## GIVEN an empty database (no cases)
@@ -36,7 +39,7 @@ def test_add_and_get_case(adapter, case_obj: Dict[str, Any], institute_obj: Dict
 
 
 def test_load_case_integrity(
-    adapter, institute_obj: Dict[str, Any], case_obj: Dict[str, Any]
+    adapter: MongoAdapter, institute_obj: Dict[str, Any], case_obj: Dict[str, Any]
 ) -> None:
     """Test load_case handles duplicate display names, changed individuals, and names."""
 
@@ -66,7 +69,7 @@ def test_load_case_integrity(
         adapter.load_case(config_data=config2, update=True)
 
 
-def test_populate_case_query(adapter):
+def test_populate_case_query(adapter: MongoAdapter):
     """Test creating a case query using an advanced search containing multiple parameters."""
 
     query = {}
@@ -99,8 +102,8 @@ def test_populate_case_query(adapter):
 
 
 def test_case_queries(
-    real_adapter: Any,
-    hpo_database: Any,
+    real_adapter: MongoAdapter,
+    hpo_database: MongoAdapter,
     test_hpo_terms: List[Dict[str, Any]],
     case_obj: Dict[str, Any],
     institute_obj: Dict[str, Any],
@@ -299,7 +302,10 @@ def test_case_queries(
 
 
 def test_update_case_rerun_status(
-    adapter: Any, case_obj: Dict[str, Any], institute_obj: Dict[str, Any], user_obj: Dict[str, Any]
+    adapter: MongoAdapter,
+    case_obj: Dict[str, Any],
+    institute_obj: Dict[str, Any],
+    user_obj: Dict[str, Any],
 ) -> None:
     """Test archiving a case, requesting rerun, and resetting rerun status."""
 
@@ -338,7 +344,7 @@ def test_update_case_rerun_status(
 
 @pytest.mark.parametrize("initial_dynamic_list", [[], {}])
 def test_update_dynamic_gene_list(
-    gene_database: Any, case_obj: Dict[str, Any], initial_dynamic_list
+    gene_database: MongoAdapter, case_obj: Dict[str, Any], initial_dynamic_list
 ) -> None:
     """Updating dynamic_gene_list should work from both empty list and invalid dict."""
 
@@ -376,7 +382,7 @@ def test_update_dynamic_gene_list(
     ],
 )
 def test_variant_tags_after_reupload(
-    adapter: Any,
+    adapter: MongoAdapter,
     case_obj: Dict[str, Any],
     variant_obj: Dict[str, Any],
     user_obj: Dict[str, Any],
@@ -451,7 +457,7 @@ def test_variant_tags_after_reupload(
 
 
 def test_keep_variant_comments_after_reupload(
-    adapter: Any,
+    adapter: MongoAdapter,
     case_obj: Dict[str, Any],
     variant_obj: Dict[str, Any],
     user_obj: Dict[str, Any],
@@ -532,7 +538,7 @@ def test_update_case_collaborators_individuals(adapter: Any, case_obj: Dict[str,
 
 
 def test_delete_and_archive_cases(
-    adapter: Any, case_obj: dict, institute_obj: dict, user_obj: dict
+    adapter: MongoAdapter, case_obj: dict, institute_obj: dict, user_obj: dict
 ) -> None:
     """Test case deletion, archiving, and unarchiving behaviors."""
 
@@ -569,3 +575,87 @@ def test_delete_and_archive_cases(
     adapter.case_collection.insert_one(case_obj)
     adapter.delete_case(institute_id=case_obj["owner"], display_name=case_obj["display_name"])
     assert adapter.case_collection.find_one() is None
+
+
+import pytest
+
+
+@pytest.mark.parametrize(
+    "case_obj",
+    [
+        {
+            "_id": "old_case",
+            "owner": "inst1",
+            "suspects": ["var1", "var2"],
+            "causatives": ["var3"],
+        },
+        {
+            "_id": "old_case2",
+            "owner": "inst2",
+            "suspects": [],
+            "causatives": [],
+        },
+    ],
+)
+def test_update_caseid(adapter, mocker, case_obj, variant_obj):
+    """Test updating case ID across the database, keeping variant IDs unchanged."""
+
+    FAMILY_ID = "new_case_id"
+
+    # GIVEN mock helper and db event calls
+    def fake_variant(variant_id):
+        return {"_id": variant_id}
+
+    # Patch get_variantid to return original variant ID (no "_new")
+    def fake_get_variantid(variant, family_id):
+        return variant["_id"]
+
+    # Mock external methods and collections
+    adapter.variant = mocker.MagicMock(side_effect=fake_variant)
+    adapter.acmg_collection = mocker.MagicMock()
+    adapter.ccv_collection = mocker.MagicMock()
+    adapter.event_collection = mocker.MagicMock()
+    adapter.case_collection = mocker.MagicMock()
+    adapter.institute = mocker.MagicMock(return_value={"_id": case_obj["owner"]})
+    adapter.events = mocker.MagicMock(return_value=[{"_id": "evt1", "verb": "updated"}])
+
+    # GIVEN mock find() to return fake objects for ACMG and CCV
+    adapter.acmg_collection.find.return_value = [
+        {"_id": "acmg1", "classification": "Pathogenic", "variant_specific": "var1"}
+    ]
+    adapter.ccv_collection.find.return_value = [
+        {"_id": "ccv1", "classification": "Likely pathogenic", "variant_specific": "var3"}
+    ]
+
+    mocker.patch("scout.adapter.mongo.case.get_variantid", side_effect=fake_get_variantid)
+
+    # WHEN update_caseid is called
+    new_case = adapter.update_caseid(case_obj, FAMILY_ID)
+
+    # THEN new case should have the new family ID
+    assert new_case["_id"] == FAMILY_ID
+
+    # THEN suspects and causatives should retain original IDs
+    assert new_case.get("suspects", []) == case_obj.get("suspects", [])
+    assert new_case.get("causatives", []) == case_obj.get("causatives", [])
+
+    # THEN ACMG and CCV collections should be updated
+    adapter.acmg_collection.find_one_and_update.assert_called_with(
+        {"_id": "acmg1"},
+        {"$set": {"case_id": FAMILY_ID, "variant_specific": "var1"}},
+    )
+    adapter.ccv_collection.find_one_and_update.assert_called_with(
+        {"_id": "ccv1"},
+        {"$set": {"case_id": FAMILY_ID, "variant_specific": "var3"}},
+    )
+
+    # THEN events should be updated with new case ID
+    adapter.event_collection.find_one_and_update.assert_called_with(
+        {"_id": "evt1"}, {"$set": {"case": FAMILY_ID}}
+    )
+
+    # THEN old case should be deleted
+    adapter.case_collection.find_one_and_delete.assert_called_with({"_id": case_obj["_id"]})
+
+    # AND new case should be inserted
+    adapter.case_collection.insert_one.assert_called_with(new_case)
