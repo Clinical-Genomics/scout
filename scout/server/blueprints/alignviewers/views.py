@@ -44,7 +44,7 @@ def remote_cors(remote_url):
         return False
 
     # And that the remote resource is among user tracks
-    if controllers.check_case_config_custom_tracks(remote_url) is False:
+    if controllers.authorize_config_custom_tracks(remote_url) is False:
         return abort(403)
 
     resp = requests.request(
@@ -89,7 +89,7 @@ def remote_static():
     _, case_obj = institute_and_case(store, institute_id, case_name)
 
     # And ensure that the file is on the case
-    if controllers.check_case_tracks(file_path, case_obj) is False:
+    if controllers.authorize_case_tracks(file_path, case_obj) is False:
         return abort(403)
 
     range_header = request.headers.get("Range", None)

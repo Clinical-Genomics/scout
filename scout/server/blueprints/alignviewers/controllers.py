@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
-def check_case_common_tracks(resource: str) -> bool:
+def authorize_common_tracks(resource: str) -> bool:
     """Check if requested resource is in static common annotation tracks."""
     for igv_tracks in IGV_TRACKS:
         if resource in igv_tracks:
@@ -32,7 +32,7 @@ def check_case_common_tracks(resource: str) -> bool:
     return False
 
 
-def check_case_config_custom_tracks(resource: str) -> bool:
+def authorize_config_custom_tracks(resource: str) -> bool:
     """Check if requested resource is in IGV config session custom tracks.
     These are available from the config IGV track extension, and
     can be both local or cloud tracks."""
@@ -44,7 +44,7 @@ def check_case_config_custom_tracks(resource: str) -> bool:
     return False
 
 
-def check_case_individual_file_path(resource: str, case: dict) -> bool:
+def authorize_individual_file_path(resource: str, case: dict) -> bool:
     """Accept file requests for the requested case files, or their indexes.
     All such file paths can be found in the CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     which is also used to populate the display object with these paths.
@@ -71,7 +71,7 @@ def check_case_individual_file_path(resource: str, case: dict) -> bool:
     return False
 
 
-def check_case_group_alignment_file_path(resource: str, case: dict) -> bool:
+def authorize_group_alignment_file_path(resource: str, case: dict) -> bool:
     """Accept file requests for the alignment paths from cases in the same case group."""
 
     #    track_items = "mt_bams" if chromosome == "M" else "bam_files"
@@ -79,13 +79,13 @@ def check_case_group_alignment_file_path(resource: str, case: dict) -> bool:
 
     grouped_cases = get_case_group(case)
     for group_case in grouped_cases:
-        if check_case_individual_file_path(resource, group_case):
+        if authorize_individual_file_path(resource, group_case):
             return True
 
     return False
 
 
-def check_case_tracks(resource: str, case: dict):
+def authorize_case_tracks(resource: str, case: dict):
     """Make sure that a user requesting a resource is authenticated and
     the resource requested is among the tracks that a user
     authorized to view the case is allowed to view.
@@ -97,41 +97,19 @@ def check_case_tracks(resource: str, case: dict):
         True if user has access to resource else False
     """
 
-    if check_case_common_tracks(resource):
+    if authorize_common_tracks(resource):
         return True
 
-    if check_case_config_custom_tracks(resource):
+    if authorize_config_custom_tracks(resource):
         return True
 
-    #    if check_case_individual_file_path(resource, case):
-    #        return True
-
-    if check_case_group_alignment_file_path(resource, case):
+    if authorize_group_alignment_file_path(resource, case):
         return True
 
     LOG.warning(
         f"Requested resource to be displayed in IGV not in cases list of IGV tracks: {resource}"
     )
     return False
-
-
-def set_session_tracks(display_obj: dict):
-    """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
-
-    Args:
-        display_obj(dict): A display object containing case name, list of genes, locus and tracks
-    """
-
-    session_tracks = list(display_obj.get("reference_track", {}).values())
-    for key, track_items in display_obj.items():
-        if key not in ["tracks", "custom_tracks", "sample_tracks", "config_custom_tracks"] + list(
-            CASE_SPECIFIC_TRACKS.keys()
-        ):
-            continue
-        for track_item in track_items:
-            session_tracks += list(track_item.values())
-
-    session["igv_tracks"] = session_tracks
 
 
 def get_case_group(case_obj: dict) -> list:

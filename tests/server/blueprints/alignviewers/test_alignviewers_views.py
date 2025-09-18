@@ -40,17 +40,13 @@ def test_test_remote_static_not_in_session(app):
 
 def test_remote_static(app):
     """Test endpoint that serves files as a logged user"""
-    # GIVEN a file on disk
+    # GIVEN a file on dis
     file = "../demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz"
 
     # GIVEN a running demo app
     with app.test_client() as client:
         # GIVEN that user is logged in
         client.get(url_for("auto_login"))
-
-        # GIVEN that resource file exists in user session
-        with client.session_transaction() as session:
-            session["igv_tracks"] = [file]
 
         # THEN the resource should be available to the user
         resp = client.get(
