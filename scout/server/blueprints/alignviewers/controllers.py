@@ -85,6 +85,41 @@ def authorize_group_alignment_file_path(resource: str, case: dict) -> bool:
     return False
 
 
+def authorize_case_rna_tracks(resource: str, case: dict) -> bool:
+    """Accept file requests for RNA alignment and junction tracks that are added
+    outside the common group and case track construction mechanism."""
+
+    accepted_coverage_files = [
+        individual.get("rna_coverage_bigwig") for individual in case["individuals"]
+    ]
+    if resource in accepted_coverage_files:
+        return True
+
+    accepted_junction_paths = [
+        individual.get("splice_junctions_bed") for individual in case["individuals"]
+    ]
+    if resource in accepted_junction_paths:
+        return True
+
+    accepted_junction_index_paths = [
+        f"{splicej_bed}.tbi"
+        for splicej_bed in accepted_junction_paths
+        if os.path.isfile(f"{splicej_bed}.tbi")
+    ]
+    if resource in accepted_junction_index_paths:
+        return True
+
+    accepted_rna_aln_paths = [
+        individual.get("rna_alignment_path") for individual in case["individuals"]
+    ]
+    if resource in accepted_rna_aln_paths:
+        return True
+
+    accepted_rna_aln_index_paths = [find_index(rna_aln) for rna_aln in accepted_rna_aln_paths]
+    if resource in accepted_rna_aln_index_paths:
+        return True
+
+
 def authorize_case_tracks(resource: str, case: dict):
     """Make sure that a user requesting a resource is authenticated and
     the resource requested is among the tracks that a user
@@ -101,6 +136,9 @@ def authorize_case_tracks(resource: str, case: dict):
         return True
 
     if authorize_config_custom_tracks(resource):
+        return True
+
+    if authorize_case_rna_tracks(resource, case):
         return True
 
     if authorize_group_alignment_file_path(resource, case):

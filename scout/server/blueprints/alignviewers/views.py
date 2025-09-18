@@ -82,13 +82,12 @@ def remote_static():
     # Check that user is logged in
     if current_user.is_authenticated is False:
         LOG.warning("Unauthenticated user requesting resource via remote_static")
-        return False
+        return abort(401)
 
     # Ensure the user really has access to this case's tracks by
     # retrieving case (only allowed if user has access)
     _, case_obj = institute_and_case(store, institute_id, case_name)
 
-    # And ensure that the file is on the case
     if controllers.authorize_case_tracks(file_path, case_obj) is False:
         return abort(403)
 
