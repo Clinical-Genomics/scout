@@ -76,14 +76,14 @@
                           format: "{{ custTrack.format }}",
                           height: 70,
                           {% if "http" in custTrack.url %}
-                            url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url, institute_id=institute_id, case_name=case_display_name) }}",
+                            url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}",
                             {% if custTrack.indexURL %}
-                              indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL) }}",
+                              indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL)| safe }}",
                             {% endif %}
                           {% else %}
-                             url: "{{ url_for('alignviewers.remote_static', file=custTrack.url, institute_id=institute_id, case_name=case_display_name) }}",
+                             url: "{{ url_for('alignviewers.remote_static', file=custTrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}",
                              {% if custTrack.indexURL %}
-                              indexURL: "{{ url_for('alignviewers.remote_static', file=custTrack.indexURL, institute_id=institute_id, case_name=case_display_name) }}",
+                              indexURL: "{{ url_for('alignviewers.remote_static', file=custTrack.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}",
                              {% endif %}
                           {% endif %}
                         },
@@ -92,7 +92,7 @@
                       {
                         type: "wig",
                         name: '{{ wtrack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=wtrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=wtrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         format: 'bw',
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
                         color: "rgb(60, 37, 17)",
@@ -105,7 +105,7 @@
                       {
                         type: "annotation",
                         name: '{{ btrack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=btrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=btrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         format: 'bb',
                         color: "rgb(65, 31, 30)",
                         sourceType: 'file'
@@ -115,8 +115,8 @@
                       {
                         name: "{{ track.name }}",
                         type: "alignment",
-                        url: "{{ url_for('alignviewers.remote_static', file=track.url, institute_id=institute_id, case_name=case_display_name) }}",
-                        indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL, institute_id=institute_id, case_name=case_display_name) }}",
+                        url: "{{ url_for('alignviewers.remote_static', file=track.url, institute_id=institute_id, case_name=case_display_name) | safe }}",
+                        indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}",
                         sourceType: "file",
                         groupBy: "tag:HP",
                         showInsertionText: true,
@@ -131,7 +131,7 @@
                         type: "wig",
                         format: 'bw',
                         name: '{{ ttrack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=ttrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=ttrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         color: "rgb(40, 0, 13)",
                         sourceType: 'file'
                       },
@@ -141,7 +141,7 @@
                         type: "wig",
                         format: 'bw',
                         name: '{{ maftrack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=maftrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=maftrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         color: "rgb(60, 60, 140)",
                         sourceType: 'file'
                       },
@@ -150,10 +150,10 @@
                       {
                         type: "alignment",
                         name: "{{ ptrack.name }}",
-                        url: '{{ url_for("alignviewers.remote_static", file=ptrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=ptrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         format: "{{ ptrack.format }}",
                         groupBy: "tag:HP",
-                        indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL, institute_id=institute_id, case_name=case_display_name)  }}',
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         min: '{{ ptrack.min }}',
                         autoscaleGroup: '{{ ptrack.autoscaleGroup }}',
                         sourceType: 'file'
@@ -163,12 +163,12 @@
                       {
                         type: "alignment",
                         name: "{{ atrack.name }}",
-                        url: '{{ url_for("alignviewers.remote_static", file=atrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=atrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         format: "{{ atrack.format }}",
                         groupBy: "tag:HP",
                         height: 140,
                         showCoverage: false,
-                        indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL, institute_id=institute_id, case_name=case_display_name)  }}',
+                        indexURL: '{{ url_for("alignviewers.remote_static", file=atrack.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         min: '{{ atrack.min }}',
                         autoscaleGroup: '{{ atrack.autoscaleGroup }}',
                         sourceType: 'file'
@@ -179,7 +179,7 @@
                         type: 'annotation',
                         format: 'bb',
                         name: '{{ rtrack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=rtrack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=rtrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         color: "rgb(0, 204, 102)",
                         sourceType: 'file'
                       },
@@ -189,7 +189,7 @@
                         type: "annotation",
                         format: 'bb',
                         name: '{{ strack.name }}',
-                        url: '{{ url_for("alignviewers.remote_static", file=strack.url, institute_id=institute_id, case_name=case_display_name) }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=strack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         color: "rgb(25, 61, 4)",
                         sourceType: 'file'
                       },
