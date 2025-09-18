@@ -3,7 +3,7 @@ import logging
 import os.path
 from typing import Dict, List, Optional
 
-from flask import flash, session
+from flask import flash
 from flask_login import current_user
 
 from scout.constants import (

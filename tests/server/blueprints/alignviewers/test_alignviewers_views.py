@@ -105,19 +105,20 @@ def test_remote_cors():
         "url": TRACK_URL,
     }
 
-    config = dict(CUSTOM_IGV_TRACKS=[{"tracks": [track]}])
+    config = {CUSTOM_IGV_TRACKS: [{"tracks": [track]}]}
 
     # THEN the initialized app should create a config_igv_tracks extension
     client = create_app(config=config)
 
-    # GIVEN that the user could be logged in
-    resp = client.get(url_for("auto_login"))
+    with client.app_context():
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
 
-    # WHEN the remote cors endpoint is invoked with cloud_track_url
-    resp = client.get(url_for("alignviewers.remote_cors", remote_url=TRACK_URL))
+        # WHEN the remote cors endpoint is invoked with cloud_track_url
+        resp = client.get(url_for("alignviewers.remote_cors", remote_url=TRACK_URL))
 
-    # THEN response should be successful
-    assert resp.status_code == 200
+        # THEN response should be successful
+        assert resp.status_code == 200
 
 
 def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
