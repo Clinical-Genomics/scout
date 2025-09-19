@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 - Consolidated and simplified case handling tests (#5708)
+- Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
 - Refactored and simplified SV, cancer SV and MEI variants views (#5701)
 ### Fixed
 - Typo in PR template (#5682)

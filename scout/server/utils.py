@@ -24,6 +24,8 @@ from flask import (
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
+from scout.constants import CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP
+
 LOG = logging.getLogger(__name__)
 
 
@@ -357,26 +359,6 @@ def case_append_alignments(case_obj: dict):
     index is set only if it is expected as a separate key on the indiviudal: an
     attempt at discovery is still made for files with index: None.
     """
-    unwrap_settings = [
-        {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},
-        {"path": "assembly_alignment_path", "append_to": "assembly_alignments", "index": None},
-        {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
-        {
-            "path": "paraphase_alignment_path",
-            "append_to": "paraphase_alignments",
-            "index": None,
-        },
-        {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": None},
-        {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
-        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},
-        {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": None},
-        {
-            "path": "minor_allele_frequency_wig",
-            "append_to": "minor_allele_frequency_wigs",
-            "index": None,
-        },
-        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": None},
-    ]
 
     def process_file(case_obj, individual, setting):
         """Process a single file and its optional index."""
@@ -403,7 +385,7 @@ def case_append_alignments(case_obj: dict):
         )
 
         # Process all file settings
-        for setting in unwrap_settings:
+        for setting in CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP:
             process_file(case_obj, individual, setting)
 
 

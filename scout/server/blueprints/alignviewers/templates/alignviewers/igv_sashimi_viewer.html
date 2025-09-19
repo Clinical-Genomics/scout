@@ -62,8 +62,8 @@
                                 name: "{{ track.name }}",
                                 order: {{counter.loop}},
                                 type: "alignment",
-                                url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
-                                indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
+                                url: "{{ url_for('alignviewers.remote_static', file=track.url, institute_id=institute_id, case_name=case_display_name) | safe }}",
+                                indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}",
                                 sourceType: "file",
                                 format: "{{ track.format }}",
                                 height: {{ track.aln_height }}
@@ -79,7 +79,7 @@
                                   {
                                     type: 'wig',
                                     format: "bigwig",
-                                    url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
+                                    url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig, institute_id=institute_id, case_name=case_display_name) | safe }}",
                                     height: 500,
                                   },
                                   {
@@ -88,8 +88,8 @@
                                     colorBy: 'strand',
                                     thicknessBasedOn: 'numUniqueRead',
                                     labelUniqueReadCount: true,
-                                    url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
-                                    indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
+                                    url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed, institute_id=institute_id, case_name=case_display_name) | safe }}",
+                                    indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index, institute_id=institute_id, case_name=case_display_name) | safe }}",
                                     minUniquelyMappedReads: 1,
                                     height: 500,
                                   },
