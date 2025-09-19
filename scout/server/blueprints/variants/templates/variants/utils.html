@@ -4,7 +4,7 @@
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
 {% macro variant_rank_score(variant) %}
-  {% if variant.rank_score is not none %}{{ variant.rank_score|int }} {% endif %} {% if variant.norm_rank_score is not none %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
+  {% if variant.norm_rank_score is defined and variant.rank_score is not none %}{{ variant.rank_score|int }} {% endif %} {% if variant.norm_rank_score is defined and variant.norm_rank_score is not none %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
 {% endmacro %}
 
 {% macro filter_script_main(cytobands) %}
