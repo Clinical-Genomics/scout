@@ -1517,6 +1517,16 @@ class CaseHandler(object):
         LOG.info("Verification status updated for {} variants".format(n_status_updated))
         return updated_variants
 
+    def get_case_group(self, case_obj: dict) -> list:
+        """Retrieve list of all connected cases (cases grouped with a given case)"""
+        grouped_cases = []
+        for group in case_obj.get("group", []):
+            grouped_cases.extend(self.cases(group=group))
+        if not grouped_cases:  # Display case individuals tracks only
+            grouped_cases.append(case_obj)
+
+        return grouped_cases
+
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

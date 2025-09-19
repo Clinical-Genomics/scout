@@ -70,6 +70,7 @@ from .gene_tags import (
     UPDATE_GENES_RESOURCES,
 )
 from .igv_tracks import (
+    CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     CASE_SPECIFIC_TRACKS,
     HUMAN_REFERENCE,
     IGV_TRACKS,
