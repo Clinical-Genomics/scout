@@ -34,7 +34,7 @@ def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_upd
         assert resp.status_code == 200
 
         # WHEN feeding an updated variant gene to the transcripts macro
-        macro = get_template_attribute("cases/utils.html", "variant_transcripts")
+        macro = get_template_attribute("variant/components.html", "variant_transcripts")
         html = macro(variant_gene_updated_info)
 
         # THEN the transcripts visualized should be the first and the third
