@@ -41,7 +41,7 @@ def remote_cors(remote_url):
     # Check that user is logged in
     if current_user.is_authenticated is False:
         LOG.warning("Unauthenticated user requesting resource via remote_static")
-        return False
+        return abort(401)
 
     # And that the remote resource is among user tracks
     if controllers.authorize_config_custom_tracks(remote_url) is False:

@@ -39,7 +39,7 @@ def authorize_config_custom_tracks(resource: str) -> bool:
     if hasattr(config_igv_tracks, "tracks"):
         for build in config_igv_tracks.tracks.keys():
             build_tracks = config_igv_tracks.tracks.get(build, [])
-            if resource in build_tracks:
+            if resource in [track.get("url") for track in build_tracks]:
                 return True
     return False
 

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import responses
 from flask import url_for
+from flask_login import login_user
 
 from scout.server.app import create_app
-from scout.server.extensions import store
+from scout.server.blueprints.login.models import LoginUser
+from scout.server.extensions import config_igv_tracks, store
 from scout.utils.ensembl_rest_clients import RESTAPI_URL
 
 
@@ -89,7 +91,7 @@ def test_remote_cors_wrong_resource(app):
         assert resp.status_code == 403
 
 
-def test_remote_cors():
+def test_remote_cors(real_database_name, user_obj):
     """Test endpoint that serves as a proxy to the actual remote track on the cloud"""
 
     # GIVEN an igv track on the cloud
@@ -105,20 +107,44 @@ def test_remote_cors():
         "url": TRACK_URL,
     }
 
-    config = {CUSTOM_IGV_TRACKS: [{"tracks": [track]}]}
+    config = {
+        "CUSTOM_IGV_TRACKS": [{"tracks": [track]}],
+        "TESTING": True,
+        "SERVER_NAME": "test",
+        "DEBUG": True,
+        "MONGO_DBNAME": real_database_name,
+        "DEBUG_TB_ENABLED": False,
+        "LOGIN_DISABLED": True,
+        "WTF_CSRF_ENABLED": False,
+    }
 
     # THEN the initialized app should create a config_igv_tracks extension
-    client = create_app(config=config)
+    igv_track_app = create_app(config=config)
 
-    with client.app_context():
+    @igv_track_app.route("/auto_login")
+    def auto_login():
+        user_inst = LoginUser(user_obj)
+        assert login_user(user_inst, remember=True)
+        return "ok"
+
+    with igv_track_app.test_client() as client:
         # GIVEN that the user could be logged in
-        client.get(url_for("auto_login"))
+        with igv_track_app.app_context():
+            client.get(url_for("auto_login"))
 
-        # WHEN the remote cors endpoint is invoked with cloud_track_url
-        resp = client.get(url_for("alignviewers.remote_cors", remote_url=TRACK_URL))
+            # WHEN a given track is configured for remote CORS
+            assert config_igv_tracks.tracks[TRACK_BUILD][0]["url"] == TRACK_URL
 
-        # THEN response should be successful
-        assert resp.status_code == 200
+            # WHEN the remote cors endpoint is invoked with that track
+            resp = client.get(
+                url_for(
+                    "alignviewers.remote_cors",
+                    remote_url=TRACK_URL,
+                )
+            )
+
+            # THEN response should be successful
+            assert resp.status_code == 200
 
 
 def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
