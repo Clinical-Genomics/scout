@@ -58,10 +58,6 @@ def test_remote_static(app, institute_obj):
         institute_id = case_obj["owner"]
         file = case_obj["individuals"][0]["splice_junctions_bed"]
 
-        print(
-            f"DEBUG REMOTE STATIC! File {file}, case {case_obj['display_name']} and institute {institute_obj['_id']}"
-        )
-
         # THEN the resource should be available to the user
         resp = client.get(
             url_for(

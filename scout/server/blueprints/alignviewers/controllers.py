@@ -70,7 +70,6 @@ def authorize_individual_file_path(resource: str, case: dict) -> bool:
         for file_path in accepted_file_paths
         if file_path and os.path.exists(file_path)
     ]
-    LOG.debug(f"accepted index paths: {accepted_index_paths}")
     if resource in accepted_index_paths:
         return True
 
