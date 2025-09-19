@@ -250,7 +250,11 @@ def str_variants(institute_id, case_name):
         return controllers.download_str_variants(case_obj, variants_query)
 
     data = controllers.str_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variants_query=variants_query,
+        page=page,
     )
 
     return dict(
