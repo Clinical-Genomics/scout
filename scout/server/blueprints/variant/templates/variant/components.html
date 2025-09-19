@@ -554,7 +554,6 @@
 
 {% macro variant_genes(variant) %}
 {% if variant.genes %}
-<li class="list-group-item p-1">
   <div id="genes-{{ variant._id }}">
     {% for gene in variant.genes %}
       <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
