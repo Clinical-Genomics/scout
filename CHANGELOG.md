@@ -51,6 +51,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restrict gene-overlapping variants (DNA and WTS outliers) search to variants found in affected individuals (#5623, #5659)
 - Update command: `scout export variants` now `scout export causatives` (backward-compatible) (#5654)
 - Show estimated VAF% also for panel and WES SNVs, much as for MT variants (#5658)
+- Replaced the archived `flask-ldapconn` library with a ldap3-based custom solution (#5589)
 ### Fixed
 - Treat -1 values as None values when parsing archived LoqusDB frequencies - works retroactively on variantS page, not on variant page yet (#5591)
 - Links to SNVs and SVs from SMN CN page (#5600)
