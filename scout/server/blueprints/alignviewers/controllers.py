@@ -120,7 +120,9 @@ def authorize_case_rna_tracks(resource: str, case: dict) -> bool:
     if resource in accepted_rna_aln_paths:
         return True
 
-    accepted_rna_aln_index_paths = [find_index(rna_aln) for rna_aln in accepted_rna_aln_paths]
+    accepted_rna_aln_index_paths = [
+        find_index(rna_aln) for rna_aln in accepted_rna_aln_paths if rna_aln
+    ]
     if resource in accepted_rna_aln_index_paths:
         return True
 
