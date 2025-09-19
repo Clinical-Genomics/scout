@@ -147,3 +147,24 @@ IGV_TRACKS = {
     "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_SV_37],
     "38": [HUMAN_GENES_38, CLINVAR_SNV_38, CLINVAR_SV_38],
 }
+
+CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP = [
+    {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},
+    {"path": "assembly_alignment_path", "append_to": "assembly_alignments", "index": None},
+    {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
+    {
+        "path": "paraphase_alignment_path",
+        "append_to": "paraphase_alignments",
+        "index": None,
+    },
+    {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": None},
+    {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
+    {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},
+    {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": None},
+    {
+        "path": "minor_allele_frequency_wig",
+        "append_to": "minor_allele_frequency_wigs",
+        "index": None,
+    },
+    {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": None},
+]
