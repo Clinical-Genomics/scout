@@ -54,7 +54,8 @@ def authorize_individual_file_path(resource: str, case: dict) -> bool:
     """Accept file requests for the requested case files, or their indexes.
     All such file paths can be found in the CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     which is also used to populate the display object with these paths.
-    The individual keys are in
+    The indexes for some larger tracks are not always available on the case individual,
+    but found by default extension from the track file name.
     """
 
     accepted_file_paths = [
@@ -79,15 +80,10 @@ def authorize_individual_file_path(resource: str, case: dict) -> bool:
 def authorize_group_alignment_file_path(resource: str, case: dict) -> bool:
     """Accept file requests for the alignment paths from cases in the same case group."""
 
-    #    track_items = "mt_bams" if chromosome == "M" else "bam_files"
-    #   track_index_items = "mt_bais" if track_items == "mt_bams" else "bai_files"
-
-    grouped_cases = get_case_group(case)
-    for group_case in grouped_cases:
-        if authorize_individual_file_path(resource, group_case):
-            return True
-
-    return False
+    return any(
+        authorize_individual_file_path(resource, group_case)
+        for group_case in store.get_case_group(case)
+    )
 
 
 def authorize_case_rna_tracks(resource: str, case: dict) -> bool:
@@ -159,21 +155,6 @@ def authorize_case_tracks(resource: str, case: dict):
     return False
 
 
-def get_case_group(case_obj: dict) -> list:
-    """Retrieve all connected cases (cases grouped with main case)"""
-
-    grouped_cases = []
-    for group in case_obj.get("group", []):
-        group_cases = list(store.cases(group=group))
-        for case in group_cases:
-            grouped_cases.append(case)
-
-    if not grouped_cases:  # Display case individuals tracks only
-        grouped_cases.append(case_obj)
-
-    return grouped_cases
-
-
 def make_igv_tracks(
     case_obj: dict,
     variant_id: str,
@@ -217,7 +198,7 @@ def make_igv_tracks(
     set_common_tracks(display_obj, build)
 
     # Add track data to connected case dictionary
-    grouped_cases = get_case_group(case_obj)
+    grouped_cases = store.get_case_group(case_obj)
     for case in grouped_cases:
         case_append_alignments(case)
 
