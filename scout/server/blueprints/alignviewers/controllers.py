@@ -126,6 +126,8 @@ def authorize_case_rna_tracks(resource: str, case: dict) -> bool:
     if resource in accepted_rna_aln_index_paths:
         return True
 
+    return False
+
 
 def authorize_case_tracks(resource: str, case: dict):
     """Make sure that a user requesting a resource is authenticated and
