@@ -43,6 +43,9 @@
             <button class="btn btn-primary form-control">Submit</button>
           {% endif %}
           <div id="conflicts_div" class="bg-warning"></div>
+          <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
+            Download as PDF
+          </button>
         </div>
       </div>
 
@@ -133,7 +136,7 @@
 
 {% block scripts %}
   {{ super() }}
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
 
     window.onload=function() {
@@ -191,5 +194,32 @@
         conflicts_div.innerHTML = data.conflicts.join("<br>");
       });
     }
+
+    // Export to PDF
+    document.getElementById('download-pdf').addEventListener('click', function() {
+        const container = document.querySelector('.container.mt-3.mb-5');
+        const realBottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+
+        // Clone the bottom bar
+        const pdfFooter = realBottomBar.cloneNode(true);
+        pdfFooter.classList.remove('fixed-bottom'); // remove fixed positioning
+        pdfFooter.style.fontSize = '0.7em';          // shrink only footer text
+        pdfFooter.style.marginTop = '50px';         // space from main content
+
+        // Append temporarily to container
+        container.appendChild(pdfFooter);
+
+        const opt = {
+            margin: 10,
+            filename: '{{ variant.display_name }}.pdf',
+            image: { type: 'jpeg', quality: 1 },    // max quality
+            html2canvas: { scale: 2 },              // high resolution
+            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(container).save().then(() => {
+            container.removeChild(pdfFooter);       // clean up after PDF
+        });
+    });
   </script>
 {% endblock %}
