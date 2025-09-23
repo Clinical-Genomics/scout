@@ -136,7 +136,8 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.bundle.min.js" integrity="sha512-D25Z8/1q2z65ZpJ3NzY6XiPZfwjhbv34OTQHDIZd+KPK+uWCovGt+fMkSzW8ArzCMFUgZt6Cdu7qoXNuy6a2GA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js" integrity="sha384-Wm+alMbg1fxSJBbLMXKBb1ZfoWBd0FwJml5aEbKolDB41cMjTfek0cLKgCku6MAF" crossorigin="anonymous"></script>
   <script>
 
     window.onload=function() {
@@ -217,27 +218,25 @@
 
         container.appendChild(bottomBar);
 
-        // Safari detection
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
         const opt = {
             margin: 10,
             filename: '{{ variant.display_name }}.pdf',
-            image: { type: 'jpeg', quality: isSafari ? 0.9 : 1 },
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: {
-                scale: isSafari ? 1 : 2, // safe mode for Safari
+                scale: 2,                  // high resolution
                 useCORS: true,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                html2canvas: window.html2canvas // use html2canvas-pro
             },
             jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(container).save().then(() => {
-            // Restore bar back to original state
+            // Restore bottom bar to original state
             bottomBar.className = originalClass;
             bottomBar.setAttribute('style', originalStyle);
             document.body.appendChild(bottomBar);
         });
-    });;
+    });
   </script>
 {% endblock %}
