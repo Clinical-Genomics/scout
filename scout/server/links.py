@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
 
-import jwt
 from flask import current_app
 
 from scout.utils.convert import amino_acid_residue_change_3_to_1
@@ -932,11 +931,7 @@ def alamut_file_links(
                 alamut_inst_arg=alamut_inst_arg,
                 file_type=file_type,
             )
-            payload = {"file": file}
-            token = jwt.encode(
-                payload=payload, key=current_app.config["SECRET_KEY"], algorithm="HS256"
-            )
-            links[ind.get("display_name")] = (link, token)
+            links[ind.get("display_name")] = (link, file)
     return links
 
 

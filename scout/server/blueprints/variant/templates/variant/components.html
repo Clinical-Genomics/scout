@@ -156,8 +156,8 @@
       {% if case['alamut_file_links'] %}
         Open align. file:
       {% for sample, file_link in case['alamut_file_links'].items() %}
-          <input type="button" class="btn btn-sm btn-secondary text-white" value='{{sample}}' data-bs-toggle="tooltip" title="Open alignment file for sample {{sample}}" onclick='linkOutsideSoftware("{{file_link[0] + url_for('alignviewers.remote_static_whole', token=file_link[1], _external=True)}}");'/>
-          {% endfor %}
+          <input type="button" class="btn btn-sm btn-secondary text-white" value='{{sample}}' data-bs-toggle="tooltip" title="Open alignment file for sample {{sample}}" onclick='linkOutsideSoftware("{{file_link[0] + url_for('alignviewers.remote_static', file=file_link[1], institute_id=institute._id, case_name=case.display_name, _external=True)}}");'/>
+      {% endfor %}
       {% endif %}
       </div>
     </li>

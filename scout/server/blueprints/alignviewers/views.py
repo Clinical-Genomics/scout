@@ -2,7 +2,6 @@
 import logging
 from typing import Optional
 
-import jwt
 import requests
 from flask import (
     Blueprint,
@@ -98,31 +97,6 @@ def remote_static():
 
     new_resp = send_file_partial(file_path)
     return new_resp
-
-
-@alignviewers_bp.route("/remote/static/whole", methods=["OPTIONS", "GET"])
-def remote_static_whole():
-    allowed_file_types = ["bam", "cram"]
-    if controllers.check_user_authentication() is False:
-        return abort(403)
-    index = False
-    token = request.args.get("token")
-    if not token:
-        return abort(400)
-    if token.count(".") == 3:
-        index = token.split(".")[-1]
-        token = token[: -(len(index) + 1)]
-    try:
-        payload = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms="HS256")
-    except Exception as error:
-        return abort(400)
-    file_path = payload["file"]
-    if file_path.split(".")[-1] not in allowed_file_types:
-        return abort(403)
-    if index:
-        file_path = file_path + "." + index
-    resp = send_file(file_path)
-    return resp
 
 
 @alignviewers_bp.route(
