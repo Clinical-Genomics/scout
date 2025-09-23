@@ -39,6 +39,9 @@
               <br><br>
               <button class="btn btn-primary form-control" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Reclassify</button>
             {% endif %}
+            <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
+              Download as PDF
+            </button>
           {% elif not evaluation %}
             <button class="btn btn-primary form-control">Submit</button>
           {% endif %}
@@ -133,7 +136,9 @@
 
 {% block scripts %}
   {{ super() }}
-
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js" integrity="sha384-Wm+alMbg1fxSJBbLMXKBb1ZfoWBd0FwJml5aEbKolDB41cMjTfek0cLKgCku6MAF" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js" integrity="sha384-GwHhSt8QjC7J+v0zZ0Flfho/T76YHEcCL9w4rvjTIUHauh6gWJeBSIi3vWXxNhtA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.min.js" integrity="sha384-xRdpZbmFBrCOR+8YH0bFeoEFdIhM9BYZeyX+oKraQnckDv30U4BfQoGK0v7TEbTH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
 
     window.onload=function() {
@@ -191,5 +196,48 @@
         conflicts_div.innerHTML = data.conflicts.join("<br>");
       });
     }
+
+    // Export to PDF
+    document.getElementById('download-pdf').addEventListener('click', function() {
+        const container = document.querySelector('.container.mt-3.mb-5');
+        const bottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+
+        if (!container || !bottomBar) {
+            alert('Required elements not found');
+            return;
+        }
+
+        // Remember original classes/styles
+        const originalClass = bottomBar.className;
+        const originalStyle = bottomBar.getAttribute('style') || '';
+
+        // Temporarily move and restyle bottom bar for PDF
+        bottomBar.classList.remove('fixed-bottom');
+        bottomBar.style.position = 'relative';
+        bottomBar.style.marginTop = '50px';
+        bottomBar.style.fontSize = '0.7em';  // shrink text
+
+        container.appendChild(bottomBar);
+
+        const opt = {
+            margin: 10,
+            filename: '{{ variant.display_name }}.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: {
+                scale: 2,                  // high resolution
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                html2canvas: window.html2canvas // use html2canvas-pro
+            },
+            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(container).save().then(() => {
+            // Restore bottom bar to original state
+            bottomBar.className = originalClass;
+            bottomBar.setAttribute('style', originalStyle);
+            document.body.appendChild(bottomBar);
+        });
+    });
   </script>
 {% endblock %}
