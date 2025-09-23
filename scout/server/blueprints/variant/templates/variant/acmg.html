@@ -198,28 +198,46 @@
     // Export to PDF
     document.getElementById('download-pdf').addEventListener('click', function() {
         const container = document.querySelector('.container.mt-3.mb-5');
-        const realBottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+        const bottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
 
-        // Clone the bottom bar
-        const pdfFooter = realBottomBar.cloneNode(true);
-        pdfFooter.classList.remove('fixed-bottom'); // remove fixed positioning
-        pdfFooter.style.fontSize = '0.7em';          // shrink only footer text
-        pdfFooter.style.marginTop = '50px';         // space from main content
+        if (!container || !bottomBar) {
+            alert('Required elements not found');
+            return;
+        }
 
-        // Append temporarily to container
-        container.appendChild(pdfFooter);
+        // Remember original classes/styles
+        const originalClass = bottomBar.className;
+        const originalStyle = bottomBar.getAttribute('style') || '';
+
+        // Temporarily move and restyle bottom bar for PDF
+        bottomBar.classList.remove('fixed-bottom');
+        bottomBar.style.position = 'relative';
+        bottomBar.style.marginTop = '50px';
+        bottomBar.style.fontSize = '0.7em';  // shrink text
+
+        container.appendChild(bottomBar);
+
+        // Safari detection
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         const opt = {
             margin: 10,
             filename: '{{ variant.display_name }}.pdf',
-            image: { type: 'jpeg', quality: 1 },    // max quality
-            html2canvas: { scale: 2 },              // high resolution
+            image: { type: 'jpeg', quality: isSafari ? 0.9 : 1 },
+            html2canvas: {
+                scale: isSafari ? 1 : 2, // safe mode for Safari
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            },
             jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(container).save().then(() => {
-            container.removeChild(pdfFooter);       // clean up after PDF
+            // Restore bar back to original state
+            bottomBar.className = originalClass;
+            bottomBar.setAttribute('style', originalStyle);
+            document.body.appendChild(bottomBar);
         });
-    });
+    });;
   </script>
 {% endblock %}
