@@ -8,13 +8,10 @@ from flask import (
     Blueprint,
     Response,
     abort,
-    copy_current_request_context,
-    current_app,
     render_template,
     request,
-    send_file,
-    session,
 )
+from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
@@ -42,8 +39,13 @@ def remote_cors(remote_url):
     Based on code from answers to this thread:
         https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
     """
-    # Check that user is logged in or that file extension is valid
-    if controllers.check_session_tracks(remote_url) is False:
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static")
+        return abort(401)
+
+    # And that the remote resource is among user tracks
+    if controllers.authorize_config_custom_tracks(remote_url) is False:
         return abort(403)
 
     resp = requests.request(
@@ -74,10 +76,20 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
-    file_path = request.args.get("file") or "."
+    file_path = request.args.get("file", default=".", type=str)
+    institute_id = request.args.get("institute_id", default=".", type=str)
+    case_name = request.args.get("case_name", default=".", type=str)
 
-    # Check that user is logged in or that file extension is valid
-    if controllers.check_session_tracks(file_path) is False:
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static")
+        return abort(401)
+
+    # Ensure the user really has access to this case's tracks by
+    # retrieving case (only allowed if user has access)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+
+    if controllers.authorize_case_tracks(file_path, case_obj) is False:
         return abort(403)
 
     range_header = request.headers.get("Range", None)
@@ -136,14 +148,8 @@ def sashimi_igv(
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_sashimi_tracks(case_obj, variant_id, omics_variant_id)
-    controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_sashimi_viewer.html", **display_obj))
-
-    @response.call_on_close
-    @copy_current_request_context
-    def clear_session_tracks():
-        session.pop("igv_tracks", None)  # clean up igv session tracks
 
     return response
 
@@ -172,13 +178,6 @@ def igv(
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
-    controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
-
-    @response.call_on_close
-    @copy_current_request_context
-    def clear_session_tracks():
-        session.pop("igv_tracks", None)  # clean up igv session tracks
-
     return response

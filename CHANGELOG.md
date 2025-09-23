@@ -9,10 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for variants annotated with an unmodified ClinVar VCF (#5691)
 - Parse and display copy number on SV page, genotype table (#5692)
 - Bootstrap-based pagination on variantS pages (#5697)
+- More transcript insights on variant summary for SV variants hitting max 5 genes (#5706)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 - Consolidated and simplified case handling tests (#5708)
+- Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
