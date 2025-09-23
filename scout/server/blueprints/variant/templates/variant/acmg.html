@@ -39,13 +39,13 @@
               <br><br>
               <button class="btn btn-primary form-control" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Reclassify</button>
             {% endif %}
+            <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
+              Download as PDF
+            </button>
           {% elif not evaluation %}
             <button class="btn btn-primary form-control">Submit</button>
           {% endif %}
           <div id="conflicts_div" class="bg-warning"></div>
-          <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
-            Download as PDF
-          </button>
         </div>
       </div>
 
