@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bootstrap-based pagination on variantS pages (#5697)
 - More transcript insights on variant summary for SV variants hitting max 5 genes (#5706)
 - Button to export ACMG classifications to PDF (#5715)
+- CLINSIG table on SV variant page (#5718)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
