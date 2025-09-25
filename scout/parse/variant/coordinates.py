@@ -1,6 +1,12 @@
 """Code to parse variant coordinates"""
 
-from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38, SV_TYPES
+from scout.constants import (
+    BND_ALT_PATTERN,
+    CHR_PATTERN,
+    CYTOBANDS_37,
+    CYTOBANDS_38,
+    SV_TYPES,
+)
 
 
 def get_cytoband_coordinates(chrom, pos, build):

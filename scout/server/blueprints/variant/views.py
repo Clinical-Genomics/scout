@@ -46,7 +46,12 @@ from scout.server.blueprints.variant.verification_controllers import (
     variant_verification,
 )
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, public_endpoint, templated
+from scout.server.utils import (
+    institute_and_case,
+    public_endpoint,
+    safe_redirect_back,
+    templated,
+)
 from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
 from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
@@ -70,7 +75,7 @@ def update_tracks_settings():
     user_obj["igv_tracks"] = selected_tracks
     store.update_user(user_obj)
     setattr(current_user, "igv_tracks", selected_tracks)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @variant_bp.route("/document_id/<variant_id>")
@@ -393,7 +398,7 @@ def variant_update(institute_id, case_name, variant_id):
             )
             flash("Reset mosaic tags: {}".format(",".join(variant_mosaic), "info"))
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @variant_bp.route("/evaluations/<evaluation_id>", methods=["GET", "POST"])
@@ -403,7 +408,7 @@ def evaluation(evaluation_id):
     evaluation_obj = store.get_evaluation(evaluation_id)
     if evaluation_obj is None:
         flash("Evaluation was not found in database", "warning")
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
     evaluation_controller(store, evaluation_obj)
     if request.method == "POST":
         link = url_for(
@@ -417,7 +422,7 @@ def evaluation(evaluation_id):
         if check_reset_variant_classification(store, evaluation_obj, link):
             flash("Cleared ACMG classification.", "info")
 
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     return dict(
         evaluation=evaluation_obj,
@@ -461,7 +466,7 @@ def ccv_evaluation(evaluation_id):
     evaluation_obj = store.get_ccv_evaluation(evaluation_id)
     if evaluation_obj is None:
         flash("Evaluation was not found in database", "warning")
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
     ccv_evaluation_controller(store, evaluation_obj)
     if request.method == "POST":
         link = url_for(
@@ -523,7 +528,7 @@ def verify(institute_id, case_name, variant_id, order):
     except MissingVerificationRecipientError:
         flash("No verification recipients added to institute.", "danger")
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @variant_bp.route("/marrvel/<build>/<variant_id>", methods=["GET"])
@@ -553,6 +558,6 @@ def marrvel_link(build, variant_id):
                 "MARRVEL requires variant coordinates in genome build 37, but variant liftover failed",
                 "warning",
             )
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
 
     return redirect(url_template.format(chrom, start, ref, alt), code=302)

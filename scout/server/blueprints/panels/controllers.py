@@ -14,6 +14,7 @@ from scout.constants import DATE_DAY_FORMATTER
 from scout.parse.panel import parse_genes
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
+from scout.server.utils import safe_redirect_back
 
 LOG = logging.getLogger(__name__)
 
@@ -114,7 +115,7 @@ def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[st
     lines = panel_decode_lines(panel_file)
 
     if not lines:
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     # check if a new panel should be created or the user is modifying an existing one
     if request.form.get("new_panel_name"):  # Create a new panel
