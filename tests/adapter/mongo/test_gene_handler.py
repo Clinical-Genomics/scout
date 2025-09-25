@@ -438,6 +438,24 @@ def test_gene_by_symbol_or_aliases(adapter, parsed_gene):
     assert type(result) != list
 
 
+def test_gene_by_coordinate(adapter, parsed_gene):
+    """Test the function that given a coordinate, genes overlapping said coordinate are found"""
+
+    # GIVEN a database containing a gene
+    adapter.load_hgnc_gene(parsed_gene)
+
+    # THEN using the function to search the gene by symbol should return a list with the gene
+    result = list(
+        adapter.genes_by_coordinate(
+            build=parsed_gene["build"],
+            chromosome=parsed_gene["chromosome"],
+            pos=parsed_gene["start"],
+        )
+    )
+    assert len(result) == 1
+    assert parsed_gene["hgnc_symbol"] in result[0]["hgnc_symbol"]
+
+
 def test_ensembl_to_hgnc_id_mapping(adapter, parsed_gene):
     """Test the function that maps Ensembl gene IDs to HGNC gene IDs."""
 

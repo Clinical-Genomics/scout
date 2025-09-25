@@ -329,6 +329,18 @@ class GeneHandler(object):
         res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
         return res
 
+    def genes_by_coordinate(self, chromosome: str, pos: int, build: str = "37"):
+        """Return genes overlapping coordinate."""
+
+        return self.hgnc_collection.find(
+            {
+                "build": str(build),
+                "chromosome": chromosome,
+                "start": {"$lte": pos},
+                "end": {"$gte": pos},
+            }
+        )
+
     def genes_by_alias(self, build=None, genes=None):
         """Return a dictionary with hgnc symbols as keys and a list of hgnc ids
              as value.
