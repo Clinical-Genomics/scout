@@ -268,11 +268,11 @@
             <div>Breakpoint 1</div>
             {{ sv_alignments(variant, case, "start") }}
           {% if variant.start_genes %}
-            <div class="col-2">
+            <div class="col-3">
               {% for gene in variant.start_genes %}
-                <span><a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                <div class="row"><a class="mr-1" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
-                </a></span>
+                </a></div>
               {% endfor %}
             </div>
           {% endif %}
@@ -283,11 +283,11 @@
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
           {% if variant.end_genes %}
-            <div class="col-2">
+            <div class="col-3">
               {% for gene in variant.end_genes %}
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                <div class="row"><a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
-                </a>
+              </a></div>
               {% endfor %}
             </div>
           {% endif %}
