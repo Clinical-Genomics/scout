@@ -267,14 +267,30 @@
           <div class="row d-flex align-items-center">
             <div>Breakpoint 1</div>
             {{ sv_alignments(variant, case, "start") }}
-          </div>
+          {% if variant.start_genes %}
+            <div class="col-2">
+              {% for gene in variant.start_genes %}
+                <span><a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
+                </a></span>
+              {% endfor %}
+            </div>
+          {% endif %}
         </li>
         {% if variant.sub_category != "ins" %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
-          </div>
+          {% if variant.end_genes %}
+            <div class="col-2">
+              {% for gene in variant.end_genes %}
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
         </li>
         {% endif %}
         <li class="list-group-item">
@@ -410,7 +426,7 @@
   <div class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</div>
   <div class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</div>
   <div class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</div>
-  <div class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</div>
+  <div class="list-group-item"><strong>Length</strong>: {{variant.length}}</div>
   </div>
   <div class="list-group-item">
     <strong>Encompassing genes</strong>:

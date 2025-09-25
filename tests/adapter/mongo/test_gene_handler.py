@@ -444,7 +444,7 @@ def test_gene_by_coordinate(adapter, parsed_gene):
     # GIVEN a database containing a gene
     adapter.load_hgnc_gene(parsed_gene)
 
-    # THEN using the function to search the gene by symbol should return a list with the gene
+    # THEN using the function to search the gene by pos should return a list with, normally, only the one gene
     result = list(
         adapter.genes_by_coordinate(
             build=parsed_gene["build"],
