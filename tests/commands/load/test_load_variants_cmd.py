@@ -17,7 +17,7 @@ def test_load_variants(mock_app, case_obj):
 
     # Test CLI by uploading SNV variants for a case
     result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 10]
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-threshold", 10]
     )
     assert result.exit_code == 0
 
@@ -93,7 +93,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # After using the CLI uploading SNV variants for a case
     result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 10]
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-threshold", 10]
     )
     assert result.exit_code == 0
 
@@ -142,7 +142,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
             "variants",
             case_obj["_id"],
             "--snv",
-            "--rank-treshold",
+            "--rank-threshold",
             10,
             "--force",
         ],
