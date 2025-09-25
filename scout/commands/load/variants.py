@@ -75,7 +75,7 @@ def variants(
     end,
     hgnc_id,
     hgnc_symbol,
-    rank_treshold,
+    rank_threshold,
     force,
     keep_actions,
 ):
@@ -266,7 +266,7 @@ def variants(
 
         return i
 
-    i = load_variant_files(case_obj, files, rank_treshold, force)
+    i = load_variant_files(case_obj, files, rank_threshold, force)
     i += load_omics_variant_files(
         case_obj,
         omics_files,
