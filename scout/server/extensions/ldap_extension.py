@@ -17,12 +17,12 @@ class LdapManager:
         self.app = app
 
         app.config.setdefault("LDAP_HOST", "localhost")
-        app.config.setdefault("LDAP_PORT", 10389)
+        app.config.setdefault("LDAP_PORT", 389)
         app.config.setdefault("LDAP_USE_SSL", False)
         app.config.setdefault("LDAP_USE_TLS", True)
 
         app.config.setdefault("LDAP_BASE_DN", "dc=planetexpress,dc=com")
-        app.config.setdefault("LDAP_USER_DN", "ou=people")  # default subnode
+        app.config.setdefault("LDAP_USER_DN", "ou=people")
         app.config.setdefault("LDAP_USER_LOGIN_ATTR", "mail")
 
         app.config.setdefault("LDAP_BINDDN", "cn=admin,dc=planetexpress,dc=com")
