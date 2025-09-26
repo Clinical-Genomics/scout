@@ -15,7 +15,7 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
     # Given a database with SNV variants
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 5]
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-threshold", 5]
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for _ in store.variant_collection.find())
@@ -55,7 +55,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     # Given a case with with SNV variants
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
-        cli, ["load", "variants", "--snv", "--rank-treshold", 0, case_obj["_id"]]
+        cli, ["load", "variants", "--snv", "--rank-threshold", 0, case_obj["_id"]]
     )
     assert result.exit_code == 0
     nr_snvs = sum(1 for _ in store.variant_collection.find())
