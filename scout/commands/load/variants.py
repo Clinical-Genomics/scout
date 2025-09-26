@@ -37,9 +37,14 @@ LOG = logging.getLogger(__name__)
 @click.option("--hgnc-id", type=int, help="If all variants from a gene, specify the gene id")
 @click.option("--hgnc-symbol", help="If all variants from a gene, specify the gene symbol")
 @click.option(
+    "--rank-threshold",
     "--rank-treshold",
     default=5,
-    help="Specify the rank score threshold. Deprecation warning: this parameter name will change in a later release.",
+    help=(
+        "Specify the rank score threshold. "
+        "Deprecation warning: the misspelled parameter '--rank-treshold' "
+        "will be removed in the next major release."
+    ),
     show_default=True,
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
@@ -70,7 +75,7 @@ def variants(
     end,
     hgnc_id,
     hgnc_symbol,
-    rank_treshold,
+    rank_threshold,
     force,
     keep_actions,
 ):
@@ -261,7 +266,7 @@ def variants(
 
         return i
 
-    i = load_variant_files(case_obj, files, rank_treshold, force)
+    i = load_variant_files(case_obj, files, rank_threshold, force)
     i += load_omics_variant_files(
         case_obj,
         omics_files,
