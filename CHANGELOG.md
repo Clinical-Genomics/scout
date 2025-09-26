@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 - Consolidated and simplified case handling tests (#5708)
 - Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
+- On the variant page, the corresponding button opens the ACMG and CCV classification tools in a new tab (#5723)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 ### Fixed
 - Typo in PR template (#5682)
