@@ -459,10 +459,12 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     start position is different from end_position."""
     genome_build = get_case_genome_build(case_obj)
 
-    start_genes = store.genes_by_coordinate(
-        chromosome=variant_obj["chromosome"],
-        pos=variant_obj["position"],
-        build=genome_build,
+    start_genes = list(
+        store.genes_by_coordinate(
+            chromosome=variant_obj["chromosome"],
+            pos=variant_obj["position"],
+            build=genome_build,
+        )
     )
     if start_genes:
         variant_obj["start_genes"] = start_genes

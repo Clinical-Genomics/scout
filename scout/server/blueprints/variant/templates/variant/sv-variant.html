@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/components.html" import clinsig_table, external_scripts, external_stylesheets, matching_variants, panel_classify_sv, variant_scripts, variant_genes %}
+{% from "variant/components.html" import clinsig_table, external_scripts, external_stylesheets, list_edge_genes, matching_variants, panel_classify_sv, variant_scripts, variant_genes %}
 {% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel, custom_annotations, gene_panels %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
@@ -267,30 +267,24 @@
           <div class="row d-flex align-items-center">
             <div>Breakpoint 1</div>
             {{ sv_alignments(variant, case, "start") }}
-          {% if variant.start_genes %}
-            <div class="col-3">
-              {% for gene in variant.start_genes %}
-                <div class="row"><a class="mr-1" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
-                </a></div>
-              {% endfor %}
-            </div>
-          {% endif %}
+            {% if variant.start_genes %}
+              <div class="col-3">
+                {{ list_edge_genes(variant.start_genes, "start") }}
+              </div>
+            {% endif %}
+          </div>
         </li>
         {% if variant.sub_category != "ins" %}
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
-          {% if variant.end_genes %}
-            <div class="col-3">
-              {% for gene in variant.end_genes %}
-                <div class="row"><a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}
-              </a></div>
-              {% endfor %}
-            </div>
-          {% endif %}
+            {% if variant.end_genes %}
+              <div class="col-3">
+                {{ list_edge_genes(variant.end_genes, "end") }}
+              </div>
+            {% endif %}
+          </div>
         </li>
         {% endif %}
         <li class="list-group-item">
