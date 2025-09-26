@@ -623,7 +623,7 @@
   {% for gene in genes %}
     {% if not gene.uniprot_ids %}
       {% if rna_genes.count == 0 %}
-        <a class="mr-3" data-bs-toggle="collapse" href="#collapseRNAgenes{{ edge }}" title="Non protein genes" role="button" aria-expanded="false" aria-controls="collapseRNAgenes{{ edge }}">[...]</a>
+        <a class="mr-3" data-bs-toggle="collapse" href="#collapseRNAgenes{{ edge }}" role="button" aria-expanded="false" aria-controls="collapseRNAgenes{{ edge }}">[...]</a>
         <div class="collapse" id="collapseRNAgenes{{ edge }}">
       {% else %}
           <div class="row">
