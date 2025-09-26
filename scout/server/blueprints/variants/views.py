@@ -140,8 +140,6 @@ def variants(institute_id, case_name):
     genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)
 
-    LOG.warning(form.data)
-
     variants_query = store.variants(
         case_obj["_id"], query=form.data, category=category, build=genome_build
     )
@@ -396,11 +394,10 @@ def mei_variants(institute_id, case_name):
 
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = controllers.case_default_panels(case_obj)
-
-        # set form variant data type the first time around
-        form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
+
+    form.variant_type.data = variant_type
 
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
