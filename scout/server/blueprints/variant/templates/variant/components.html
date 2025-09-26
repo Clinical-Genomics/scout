@@ -280,7 +280,7 @@
       ACMG <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="text-decoration: inherit;" data-bs-toggle="tooltip" title="Richards et al 2015">classification</a>
       {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
-        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
+        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control" target="_blank" rel="noopener noreferrer">Classify</a>
       </div>
       {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
         <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
@@ -292,7 +292,7 @@
       {% if case.track == "cancer" %}
       {{ ccv_form(institute, case, variant, CCV_OPTIONS, variant.ccv_classification.code if variant.ccv_classification) }}
       <div class="mt-3">
-        <a href="{{ url_for('variant.variant_ccv', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
+        <a href="{{ url_for('variant.variant_ccv', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control" target="_blank" rel="noopener noreferrer">Classify</a>
       </div>
       {% if ccv_evaluations %} <!-- scrollable previous ClinGen-CGC-VICC evaluations div-->
         <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
