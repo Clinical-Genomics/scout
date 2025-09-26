@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow updating case owner on `scout load case -u` (#5681)
 - Missing query results on STR variantS page (#5713)
 - Links to variants with missing rank scores from Causatives and Verified pages (#5715)
+- Include both chanjo and chanjo2 stats on MT report (#5686)
 
 ## [4.104]
 ### Added
