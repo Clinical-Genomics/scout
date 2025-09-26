@@ -1724,13 +1724,14 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     form = SvFiltersForm(request_obj.args)
     user_obj = store.user(current_user.email)
 
+    variant_type = request_obj.values.get("variant_type", "clinical")
+
     if request_obj.method == "GET":
         if category == "sv":
             form = SvFiltersForm(request_obj.args)
         elif category == "cancer_sv":
             form = CancerSvFiltersForm(request_obj.args)
-        variant_type = request_obj.args.get("variant_type", "clinical")
-        form.variant_type.data = variant_type
+
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
         if form.gene_panels.data == [] and variant_type == "clinical":
@@ -1740,6 +1741,8 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
+
+    form.variant_type.data = variant_type
 
     populate_force_show_unaffected_vars(institute_obj, form)
 

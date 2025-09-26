@@ -53,8 +53,7 @@ def outliers(institute_id, case_name):
 
     if request.method == "GET":
         form = OutlierFiltersForm(request.args)
-        variant_type = request.args.get("variant_type", "clinical")
-        form.variant_type.data = variant_type
+
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
         if form.gene_panels.data == [] and variant_type == "clinical":
@@ -64,6 +63,8 @@ def outliers(institute_id, case_name):
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
+
+    form.variant_type.data = variant_type
 
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
