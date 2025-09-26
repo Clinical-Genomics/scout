@@ -51,7 +51,7 @@ def clinvar_submission_status(submission_id):
         f"Response from ClinVar: {clinvar_resp_status}",
         "primary",
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/clinvar/delete-enquiry/<submission_id>", methods=["POST"])
@@ -66,7 +66,7 @@ def clinvar_submission_delete(submission_id):
         f"ClinVar response: { str(delete_res[1]) }",
         "success" if delete_res[0] == 201 else "warning",
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
@@ -115,7 +115,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
-    return redirect(request.referrer + f"#cdata_{submission}")
+    return safe_redirect_back(request, request.referrer + f"#cdata_{submission}")
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
@@ -127,14 +127,14 @@ def clinvar_delete_object(submission: str, object_type: str):
         object_type=object_type,
         subm_variant_id=request.form.get("delete_object"),
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/<institute_id>/<submission>/update_status", methods=["POST"])
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
     controllers.update_clinvar_submission_status(request, institute_id, submission)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
@@ -168,7 +168,7 @@ def clinvar_download_json(submission: str, clinvar_id: Optional[str]) -> Respons
             f"JSON file could not be crated for ClinVar submission: {filename}: {conversion_res}",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
 
 ### ClinVar oncogenicity variants submissions views
