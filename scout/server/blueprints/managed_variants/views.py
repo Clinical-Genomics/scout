@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, request
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import templated, user_institutes
+from scout.server.utils import safe_redirect_back, templated, user_institutes
 
 from . import controllers
 from .forms import ManagedVariantModifyForm
@@ -39,7 +39,7 @@ def upload_managed_variants():
             "Something went wrong while parsing the panel CSV file! ({})".format(err),
             "danger",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
     flash(
@@ -47,7 +47,7 @@ def upload_managed_variants():
         "success",
     )
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
@@ -60,18 +60,18 @@ def modify_managed_variant(variant_id):
             "warning",
         )
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
 def remove_managed_variant(variant_id):
     controllers.remove_managed_variant(store, variant_id)
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @managed_variants_bp.route("/managed_variant/add", methods=["POST"])
 def add_managed_variant():
     """Add a managed variant using form data filled in by user"""
     controllers.add_managed_variant(request)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)

@@ -72,6 +72,7 @@ from scout.server.utils import (
     get_case_mito_chromosome,
     institute_and_case,
     refresh_token,
+    safe_redirect_back,
 )
 from scout.utils.acmg import get_acmg_temperature
 from scout.utils.ccv import get_ccv_temperature
@@ -1238,13 +1239,13 @@ def matchmaker_check_requirements(request):
             "An error occurred reading matchmaker connection parameters. Please check config file!",
             "danger",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     # Check that request comes from an authorized user (mme_submitter role)
     user_obj = store.user(current_user.email)
     if "mme_submitter" not in user_obj.get("roles", []):
         flash("unauthorized request", "warning")
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
 
 def matchmaker_add(request, institute_id, case_name):
@@ -1265,7 +1266,7 @@ def matchmaker_add(request, institute_id, case_name):
             "At the moment it is not possible to save to MatchMaker more than 3 candidate variants / genes",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     save_gender = "sex" in request.form
     features = (
@@ -1281,7 +1282,7 @@ def matchmaker_add(request, institute_id, case_name):
             "In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)",
             "danger",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     # create contact dictionary
     user_obj = store.user(current_user.email)
@@ -1421,7 +1422,7 @@ def matchmaker_matches(request, institute_id, case_name):
                 "MatchMaker server returned error:{}".format(data["server_errors"]),
                 "danger",
             )
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
         # server returned a valid response
         pat_matches = []
         if server_resp.get("content", {}).get("matches"):
