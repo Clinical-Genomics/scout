@@ -104,7 +104,7 @@ def case(
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     if not case_obj:
         flash("Case {} does not exist in database!".format(case_name))
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     hide_matching = (
         literal_eval(request.args.get("hide_matching"))
