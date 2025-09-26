@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Consolidated and simplified case handling tests (#5708)
 - Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
 - On the variant page, the corresponding button opens the ACMG and CCV classification tools in a new tab (#5723)
+- Fix CLI parameter typo --rank-treshold with backward-compatible alias and deprecation warning (#5720)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
