@@ -3,7 +3,7 @@ from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import institute_and_case, safe_redirect_back, templated
 
 from . import controllers
 from .forms import PhenoModelForm, PhenoSubPanelForm
@@ -52,7 +52,7 @@ def create_phenomodel(institute_id):
     store.create_phenomodel(
         institute_id, request.form.get("model_name"), request.form.get("model_desc")
     )
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @phenomodels_bp.route("/advanced_phenotypes/lock", methods=["POST"])
@@ -62,7 +62,7 @@ def lock_phenomodel():
     model_id = form.get("model_id")
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     phenomodel_obj["admins"] = []
     if (
@@ -72,7 +72,7 @@ def lock_phenomodel():
 
     # update phenomodels admins:
     store.update_phenomodel(model_id, phenomodel_obj)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @phenomodels_bp.route("/advanced_phenotypes/remove", methods=["POST"])
@@ -82,7 +82,7 @@ def remove_phenomodel():
     model_obj = store.phenomodel_collection.find_one_and_delete({"_id": ObjectId(model_id)})
     if model_obj is None:
         flash("An error occurred while deleting phenotype model", "warning")
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
@@ -97,7 +97,7 @@ def phenomodel_edit(institute_id, model_id):
     """Edit a phenomodel or a subpanel"""
     institute_and_case(store, institute_id)
     controllers.update_phenomodel(model_id, request.form)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>", methods=["GET"])
@@ -112,7 +112,7 @@ def phenomodel(institute_id, model_id):
             f"Could not retrieve given phenotype model using the given key '{model_id}'",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     pheno_form = PhenoModelForm()
     subpanel_form = PhenoSubPanelForm()
