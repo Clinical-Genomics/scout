@@ -27,6 +27,7 @@ from scout.server.utils import (
     institute_and_case,
     jsonconverter,
     public_endpoint,
+    safe_redirect_back,
     templated,
     user_institutes,
 )
@@ -144,14 +145,14 @@ def panel(panel_id):
             hgnc_id = int(raw_hgnc_id)
         except ValueError:
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
         action = request.form["action"]
         gene_obj = store.hgnc_gene_caption(
             hgnc_identifier=hgnc_id, build="37"
         ) or store.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
         if gene_obj is None:
             flash("HGNC id not found: {}".format(hgnc_id), "warning")
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
 
         if action == "add":
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
@@ -199,7 +200,7 @@ def panel_update(panel_id):
         elif updated_panel.get("pending") is None:
             flash("Pending actions were correctly canceled!", "success")
 
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     if controllers.panel_write_granted(panel_obj, current_user):
         update_version = request.form.get("version", None)
@@ -210,7 +211,6 @@ def panel_update(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-
     return redirect(url_for("panels.panel", panel_id=panel_id))
 
 
@@ -223,7 +223,7 @@ def panel_delete(panel_id):
             f"Panel object with id '{panel_id}' was not found.",
             "danger",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     if controllers.panel_write_granted(panel_obj, current_user):
         LOG.info("Mark gene panel: %s as deleted (hidden)" % panel_obj["display_name"])
@@ -309,7 +309,7 @@ def panel_export_case_hits(panel_id):
             "Could not parse case name, please use format: 'cust000 - 643594' or use typing suggestions",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
     try:
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     except Exception:
@@ -317,7 +317,7 @@ def panel_export_case_hits(panel_id):
             f"Could not find a case named '{case_name}' associated to institute '{institute_id}'",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
     now = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     data["report_created_at"] = now

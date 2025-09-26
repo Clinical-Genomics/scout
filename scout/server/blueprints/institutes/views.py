@@ -21,6 +21,7 @@ from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import (
     institute_and_case,
     jsonconverter,
+    safe_redirect_back,
     templated,
     user_institutes,
 )
@@ -129,7 +130,7 @@ def lock_filter(institute_id, filter_id):
     if filter_lock == "False" or not filter_lock:
         filter_obj = controllers.lock_filter(store, current_user, filter_id)
 
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
@@ -169,7 +170,7 @@ def gene_variants(institute_id):
         # If no valid gene is provided, redirect to form
         if not form.hgnc_symbols.data:
             flash("Provided gene symbols could not be used in variants' search", "warning")
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
 
         variants_query = store.build_variant_query(
             query=form.data,
@@ -214,13 +215,13 @@ def add_beacon_dataset(institute_id):
             "Only an admin can create a new Beacon dataset",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     dataset_id = request.form.get("beacon_dataset")
     institute_obj = store.institute(institute_id)
 
     beacon.add_dataset(institute_obj, dataset_id)
-    return redirect(request.referrer)
+    return safe_redirect_back(request)
 
 
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])
@@ -232,7 +233,7 @@ def institute_settings(institute_id):
             "Current user doesn't have the permission to modify this institute",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
 
     institute_obj = store.institute(institute_id)
     institute_form = InstituteForm(request.form)
@@ -246,7 +247,7 @@ def institute_settings(institute_id):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
             flash(institute_obj, "warning")
-            return redirect(request.referrer)
+            return safe_redirect_back(request)
 
     data = controllers.institute(store, institute_id)
     loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
@@ -272,6 +273,6 @@ def institute_users(institute_id):
             "Current user doesn't have the permission to modify this institute",
             "warning",
         )
-        return redirect(request.referrer)
+        return safe_redirect_back(request)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
