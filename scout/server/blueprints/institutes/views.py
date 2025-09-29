@@ -193,7 +193,7 @@ def gene_variants(institute_id):
             )
 
         data = controllers.gene_variants(
-            store, results, result_size, page
+            store, results=results, page=page
         )  # decorated variant results, max 50 in a page
 
     return dict(
