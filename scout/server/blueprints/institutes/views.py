@@ -189,11 +189,11 @@ def gene_variants(institute_id):
             return controllers.export_gene_variants(
                 store=store,
                 gene_symbol=request.form.get("hgnc_symbols").split(",")[0].strip(),
-                pymongo_cursor=results,
+                results=results,
             )
 
         data = controllers.gene_variants(
-            store, results, result_size, page
+            store, results=results, page=page
         )  # decorated variant results, max 50 in a page
 
     return dict(

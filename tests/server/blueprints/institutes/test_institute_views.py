@@ -8,6 +8,29 @@ OVERVIEW_GENE_VARIANTS_ENDPOINT = "overview.gene_variants"
 
 
 def test_gene_variants(app, user_obj, institute_obj):
+    """Test the page that returns all variants for an institute, without a query.
+    It should return the empty search page."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # WHEN form is submitted by POST request
+        resp = client.post(
+            url_for(
+                OVERVIEW_GENE_VARIANTS_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+            ),
+        )
+        # THEN it should return a valid page
+        assert resp.status_code == 200
+
+        # THEN the result shall contain a string indicating no variants available yet.
+        assert "No variants to display" in str(resp.data)
+
+
+def test_gene_variants(app, user_obj, institute_obj):
     """Test the page that returns all SNPs and INDELs given a gene provided by user"""
 
     # GIVEN a form filled in by the user
