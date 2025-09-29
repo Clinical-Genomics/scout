@@ -3,7 +3,6 @@ import datetime
 import logging
 from typing import Dict, List, Optional, Tuple
 
-import pymongo.cursor
 from flask import Response, current_app, flash, request, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
@@ -802,7 +801,7 @@ def get_sanger_unevaluated(
     return unevaluated, evaluated_by_others
 
 
-def export_gene_variants(store: MongoAdapter, gene_symbol: str, pymongo_cursor: Cursor) -> Response:
+def export_gene_variants(store: MongoAdapter, gene_symbol: str, results: Cursor) -> Response:
     """Export 500 gene variants for an institute resulting from a customer query"""
 
     def generate(header, lines):
@@ -812,7 +811,7 @@ def export_gene_variants(store: MongoAdapter, gene_symbol: str, pymongo_cursor: 
 
     data: dict = gene_variants(
         store=store,
-        pymongo_cursor=pymongo_cursor,
+        results=results,
         per_page=500,
     )
 
