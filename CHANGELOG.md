@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On the variant page, the corresponding button opens the ACMG and CCV classification tools in a new tab (#5723)
 - Fix CLI parameter typo --rank-treshold with backward-compatible alias and deprecation warning (#5720)
 - Safer redirect to previous page for all views and controllers still using `redirect(request.referrer)`(#5721)
+- Default paraphase igv.js track settings: color by YC, squish, extend visibility window, auto-height and place last in view. (#5724)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 ### Fixed
 - Typo in PR template (#5682)
