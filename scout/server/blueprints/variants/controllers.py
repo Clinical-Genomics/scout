@@ -58,6 +58,7 @@ from .forms import (
     FILTERSFORMCLASS,
     CancerSvFiltersForm,
     FusionFiltersForm,
+    MeiFiltersForm,
     SvFiltersForm,
 )
 from .utils import update_case_panels
@@ -236,7 +237,6 @@ def render_variants_page(
     institute_id,
     case_name,
     form_builder,
-    form_extra=None,
 ) -> dict:
     """Shared logic for SV and MEI variants routes."""
     page = get_variants_page(request.form)
@@ -267,9 +267,6 @@ def render_variants_page(
 
     # Build form (different per category)
     form = form_builder(store, institute_obj, case_obj, category, variant_type)
-
-    if form_extra:  # allow MEI-specific modifications
-        form_extra(form, store, institute_obj, case_obj, variant_type)
 
     # Populate common filter choices
     populate_chrom_choices(form, case_obj)
@@ -1792,7 +1789,7 @@ def case_default_panels(case_obj):
     return case_panels
 
 
-def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
+def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, request_obj):
     """Populate a filters form object of the type SvFiltersForm
 
     Accepts:
@@ -1809,13 +1806,15 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     form = SvFiltersForm(request_obj.args)
     user_obj = store.user(current_user.email)
 
+    variant_type = request_obj.values.get("variant_type", "clinical")
     if request_obj.method == "GET":
         if category == "sv":
             form = SvFiltersForm(request_obj.args)
         elif category == "cancer_sv":
             form = CancerSvFiltersForm(request_obj.args)
-        variant_type = request_obj.args.get("variant_type", "clinical")
-        form.variant_type.data = variant_type
+        elif category == "mei":
+            form = MeiFiltersForm(request_obj.args)
+
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
         if form.gene_panels.data == [] and variant_type == "clinical":
@@ -1827,7 +1826,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         )
 
     populate_force_show_unaffected_vars(institute_obj, form)
-
+    form.variant_type.data = variant_type
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 

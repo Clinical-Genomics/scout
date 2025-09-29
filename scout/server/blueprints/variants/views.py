@@ -282,10 +282,9 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id: str, case_name: str):
     """Display a list of structural variants (SV)."""
 
-    # form_builder defined inside the route
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_sv_filters_form(store, inst, case, cat, request)
+        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
 
     # SV does not need form_extra
     return controllers.render_variants_page(
@@ -301,10 +300,9 @@ def sv_variants(institute_id: str, case_name: str):
 def cancer_sv_variants(institute_id: str, case_name: str):
     """Display a list of cancer structural variants."""
 
-    # Form builder defined inside the route
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_filters_form(store, inst, case, cat, request)
+        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
 
     return controllers.render_variants_page(
         category="cancer_sv",
@@ -318,25 +316,14 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 @templated("variants/mei-variants.html")
 def mei_variants(institute_id: str, case_name: str):
     def form_builder(store, inst, case, cat, vtype):
-        user_obj = store.user(current_user.email)
-        if request.method == "POST":
-            return controllers.populate_filters_form(store, inst, case, user_obj, cat, request.form)
-        form = MeiFiltersForm(request.args)
-        if form.gene_panels.data == [] and vtype == "clinical":
-            form.gene_panels.data = controllers.case_default_panels(case)
-        form.variant_type.data = vtype
-        form.chrom.data = request.args.get("chrom", "")
-        return form
-
-    def form_extra(form, store, inst, case, vtype):
-        form.gene_panels.choices = controllers.gene_panel_choices(store, inst, case)
+        """Builds the cancer SV filters form."""
+        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
 
     return controllers.render_variants_page(
         category="mei",
         institute_id=institute_id,
         case_name=case_name,
         form_builder=form_builder,
-        form_extra=form_extra,
     )
 
 
