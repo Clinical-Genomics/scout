@@ -92,12 +92,14 @@ def variants(institute_id, case_name):
     else:
         form = FiltersForm(request.args)
         # set form variant data type the first time around
-        form.variant_type.data = variant_type
+
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
 
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = controllers.case_default_panels(case_obj)
+
+    form.variant_type.data = variant_type
 
     controllers.populate_force_show_unaffected_vars(institute_obj, form)
 
@@ -315,6 +317,8 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 @variants_bp.route("/<institute_id>/<case_name>/mei/variants", methods=["GET", "POST"])
 @templated("variants/mei-variants.html")
 def mei_variants(institute_id: str, case_name: str):
+    """Display a list of MEI variants."""
+
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
         return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)

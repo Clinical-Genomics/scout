@@ -1807,6 +1807,7 @@ def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, reque
     user_obj = store.user(current_user.email)
 
     variant_type = request_obj.values.get("variant_type", "clinical")
+
     if request_obj.method == "GET":
         if category == "sv":
             form = SvFiltersForm(request_obj.args)
@@ -1824,6 +1825,8 @@ def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, reque
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
+
+    form.variant_type.data = variant_type
 
     populate_force_show_unaffected_vars(institute_obj, form)
     form.variant_type.data = variant_type
