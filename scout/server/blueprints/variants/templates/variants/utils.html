@@ -1177,9 +1177,14 @@
   {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
-{% macro pagination_hidden_div(page, total_variants) %}
+{% macro pagination_hidden_div(page, result_size) %}
   {% set per_page = 50 %}
-  {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
+  {% if result_size is not none %}
+    {% set total_pages = (result_size // per_page) + (1 if result_size % per_page > 0 else 0) %}
+  {% else %}
+    {% set total_pages = 1 %}
+  {% endif %}
+
   <div class="hidden">
     <input type="submit" name="page" id="paginate-first" value="1" hidden>
     <input type="submit" name="page" id="paginate-previous" value="{{ page-1 }}" hidden>
@@ -1195,9 +1200,14 @@
   </div>
 {% endmacro %}
 
-{% macro pagination_footer(page, total_variants) %}
+{% macro pagination_footer(page, result_size) %}
   {% set per_page = 50 %}
-  {% set total_pages = (total_variants // per_page) + (1 if total_variants % per_page > 0 else 0) %}
+
+  {% if result_size is not none %}
+    {% set total_pages = (result_size // per_page) + (1 if result_size % per_page > 0 else 0) %}
+  {% else %}
+    {% set total_pages = 1 %}
+  {% endif %}
   {% set window = 2 %} {# pages around current page #}
 
   {# Clamp page number #}
