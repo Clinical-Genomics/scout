@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing query results on STR variantS page (#5713)
 - Links to variants with missing rank scores from Causatives and Verified pages (#5715)
 - Clinical filter button on research variants, wrongly redirecting to respective clinical variants pages (#5725)
+- Pagination to handle empty search results (#5727)
 
 ## [4.104]
 ### Added
