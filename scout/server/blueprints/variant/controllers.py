@@ -457,6 +457,9 @@ def get_gene_has_full_coverage(institute_obj, case_obj, variant_obj) -> Dict[int
 def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     """Set edge genes, "start_genes" and "end_genes" if they exist. Only attempt end_genes if
     start position is different from end_position."""
+    if variant_obj["category"] not in ["sv", "cancer_sv"]:
+        return
+
     genome_build = get_case_genome_build(case_obj)
 
     start_genes = store.genes_by_coordinate(
