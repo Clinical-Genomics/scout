@@ -210,9 +210,9 @@ def parse_genes(gene_lines):
             LOG.warning(err)
             raise SyntaxError("Line {0} is malformed: {1}".format(i + 1, err))
 
-        identifier = gene.pop("identifier")
+        identifier = gene.pop("identifier", None)
 
-        if identifier not in hgnc_identifiers:
+        if identifier and identifier not in hgnc_identifiers:
             hgnc_identifiers.add(identifier)
             genes.append(gene)
 
