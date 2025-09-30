@@ -75,10 +75,13 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
-    file_path = request.args.get("file", default=".", type=str)
-    institute_id = request.args.get("institute_id", default=".", type=str)
-    case_name = request.args.get("case_name", default=".", type=str)
-
+    arguments = request.args.get("args", default=".", type=str)
+    if arguments != '.':
+        institute_id, case_name, file_path = arguments.split(",")
+    else:
+        file_path = request.args.get("file", default=".", type=str)
+        institute_id = request.args.get("institute_id", default=".", type=str)
+        case_name = request.args.get("case_name", default=".", type=str)
     # Check that user is logged in
     if current_user.is_authenticated is False:
         LOG.warning("Unauthenticated user requesting resource via remote_static")
