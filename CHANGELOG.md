@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More transcript insights on variant summary for SV variants hitting max 5 genes (#5706)
 - Button to export ACMG classifications to PDF (#5715)
 - CLINSIG table on SV variant page (#5718)
+- Search genes at breakpoint for larger SVs (#5722)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
@@ -32,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing query results on STR variantS page (#5713)
 - Links to variants with missing rank scores from Causatives and Verified pages (#5715)
 - Clinical filter button on research variants, wrongly redirecting to respective clinical variants pages (#5725)
+- Pagination to handle empty search results (#5727)
+- Gene variants page to return all resulting variants again (#5727)
 
 ## [4.104]
 ### Added
