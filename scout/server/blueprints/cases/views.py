@@ -1077,7 +1077,13 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 # path contains both dir structure and a file prefix
                 path = ind["chromograph_images"][key]
                 abs_path = os.path.abspath(path)
-                img_path = abs_path + image.split("-")[-1]  # get suffix
+
+                # Remove possible dash before the chromosome name
+                suffix = image.split("-", 1)[-1] if "-" in image else image
+
+                # Safely join (prevents directory traversal)
+                img_path = os.path.join(abs_path + suffix)
+
                 return send_file(img_path)
             except Exception as err:
                 # redirect to missing file icon upon error
