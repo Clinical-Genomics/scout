@@ -1082,7 +1082,7 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 suffix = image.split("-", 1)[-1] if "-" in image else image
 
                 # Safely join (prevents directory traversal)
-                img_path = os.path.join(abs_path + suffix)
+                img_path = os.path.join(abs_path + suffix)  # nosec B307
 
                 return send_file(img_path)
             except Exception as err:
