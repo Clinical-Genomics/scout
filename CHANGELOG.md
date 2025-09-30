@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinical filter button on research variants, wrongly redirecting to respective clinical variants pages (#5725)
 - Pagination to handle empty search results (#5727)
 - Gene variants page to return all resulting variants again (#5727)
+- Gene panel parsing if gene doesn't contain an identifier (#5733)
 
 ## [4.104]
 ### Added
