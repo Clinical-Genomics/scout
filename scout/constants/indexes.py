@@ -21,20 +21,25 @@ INDEXES = {
     ],
     "hgnc_gene": [
         IndexModel(
-            [("build", ASCENDING), ("chromosome", ASCENDING)],
-            name="build_chromosome",
+            [
+                ("build", ASCENDING),
+                ("chromosome", ASCENDING),
+                ("start", ASCENDING),
+                ("end", ASCENDING),
+            ],
+            name="build_chromosome_start_end",
         ),
         IndexModel(
-            [("build", ASCENDING), ("hgnc_id", ASCENDING)],
-            name="build_hgncid",
+            [("hgnc_id", ASCENDING), ("build", ASCENDING)],
+            name="hgncid_build",
         ),
         IndexModel(
-            [("build", ASCENDING), ("aliases", ASCENDING)],
-            name="build_aliases",
+            [("aliases", ASCENDING), ("build", ASCENDING)],
+            name="aliases_build",
         ),
         IndexModel(
-            [("build", ASCENDING), ("hgnc_symbol", ASCENDING)],
-            name="build_hgnc_symbol",
+            [("hgnc_symbol", ASCENDING), ("build", ASCENDING)],
+            name="hgnc_symbol_build",
         ),
     ],
     "omics_variant": [
