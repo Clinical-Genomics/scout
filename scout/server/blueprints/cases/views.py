@@ -1107,7 +1107,18 @@ def host_custom_image_aux(institute_id: str, case_name: str) -> Optional[Respons
     _, case_obj = institute_and_case(store, institute_id, case_name)
     custom_images_values: list = list(custom_images_paths(case_obj.get("custom_images", {})))
     if request.args.get("image_path") in custom_images_values:
-        abs_path: str = os.path.abspath(request.args.get("image_path"))
+        image_path = request.args.get("image_path")
+        # Normalize and sanitize
+        safe_path = os.path.normpath(image_path)
+
+        # Reject any attempts at path traversal like "../../etc/passwd"
+        if ".." in safe_path.split(os.path.sep):
+            abort(403, description="Invalid path")
+
+        # Resolve to absolute path
+        abs_path = os.path.abspath(safe_path)
+
+        # Return the file
         return send_file(abs_path)
 
 
