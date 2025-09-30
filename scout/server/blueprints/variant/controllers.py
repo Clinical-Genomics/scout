@@ -318,6 +318,7 @@ def variant(
         )
 
     variant_obj["end_position"] = end_position(variant_obj)
+    set_edge_genes(store, case_obj, variant_obj)
 
     # common motif count for STR variants
     variant_obj["str_mc"] = get_str_mc(variant_obj)
@@ -451,6 +452,38 @@ def get_gene_has_full_coverage(institute_obj, case_obj, variant_obj) -> Dict[int
         for hgnc_id in [gene.get("hgnc_id") for gene in variant_obj.get("genes", [])]
     }
     return gene_has_full_coverage
+
+
+def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
+    """Set edge genes, "start_genes" and "end_genes" if they exist. Only attempt end_genes if
+    start position is different from end_position."""
+    if variant_obj["category"] not in ["sv", "cancer_sv"]:
+        return
+
+    genome_build = get_case_genome_build(case_obj)
+
+    start_genes = store.genes_by_coordinate(
+        chromosome=variant_obj["chromosome"],
+        pos=variant_obj["position"],
+        build=genome_build,
+    )
+
+    if start_genes:
+        variant_obj["start_genes"] = start_genes
+
+    if (
+        variant_obj.get("end_position")
+        and variant_obj["position"] != variant_obj["end_position"]
+        and variant_obj.get("sub_category") != "ins"
+    ):
+        end_chromosome = variant_obj.get("end_chrom") or variant_obj["chromosome"]
+        end_genes = store.genes_by_coordinate(
+            chromosome=end_chromosome,
+            pos=variant_obj["end_position"],
+            build=genome_build,
+        )
+        if end_genes:
+            variant_obj["end_genes"] = end_genes
 
 
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
