@@ -76,7 +76,7 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     arguments = request.args.get("args", default=".", type=str)
-    if arguments != '.':
+    if arguments != ".":
         institute_id, case_name, file_path = arguments.split(",")
     else:
         file_path = request.args.get("file", default=".", type=str)
