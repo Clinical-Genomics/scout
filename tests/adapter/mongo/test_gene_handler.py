@@ -445,12 +445,10 @@ def test_gene_by_coordinate(adapter, parsed_gene):
     adapter.load_hgnc_gene(parsed_gene)
 
     # THEN using the function to search the gene by pos should return a list with, normally, only the one gene
-    result = list(
-        adapter.genes_by_coordinate(
-            build=parsed_gene["build"],
-            chromosome=parsed_gene["chromosome"],
-            pos=parsed_gene["start"],
-        )
+    result = adapter.genes_by_coordinate(
+        build=parsed_gene["build"],
+        chromosome=parsed_gene["chromosome"],
+        pos=parsed_gene["start"],
     )
     assert len(result) == 1
     assert parsed_gene["hgnc_symbol"] in result[0]["hgnc_symbol"]

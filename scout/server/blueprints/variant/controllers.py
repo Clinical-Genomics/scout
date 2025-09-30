@@ -459,13 +459,12 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     start position is different from end_position."""
     genome_build = get_case_genome_build(case_obj)
 
-    start_genes = list(
-        store.genes_by_coordinate(
-            chromosome=variant_obj["chromosome"],
-            pos=variant_obj["position"],
-            build=genome_build,
-        )
+    start_genes = store.genes_by_coordinate(
+        chromosome=variant_obj["chromosome"],
+        pos=variant_obj["position"],
+        build=genome_build,
     )
+
     if start_genes:
         variant_obj["start_genes"] = start_genes
 
@@ -475,12 +474,10 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
         and variant_obj.get("sub_category") != "ins"
     ):
         end_chromosome = variant_obj.get("end_chrom") or variant_obj["chromosome"]
-        end_genes = list(
-            store.genes_by_coordinate(
-                chromosome=end_chromosome,
-                pos=variant_obj["end_position"],
-                build=genome_build,
-            )
+        end_genes = store.genes_by_coordinate(
+            chromosome=end_chromosome,
+            pos=variant_obj["end_position"],
+            build=genome_build,
         )
         if end_genes:
             variant_obj["end_genes"] = end_genes
