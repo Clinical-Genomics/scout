@@ -611,9 +611,11 @@
   {% for gene in genes %}
     {% if gene.uniprot_ids %}
       <div class="row">
-        <a class="ml-1" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-          {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}<div class="badge bg-primary">P</div>
-        </a>
+        <div class="col">
+          <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+            {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}<div class="badge bg-primary">P</div>
+          </a>
+        </div>
       </div>
     {% endif %}
   {% endfor %}
@@ -623,11 +625,13 @@
   {% for gene in genes %}
     {% if not gene.uniprot_ids %}
       {% if rna_genes.count == 0 %}
-        <a class="mr-3" data-bs-toggle="collapse" href="#collapseRNAgenes{{ edge }}" role="button" aria-expanded="false" aria-controls="collapseRNAgenes{{ edge }}">[...]</a>
+        <a data-bs-toggle="collapse" href="#collapseRNAgenes{{ edge }}" role="button" aria-expanded="false" aria-controls="collapseRNAgenes{{ edge }}">[...]</a>
         <div class="collapse" id="collapseRNAgenes{{ edge }}">
       {% else %}
           <div class="row">
-            <a class="ml-1" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}</a>
+            <div class="col">
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}</a>
+            </div>
           </div>
       {% endif %}
       {% set rna_genes.count = rna_genes.count + 1 %}

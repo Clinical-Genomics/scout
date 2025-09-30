@@ -264,7 +264,7 @@
         </li>
         {% endif %}
         <li class="list-group-item">
-          <div class="row d-flex align-items-center">
+          <div class="row">
             <div>Breakpoint 1</div>
             {{ sv_alignments(variant, case, "start") }}
             {% if variant.start_genes %}
@@ -276,7 +276,7 @@
         </li>
         {% if variant.sub_category != "ins" %}
         <li class="list-group-item">
-          <div class="row d-flex align-items-center">
+          <div class="row">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
             {% if variant.end_genes %}
@@ -288,7 +288,7 @@
         </li>
         {% endif %}
         <li class="list-group-item">
-          <div class="row d-flex align-items-center">
+          <div class="row">
             <div>Length</div>
             {{ sv_alignments(variant, case, "length") }}
           </div>

@@ -350,7 +350,7 @@
   {% set align_start = variant.position - 500 if variant.position > 500 else 0 %}
   {% set align_end = variant.end + 500 %}
   {% set chrom = variant.chromosome %}
-    <div class="col-4 offset-1 ">
+    <div class="col-3 offset-1 ">
     {% if zoom == "start" %}
       {% set align_end = variant.position + 500 %}
       {{variant.chromosome}}:{{variant.position|human_longint|safe}}<button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
@@ -393,7 +393,7 @@
         </span>
       {% endif %}
     </div>
-    <div class="col-1">
+    <div class="col-2">
       <!--Define build variable to be used in the UCSC link-->
       {% set build = "hg19" %}
       {% if case.genome_build == "38" or variant.chromosome == "MT" %}
