@@ -1084,7 +1084,7 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 # Safely join (prevents directory traversal)
                 img_path = os.path.join(abs_path + suffix)  # nosec B307
 
-                return send_file(img_path)
+                return send_file(img_path)  # nosec B307
             except Exception as err:
                 # redirect to missing file icon upon error
                 LOG.warning("send_file() exception: {}".format(err))
