@@ -627,13 +627,13 @@
       {% if rna_genes.count == 0 %}
         <a data-bs-toggle="collapse" href="#collapseRNAgenes{{ edge }}" role="button" aria-expanded="false" aria-controls="collapseRNAgenes{{ edge }}">[...]</a>
         <div class="collapse" id="collapseRNAgenes{{ edge }}">
-      {% else %}
-          <div class="row">
-            <div class="col">
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}</a>
-            </div>
-          </div>
+
       {% endif %}
+      <div class="row">
+        <div class="col">
+          <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}</a>
+        </div>
+      </div>
       {% set rna_genes.count = rna_genes.count + 1 %}
     {% endif %}
   {% endfor %}
