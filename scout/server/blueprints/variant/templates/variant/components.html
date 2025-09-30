@@ -613,7 +613,7 @@
       <div class="row">
         <div class="col">
           <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-            {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}<div class="badge bg-primary">P</div>
+            {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id }}<div class="badge bg-primary" data-bs-toggle="tooltip" title="Protein coding gene">P</div>
           </a>
         </div>
       </div>
