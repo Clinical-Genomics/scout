@@ -40,6 +40,7 @@
         <tr>
           <th scope="col">Case : Score</th>
           <th scope="col">Var</th>
+          <th scope="col">Zygosity</th>
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
@@ -56,6 +57,8 @@
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
+            <td>{{ zygosity(variant) }}
+            </td>
             <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
@@ -86,6 +89,17 @@
 </form>
 {% endmacro %}
 
+
+{% macro zygosity(variant) %}
+  {%- for sample in variant.samples -%}
+    {%- for ind in variant.case.individuals -%}
+      {%- if sample.sample_id == ind.individual_id -%}
+        {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
+        <span data-bs-toggle='tooltip' data-bs-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}} AD:{{sample.allele_depths[0]}}|{{sample.allele_depths[1]}}</span>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{% endmacro %}
 
 {% macro pretty_link_no_gene(variant) %}
   {% if variant.category == "sv" %}
