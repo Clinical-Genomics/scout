@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene variants page to return all resulting variants again (#5727)
 - Gene panel parsing if gene doesn't contain an identifier (#5733)
 - Include both chanjo and chanjo2 stats on MT report (#5686)
+- Institute cases filtering with Has ClinVar submissions checkbox (#5735)
 
 ## [4.104]
 ### Added

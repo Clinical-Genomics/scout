@@ -460,16 +460,12 @@ class ClinVarHandler(object):
 
         return submitted_vars
 
-    def clinvar_cases(self, institute_id=None):
-        """Fetch all cases with variants contained in a ClinVar submission object
-
-        Args:
-            institute_id(str): id of an institute
-        Returns:
-            clinvar_case_ids(list): list of case _ids
-        """
+    def clinvar_cases(self, institute_id: str = None) -> List[str]:
+        """Fetch all cases with variants contained in a ClinVar submission object"""
         clinvar_case_ids = set()
-        inst_submissions = self.clinvar_submissions(institute_id=institute_id)
+        inst_submissions = self.get_clinvar_germline_submissions(institute_id=institute_id) + list(
+            self.get_clinvar_onc_submissions(institute_id=institute_id)
+        )
         for subm in inst_submissions:
             for var in subm.get("variant_data"):
                 clinvar_case_ids.add(var["case_id"])
