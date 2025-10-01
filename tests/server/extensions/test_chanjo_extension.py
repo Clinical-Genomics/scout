@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from scout.server.extensions import chanjo_report  # already an instance
+from scout.server.extensions import chanjo_report
 
 
 def test_chanjo_mt_coverage_stats(app, monkeypatch):
