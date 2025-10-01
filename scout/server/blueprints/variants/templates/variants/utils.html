@@ -1295,9 +1295,9 @@
   {% endif %}
 {% endmacro %}
 
-{% macro zygosity_badges(variant) %}
+{% macro zygosity_badges(variant, case) %}
   {%- for sample in variant.samples -%}
-    {%- for ind in variant.case.individuals -%}
+    {%- for ind in case.individuals -%}
       {%- if sample.sample_id == ind.individual_id -%}
         {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
         <span data-bs-toggle='tooltip' data-bs-container='body' title="{{sample.genotype_call}} {{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{zygosity_icon(sample.genotype_call)}} GQ:{{sample.genotype_quality}} AD:{{sample.allele_depths[0]}}|{{sample.allele_depths[1]}}</span>
@@ -1307,15 +1307,17 @@
 {% endmacro %}
 
 {% macro zygosity_icon(genotype) %}
-  <span class="
-    {%- if genotype == "1/1" -%}
-      fa-solid fa-circle
-    {%- elif genotype == "0/0" -%}
-      fa-regular fa-circle
-    {%- elif genotype in ["0/1", "1/0"] -%}
-      fa-solid fa-circle-half-stroke
-    {%- elif "." in genotype -%}
-      fa-solid fa-circle-question
-    {%- endif -%}">
-  </span>
+  {% if genotype is not none %}
+    <span class="
+      {%- if genotype == "1/1" -%}
+        fa-solid fa-circle
+      {%- elif genotype == "0/0" -%}
+        fa-regular fa-circle
+      {%- elif genotype in ["0/1", "1/0"] -%}
+        fa-solid fa-circle-half-stroke
+      {%- elif "." in genotype -%}
+        fa-solid fa-circle-question
+      {%- endif -%}">
+    </span>
+  {% endif %}
 {% endmacro %}

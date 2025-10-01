@@ -57,7 +57,7 @@
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
-            <td>{{ zygosity_badges(variant) }}
+            <td>{{ zygosity_badges(variant, variant.case) }}
             </td>
             <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
