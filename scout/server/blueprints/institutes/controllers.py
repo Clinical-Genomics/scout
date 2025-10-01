@@ -883,8 +883,8 @@ def export_gene_variants(store: MongoAdapter, gene_symbol: str, results: Cursor)
 
 def gene_variants(store: MongoAdapter, results: Cursor, page: int = 1, per_page: int = 50) -> dict:
     """Pre-process list of variants.
-    We retrieve that case for each variant, to populate variant case_display_name and
-    to have case properties, such as sample disease status available for display.
+    We retrieve the case for each variant, to populate variant case_display_name and
+    to have other case properties, such as individual disease status available for display.
     """
 
     skip_count = per_page * max(page - 1, 0)
