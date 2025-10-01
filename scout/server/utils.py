@@ -268,7 +268,7 @@ def refresh_token() -> None:
     for key in ["KEYCLOAK", "GOOGLE"]:
         if current_app.config.get(key):
             provider = key
-            break  # use first match
+            break
 
     if not provider:
         LOG.warning("No OAuth provider configured; cannot refresh token.")
