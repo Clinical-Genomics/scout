@@ -99,7 +99,7 @@ class ChanjoReport:
 
         except Exception as e:
             # Generic catch-all for network issues, invalid JSON, etc.
-            print(f"Warning: failed to fetch MT coverage stats: {e}")
+            LOG.warning(f"Failed to fetch chanjo MT coverage stats: {e}")
             return {}
 
         return coverage_stats
