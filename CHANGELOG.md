@@ -41,6 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel parsing if gene doesn't contain an identifier (#5733)
 - Include both chanjo and chanjo2 stats on MT report (#5686)
 - Institute cases filtering with Has ClinVar submissions checkbox (#5735)
+- Display plain variant rank score also if norm rank score is missing (#5738)
 
 ## [4.104]
 ### Added
