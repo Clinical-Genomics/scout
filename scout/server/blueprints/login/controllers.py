@@ -101,7 +101,11 @@ def google_login() -> Optional[Response]:
 
     redirect_uri: str = url_for("login.authorized", _external=True)
     try:
-        return oauth_client.google.authorize_redirect(redirect_uri, prompt="select_account")
+        return oauth_client.google.authorize_redirect(
+            redirect_uri,
+            prompt="consent",  # force consent each time (so refresh_token is issued)
+            access_type="offline",  # tells Google to send a refresh token
+        )
     except Exception:
         flash("An error has occurred while logging in user using Google OAuth", "warning")
         return None
