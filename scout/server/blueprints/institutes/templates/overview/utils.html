@@ -1,4 +1,5 @@
 {% from "variants/components.html" import variant_gene_symbols_cell, variant_funct_anno_cell, fusion_variant_gene_symbols_cell %}
+{% from "variants/utils.html" import zygosity_badges %}
 
 {% macro cases_search_form(form, form_action, reset_action, institute = none) %}
 <!-- Collect advanced search key/values -->
@@ -601,18 +602,8 @@
               {{ variant.spliceai_scores|list_remove_none|join(', ') if variant.spliceai_scores else "-" }}
               </span>
             </td>
-            <td><!-- Zygosity -->
-              {%- for sample in variant.samples -%}
-                {%- for ind in case.individuals -%}
-                  {%- if sample.sample_id == ind.individual_id -%}
-                    {% if sample.genotype_call not in ['0/0', './.', '0/.', './0'] %}
-                      {% do analysis_types.append(ind.analysis_type) %} <!-- used later in Analysis type column -->
-                    {% endif %}
-                    {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
-                    <span data-bs-toggle='tooltip' data-bs-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}} AD:{{sample.allele_depths[0]}}|{{sample.allele_depths[1]}}</span>
-                  {%- endif -%}
-                {%- endfor -%}
-              {%- endfor -%}
+            <td>
+            {{ zygosity_badges(variant,case) }}
             </td>
             <td><!-- Inheritance -->
               {% for model in variant.genetic_models %}
