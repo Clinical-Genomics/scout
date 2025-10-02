@@ -2,7 +2,7 @@
 {% from "utils.html" import clickable_table_row_script, comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
-{% from "variants/utils.html" import gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score %}
+{% from "variants/utils.html" import gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score, zygosity_badges %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -40,6 +40,7 @@
         <tr>
           <th scope="col">Case : Score</th>
           <th scope="col">Var</th>
+          <th scope="col">Zygosity</th>
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
@@ -56,6 +57,8 @@
       {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
+            <td>{{ zygosity_badges(variant, variant.case) }}
+            </td>
             <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
@@ -85,6 +88,7 @@
   </div>
 </form>
 {% endmacro %}
+
 
 
 {% macro pretty_link_no_gene(variant) %}
