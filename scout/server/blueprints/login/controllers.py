@@ -15,20 +15,17 @@ LOG = logging.getLogger(__name__)
 
 
 def ldap_authorized(userid: str, password: str) -> bool:
-    """Log in an LDAP user."""
-    authorized = False
+    """Log in an LDAP user using flask-ldap3-login."""
     try:
-        authorized = ldap_manager.authenticate(
-            username=userid,
-            password=password,
-            base_dn=current_app.config.get("LDAP_BASE_DN") or current_app.config.get("LDAP_BINDDN"),
-            attribute=current_app.config.get("LDAP_USER_LOGIN_ATTR")
-            or current_app.config.get("LDAP_SEARCH_ATTR"),
-        )
+        authorized = ldap_manager.ldap_authorized(userid, password)
+        if authorized:
+            flash("Login successful", "success")
+        else:
+            flash("Invalid credentials or insufficient group membership", "danger")
+        return authorized
     except Exception as ex:
-        flash(ex, "danger")
-
-    return authorized
+        flash(str(ex), "danger")
+        return False
 
 
 def event_rank(count):
