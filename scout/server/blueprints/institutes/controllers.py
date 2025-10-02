@@ -882,19 +882,24 @@ def export_gene_variants(store: MongoAdapter, gene_symbol: str, results: Cursor)
 
 
 def gene_variants(store: MongoAdapter, results: Cursor, page: int = 1, per_page: int = 50) -> dict:
-    """Pre-process list of variants."""
+    """Pre-process list of variants.
+    We retrieve the case for each variant, to populate variant case_display_name and
+    to have other case properties, such as individual disease status available for display.
+    """
 
     skip_count = per_page * max(page - 1, 0)
     variant_res = results.skip(skip_count).limit(per_page)
     variants = []
 
     for variant_obj in variant_res:
-        # Populate variant case_display_name
+
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
         if variant_case_obj is None:
             continue
         case_display_name = variant_case_obj.get("display_name")
         variant_obj["case_display_name"] = case_display_name
+
+        variant_obj["case"] = variant_case_obj
 
         genome_build = get_case_genome_build(variant_case_obj)
         update_variant_genes(store, variant_obj, genome_build)
