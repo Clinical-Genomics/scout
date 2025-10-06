@@ -601,11 +601,15 @@ def cancer_sv_variants(institute_id, case_name):
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(
-        case_obj["_id"], category=category, query=form.data, build=genome_build
+        case_id=case_obj["_id"], query=form.data, category=category, build=genome_build
     )
 
     result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
+        case_id=case_obj["_id"],
+        query=form.data,
+        variant_ids=None,
+        category=category,
+        build=genome_build,
     )
 
     # if variants should be exported
@@ -613,7 +617,11 @@ def cancer_sv_variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.sv_mei_variants(
-        store, institute_obj, case_obj, variants_query, result_size, page
+        store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variants_query=variants_query,
+        page=page,
     )
 
     return dict(
