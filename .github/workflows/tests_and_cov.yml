@@ -16,13 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Install the project
+      - name: Install project dependencies
         run: uv sync --all-extras --dev
 
   test:
@@ -33,7 +38,7 @@ jobs:
     strategy:
       matrix:
         group: [1, 2, 3, 4, 5, 6, 7, 8]
-        mongodb-version: ['7']
+        mongodb-version: ["7"]
     steps:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
@@ -48,11 +53,20 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install system libs
-        run: apt-get update && apt-get install -y wkhtmltopdf libcairo2 libpango-1.0-0 libpangocairo-1.0-0
+        run: apt-get update && apt-get install -y wkhtmltopdf
 
       - name: Run pytest
-        run: uv run --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
+        run: |
+          uv run --dev pytest --cov \
+            --test-group-count 8 \
+            --test-group=${{ matrix.group }} \
+            --test-group-random-seed=12345
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -69,6 +83,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
@@ -77,7 +96,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
 
-      - name: Run coverage
+      - name: Combine and report coverage
         run: |
           coverage combine coverage*/.coverage*
           coverage report
