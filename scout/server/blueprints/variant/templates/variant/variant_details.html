@@ -137,7 +137,7 @@
             {% else %}
               <tr>
 	          {% endif %}
-              <td>Motif copies</td><td>{{ variant.str_mc }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
+              <td>Motif copies</td><td>{{ variant.str_mc or "." }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
             </tr>
             <tr><td colspan=2>&nbsp;</td></tr>
             {% if variant.str_swegen_mean %}

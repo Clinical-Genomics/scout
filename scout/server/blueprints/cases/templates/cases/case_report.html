@@ -1214,8 +1214,8 @@
           <tr class="bg-warning">
         {% endif %}
           <td><span class="badge bg-info">{{variant.category | upper}}</span></td>
-          <td>{{ variant.str_mc }}</td>
-          <td>{{ variant.str_ref }}</td>
+          <td>{{ variant.str_mc or "." }}</td>
+          <td>{{ variant.str_ref or "." }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
