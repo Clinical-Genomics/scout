@@ -295,10 +295,16 @@ def render_variants_page(
         page=page,
     )
 
+    dismiss_variant_options = (
+        {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+        if category == "cancer_sv"
+        else DISMISS_VARIANT_OPTIONS
+    )
+
     return dict(
         case=case_obj,
         cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        dismiss_variant_options=dismiss_variant_options,
         expand_search=get_expand_search(request.form),
         filters=populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
