@@ -19,8 +19,16 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Install system dependencies for pycairo
-        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Pre-install pycairo wheel
+        run: pip install pycairo==1.28.0 --only-binary :all:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -46,8 +54,16 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Install system dependencies for pycairo
-        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Pre-install pycairo wheel
+        run: pip install pycairo==1.28.0 --only-binary :all:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -58,7 +74,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
         with:
-         mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
@@ -96,4 +112,5 @@ jobs:
       - uses: codecov/codecov-action@v4
         env:
             CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
 
