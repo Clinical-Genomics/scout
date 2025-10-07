@@ -3,10 +3,10 @@ name: Run tests and push coverage to Codecov
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
 
 jobs:
   setup:
@@ -14,10 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version-file: ".python-version"
+
+      - name: Install system dependencies for pycairo
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -36,12 +39,15 @@ jobs:
         group: [1, 2, 3, 4, 5, 6, 7, 8]
         mongodb-version: ['7']
     steps:
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install system dependencies for pycairo
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -49,12 +55,12 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
-          python-version: "3.11"
+         mongodb-version: ${{ matrix.mongodb-version }}
 
-      - name: Install the HTML to PDF renderer
+      - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
       - name: Run pytest
@@ -72,27 +78,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-
+          python-version-file: ".python-version"
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install coverage
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-
       - name: Run coverage
         run: |
           coverage combine coverage*/.coverage*
           coverage report
           coverage xml
-
       - uses: codecov/codecov-action@v4
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
