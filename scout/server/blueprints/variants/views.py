@@ -17,7 +17,6 @@ from scout.constants import (
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
-    SEVERE_SO_TERMS_SV,
 )
 from scout.server.extensions import store
 from scout.server.utils import (
@@ -282,170 +281,58 @@ def str_variants(institute_id, case_name):
 
 @variants_bp.route("/<institute_id>/<case_name>/sv/variants", methods=["GET", "POST"])
 @templated("variants/sv-variants.html")
-def sv_variants(institute_id, case_name):
-    """Display a list of structural variants."""
-    page = controllers.get_variants_page(request.form)
-    category = "sv"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    if variant_type not in ["clinical", "research"]:
-        variant_type = "clinical"
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+def sv_variants(institute_id: str, case_name: str):
+    """Display a list of structural variants (SV)."""
 
-    controllers.set_hpo_clinical_filter(case_obj, request.form)
-
-    if "dismiss_submit" in request.form:  # dismiss a list of variants
-        controllers.dismiss_variant_list(
-            store,
-            institute_obj,
-            case_obj,
-            "variant.sv_variant",
-            request.form.getlist("dismiss"),
-            request.form.getlist("dismiss_choices"),
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the SV filters form."""
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    variants_query = store.variants(
-        case_obj["_id"], category=category, query=form.data, build=genome_build
+    return controllers.render_variants_page(
+        category="sv",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
     )
 
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
 
-    # if variants should be exported
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
+@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
+@templated("variants/cancer-sv-variants.html")
+def cancer_sv_variants(institute_id: str, case_name: str):
+    """Display a list of cancer structural variants."""
 
-    data = controllers.sv_mei_variants(store, institute_obj, case_obj, variants_query, page)
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the cancer SV filters form."""
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
+        )
 
-    return dict(
-        case=case_obj,
-        cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS_SV,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        variant_type=variant_type,
-        **data,
+    return controllers.render_variants_page(
+        category="cancer_sv",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
     )
 
 
 @variants_bp.route("/<institute_id>/<case_name>/mei/variants", methods=["GET", "POST"])
 @templated("variants/mei-variants.html")
-def mei_variants(institute_id, case_name):
-    """Display a list of mobile element insertion (MEI) variants."""
-    page = controllers.get_variants_page(request.form)
-    category = "mei"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+def mei_variants(institute_id: str, case_name: str):
+    """Display a list of MEI variants."""
 
-    controllers.set_hpo_clinical_filter(case_obj, request.form)
-
-    if "dismiss_submit" in request.form:  # dismiss a list of variants
-        controllers.dismiss_variant_list(
-            store,
-            institute_obj,
-            case_obj,
-            "variant.sv_variant",
-            request.form.getlist("dismiss"),
-            request.form.getlist("dismiss_choices"),
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the cancer SV filters form."""
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
-
-    user_obj = store.user(current_user.email)
-    if request.method == "POST":
-        form = controllers.populate_filters_form(
-            store, institute_obj, case_obj, user_obj, category, request.form
-        )
-    else:
-        form = MeiFiltersForm(request.args)
-
-        if form.gene_panels.data == [] and variant_type == "clinical":
-            form.gene_panels.data = controllers.case_default_panels(case_obj)
-        # set chromosome to all chromosomes
-        form.chrom.data = request.args.get("chrom", "")
-
-    form.variant_type.data = variant_type
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    # populate available panel choices
-    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    variants_query = store.variants(
-        case_obj["_id"], category=category, query=form.data, build=genome_build
-    )
-
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
-
-    # if variants should be exported
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
-
-    data = controllers.sv_mei_variants(store, institute_obj, case_obj, variants_query, page)
-
-    return dict(
-        case=case_obj,
-        cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS_SV,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        variant_type=variant_type,
-        **data,
+    return controllers.render_variants_page(
+        category="mei",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
     )
 
 
@@ -553,97 +440,6 @@ def cancer_variants(institute_id, case_name):
             institute_id=institute_id, category=category, form=form
         ),
         result_size=result_size,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        variant_type=variant_type,
-        **data,
-    )
-
-
-@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
-@templated("variants/cancer-sv-variants.html")
-def cancer_sv_variants(institute_id, case_name):
-    """Display a list of cancer structural variants."""
-
-    page = controllers.get_variants_page(request.form)
-    category = "cancer_sv"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    if variant_type not in ["clinical", "research"]:
-        variant_type = "clinical"
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-
-    if "dismiss_submit" in request.form:  # dismiss a list of variants
-        controllers.dismiss_variant_list(
-            store,
-            institute_obj,
-            case_obj,
-            "variant.sv_variant",
-            request.form.getlist("dismiss"),
-            request.form.getlist("dismiss_choices"),
-        )
-
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    variants_query = store.variants(
-        case_id=case_obj["_id"], query=form.data, category=category, build=genome_build
-    )
-
-    result_size = store.count_variants(
-        case_id=case_obj["_id"],
-        query=form.data,
-        variant_ids=None,
-        category=category,
-        build=genome_build,
-    )
-
-    # if variants should be exported
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
-
-    data = controllers.sv_mei_variants(
-        store,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
-        variants_query=variants_query,
-        page=page,
-    )
-
-    return dict(
-        case=case_obj,
-        cancer_tier_options=CANCER_TIER_OPTIONS,
-        cytobands=cytobands,
-        dismiss_variant_options={
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        },
-        escat_tier_options=ESCAT_TIER_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
