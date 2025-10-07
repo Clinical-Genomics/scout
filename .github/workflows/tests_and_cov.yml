@@ -24,7 +24,7 @@ jobs:
       - name: Install system libs
         run: |
           apt-get update
-          apt-get install -y build-essential python3.12-dev \
+          apt-get install -y build-essential \
                              libcairo2-dev libpango1.0-dev libpangocairo-1.0-0 \
                              wkhtmltopdf
 
@@ -63,7 +63,7 @@ jobs:
       - name: Install system libs
         run: |
           apt-get update
-          apt-get install -y build-essential python3.12-dev \
+          apt-get install -y build-essential \
                              libcairo2-dev libpango1.0-dev libpangocairo-1.0-0 \
                              wkhtmltopdf
 
@@ -111,5 +111,4 @@ jobs:
       - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
 
