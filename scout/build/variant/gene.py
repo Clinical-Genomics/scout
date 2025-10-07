@@ -64,7 +64,7 @@ def build_gene(gene, hgncid_to_gene=None):
             gene_obj["phenotypes"] = hgnc_gene["phenotypes"]
 
     transcripts = []
-    for transcript in gene["transcripts"]:
+    for transcript in gene.get("transcripts", []):
         transcript_obj = build_transcript(transcript)
         transcripts.append(transcript_obj)
     gene_obj["transcripts"] = transcripts
