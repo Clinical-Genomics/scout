@@ -698,7 +698,7 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
         return alt_mc
 
     for sample in variant_obj["samples"]:
-        if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "./1", ".|1", "0/0", "0|0"]:
+        if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "0/0", "0|0"]:
             continue
         alt_mc = sample.get("alt_mc")
     if alt_mc:
