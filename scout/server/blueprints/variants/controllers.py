@@ -287,7 +287,13 @@ def render_variants_page(
     if request.form.get("export"):
         return download_variants(store, case_obj, variants_query)
 
-    data = sv_mei_variants(store, institute_obj, case_obj, variants_query, page)
+    data = sv_mei_variants(
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variants_query=variants_query,
+        page=page,
+    )
 
     return dict(
         case=case_obj,

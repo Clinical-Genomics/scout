@@ -441,6 +441,7 @@ def cancer_variants(institute_id, case_name):
         **data,
     )
 
+
 @variants_bp.route("/<institute_id>/<case_name>/fusion/variants", methods=["GET", "POST"])
 @templated("variants/fusion-variants.html")
 def fusion_variants(institute_id, case_name):
