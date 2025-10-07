@@ -19,16 +19,15 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Pre-install pycairo wheel
+        run:
+            pip install pycairo==1.28.0 --only-binary :all:
+
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-
-      - name: Install system dependencies
-        run: |
-            sudo apt-get update
-            sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 
       - name: Install the project
         run: uv sync --all-extras --dev
