@@ -286,7 +286,9 @@ def sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
+        )
 
     return controllers.render_variants_page(
         category="sv",
@@ -303,7 +305,9 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
+        )
 
     return controllers.render_variants_page(
         category="cancer_sv",
@@ -320,7 +324,9 @@ def mei_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
+        return controllers.populate_sv_mei_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
+        )
 
     return controllers.render_variants_page(
         category="mei",
