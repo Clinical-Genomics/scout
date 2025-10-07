@@ -288,7 +288,6 @@ def sv_variants(institute_id: str, case_name: str):
         """Builds the SV filters form."""
         return controllers.populate_sv_mei_filters_form(store, inst, case, cat, request)
 
-    # SV does not need form_extra
     return controllers.render_variants_page(
         category="sv",
         institute_id=institute_id,
