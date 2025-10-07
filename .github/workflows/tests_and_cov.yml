@@ -3,10 +3,10 @@ name: Run tests and push coverage to Codecov
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
   setup:
@@ -19,9 +19,8 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Pre-install pycairo wheel
-        run:
-            pip install pycairo==1.28.0 --only-binary :all:
+      # Minimal fix: pre-install pycairo wheel
+      - run: pip install pycairo==1.28.0 --only-binary :all:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -40,12 +39,15 @@ jobs:
         group: [1, 2, 3, 4, 5, 6, 7, 8]
         mongodb-version: ['7']
     steps:
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-         mongodb-version: ${{ matrix.mongodb-version }}
-
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      # Minimal fix: pre-install pycairo wheel in test job as well
+      - run: pip install pycairo==1.28.0 --only-binary :all:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -53,13 +55,13 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
-          python-version-file: ".python-version"
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Install the HTML 2 PDF renderer
-        run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
+        run: sudo apt-get update && sudo apt-get install -y wkhtmltopdf
 
       - name: Run pytest
         run: uv run --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
@@ -85,7 +87,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install coverage
       - name: Download all artifacts
-        # Download and combine coverage1, coverage2, etc.
         uses: actions/download-artifact@v4
       - name: Run coverage
         run: |
@@ -94,4 +95,4 @@ jobs:
           coverage xml
       - uses: codecov/codecov-action@v4
         env:
-            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
