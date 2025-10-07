@@ -44,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute cases filtering with Has ClinVar submissions checkbox (#5735)
 - Display plain variant rank score also if norm rank score is missing (#5738)
 - Missing cairo runtime dependency (#5745)
+- Fix pagination for somatic SVs (#5746)
 
 ## [4.104]
 ### Added
