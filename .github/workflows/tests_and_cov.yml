@@ -59,7 +59,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install system libs
-        run: apt-get update && apt-get install -y wkhtmltopdf
+        run: |
+          apt-get update
+          apt-get install -y wkhtmltopdf python3.12-dev build-essential
 
       - name: Run pytest
         run: |
