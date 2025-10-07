@@ -45,6 +45,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display plain variant rank score also if norm rank score is missing (#5738)
 - Missing cairo runtime dependency (#5750)
 - Fix pagination for somatic SVs (#5746)
+- Fix display of STR MC for cases with GT "./0" calls (#5749)
 
 ## [4.104]
 ### Added
