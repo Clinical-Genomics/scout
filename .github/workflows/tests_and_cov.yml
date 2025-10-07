@@ -3,10 +3,10 @@ name: Run tests and push coverage to Codecov
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
 
 jobs:
   setup:
@@ -17,12 +17,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version-file: ".python-version"
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libcairo2-dev wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0
+      - name: Install system dependencies for pycairo
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -30,7 +28,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Install project dependencies
+      - name: Install the project
         run: uv sync --all-extras --dev
 
   test:
@@ -38,26 +36,32 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        group: [1,2,3,4,5,6,7,8]
+        group: [1, 2, 3, 4, 5, 6, 7, 8]
         mongodb-version: ['7']
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version-file: ".python-version"
+
+      - name: Install system dependencies for pycairo
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+         mongodb-version: ${{ matrix.mongodb-version }}
+
+      - name: Install the HTML 2 PDF renderer
+        run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
 
       - name: Run pytest
         run: uv run --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
@@ -74,27 +78,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
-
-      - name: Install coverage tool
+          python-version-file: ".python-version"
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install coverage
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-
-      - name: Combine and report coverage
+      - name: Run coverage
         run: |
           coverage combine coverage*/.coverage*
           coverage report
           coverage xml
-
       - uses: codecov/codecov-action@v4
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
