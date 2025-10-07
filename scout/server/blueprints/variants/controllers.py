@@ -3,7 +3,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-from flask import Response, flash, session, url_for
+from flask import Response, flash, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 from pymongo.cursor import CursorType
@@ -27,8 +27,10 @@ from scout.constants import (
     EXPORT_HEADER,
     EXPORTED_VARIANTS_LIMIT,
     FUSION_EXPORT_HEADER,
+    INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
+    SEVERE_SO_TERMS_SV,
     SPIDEX_HUMAN,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
@@ -56,6 +58,7 @@ from .forms import (
     FILTERSFORMCLASS,
     CancerSvFiltersForm,
     FusionFiltersForm,
+    MeiFiltersForm,
     SvFiltersForm,
 )
 from .utils import update_case_panels
@@ -227,6 +230,97 @@ def _get_group_assessments(store, case_obj, variant_obj):
             group_assessments.extend(get_manual_assessments(cohort_var_obj))
 
     return group_assessments
+
+
+def render_variants_page(
+    category,
+    institute_id,
+    case_name,
+    form_builder,
+) -> dict:
+    """Shared logic for SV and MEI variants routes."""
+    page = get_variants_page(request.form)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # Variant type handling
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
+
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+
+    set_hpo_clinical_filter(case_obj, request.form)
+
+    if "dismiss_submit" in request.form:
+        dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            "variant.sv_variant",  # both SV and MEI use this
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_choices"),
+        )
+
+    activate_case(store, institute_obj, case_obj, current_user)
+
+    # Build form (different per category)
+    form = form_builder(store, institute_obj, case_obj, category, variant_type)
+
+    # Populate common filter choices
+    populate_chrom_choices(form, case_obj)
+    populate_institute_soft_filters(form=form, institute_obj=institute_obj)
+
+    genome_build = get_case_genome_build(case_obj)
+    cytobands = store.cytoband_by_chrom(genome_build)
+
+    update_form_hgnc_symbols(store, case_obj, form)
+
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=form.data, build=genome_build
+    )
+    result_size = store.count_variants(
+        case_obj["_id"], form.data, None, category, build=genome_build
+    )
+
+    if request.form.get("export"):
+        return download_variants(store, case_obj, variants_query)
+
+    data = sv_mei_variants(
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variants_query=variants_query,
+        page=page,
+    )
+
+    dismiss_variant_options = (
+        {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+        if category == "cancer_sv"
+        else DISMISS_VARIANT_OPTIONS
+    )
+
+    return dict(
+        case=case_obj,
+        cytobands=cytobands,
+        dismiss_variant_options=dismiss_variant_options,
+        expand_search=get_expand_search(request.form),
+        filters=populate_persistent_filters_choices(
+            institute_id=institute_id, category=category, form=form
+        ),
+        form=form,
+        inherit_palette=INHERITANCE_PALETTE,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
+        result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS_SV,
+        show_dismiss_block=get_show_dismiss_block(),
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
+        **data,
+    )
 
 
 def sv_mei_variants(
@@ -1707,7 +1801,7 @@ def case_default_panels(case_obj):
     return case_panels
 
 
-def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
+def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, request_obj):
     """Populate a filters form object of the type SvFiltersForm
 
     Accepts:
@@ -1731,6 +1825,8 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             form = SvFiltersForm(request_obj.args)
         elif category == "cancer_sv":
             form = CancerSvFiltersForm(request_obj.args)
+        elif category == "mei":
+            form = MeiFiltersForm(request_obj.args)
 
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
@@ -1745,7 +1841,6 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     form.variant_type.data = variant_type
 
     populate_force_show_unaffected_vars(institute_obj, form)
-
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
