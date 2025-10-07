@@ -41,10 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
-          python-version-file: ".python-version"
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Install system dependencies for pycairo
         run: sudo apt-get update && sudo apt-get install -y libcairo2-dev pkg-config python3-dev
@@ -55,10 +55,10 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-         mongodb-version: ${{ matrix.mongodb-version }}
+          python-version-file: ".python-version"
 
       - name: Install the HTML 2 PDF renderer
         run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
