@@ -24,7 +24,7 @@ jobs:
       - name: Install system libs
         run: |
           apt-get update
-          apt-get install -y python3-dev build-essential wkhtmltopdf
+          apt-get install -y build-essential wkhtmltopdf libcairo2 libpango-1.0-0 libpangocairo-1.0-0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -58,15 +58,10 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Install system libs
         run: |
           apt-get update
-          apt-get install -y python3-dev build-essential wkhtmltopdf
+          apt-get install -y build-essential wkhtmltopdf libcairo2 libpango-1.0-0 libpangocairo-1.0-0
 
       - name: Run pytest
         run: |
