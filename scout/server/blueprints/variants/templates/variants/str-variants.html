@@ -96,7 +96,7 @@
           {% if variant.str_display_ru %}{{variant.str_display_ru | truncate(12, True)}}
           {% elif variant.str_ru %}{{ variant.str_ru | truncate(12, True) }}
           {% else %}{{ variant.reference | truncate(12, True) }}{% endif %}</span></td>
-            <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc }}</span></b></td>
+            <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc or "." }}</span></b></td>
             <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
             <td>{{ callers_cell(variant) }}</td>
             <td>{{ str_status(variant) }}</td>
