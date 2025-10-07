@@ -1835,7 +1835,6 @@ def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, reque
     form.variant_type.data = variant_type
 
     populate_force_show_unaffected_vars(institute_obj, form)
-    form.variant_type.data = variant_type
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
