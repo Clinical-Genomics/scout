@@ -626,6 +626,12 @@ def add_gene_and_transcript_info(parsed_variant, variant, vep_header):
     if str_hgnc_id:
         hgnc_ids.add(str_hgnc_id)
 
+        gene = {
+            "hgnc_id": str_hgnc_id,
+        }
+        if not parsed_variant["genes"]:
+            parsed_variant["genes"] = [gene]
+
     parsed_variant["hgnc_ids"] = list(hgnc_ids)
     return parsed_transcripts
 
