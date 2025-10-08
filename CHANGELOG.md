@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search genes at breakpoint for larger SVs (#5722)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
 - Genotype to the gene variants view (#5736)
-- Display number of fusion variants are shown on the page, just like the other variant types (#5754)
+- Display the number of fusion variants on the variantS page, just like the other variant types (#5754)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
