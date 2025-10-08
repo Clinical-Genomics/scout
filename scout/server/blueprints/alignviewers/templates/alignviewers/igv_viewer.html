@@ -191,12 +191,9 @@
                         groupBy: "tag:HP",
                         colorBy: "tag:YC",
                         displayMode: "SQUISHED",
-                        showInsertionText: true,
-                        showDeletionText: true,
                         indexURL: '{{ url_for("alignviewers.remote_static", file=ptrack.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}',
                         min: '{{ ptrack.min }}',
-                        autoscaleGroup: '{{ ptrack.autoscaleGroup }}',
-                        visibilityWindow: 600000,
+                        visibilityWindow: 300000,
                         sourceType: 'file'
                       },
                       {% endfor %}
