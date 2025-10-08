@@ -46,6 +46,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing cairo runtime dependency (#5750)
 - Fix pagination for somatic SVs (#5746)
 - Fix display of STR MC for cases with GT "./0" calls (#5749)
+- Build full HGNC genes for STR variants with HGNCId on load (#5751)
 
 ## [4.104]
 ### Added
