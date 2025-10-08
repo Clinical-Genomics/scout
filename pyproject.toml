@@ -64,7 +64,6 @@ dependencies = [
 	# webapp login
 	"authlib",
 	"flask-login",
-	"flask-ldapconn",
 	# Parsing
 	"cyvcf2",
 	"configobj",
@@ -76,6 +75,7 @@ dependencies = [
 	"anytree",
 	# Required by scripts
 	"tabulate",
+	"flask-ldap3-login>=1.0.2",
 ]
 
 [project.optional-dependencies]

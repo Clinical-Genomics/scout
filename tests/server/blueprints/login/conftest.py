@@ -16,28 +16,6 @@ def user_adapter(adapter, user_obj, institute_obj):
 
 
 @pytest.fixture
-def ldap_app(request):
-    """app ficture for testing the LDAP login system."""
-    config = {
-        "TESTING": True,
-        "DEBUG": True,
-        "SERVER_NAME": SERVER_NAME,
-        "LDAP_HOST": "ldap://test_ldap_server",
-        "WTF_CSRF_ENABLED": False,
-        "MONGO_DBNAME": "testdb",
-    }
-    app = create_app(config=config)
-    ctx = app.app_context()
-    ctx.push()
-
-    def teardown():
-        ctx.pop()
-
-    request.addfinalizer(teardown)
-    return app
-
-
-@pytest.fixture
 def google_app(request):
     """app ficture for testing the Google login system."""
     config = {
