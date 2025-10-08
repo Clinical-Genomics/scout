@@ -929,16 +929,18 @@ wheels = [
 ]
 
 [[package]]
-name = "flask-ldapconn"
-version = "0.10.2"
+name = "flask-ldap3-login"
+version = "1.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "flask" },
+    { name = "flask-wtf" },
     { name = "ldap3" },
+    { name = "wtforms" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/94/64d6145e297d9b5f9792ada260e53690cfd5a8167af4b226962f970b2ae8/flask_ldapconn-0.10.2.tar.gz", hash = "sha256:1df0cdeaeb9b7b996709de1283d35d60711ebb1dd5a2c935e1186d31b601d60a", size = 10576, upload-time = "2024-06-11T09:51:05.553Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/ec/4b565bde4cb411d236f6f7e56b05158a5d509f75ccfd43f51c71ef0c33e4/flask_ldap3_login-1.0.2.tar.gz", hash = "sha256:969d2e4263aa0908383174d9700e03198a5eb3db483b26a18f9ea634032cbdd4", size = 11272, upload-time = "2024-08-15T12:46:48.092Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/7d/a4ca922fb33aa88204a51e9bbfbeddd82b3018f6b43aef724551704b020c/Flask_LDAPConn-0.10.2-py3-none-any.whl", hash = "sha256:6fa07788835fbb6ca8f9372cd5b8912155c7f33324ee1fe7924eb76e2ea56a14", size = 10393, upload-time = "2024-06-11T09:51:03.527Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/8f/dccbcd2600fb477042dd42ab953c39277ef156c96b5c915c14d583a737c1/flask_ldap3_login-1.0.2-py3-none-any.whl", hash = "sha256:72368ea58b5faac4935d1f3e5ec1fcfdce51cc16adbec41a74c834247422ac61", size = 10648, upload-time = "2024-08-15T12:46:46.874Z" },
 ]
 
 [[package]]
@@ -2716,7 +2718,7 @@ dependencies = [
     { name = "flask-babel" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
+    { name = "flask-ldap3-login" },
     { name = "flask-login" },
     { name = "flask-mail" },
     { name = "flask-wtf" },
@@ -2787,7 +2789,7 @@ requires-dist = [
     { name = "flask-babel", specifier = ">=3" },
     { name = "flask-bootstrap" },
     { name = "flask-cors" },
-    { name = "flask-ldapconn" },
+    { name = "flask-ldap3-login", specifier = ">=1.0.2" },
     { name = "flask-login", git = "https://github.com/maxcountryman/flask-login.git?rev=main" },
     { name = "flask-mail" },
     { name = "flask-wtf" },

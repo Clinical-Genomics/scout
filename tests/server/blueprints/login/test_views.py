@@ -49,7 +49,7 @@ def test_ldap_login(ldap_app, user_obj, mocker):
     """Test authentication using LDAP"""
 
     # GIVEN a patched LDAP module
-    mocker.patch("scout.server.extensions.ldap_manager.authenticate", return_value=True)
+    mocker.patch("scout.server.extensions.ldap_manager.ldap_authorized", return_value=True)
 
     # GIVEN a patched database containing the user
     mocker.patch("scout.server.blueprints.login.views.store.user", return_value=user_obj)
