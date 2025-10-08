@@ -471,15 +471,16 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     if start_genes:
         variant_obj["start_genes"] = start_genes
 
+    variant_end = variant_obj.get("end") or variant_obj.get("end_position")
     if (
-        variant_obj.get("end_position")
-        and variant_obj["position"] != variant_obj["end_position"]
+        variant_end
+        and variant_obj["position"] != variant_end
         and variant_obj.get("sub_category") != "ins"
     ):
         end_chromosome = variant_obj.get("end_chrom") or variant_obj["chromosome"]
         end_genes = store.genes_by_coordinate(
             chromosome=end_chromosome,
-            pos=variant_obj["end_position"],
+            pos=variant_end,
             build=genome_build,
         )
         if end_genes:
