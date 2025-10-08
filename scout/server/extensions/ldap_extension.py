@@ -1,6 +1,7 @@
 import logging
 
 from flask_ldap3_login import LDAP3LoginManager
+from ldap3 import SUBTREE
 
 LOG = logging.getLogger(__name__)
 
@@ -28,14 +29,12 @@ class LdapManager:
         app.config.setdefault("LDAP_BINDDN", "cn=admin,dc=planetexpress,dc=com")
         app.config.setdefault("LDAP_SECRET", "admin-secret")
 
-        app.config.setdefault("LDAP_GROUP_OBJECT_FILTER", None)
+        # Optional group restriction DN (not a filter, but a specific DN)
+        app.config.setdefault("LDAP_GROUP_DN", None)
 
         self.ldap_manager.init_app(app)
 
-        # Keep backward-compatible reference
         app.extensions["ldap_conn"] = self
-
-        # Teardown placeholder
         app.teardown_appcontext(self.teardown)
 
     def ldap_authorized(self, username: str, password: str) -> bool:
@@ -44,18 +43,29 @@ class LdapManager:
         Returns True if credentials are valid and user is allowed.
         """
         try:
-            user = self.ldap_manager.authenticate(username, password)
-            if not user:
-                LOG.info(f"LDAP authentication failed for user {username}")
+            result = self.ldap_manager.authenticate(username, password)
+
+            if not result or not getattr(result, "status", False):
+                LOG.warning(f"LDAP authentication failed for user {username}")
                 return False
 
-            group_dn = self.app.config.get("LDAP_GROUP_OBJECT_FILTER")
+            LOG.info(f"LDAP authentication succeeded for {username}")
+
+            group_dn = self.app.config.get("LDAP_GROUP_DN")
             if group_dn:
-                if not self.ldap_manager.is_user_member_of_group(username, group_dn):
+                conn = self.ldap_manager.connection
+                user_dn = result.user_dn
+
+                # Check whether user_dn appears as a member in the group
+                search_filter = f"(member={user_dn})"
+                conn.search(group_dn, search_filter, search_scope=SUBTREE, attributes=["dn"])
+
+                if not conn.entries:
                     LOG.info(f"User {username} not in required group {group_dn}")
                     return False
 
             return True
+
         except Exception as ex:
             LOG.exception(f"LDAP auth failed for {username}: {ex}")
             return False
