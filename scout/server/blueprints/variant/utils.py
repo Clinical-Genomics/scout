@@ -531,7 +531,8 @@ def transcript_str(transcript_obj, gene_name=None):
 
 
 def end_position(variant_obj):
-    """Calculate end position for a variant.
+    """Calculate end position for a variant that does not have a set "end",
+    eg an indel snv or ins sv.
 
     Args:
         variant_obj(scout.models.Variant)
