@@ -7,6 +7,9 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
+from scout.server.extensions.ldap_extension import LdapManager
+
+SERVER_NAME = "test.server"
 
 
 class MockMail:
@@ -89,6 +92,36 @@ def app(real_database_name, real_variant_database, user_obj, loqusdburl):
         return "ok"
 
     return app
+
+
+@pytest.fixture
+def ldap_app(request):
+    """app ficture for testing the LDAP login system."""
+    config = {
+        "TESTING": True,
+        "DEBUG": True,
+        "SERVER_NAME": SERVER_NAME,
+        "LDAP_HOST": "ldap://test_ldap_server",
+        "WTF_CSRF_ENABLED": False,
+        "MONGO_DBNAME": "testdb",
+    }
+    app = create_app(config=config)
+    ctx = app.app_context()
+    ctx.push()
+
+    def teardown():
+        ctx.pop()
+
+    request.addfinalizer(teardown)
+    return app
+
+
+@pytest.fixture
+def ldap_manager_instance(ldap_app):
+    """Return an initialized LdapManager using the ldap_app fixture."""
+    manager = LdapManager()
+    manager.init_app(ldap_app)
+    return manager
 
 
 @pytest.fixture
