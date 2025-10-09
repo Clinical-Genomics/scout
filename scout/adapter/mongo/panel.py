@@ -464,7 +464,7 @@ class PanelHandler:
         )
         return updated_panel
 
-    def apply_pending(self, panel_obj: dict, version: float) -> str:
+    def apply_pending(self, panel_obj: dict, version: str) -> str:
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
 
         Returns:
