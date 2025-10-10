@@ -1323,12 +1323,16 @@
 {% endmacro %}
 
 {% macro enable_variants_hotkeys() %}
+  <script src="https://cdn.jsdelivr.net/npm/mousetrap@1.6.5/mousetrap.min.js" integrity="sha512-+Jg3Ynmj9hse704K48H6rBBI3jdNBjReRGBCxUWFfOz3yVurnJFWtAWssDAsGtzWYw89xFWPxShuj2T6E9EOpg==" crossorigin="anonymous"></script>
+
   <script>
     // Hotkeys
     // - "d" for checking dismiss checkbox
     // - "v" for opening a variant (opening the href in target, typically _blank)
+    // - "c" - clinical filter
+    // - "f" - filter variants
+    // - "g" - focus input on the gene symbol field, un-collapsing filter if needed
     let elementUnderMouse = null;
-
     document.addEventListener("mousemove", function(event) {
       elementUnderMouse = event.target;
     });
@@ -1356,6 +1360,25 @@
           }
         }
       }
+    });
+
+    Mousetrap.bind("c", function() {
+      clinical_filter_input = document.getElementById('clinical_filter')
+      clinical_filter_input.click()
+    });
+
+    Mousetrap.bind("f", function() {
+      filter_input = document.getElementById('filter_variants')
+      filter_input.click()
+    });
+
+    Mousetrap.bind("g", function() {
+      $('#collapseFilters').collapse('show');
+      hgnc_symbols = document.getElementById('hgnc_symbols')
+      hgnc_symbols.focus()
+      return false;
+    });
+
   </script>
 {% endmacro %}
 
