@@ -191,27 +191,41 @@ def panel(panel_id):
 
 @panels_bp.route("/panels/<panel_id>/update", methods=["POST"])
 def panel_update(panel_id):
-    """Update panel to a new version."""
-    panel_obj = store.panel(panel_id)
-    if request.form.get("cancel_pending"):
-        updated_panel = store.reset_pending(panel_obj)
-        if updated_panel is None:
-            flash("Couldn't find a panel with ID {}".format(panel_id), "warning")
-        elif updated_panel.get("pending") is None:
-            flash("Pending actions were correctly canceled!", "success")
+    """Update a gene panel to a new version, or cancel pending changes."""
 
+    panel_obj = store.panel(panel_id)
+    if not panel_obj:
+        flash(f"Couldn't find a panel with ID {panel_id}", "warning")
         return safe_redirect_back(request)
 
-    if controllers.panel_write_granted(panel_obj, current_user):
-        update_version = request.form.get("version", None)
-        new_panel_id = store.apply_pending(panel_obj, update_version)
-        panel_id = new_panel_id
-    else:
+    if request.form.get("cancel_pending"):
+        updated_panel = store.reset_pending(panel_obj)
+        if updated_panel and updated_panel.get("pending") is None:
+            flash("Pending actions were correctly canceled!", "success")
+        else:
+            flash(f"Couldn't cancel pending actions for panel {panel_id}", "warning")
+        return safe_redirect_back(request)
+
+    update_version = request.form.get("version")
+    if not update_version:
+        return redirect(url_for("panels.panel", panel_id=panel_id))
+
+    duplicate = store.gene_panel(
+        panel_id=panel_obj["panel_name"], version=int(float(update_version))
+    )
+    if duplicate:
         flash(
-            "Permission denied: please ask a panel maintainer or admin for help.",
-            "danger",
+            f"A panel named '{panel_obj['panel_name']}' with version {update_version} already exists.",
+            "warning",
         )
-    return redirect(url_for("panels.panel", panel_id=panel_id))
+        return redirect(url_for("panels.panel", panel_id=duplicate["_id"]))
+
+    if not controllers.panel_write_granted(panel_obj, current_user):
+        flash("Permission denied: please ask a panel maintainer or admin for help.", "danger")
+        return redirect(url_for("panels.panel", panel_id=panel_id))
+
+    new_panel_id = store.apply_pending(panel_obj, update_version)
+    return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
 
 @panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])

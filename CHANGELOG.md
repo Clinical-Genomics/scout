@@ -51,6 +51,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix display of STR MC for cases with GT "./0" calls (#5749)
 - Build full HGNC genes for STR variants with HGNCId on load (#5751)
 - Use proper end position for large SVs when looking up edge genes (#5755)
+- Fixed crash on the Gene Panel page when changes to the same panel version were applied from multiple browser tabs (#5762)
 
 ## [4.104]
 ### Added
