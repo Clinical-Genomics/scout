@@ -1327,10 +1327,7 @@
     // Hotkeys
     // - "d" for checking dismiss checkbox
     // - "v" for opening a variant (opening the href in target, typically _blank)
-    // - "e" for previewing a variant in preview modal
     let elementUnderMouse = null;
-    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-    const previewContent = document.getElementById('previewContent');
 
     document.addEventListener("mousemove", function(event) {
       elementUnderMouse = event.target;
@@ -1359,39 +1356,6 @@
           }
         }
       }
-      if (event.key === "e" && elementUnderMouse) {
-        let row = elementUnderMouse.closest("tr");
-        if (row) {
-          const url = row.dataset.href;
-          row.classList.toggle("table-active");
-          previewContent.innerHTML = "<p class='text-muted'>Loading...</p>";
-          try {
-            const resp = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
-            const html = await resp.text();
-            previewContent.innerHTML = html;
-            previewModal.show();
-          } catch (err) {
-            previewContent.innerHTML = `<div class="text-danger">Error loading preview.</div>`;
-          }
-        }
-      }
-    });
   </script>
 {% endmacro %}
 
-{% macro preview_modal() %}
-<!-- Bootstrap Modal -->
-<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Preview</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="previewContent">
-        <p class="text-muted">Loading...</p>
-      </div>
-    </div>
-  </div>
-</div>
-{% endmacro %}

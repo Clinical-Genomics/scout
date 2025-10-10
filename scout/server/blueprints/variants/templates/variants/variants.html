@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "utils.html" import clickable_table_row_script %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block, enable_variants_hotkeys, filters_form_header, filter_form_footer, filter_script_main, mark_heteroplasmic_mt, pagination_footer, pagination_hidden_div, preview_modal, snv_filters, update_stash_filter_button_status, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, enable_variants_hotkeys, filters_form_header, filter_form_footer, filter_script_main, mark_heteroplasmic_mt, pagination_footer, pagination_hidden_div, snv_filters, update_stash_filter_button_status, variant_link_href, variant_rank_score %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell  %}
 
 {% block title %}
@@ -111,7 +111,6 @@
   <div class="container-fluid" style="padding-bottom: 100px">
     {{ pagination_footer(page, result_size) }}
   </div>
-  {{ preview_modal() }}
 {% endblock %}
 
 {% macro functional_annotation_cell(variant) %}
