@@ -9,7 +9,6 @@ from typing import Dict, List, Optional, Union
 import pymongo
 from bson import ObjectId
 from bson.errors import InvalidId
-from flask import flash
 
 from scout.build import build_panel
 from scout.constants.panels import EXPORT_PANEL_FIELDS
@@ -470,17 +469,6 @@ class PanelHandler:
         Returns:
             inserted_id(str): id of updated panel or the new one
         """
-
-        duplicate = self.gene_panel(
-            panel_id=panel_obj.get("panel_name"), version=int(float(version))
-        )
-        if duplicate:
-            flash(
-                f"A panel named '{panel_obj['panel_name']}' with version {version} already exists.",
-                "warning",
-            )
-            return duplicate["_id"]
-
         new_panel = deepcopy(panel_obj)
         new_panel["pending"] = []
         new_panel["date"] = dt.datetime.now()
