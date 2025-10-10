@@ -210,9 +210,7 @@ def panel_update(panel_id):
     if not update_version:
         return redirect(url_for("panels.panel", panel_id=panel_id))
 
-    duplicate = store.gene_panel(
-        panel_id=panel_obj["panel_name"], version=int(float(update_version))
-    )
+    duplicate = store.gene_panel(panel_id=panel_obj["panel_name"], version=float(update_version))
     if duplicate:
         flash(
             f"A panel named '{panel_obj['panel_name']}' with version {update_version} already exists.",
