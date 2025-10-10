@@ -463,13 +463,12 @@ class PanelHandler:
         )
         return updated_panel
 
-    def apply_pending(self, panel_obj: dict, version: float) -> str:
+    def apply_pending(self, panel_obj: dict, version: str) -> str:
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
 
         Returns:
             inserted_id(str): id of updated panel or the new one
         """
-
         new_panel = deepcopy(panel_obj)
         new_panel["pending"] = []
         new_panel["date"] = dt.datetime.now()
