@@ -1332,6 +1332,9 @@
     // - "c" - clinical filter
     // - "f" - filter variants
     // - "g" - focus input on the gene symbol field, un-collapsing filter if needed
+    // - "b" - toggle dismiss bar
+    // - "r" - open the dismiss bar, dismiss reason menu and set focus to it
+
     let elementUnderMouse = null;
     document.addEventListener("mousemove", function(event) {
       elementUnderMouse = event.target;
@@ -1377,6 +1380,20 @@
       hgnc_symbols = document.getElementById('hgnc_symbols')
       hgnc_symbols.focus()
       return false;
+    });
+
+    Mousetrap.bind("b", function() {
+      $('#dismiss_bar').toggle();
+      fetch("{{ url_for('variants.toggle_show_dismiss_block') }}");
+    });
+
+    Mousetrap.bind("r", function() {
+      $('#dismiss_bar').collapse('show');
+      fetch("{{ url_for('variants.show_dismiss_block') }}");
+      reasons = document.querySelector("button[data-id='dismiss_choices']")
+      reasons.click();
+      reason = document.querySelector("button[data-id='dismiss_choices'].dropdown-menu.a")
+      reason.focus();
     });
 
   </script>
