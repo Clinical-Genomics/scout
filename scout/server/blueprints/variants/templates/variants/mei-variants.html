@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "utils.html" import clickable_table_row_script %}
-{% from "variants/utils.html" import filters_form_header, cell_rank, dismiss_variants_block, filter_form_footer, filter_script_main, mei_filters, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, enable_variants_hotkeys, filter_form_footer, filters_form_header, filter_script_main, mei_filters, pagination_footer, pagination_hidden_div, update_stash_filter_button_status, variant_link_href %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
@@ -157,4 +157,5 @@ onsubmit="return validateForm()">
     {{ clickable_table_row_script() }}
 
   </script>
+  {{ enable_variants_hotkeys() }}
 {% endblock %}
