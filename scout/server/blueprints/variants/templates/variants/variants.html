@@ -68,7 +68,7 @@
          </thead>
          <tbody>
             {% for variant in variants %}
-              <tr data-target="_blank"  data-id="{{variant._id}}" data-href="{{ variant_link_href(variant, institute, case) }}"
+              <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
               {% if variant.dismiss_variant %}
                  class="dismiss">
               {% elif 'causatives' in case and variant._id in case.causatives %}

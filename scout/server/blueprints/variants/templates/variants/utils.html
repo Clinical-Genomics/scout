@@ -1392,7 +1392,7 @@
       fetch("{{ url_for('variants.show_dismiss_block') }}");
       reasons = document.querySelector("button[data-id='dismiss_choices']")
       reasons.click();
-      reason = document.querySelector("button[data-id='dismiss_choices'].dropdown-menu.a")
+      reason = document.querySelector("button[data-id='dismiss_choices'] + div .dropdown-menu .dropdown-item")
       reason.focus();
     });
 
