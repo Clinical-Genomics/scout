@@ -2,7 +2,6 @@
 
   {% set form_name = "chanjo2_" ~ panel_name ~ "_" ~ report_type %}
   {% set form_action = config.CHANJO2_URL+"/"+report_type %}
-  {% set id_token = session.token_response.id_token if session.token_response else '' %}
   {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
   {% set default_level = institute_obj.coverage_cutoff %}
   {% set interval_type = "genes" %} <!-- wgs analysis as default -->
@@ -32,7 +31,7 @@
 
   <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener">
     {% if id_token %}
-      <input type="hidden" id="id_token" name="id_token" value="{{id_token}}">
+      <input type="hidden" id="id_token" name="id_token" value="">
     {% endif %}
     <input type="hidden" id="build" name="build" value="{{build}}">
     <input type="hidden" id="default_level" name="default_level" value="{{default_level}}">
@@ -49,3 +48,4 @@
   </form>
 
 {% endmacro %}
+
