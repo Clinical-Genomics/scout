@@ -47,7 +47,7 @@
   {% endfor %}
 {% endblock %}
 
-{% macro cancer_variant_row(variant, institute, case, ) %}
+{% macro cancer_variant_row(variant, institute, case) %}
   <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
   {% if variant.dismiss_variant %}
     class="dismiss">
