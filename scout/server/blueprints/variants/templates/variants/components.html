@@ -421,6 +421,37 @@
   {% endif %}
 {% endmacro %}
 
+{% macro cell_cadd(variant) %}
+  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
+    <div class='text-start'>
+      <strong>Sift</strong>
+      {{ variant.sift_predictions|join(',') }} <br>
+      <strong>PolyPhen</strong>
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }} <br>
+      <strong>REVEL</strong>
+      {{ variant.revel or '-' }}
+    </div>
+  ">
+    {% if variant.cadd_score %}
+      {{ variant.cadd_score|round(1) }}
+    {% else %}
+      -
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro functional_annotation_cell(variant) %}
+<div data-bs-toggle="tooltip" data-bs-html="true" title="
+  <div>
+    {% for annotation in variant.region_annotations %}
+          {{ annotation }}</br>
+    {% endfor %}
+  </div>">
+  {% for annotation in variant.functional_annotations %}
+      <div>{{ annotation }}</div>
+  {% endfor %}
+</div>
+{% endmacro %}
 
 {% macro overlapping_cell(variant, institute, case) %}
   {% if variant.compounds %}

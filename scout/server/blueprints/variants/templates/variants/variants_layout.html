@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% from "utils.html" import clickable_table_row_script %}
+{% from "variants/utils.html" import cell_models, cell_rank, dismiss_variants_block, enable_variants_hotkeys, filters_form_header, filter_form_footer, filter_script_main, mark_heteroplasmic_mt, pagination_footer, pagination_hidden_div, snv_filters, update_stash_filter_button_status, variant_link_href, variant_rank_score %}
+{% from "variants/components.html" import cell_cadd, external_scripts, external_stylesheets, frequency_cell_general, functional_annotation_cell, gene_cell, observed_cell_general, overlapping_cell  %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} {% block category_title %}{% endblock %} variants
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  {{ external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">{{ form.variant_type.data|capitalize }} {{ self.category_title() }}</span>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data if form.gene_panels.data and form.gene_panels.data != [""] else ['All'])|join(',') }}</p></li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+  <form method="POST" id="filters_form" action="{% block variants_form_action %}{% endblock %}"
+       enctype="multipart/form-data" onsubmit="return validateForm()">
+    <div class="container-float">
+     {{ pagination_hidden_div(page, result_size) }}
+     <div class="card panel-default" id="accordion">
+       {{ filters_form_header(result_size, total_variants) }}
+       <!--Expand filters form if filters were used in a previous POST request-->
+       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
+         {% block variants_filter %}{% endblock %}
+       </div>
+       {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
+     </div>
+     <div class="card mt-3">
+       <table class="table table-hover table-bordered" aria-label="{{ self.category_title() }} table">
+         {% block variants_table_header %}{% endblock %}
+         <tbody>
+          {% block variants_table_rows %}{% endblock %}
+         </tbody>
+       </table>
+     </div><!-- end of <div class="card mt-3">-->
+    </div> <!-- end of class="container-float"> -->
+    {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
+  </form> <!--end of form containing filters and variants' table elements -->
+  <div class="container-fluid" style="padding-bottom: 100px">
+    {{ pagination_footer(page, result_size) }}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  {{ external_scripts() }}
+  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
+  {{ filter_script_main(cytobands) }}
+  <script type="text/javascript">
+    window.onload=function() {
+      populateCytobands({{cytobands|safe}});
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    }
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    });
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
+      })
+    })
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    {{ clickable_table_row_script() }}
+  </script>
+  {{ enable_variants_hotkeys() }}
+{% endblock %}
