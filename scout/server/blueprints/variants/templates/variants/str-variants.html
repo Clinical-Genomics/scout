@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "variants/variants_layout.html" %}
 {% from "utils.html" import clickable_table_row_script, comments_table, pedigree_panel %}
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
@@ -20,6 +20,7 @@
 {% block variants_table_header %}
   <thead class="thead table-light">
     <tr>
+      <th style="width:2%">
       <th style="width:8%" title="Index">Index</th>
       <th title="Repeat locus ID">Repeat locus</th>
       <th style="width:8%" title="Reference repeat unit">Ref RU</th>
@@ -55,6 +56,7 @@
     {% else %}
         >
     {% endif %}
+      <td class="no-row-click"><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
       <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
       <td class="str-link">{{ str_locus_info(variant) }}</td>
   <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.str_display_ru or variant.str_ru or variant.reference }}">
@@ -88,7 +90,7 @@
   </tr>
   {% else %}
     <tr>
-      <td colspan="9">
+      <td colspan="11">
         No matching variants
       </td>
     </tr>
