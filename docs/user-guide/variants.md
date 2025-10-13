@@ -16,6 +16,17 @@ At the bottom of the list you will find a button to load the next batch of varia
 
 It's also possible to filter the variants using a number of different criteria. Open the filters panel by clicking the "filter" icon in the top right. Here you can fill in form and click "Filter variants" to update the list. This is also the place where you switch gene lists.
 
+### Hotkeys available on all variantS pages
+
+Some variants hotkeys are sensitive to which row you currently hovering over.
+- `d` for checking **D**ismiss checkbox on current row
+- `v` for opening a **V**ariant on current row (open the variant, typically in a new `_blank` tab)
+Others give you quick access to a given function.
+- `c` **C**linical filter
+- `f` **F**ilter variants
+- `g` focus input on the **G**ene symbol field, un-collapsing filter if needed
+- `b` toggle dismiss **B**ar
+
 ----------
 
 ## Variant
