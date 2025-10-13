@@ -892,11 +892,19 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         row += 3
 
         row = write_coverage(
-            Report_Sheet, row, "Coverage Stats (chanjo2)", chanjo2_coverage_stats, sample_id
+            Report_Sheet,
+            row,
+            "Coverage Stats (chanjo2) - based on entire chromosomes MT and 14",
+            chanjo2_coverage_stats,
+            sample_id,
         )
 
         row = write_coverage(
-            Report_Sheet, row, "Coverage Stats (chanjo)", chanjo_coverage_stats, sample_id
+            Report_Sheet,
+            row,
+            "Coverage Stats (chanjo) - based on transcripts from chromosomes MT and 14 ",
+            chanjo_coverage_stats,
+            sample_id,
         )
 
         mitodel = sample.get("mitodel")
