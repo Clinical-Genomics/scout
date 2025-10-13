@@ -1321,3 +1321,71 @@
     </span>
   {% endif %}
 {% endmacro %}
+
+{% macro enable_variants_hotkeys() %}
+  <script src="https://cdn.jsdelivr.net/npm/mousetrap@1.6.5/mousetrap.min.js" integrity="sha512-+Jg3Ynmj9hse704K48H6rBBI3jdNBjReRGBCxUWFfOz3yVurnJFWtAWssDAsGtzWYw89xFWPxShuj2T6E9EOpg==" crossorigin="anonymous"></script>
+
+  <script>
+    // Hotkeys
+    // - "d" for checking dismiss checkbox on current row
+    // - "v" for opening a variant (opening the href in target, typically _blank) on current row
+    // - "c" - clinical filter
+    // - "f" - filter variants
+    // - "g" - focus input on the gene symbol field, un-collapsing filter if needed
+    // - "b" - toggle dismiss bar
+
+    let elementUnderMouse = null;
+    document.addEventListener("mousemove", function(event) {
+      elementUnderMouse = event.target;
+    });
+
+    document.addEventListener("keydown", async(event) => {
+      if (event.key === "d" && elementUnderMouse) {
+        let row = elementUnderMouse.closest("tr");
+        if (row) {
+          const checkbox = row.querySelector('input[type="checkbox"]');
+          if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+        }
+      }
+      if (event.key === "v" && elementUnderMouse) {
+        let row = elementUnderMouse.closest("tr");
+        if (row) {
+          const url = row.dataset.href;
+          const target = row.dataset.target || "_self";
+          // respect ctrl/cmd for manual background open
+          if (event.metaKey || event.ctrlKey) {
+            window.open(url, "_blank");
+          } else {
+            window.open(url, target);
+          }
+        }
+      }
+    });
+
+    Mousetrap.bind("c", function() {
+      clinical_filter_input = document.getElementById('clinical_filter')
+      clinical_filter_input.click()
+    });
+
+    Mousetrap.bind("f", function() {
+      filter_input = document.getElementById('filter_variants')
+      filter_input.click()
+    });
+
+    Mousetrap.bind("g", function() {
+      $('#collapseFilters').collapse('show');
+      hgnc_symbols = document.getElementById('hgnc_symbols')
+      hgnc_symbols.focus()
+      return false;
+    });
+
+    Mousetrap.bind("b", function() {
+      $('#dismiss_bar').toggle();
+      fetch("{{ url_for('variants.toggle_show_dismiss_block') }}");
+    });
+
+  </script>
+{% endmacro %}
+
