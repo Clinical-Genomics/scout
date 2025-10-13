@@ -582,13 +582,6 @@ def toggle_show_dismiss_block():
     return f"Toggled to {session['show_dismiss_block']}"
 
 
-@variants_bp.route("/variants/show_dismiss_block", methods=["GET"])
-def show_dismiss_block():
-    """Endpoint to enable the show dismiss block session variable."""
-    session["show_dismiss_block"] = True
-    return f"Set to {session['show_dismiss_block']}"
-
-
 @variants_bp.route("/variants/un-audit_filter", methods=["GET"])
 def unaudit_filter():
     """Un-audit an audited filter."""

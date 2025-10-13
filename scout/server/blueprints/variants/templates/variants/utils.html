@@ -1387,15 +1387,6 @@
       fetch("{{ url_for('variants.toggle_show_dismiss_block') }}");
     });
 
-    Mousetrap.bind("r", function() {
-      $('#dismiss_bar').collapse('show');
-      fetch("{{ url_for('variants.show_dismiss_block') }}");
-      reasons = document.querySelector("button[data-id='dismiss_choices']")
-      reasons.click();
-      reason = document.querySelector("button[data-id='dismiss_choices'] + div .dropdown-menu .dropdown-item")
-      reason.focus();
-    });
-
   </script>
 {% endmacro %}
 
