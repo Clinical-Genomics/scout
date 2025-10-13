@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genotype to the gene variants view (#5736)
 - Display the number of fusion variants on the variantS page, just like the other variant types (#5754)
 - Keyboard shortcuts on the variantS pages - see the updated user guide for details (#5768)
+- Bulk dismiss STR variants from variantS page (#5773)
 ### Changed
 - Better access to ALT allele for SVs (#5693)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
@@ -31,7 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 - Update IGV.js to v3.5.3 (#5757)
 - Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5761)
-- Refactored variantS pages to share an intermediate template (#5769)
+- Refactored variantS pages to share an intermediate template (#5773)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
@@ -56,6 +57,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use proper end position for large SVs when looking up edge genes (#5755)
 - Fixed crash on the Gene Panel page when changes to the same panel version were applied from multiple browser tabs (#5762 and #5765)
 - Sort STRs primarily by HGNC symbol, if available (#5763)
+
 
 ## [4.104]
 ### Added
