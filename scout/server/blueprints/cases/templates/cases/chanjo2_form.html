@@ -30,9 +30,7 @@
   {% endif %}
 
   <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener">
-    {% if id_token %}
-      <input type="hidden" id="id_token" name="id_token" value="">
-    {% endif %}
+    <input type="hidden" id="id_token" name="id_token" value="">
     <input type="hidden" id="build" name="build" value="{{build}}">
     <input type="hidden" id="default_level" name="default_level" value="{{default_level}}">
     <input type="hidden" id="interval_type" name="interval_type" value="{{interval_type}}">
@@ -41,9 +39,21 @@
     <input type="hidden" id="hgnc_gene_ids" name="hgnc_gene_ids" value={{hgnc_ids}}>
     <input type="hidden" id="samples" name="samples" value="{{samples|safe}}">
     {% if panel_name == "HPO Panel" %}
-      <button type="submit" class="btn btn-secondary btn-sm text-white"> Coverage {{report_type}} (Chanjo2)</button>
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm text-white"
+        onclick="refreshAndSubmit(this.closest('form'))"
+      >
+        Coverage {{report_type}} (Chanjo2)
+      </button>
     {% else %}
-      <a class="{{ link_class }}" onclick="this.closest('form').submit();return false;">{{link_text}}</a>
+      <a
+        class="{{ link_class }}"
+        href="#"
+        onclick="refreshAndSubmit(this.closest('form'))"
+      >
+        {{link_text}}
+      </a>
     {% endif %}
   </form>
 
