@@ -894,7 +894,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         row = write_coverage(
             Report_Sheet,
             row,
-            "Coverage Stats (chanjo2) - based on entire chromosomes MT ad 14",
+            "Coverage Stats (chanjo2) - based on entire chromosomes MT and 14",
             chanjo2_coverage_stats,
             sample_id,
         )
