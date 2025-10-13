@@ -11,65 +11,38 @@
 {% endblock %}
 
 {% block variants_filter %}
+  {{ sv_filters(form, institute, case) }}
 {% endblock %}
 
 {% block variants_table_header %}
+  <thead class="table-light thead">
+    <tr>
+      <th style="width:3%"></th>
+      <th title="Rank position">Rank</th>
+      <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)">Score</th>
+      <th>Callers</th>
+      <th>Type</th>
+      <th title="Chromosome">Chr</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Length</th>
+      <th title="Population Frequency">Pop Freq</th>
+      <th title="Observed database matches">Observed</th>
+      <th>Gene(s)</th>
+      <th title="Functional annotation">Function</th>
+      <th title="Gene overlapping variants in affected individuals">Overlap</th>
+    </tr>
+  </thead>
 {% endblock %}
 
 {% block variants_table_rows %}
-{% endblock %}
-
-{% block content_main %}
- <form method="POST" id="filters_form" action=""
-onsubmit="return validateForm()">
-  <div class="container-float">
-    {{ pagination_hidden_div(page, result_size) }}
-    <div class="card panel-default" id="accordion">
-      {{ filters_form_header(result_size, total_variants) }}
-      <!--Expand filters form if filters were used in a previous POST request-->
-      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
-        {{ sv_filters(form, institute, case) }}
-      </div>
-      {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
-    </div>
-
-    <div class="card mt-3">
-      <table id="variantsTable" class="table table-hover table-bordered" aria-label="SV variants table">
-        <thead class="table-light thead">
-          <tr>
-            <th style="width:3%"></th>
-            <th title="Rank position">Rank</th>
-            <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)">Score</th>
-            <th>Callers</th>
-            <th>Type</th>
-            <th title="Chromosome">Chr</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Length</th>
-            <th title="Population Frequency">Pop Freq</th>
-            <th title="Observed database matches">Observed</th>
-            <th>Gene(s)</th>
-            <th title="Functional annotation">Function</th>
-            <th title="Gene overlapping variants in affected individuals">Overlap</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for variant in variants %}
-            {{ variant_row(variant, inherit_palette) }}
-          {% else %}
-            <tr>
-                <td colspan="13">No matching variants</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
-</form>
-<div class="container-fluid" style="padding-bottom: 100px">
- {{ pagination_footer(page, result_size) }}
-</div>
+  {% for variant in variants %}
+    {{ variant_row(variant, inherit_palette) }}
+  {% else %}
+    <tr>
+        <td colspan="13">No matching variants</td>
+    </tr>
+  {% endfor %}
 {% endblock %}
 
 {% macro variant_row(variant, inherit_palette) %}

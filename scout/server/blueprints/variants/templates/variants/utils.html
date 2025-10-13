@@ -1153,7 +1153,7 @@
     {{ url_for('variant.sv_variant', institute_id=institute._id,
                         case_name=case.display_name, variant_id=variant._id) }}
   {% elif variant.category in ("cancer") %}
-    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute._id, case_name=case.display_name) }}
+    {{ url_for('variant.cancer_variant', variant_id=variant._id, institute_id=institute._id, case_name=case.display_name, cancer='yes') }}
   {% else %}
     {{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                         variant_id=variant._id) }}

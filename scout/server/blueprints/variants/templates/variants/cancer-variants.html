@@ -13,116 +13,95 @@
 {% endblock %}
 
 {% block variants_filter %}
+  {{ cancer_filters(form, institute, case) }}
 {% endblock %}
 
 {% block variants_table_header %}
+  <thead class="thead table-light">
+    <tr>
+      <th style="width:2%"></th>
+      <th title="Gene">Gene</th>
+      <th title="Variant" style="width:12%">HGVS[c/p]</th>
+      <th title="Assessments including variant tier" style="width:8%">Assessment</th>
+      <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)" style="width:5%">Rank</th>
+      <th title="CADD scores" style="width:4%">CADD</th>
+      <th title="Genomic coordinate" style="width:8%">Chr pos</th>
+      <th title="Population frequency">Pop Freq</th>
+      <th title="Observed" style="width:7%">Observed</th>
+      <th title="Variant type">Type</th>
+      <th title="Callers" style="width:12%">Callers</th>
+      <th title="Functional consequence annotation" style="width:10%">Consequence</th>
+      <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
+      <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
+    </tr>
+  </thead>
 {% endblock %}
 
 {% block variants_table_rows %}
+  {% for variant in variants %}
+    {{ cancer_variant_row(variant, institute, case) }}
+  {% else %}
+    <tr>
+        <td colspan="14">No matching variants</td>
+    </tr>
+  {% endfor %}
 {% endblock %}
 
-{% block content_main %}
-  <form method="POST" id="filters_form" action="" enctype="multipart/form-data" onsubmit="return validateForm()">
-  <div class="container-float">
-    {{ pagination_hidden_div(page, result_size) }}
-    <div class="card panel-default" id="accordion">
-      {{ filters_form_header(result_size, total_variants) }}
-      <!--Expand filters form if filters were used in a previous POST request or the previous POST request form was not validated-->
-      <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters" >
-        {{ cancer_filters(form, institute, case) }}
-      </div>
-      {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
-    </div>
-
-  <div class="card mt-3">
-    <table class="table table-hover table-bordered" style="table-layout:fixed">
-      <thead class="thead table-light">
-            <tr>
-              <th style="width:2%"></th>
-              <th title="Gene">Gene</th>
-              <th title="Variant" style="width:12%">HGVS[c/p]</th>
-              <th title="Assessments including variant tier" style="width:8%">Assessment</th>
-              <th data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)" style="width:5%">Rank</th>
-              <th title="CADD scores" style="width:4%">CADD</th>
-              <th title="Genomic coordinate" style="width:8%">Chr pos</th>
-              <th title="Population frequency">Pop Freq</th>
-              <th title="Observed" style="width:7%">Observed</th>
-              <th title="Variant type">Type</th>
-              <th title="Callers" style="width:12%">Callers</th>
-              <th title="Functional consequence annotation" style="width:10%">Consequence</th>
-              <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
-              <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
-            </tr>
-      </thead>
-      <tbody>
-
-        {% for variant in variants %}
-          <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
-          {% if variant.dismiss_variant %}
-            class="dismiss">
-          {% elif 'causatives' in case and variant._id in case.causatives %}
-            class="causative">
-          {% else %}
-            >
-          {% endif %}
-            <td class="no-row-click">
-              <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
-              {{ pin_indicator(variant, case) }}
-            </td>
-            <td>{{ gene_cell(variant) }}</td>
-            <td>
-
-              <a target="_blank" href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
-                                  variant_id=variant._id, cancer='yes') }}">
-                {% if variant.first_rep_gene.hgvs_identifier %}
-                  <div>{{ variant.first_rep_gene.hgvs_identifier|truncate(30, True) }}</div>
-                  <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</div>
-                {% else %}
-                  <div>{{ variant.reference|truncate(30, True) }}→
-                    {% if variant.alternative | length > 5 %}
-                      {{ variant.alternative[0] }}...{{ variant.alternative[-1] }}
-                    {% else %}
-                      {{ variant.alternative|truncate(30, True) }}
-                    {% endif %}
-                  </div>
-                {% endif %}
-              </a>
-            </td>
-            <td>
-              {{ evaluations_badge(variant.evaluations) }}
-              {{ dismissals_badge(variant) }}
-              {{ matching_manual_rank(variant) }}
-              {{ research_assessments_badge(variant) }}
-              {{ clinical_assessments_badge(variant) }}
-              {{ group_assessments_badge(variant) }}
-              {{ comments_badge(case, institute, variant) }}
-              {{ causative_badge(variant, case) }}
-              {{ other_tiered_variants(variant.matching_tiered) }}
-              {{ other_tiered_variants(variant.matching_escat_tiered) }}
-              {{ evaluations_badge(variant.ccv_evaluations) }}
-            </td>
-            <td>{{ rank_cell(variant) }}</td>
-            <td>{{ cadd_cell(variant) }}</td>
-            <td>{{ position_cell(variant) }}</td>
-            <td class="text-end">{{ frequency_cell_general(variant) }}</td>
-            <td>{{ observed_cell_general(variant) }}</td>
-            <td>{{ variant.sub_category|upper }}</td>
-            <td>{{ callers_cell(variant) }}</td>
-            <td>{{ variant_funct_anno_cell(variant) }}</td>
-            <td>{{ allele_cell(variant.tumor or {}) }}</td>
-            <td>{{ allele_cell(variant.normal or {}) }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div><!-- end of card-->
-</div><!--end of container-float -->
-{{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
-</form><!--end of form containing filters and variants' table elements -->
-<div class="container-fluid" style="padding-bottom: 100px">
-  {{ pagination_footer(page, result_size) }}
-</div>
-{% endblock %}
+{% macro cancer_variant_row(variant, institute, case, ) %}
+  <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
+  {% if variant.dismiss_variant %}
+    class="dismiss">
+  {% elif 'causatives' in case and variant._id in case.causatives %}
+    class="causative">
+  {% else %}
+    >
+  {% endif %}
+    <td class="no-row-click">
+      <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
+      {{ pin_indicator(variant, case) }}
+    </td>
+    <td>{{ gene_cell(variant) }}</td>
+    <td>
+      <a target="_blank" href="{{ variant_link_href(variant, institute, case) }}">
+        {% if variant.first_rep_gene.hgvs_identifier %}
+          <div>{{ variant.first_rep_gene.hgvs_identifier|truncate(30, True) }}</div>
+          <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</div>
+        {% else %}
+          <div>{{ variant.reference|truncate(30, True) }}→
+            {% if variant.alternative | length > 5 %}
+              {{ variant.alternative[0] }}...{{ variant.alternative[-1] }}
+            {% else %}
+              {{ variant.alternative|truncate(30, True) }}
+            {% endif %}
+          </div>
+        {% endif %}
+      </a>
+    </td>
+    <td>
+      {{ evaluations_badge(variant.evaluations) }}
+      {{ dismissals_badge(variant) }}
+      {{ matching_manual_rank(variant) }}
+      {{ research_assessments_badge(variant) }}
+      {{ clinical_assessments_badge(variant) }}
+      {{ group_assessments_badge(variant) }}
+      {{ comments_badge(case, institute, variant) }}
+      {{ causative_badge(variant, case) }}
+      {{ other_tiered_variants(variant.matching_tiered) }}
+      {{ other_tiered_variants(variant.matching_escat_tiered) }}
+      {{ evaluations_badge(variant.ccv_evaluations) }}
+    </td>
+    <td>{{ rank_cell(variant) }}</td>
+    <td>{{ cadd_cell(variant) }}</td>
+    <td>{{ position_cell(variant) }}</td>
+    <td class="text-end">{{ frequency_cell_general(variant) }}</td>
+    <td>{{ observed_cell_general(variant) }}</td>
+    <td>{{ variant.sub_category|upper }}</td>
+    <td>{{ callers_cell(variant) }}</td>
+    <td>{{ variant_funct_anno_cell(variant) }}</td>
+    <td>{{ allele_cell(variant.tumor or {}) }}</td>
+    <td>{{ allele_cell(variant.normal or {}) }}</td>
+  </tr>
+{% endmacro %}
 
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
