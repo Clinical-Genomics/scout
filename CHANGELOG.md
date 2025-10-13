@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored and simplified SV, cancer SV and MEI variants views (#5701)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 - Update IGV.js to v3.5.3 (#5757)
+- Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5761)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
