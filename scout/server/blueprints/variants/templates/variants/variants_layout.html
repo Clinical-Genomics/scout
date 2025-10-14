@@ -48,7 +48,7 @@
        <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
          {% block variants_filter %}{% endblock %}
        </div>
-       {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
+       {% block variants_filter_form_footer %}{% endblock %}
      </div>
      <div class="card mt-3">
        <table class="table table-hover table-bordered" aria-label="{{ self.category_title() }} table">

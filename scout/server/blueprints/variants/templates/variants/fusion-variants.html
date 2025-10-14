@@ -14,6 +14,10 @@
   {{ fusion_filters(form, institute, case) }}
 {% endblock %}
 
+{% block variants_filter_form_footer %}
+  {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
+{% endblock %}
+
 {% block variants_table_header %}
   {{ fusion_variants_header() }}
 {% endblock %}

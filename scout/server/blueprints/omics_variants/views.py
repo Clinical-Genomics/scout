@@ -2,12 +2,14 @@ from flask import Blueprint, request
 from flask_login import current_user
 from markupsafe import Markup
 
-from scout.constants import INHERITANCE_PALETTE
+from scout.constants import DISMISS_VARIANT_OPTIONS, INHERITANCE_PALETTE
 from scout.server.blueprints.variants.controllers import (
     activate_case,
     case_default_panels,
+    dismiss_variant_list,
     gene_panel_choices,
     get_expand_search,
+    get_show_dismiss_block,
     get_variants_page,
     populate_chrom_choices,
     populate_filters_form,
@@ -20,6 +22,8 @@ from scout.server.extensions import store
 from scout.server.utils import get_case_genome_build, institute_and_case, templated
 
 from . import controllers
+
+VARIANT_PAGE = "variant.variant"
 
 omics_variants_bp = Blueprint(
     "omics_variants",
@@ -59,6 +63,16 @@ def outliers(institute_id, case_name):
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
     else:  # POST
+        if "dismiss_submit" in request.form:  # dismiss a list of variants
+            dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                VARIANT_PAGE,
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
+
         user_obj = store.user(current_user.email)
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
@@ -92,6 +106,7 @@ def outliers(institute_id, case_name):
     return dict(
         case=case_obj,
         cytobands=cytobands,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         expand_search=get_expand_search(request.form),
         filters=populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
@@ -101,6 +116,7 @@ def outliers(institute_id, case_name):
         institute=institute_obj,
         page=page,
         result_size=result_size,
+        show_dismiss_block=get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
         **data,
