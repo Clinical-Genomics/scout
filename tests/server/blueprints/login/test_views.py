@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
-from flask import redirect, session, url_for
+from flask import redirect, url_for
 from flask_login import current_user
 
-from scout.server.blueprints.login.views import refresh_token_endpoint
 from scout.server.extensions import store
 
 NEW_USER_EMAIL = "thisIsATest@mail.com"
