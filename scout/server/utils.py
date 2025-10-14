@@ -253,6 +253,7 @@ def refresh_token() -> None:
     """
     Refresh the ID token if it's expired and a token is available in the session.
     """
+    LOG.warning("HERE BITCHES")
     token: Optional[dict] = session.get("token_response")
 
     if token is None:

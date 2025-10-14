@@ -42,7 +42,7 @@
       <button
         type="button"
         class="btn btn-secondary btn-sm text-white"
-        onclick="refreshAndSubmit(this.closest('form'))"
+        onclick="refreshAndSubmit(this.closest('form'), '{{ url_for('login.refresh_token_endpoint') }}')"
       >
         Coverage {{report_type}} (Chanjo2)
       </button>
@@ -50,7 +50,7 @@
       <a
         class="{{ link_class }}"
         href="#"
-        onclick="refreshAndSubmit(this.closest('form'))"
+        onclick="refreshAndSubmit(this.closest('form'), '{{ url_for('login.refresh_token_endpoint') }}')"
       >
         {{link_text}}
       </a>

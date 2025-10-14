@@ -232,7 +232,7 @@ def edit_user(email):
 
 
 @login_bp.route("/refresh_token", methods=["POST"])
-def refresh_token_endpoint():
+def refresh_token_endpoint() -> dict:
     """Refresh the login token and return the updated ID token.
 
     This endpoint is used for Chanjo2 reports,
