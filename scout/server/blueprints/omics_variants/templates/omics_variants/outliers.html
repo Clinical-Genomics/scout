@@ -26,7 +26,6 @@
 {% block variants_table_header %}
   <thead class="thead table-light">
     <tr>
-      <th style="width:2%">
       <th style="width:14%" title="HGNC symbols">Gene</th>
       <th style="width:7%" title="Sub-category">Type</th>
       <th style="width:7%" title="Value - delta Psi or l2fc">Value</th>
@@ -41,13 +40,7 @@
 
 {% block variants_table_rows %}
     {% for variant in variants %}
-      <tr
-      {% if variant.dismiss_variant %}
-         class="dismiss">
-      {% else %}
-         >
-      {% endif %}
-      <td class="no-row-click"><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
+      <tr>
       <td class="text-end">
         <div class="d-flex flex-row justify-content-between">
         {% if variant.genes %}
@@ -219,9 +212,6 @@
     </div>
     <div class="col-4 d-flex justify-content-center align-items-center">
       <div class="d-flex me-1 justify-content-center align-items-center">Showing page {{page}}</div>
-    </div>
-    <div class="col-4 d-flex justify-content-end align-items-center">
-      <div class="d-flex justify-content-end flex-grow-1">{{ toggle_dismiss_variants_block() }}</div>
     </div>
   </div>
 </div>
