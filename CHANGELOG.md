@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.105.1]
+### Fixed
+- uv lockfile update (#5780)
+
 ## [4.105]
 ### Added
 - Support for variants annotated with an unmodified ClinVar VCF (#5691)
