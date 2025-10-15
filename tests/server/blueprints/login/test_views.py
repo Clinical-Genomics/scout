@@ -166,3 +166,26 @@ def test_edit_user(app, user_obj):
         existing_user = store.user(email=user_obj.get("email"))
         assert existing_user["name"] == USERS_INFO["name"]
         assert existing_user["roles"] == USERS_INFO["role"]
+
+
+def test_refresh_token_endpoint(mock_app, monkeypatch):
+    """Test the function that refreshes the login token."""
+
+    def fake_refresh_token():
+        pass
+
+    # GIVEN a mocked call to refresh_token
+    monkeypatch.setattr("scout.server.utils.refresh_token", fake_refresh_token)
+
+    with mock_app.test_client() as client:
+
+        # GIVEN a patched refreshed token in session
+        with client.session_transaction() as sess:
+            sess["token_response"] = {"id_token": "mocked-id-token"}
+
+        # WHEN the refresh token endpoint is called
+        response = client.post("/refresh_token")
+
+        # THEN it should return the token
+        assert response.status_code == 200
+        assert response.get_json() == {"id_token": "mocked-id-token"}

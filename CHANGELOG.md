@@ -55,6 +55,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use proper end position for large SVs when looking up edge genes (#5755)
 - Fixed crash on the Gene Panel page when changes to the same panel version were applied from multiple browser tabs (#5762 and #5765)
 - Sort STRs primarily by HGNC symbol, if available (#5763)
+- Refresh login token on stale case pages before submitting chanjo2 forms (#5772)
 
 ## [4.104]
 ### Added
