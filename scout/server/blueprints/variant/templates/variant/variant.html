@@ -401,6 +401,7 @@
   {{ external_scripts() }}
   {{ variant_scripts() }}
   <script src="{{ url_for('static', filename='custom_images.js') }}"></script>
+  <script src="{{ url_for('static', filename='token_utils.js') }}"></script>
   <script>
 
     {% if variant.custom_images %}

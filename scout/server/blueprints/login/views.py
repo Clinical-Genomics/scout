@@ -18,7 +18,7 @@ from flask_login import current_user, logout_user
 from scout.load.user import save_user
 from scout.server.blueprints.login.forms import UserForm
 from scout.server.extensions import login_manager, oauth_client, store
-from scout.server.utils import public_endpoint, safe_redirect_back
+from scout.server.utils import public_endpoint, refresh_token, safe_redirect_back
 
 from . import controllers
 from .models import LoginUser
@@ -229,3 +229,16 @@ def edit_user(email):
 
     data = controllers.users(store)
     return render_template("login/users.html", edit_user=edit_user, **data)
+
+
+@login_bp.route("/refresh_token", methods=["POST"])
+def refresh_token_endpoint() -> dict:
+    """Refresh the login token and return the updated ID token.
+
+    This endpoint is used for Chanjo2 reports,
+    ensuring that the ID token is always fresh.
+    """
+    refresh_token()  # your existing refresh function
+    token_response = session.get("token_response", {})
+    id_token = token_response.get("id_token")
+    return {"id_token": id_token}

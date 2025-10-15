@@ -4,7 +4,7 @@ import logging
 import re
 from typing import List, Optional, Union
 
-from flask import Response, flash, redirect
+from flask import Response, flash
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
@@ -183,8 +183,8 @@ def update_panel(store, panel_name, csv_lines, option):
             store.add_pending(panel_obj, gene, action="delete", info=None)
 
     for new_gene in new_genes:
-        if not new_gene["hgnc_id"]:
-            flash("gene missing hgnc id: {}".format(new_gene["hgnc_symbol"]), "danger")
+        if not new_gene.get("hgnc_id"):
+            flash(f"gene missing hgnc id: {new_gene.get('hgnc_symbol')}", "danger")
             continue
         gene_obj = store.hgnc_gene_caption(new_gene["hgnc_id"])
         if gene_obj is None:
