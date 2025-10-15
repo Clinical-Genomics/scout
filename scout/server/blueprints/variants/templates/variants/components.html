@@ -438,19 +438,6 @@
   </div>
 {% endmacro %}
 
-{% macro functional_annotation_cell(variant) %}
-<div data-bs-toggle="tooltip" data-bs-html="true" title="
-  <div>
-    {% for annotation in variant.region_annotations %}
-          {{ annotation }}</br>
-    {% endfor %}
-  </div>">
-  {% for annotation in variant.functional_annotations %}
-      <div>{{ annotation }}</div>
-  {% endfor %}
-</div>
-{% endmacro %}
-
 {% macro overlapping_cell(variant, institute, case) %}
   {% if variant.compounds %}
     {% set ns=namespace(show_compounds=false) %}
