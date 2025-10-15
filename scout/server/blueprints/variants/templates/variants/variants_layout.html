@@ -52,7 +52,9 @@
      </div>
      <div class="card mt-3">
        <table class="table table-hover table-bordered" aria-label="{{ self.category_title() }} table">
+         <thead class="table-light thead">
          {% block variants_table_header %}{% endblock %}
+         </thead>
          <tbody>
           {% block variants_table_rows %}{% endblock %}
          </tbody>

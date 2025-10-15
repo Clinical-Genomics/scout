@@ -50,24 +50,22 @@
 {% endmacro %}
 
 {% macro fusion_variants_header() %}
-  <thead class="table-light">
-    <tr>
-      <th id="checkbox" style="width:1%"></th>
-      <th id="rank" style="width:3%;" title="Beta version. Currently testing" class="text-left">Rank (beta)</th>
-      <th id="genes" style="width:6%" title="Genes">Fusion Genes</th>
-      <th id="callers" style="width:4%" title="Number of callers detecting a given event">Callers</th>
-      <th id="observed" style="width:4%" title="Observed database matches">Observed</th>
-      <th id="score" style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
-      <th id="junction_reads" style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
-      <th id="split_reads" style="width:6%" title="Number of split reads that support the event">Split Reads</th>
-      <th id="ffpm" style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
-      <th id="frame_status" style="width:8%" title="Frame status of the fusion">Frame Status</th>
-      <th id="transcripts" style="width:8%" title="Transcript ID">Transcript ID</th>
-      <th id="exons" style="width:4%" title="Exon Number">Exon Number</th>
-      <th id="breakpoints" style="width:4%" title="Breakpoints">Breakpoints</th>
-      <th id="orientation" style="width:4%" title="Orientation">Orientation</th>
-    </tr>
-  </thead>
+  <tr>
+    <th id="checkbox" style="width:1%"></th>
+    <th id="rank" style="width:3%;" title="Beta version. Currently testing" class="text-left">Rank (beta)</th>
+    <th id="genes" style="width:6%" title="Genes">Fusion Genes</th>
+    <th id="callers" style="width:4%" title="Number of callers detecting a given event">Callers</th>
+    <th id="observed" style="width:4%" title="Observed database matches">Observed</th>
+    <th id="score" style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
+    <th id="junction_reads" style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
+    <th id="split_reads" style="width:6%" title="Number of split reads that support the event">Split Reads</th>
+    <th id="ffpm" style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
+    <th id="frame_status" style="width:8%" title="Frame status of the fusion">Frame Status</th>
+    <th id="transcripts" style="width:8%" title="Transcript ID">Transcript ID</th>
+    <th id="exons" style="width:4%" title="Exon Number">Exon Number</th>
+    <th id="breakpoints" style="width:4%" title="Breakpoints">Breakpoints</th>
+    <th id="orientation" style="width:4%" title="Orientation">Orientation</th>
+  </tr>
 {% endmacro %}
 
 {% macro default_fusion_variant_cells(institute, case, variant) %}

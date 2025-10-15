@@ -20,24 +20,22 @@
 {% endblock %}
 
 {% block variants_table_header %}
-  <thead class="thead table-light">
-    <tr>
-      <th scope="col" style="width:2%"></th>
-      <th scope="col" style="width:3%">Index</th>
-      <th scope="col" style="width:9%">Callers</th>
-      <th scope="col">Type</th>
-      <th scope="col" style="width:5%">Chr</th>
-      <th scope="col">Start</th>
-      <th scope="col">End</th>
-      <th scope="col">Length</th>
-      <th scope="col">Pop Freq</th>
-      <th scope="col">Observed</th>
-      <th scope="col" style="width:12%">Gene(s)</th>
-      <th scope="col" style="width:16%">Function</th>
-      <th scope="col" style="width:9%" data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
-      <th scope="col" style="width:6%" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
-    </tr>
-  </thead>
+  <tr>
+    <th scope="col" style="width:2%"></th>
+    <th scope="col" style="width:3%">Index</th>
+    <th scope="col" style="width:9%">Callers</th>
+    <th scope="col">Type</th>
+    <th scope="col" style="width:5%">Chr</th>
+    <th scope="col">Start</th>
+    <th scope="col">End</th>
+    <th scope="col">Length</th>
+    <th scope="col">Pop Freq</th>
+    <th scope="col">Observed</th>
+    <th scope="col" style="width:12%">Gene(s)</th>
+    <th scope="col" style="width:16%">Function</th>
+    <th scope="col" style="width:9%" data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
+    <th scope="col" style="width:6%" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
+  </tr>
 {% endblock %}
 
 {% block variants_table_rows %}

@@ -19,24 +19,22 @@
 {% endblock %}
 
 {% block variants_table_header %}
-  <thead class="table-light thead">
-    <tr>
-      <th scope="col" style="width:3%"></th>
-      <th scope="col" title="Rank position">Rank</th>
-      <th scope="col" data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)">Score</th>
-      <th scope="col">Callers</th>
-      <th scope="col">Type</th>
-      <th scope="col" title="Chromosome">Chr</th>
-      <th scope="col">Start</th>
-      <th scope="col">End</th>
-      <th scope="col">Length</th>
-      <th scope="col" title="Population Frequency">Pop Freq</th>
-      <th scope="col" title="Observed database matches">Observed</th>
-      <th scope="col">Gene(s)</th>
-      <th scope="col" title="Functional annotation">Function</th>
-      <th scope="col" title="Gene overlapping variants in affected individuals">Overlap</th>
-    </tr>
-  </thead>
+  <tr>
+    <th scope="col" style="width:3%"></th>
+    <th scope="col" title="Rank position">Rank</th>
+    <th scope="col" data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)">Score</th>
+    <th scope="col">Callers</th>
+    <th scope="col">Type</th>
+    <th scope="col" title="Chromosome">Chr</th>
+    <th scope="col">Start</th>
+    <th scope="col">End</th>
+    <th scope="col">Length</th>
+    <th scope="col" title="Population Frequency">Pop Freq</th>
+    <th scope="col" title="Observed database matches">Observed</th>
+    <th scope="col">Gene(s)</th>
+    <th scope="col" title="Functional annotation">Function</th>
+    <th scope="col" title="Gene overlapping variants in affected individuals">Overlap</th>
+  </tr>
 {% endblock %}
 
 {% block variants_table_rows %}
