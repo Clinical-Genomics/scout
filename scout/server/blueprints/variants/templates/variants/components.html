@@ -482,3 +482,17 @@
       {{ overlapping_tooltip_table(institute, case, variant.overlapping_outliers[:40]) }}">Gene overlapping (WTS)</a>
   {% endif %}
 {% endmacro %}
+
+{% macro cell_models(variant, genetic_models_palette) %}
+  {% for model in (variant.genetic_models or []) %}
+    {% if model in genetic_models_palette %}
+      <span class="badge {{genetic_models_palette[model]['bgcolor']}} {{genetic_models_palette[model]['text_color']}}">{{model}}</span>
+    {% else %}
+      <span class="badge bg-secondary">{{ model }}</span>
+    {% endif %}
+  {% endfor %}
+
+  {% if variant.mosaic_tags %}
+    <span class="badge bg-warning">mosaic</span>
+  {% endif %}
+{% endmacro %}

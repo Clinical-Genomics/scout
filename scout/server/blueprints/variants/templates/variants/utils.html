@@ -1295,20 +1295,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro cell_models(variant) %}
-  {% for model in (variant.genetic_models or []) %}
-    {% if model in genetic_models_palette %}
-      <span class="badge {{genetic_models_palette[model]['bgcolor']}} {{genetic_models_palette[model]['text_color']}}">{{model}}</span>
-    {% else %}
-      <span class="badge bg-secondary">{{ model }}</span>
-    {% endif %}
-  {% endfor %}
-
-  {% if variant.mosaic_tags %}
-    <span class="badge bg-warning">mosaic</span>
-  {% endif %}
-{% endmacro %}
-
 {% macro zygosity_badges(variant, case) %}
   {%- for sample in variant.samples -%}
     {%- for ind in case.individuals -%}
