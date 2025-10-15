@@ -4,7 +4,7 @@ import logging
 import re
 from typing import List, Optional, Union
 
-from flask import Response, flash, redirect
+from flask import Response, flash
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
