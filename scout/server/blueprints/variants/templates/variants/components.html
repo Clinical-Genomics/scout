@@ -420,7 +420,7 @@
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
-  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
+  <div class="badge bg-primary rounded-pill" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
     <div class='text-start'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
