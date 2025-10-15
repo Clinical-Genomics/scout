@@ -30,7 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored and simplified SV, cancer SV and MEI variants views (#5701)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 - Update IGV.js to v3.5.3 (#5757)
-- Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5761)
+- Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5771)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5682)
@@ -55,6 +55,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use proper end position for large SVs when looking up edge genes (#5755)
 - Fixed crash on the Gene Panel page when changes to the same panel version were applied from multiple browser tabs (#5762 and #5765)
 - Sort STRs primarily by HGNC symbol, if available (#5763)
+- Refresh login token on stale case pages before submitting chanjo2 forms (#5772)
 
 ## [4.104]
 ### Added
