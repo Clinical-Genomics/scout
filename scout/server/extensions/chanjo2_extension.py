@@ -3,7 +3,7 @@ from typing import Dict
 
 from flask import Flask, current_app, session
 
-from scout.server.utils import get_case_mito_chromosome
+from scout.server.utils import get_case_mito_chromosome, refresh_token
 from scout.utils.scout_requests import get_request_json, post_request_json
 
 REF_CHROM = "14"
@@ -42,6 +42,7 @@ class Chanjo2Client:
         )
         coverage_stats = {}
         case_mt_chrom = get_case_mito_chromosome(case_obj)
+        refresh_token()
         id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
         request_headers = {"Authorization": f"Bearer {id_token}"}
         for ind in case_obj.get("individuals", []):
@@ -100,7 +101,7 @@ class Chanjo2Client:
             "samples": [],
         }
         analysis_types = []
-
+        refresh_token()
         id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
         request_headers = {"Authorization": f"Bearer {id_token}"}
 

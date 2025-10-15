@@ -71,7 +71,6 @@ from scout.server.utils import (
     get_case_genome_build,
     get_case_mito_chromosome,
     institute_and_case,
-    refresh_token,
     safe_redirect_back,
 )
 from scout.utils.acmg import get_acmg_temperature
@@ -356,8 +355,6 @@ def case(
     case_has_mt_alignments(case_obj)
     case_has_chanjo_coverage(case_obj)
     case_has_chanjo2_coverage(case_obj)
-    if case_obj.get("chanjo2_coverage"):
-        refresh_token()  # Needed for authorized requests in chanjo2
     case_has_mtdna_report(case_obj)
 
     case_groups = {}
