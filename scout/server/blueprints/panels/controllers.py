@@ -184,7 +184,7 @@ def update_panel(store, panel_name, csv_lines, option):
 
     for new_gene in new_genes:
         if not new_gene.get("hgnc_id"):
-            flash("gene missing hgnc id: {}".format(new_gene["hgnc_symbol"]), "danger")
+            flash(f"gene missing hgnc id: {new_gene.get('hgnc_symbol')}", "danger")
             continue
         gene_obj = store.hgnc_gene_caption(new_gene["hgnc_id"])
         if gene_obj is None:
