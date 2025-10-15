@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.105]
 ### Added
 - Support for variants annotated with an unmodified ClinVar VCF (#5691)
 - Parse and display copy number on SV page, genotype table (#5692)
@@ -14,11 +14,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLINSIG table on SV variant page (#5718)
 - Search genes at breakpoint for larger SVs (#5722)
 - Code for refreshing id token, if needed. To be used for authenticated requests to chanjo2 (#5532)
-- Genotype to the gene variants view (#5736)
+- Genotypes on `Search SNVs & SVs` page (#5737)
 - Display the number of fusion variants on the variantS page, just like the other variant types (#5754)
 - Keyboard shortcuts on the variantS pages - see the updated user guide for details (#5768)
 ### Changed
-- Better access to ALT allele for SVs (#5693)
+- Better access to ALT allele for SVs (#5694)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
 - Consolidated and simplified case handling tests (#5708)
 - Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
@@ -33,11 +33,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5771)
 ### Fixed
 - Typo in PR template (#5682)
-- Highlight affected individuals/samples on `GT call` tables (#5682)
+- Highlight affected individuals/samples on `GT call` tables (#5683)
 - Refactored and simplified the LoqusDB archived observations table. -1 is no longer shown for missing observations (#5680)
 - Fix a parsing issue with VEP annotations done with `--check_existing` where the `CSQ` key `CLIN_SIG` would be prioritised over `CLINVAR` (#5691)
-- Display variant rank score 0 (#5698)
-- Show only IGV link to breakpoint1 for SVs of sub-category INS (#5693)
+- Display variant rank score 0 (#5699)
+- Show only IGV link to breakpoint1 for SVs of sub-category INS (#5694)
 - Allow updating case owner on `scout load case -u` (#5681)
 - Missing query results on STR variantS page (#5713)
 - Links to variants with missing rank scores from Causatives and Verified pages (#5715)
