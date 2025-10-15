@@ -314,6 +314,7 @@
   {{ super() }}
   {{ external_scripts() }}
   {{ variant_scripts() }}
+  <script src="{{ url_for('static', filename='token_utils.js') }}"></script>
   <script>
     var triggerProtTabList = [].slice.call(document.querySelectorAll('#nav-proteins-tab'))
       triggerProtTabList.forEach(function (triggerEl) {
