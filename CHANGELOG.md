@@ -4,10 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Filter `f` hotkey not working on cancer variantS pages (#5788)
+
 ## [4.105.2]
 ### Fixed
 - Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
-- CN profile button does not dim for visited links (#5787)
+- CN profile button not to dim for visited links (#5787)
 
 ## [4.105.1]
 ### Fixed
