@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Bulk dismiss STR variants from variantS page (#5774)
+### Changed
+- Refactored variantS pages to share an intermediate template (#5774)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 
@@ -30,7 +34,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genotypes on `Search SNVs & SVs` page (#5737)
 - Display the number of fusion variants on the variantS page, just like the other variant types (#5754)
 - Keyboard shortcuts on the variantS pages - see the updated user guide for details (#5768)
-- Bulk dismiss STR variants from variantS page (#5774)
 ### Changed
 - Better access to ALT allele for SVs (#5694)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
@@ -45,7 +48,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 - Update IGV.js to v3.5.3 (#5757)
 - Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5771)
-- Refactored variantS pages to share an intermediate template (#5774)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5683)
