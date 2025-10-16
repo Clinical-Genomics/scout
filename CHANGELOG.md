@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
+
 ## [4.105.1]
 ### Fixed
 - uv lockfile update (#5780)
