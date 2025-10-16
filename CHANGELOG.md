@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.105.2]
 ### Fixed
 - Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
-- CN profile button does not dim for visited links (#5787)
+- CN profile button not to dim for visited links (#5787)
 
 ## [4.105.1]
 ### Fixed
