@@ -1,188 +1,113 @@
-{% extends "layout.html" %}
+{% extends "variants/variants_layout.html" %}
 
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell %}
+{% from "variants/components.html" import gene_cell %}
+{% from "variants/utils.html" import stash_filter_buttons %}
 {% from "variant/buttons.html" import splice_junctions_button %}
-{% from "variants/utils.html" import filter_script_main, filters_form_header, pagination_footer, pagination_hidden_div, stash_filter_buttons, update_stash_filter_button_status %}
 {% from "variant/components.html" import variant_scripts %}
 
-{% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} omics outlier variants
+{% block category_title %}
+  WTS outlier variants
 {% endblock %}
 
-{% block css %}
-  {{ super() }}
-  {{ external_stylesheets() }}
+{% block variants_form_action%}
+  {{url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name)}}
 {% endblock %}
 
-{% block top_nav %}
-  {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-      {{ case.display_name }}
-    </a>
-  </li>
-  <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">{{ form.variant_type.data|capitalize }} WTS outliers</span>
-  </li>
+{% block variants_filter %}
+  {{ outlier_filters(form, institute, case) }}
 {% endblock %}
 
-{% block top_nav_right %}
-  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data if form.gene_panels.data and form.gene_panels.data != [""] else ['All'])|join(',') }}</p></li>
-  {{ super() }}
+{% block variants_filter_form_footer %}
+  {{ omics_filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
 {% endblock %}
 
-{% block content_main %}
-  <div class="container-float">
-    <form method="POST" id="filters_form" action="{{url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name)}}"
-        enctype="multipart/form-data" onsubmit="return validateForm()">
+{% block variants_table_header %}
+  <thead class="thead table-light">
+    <tr>
+      <th scope="col" style="width:14%" title="HGNC symbols">Gene</th>
+      <th scope="col" style="width:7%" title="Sub-category">Type</th>
+      <th scope="col" style="width:7%" title="Value - delta Psi or l2fc">Value</th>
+      <th scope="col" title="Functional annotation">Func. annotation</th>
+      <th scope="col" style="width:7%" title="P-value">P-value</th>
+      <th scope="col" style="width:10%" title="Individual">Ind</th>
+      <th scope="col" style="width:3%" title="Chromosome">Chr</th>
+      <th scope="col" title="Position">Pos</th>
+    </tr>
+  </thead>
+{% endblock %}
 
-      {{ pagination_hidden_div(page, result_size) }}
-      <div class="card panel-default" id="accordion">
-        {{ filters_form_header(result_size, total_variants) }}
-        <!--Expand filters form if filters were used in a previous POST request-->
-        <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
-            {{ outlier_filters(form, institute, case) }}
-        </div>
-        {{ omics_filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
-      </div>
-    </form>
-    <div class="card mt-3">
-      <table class="table table-hover table-bordered" style="table-layout: fixed">
-        <thead class="thead table-light">
-              <tr>
-                <th style="width:14%" title="HGNC symbols">Gene</th>
-                <th style="width:7%" title="Sub-category">Type</th>
-                <th style="width:7%" title="Value - delta Psi or l2fc">Value</th>
-                <th title="Functional annotation">Func. annotation</th>
-                <th style="width:7%" title="P-value">P-value</th>
-                <th style="width:10%" title="Individual">Ind</th>
-                <th style="width:3%" title="Chromosome">Chr</th>
-                <th title="Position">Pos</th>
-              </tr>
-        </thead>
-        <tbody>
-          {% for variant in variants %}
-            <tr>
-              <td class="text-end">
-                <div class="d-flex flex-row justify-content-between">
-                {% if variant.genes %}
-                  {{ gene_cell(variant, inherit_palette) }}
-                {% else %}
-                  {{ variant.gene_name_orig }}
-                {% endif %}
-                  <div class="d-flex justify-content-center">
-                  {% if case.vcf_files.vcf_snv %}
-                    <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                    <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
-                    </form>
-                  {% endif %}
-                  {% if case.vcf_files.vcf_sv %}
-                    <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                    <button type="submit" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
-                  </form>
-                  {% endif %}
-                    </div>
-                 </div>
-              </td>
-              <td>{{ variant.sub_category }}</td>
-              <td class="text-end"> {%  if variant.sub_category == "splicing" %}
-                  <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
-                  {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
-                {% else %}
-                  <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
-                  {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
-                {% endif %}
-              </td>
-              <td>
-                {% if variant.sub_category == "splicing" %}
-                  {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
-                {% endif %}
-              </td>
-              <td class="text-end">{{ '%.3e' % variant.p_value }}</td>
-              <td>{% for sample in variant.samples %}
-                  {% if sample.genotype_call != "./." %}
-                    <div>{{ sample.display_name }}</div>
-                  {% endif %}
-                {% endfor %}
-              </td>
-              <td class="text-end">{{ variant.chromosome }}</td>
-                <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
-                  <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
-                    style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" title="Copy to clipboard">
-                  </button>
-                {% if case.has_rna_tracks %}
-                  {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
-                {% endif %}
-              </tr>
-            {% else %}
-              <tr>
-                <td colspan="9">
-                  No matching variants
-                </td>
-              </tr>
-            {% endfor %}
-         </tbody>
-       </table>
-     </div><!-- end of card -->
-    </div> <!-- end of container-float -->
-  </form> <!--end of form containing filters and variants' table elements -->
-  <div class="container-fluid" style="padding-bottom: 100px">
-    {{ pagination_footer(page, result_size) }}
-  </div>
-
+{% block variants_table_rows %}
+    {% for variant in variants %}
+      <tr>
+      <td class="text-end">
+        <div class="d-flex flex-row justify-content-between">
+        {% if variant.genes %}
+          {{ gene_cell(variant, inherit_palette) }}
+        {% else %}
+          {{ variant.gene_name_orig }}
+        {% endif %}
+          <div class="d-flex justify-content-center">
+          {% if case.vcf_files.vcf_snv %}
+            <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+            <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
+            </form>
+          {% endif %}
+          {% if case.vcf_files.vcf_sv %}
+            <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+            <button type="submit" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
+          </form>
+          {% endif %}
+            </div>
+         </div>
+      </td>
+      <td>{{ variant.sub_category }}</td>
+      <td class="text-end"> {%  if variant.sub_category == "splicing" %}
+          <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
+          {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
+        {% else %}
+          <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
+          {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
+        {% endif %}
+      </td>
+      <td>
+        {% if variant.sub_category == "splicing" %}
+          {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
+        {% endif %}
+      </td>
+      <td class="text-end">{{ '%.3e' % variant.p_value }}</td>
+      <td>{% for sample in variant.samples %}
+          {% if sample.genotype_call != "./." %}
+            <div>{{ sample.display_name }}</div>
+          {% endif %}
+        {% endfor %}
+      </td>
+      <td class="text-end">{{ variant.chromosome }}</td>
+        <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
+          <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
+            style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" title="Copy to clipboard">
+          </button>
+        {% if case.has_rna_tracks %}
+          {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
+        {% endif %}
+      </tr>
+    {% else %}
+      <tr>
+        <td colspan="9">
+          No matching variants
+        </td>
+      </tr>
+    {% endfor %}
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
-  {{ external_scripts() }}
   {{ variant_scripts() }}
-  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
-  {{ filter_script_main(cytobands) }}
-  <script type="text/javascript">
-    window.onload=function() {
-      populateCytobands({{cytobands|safe}});
-      {{ update_stash_filter_button_status(current_user, filters) }}
-    }
-
-    $("#filters").change(function () {
-      {{ update_stash_filter_button_status(current_user, filters) }}
-    });
-
-    $('select[multiple]').selectpicker({
-      width: '100%'
-    });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl, {
-        sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body',
-      })
-    })
-
-  </script>
-
 {% endblock %}
 
 {% macro outlier_filters(form, institute, case, filters) %}
@@ -285,8 +210,8 @@
         {% endif %}
       </div>
     </div>
-    <div class="col-4 d-flex justify-content-center">
-      Showing page {{page}}
+    <div class="col-4 d-flex justify-content-center align-items-center">
+      <div class="d-flex me-1 justify-content-center align-items-center">Showing page {{page}}</div>
     </div>
   </div>
 </div>

@@ -1,188 +1,118 @@
-{% extends "layout.html" %}
-{% from "utils.html" import clickable_table_row_script, comments_table, pedigree_panel %}
+{% extends "variants/variants_layout.html" %}
+{% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general %}
-{% from "variants/utils.html" import callers_cell, cell_rank, dismiss_variants_block, enable_variants_hotkeys, filter_form_footer, filters_form_header, filter_script_main, pagination_footer, pagination_hidden_div, str_filters, update_stash_filter_button_status, variant_link_href %}
+{% from "variants/components.html" import frequency_cell_general %}
+{% from "variants/utils.html" import callers_cell, cell_rank, filter_form_footer, str_filters, variant_link_href %}
 
-
-{% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
+{% block category_title %}
+  STR variants
 {% endblock %}
 
-{% block css %}
-{{ super() }}
-  {{ external_stylesheets() }}
+{% block variants_form_action %}
+  {{url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name)}}
 {% endblock %}
 
-{% block top_nav %}
-  {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-      {{ case.display_name }}
-    </a>
-  </li>
-  <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
-  </li>
+{% block variants_filter %}
+  {{ str_filters(form, institute, case) }}
 {% endblock %}
 
-{% block top_nav_right %}
-  {{ super() }}
+{% block variants_filter_form_footer %}
+  {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
+{% endblock %}
+
+{% block variants_table_header %}
+  <tr>
+    <th scope="col" style="width:2%">
+    <th scope="col" style="width:8%" title="Index">Index</th>
+    <th scope="col" title="Repeat locus ID">Repeat locus</th>
+    <th scope="col" style="width:8%" title="Reference repeat unit">Ref RU</th>
+    <th scope="col" style="width:6%" title="ALT">Est size</th>
+    <th scope="col" style="width:6%" title="ReferenceSize">Ref size</th>
+    <th scope="col" style="width:8%" title="Caller and call filter status">Qual</th>
+    <th scope="col" style="width:8%" title="Status">Status</th>
+    <th scope="col" title="GT">Genotype</th>
+    <th scope="col" style="width:6%" title="Chromosome" style="width:6%">Chr.</th>
+    <th scope="col" title="Position" style="width:20%">Position</th>
+  </tr>
+{% endblock %}
+
+{% block variants_table_rows %}
+  {% set ns = namespace(allele0='') %}
+  {% for variant in variants %}
+    {% if variant.chromosome + variant.position|string != ns.allele0 %}
+      <tr style="height:10px;"></tr>
+    {% endif %}
+    {% set ns.allele0 = variant.chromosome + variant.position|string %}
+      <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
+    {% if variant.dismiss_variant %}
+        class="dismiss">
+    {% elif 'causatives' in case and variant._id in case.causatives %}
+        class="causative">
+    {% elif variant.str_status == 'normal' %}
+        class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
+    {% elif variant.str_status == 'full_mutation' %}
+        class="bg-danger">
+    {% elif variant.str_status == 'pre_mutation' %}
+        class="bg-warning">
+    {% else %}
+        >
+    {% endif %}
+      <td class="no-row-click"><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()" onkeyup="enableDismiss()" tabindex="0"></td>
+      <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+      <td class="str-link">{{ str_locus_info(variant) }}</td>
+  <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.str_display_ru or variant.str_ru or variant.reference }}">
+    {% if variant.str_display_ru %}{{variant.str_display_ru | truncate(12, True)}}
+    {% elif variant.str_ru %}{{ variant.str_ru | truncate(12, True) }}
+    {% else %}{{ variant.reference | truncate(12, True) }}{% endif %}</span></td>
+      <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc or "." }}</span></b></td>
+      <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
+      <td>{{ callers_cell(variant) }}</td>
+      <td>{{ str_status(variant) }}</td>
+      <td>{% for sample in variant.samples %}
+            {% if sample.genotype_call != "./." %}
+              <div class="row">
+                <div class="col-8">{{ sample.display_name }}</div>
+                <div class="col-4 text-end">{{ sample.genotype_call }}</div>
+              </div>
+            {% endif %}
+          {% endfor %}
+      </td>
+      <td class="text-end">{{ variant.chromosome }}</td>
+      <td class="text-end"><span style="white-space: nowrap;">
+        {{ variant.position|human_longint|safe }}</span>
+        {{ reviewer_button(case,variant,case_groups,institute._id) }}
+        {% if case.bam_files %}
+          <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank"><i class="fa fa-magnifying-glass fa-fw me-1"></i>IGV gDNA</a></span>
+        {% else %}
+          <span data-bs-toggle="tooltip" title="BAM file(s) missing"><button class="btn btn-secondary btn-sm" disabled><i class="fa fa-times-circle fa-fw me-1"></i>IGV gDNA</button></span>
+        {% endif %}
+
+      </td>
+  </tr>
+  {% else %}
+    <tr>
+      <td colspan="11">
+        No matching variants
+      </td>
+    </tr>
+  {% endfor %}
 {% endblock %}
 
 {% block content_main %}
-<div class="container-float">
-  <form method="POST" id="filters_form" action="{{url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name)}}"
-     enctype="multipart/form-data" onsubmit="return validateForm()">
-     {{ pagination_hidden_div(page, result_size) }}
-    <div class="card panel-default" id="accordion">
-      {{ filters_form_header(result_size, total_variants) }}
-      <!--Expand filters form if filters were used in a previous POST request-->
-      <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
-          {{ str_filters(form, institute, case) }}
-      </div>
-      {{ filter_form_footer(form, result_size, total_variants, page, variants|length, institute) }}
+  {{ super() }}
+  <!--  Pedigree_panel -->
+  {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+  {% if has_pedigree %}
+    <div class="row">
+      <div class="col-md-4">{{ pedigree_panel(case) }}</div>
     </div>
-  </form>
-  <div class="card mt-3">
-    <table class="table table-bordered table-hover" style="table-layout: fixed">
-      <thead class="thead table-light">
-        <tr>
-          <th style="width:8%" title="Index">Index</th>
-          <th title="Repeat locus ID">Repeat locus</th>
-          <th style="width:8%" title="Reference repeat unit">Ref RU</th>
-          <th style="width:6%" title="ALT">Est size</th>
-          <th style="width:6%" title="ReferenceSize">Ref size</th>
-          <th style="width:8%" title="Caller and call filter status">Qual</th>
-          <th style="width:8%" title="Status">Status</th>
-          <th title="GT">Genotype</th>
-          <th style="width:6%" title="Chromosome" style="width:6%">Chr.</th>
-          <th title="Position" style="width:20%">Position</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% set ns = namespace(allele0='') %}
-        {% for variant in variants %}
-          {% if variant.chromosome + variant.position|string != ns.allele0 %}
-            <tr style="height:10px;"></tr>
-          {% endif %}
-          {% set ns.allele0 = variant.chromosome + variant.position|string %}
-            <tr data-target="_blank" data-href="{{ variant_link_href(variant, institute, case) }}"
-          {% if variant.dismiss_variant %}
-              class="dismiss">
-          {% elif 'causatives' in case and variant._id in case.causatives %}
-              class="causative">
-          {% elif variant.str_status == 'normal' %}
-              class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
-          {% elif variant.str_status == 'full_mutation' %}
-              class="bg-danger">
-          {% elif variant.str_status == 'pre_mutation' %}
-              class="bg-warning">
-	        {% else %}
-	            >
-	        {% endif %}
-            <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td class="str-link">{{ str_locus_info(variant) }}</td>
-        <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.str_display_ru or variant.str_ru or variant.reference }}">
-          {% if variant.str_display_ru %}{{variant.str_display_ru | truncate(12, True)}}
-          {% elif variant.str_ru %}{{ variant.str_ru | truncate(12, True) }}
-          {% else %}{{ variant.reference | truncate(12, True) }}{% endif %}</span></td>
-            <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc or "." }}</span></b></td>
-            <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
-            <td>{{ callers_cell(variant) }}</td>
-            <td>{{ str_status(variant) }}</td>
-            <td>{% for sample in variant.samples %}
-                  {% if sample.genotype_call != "./." %}
-                    <div class="row">
-                      <div class="col-8">{{ sample.display_name }}</div>
-                      <div class="col-4 text-end">{{ sample.genotype_call }}</div>
-                    </div>
-                  {% endif %}
-                {% endfor %}
-            </td>
-            <td class="text-end">{{ variant.chromosome }}</td>
-            <td class="text-end"><span style="white-space: nowrap;">
-              {{ variant.position|human_longint|safe }}</span>
-              {{ reviewer_button(case,variant,case_groups,institute._id) }}
-              {% if case.bam_files %}
-                <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank"><i class="fa fa-magnifying-glass fa-fw me-1"></i>IGV gDNA</a></span>
-              {% else %}
-                <span data-bs-toggle="tooltip" title="BAM file(s) missing"><button class="btn btn-secondary btn-sm" disabled><i class="fa fa-times-circle fa-fw me-1"></i>IGV gDNA</button></span>
-              {% endif %}
-
-            </td>
-        </tr>
-        {% else %}
-          <tr>
-            <td colspan="9">
-              No matching variants
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div> <!-- end of class="container-float"> -->
-<div class="container-fluid">
-  {{ pagination_footer(page, result_size) }}
-</div>
-<!--  Pedigree_panel -->
-{% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-{% if has_pedigree %}
-  <div class="row">
-    <div class="col-md-4">{{ pedigree_panel(case) }}</div>
-  </div>
-{% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block scripts %}
-  {{ super() }}
-  {{ external_scripts() }}
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
-  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
-  {{ filter_script_main(cytobands) }}
-  <script type="text/javascript">
-    window.onload=function() {
-      populateCytobands({{cytobands|safe}});
-      {{ update_stash_filter_button_status(current_user, filters) }}
-    }
-
-    $("#filters").change(function () {
-      {{ update_stash_filter_button_status(current_user, filters) }}
-    });
-
-    $('select[multiple]').selectpicker({
-      width: '100%'
-    });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl, {
-        sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body',
-      })
-    })
-
-    {{ clickable_table_row_script() }}
-
-  </script>
-  {{ enable_variants_hotkeys() }}
+  {{ super() }}
 {% endblock %}
 
 {% macro str_status(variant) %}
