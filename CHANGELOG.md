@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
-
+- IGV.js updated to v3.5.4 (#5790)
 ## [4.105.2]
 ### Fixed
 - Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
