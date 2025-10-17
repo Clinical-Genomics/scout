@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "utils.html" import clickable_table_row_script, comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/components.html" import frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
+{% from "variants/components.html" import cell_cadd, frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
 {% from "variants/utils.html" import gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score, zygosity_badges %}
 
 {% block title %}
@@ -117,20 +117,6 @@
    {{ variant.case_display_name }}
     :
     <span class="badge bg-info">{{ variant_rank_score(variant) }}</span>
-{% endmacro %}
-
-{% macro cell_cadd(variant) %}
-  <div>
-    <div class="badge bg-primary rounded-pill" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
-    <div class='text-start'>
-      <strong>Sift</strong>
-      {{ variant.sift_predictions|join(',') }} <br>
-      <strong>PolyPhen</strong>
-      {{ (variant.polyphen_predictions or ['-'])|join(',') }}
-    </div>
-    ">
-    {% if variant.cadd_score %}{{ variant.cadd_score|round(1) }}{% else %}-{% endif %}
-  </div>
 {% endmacro %}
 
 {% macro filters_form() %}

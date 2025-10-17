@@ -18,7 +18,7 @@ It's also possible to filter the variants using a number of different criteria. 
 
 ### Hotkeys available on all variantS pages
 
-Some variants hotkeys are sensitive to which row you currently hovering over.
+Some variants hotkeys are sensitive to which row you are currently hovering over.
 - `d` for checking **D**ismiss checkbox on current row
 - `v` for opening a **V**ariant on current row (open the variant, typically in a new `_blank` tab)
 Others give you quick access to a given function.
