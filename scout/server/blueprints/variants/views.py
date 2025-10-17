@@ -199,6 +199,15 @@ def str_variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
+        if "dismiss_submit" in request.form:  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                VARIANT_PAGE,
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
