@@ -70,8 +70,6 @@ You can also install using pip:
 pip install --editable .
 ```
 
-Scout PDF reports are created using [Flask-WeasyPrint](https://pythonhosted.org/Flask-WeasyPrint/). This library requires external dependencies which need be installed separately (namely Cairo and Pango). See platform-specific instructions for Linux, macOS and Windows available on the WeasyPrint installation [pages](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation).
-
 <b>NB</b>: in order to convert HTML reports into PDF reports, we have recently switched from the WeasyPrint lib to [python-pdfkit](https://github.com/JazzCore/python-pdfkit). For this reason, when upgrading to a Scout version >4.47, you need to install an additional [wkhtmltopdf system library](https://wkhtmltopdf.org/).
 
 You also need to have an instance of MongoDB running. I've found that it's easiest to do using the official Docker image:
