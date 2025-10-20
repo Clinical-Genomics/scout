@@ -59,7 +59,8 @@ def individual(case_id, ind, delete, key, value):
         click.echo(f"Could not find case {case_id}")
         return
 
-    _validate_input(case_obj, ind, key, value)
+    if not _validate_input(case_obj, ind, key, value):
+        return
 
     # perform the update. Note that the keys that dig into dictionaries may have a parent exist and be None.
     for ind_obj in case_obj["individuals"]:
@@ -96,20 +97,20 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str):
         click.echo(
             f"Please specify individual name with '-n' option. Available individuals for this case:{list(individuals.keys())}"
         )
-        return
+        return 0
     if ind not in individuals:
         click.echo(
             f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys())}"
         )
-        return
+        return 0
 
     if key is None or not key in UPDATE_KEYS:
         click.echo(f"Please specify a valid key to update. Valid keys:{UPDATE_KEYS}")
-        return
+        return 0
 
     if value is None:
         click.echo(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
-        return
+        return 0
     if UPDATE_DICT[key] == "path":
         file_path = Path(value)
         if file_path.exists() is False:
