@@ -41,9 +41,10 @@ UPDATE_KEYS = UPDATE_DICT.keys()
 @click.command()
 @click.option("--case-id", "-c", required=True, help="Case id")
 @click.option("--ind", "-n", help="Individual display name")
+@click.option("--delete", "-d", is_flag=True, help="Delete the given key from the case individual.")
 @click.argument("key", required=False)
 @click.argument("value", required=False)
-def individual(case_id, ind, key, value):
+def individual(case_id, ind, delete, key, value):
     """Update information on individual level in Scout
 
     UPDATE_DICT holds keys and type of value. If the value type is "path", and most are, a check
@@ -94,7 +95,11 @@ def individual(case_id, ind, key, value):
                 key_parts = key.split(".")
                 if not ind_obj.get(key_parts[0]):
                     ind_obj[key_parts[0]] = {}
-                ind_obj[key_parts[0]][key_parts[1]] = value
+                if delete:
+                    deleted_value = ind_obj[key_parts[0]].pop([key_parts[1]], None)
+                    click.echo(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
+                else:
+                    ind_obj[key_parts[0]][key_parts[1]] = value
                 continue
 
             ind_obj[key] = value

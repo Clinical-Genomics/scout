@@ -7,11 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
+- Delete flag for update report and update individual (#5793)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
+
 ## [4.105.2]
 ### Fixed
 - Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
