@@ -59,7 +59,6 @@ dependencies = [
 	"cryptography",
 	"defusedxml",
 	"svglib",
-	"cairosvg",
 	"importlib_resources",
 	# webapp login
 	"authlib",
