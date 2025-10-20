@@ -26,8 +26,6 @@ from flask import (
 )
 from flask_login import current_user
 from pymongo.errors import OperationFailure
-from reportlab.graphics import renderPM
-from svglib.svglib import svg2rlg
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import DATE_DAY_FORMATTER
