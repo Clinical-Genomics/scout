@@ -41,7 +41,12 @@ UPDATE_KEYS = UPDATE_DICT.keys()
 @click.command()
 @click.option("--case-id", "-c", required=True, help="Case id")
 @click.option("--ind", "-n", help="Individual display name")
-@click.option("--delete", "-d", is_flag=True, help="Delete the given key from the case individual.")
+@click.option(
+    "--delete",
+    "-d",
+    is_flag=True,
+    help="Delete the given key from the case individual.",
+)
 @click.argument("key", required=False)
 @click.argument("value", required=False)
 def individual(case_id, ind, delete, key, value):
@@ -84,7 +89,7 @@ def individual(case_id, ind, delete, key, value):
     )
 
 
-def _validate_input(case_obj: dict, ind: str, key: str, value: str):
+def _validate_input(case_obj: dict, ind: str, key: str, value: str) -> bool:
     """Validate input values: check ind, key and value.
     If ind name is empty, print available individual names for this case to help the user to build the command.
     If key is null or non-valid, print a list of all the keys that can be updated using this function.
@@ -97,24 +102,26 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str):
         click.echo(
             f"Please specify individual name with '-n' option. Available individuals for this case:{list(individuals.keys())}"
         )
-        return 0
+        return False
     if ind not in individuals:
         click.echo(
             f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys())}"
         )
-        return 0
+        return False
 
     if key is None or not key in UPDATE_KEYS:
         click.echo(f"Please specify a valid key to update. Valid keys:{UPDATE_KEYS}")
-        return 0
+        return False
 
     if value is None:
         click.echo(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
-        return 0
+        return False
     if UPDATE_DICT[key] == "path":
         file_path = Path(value)
         if file_path.exists() is False:
-            click.confirm(
+            return click.confirm(
                 "The provided path was not found on the server, update key anyway?",
                 abort=True,
             )
+
+    return True
