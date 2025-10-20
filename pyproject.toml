@@ -58,7 +58,6 @@ dependencies = [
 	"click",
 	"cryptography",
 	"defusedxml",
-	"svglib",
 	"importlib_resources",
 	# webapp login
 	"authlib",
