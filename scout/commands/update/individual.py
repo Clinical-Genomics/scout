@@ -1,10 +1,13 @@
 """Code for updating information on individuals"""
 
+import logging
 from pathlib import Path
 
 import click
 
 from scout.server.extensions import store
+
+LOG = logging.getLogger(__name__)
 
 UPDATE_DICT = {
     "assembly_alignment_path": "path",
@@ -58,35 +61,23 @@ def individual(case_id, ind, delete, key, value):
     If the key contains a dot (only one needed currently), keys for a dict type value is assumed:
     e.g. "reviewer.alignment" -> ind["reviewer"]["alignment"] (path value required)
 
+    If the delete flag is set, do not require a value, and remove the key from the individual if present.
     """
     case_obj = store.case(case_id)
     if not case_obj:
-        click.echo(f"Could not find case {case_id}")
+        LOG.error(f"Could not find case {case_id}")
         return
 
     if not _validate_input(case_obj, ind, key, value, delete):
         return
 
-    # perform the update. Note that the keys that dig into dictionaries may have a parent exist and be None.
     for ind_obj in case_obj["individuals"]:
         if ind_obj["display_name"] == ind:
-            if "." not in key:
-                if delete:
-                    deleted_value = ind_obj.pop(key, None)
-                    click.echo(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
-                else:
-                    ind_obj[key] = value
-                continue
-            key_parts = key.split(".")
-            if not ind_obj.get(key_parts[0]):
-                ind_obj[key_parts[0]] = {}
             if delete:
-                deleted_value = ind_obj[key_parts[0]].pop(key_parts[1], None)
-                if len(ind_obj[key_parts[0]]) == 0:
-                    ind_obj.pop(key_parts[0])
-                click.echo(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
+                deleted_value = _delete_key(ind_obj, key)
+                LOG.info(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
             else:
-                ind_obj[key_parts[0]][key_parts[1]] = value
+                _update_key(ind_obj, key, value)
 
     link = f"/{case_obj['owner']}/{case_obj['display_name']}"
     institute_obj = store.institute(case_obj["owner"])
@@ -105,18 +96,18 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str, delete: bool
     individuals = {ind_info["display_name"]: ind_info for ind_info in case_obj["individuals"]}
 
     if ind is None:
-        click.echo(
+        LOG.error(
             f"Please specify individual name with '-n' option. Available individuals for this case:{list(individuals.keys())}"
         )
         return False
     if ind not in individuals:
-        click.echo(
+        LOG.error(
             f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys())}"
         )
         return False
 
-    if key is None or not key in UPDATE_KEYS:
-        click.echo(f"Please specify a valid key to update. Valid keys:{UPDATE_KEYS}")
+    if key is None or key not in UPDATE_KEYS:
+        LOG.error(f"Please specify a valid key to update. Valid keys:{UPDATE_KEYS}")
         return False
 
     if delete:
@@ -124,15 +115,44 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str, delete: bool
         return True
 
     if value is None:
-        click.echo(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
+        LOG.error(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
         return False
 
     if UPDATE_DICT[key] == "path":
         file_path = Path(value)
-        if file_path.exists() is False:
+        if not file_path.exists():
             return click.confirm(
                 "The provided path was not found on the server, update key anyway?",
                 abort=True,
             )
 
     return True
+
+
+def _delete_key(ind_obj: dict, key: str):
+    """Delete key. Also remove the parent key if this was the last key in a sub dict."""
+    if "." not in key:
+        deleted_value = ind_obj.pop(key, None)
+        return deleted_value
+
+    key_parts = key.split(".")
+    if not ind_obj.get(key_parts[0]):
+        ind_obj[key_parts[0]] = {}
+
+    deleted_value = ind_obj[key_parts[0]].pop(key_parts[1], None)
+    if len(ind_obj[key_parts[0]]) == 0:
+        ind_obj.pop(key_parts[0])
+    return deleted_value
+
+
+def _update_key(ind_obj: dict, key: str, value: str):
+    """Perform the update. Note that the keys that dig into dictionaries may have a parent exist and be None."""
+    if "." not in key:
+        ind_obj[key] = value
+        return
+
+    key_parts = key.split(".")
+    if not ind_obj.get(key_parts[0]):
+        ind_obj[key_parts[0]] = {}
+
+    ind_obj[key_parts[0]][key_parts[1]] = value
