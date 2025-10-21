@@ -33,12 +33,32 @@ def test_load_case_report(mock_app, report_types):
             ],
         )
 
-        # THEN the command should be succesful
+        # THEN the command should be successful
         assert result.exit_code == 0
 
         # And the report should have been loaded
         updated_case = store.case_collection.find_one()
         assert updated_case[CUSTOM_CASE_REPORTS[report_types]["key_name"]] == report_path
+
+    # WHEN executing the command to delete the same report
+    result = runner.invoke(
+        cli,
+        [
+            "load",
+            "report",
+            "-t",
+            report_types,
+            "--delete",
+            case_id,
+        ],
+    )
+
+    # THEN the command should be successful
+    assert result.exit_code == 0
+
+    # THEN the report should have been deleted again
+    updated_case = store.case_collection.find_one()
+    assert CUSTOM_CASE_REPORTS[report_types]["key_name"] not in updated_case
 
 
 def test_load_gene_fusion_report_research(mock_app):

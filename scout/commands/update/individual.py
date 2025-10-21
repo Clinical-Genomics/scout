@@ -64,20 +64,26 @@ def individual(case_id, ind, delete, key, value):
         click.echo(f"Could not find case {case_id}")
         return
 
-    if not _validate_input(case_obj, ind, key, value):
+    if not _validate_input(case_obj, ind, key, value, delete):
         return
 
     # perform the update. Note that the keys that dig into dictionaries may have a parent exist and be None.
     for ind_obj in case_obj["individuals"]:
         if ind_obj["display_name"] == ind:
             if "." not in key:
-                ind_obj[key] = value
+                if delete:
+                    deleted_value = ind_obj.pop(key, None)
+                    click.echo(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
+                else:
+                    ind_obj[key] = value
                 continue
             key_parts = key.split(".")
             if not ind_obj.get(key_parts[0]):
                 ind_obj[key_parts[0]] = {}
             if delete:
-                deleted_value = ind_obj[key_parts[0]].pop([key_parts[1]], None)
+                deleted_value = ind_obj[key_parts[0]].pop(key_parts[1], None)
+                if len(ind_obj[key_parts[0]]) == 0:
+                    ind_obj.pop(key_parts[0])
                 click.echo(f"Deleted value {deleted_value} from {key} on {ind} in {case_id}.")
             else:
                 ind_obj[key_parts[0]][key_parts[1]] = value
@@ -89,7 +95,7 @@ def individual(case_id, ind, delete, key, value):
     )
 
 
-def _validate_input(case_obj: dict, ind: str, key: str, value: str) -> bool:
+def _validate_input(case_obj: dict, ind: str, key: str, value: str, delete: bool) -> bool:
     """Validate input values: check ind, key and value.
     If ind name is empty, print available individual names for this case to help the user to build the command.
     If key is null or non-valid, print a list of all the keys that can be updated using this function.
@@ -113,9 +119,14 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str) -> bool:
         click.echo(f"Please specify a valid key to update. Valid keys:{UPDATE_KEYS}")
         return False
 
+    if delete:
+        # no need to check values for delete
+        return True
+
     if value is None:
         click.echo(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
         return False
+
     if UPDATE_DICT[key] == "path":
         file_path = Path(value)
         if file_path.exists() is False:
