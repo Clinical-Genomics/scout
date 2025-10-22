@@ -58,6 +58,8 @@ dependencies = [
 	"click",
 	"cryptography",
 	"defusedxml",
+	"svglib",
+	"cairosvg",
 	"importlib_resources",
 	# webapp login
 	"authlib",
@@ -74,13 +76,15 @@ dependencies = [
 	# Required by scripts
 	"tabulate",
 	"flask-ldap3-login>=1.0.2",
+	"chanjo-report",
 ]
 
 [project.optional-dependencies]
 coverage=[
+            "chanjo-report",
             "pymysql",
-            "python-dateutil",
-]
+			"python-dateutil",
+        ]
 
 
 [project.urls]
@@ -127,9 +131,6 @@ flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = 
 chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "remove_cairo" }
 
 [dependency-groups]
-coverage = [
-    "chanjo-report",
-]
 dev = [
 	"pytest-mock",
 	"pytest>=5.2",
