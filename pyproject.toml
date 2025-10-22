@@ -78,7 +78,7 @@ dependencies = [
 
 [project.optional-dependencies]
 coverage=[
-            "chanjo-report",
+            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report.git@remove_cairo",
             "pymysql",
 			"python-dateutil",
         ]
