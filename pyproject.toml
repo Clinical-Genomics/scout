@@ -78,10 +78,9 @@ dependencies = [
 
 [project.optional-dependencies]
 coverage=[
-            "chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report.git@remove_cairo",
             "pymysql",
-			"python-dateutil",
-        ]
+            "python-dateutil",
+]
 
 
 [project.urls]
@@ -125,8 +124,12 @@ profile = "black"
 
 [tool.uv.sources]
 flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
+chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "remove_cairo" }
 
 [dependency-groups]
+coverage = [
+    "chanjo-report",
+]
 dev = [
 	"pytest-mock",
 	"pytest>=5.2",
