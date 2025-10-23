@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Downgrade igv.js to 3.5.0 to restore alignment track popupData (#5783)
 - CN profile button not to dim for visited links (#5787)
+- Saving an SNV variant in a germline ClinVar submission object without specifying HGVS and transcript (#5804)
 
 ## [4.105.1]
 ### Fixed
