@@ -34,6 +34,8 @@ from .form import (
 
 LOG = logging.getLogger(__name__)
 
+UNDEFINED_HGVS = [None, "Do not specify"]
+
 
 def _get_var_tx_hgvs(case_obj: dict, variant_obj: dict) -> List[Tuple[str, str]]:
     """Retrieve all transcripts / HGVS for a given variant."""
@@ -249,7 +251,7 @@ def _parse_tx_hgvs(clinvar_var, form):
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
     tx_hgvs = form.get("tx_hgvs")
-    if tx_hgvs in [None, "Do not specify"]:
+    if tx_hgvs in UNDEFINED_HGVS:
         return
     clinvar_var["ref_seq"] = tx_hgvs.split(":")[0]
     clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
@@ -705,7 +707,7 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
 
     variant = {}
-    if form.get("tx_hgvs") not in [None, "Do not specify"]:
+    if form.get("tx_hgvs") not in UNDEFINED_HGVS:
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
         variant["chromosomeCoordinates"] = {
