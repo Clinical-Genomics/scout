@@ -249,7 +249,7 @@ def _parse_tx_hgvs(clinvar_var, form):
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
     tx_hgvs = form.get("tx_hgvs")
-    if not tx_hgvs:
+    if tx_hgvs in [None, "Do not specify"]:
         return
     clinvar_var["ref_seq"] = tx_hgvs.split(":")[0]
     clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
