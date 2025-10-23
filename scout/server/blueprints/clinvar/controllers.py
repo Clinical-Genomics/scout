@@ -131,6 +131,7 @@ def _get_snv_var_form(variant_obj: dict, case_obj: dict):
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.start.data = variant_obj.get("position")
     var_form.stop.data = variant_obj.get("end")
+    var_form.category.data = variant_obj.get("category")
     return var_form
 
 
@@ -150,6 +151,7 @@ def _get_sv_var_form(variant_obj, case_obj):
     var_form.end_chromosome.data = variant_obj.get("end_chrom")
     var_form.breakpoint1.data = variant_obj.get("position")
     var_form.breakpoint2.data = variant_obj.get("end")
+    var_form.category.data = variant_obj.get("category")
 
     # try to preselect variant type from variant subcategory
     if variant_obj["sub_category"] in SCOUT_CLINVAR_SV_TYPES_MAP:
