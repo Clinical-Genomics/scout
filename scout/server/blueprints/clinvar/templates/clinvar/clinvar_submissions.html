@@ -132,7 +132,7 @@
                 {% set case_name = subm_obj.cases[subm_variant.case_id] %}
                 <tr>
                   <td>{{loop.index}}</td>
-                    {% if subm_variant.category == 'sv' %}
+                    {% if subm_variant.category == 'sv' or subm_variant.breakpoint1 %}
                       {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
                       <td>
                         {% if "N/A" not in case_name %}
