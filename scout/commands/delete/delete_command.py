@@ -389,35 +389,8 @@ def case(institute, case_id, display_name):
 
     adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
     adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
-
-
-# @click.command('diseases', short_help='Display all diseases')
-# @click.pass_context
-# def diseases(context):
-#     """Show all diseases in the database"""
-#     LOG.info("Running scout view diseases")
-#     adapter = context.obj['adapter']
-#
-#     click.echo("Disease")
-#     for disease_obj in adapter.disease_terms():
-#         click.echo("{0}:{1}".format(
-#             disease_obj['source'],
-#             disease_obj['disease_id'],
-#         ))
-#
-# @click.command('hpo', short_help='Display all hpo terms')
-# @click.pass_context
-# def hpo(context):
-#     """Show all hpo terms in the database"""
-#     LOG.info("Running scout view hpo")
-#     adapter = context.obj['adapter']
-#
-#     click.echo("hpo_id\tdescription")
-#     for hpo_obj in adapter.hpo_terms():
-#         click.echo("{0}\t{1}".format(
-#             hpo_obj.hpo_id,
-#             hpo_obj.description,
-#         ))
+    adapter.delete_omics_variants_by_category(case_id=case_obj["_id"], variant_type="clinical")
+    adapter.delete_omics_variants_by_category(case_id=case_obj["_id"], variant_type="research")
 
 
 @click.group()

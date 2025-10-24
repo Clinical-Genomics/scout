@@ -85,7 +85,8 @@ def gene_fusion_report(case_id, report_path, research, update):
 
 @click.command("report")
 @click.argument("case-id", required=True)
-@click.argument("report-path", type=click.Path(exists=True), required=True)
+@click.argument("report-path", type=click.Path(exists=True), required=False)
+@click.option("--delete", "-d", is_flag=True, help="Delete the given report from the case.")
 @click.option(
     "-t",
     "--report-type",
@@ -94,9 +95,14 @@ def gene_fusion_report(case_id, report_path, research, update):
     help="Type of report",
 )
 @with_appcontext
-def report(case_id, report_path, report_type):
-    """Load a report document for a case."""
-    updated_case = update_case_report(case_id, report_path, report_type)
+def report(case_id, report_path, report_type, delete):
+    """Load (or delete) a report document for a case."""
+
+    if not delete and not report_path:
+        LOG.error("No report path given!")
+        raise click.Abort()
+
+    updated_case = update_case_report(case_id, report_path, report_type, delete)
     if updated_case:
         LOG.info(f"Report '{report_type}' updated for case {case_id}")
     else:
