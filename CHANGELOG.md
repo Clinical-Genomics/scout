@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bulk dismiss STR variants from variantS page (#5774)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
+- Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)
 - Render the case report's pedigree SVG to a temporary file without Cairo when exporting it to PDF (#5791)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
