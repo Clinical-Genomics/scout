@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 )
 @with_appcontext
 def report(case_id, report_path, report_type, delete):
-    """Load (or delete) a report document for a case."""
+    """Update (or delete) a report document for a case."""
 
     if not delete and not report_path:
         LOG.error("No report path given!")
