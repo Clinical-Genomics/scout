@@ -10,7 +10,7 @@ from scout.server.extensions import store
 
 
 @pytest.mark.parametrize("report_types", list(CUSTOM_CASE_REPORTS.keys()))
-def test_load_case_report(mock_app, report_types):
+def test_update_case_report(mock_app, report_types):
     """Test the command to load/update one of the available reports for a case"""
     # GIVEN a database with an existing case
     case_obj = store.case_collection.find_one()
@@ -19,7 +19,7 @@ def test_load_case_report(mock_app, report_types):
     runner = mock_app.test_cli_runner()
 
     with tempfile.NamedTemporaryFile(suffix=".html") as tf:
-        # WHEN the "scout load report <report-type> command is executed
+        # WHEN the "scout update report <report-type> command is executed
         report_path = os.path.dirname(tf.name)
         result = runner.invoke(
             cli,
