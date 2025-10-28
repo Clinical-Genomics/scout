@@ -237,12 +237,18 @@ def validate_vcf_line(variant_type: str, chrom: str, line: str) -> bool:
 
     ref = record.REF
     alt = record.ALT[0] if record.ALT else None
+
+    if not ref or not alt:
+        LOG.warning(f"VCF error: {line} -> REF or ALT allele missing")
+        return False
+
     is_sv = variant_type == "SVTYPE"
 
-    # Validate REF
-    if not ref or any(base not in NUCLEOTIDES for base in ref):
-        LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
-        return False
+    if not is_sv:
+        if any(base not in NUCLEOTIDES for base in ref):
+            LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
+            return False
+    # For SVs, allow REF to be N or any placeholder, skip check
 
     if is_sv:
         if alt not in SYMBOLIC_ALTS:
@@ -273,17 +279,14 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     else:
         info_field = f"END={end};{var_type}={subcat}"
 
-    # Normalize REF
     ref = variant_obj.get("reference") or "N"
     if ref == ".":
         ref = "N"
 
-    # Normalize ALT
     alt = variant_obj.get("alternative") or "N"
     if alt in [".", "-", variant_obj["sub_category"]]:
         alt = f"<{subcat}>" if category == "sv" else "N"
 
-    # Build the VCF line
     filters = ";".join(variant_obj.get("filters", [])) or "."
     vcf_fields = [
         variant_obj["chromosome"],
@@ -296,13 +299,11 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
         info_field,
     ]
 
-    # Add sample genotypes if case_id is provided
     if case_id and variant_obj.get("samples"):
         vcf_fields.append("GT")
         vcf_fields.extend(sample["genotype_call"] for sample in variant_obj["samples"])
 
     variant_string = "\t".join(vcf_fields)
 
-    # Validate the line before returning
     if validate_vcf_line(variant_type=var_type, chrom=vcf_fields[0], line=variant_string):
         return variant_string
