@@ -244,10 +244,9 @@ def validate_vcf_line(variant_type: str, chrom: str, line: str) -> bool:
 
     is_sv = variant_type == "SVTYPE"
 
-    if not is_sv:
-        if any(base not in NUCLEOTIDES for base in ref):
-            LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
-            return False
+    if not is_sv and any(base not in NUCLEOTIDES for base in ref):
+        LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
+        return False
     # For SVs, allow REF to be N or any placeholder, skip check
 
     if is_sv:
