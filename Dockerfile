@@ -8,11 +8,6 @@ WORKDIR /app
 # Copy the project files needed to configure dependencies build into the image
 COPY --chmod=644 pyproject.toml uv.lock README.md ./
 
-# No wheel for indirect pycairo dependency so need build env for it to install
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get -y install --no-install-recommends libcairo2-dev
-
 RUN uv venv --relocatable
 RUN uv sync --frozen --no-install-project --no-editable
 
@@ -28,16 +23,15 @@ LABEL about.license="MIT License (MIT)"
 
 # Install base dependencies
 RUN apt-get update && \
-     apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends git wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists/*
+    apt-get -y upgrade && \
+    apt-get -y install --no-install-recommends git wkhtmltopdf && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user to run commands
 RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
 
 ENV PATH="/home/worker/app/.venv/bin:$PATH"
-
 WORKDIR /home/worker/app
 
 # Copy current app code to app dir
