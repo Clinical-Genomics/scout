@@ -26,6 +26,9 @@ from .utils import build_option, json_option
 
 LOG = logging.getLogger(__name__)
 
+SYMBOLIC_ALTS = {"<DEL>", "<INS>", "<DUP>", "<INV>", "<CNV>"}
+NUCLEOTIDES = {"A", "T", "C", "G"}
+
 
 @click.command("verified", short_help="Export validated variants")
 @click.option(
@@ -209,7 +212,7 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
         click.echo(variant_string)
 
 
-def validate_vcf_line(chrom: str, line: str) -> bool:
+def validate_vcf_line(variant_type: str, chrom: str, line: str) -> bool:
     """
     Validate a single VCF line using cyvcf2 via a temporary file.
     Do not print validation warnings, only errors.
@@ -227,21 +230,35 @@ def validate_vcf_line(chrom: str, line: str) -> bool:
 
         try:
             vcf = VCF(tmp.name)
-            next(iter(vcf))  # force parsing
-            return True
+            record = next(iter(vcf))
         except Exception as e:
             LOG.warning(f"VCF error:{line} -> {e}")
             return False
 
+    ref = record.REF
+    alt = record.ALT[0] if record.ALT else None
+    is_sv = variant_type == "SVTYPE"
 
-def get_vcf_entry(variant_obj, case_id=None) -> str:
+    # Validate REF
+    if not ref or any(base not in NUCLEOTIDES for base in ref):
+        LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
+        return False
+
+    if is_sv:
+        if alt not in SYMBOLIC_ALTS:
+            LOG.warning(f"VCF error: {line} -> ALT must be symbolic: {SYMBOLIC_ALTS}")
+            return False
+    else:
+        if any(base not in NUCLEOTIDES for base in alt):
+            LOG.warning(f"VCF error: {line} -> ALT must be nucleotides: {NUCLEOTIDES}")
+            return False
+
+    return True
+
+
+def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     """
     Get vcf entry from variant object
-
-    Args:
-        variant_obj(dict)
-    Returns:
-        variant_string(str): string representing variant in vcf format
     """
 
     pos = variant_obj["position"]
@@ -287,5 +304,5 @@ def get_vcf_entry(variant_obj, case_id=None) -> str:
     variant_string = "\t".join(vcf_fields)
 
     # Validate the line before returning
-    if validate_vcf_line(chrom=vcf_fields[0], line=variant_string):
+    if validate_vcf_line(variant_type=var_type, chrom=vcf_fields[0], line=variant_string):
         return variant_string
