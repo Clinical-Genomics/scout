@@ -10,12 +10,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
 - Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)
-- Export of managed variants to VCF is subject to validation. variants failing validation will raise a warning instead of being included in the VCF file ()
+- Export of managed variants to VCF is subject to validation. variants failing validation will raise a warning instead of being included in the VCF file (#5813)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
-- Empty string as END position is not longer accepted when exporting manages variants to VCF file. END will be omitted for SNVs instead ()
+- Empty string as END position is not longer accepted when exporting manages variants to VCF file. END will be omitted for SNVs instead (#5813)
 
 ## [4.105.2]
 ### Fixed

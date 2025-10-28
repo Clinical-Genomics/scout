@@ -225,7 +225,8 @@ def validate_vcf_line(line: str) -> bool:
             vcf = VCF(tmp.name)
             next(iter(vcf))  # force parsing
             return True
-        except Exception:
+        except Exception as e:
+            LOG.warning(f"VCF error:{line} -> {e}")
             return False
 
 
