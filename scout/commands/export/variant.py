@@ -209,13 +209,17 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
         click.echo(variant_string)
 
 
-def validate_vcf_line(line: str) -> bool:
+def validate_vcf_line(chrom: str, line: str) -> bool:
     """
     Validate a single VCF line using cyvcf2 via a temporary file.
     Do not print validation warnings, only errors.
     """
 
-    vcf_text = "\n".join(VCF_HEADER) + "\n" + line.strip() + "\n"
+    contig_line = f"##contig=<ID={chrom},length=1000000>"
+    header_with_contig = VCF_HEADER.copy()
+    header_with_contig.insert(1, contig_line)
+
+    vcf_text = "\n".join(header_with_contig) + "\n" + line.strip() + "\n"
 
     with tempfile.NamedTemporaryFile(mode="w+", suffix=".vcf") as tmp:
         tmp.write(vcf_text)
@@ -230,7 +234,7 @@ def validate_vcf_line(line: str) -> bool:
             return False
 
 
-def get_vcf_entry(variant_obj, case_id=None):
+def get_vcf_entry(variant_obj, case_id=None) -> str:
     """
     Get vcf entry from variant object
 
@@ -240,47 +244,48 @@ def get_vcf_entry(variant_obj, case_id=None):
         variant_string(str): string representing variant in vcf format
     """
 
-    start = variant_obj["position"]
-    end = variant_obj.get("end")
+    pos = variant_obj["position"]
+    end = variant_obj.get("end") or pos
     category = variant_obj["category"]
     subcat = variant_obj["sub_category"].upper()
     var_type = "TYPE" if category in ["snv", "cancer"] else "SVTYPE"
 
-    if end in [None, ""]:
-        if category in ["snv", "cancer"]:
-            info_field = f"{var_type}={subcat}"
-        else:
-            end = start
-            info_field = f"END={end};{var_type}={subcat}"
+    # Build INFO field
+    if category in ["snv", "cancer"] and not variant_obj.get("end"):
+        info_field = f"{var_type}={subcat}"
     else:
         info_field = f"END={end};{var_type}={subcat}"
 
-    reference = variant_obj["reference"]
-    if reference in [".", ""]:
-        reference = "N"
+    # Normalize REF
+    ref = variant_obj.get("reference") or "N"
+    if ref == ".":
+        ref = "N"
 
-    alternative = variant_obj.get("alternative")
-    if alternative in ["", ".", "-", variant_obj["sub_category"]]:
-        if variant_obj["category"] == "sv":
-            alternative = f"<{variant_obj['sub_category'].upper()}>"
-        else:
-            alternative = "N"
+    # Normalize ALT
+    alt = variant_obj.get("alternative") or "N"
+    if alt in [".", "-", variant_obj["sub_category"]]:
+        alt = f"<{subcat}>" if category == "sv" else "N"
 
-    variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
+    # Build the VCF line
+    filters = ";".join(variant_obj.get("filters", [])) or "."
+    vcf_fields = [
         variant_obj["chromosome"],
-        variant_obj["position"],
+        str(pos),
         variant_obj.get("dbsnp_id", "."),
-        reference,
-        alternative,
-        variant_obj.get("quality", "."),
-        ";".join(variant_obj.get("filters", [])) or ".",
+        ref,
+        alt,
+        str(variant_obj.get("quality", ".")),
+        filters,
         info_field,
-    )
+    ]
 
-    if case_id:
-        variant_string += "\tGT"
-        for sample in variant_obj["samples"]:
-            variant_string += "\t" + sample["genotype_call"]
+    # Add sample genotypes if case_id is provided
+    if case_id and variant_obj.get("samples"):
+        vcf_fields.append("GT")
+        vcf_fields.extend(sample["genotype_call"] for sample in variant_obj["samples"])
 
-    if validate_vcf_line(variant_string):
+    variant_string = "\t".join(vcf_fields)
+
+    # Validate the line before returning
+    if validate_vcf_line(chrom=vcf_fields[0], line=variant_string):
         return variant_string
