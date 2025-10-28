@@ -7,7 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
-- Delete flag for update report and update individual (#5793)
+- Delete flag for update individual (#5793)
+- Update report command, with a delete flag (#5793)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
 - Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)

@@ -6,7 +6,7 @@ import click
 from flask.cli import with_appcontext
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.load.report import update_case_report
+from scout.update.report import update_case_report
 
 LOG = logging.getLogger(__name__)
 
@@ -86,7 +86,6 @@ def gene_fusion_report(case_id, report_path, research, update):
 @click.command("report")
 @click.argument("case-id", required=True)
 @click.argument("report-path", type=click.Path(exists=True), required=False)
-@click.option("--delete", "-d", is_flag=True, help="Delete the given report from the case.")
 @click.option(
     "-t",
     "--report-type",
@@ -95,14 +94,14 @@ def gene_fusion_report(case_id, report_path, research, update):
     help="Type of report",
 )
 @with_appcontext
-def report(case_id, report_path, report_type, delete):
+def report(case_id, report_path, report_type):
     """Load (or delete) a report document for a case."""
 
-    if not delete and not report_path:
+    if not report_path:
         LOG.error("No report path given!")
         raise click.Abort()
 
-    updated_case = update_case_report(case_id, report_path, report_type, delete)
+    updated_case = update_case_report(case_id, report_path, report_type)
     if updated_case:
         LOG.info(f"Report '{report_type}' updated for case {case_id}")
     else:
