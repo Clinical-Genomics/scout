@@ -2,11 +2,13 @@ from scout.commands.export.variant import validate_vcf_line
 
 
 def test_validate_vcf_line():
+    """Test the variants export VCF line validator."""
+
     # --- Valid SNV ---
     snv_line = "1\t1000\t.\tA\tT\t.\t.\tTYPE=SNV"
     assert validate_vcf_line("TYPE", "1", snv_line) is True
 
-    # --- Valid SNV with missing ALT (allowed) ---
+    # --- SNV with missing ALT ---
     snv_missing_alt = "1\t1000\t.\tA\t.\t.\t.\tTYPE=SNV"
     assert validate_vcf_line("TYPE", "1", snv_missing_alt) is False
 
