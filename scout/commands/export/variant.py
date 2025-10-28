@@ -2,9 +2,12 @@ import datetime
 import json as json_lib
 import logging
 import os
+import sys
+import tempfile
 from typing import Tuple
 
 import click
+from cyvcf2 import VCF
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -144,12 +147,18 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     vcf_header = VCF_HEADER
     vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
 
-    for line in vcf_header:
-        click.echo(line)
+    valid_lines = []
 
     for variant_obj in variants:
         variant_string = get_vcf_entry(variant_obj)
-        click.echo(variant_string)
+        if variant_string:
+            valid_lines.append(variant_string)
+
+    for line in vcf_header:
+        click.echo(line)
+
+    for valid_line in valid_lines:
+        click.echo(valid_line)
 
 
 @click.command("causatives", short_help="Export causative variants")
@@ -200,6 +209,26 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
         click.echo(variant_string)
 
 
+def validate_vcf_line(line: str) -> bool:
+    """
+    Validate a single VCF line using cyvcf2 via a temporary file.
+    Do not print validation warnings, only errors.
+    """
+
+    vcf_text = "\n".join(VCF_HEADER) + "\n" + line.strip() + "\n"
+
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".vcf") as tmp:
+        tmp.write(vcf_text)
+        tmp.flush()
+
+        try:
+            vcf = VCF(tmp.name)
+            next(iter(vcf))  # force parsing
+            return True
+        except Exception:
+            return False
+
+
 def get_vcf_entry(variant_obj, case_id=None):
     """
     Get vcf entry from variant object
@@ -209,27 +238,32 @@ def get_vcf_entry(variant_obj, case_id=None):
     Returns:
         variant_string(str): string representing variant in vcf format
     """
-    if variant_obj["category"] in ["snv", "cancer"]:
-        var_type = "TYPE"
-    else:
-        var_type = "SVTYPE"
 
-    info_field = ";".join(
-        [
-            "END=" + str(variant_obj["end"]),
-            var_type + "=" + variant_obj["sub_category"].upper(),
-        ]
-    )
+    start = variant_obj["position"]
+    end = variant_obj.get("end")
+    category = variant_obj["category"]
+    subcat = variant_obj["sub_category"].upper()
+    var_type = "TYPE" if category in ["snv", "cancer"] else "SVTYPE"
+
+    if end in [None, ""]:
+        if category in ["snv", "cancer"]:
+            info_field = f"{var_type}={subcat}"
+        else:
+            end = start
+            info_field = f"END={end};{var_type}={subcat}"
+    else:
+        info_field = f"END={end};{var_type}={subcat}"
 
     reference = variant_obj["reference"]
     if reference in [".", ""]:
         reference = "N"
 
-    alternative = variant_obj["alternative"]
+    alternative = variant_obj.get("alternative")
     if alternative in ["", ".", "-", variant_obj["sub_category"]]:
-        alternative = "N"
         if variant_obj["category"] == "sv":
             alternative = f"<{variant_obj['sub_category'].upper()}>"
+        else:
+            alternative = "N"
 
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj["chromosome"],
@@ -247,4 +281,5 @@ def get_vcf_entry(variant_obj, case_id=None):
         for sample in variant_obj["samples"]:
             variant_string += "\t" + sample["genotype_call"]
 
-    return variant_string
+    if validate_vcf_line(variant_string):
+        return variant_string
