@@ -5,9 +5,6 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS python-builder
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get -y upgrade
-
 # Copy the project files needed to configure dependencies build into the image
 COPY --chmod=644 pyproject.toml uv.lock README.md ./
 

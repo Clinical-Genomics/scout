@@ -8,9 +8,6 @@ WORKDIR /app
 # Copy the project files needed to configure dependencies build into the image
 COPY --chmod=644 pyproject.toml uv.lock README.md ./
 
-RUN apt-get update && \
-    apt-get -y upgrade
-
 RUN uv venv --relocatable
 RUN uv sync --frozen --no-install-project --no-editable
 
