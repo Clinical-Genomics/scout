@@ -10,7 +10,6 @@ from operator import itemgetter
 from tempfile import NamedTemporaryFile, mkdtemp
 from typing import Generator, Optional, Union
 
-from cairosvg import svg2png
 from flask import (
     Blueprint,
     Response,
@@ -288,18 +287,16 @@ def pdf_case_report(institute_id, case_name):
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         try:
-            write_to = NamedTemporaryFile(
-                mode="a+", prefix=case_obj.get("_id"), suffix="madeline.png"
+            svg_str = case_obj["madeline_info"]
+            tmp_svg = NamedTemporaryFile(
+                suffix=".svg", prefix=case_obj.get("_id", "case") + "_debug_", delete=False
             )
-            svg2png(
-                bytestring=case_obj["madeline_info"],
-                write_to=write_to,
-            )  # Transform to png, since PDFkit can't render svg images
-            data["case"]["madeline_path"] = write_to
+            tmp_svg.write(svg_str.encode("utf-8"))
+            tmp_svg.flush()
+            data["case"]["madeline_path"] = tmp_svg.name
+
         except Exception as ex:
-            LOG.error(
-                f"Could not convert SVG pedigree figure {case_obj['madeline_info']} to PNG: {ex}"
-            )
+            LOG.error(f"Exception while preparing Madeline SVG: {ex}")
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
