@@ -249,10 +249,9 @@ def validate_vcf_line(variant_type: str, chrom: str, line: str) -> bool:
         return False
     # For SVs, allow REF to be N or any placeholder, skip check
 
-    if is_sv:
-        if alt not in SYMBOLIC_ALTS:
-            LOG.warning(f"VCF error: {line} -> ALT must be symbolic: {SYMBOLIC_ALTS}")
-            return False
+    if is_sv and alt not in SYMBOLIC_ALTS:
+        LOG.warning(f"VCF error: {line} -> ALT must be symbolic: {SYMBOLIC_ALTS}")
+        return False
     else:
         if any(base not in NUCLEOTIDES for base in alt):
             LOG.warning(f"VCF error: {line} -> ALT must be nucleotides: {NUCLEOTIDES}")
