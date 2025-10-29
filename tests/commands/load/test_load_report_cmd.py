@@ -33,7 +33,7 @@ def test_load_case_report(mock_app, report_types):
             ],
         )
 
-        # THEN the command should be succesful
+        # THEN the command should be successful
         assert result.exit_code == 0
 
         # And the report should have been loaded
