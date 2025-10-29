@@ -13,11 +13,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored variantS pages to share an intermediate template (#5774)
 - Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)
 - Render the case report's pedigree SVG to a temporary file without Cairo when exporting it to PDF (#5791)
+- Deprecate python 3.9 which has reached its EOL, default build to 3.14 (#5818)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
 - Missing size_selector in old filters containing a size criterion, causing the variantS page to crash (#5817)
+- Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
 - MIM diseases can have multiple descriptions - merge them instead of using the first (#5814)
 
 ## [4.105.2]
