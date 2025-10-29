@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
+- Missing size_selector in old filters containing size criterion, causing variantS page to crash (#5817)
 
 ## [4.105.2]
 ### Fixed
