@@ -107,8 +107,9 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str, delete: bool
         return False
 
     if key is None or key not in UPDATE_KEYS:
+        newliner = "\n\t"
         LOG.error(
-            f"Please specify a valid key to update. Valid keys:\n\t{'\n\t'.join(sorted(UPDATE_KEYS))}"
+            f"Please specify a valid key to update. Valid keys:{newliner}{newliner.join(sorted(UPDATE_KEYS))}"
         )
         return False
 

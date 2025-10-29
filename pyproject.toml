@@ -9,7 +9,7 @@ include = [
   "README.md",
   "scout/**/*",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["vcf", "variants", "dna", "lrs", "wgs", "wes", "panel", "wts", "rna", "fusion",
 	"snv", "sv", "str", "cnv", "outliers", "cancer", "sma", "ogm",
 	"acmg", "clingen-cgc-vicc", "phenopacket", "clinvar", "coverage", "beacon", "matchmaker exchange","panelapp",
@@ -23,11 +23,11 @@ classifiers = [
 	"Programming Language :: Python",
   	"Programming Language :: Python :: Implementation :: CPython",
 	"Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
 	"Programming Language :: Python :: 3.12",
 	"Programming Language :: Python :: 3.13",
+	"Programming Language :: Python :: 3.14",
   	"Development Status :: 5 - Production/Stable",
 	"Intended Audience :: Science/Research",
   	"Topic :: Scientific/Engineering :: Bio-Informatics",
