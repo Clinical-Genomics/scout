@@ -212,7 +212,7 @@ class VariantHandler(VariantLoader):
 
         Arguments:
             case_id(str): A string that represents the case
-            query(dict): A dictionary with querys for the database
+            query(dict): A dictionary with queries for the database
             variant_ids(List[str])
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
 
