@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM ghcr.io/astral-sh/uv:python3.14-trixie AS python-builder
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm AS python-builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN uv sync --frozen --no-install-project --no-editable
 #########
 # FINAL #
 #########
-FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
 
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
