@@ -14,11 +14,13 @@ SORT_ORDER = {"asc": ASCENDING, "desc": DESCENDING}
 
 class OmicsVariantHandler:
 
-    def delete_omics_variants_by_category(self, case_id: str, variant_type: str, category: str):
+    def delete_omics_variants_by_category(
+        self, case_id: str, variant_type: str, category: str = None
+    ):
         """Delete all OMICS variants for a case, given case, variant_type and category."""
 
         LOG.info(
-            "Deleting old %s %s OMICS variants.",
+            "Deleting existing %s %s OMICS variants.",
             variant_type,
             category,
         )
@@ -26,8 +28,9 @@ class OmicsVariantHandler:
         query = {
             "case_id": case_id,
             "variant_type": variant_type,
-            "category": category,
         }
+        if category:
+            query["category"] = category
         result = self.omics_variant_collection.delete_many(query)
 
         LOG.info("%s variants deleted", result.deleted_count)
@@ -40,7 +43,7 @@ class OmicsVariantHandler:
         variant_type = omics_file_type["variant_type"]
 
         LOG.info(
-            "Deleting old %s %s %s OMICS variants.",
+            "Deleting existing %s %s %s OMICS variants.",
             variant_type,
             sub_category,
             category,

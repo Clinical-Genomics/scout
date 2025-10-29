@@ -13,6 +13,7 @@ from .omim import omim as omim_command
 from .panel import panel as panel_command
 from .panelapp import panelapp_green as panelapp_green_command
 from .phenotype_groups import groups as groups_command
+from .report import report as report_command
 from .user import user as user_command
 
 LOG = logging.getLogger(__name__)
@@ -27,15 +28,16 @@ def update(context):
     pass
 
 
-update.add_command(institute_command)
-update.add_command(user_command)
-update.add_command(panel_command)
 update.add_command(case_command)
-update.add_command(omim_command)
-update.add_command(panelapp_green_command)
 update.add_command(compound_command)
-update.add_command(hpo_command)
-update.add_command(gene_command)
 update.add_command(disease_command)
+update.add_command(gene_command)
 update.add_command(groups_command)
+update.add_command(hpo_command)
 update.add_command(individual_command)
+update.add_command(institute_command)
+update.add_command(omim_command)
+update.add_command(panel_command)
+update.add_command(panelapp_green_command)
+update.add_command(report_command)
+update.add_command(user_command)
