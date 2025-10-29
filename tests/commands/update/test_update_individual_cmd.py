@@ -134,3 +134,21 @@ def test_update_individuals_key_value(
         )
     else:
         assert fetched_case["individuals"][0][update_key] == update_value
+
+    # WHEN updating a individual asking to delete the same key
+    result = runner.invoke(
+        ind_cmd,
+        ["--case-id", case_id, "--ind", ind_name, "--delete", update_key],
+    )
+
+    # THEN the command should run with no errors
+    assert result.exit_code == 0
+
+    # THEN the individual should be updated
+    fetched_case = real_populated_database.case_collection.find_one()
+    if "." in update_key:
+        update_key_values = update_key.split(".")
+        if update_key_values[0] in fetched_case["individuals"][0]:
+            assert update_key_values[1] not in fetched_case["individuals"][0][update_key_values[0]]
+    else:
+        assert update_key not in fetched_case["individuals"][0]
