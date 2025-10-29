@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
 - Missing size_selector in old filters containing a size criterion, causing the variantS page to crash (#5817)
+- Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5816)
 
 ## [4.105.2]
 ### Fixed
