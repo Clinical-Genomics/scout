@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
-- Delete flag for update individual (#5793)
+- Delete flag for update individual command (#5793)
 - Update report command, with a delete flag (#5793)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
@@ -17,7 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
-
 
 ## [4.105.2]
 ### Fixed
