@@ -744,7 +744,7 @@ class QueryHandler(object):
 
             if criterion == "size":
                 size = query["size"]
-                size_selector = query.get("size_selector")
+                size_selector = query.get("size_selector") or "$gte"
 
                 size_query = {
                     "$or": [
