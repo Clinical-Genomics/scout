@@ -1,4 +1,5 @@
 import re
+
 from scout.constants.variant_tags import SV_TYPES
 
 

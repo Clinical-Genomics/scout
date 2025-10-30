@@ -2,7 +2,6 @@ import datetime
 import json as json_lib
 import logging
 import os
-
 from typing import Tuple
 
 import click
@@ -18,10 +17,10 @@ from scout.export.variant import (
     export_verified_variants,
 )
 from scout.server.extensions import store
+from scout.utils.vcf import validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, json_option
-from scout.utils.vcf import validate_vcf_line
 
 LOG = logging.getLogger(__name__)
 
