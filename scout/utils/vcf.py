@@ -57,7 +57,7 @@ def validate_filter(flt: str, line: str) -> bool:
     return True
 
 
-def validate_info(info: str, line: str) -> bool:
+def validate_info(var_type: str, info: str, line: str) -> bool:
     if info != ".":
         parts = info.split(";")
         for p in parts:
@@ -69,6 +69,11 @@ def validate_info(info: str, line: str) -> bool:
             elif not p:
                 print(f"❌ Empty INFO segment: {info}\n   Line: {line.strip()}")
                 return False
+
+        if var_type == "SVTYPE" and "SVTYPE=" not in info:
+            print(f"❌ SV line missing SVTYPE in INFO.\n   Line: {line.strip()}")
+            return False
+
     return True
 
 
@@ -90,5 +95,5 @@ def validate_vcf_line(var_type: str, line: str) -> bool:
         and validate_alt(var_type, alt, line)
         and validate_qual(qual, line)
         and validate_filter(flt, line)
-        and validate_info(info, line)
+        and validate_info(var_type, info, line)
     )
