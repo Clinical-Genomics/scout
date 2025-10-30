@@ -79,7 +79,7 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
         }
         _merge_disease_entries(parsed_diseases, parsed_disease_entry)
 
-    return parsed_diseases.values()
+    return list(parsed_diseases.values())
 
 
 def _merge_disease_entries(parsed_diseases: dict, parsed_disease_entry: dict):
