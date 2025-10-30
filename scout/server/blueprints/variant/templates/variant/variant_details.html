@@ -153,7 +153,7 @@
             {% for gene in variant.genes %}
               {% if gene.stripy_link %}
                 <tr><td>
-                  <a href="{{ gene.str_gnomad_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">gnomAD</a>
+                  <a href="{{ gene.gnomad_str_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">gnomAD</a>
                 </td><td>{{ gene.hgnc_symbol }}</td></tr>
               {% endif %}
               {% if gene.stripy_link %}
