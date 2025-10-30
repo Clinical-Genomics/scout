@@ -74,7 +74,7 @@ dependencies = [
 	# Required by scripts
 	"tabulate",
 	"flask-ldap3-login>=1.0.2",
-	"chanjo-report",
+	"chanjo-report>=4.12.0",
 ]
 
 [project.optional-dependencies]
@@ -126,7 +126,6 @@ profile = "black"
 
 [tool.uv.sources]
 flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
-chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "remove_cairo" }
 
 [dependency-groups]
 dev = [

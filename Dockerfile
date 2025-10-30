@@ -47,6 +47,6 @@ RUN chown -R worker:worker /home/worker/app/.venv
 USER worker
 
 # Install Scout app
-RUN uv pip install --no-cache-dir --editable .[coverage]
+RUN uv pip install --no-cache-dir .[coverage]
 
 ENTRYPOINT ["uv", "run", "scout"]
