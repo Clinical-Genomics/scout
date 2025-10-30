@@ -217,8 +217,8 @@ wheels = [
 
 [[package]]
 name = "chanjo-report"
-version = "4.11.5"
-source = { git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=remove_cairo#1b3403da4ddc8729aa9c6bddf3e42661e0bd6cc1" }
+version = "4.12.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "chanjo" },
     { name = "cryptography" },
@@ -236,6 +236,10 @@ dependencies = [
     { name = "tabulate" },
     { name = "toml" },
     { name = "toolz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/84/5c/bec105c3dabf4b4e60905691ca7a3219f815cce0442185d2574145e04def/chanjo_report-4.12.0.tar.gz", hash = "sha256:45a7706aa3ee5050c0bb39a5b8f4748c0995aae85e6ff0f4ac041773313ee97f", size = 36479, upload-time = "2025-10-29T14:18:16.627Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/ca/74248e28c5e4f9f92abbebd842e7b8591f383b4a474c2842b2f39d1ffbac/chanjo_report-4.12.0-py2.py3-none-any.whl", hash = "sha256:035376869c8d38628d7209825a5797e25e8825d35a806b16a46dd61a54952ff9", size = 26859, upload-time = "2025-10-29T14:18:15.416Z" },
 ]
 
 [[package]]
@@ -617,7 +621,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -2134,8 +2138,8 @@ lint = [
 requires-dist = [
     { name = "anytree" },
     { name = "authlib" },
-    { name = "chanjo-report", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=remove_cairo" },
-    { name = "chanjo-report", marker = "extra == 'coverage'", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=remove_cairo" },
+    { name = "chanjo-report", specifier = ">=4.12.0" },
+    { name = "chanjo-report", marker = "extra == 'coverage'" },
     { name = "click" },
     { name = "coloredlogs" },
     { name = "configobj" },
