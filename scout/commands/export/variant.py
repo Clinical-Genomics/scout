@@ -2,12 +2,10 @@ import datetime
 import json as json_lib
 import logging
 import os
-import sys
-import tempfile
+import re
 from typing import Tuple
 
 import click
-from cyvcf2 import VCF
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -26,8 +24,7 @@ from .utils import build_option, json_option
 
 LOG = logging.getLogger(__name__)
 
-SYMBOLIC_ALTS = {"<DEL>", "<INS>", "<DUP>", "<INV>", "<CNV>"}
-NUCLEOTIDES = {"A", "T", "C", "G"}
+from scout.constants.variant_tags import SV_TYPES
 
 
 @click.command("verified", short_help="Export validated variants")
@@ -212,54 +209,72 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
         click.echo(variant_string)
 
 
-def validate_vcf_line(variant_type: str, chrom: str, line: str) -> bool:
+def validate_vcf_line(var_type: str, line: str) -> bool:
     """
-    Validate a single VCF line using cyvcf2 via a temporary file.
-    Do not print validation warnings, only errors.
+    Validate a single VCF line (SNV or SV).
+
+    Parameters:
+        var_type (str): "TYPE" for SNVs, "SVTYPE" for structural variants
+        line (str): The VCF data line (tab-separated)
     """
+    def error(msg: str):
+        print(f"❌ {msg}\n   Line: {line.strip()}")
+        return False
 
-    contig_line = f"##contig=<ID={chrom},length=1000000>"
-    header_with_contig = VCF_HEADER.copy()
-    header_with_contig.insert(1, contig_line)
+    fields = line.strip().split('\t')
+    if len(fields) < 8:
+        return error("Less than 8 VCF fields.")
 
-    vcf_text = "\n".join(header_with_contig) + "\n" + line.strip() + "\n"
+    chrom, pos, vid, ref, alt, qual, flt, info = fields[:8]
 
-    with tempfile.NamedTemporaryFile(mode="w+", suffix=".vcf") as tmp:
-        tmp.write(vcf_text)
-        tmp.flush()
+    # --- CHROM ---
+    if not chrom or not re.fullmatch(r"[\w.-]+", chrom):
+        return error(f"Invalid CHROM field: {chrom!r}")
 
+    # --- POS ---
+    if not pos.isdigit() or int(pos) < 1:
+        return error(f"Invalid POS: {pos}")
+
+    # --- REF ---
+    if not re.fullmatch(r"[ACGTN]+", ref):
+        return error(f"Invalid REF: {ref}")
+
+    # --- ALT ---
+    if var_type == "SVTYPE":
+        # SV ALT must be in <TYPE> format and match official SV types
+        if not alt.startswith("<") or not alt.endswith(">"):
+            return error(f"Invalid SV ALT format: {alt}")
+        svtype = alt[1:-1]  # strip < >
+        base_type = svtype.split(":", 1)[0]  # handle extended forms like INS:ME
+        if base_type.lower() not in SV_TYPES:
+            return error(f"Invalid SVTYPE in ALT: {base_type} (got {alt})")
+    else:  # SNV / small variant
+        if not re.fullmatch(r"[ACGTN,]+", alt):
+            return error(f"Invalid SNV ALT: {alt}")
+
+    # --- QUAL ---
+    if qual != ".":
         try:
-            vcf = VCF(tmp.name)
-            record = next(iter(vcf))
-        except Exception as e:
-            LOG.warning(f"VCF error:{line} -> {e}")
-            return False
+            float(qual)
+        except ValueError:
+            return error(f"Invalid QUAL: {qual}")
 
-    ref = record.REF
-    alt = record.ALT[0] if record.ALT else None
+    # --- FILTER ---
+    if flt != "." and not re.fullmatch(r"[A-Za-z0-9_;]+", flt):
+        return error(f"Invalid FILTER: {flt}")
 
-    if not ref or not alt:
-        LOG.warning(f"VCF error: {line} -> REF or ALT allele missing")
-        return False
-
-    is_sv = variant_type == "SVTYPE"
-
-    if not is_sv and any(base not in NUCLEOTIDES for base in ref):
-        LOG.warning(f"VCF error: {line} -> REF must be nucleotides: {NUCLEOTIDES}")
-        return False
-    # For SVs, allow REF to be N or any placeholder, skip check
-
-    if is_sv:
-        if alt not in SYMBOLIC_ALTS:
-            LOG.warning(f"VCF error: {line} -> ALT must be symbolic: {SYMBOLIC_ALTS}")
-            return False
-    else:
-        if any(base not in NUCLEOTIDES for base in alt):
-            LOG.warning(f"VCF error: {line} -> ALT must be nucleotides: {NUCLEOTIDES}")
-            return False
+    # --- INFO ---
+    if info != ".":
+        parts = info.split(";")
+        for p in parts:
+            if "=" in p:
+                k, v = p.split("=", 1)
+                if not k or not v:
+                    return error(f"Invalid INFO key=value pair: {p}")
+            elif not p:
+                return error(f"Empty INFO segment: {info}")
 
     return True
-
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     """
@@ -304,5 +319,5 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
 
     variant_string = "\t".join(vcf_fields)
 
-    if validate_vcf_line(variant_type=var_type, chrom=vcf_fields[0], line=variant_string):
+    if validate_vcf_line(var_type=var_type, line=variant_string):
         return variant_string
