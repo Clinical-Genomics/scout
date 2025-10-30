@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)
 - Render the case report's pedigree SVG to a temporary file without Cairo when exporting it to PDF (#5791)
 - Deprecate python 3.9 which has reached its EOL, default build to 3.14 (#5818)
+- Don't build in editable mode for Docker images (#5819)
+- Restored installation of chanjo-report from PyPI (#5820)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
