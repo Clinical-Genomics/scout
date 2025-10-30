@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bulk dismiss STR variants from variantS page (#5774)
 - Delete flag for update individual command (#5793)
 - Update report command, with a delete flag (#5793)
+- Display phase blocks gtf - new key on individuals, parsed from case load config or updated via CLI (#5822)
 ### Changed
 - Refactored variantS pages to share an intermediate template (#5774)
 - Removed ClinVar submissions instructions from case pages - it's still present on the ClinVar submissions page (#5806)

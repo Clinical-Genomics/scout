@@ -16,6 +16,7 @@ def test_build_individual():
         "phenotype": "affected",
         "bam_file": "scout/demo/reduced_mt.bam",
         "paraphase_alignment_path": "scout/demo/reduced_mt.bam",
+        "phase_blocks": "scout/demo/643594.hg38.blocks.gtf.gz",
         "assembly_alignment_path": "scout/demo/reduced_mt.bam",
         "capture_kits": ["Agilent"],
     }
@@ -32,6 +33,7 @@ def test_build_individual():
     assert ind_obj["phenotype"] == 2
     assert ind_obj["bam_file"].endswith(ind_info["bam_file"])
     assert ind_obj["paraphase_alignment_path"].endswith(ind_info["bam_file"])
+    assert ind_obj["phase_blocks"].endswith(ind_info["phase_blocks"])
     assert ind_obj["assembly_alignment_path"].endswith(ind_info["bam_file"])
     assert ind_obj["analysis_type"] == "unknown"
 

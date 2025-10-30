@@ -146,6 +146,17 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
+                      {% for pbtrack in phase_blocks %}
+                      {
+                        type: "annotation",
+                        format: 'gtf',
+                        displayMode: "EXPANDED",
+                        name: '{{ pbtrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=pbtrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
+                        color: "rgb(40, 40, 200)",
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for atrack in assembly_alignments %}
                       {
                         type: "alignment",
