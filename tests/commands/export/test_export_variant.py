@@ -1,4 +1,4 @@
-from scout.commands.export.variant import validate_vcf_line
+from scout.utils.vcf import validate_vcf_line
 
 
 def test_validate_vcf_line():

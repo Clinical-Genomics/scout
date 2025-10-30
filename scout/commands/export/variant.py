@@ -2,7 +2,7 @@ import datetime
 import json as json_lib
 import logging
 import os
-import re
+
 from typing import Tuple
 
 import click
@@ -21,10 +21,9 @@ from scout.server.extensions import store
 
 from .export_handler import bson_handler
 from .utils import build_option, json_option
+from scout.utils.vcf import validate_vcf_line
 
 LOG = logging.getLogger(__name__)
-
-from scout.constants.variant_tags import SV_TYPES
 
 
 @click.command("verified", short_help="Export validated variants")
@@ -208,73 +207,6 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
         variant_string = get_vcf_entry(variant_obj, case_id=case_id)
         click.echo(variant_string)
 
-
-def validate_vcf_line(var_type: str, line: str) -> bool:
-    """
-    Validate a single VCF line (SNV or SV).
-
-    Parameters:
-        var_type (str): "TYPE" for SNVs, "SVTYPE" for structural variants
-        line (str): The VCF data line (tab-separated)
-    """
-    def error(msg: str):
-        print(f"❌ {msg}\n   Line: {line.strip()}")
-        return False
-
-    fields = line.strip().split('\t')
-    if len(fields) < 8:
-        return error("Less than 8 VCF fields.")
-
-    chrom, pos, vid, ref, alt, qual, flt, info = fields[:8]
-
-    # --- CHROM ---
-    if not chrom or not re.fullmatch(r"[\w.-]+", chrom):
-        return error(f"Invalid CHROM field: {chrom!r}")
-
-    # --- POS ---
-    if not pos.isdigit() or int(pos) < 1:
-        return error(f"Invalid POS: {pos}")
-
-    # --- REF ---
-    if not re.fullmatch(r"[ACGTN]+", ref):
-        return error(f"Invalid REF: {ref}")
-
-    # --- ALT ---
-    if var_type == "SVTYPE":
-        # SV ALT must be in <TYPE> format and match official SV types
-        if not alt.startswith("<") or not alt.endswith(">"):
-            return error(f"Invalid SV ALT format: {alt}")
-        svtype = alt[1:-1]  # strip < >
-        base_type = svtype.split(":", 1)[0]  # handle extended forms like INS:ME
-        if base_type.lower() not in SV_TYPES:
-            return error(f"Invalid SVTYPE in ALT: {base_type} (got {alt})")
-    else:  # SNV / small variant
-        if not re.fullmatch(r"[ACGTN,]+", alt):
-            return error(f"Invalid SNV ALT: {alt}")
-
-    # --- QUAL ---
-    if qual != ".":
-        try:
-            float(qual)
-        except ValueError:
-            return error(f"Invalid QUAL: {qual}")
-
-    # --- FILTER ---
-    if flt != "." and not re.fullmatch(r"[A-Za-z0-9_;]+", flt):
-        return error(f"Invalid FILTER: {flt}")
-
-    # --- INFO ---
-    if info != ".":
-        parts = info.split(";")
-        for p in parts:
-            if "=" in p:
-                k, v = p.split("=", 1)
-                if not k or not v:
-                    return error(f"Invalid INFO key=value pair: {p}")
-            elif not p:
-                return error(f"Empty INFO segment: {info}")
-
-    return True
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     """
