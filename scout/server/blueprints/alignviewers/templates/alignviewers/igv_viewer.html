@@ -150,10 +150,14 @@
                       {
                         type: "annotation",
                         format: 'gtf',
-                        displayMode: "EXPANDED",
+                        displayMode: "COLLAPSED",
                         name: '{{ pbtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=pbtrack.url, institute_id=institute_id, case_name=case_display_name) | safe }}',
+                        {% if pbtrack.indexURL %}
+                          indexURL: '{{ url_for("alignviewers.remote_static", file=pbtrack.indexURL, institute_id=institute_id, case_name=case_display_name) | safe }}',
+                        {% endif %}
                         color: "rgb(40, 40, 200)",
+                        visibilityWindow: 0,
                         sourceType: 'file'
                       },
                       {% endfor %}
