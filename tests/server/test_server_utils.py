@@ -200,6 +200,19 @@ def test_find_index_cram_crai():
             assert index.endswith("cram.crai")
 
 
+def test_find_index_gtf():
+    """Test to find a bam index"""
+    # GIVEN a case with this type of track files
+    # .gtf.gz, with index .gtf.gz.tbi
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.NamedTemporaryFile(dir=tmpdirname, suffix=".gtf.gz.tbi") as idx:
+            gtf_file = idx.name.replace(".tbi", "")
+            # THEN the find_index function should return the correct index file
+            index = find_index(gtf_file)
+            assert index.endswith(".gz.tbi")
+
+
 def test_append_safe_no_except():
     """Test to append_safe"""
     # GIVEN a simple dict with list

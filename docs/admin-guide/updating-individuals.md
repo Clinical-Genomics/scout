@@ -29,6 +29,7 @@ And the tracks that can be updated are the following:
 - mt_bam
 - vcf2cytosure
 - paraphase_alignment_path
+- phase_blocks
 - rhocall_bed
 - rhocall_wig
 - tiddit_coverage_wig

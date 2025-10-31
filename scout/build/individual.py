@@ -12,6 +12,7 @@ BUILD_INDIVIDUAL_FILES = [
     "minor_allele_frequency_wig",
     "mt_bam",
     "paraphase_alignment_path",
+    "phase_blocks",
     "rhocall_bed",
     "rhocall_wig",
     "rna_alignment_path",

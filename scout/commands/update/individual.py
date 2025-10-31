@@ -23,6 +23,7 @@ UPDATE_DICT = {
     "mt_bam": "path",
     "omics_sample_id": "str",  # RNA sample id for connected wts outliers
     "paraphase_alignment_path": "path",
+    "phase_blocks": "path",
     "reviewer.alignment": "path",
     "reviewer.alignment_index": "path",
     "reviewer.vcf": "path",

@@ -129,6 +129,7 @@ HUMAN_GENES_38 = {
 
 CASE_SPECIFIC_TRACKS = {
     "paraphase_alignments": "Paraphase Alignment",
+    "phase_blocks": "Phase Blocks",
     "assembly_alignments": "de novo Assembly Alignment",
     "minor_allele_frequency_wigs": "SV Caller Minor Allele Frequency",
     "rhocall_beds": "Rhocall Zygosity",
@@ -157,6 +158,7 @@ CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP = [
         "append_to": "paraphase_alignments",
         "index": None,
     },
+    {"path": "phase_blocks", "append_to": "phase_blocks", "index": None},
     {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": None},
     {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": None},
     {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": None},

@@ -31,6 +31,7 @@ SAMPLES_FILE_PATH_CHECKS = [
     "minor_allele_frequency_wig",
     "mitodel_file",
     "paraphase_alignment_path",
+    "phase_blocks",
     "rhocall_bed",
     "rhocall_wig",
     "rna_alignment_path",
@@ -230,6 +231,7 @@ class SampleLoader(BaseModel):
     msi: Optional[str] = None
     mt_bam: Optional[str] = None
     paraphase_alignment_path: Optional[str] = None
+    phase_blocks: Optional[str] = None
     phenotype: Literal["affected", "unaffected", "unknown"]
     predicted_ancestry: Optional[str] = None
     reviewer: Optional[REViewer] = REViewer()
