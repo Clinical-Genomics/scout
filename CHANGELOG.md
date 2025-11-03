@@ -23,7 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
 - Missing size_selector in old filters containing a size criterion, causing the variantS page to crash (#5817)
 - Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
-- GnomAD links for the STR variant page (#5823)- Empty string as END position is not longer accepted when exporting manages variants to VCF file. END will be omitted for SNVs instead (#5813)
+- GnomAD links for the STR variant page (#5823)
+- Empty string as END position is no longer accepted when exporting managed variants SVs to VCF file. INFO.END will be omitted for SNVs (#5813)
 
 ## [4.105.2]
 ### Fixed
