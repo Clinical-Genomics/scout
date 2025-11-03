@@ -31,7 +31,7 @@ def validate_alt(
     if var_type != "SVTYPE":
         return validate_snv_alt(alt, line)
 
-    svtype = extract_svtype(info, line)
+    svtype = extract_svtype(info)
     if svtype is None:
         return False, f"Missing SVTYPE in INFO\n   Line: {line.strip()}"
 
@@ -53,7 +53,7 @@ def validate_snv_alt(alt: str, line: str) -> tuple[bool, str | None]:
     return False, f"Invalid SNV ALT: {alt}\n   Line: {line.strip()}"
 
 
-def extract_svtype(info: str, line: str) -> str | None:
+def extract_svtype(info: str) -> str | None:
     match = re.search(r"SVTYPE=([^;]+)", info)
     return match.group(1).upper() if match else None
 
@@ -113,7 +113,7 @@ def validate_info(var_type: str, info: str, line: str) -> tuple[bool, str | None
     return True, None
 
 
-def validate_vcf_line(var_type: str, line: str) -> bool:
+def validate_vcf_line(var_type: str, line: str) -> tuple[bool, str | None]:
     """
     Validate a single VCF line (SNV or SV) by delegating to smaller helper functions.
     """
