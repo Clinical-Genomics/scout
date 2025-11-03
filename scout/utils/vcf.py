@@ -26,46 +26,59 @@ def validate_alt(
 ) -> tuple[bool, str | None]:
     """
     Validate the ALT field for a VCF line.
+    Returns (is_valid, error_message)
     """
-    if var_type == "SVTYPE":
-        # Extract declared SVTYPE from INFO
-        svtype_match = re.search(r"SVTYPE=([^;]+)", info)
-        if not svtype_match:
-            return False, f"Missing SVTYPE in INFO\n   Line: {line.strip()}"
-        svtype = svtype_match.group(1).upper()
+    if var_type != "SVTYPE":
+        return validate_snv_alt(alt, line)
 
-        # Breakend ALT
-        if svtype == "BND":
-            if "[" in alt or "]" in alt:
-                return True, None
-            return False, f"Invalid BND ALT: {alt}\n   Line: {line.strip()}"
+    svtype = extract_svtype(info, line)
+    if svtype is None:
+        return False, f"Missing SVTYPE in INFO\n   Line: {line.strip()}"
 
-        # Symbolic ALT (standard SV)
-        if alt.startswith("<") and alt.endswith(">"):
-            base_type = alt[1:-1].split(":", 1)[0].upper()
-            if base_type.lower() not in SV_TYPES:
-                return (
-                    False,
-                    f"Invalid SVTYPE in ALT: {base_type} (got {alt})\n   Line: {line.strip()}",
-                )
-            return True, None
+    if svtype == "BND":
+        return validate_bnd_alt(alt, line)
 
-        # Allow ALT = REF (common for DEL/INS/DUP/INV)
-        if svtype in {"DEL", "INS", "DUP", "INV"}:
-            if alt == ref:
-                return True, None
-            # Optional: allow ALT = first base of REF for long deletions
-            if len(ref) > 1 and ref.startswith(alt):
-                return True, None
+    if is_symbolic_alt(alt):
+        return validate_symbolic_alt(alt, line)
 
-        # Anything else is invalid
-        return False, f"Invalid SV ALT for SVTYPE {svtype}: {alt}\n   Line: {line.strip()}"
+    if svtype in {"DEL", "INS", "DUP", "INV"}:
+        return validate_ref_alt(alt, ref, line)
 
-    else:
-        # SNV / small variant ALT
-        if not re.fullmatch(r"[ACGTN,]+", alt):
-            return False, f"Invalid SNV ALT: {alt}\n   Line: {line.strip()}"
+    return False, f"Invalid SV ALT for SVTYPE {svtype}: {alt}\n   Line: {line.strip()}"
+
+
+def validate_snv_alt(alt: str, line: str) -> tuple[bool, str | None]:
+    if re.fullmatch(r"[ACGTN,]+", alt):
         return True, None
+    return False, f"Invalid SNV ALT: {alt}\n   Line: {line.strip()}"
+
+
+def extract_svtype(info: str, line: str) -> str | None:
+    match = re.search(r"SVTYPE=([^;]+)", info)
+    return match.group(1).upper() if match else None
+
+
+def validate_bnd_alt(alt: str, line: str) -> tuple[bool, str | None]:
+    if "[" in alt or "]" in alt:
+        return True, None
+    return False, f"Invalid BND ALT: {alt}\n   Line: {line.strip()}"
+
+
+def is_symbolic_alt(alt: str) -> bool:
+    return alt.startswith("<") and alt.endswith(">")
+
+
+def validate_symbolic_alt(alt: str, line: str) -> tuple[bool, str | None]:
+    base_type = alt[1:-1].split(":", 1)[0].lower()
+    if base_type in SV_TYPES:
+        return True, None
+    return False, f"Invalid SVTYPE in ALT: {base_type} (got {alt})\n   Line: {line.strip()}"
+
+
+def validate_ref_alt(alt: str, ref: str, line: str) -> tuple[bool, str | None]:
+    if alt == ref or (len(ref) > 1 and ref.startswith(alt)):
+        return True, None
+    return False, f"Invalid SV ALT for REF-based SV: {alt}\n   Line: {line.strip()}"
 
 
 def validate_qual(qual: str, line: str) -> tuple[bool, str | None]:
@@ -83,7 +96,7 @@ def validate_filter(flt: str, line: str) -> tuple[bool, str | None]:
     return True, None
 
 
-def validate_info(var_type: str, info: str, line: str) -> bool:
+def validate_info(var_type: str, info: str, line: str) -> tuple[bool, str | None]:
     if info != ".":
         parts = info.split(";")
         for p in parts:
