@@ -250,5 +250,5 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
 
     variant_string = "\t".join(vcf_fields)
 
-    if validate_vcf_line(var_type=var_type, line=variant_string):
+    if validate_vcf_line(var_type=var_type, line=variant_string)[0]:
         return variant_string
