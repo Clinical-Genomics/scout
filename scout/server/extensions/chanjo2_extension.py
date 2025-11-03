@@ -143,20 +143,4 @@ class Chanjo2Client:
             except ValueError:
                 return False
 
-        gene_cov = gene_cov_json.get("content")
-        if not gene_cov:
-            return False  # No samples = not full coverage
-
-        for sample in gene_cov.keys():
-            cov_percent = gene_cov[sample].get("coverage_completeness_percent")
-
-            # Treat "NA" or None as incomplete
-            if cov_percent == "NA" or cov_percent is None:
-                return False
-            try:
-                if float(cov_percent) < 100:
-                    return False
-            except ValueError:
-                return False
-
         return True
