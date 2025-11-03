@@ -850,54 +850,57 @@ class QueryHandler(object):
                 )
 
             if criterion == "p_value":
-                mongo_secondary_query.append(_get_query_outlier(query))
+                p_value = query.get("p_value")
+                mongo_secondary_query.append(
+                    {
+                        "$or": [
+                            {"p_value": {"$lt": p_value}},
+                            {"p_value": {"$exists": False}},
+                            {"p_value": None},
+                        ]
+                    }
+                )
+
+        if outlier_query := _get_query_outlier(query):
+            mongo_secondary_query.append(outlier_query)
 
         return mongo_secondary_query
 
 
 def _get_query_outlier(query: dict) -> dict:
-    """Outlier pvalue queries can be for either the adjusted or unadjusted p_value.
-    The adjusted p_value fields have different names for expression and splicing outliers.
-    For the clinical filter base expression, we also need delta_psi (with p_adjust_gene), but not l2fc.
+    """Outlier P value queries can be for either the adjusted or unadjusted p_value.
+    The adjusted p_value fields have different names for expression and splicing outliers, and
+    both can be used together in the same query.
+    For the clinical filter base expression, we also need delta_psi for fraser (with p_adjust_gene),
+    but not for outrider (with padjust and l2fc).
     """
-    p_value = query.get("p_value")
-    adjusted = query.get("adjusted", True)
 
-    if not adjusted:
-        return {
-            "$or": [
-                {"p_value": {"$lt": p_value}},
-                {"p_value": {"$exists": False}},
-                {"p_value": None},
-            ]
-        }
+    p_adjust_gene = query.get("p_adjust_gene")
 
-    outlier_padjust_query = {
-        "$or": [
-            {
-                "$and": [
-                    {"padjust": {"$lt": p_value}},
-                ]
-            },
-            {
-                "$and": [
-                    {"p_adjust_gene": {"$lt": p_value}},
-                ]
-            },
-        ]
-    }
+    outlier_padjust_query = {"$or": []}
 
-    if not (abs_delta_psi := query.get("delta_psi")):
-        pass
-    else:
-        outlier_padjust_query["$or"][1]["$and"].append(
-            {
-                "$or": [
-                    {"delta_psi": {"$gt": abs_delta_psi}},
-                    {"delta_psi": {"$lt": abs_delta_psi}},
-                ]
-            }
-        )
+    for pval_name in {"padjust", "p_adjust_gene"}:
+        if pval := query.get(pval_name):
+            pval_struct = (
+                {
+                    "$and": [
+                        {pval_name: {"$lt": pval}},
+                    ]
+                },
+            )
+
+            if abs_delta_psi := query.get("delta_psi"):
+                pval_struct["$and"].append(
+                    {
+                        "$or": [
+                            {"delta_psi": {"$gt": abs_delta_psi}},
+                            {"delta_psi": {"$lt": abs_delta_psi}},
+                        ]
+                    }
+                )
+
+            outlier_padjust_query["$or"].append(pval_struct)
+
     return outlier_padjust_query
 
 
