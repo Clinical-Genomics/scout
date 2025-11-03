@@ -201,7 +201,7 @@ def test_find_index_cram_crai():
 
 
 def test_find_index_gtf():
-    """Test to find a bam index"""
+    """Test to find a gtf index"""
     # GIVEN a case with this type of track files
     # .gtf.gz, with index .gtf.gz.tbi
 
