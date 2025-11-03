@@ -479,11 +479,16 @@ def find_index(align_file):
     if align_file.endswith("cram"):
         index_file = align_file.replace(".cram", ".crai")
         if not os.path.exists(index_file):
-            index_file = "{}.crai".format(align_file)
-    else:
+            index_file = f"{align_file}.crai"
+    elif align_file.endswith("bam"):
         index_file = align_file.replace(".bam", ".bai")
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
+    elif align_file.endswith(".gz"):
+        index_file = align_file.replace(".gz", ".tbi")
+        if not os.path.exists(index_file):
+            index_file = f"{align_file}.tbi"
+
     return index_file
 
 
