@@ -138,7 +138,7 @@ class Chanjo2Client:
             if cov_percent == "NA" or cov_percent is None:
                 return False
             try:
-                if float(cov_percent) < 100:
+                if round(float(cov_percent), 2) < 100:
                     return False
             except ValueError:
                 return False
