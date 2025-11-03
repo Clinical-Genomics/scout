@@ -21,46 +21,58 @@ def validate_ref(ref: str, line: str) -> tuple[bool, str | None]:
     return True, None
 
 
-def validate_alt(var_type: str, alt: str, line: str) -> tuple[bool, str | None]:
+def validate_alt(
+    var_type: str, alt: str, ref: str, info: str, line: str
+) -> tuple[bool, str | None]:
     """
-    Validate the ALT field of a VCF line.
-    """
+    Validate the ALT field for a VCF line.
 
+    Parameters:
+        var_type (str): "TYPE" for SNVs, "SVTYPE" for structural variants
+        alt (str): ALT column from the VCF line
+        ref (str): REF column from the VCF line
+        info (str): INFO column from the VCF line
+        line (str): Full VCF line (used for error reporting)
+
+    Returns:
+        Tuple[bool, Optional[str]]: (is_valid, error_message)
+    """
     if var_type == "SVTYPE":
-        # Extract declared SVTYPE from INFO field
-        declared_svtype = None
-        info_fields = line.strip().split("\t")[7].split(";")
-        for f in info_fields:
-            if f.startswith("SVTYPE="):
-                declared_svtype = f.split("=", 1)[1].upper()
-                break
+        # Extract declared SVTYPE from INFO
+        svtype_match = re.search(r"SVTYPE=([^;]+)", info)
+        if not svtype_match:
+            return False, f"Missing SVTYPE in INFO\n   Line: {line.strip()}"
+        svtype = svtype_match.group(1).upper()
 
-        # If no SVTYPE declared, fail
-        if not declared_svtype:
-            return False, f"Missing SVTYPE in INFO field\n   Line: {line.strip()}"
-
-        # BND / breakends
-        if declared_svtype == "BND":
+        # Breakend ALT
+        if svtype == "BND":
             if "[" in alt or "]" in alt:
                 return True, None
-            else:
-                return False, f"ALT does not match SVTYPE=BND: {alt}\n   Line: {line.strip()}"
+            return False, f"Invalid BND ALT: {alt}\n   Line: {line.strip()}"
 
-        # Standard symbolic SVs
+        # Symbolic ALT (standard SV)
         if alt.startswith("<") and alt.endswith(">"):
-            svtype_alt = alt[1:-1].split(":", 1)[0].upper()
-            if svtype_alt.lower() not in SV_TYPES:
+            base_type = alt[1:-1].split(":", 1)[0].upper()
+            if base_type.lower() not in SV_TYPES:
                 return (
                     False,
-                    f"Invalid SVTYPE in ALT: {svtype_alt} (got {alt})\n   Line: {line.strip()}",
+                    f"Invalid SVTYPE in ALT: {base_type} (got {alt})\n   Line: {line.strip()}",
                 )
             return True, None
 
-        # Anything else is invalid
-        return False, f"Invalid SV ALT for SVTYPE {declared_svtype}: {alt}\n   Line: {line.strip()}"
+        # Allow ALT = REF (common for DEL/INS/DUP/INV)
+        if svtype in {"DEL", "INS", "DUP", "INV"}:
+            if alt == ref:
+                return True, None
+            # Optional: allow ALT = first base of REF for long deletions
+            if len(ref) > 1 and ref.startswith(alt):
+                return True, None
 
-    # SNVs / small variants
+        # Anything else is invalid
+        return False, f"Invalid SV ALT for SVTYPE {svtype}: {alt}\n   Line: {line.strip()}"
+
     else:
+        # SNV / small variant ALT
         if not re.fullmatch(r"[ACGTN,]+", alt):
             return False, f"Invalid SNV ALT: {alt}\n   Line: {line.strip()}"
         return True, None
@@ -112,7 +124,7 @@ def validate_vcf_line(var_type: str, line: str) -> bool:
         validate_chrom(chrom, line),
         validate_pos(pos, line),
         validate_ref(ref, line),
-        validate_alt(var_type, alt, line),
+        validate_alt(var_type, alt, ref, info, line),
         validate_qual(qual, line),
         validate_filter(flt, line),
         validate_info(var_type, info, line),
