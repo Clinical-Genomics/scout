@@ -38,26 +38,3 @@ CLINICAL_FILTER_BASE_OUTLIER = {
     "padjust": 0.05,
     "p_adjust_gene": 0.1,
 }
-
-"""
-    "$and": [
-        {"variant_type": "clinical"},
-        {
-            "$or": [
-                {"padjust": {"$lt": 0.05}},
-                {
-                    "$and": [
-                        {"p_adjust_gene": {"$lt": 0.1}},
-                        {
-                            "$or": [  # absolute(deltaPsi)
-                                {"delta_psi": {"$gt": 0.1}},
-                                {"delta_psi": {"$lt": -0.1}},
-                            ]
-                        },
-                    ]
-                },
-            ]
-        },
-    ]
-}
-"""
