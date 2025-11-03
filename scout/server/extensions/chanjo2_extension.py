@@ -85,42 +85,38 @@ class Chanjo2Client:
     def get_gene_complete_coverage(
         self, hgnc_id: int, threshold: int = 15, individuals: dict = {}, build: str = "38"
     ) -> bool:
-        """
-        Return complete coverage for hgnc_id at a coverage threshold.
-        """
+        """Return True if all samples have complete coverage for a gene."""
         chanjo_build = CHANJO_BUILD_37 if "37" in build else CHANJO_BUILD_38
-        chanjo2_gene_cov_url: str = "/".join(
-            [current_app.config.get("CHANJO2_URL"), "coverage/d4/genes/summary"]
-        )
+        chanjo2_gene_cov_url = f"{current_app.config.get('CHANJO2_URL')}/coverage/d4/genes/summary"
+
+        # Build query payload
+        samples = [
+            {"coverage_file_path": ind["d4_file"], "name": ind["individual_id"]}
+            for ind in individuals
+            if ind.get("d4_file")
+        ]
+        analysis_types = [ind.get("analysis_type") for ind in individuals if ind.get("d4_file")]
+
+        interval_type = "genes"
+        if "wes" in analysis_types:
+            interval_type = "exons"
+        elif "wts" in analysis_types:
+            interval_type = "transcripts"
 
         gene_cov_query = {
             "build": chanjo_build,
             "coverage_threshold": threshold,
             "hgnc_gene_ids": [hgnc_id],
-            "interval_type": "genes",
-            "samples": [],
+            "interval_type": interval_type,
+            "samples": samples,
         }
-        analysis_types = []
+
+        # Auth + request
         refresh_token()
-        id_token = session["token_response"]["id_token"] if session.get("token_response") else ""
-        request_headers = {"Authorization": f"Bearer {id_token}"}
-
-        for ind in individuals:
-            if not ind.get("d4_file"):
-                continue
-
-            gene_cov_query["samples"].append(
-                {"coverage_file_path": ind["d4_file"], "name": ind["individual_id"]}
-            )
-            analysis_types.append(ind.get("analysis_type"))
-
-        if "wes" in analysis_types:
-            gene_cov_query["interval_type"] = "exons"
-        elif "wts" in analysis_types:
-            gene_cov_query["interval_type"] = "transcripts"
-
+        id_token = session.get("token_response", {}).get("id_token", "")
+        headers = {"Authorization": f"Bearer {id_token}"}
         gene_cov_json = post_request_json(
-            url=chanjo2_gene_cov_url, data=gene_cov_query, headers=request_headers
+            url=chanjo2_gene_cov_url, data=gene_cov_query, headers=headers
         )
 
         if gene_cov_json.get("status_code") != 200:
@@ -128,19 +124,16 @@ class Chanjo2Client:
                 f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}"
             )
 
-        gene_cov = gene_cov_json.get("content")
-        if not gene_cov:
-            return False
-
-        for sample in gene_cov.keys():
-            cov_percent = gene_cov[sample].get("coverage_completeness_percent")
-
-            if cov_percent == "NA" or cov_percent is None:
+        # Evaluate coverage
+        gene_cov = gene_cov_json.get("content") or {}
+        for cov_data in gene_cov.values():
+            cov_percent = cov_data.get("coverage_completeness_percent")
+            if cov_percent in ("NA", None):
                 return False
             try:
                 if round(float(cov_percent), 2) < 100:
                     return False
-            except ValueError:
+            except (TypeError, ValueError):
                 return False
 
         return True
