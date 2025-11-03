@@ -40,6 +40,20 @@ def test_validate_vcf_line():
     sv_missing_brackets = "2\t2000\t.\tN\tDEL\t.\t.\tEND=2050;SVTYPE=DEL"
     assert validate_vcf_line("SVTYPE", sv_missing_brackets)[0] is False
 
+    # --- BND / breakend ALT tests ---
+    bnd1 = "4\t4000\t.\tN\tN]chr2:12345]\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", bnd1)[0] is True
+
+    bnd2 = "5\t5000\t.\tN\t[chr3:54321[N\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", bnd2)[0] is True
+
+    bnd3 = "6\t6000\t.\tN\tA]chr1:11111]\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", bnd3)[0] is True
+
+    # --- Invalid BND ALT ---
+    invalid_bnd = "7\t7000\t.\tN\t<DEL>\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", invalid_bnd)[0] is False
+
     # --- QUAL field tests ---
     snv_invalid_qual = "1\t1000\t.\tA\tT\tXYZ\t.\tTYPE=SNV"
     assert validate_vcf_line("TYPE", snv_invalid_qual)[0] is False

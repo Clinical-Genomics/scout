@@ -22,16 +22,56 @@ def validate_ref(ref: str, line: str) -> tuple[bool, str | None]:
 
 
 def validate_alt(var_type: str, alt: str, line: str) -> tuple[bool, str | None]:
+    """
+    Validate the ALT field of a VCF line.
+
+    Parameters:
+        var_type (str): "TYPE" for SNVs, "SVTYPE" for structural variants
+        alt (str): ALT field
+        line (str): full VCF line for context in error messages
+
+    Returns:
+        tuple[bool, Optional[str]]: (is_valid, error_message)
+    """
+
     if var_type == "SVTYPE":
-        if not alt.startswith("<") or not alt.endswith(">"):
-            return False, f"Invalid SV ALT format: {alt}\n   Line: {line.strip()}"
-        svtype = alt[1:-1].split(":", 1)[0]  # handle extended forms like INS:ME
-        if svtype.lower() not in SV_TYPES:
-            return False, f"Invalid SVTYPE in ALT: {svtype} (got {alt})\n   Line: {line.strip()}"
+        # Extract declared SVTYPE from INFO field
+        declared_svtype = None
+        info_fields = line.strip().split("\t")[7].split(";")
+        for f in info_fields:
+            if f.startswith("SVTYPE="):
+                declared_svtype = f.split("=", 1)[1].upper()
+                break
+
+        # If no SVTYPE declared, fail
+        if not declared_svtype:
+            return False, f"Missing SVTYPE in INFO field\n   Line: {line.strip()}"
+
+        # BND / breakends
+        if declared_svtype == "BND":
+            if "[" in alt or "]" in alt:
+                return True, None
+            else:
+                return False, f"ALT does not match SVTYPE=BND: {alt}\n   Line: {line.strip()}"
+
+        # Standard symbolic SVs
+        if alt.startswith("<") and alt.endswith(">"):
+            svtype_alt = alt[1:-1].split(":", 1)[0].upper()
+            if svtype_alt.lower() not in SV_TYPES:
+                return (
+                    False,
+                    f"Invalid SVTYPE in ALT: {svtype_alt} (got {alt})\n   Line: {line.strip()}",
+                )
+            return True, None
+
+        # Anything else is invalid
+        return False, f"Invalid SV ALT for SVTYPE {declared_svtype}: {alt}\n   Line: {line.strip()}"
+
+    # SNVs / small variants
     else:
         if not re.fullmatch(r"[ACGTN,]+", alt):
             return False, f"Invalid SNV ALT: {alt}\n   Line: {line.strip()}"
-    return True, None
+        return True, None
 
 
 def validate_qual(qual: str, line: str) -> tuple[bool, str | None]:
