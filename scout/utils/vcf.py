@@ -24,14 +24,6 @@ def validate_ref(ref: str, line: str) -> tuple[bool, str | None]:
 def validate_alt(var_type: str, alt: str, line: str) -> tuple[bool, str | None]:
     """
     Validate the ALT field of a VCF line.
-
-    Parameters:
-        var_type (str): "TYPE" for SNVs, "SVTYPE" for structural variants
-        alt (str): ALT field
-        line (str): full VCF line for context in error messages
-
-    Returns:
-        tuple[bool, Optional[str]]: (is_valid, error_message)
     """
 
     if var_type == "SVTYPE":
