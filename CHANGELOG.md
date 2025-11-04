@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
 - GnomAD links for the STR variant page (#5823)
 - Clinical filter for outlier variants (#5828)
+- Decipher query was treated as a primary - now secondary again (#5828)
 
 ## [4.105.2]
 ### Fixed

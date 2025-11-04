@@ -206,86 +206,80 @@ class QueryHandler(object):
         # set up the fundamental query params: case_id, category, type and
         # restrict to list of variants (if var list is provided)
         for criterion in FUNDAMENTAL_CRITERIA:
-            if criterion == "case_id":
-                LOG.debug("Building a mongo query for %s" % case_id)
-                mongo_query["case_id"] = case_id
-                continue
+            match criterion:
+                case "case_id":
+                    LOG.debug("Building a mongo query for %s" % case_id)
+                    mongo_query["case_id"] = case_id
 
-            if criterion == "variant_ids" and variant_ids:
-                LOG.debug("Adding variant_ids %s to query" % ", ".join(variant_ids))
-                mongo_query["variant_id"] = {"$in": variant_ids}
-                continue
+                case "variant_ids":
+                    if variant_ids:
+                        mongo_query["variant_id"] = {"$in": variant_ids}
 
-            if criterion == "category":
-                LOG.debug("Querying category %s" % category)
-                mongo_query["category"] = category
-                continue
+                case "category":
+                    mongo_query["category"] = category
 
-            if criterion == "variant_type":
-                mongo_query["variant_type"] = query.get("variant_type", "clinical")
-                LOG.debug("Set variant type to %s", mongo_query["variant_type"])
-                continue
+                case "variant_type":
+                    mongo_query["variant_type"] = query.get("variant_type", "clinical")
 
-            # Requests to filter based on gene panels, hgnc_symbols or
-            # coordinate ranges must always be honored. They are always added to
-            # query as top level, implicit '$and'. When hgnc_symbols or gene panels
-            # are used, addition of relative gene symbols is delayed until after
-            # the rest of the query content is clear.
+                # Requests to filter based on gene panels, hgnc_symbols or
+                # coordinate ranges must always be honored. They are always added to
+                # query as top level, implicit '$and'. When hgnc_symbols or gene panels
+                # are used, addition of relative gene symbols is delayed until after
+                # the rest of the query content is clear.
 
-            if criterion in ["hgnc_symbols", "gene_panels"]:
-                gene_query = self.gene_filter(query, build=build)
-                if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
-                    mongo_query["hgnc_ids"] = {
-                        CRITERION_EXCLUDE_OPERATOR[
-                            bool(query.get("gene_panels_exclude"))
-                        ]: gene_query
-                    }
-                continue
+                case "hgnc_symbols" | "gene_panels":
+                    gene_query = self.gene_filter(query, build=build)
+                    if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
+                        mongo_query["hgnc_ids"] = {
+                            CRITERION_EXCLUDE_OPERATOR[
+                                bool(query.get("gene_panels_exclude"))
+                            ]: gene_query
+                        }
 
-            if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
-                query_chrom = query.get("chrom")
-                if isinstance(query_chrom, list):
-                    if "" in query_chrom or query_chrom == []:
-                        LOG.debug(f"Query chrom {query_chrom} has All selected")
-                        continue
-                    if len(query_chrom) == 1:
-                        query["chrom"] = query_chrom[0]
-                    else:
-                        mongo_query["chromosome"] = {"$in": query_chrom}
-                        continue
-                coordinate_query = None
-                if category in ["snv", "cancer"]:
-                    mongo_query["chromosome"] = query.get("chrom")
-                    if query.get("start") and query.get("end"):
-                        self.coordinate_filter(query, mongo_query)
-                else:  # sv
-                    coordinate_query = [self.sv_coordinate_query(query)]
-                continue
+                case "chrom":
+                    if query.get("chrom"):  # filter by coordinates
+                        query_chrom = query.get("chrom")
+                        if isinstance(query_chrom, list):
+                            if "" in query_chrom or query_chrom == []:
+                                LOG.debug(f"Query chrom {query_chrom} has All selected")
+                                continue
+                            if len(query_chrom) == 1:
+                                query["chrom"] = query_chrom[0]
+                            else:
+                                mongo_query["chromosome"] = {"$in": query_chrom}
+                                continue
+                        coordinate_query = None
+                        if category in ["snv", "cancer"]:
+                            mongo_query["chromosome"] = query.get("chrom")
+                            if query.get("start") and query.get("end"):
+                                self.coordinate_filter(query, mongo_query)
+                        else:  # sv
+                            coordinate_query = [self.sv_coordinate_query(query)]
 
-            if criterion == "variant_ids" and variant_ids:
-                LOG.debug("Adding variant_ids %s to query" % ", ".join(variant_ids))
-                mongo_query["variant_id"] = {"$in": variant_ids}
-                continue
+                case "variant_ids":
+                    if variant_ids:
+                        mongo_query["variant_id"] = {"$in": variant_ids}
 
-            # Do not retrieve dismissed variants if hide_dismissed checkbox is checked in filter form
-            if criterion == "hide_dismissed" and query.get(criterion) is True:
-                mongo_query["dismiss_variant"] = {"$in": [None, []]}
+                # Do not retrieve dismissed variants if hide_dismissed checkbox is checked in filter form
+                case "hide_dismissed":
+                    if query.get(criterion) is True:
+                        mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
-            gt_query = _get_query_genotype(query)
-            if criterion == "show_unaffected" and query.get(criterion) is False:
-                self.affected_inds_query(mongo_query, case_id, gt_query)
+                case "show_unaffected":
+                    if query.get(criterion) is False:
+                        self.affected_inds_query(mongo_query, case_id, _get_query_genotype(query))
 
-            if criterion == "show_soft_filtered" and query.get(criterion) is False:
-                self.soft_filters_query(query=query, mongo_query=mongo_query)
+                case "show_soft_filtered":
+                    if query.get(criterion) is False:
+                        self.soft_filters_query(query=query, mongo_query=mongo_query)
 
-            ##### end of fundamental query params
+        ##### end of fundamental query params
 
         ##### start of the custom query params
         # there is only 'clinsig' criterion among the primary terms right now
         primary_terms = False
 
-        # gnomad_frequency, local_obs, local_obs_freq, clingen_ngi, swegen, swegen_freq, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
-        # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, somatic_score, control_frequency, tumor_frequency
+        # most  criteria fall into the secondary category, e.g. gnomad_frequency, local_obs, size, somatic_score etc
         secondary_terms = False
 
         # check if any of the primary criteria was specified in the query
@@ -308,7 +302,7 @@ class QueryHandler(object):
         # such as a Pathogenic ClinSig.
 
         if secondary_terms is True:
-            secondary_filter = self.secondary_query(query, mongo_query)
+            secondary_filter = self.secondary_query(query)
             # If there are no primary criteria given, all secondary criteria are added as a
             # top level '$and' to the query.
             if secondary_filter and primary_terms is False:
@@ -572,297 +566,289 @@ class QueryHandler(object):
 
         return list(hgnc_ids)
 
-    def secondary_query(self, query, mongo_query, secondary_filter=None):
-        """Creates a secondary query object based on secondary parameters specified by user
+    def secondary_query(self, query: dict) -> list:
+        """Creates a secondary query object based on secondary parameters specified by user.
 
-        Args:
-            query(dict): a dictionary of query filters specified by the users
-            mongo_query(dict): the query that is going to be submitted to the database
+        Based on the query dictionary of query filters specified by the users,
+        a list of dictionaries with secondary query parameters is created.
 
-        Returns:
-            mongo_secondary_query(list): a dictionary with secondary query parameters
-
+        We first set the sample genotype call fiter if the somewhat mixed fundamental criterion "show unaffected"
+        is given.
         """
         LOG.debug("Creating a query object with secondary parameters")
 
         mongo_secondary_query = []
 
-        # loop over secondary query criteria
+        if query.get("show_unaffected") and (gt_query := _get_query_genotype(query)):
+            mongo_secondary_query.append({"samples.genotype_call": gt_query})
+
         for criterion in SECONDARY_CRITERIA:
             if not query.get(criterion):
                 continue
 
-            if criterion == "gnomad_frequency":
-                gnomad = query.get("gnomad_frequency")
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"gnomad_frequency": {"$lt": float(gnomad)}},
-                            {"gnomad_frequency": NOT_EXISTS},
-                        ]
-                    }
-                )
-
-            for local_obs_old_type in [
-                "local_obs_old",
-                "local_obs_cancer_germline_old",
-                "local_obs_cancer_somatic_old",
-                "local_obs_cancer_somatic_panel_old",
-            ]:
-                if criterion == local_obs_old_type:
-                    local_obs = query.get(local_obs_old_type)
+            match criterion:
+                case "gnomad_frequency":
+                    gnomad = query.get("gnomad_frequency")
                     mongo_secondary_query.append(
                         {
                             "$or": [
-                                {local_obs_old_type: None},
-                                {local_obs_old_type: {"$lt": local_obs + 1}},
+                                {"gnomad_frequency": {"$lt": float(gnomad)}},
+                                {"gnomad_frequency": NOT_EXISTS},
                             ]
                         }
                     )
 
-            if criterion == "local_obs_freq":
-                local_obs_freq = query.get("local_obs_freq")
-                mongo_secondary_query.append(
-                    {
+                case (
+                    "local_obs_old"
+                    | "local_obs_cancer_germline_old"
+                    | "local_obs_cancer_somatic_old"
+                    | "local_obs_cancer_somatic_panel_old"
+                ):
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {criterion: None},
+                                {criterion: {"$lt": query.get(criterion) + 1}},
+                            ]
+                        }
+                    )
+
+                case "local_obs_freq":
+                    local_obs_freq = query.get("local_obs_freq")
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"local_obs_old_freq": None},
+                                {"local_obs_old_freq": {"$lt": local_obs_freq}},
+                            ]
+                        }
+                    )
+
+                case "swegen_freq":
+                    swegen = query.get("swegen_freq")
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"swegen_mei_max": {"$lt": float(swegen)}},
+                                {"swegen_mei_max": NOT_EXISTS},
+                            ]
+                        }
+                    )
+
+                case "clingen_ngi" | "swegen":
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {criterion: NOT_EXISTS},
+                                {criterion: {"$lt": query[criterion] + 1}},
+                            ]
+                        }
+                    )
+
+                case "spidex_human":
+                    # construct spidex query. Build the or part starting with empty SPIDEX values
+                    spidex_human = query["spidex_human"]
+
+                    spidex_query_or_part = []
+                    if "not_reported" in spidex_human:
+                        spidex_query_or_part.append({"spidex": NOT_EXISTS})
+
+                    for spidex_level in SPIDEX_HUMAN:
+                        if spidex_level in spidex_human:
+                            spidex_query_or_part.append(
+                                {
+                                    "$or": [
+                                        {
+                                            "$and": [
+                                                {
+                                                    "spidex": {
+                                                        "$gt": SPIDEX_HUMAN[spidex_level]["neg"][0]
+                                                    }
+                                                },
+                                                {
+                                                    "spidex": {
+                                                        "$lt": SPIDEX_HUMAN[spidex_level]["neg"][1]
+                                                    }
+                                                },
+                                            ]
+                                        },
+                                        {
+                                            "$and": [
+                                                {
+                                                    "spidex": {
+                                                        "$gt": SPIDEX_HUMAN[spidex_level]["pos"][0]
+                                                    }
+                                                },
+                                                {
+                                                    "spidex": {
+                                                        "$lt": SPIDEX_HUMAN[spidex_level]["pos"][1]
+                                                    }
+                                                },
+                                            ]
+                                        },
+                                    ]
+                                }
+                            )
+
+                    mongo_secondary_query.append({"$or": spidex_query_or_part})
+
+                case "revel":
+                    revel = query["revel"]
+                    revel_query = {"revel": {"$gt": float(revel)}}
+                    revel_query = {"$or": [revel_query, {"revel": NOT_EXISTS}]}
+
+                    mongo_secondary_query.append(revel_query)
+
+                case "rank_score":
+                    rank_score_query = {
                         "$or": [
-                            {"local_obs_old_freq": None},
-                            {"local_obs_old_freq": {"$lt": local_obs_freq}},
+                            {"rank_score": {"$gte": float(query["rank_score"])}},
+                            {"rank_score": NOT_EXISTS},
                         ]
                     }
-                )
+                    mongo_secondary_query.append(rank_score_query)
 
-            if criterion == "swegen_freq":
-                swegen = query.get("swegen_freq")
-                mongo_secondary_query.append(
-                    {
+                case "cadd_score":
+                    cadd = query["cadd_score"]
+                    cadd_query = {"cadd_score": {"$gt": float(cadd)}}
+
+                    if query.get("cadd_inclusive") is True:
+                        cadd_query = {"$or": [cadd_query, {"cadd_score": NOT_EXISTS}]}
+
+                    mongo_secondary_query.append(cadd_query)
+
+                case "genetic_models" | "functional_annotations" | "region_annotations":
+                    criterion_values = query[criterion]
+                    if criterion == "genetic_models":
+                        mongo_secondary_query.append({criterion: {"$in": criterion_values}})
+                    else:
+                        # filter key will be genes.[criterion (minus final char)]
+                        mongo_secondary_query.append(
+                            {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
+                        )
+
+                case "size":
+                    size = query["size"]
+                    size_selector = query.get("size_selector") or "$gte"
+
+                    size_query = {
                         "$or": [
-                            {"swegen_mei_max": {"$lt": float(swegen)}},
-                            {"swegen_mei_max": NOT_EXISTS},
+                            {"$expr": {size_selector: [{"$abs": "$length"}, size]}},
+                            {"length": NOT_EXISTS},  # Include documents where 'length' is missing
                         ]
                     }
-                )
 
-            if criterion in ["clingen_ngi", "swegen"]:
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {criterion: NOT_EXISTS},
-                            {criterion: {"$lt": query[criterion] + 1}},
-                        ]
-                    }
-                )
+                    mongo_secondary_query.append(size_query)
 
-            if criterion == "spidex_human":
-                # construct spidex query. Build the or part starting with empty SPIDEX values
-                spidex_human = query["spidex_human"]
+                case "svtype":
+                    svtype = query["svtype"]
+                    mongo_secondary_query.append(
+                        {
+                            "sub_category": {
+                                "$in": [re.compile(sub_category) for sub_category in svtype]
+                            }
+                        }
+                    )
 
-                spidex_query_or_part = []
-                if "not_reported" in spidex_human:
-                    spidex_query_or_part.append({"spidex": NOT_EXISTS})
+                case "decipher":
+                    mongo_secondary_query.append({"decipher": EXISTS})
 
-                for spidex_level in SPIDEX_HUMAN:
-                    if spidex_level in spidex_human:
-                        spidex_query_or_part.append(
+                case "depth":
+                    mongo_secondary_query.append({"tumor.read_depth": {"$gt": query.get("depth")}})
+
+                case "alt_count":
+                    mongo_secondary_query.append(
+                        {"tumor.alt_depth": {"$gt": query.get("alt_count")}}
+                    )
+
+                case "somatic_score":
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"somatic_score": {"$gt": query.get("somatic_score")}},
+                                {"somatic_score": NOT_EXISTS},
+                            ]
+                        }
+                    )
+
+                case "control_frequency":
+                    mongo_secondary_query.append(
+                        {"normal.alt_freq": {"$lt": float(query.get("control_frequency"))}}
+                    )
+
+                case "tumor_frequency":
+                    mongo_secondary_query.append(
+                        {"tumor.alt_freq": {"$gt": float(query.get("tumor_frequency"))}}
+                    )
+
+                case "mvl_tag":
+                    mongo_secondary_query.append({"mvl_tag": EXISTS})
+
+                case "cosmic_tag":
+                    mongo_secondary_query.append({"cosmic_ids": EXISTS_NOT_NULL})
+
+                case "fusion_score":
+                    mongo_secondary_query.append(
+                        {"fusion_score": {"$gte": float(query.get("fusion_score"))}}
+                    )
+
+                case "ffpm":
+                    mongo_secondary_query.append(
+                        {"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}}
+                    )
+                case "junction_reads":
+                    mongo_secondary_query.append(
+                        {"samples.0.read_depth": {"$gte": int(query.get("junction_reads"))}}
+                    )
+                case "split_reads":
+                    mongo_secondary_query.append(
+                        {"samples.0.split_read": {"$gte": int(query.get("split_reads"))}}
+                    )
+                case "fusion_caller":
+                    fusion_caller_query = []
+                    for caller in query.get("fusion_caller", []):
+                        fusion_caller_query.append({caller: "Pass"})
+                    mongo_secondary_query.append({"$or": fusion_caller_query})
+
+                case "clinsig_onc":
+                    elem_match = re.compile("|".join(query.get("clinsig_onc")))
+
+                    if query.get("clinsig_onc_exclude"):
+                        mongo_secondary_query.append(
                             {
                                 "$or": [
                                     {
-                                        "$and": [
-                                            {
-                                                "spidex": {
-                                                    "$gt": SPIDEX_HUMAN[spidex_level]["neg"][0]
-                                                }
-                                            },
-                                            {
-                                                "spidex": {
-                                                    "$lt": SPIDEX_HUMAN[spidex_level]["neg"][1]
-                                                }
-                                            },
-                                        ]
-                                    },
-                                    {
-                                        "$and": [
-                                            {
-                                                "spidex": {
-                                                    "$gt": SPIDEX_HUMAN[spidex_level]["pos"][0]
-                                                }
-                                            },
-                                            {
-                                                "spidex": {
-                                                    "$lt": SPIDEX_HUMAN[spidex_level]["pos"][1]
-                                                }
-                                            },
-                                        ]
-                                    },
+                                        "clnsig_onc.value": {"$not": elem_match}
+                                    },  # Exclude values in `elem_match`
+                                    CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
+                                    CLNSIG_ONC_NULL,  # Field is null
                                 ]
                             }
                         )
+                    else:
+                        mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
-                mongo_secondary_query.append({"$or": spidex_query_or_part})
-
-            if criterion == "revel":
-                revel = query["revel"]
-                revel_query = {"revel": {"$gt": float(revel)}}
-                revel_query = {"$or": [revel_query, {"revel": NOT_EXISTS}]}
-
-                mongo_secondary_query.append(revel_query)
-
-            if criterion == "rank_score":
-                rank_score_query = {
-                    "$or": [
-                        {"rank_score": {"$gte": float(query["rank_score"])}},
-                        {"rank_score": NOT_EXISTS},
-                    ]
-                }
-                mongo_secondary_query.append(rank_score_query)
-
-            if criterion == "cadd_score":
-                cadd = query["cadd_score"]
-                cadd_query = {"cadd_score": {"$gt": float(cadd)}}
-
-                if query.get("cadd_inclusive") is True:
-                    cadd_query = {"$or": [cadd_query, {"cadd_score": NOT_EXISTS}]}
-
-                mongo_secondary_query.append(cadd_query)
-
-            gt_query = _get_query_genotype(query)
-            if gt_query and query.get("show_unaffected") is True:
-                mongo_secondary_query.append({"samples.genotype_call": gt_query})
-
-            if criterion in [
-                "genetic_models",
-                "functional_annotations",
-                "region_annotations",
-            ]:
-                criterion_values = query[criterion]
-                if criterion == "genetic_models":
-                    mongo_secondary_query.append({criterion: {"$in": criterion_values}})
-                else:
-                    # filter key will be genes.[criterion (minus final char)]
-                    mongo_secondary_query.append(
-                        {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
-                    )
-
-            if criterion == "size":
-                size = query["size"]
-                size_selector = query.get("size_selector") or "$gte"
-
-                size_query = {
-                    "$or": [
-                        {"$expr": {size_selector: [{"$abs": "$length"}, size]}},
-                        {"length": NOT_EXISTS},  # Include documents where 'length' is missing
-                    ]
-                }
-
-                mongo_secondary_query.append(size_query)
-
-            if criterion == "svtype":
-                svtype = query["svtype"]
-                mongo_secondary_query.append(
-                    {"sub_category": {"$in": [re.compile(sub_category) for sub_category in svtype]}}
-                )
-
-            if criterion == "decipher":
-                mongo_query["decipher"] = EXISTS
-
-            if criterion == "depth":
-                mongo_secondary_query.append({"tumor.read_depth": {"$gt": query.get("depth")}})
-
-            if criterion == "alt_count":
-                mongo_secondary_query.append({"tumor.alt_depth": {"$gt": query.get("alt_count")}})
-
-            if criterion == "somatic_score":
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"somatic_score": {"$gt": query.get("somatic_score")}},
-                            {"somatic_score": NOT_EXISTS},
-                        ]
-                    }
-                )
-
-            if criterion == "control_frequency":
-                mongo_secondary_query.append(
-                    {"normal.alt_freq": {"$lt": float(query.get("control_frequency"))}}
-                )
-
-            if criterion == "tumor_frequency":
-                mongo_secondary_query.append(
-                    {"tumor.alt_freq": {"$gt": float(query.get("tumor_frequency"))}}
-                )
-
-            if criterion == "mvl_tag":
-                mongo_secondary_query.append({"mvl_tag": EXISTS})
-
-            if criterion == "cosmic_tag":
-                mongo_secondary_query.append({"cosmic_ids": EXISTS})
-                mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
-
-            if criterion == "fusion_score":
-                mongo_secondary_query.append(
-                    {"fusion_score": {"$gte": float(query.get("fusion_score"))}}
-                )
-            if criterion == "ffpm":
-                mongo_secondary_query.append({"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}})
-            if criterion == "junction_reads":
-                mongo_secondary_query.append(
-                    {"samples.0.read_depth": {"$gte": int(query.get("junction_reads"))}}
-                )
-            if criterion == "split_reads":
-                mongo_secondary_query.append(
-                    {"samples.0.split_read": {"$gte": int(query.get("split_reads"))}}
-                )
-            if criterion == "fusion_caller":
-                fusion_caller_query = []
-                for caller in query.get("fusion_caller", []):
-                    fusion_caller_query.append({caller: "Pass"})
-                mongo_secondary_query.append({"$or": fusion_caller_query})
-
-            if criterion == "clinsig_onc":
-
-                elem_match = re.compile("|".join(query.get("clinsig_onc")))
-
-                if query.get("clinsig_onc_exclude"):
+                case "l2fc" | "delta_psi":
+                    criterion_value = query.get(criterion)
                     mongo_secondary_query.append(
                         {
                             "$or": [
-                                {
-                                    "clnsig_onc.value": {"$not": elem_match}
-                                },  # Exclude values in `elem_match`
-                                CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
-                                CLNSIG_ONC_NULL,  # Field is null
+                                {criterion: {"$gt": criterion_value}},
+                                {criterion: {"$lt": -criterion_value}},
+                                {criterion: {"$exists": False}},
+                                {criterion: None},
                             ]
                         }
                     )
-                else:
-                    mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
-            if criterion in ["l2fc", "delta_psi"]:
-                criterion_value = query.get(criterion)
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {criterion: {"$gt": criterion_value}},
-                            {criterion: {"$lt": -criterion_value}},
-                            {criterion: {"$exists": False}},
-                            {criterion: None},
-                        ]
-                    }
-                )
+                case "p_value":
+                    p_value = query.get("p_value")
+                    mongo_secondary_query.append(
+                        {"p_value": {"$lt": p_value}},
+                    )
 
-            if criterion == "p_value":
-                p_value = query.get("p_value")
-                mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"p_value": {"$lt": p_value}},
-                            {"p_value": {"$exists": False}},
-                            {"p_value": None},
-                        ]
-                    }
-                )
-
-        if criterion in {"padjust", "p_adjust_gene"}:
-            mongo_secondary_query.append(_get_query_outlier(query))
+                case "padjust" | "p_adjust_gene":
+                    mongo_secondary_query.append(_get_query_outlier(query))
 
         return mongo_secondary_query
 

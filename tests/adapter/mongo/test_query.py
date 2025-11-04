@@ -590,8 +590,7 @@ def test_build_has_cosmic_ids(
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert {"cosmic_ids": {"$exists": True}} in mongo_query["$and"]
-    assert {"cosmic_ids": {"$ne": None}} in mongo_query["$and"]
+    assert {"cosmic_ids": {"$exists": True, "$ne": None}} in mongo_query["$and"]
 
 
 def test_build_clinsig_high_confidence(adapter):
@@ -750,11 +749,10 @@ def test_build_local_obs_freq(adapter):
 
 def test_build_decipher(adapter):
     case_id = "cust000"
-    count = 1
     query = {"decipher": True}
 
     mongo_query = adapter.build_query(case_id, query=query)
-    assert mongo_query["decipher"] == {"$exists": True}
+    assert mongo_query["$and"][0]["decipher"] == {"$exists": True}
 
 
 def test_build_query_clnsig_oncogenicity(adapter, case_obj):
