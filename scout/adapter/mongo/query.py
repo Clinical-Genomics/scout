@@ -766,10 +766,7 @@ class QueryHandler(object):
                         {"samples.0.split_read": {"$gte": int(query.get("split_reads"))}}
                     )
                 case "fusion_caller":
-                    fusion_caller_query = []
-                    for caller in query.get("fusion_caller", []):
-                        fusion_caller_query.append({caller: "Pass"})
-                    mongo_secondary_query.append({"$or": fusion_caller_query})
+                    mongo_secondary_query.append({"$or": _get_fusion_caller_query(query)})
 
                 case "clinsig_onc":
                     elem_match = re.compile("|".join(query.get("clinsig_onc")))
@@ -901,3 +898,10 @@ def _get_genotype_query(query):
         return {"$in": ["0/1", "1/0"]}
     elif q_value:
         return q_value
+
+
+def _get_fusion_caller_query(query: dict) -> list:
+    """Return query part for fusion callers"""
+    fusion_caller_query = []
+    for caller in query.get("fusion_caller", []):
+        fusion_caller_query.append({caller: "Pass"})
