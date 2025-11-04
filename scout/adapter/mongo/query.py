@@ -208,7 +208,6 @@ class QueryHandler(object):
         for criterion in FUNDAMENTAL_CRITERIA:
             match criterion:
                 case "case_id":
-                    LOG.debug("Building a mongo query for %s" % case_id)
                     mongo_query["case_id"] = case_id
 
                 case "variant_ids":
@@ -255,10 +254,6 @@ class QueryHandler(object):
                                 self.coordinate_filter(query, mongo_query)
                         else:  # sv
                             coordinate_query = [self.sv_coordinate_query(query)]
-
-                case "variant_ids":
-                    if variant_ids:
-                        mongo_query["variant_id"] = {"$in": variant_ids}
 
                 # Do not retrieve dismissed variants if hide_dismissed checkbox is checked in filter form
                 case "hide_dismissed":
@@ -574,6 +569,9 @@ class QueryHandler(object):
 
         We first set the sample genotype call fiter if the somewhat mixed fundamental criterion "show unaffected"
         is given.
+
+        When looping over the secondary criteria, note that we only should apply the outlier filter once, if either
+        of the clincial
         """
         LOG.debug("Creating a query object with secondary parameters")
 
@@ -581,6 +579,12 @@ class QueryHandler(object):
 
         if query.get("show_unaffected") and (gt_query := _get_query_genotype(query)):
             mongo_secondary_query.append({"samples.genotype_call": gt_query})
+
+        if query.get("padjust") or query.get("p_adjust_gene"):
+            mongo_secondary_query.append(_get_query_outlier(query))
+            LOG.info(
+                f"using padjust for filtering - query was {query}, secondary filter is {mongo_secondary_query}"
+            )
 
         for criterion in SECONDARY_CRITERIA:
             if not query.get(criterion):
@@ -828,14 +832,29 @@ class QueryHandler(object):
                     else:
                         mongo_secondary_query.append({"clnsig_onc.value": elem_match})
 
-                case "l2fc" | "delta_psi":
+                case "delta_psi":
+                    if query.get("p_adjust_gene"):
+                        continue
                     criterion_value = query.get(criterion)
                     mongo_secondary_query.append(
                         {
                             "$or": [
                                 {criterion: {"$gt": criterion_value}},
                                 {criterion: {"$lt": -criterion_value}},
-                                {criterion: {"$exists": False}},
+                                {criterion: NOT_EXISTS},
+                                {criterion: None},
+                            ]
+                        }
+                    )
+
+                case "l2fc":
+                    criterion_value = query.get(criterion)
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {criterion: {"$gt": criterion_value}},
+                                {criterion: {"$lt": -criterion_value}},
+                                {criterion: NOT_EXISTS},
                                 {criterion: None},
                             ]
                         }
@@ -846,9 +865,6 @@ class QueryHandler(object):
                     mongo_secondary_query.append(
                         {"p_value": {"$lt": p_value}},
                     )
-
-                case "padjust" | "p_adjust_gene":
-                    mongo_secondary_query.append(_get_query_outlier(query))
 
         return mongo_secondary_query
 
@@ -865,21 +881,20 @@ def _get_query_outlier(query: dict) -> dict:
 
     for pval_name in {"padjust", "p_adjust_gene"}:
         if pval := query.get(pval_name):
-            pval_struct = {
-                "$and": [
-                    {pval_name: {"$lt": pval}},
-                ]
-            }
+            pval_struct = {pval_name: {"$lt": pval}}
 
-            if abs_delta_psi := query.get("delta_psi"):
-                pval_struct["$and"].append(
-                    {
-                        "$or": [
-                            {"delta_psi": {"$gt": abs_delta_psi}},
-                            {"delta_psi": {"$lt": abs_delta_psi}},
-                        ]
-                    }
-                )
+            if (abs_delta_psi := query.get("delta_psi")) and pval_name == "p_adjust_gene":
+                pval_struct = {
+                    "$and": [
+                        pval_struct,
+                        {
+                            "$or": [
+                                {"delta_psi": {"$gt": abs_delta_psi}},
+                                {"delta_psi": {"$lt": abs_delta_psi}},
+                            ]
+                        },
+                    ]
+                }
 
             outlier_padjust_query["$or"].append(pval_struct)
 
