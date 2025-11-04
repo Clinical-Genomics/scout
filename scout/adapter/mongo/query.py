@@ -650,7 +650,7 @@ class QueryHandler(object):
                     )
 
                 case "spidex_human":
-                    mongo_secondary_query.append({"$or": get_spidex_query(query)})
+                    mongo_secondary_query.append({"$or": _get_spidex_query(query)})
 
                 case "revel":
                     revel = query["revel"]
@@ -769,7 +769,7 @@ class QueryHandler(object):
                     mongo_secondary_query.append({"$or": _get_fusion_caller_query(query)})
 
                 case "clinsig_onc":
-                    mongo_secondary_query.append(get_clinsig_onc_query(query))
+                    mongo_secondary_query.append(_get_clinsig_onc_query(query))
 
                 case "delta_psi":
                     if query.get("p_adjust_gene"):
