@@ -677,15 +677,16 @@ class QueryHandler(object):
 
                     mongo_secondary_query.append(cadd_query)
 
-                case "genetic_models" | "functional_annotations" | "region_annotations":
+                case "genetic_models":
                     criterion_values = query[criterion]
-                    if criterion == "genetic_models":
-                        mongo_secondary_query.append({criterion: {"$in": criterion_values}})
-                    else:
-                        # filter key will be genes.[criterion (minus final char)]
-                        mongo_secondary_query.append(
-                            {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
-                        )
+                    mongo_secondary_query.append({criterion: {"$in": criterion_values}})
+
+                case "functional_annotations" | "region_annotations":
+                    # filter key will be genes.[criterion (minus final char)]
+                    criterion_values = query[criterion]
+                    mongo_secondary_query.append(
+                        {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
+                    )
 
                 case "size":
                     size = query["size"]
