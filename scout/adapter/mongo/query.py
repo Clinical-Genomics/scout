@@ -808,7 +808,7 @@ class QueryHandler(object):
         return mongo_secondary_query
 
 
-def _get_spidex_query(query: dict) -> dict:
+def _get_spidex_query(query: dict) -> list:
     """Construct spidex query. Build the or part starting with empty SPIDEX values."""
     spidex_human = query["spidex_human"]
 
