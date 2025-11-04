@@ -80,7 +80,9 @@
           {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
         {% endif %}
       </td>
-      <td class="text-end">{{ '%.3e' % variant.p_value }}</td>
+      <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
+        {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
+        ">{{ '%.3e' % variant.p_value }}</td>
       <td>{% for sample in variant.samples %}
           {% if sample.genotype_call != "./." %}
             <div>{{ sample.display_name }}</div>

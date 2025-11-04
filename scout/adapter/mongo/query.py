@@ -836,6 +836,7 @@ def _get_spidex_query(query: dict) -> dict:
                     ]
                 }
             )
+    return spidex_query_or_part
 
 
 def _get_outlier_query(query: dict) -> dict:
@@ -908,3 +909,4 @@ def _get_fusion_caller_query(query: dict) -> list:
     fusion_caller_query = []
     for caller in query.get("fusion_caller", []):
         fusion_caller_query.append({caller: "Pass"})
+    return fusion_caller_query
