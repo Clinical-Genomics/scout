@@ -89,7 +89,6 @@ class Chanjo2Client:
         chanjo_build = CHANJO_BUILD_37 if "37" in build else CHANJO_BUILD_38
         chanjo2_gene_cov_url = f"{current_app.config.get('CHANJO2_URL')}/coverage/d4/genes/summary"
 
-        # Build query payload
         samples = [
             {"coverage_file_path": ind["d4_file"], "name": ind["individual_id"]}
             for ind in individuals
@@ -111,7 +110,6 @@ class Chanjo2Client:
             "samples": samples,
         }
 
-        # Auth + request
         refresh_token()
         id_token = session.get("token_response", {}).get("id_token", "")
         headers = {"Authorization": f"Bearer {id_token}"}
@@ -124,7 +122,6 @@ class Chanjo2Client:
                 f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}"
             )
 
-        # Evaluate coverage
         gene_cov = gene_cov_json.get("content") or {}
         for cov_data in gene_cov.values():
             cov_percent = cov_data.get("coverage_completeness_percent")
