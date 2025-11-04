@@ -114,7 +114,9 @@
                   <button id="{{variant._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
                     <span class="fa fa-pen-square"></span>
                   </button>
-                  <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
+                  <button id="remove_{{variant.managed_variant_id}}" type="button" class="btn btn-danger btn-xs" onclick="removeVariant('{{variant.managed_variant_id}}')">
+                    <span class="fa fa-trash"></span>
+                  </button>
               </form>
             </div>
           </td>
@@ -282,6 +284,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
+  function removeVariant(variantId) {
+    fetch(`/managed_variant/${variantId}/remove`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ modify_form.csrf_token._value() }}"
+        }
+    }).finally(() => {
+        location.reload();
+    });
+
   $(document).ready(function(){
     setChromosomes();
     set_coords_fields();
@@ -429,7 +441,7 @@
     value = document.forms["filters_form"].elements[cytobandElem].value
     modifyElem.value = value
   }
-
+}
 
 </script>
 {% endblock %}
