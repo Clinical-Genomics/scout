@@ -262,7 +262,7 @@ class QueryHandler(object):
 
                 case "show_unaffected":
                     if query.get(criterion) is False:
-                        self.affected_inds_query(mongo_query, case_id, _get_query_genotype(query))
+                        self.affected_inds_query(mongo_query, case_id, _get_genotype_query(query))
 
                 case "show_soft_filtered":
                     if query.get(criterion) is False:
@@ -577,11 +577,11 @@ class QueryHandler(object):
 
         mongo_secondary_query = []
 
-        if query.get("show_unaffected") and (gt_query := _get_query_genotype(query)):
+        if query.get("show_unaffected") and (gt_query := _get_genotype_query(query)):
             mongo_secondary_query.append({"samples.genotype_call": gt_query})
 
         if query.get("padjust") or query.get("p_adjust_gene"):
-            mongo_secondary_query.append(_get_query_outlier(query))
+            mongo_secondary_query.append(_get_outlier_query(query))
             LOG.info(
                 f"using padjust for filtering - query was {query}, secondary filter is {mongo_secondary_query}"
             )
@@ -650,51 +650,7 @@ class QueryHandler(object):
                     )
 
                 case "spidex_human":
-                    # construct spidex query. Build the or part starting with empty SPIDEX values
-                    spidex_human = query["spidex_human"]
-
-                    spidex_query_or_part = []
-                    if "not_reported" in spidex_human:
-                        spidex_query_or_part.append({"spidex": NOT_EXISTS})
-
-                    for spidex_level in SPIDEX_HUMAN:
-                        if spidex_level in spidex_human:
-                            spidex_query_or_part.append(
-                                {
-                                    "$or": [
-                                        {
-                                            "$and": [
-                                                {
-                                                    "spidex": {
-                                                        "$gt": SPIDEX_HUMAN[spidex_level]["neg"][0]
-                                                    }
-                                                },
-                                                {
-                                                    "spidex": {
-                                                        "$lt": SPIDEX_HUMAN[spidex_level]["neg"][1]
-                                                    }
-                                                },
-                                            ]
-                                        },
-                                        {
-                                            "$and": [
-                                                {
-                                                    "spidex": {
-                                                        "$gt": SPIDEX_HUMAN[spidex_level]["pos"][0]
-                                                    }
-                                                },
-                                                {
-                                                    "spidex": {
-                                                        "$lt": SPIDEX_HUMAN[spidex_level]["pos"][1]
-                                                    }
-                                                },
-                                            ]
-                                        },
-                                    ]
-                                }
-                            )
-
-                    mongo_secondary_query.append({"$or": spidex_query_or_part})
+                    mongo_secondary_query.append({"$or": get_spidex_query(query)})
 
                 case "revel":
                     revel = query["revel"]
@@ -733,7 +689,7 @@ class QueryHandler(object):
 
                 case "size":
                     size = query["size"]
-                    size_selector = query.get("size_selector") or "$gte"
+                    size_selector = query.get("size_selector", "$gte")
 
                     size_query = {
                         "$or": [
@@ -869,7 +825,37 @@ class QueryHandler(object):
         return mongo_secondary_query
 
 
-def _get_query_outlier(query: dict) -> dict:
+def _get_spidex_query(query: dict) -> dict:
+    """Construct spidex query. Build the or part starting with empty SPIDEX values."""
+    spidex_human = query["spidex_human"]
+
+    spidex_query_or_part = []
+    if "not_reported" in spidex_human:
+        spidex_query_or_part.append({"spidex": NOT_EXISTS})
+
+    for spidex_level in SPIDEX_HUMAN:
+        if spidex_level in spidex_human:
+            spidex_query_or_part.append(
+                {
+                    "$or": [
+                        {
+                            "$and": [
+                                {"spidex": {"$gt": SPIDEX_HUMAN[spidex_level]["neg"][0]}},
+                                {"spidex": {"$lt": SPIDEX_HUMAN[spidex_level]["neg"][1]}},
+                            ]
+                        },
+                        {
+                            "$and": [
+                                {"spidex": {"$gt": SPIDEX_HUMAN[spidex_level]["pos"][0]}},
+                                {"spidex": {"$lt": SPIDEX_HUMAN[spidex_level]["pos"][1]}},
+                            ]
+                        },
+                    ]
+                }
+            )
+
+
+def _get_outlier_query(query: dict) -> dict:
     """Outlier P value queries can be for either the adjusted or unadjusted p_value.
     The adjusted p_value fields have different names for expression and splicing outliers, and
     both can be used together in the same query.
@@ -901,7 +887,7 @@ def _get_query_outlier(query: dict) -> dict:
     return outlier_padjust_query
 
 
-def _get_query_genotype(query):
+def _get_genotype_query(query):
     """Query helper that returns the specific genotype selected by the user for a variantS query
 
     Args:
