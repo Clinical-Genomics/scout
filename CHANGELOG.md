@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
 - GnomAD links for the STR variant page (#5823)
 - `get_gene_complete_coverage` breaking for genes with no intervals on chanjo2, which is returning 'NA' instead of numerical stats (#5830)
+- keep page filters alive when removing managed variants (#5836)
 
 ## [4.105.2]
 ### Fixed
