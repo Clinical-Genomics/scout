@@ -287,9 +287,6 @@
   function removeVariant(variantId) {
     fetch(`/managed_variant/${variantId}/remove`, {
         method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ modify_form.csrf_token._value() }}"
-        }
     }).finally(() => {
         location.reload();
     });
