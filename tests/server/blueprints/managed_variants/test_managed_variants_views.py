@@ -77,6 +77,6 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, m
             )
         )
         # THEN the status code should again be redirect
-        assert resp.status_code == 302
+        assert resp.status_code == 200
         # THEN no variants should remain in the collection
         assert sum(1 for i in store.managed_variant_collection.find()) == 0

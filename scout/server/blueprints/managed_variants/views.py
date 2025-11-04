@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, flash, jsonify, request
+from flask import Blueprint, flash, jsonify, redirect, request
 from flask_login import current_user
 
 from scout.server.extensions import store
