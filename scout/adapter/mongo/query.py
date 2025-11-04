@@ -769,22 +769,7 @@ class QueryHandler(object):
                     mongo_secondary_query.append({"$or": _get_fusion_caller_query(query)})
 
                 case "clinsig_onc":
-                    elem_match = re.compile("|".join(query.get("clinsig_onc")))
-
-                    if query.get("clinsig_onc_exclude"):
-                        mongo_secondary_query.append(
-                            {
-                                "$or": [
-                                    {
-                                        "clnsig_onc.value": {"$not": elem_match}
-                                    },  # Exclude values in `elem_match`
-                                    CLNSIG_ONC_NOT_EXISTS,  # Field does not exist
-                                    CLNSIG_ONC_NULL,  # Field is null
-                                ]
-                            }
-                        )
-                    else:
-                        mongo_secondary_query.append({"clnsig_onc.value": elem_match})
+                    mongo_secondary_query.append(get_clinsig_onc_query(query))
 
                 case "delta_psi":
                     if query.get("p_adjust_gene"):
@@ -898,6 +883,24 @@ def _get_genotype_query(query):
         return {"$in": ["0/1", "1/0"]}
     elif q_value:
         return q_value
+
+
+def _get_clinsig_onc_query(query: dict) -> dict:
+    # Clinsig ONC query part. If clinsig_onc_exclude is set, exclude values in `elem_match`
+    # but then also return unset values.
+
+    elem_match = re.compile("|".join(query.get("clinsig_onc")))
+
+    if query.get("clinsig_onc_exclude"):
+        return {
+            "$or": [
+                {"clnsig_onc.value": {"$not": elem_match}},
+                CLNSIG_ONC_NOT_EXISTS,
+                CLNSIG_ONC_NULL,
+            ]
+        }
+    else:
+        return {"clnsig_onc.value": elem_match}
 
 
 def _get_fusion_caller_query(query: dict) -> list:
