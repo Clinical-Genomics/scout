@@ -399,6 +399,7 @@ def test_parse_individual_files(scout_config, custom_temp_file):
         sample_config["assembly_alignment_path"] = str(custom_temp_file(".bam"))
         sample_config["bam_path"] = str(custom_temp_file(".cram"))
         sample_config["paraphase_alignment_path"] = str(custom_temp_file(".bam"))
+        sample_config["phase_blocks"] = str(custom_temp_file(".gtf.gz"))
         sample_config["minor_allele_frequency_wig"] = str(custom_temp_file(".wig"))
         sample_config["rhocall_bed"] = str(custom_temp_file(".bed"))
         sample_config["rhocall_wig"] = str(custom_temp_file(".wig"))
