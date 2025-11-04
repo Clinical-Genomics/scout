@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from flask import Flask, current_app, session
+from flask import Flask, current_app, flash, session
 
 from scout.server.utils import get_case_mito_chromosome, refresh_token
 from scout.utils.scout_requests import get_request_json, post_request_json
@@ -118,9 +118,10 @@ class Chanjo2Client:
         )
 
         if gene_cov_json.get("status_code") != 200:
-            raise ValueError(
-                f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}"
+            flash(
+                f"Chanjo2 get complete coverage failed: {gene_cov_json.get('message')}", "warning"
             )
+            return False
 
         gene_cov = gene_cov_json.get("content") or {}
         for cov_data in gene_cov.values():
