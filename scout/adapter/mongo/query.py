@@ -875,19 +875,15 @@ def _get_query_outlier(query: dict) -> dict:
     but not for outrider (with padjust and l2fc).
     """
 
-    p_adjust_gene = query.get("p_adjust_gene")
-
     outlier_padjust_query = {"$or": []}
 
     for pval_name in {"padjust", "p_adjust_gene"}:
         if pval := query.get(pval_name):
-            pval_struct = (
-                {
-                    "$and": [
-                        {pval_name: {"$lt": pval}},
-                    ]
-                },
-            )
+            pval_struct = {
+                "$and": [
+                    {pval_name: {"$lt": pval}},
+                ]
+            }
 
             if abs_delta_psi := query.get("delta_psi"):
                 pval_struct["$and"].append(
