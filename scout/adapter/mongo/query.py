@@ -861,8 +861,8 @@ class QueryHandler(object):
                     }
                 )
 
-        if outlier_query := _get_query_outlier(query):
-            mongo_secondary_query.append(outlier_query)
+        if criterion in {"padjust", "p_adjust_gene"}:
+            mongo_secondary_query.append(_get_query_outlier(query))
 
         return mongo_secondary_query
 
