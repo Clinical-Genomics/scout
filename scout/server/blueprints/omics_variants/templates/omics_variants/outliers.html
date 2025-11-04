@@ -118,7 +118,7 @@
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-3">
+  <div class="col-4">
     {{ form.hgnc_symbols.label(class="control-label") }}
     {{ form.hgnc_symbols(class="form-control") }}
   </div>
@@ -134,8 +134,38 @@
     {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
   </div>
   <div class="col-1">
-    {{ form.p_value.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Un-adjusted p-value'}) }}
+    {{ form.p_value.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Un-adjusted P-value'}) }}
     {{ form.p_value(class="form-control") }}
+  </div>
+  <div class="col-1">
+    {{ form.padjust.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Outrider adjusted P-value'}) }}
+    {{ form.padjust(class="form-control") }}
+  </div>
+  <div class="col-1">
+    {{ form.p_adjust_gene.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Fraser gene adjusted P-value'}) }}
+    {{ form.p_adjust_gene(class="form-control") }}
+  </div>
+</div>
+<div class="row">
+  <div class="col-2">
+    {{ form.chrom.label(class="control-label") }}
+    {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+  </div>
+  <div class="col-8">
+    <div class="row">
+      <div class="col">
+        {{ wtf.form_field(form.start) }}
+      </div>
+      <div class="col">
+        {{ wtf.form_field(form.end) }}
+      </div>
+      <div class="col">
+      {{ wtf.form_field(form.cytoband_start) }}
+      </div>
+      <div class="col">
+        {{ wtf.form_field(form.cytoband_end) }}
+      </div>
+    </div>
   </div>
   <div class="col-1">
     {{ form.l2fc.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Absolute log2 fold change'}) }}
@@ -145,24 +175,7 @@
     {{ form.delta_psi.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Absolute ΔΨ value'}) }}
     {{ form.delta_psi(class="form-control") }}
   </div>
-</div>
-<div class="row">
-  <div class="col-2">
-    {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
-  </div>
-  <div class="col-2">
-    {{ wtf.form_field(form.start) }}
-  </div>
-  <div class="col-2">
-    {{ wtf.form_field(form.end) }}
-  </div>
-  <div class="col-2">
-    {{ wtf.form_field(form.cytoband_start) }}
-  </div>
-  <div class="col-2">
-    {{ wtf.form_field(form.cytoband_end) }}
-  </div>
+
 </div>
 <div class="row" style="margin-top:20px;">
     <div class="col-4">
@@ -176,7 +189,7 @@
     </div>
 </div>
 <div class="row" style="margin-top:20px;">
-  <div class="col-2 text-start">
+  <div class="col-2">
     <a href="{{ url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name,
       variant_type=form.variant_type.data) }}"
       class="btn btn-secondary" style="color: #ffffff !important;">
@@ -186,11 +199,10 @@
   <div class="col-6">
     {{ stash_filter_buttons(form, institute, case) }}
   </div>
-
-  <div class="col-2 offset-2">
-      <div class="btn-group">
-        {{ form.sort_by(class="form-select btn btn-primary", style="width: auto;") }}
-        {{ form.sort_order(class="form-select btn btn-primary", style="width: auto;") }}
+  <div class="col-2 offset-2 text-end">
+      <div class="btn-group" role="group">
+        {{ form.sort_by(class="form-select btn btn-primary") }}
+        {{ form.sort_order(class="form-select btn btn-primary") }}
       </div>
     </div>
 </div>
