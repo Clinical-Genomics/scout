@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, flash, redirect, request
+from flask import Blueprint, flash, jsonify, redirect, request
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -52,8 +52,8 @@ def upload_managed_variants():
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
 def modify_managed_variant(variant_id):
+    """Edit one managed variant."""
     edit_form = ManagedVariantModifyForm(request.form)
-
     if not controllers.modify_managed_variant(store, variant_id, edit_form):
         return (
             jsonify(
@@ -69,9 +69,17 @@ def modify_managed_variant(variant_id):
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
 def remove_managed_variant(variant_id):
-    controllers.remove_managed_variant(store, variant_id)
-
-    return safe_redirect_back(request)
+    """Remove one managed variant from the database."""
+    removed_variant = controllers.remove_managed_variant(store, variant_id)
+    if removed_variant:
+        return jsonify({"status": "ok", "variant_id": variant_id})
+    else:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Could not remove managed variant {variant_id}"}
+            ),
+            400,
+        )
 
 
 @managed_variants_bp.route("/managed_variant/add", methods=["POST"])

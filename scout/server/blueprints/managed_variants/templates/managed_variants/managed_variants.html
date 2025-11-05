@@ -114,7 +114,9 @@
                   <button id="{{variant._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
                     <span class="fa fa-pen-square"></span>
                   </button>
-                  <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
+                  <button id="remove_{{variant.managed_variant_id}}" type="button" class="btn btn-danger btn-xs" onclick="removeVariant('{{variant.managed_variant_id}}')">
+                    <span class="fa fa-trash"></span>
+                  </button>
               </form>
             </div>
           </td>
@@ -286,28 +288,16 @@
     const form = document.getElementById(`modify_variant_${variantId}`);
     if (!form) return;
 
-    const formData = new FormData(form);
+    fetch(form.action, { method: "POST", body: new FormData(form) })
+      .finally(() => document.getElementById("filters_form").submit());
+  }
 
-    fetch(form.action, {
-      method: "POST",
-      body: formData,
-      headers: {
-        "X-Requested-With": "XMLHttpRequest" // helps Flask detect AJAX
-      }
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      if (data.status === "ok") {
-        // After successful edit, resubmit the filter form
-        const filterForm = document.getElementById("filters_form");
-        if (filterForm) {
-          filterForm.submit();
-        }
-      } else {
-        alert("Error editing variant: " + data.message);
-      }
-    })
-    .catch(err => console.error("Edit variant request failed:", err));
+  function removeVariant(variantId) {
+    fetch(`/managed_variant/${variantId}/remove`, {
+        method: "POST",
+    }).finally(() => {
+        document.getElementById("filters_form").submit();
+    });
   }
 
   $(document).ready(function(){
@@ -457,7 +447,6 @@
     value = document.forms["filters_form"].elements[cytobandElem].value
     modifyElem.value = value
   }
-
 
 </script>
 {% endblock %}
