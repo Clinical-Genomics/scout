@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deprecate python 3.9 which has reached its EOL, default build to 3.14 (#5818)
 - Don't build in editable mode for Docker images (#5819)
 - Restored installation of chanjo-report from PyPI (#5820)
+- Export of managed variants to VCF is subject to validation. Variants failing validation will raise a warning instead of being included in the VCF file (#5813)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
@@ -25,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
 - GnomAD links for the STR variant page (#5823)
 - `get_gene_complete_coverage` breaking for genes with no intervals on chanjo2, which is returning 'NA' instead of numerical stats (#5830)
+- Cleaner managed variant VCF export and detailed error messages for variants which are not included (#5813)
 
 ## [4.105.2]
 ### Fixed
