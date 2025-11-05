@@ -1,6 +1,9 @@
+import logging
 import re
 
 from scout.constants.variant_tags import SV_TYPES
+
+LOG = logging.getLogger(__name__)
 
 
 def validate_chrom(chrom: str, line: str) -> tuple[bool, str | None]:
@@ -135,10 +138,8 @@ def validate_vcf_line(var_type: str, line: str) -> tuple[bool, str | None]:
 
     for ok, msg in validators:
         if not ok:
-            # Prefix with the line content for better context
             full_msg = f"❌ {msg}"
-            # you can either print or return this message — depending on your use
-            print(full_msg)
+            LOG.error(full_msg)
             return False, msg
 
     return True, None
