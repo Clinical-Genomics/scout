@@ -60,7 +60,7 @@
                   {% if sample.alt_frequency and sample.alt_frequency != -1 and sample.alt_frequency == sample.alt_frequency %}
                     {{ (100*sample.alt_frequency)|round(2) }}%
                   {% else %}
-		    N/A
+                    N/A
                   {% endif %}
                 </td>
               {% endif %}
@@ -90,7 +90,7 @@
                   {% endif%})
                   </td>
                 {% elif variant.category == "str" %}
-                    <small>{{ sample.so }}</small>
+                  <td><small>{{ sample.so }}</small></td>
                 {% else %}
                   <td>{{ sample.genotype_quality }}</td>
                 {% endif %}
