@@ -174,7 +174,7 @@
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
            <button type="button" class="btn btn-primary btn-sm" onclick="editVariant('{{ variant.variant_id }}')">Save</button>
-           <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('modifydiv_{{variant._id}}').style.display='none';">Cancel</button>
+           <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('filters_form').submit()">Cancel</button>
          </div>
       </td>
   </form>
