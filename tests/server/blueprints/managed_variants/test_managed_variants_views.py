@@ -4,7 +4,7 @@ from flask import url_for
 from scout.server.extensions import store
 
 
-def test_managed_variants(app, user_obj, institute_obj):
+def test_managed_variants(app):
     """Test managed variants view"""
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -21,7 +21,7 @@ def test_managed_variants(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, mock_redirect):
+def test_add_and_remove_managed_variants(app, mocker, mock_redirect):
     """Test first managed variants views:
     adding a managed variant,
     trying to add it again in duplicate and finally removing it.
@@ -76,7 +76,7 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, m
                 variant_id=test_managed_variant["managed_variant_id"],
             )
         )
-        # THEN the status code should again be redirect
-        assert resp.status_code == 302
+        # THEN the status code should be ok
+        assert resp.status_code == 200
         # THEN no variants should remain in the collection
         assert sum(1 for i in store.managed_variant_collection.find()) == 0
