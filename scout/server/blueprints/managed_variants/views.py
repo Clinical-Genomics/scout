@@ -59,7 +59,7 @@ def modify_managed_variant(variant_id):
             jsonify(
                 {
                     "status": "error",
-                    "message": f"Could not modify managed variant {variant_id}: {str(e)}",
+                    "message": f"Could not modify managed variant {variant_id}",
                 }
             ),
             400,
