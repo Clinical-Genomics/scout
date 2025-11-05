@@ -92,11 +92,15 @@ def _merge_disease_entries(parsed_diseases: dict, parsed_disease_entry: dict):
     if disease_mim in parsed_diseases:
         if parsed_diseases[disease_mim]["status"] == "established":
             parsed_diseases[disease_mim]["description"] = (
-                parsed_diseases[disease_mim]["description"] + parsed_disease_entry["description"]
+                parsed_diseases[disease_mim]["description"]
+                + ". "
+                + parsed_disease_entry["description"]
             )
         else:
             parsed_diseases[disease_mim]["description"] = (
-                parsed_disease_entry["description"] + parsed_diseases[disease_mim]["description"]
+                parsed_disease_entry["description"]
+                + ". "
+                + parsed_diseases[disease_mim]["description"]
             )
             parsed_diseases[disease_mim]["status"] = parsed_disease_entry["status"]
         parsed_diseases[disease_mim]["inheritance"].update(parsed_disease_entry["inheritance"])
