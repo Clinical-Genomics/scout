@@ -67,4 +67,6 @@ SECONDARY_CRITERIA = [
     "p_value",
     "l2fc",
     "delta_psi",
+    "padjust",
+    "p_adjust_gene",
 ]

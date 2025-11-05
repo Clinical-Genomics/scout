@@ -324,6 +324,9 @@ class OutlierFiltersForm(FlaskForm):
     l2fc = FloatField("|log₂FC|")
     delta_psi = FloatField("|ΔΨ|")
 
+    padjust = FloatField("P adj Outrider")
+    p_adjust_gene = FloatField("P adj Fraser")
+
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
