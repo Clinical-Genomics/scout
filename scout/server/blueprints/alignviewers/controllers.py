@@ -396,6 +396,7 @@ def set_common_tracks(display_obj, build):
 
     # Set up IGV tracks that are common for all cases:
     display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
+    display_obj["chromosomeOrder"] = HUMAN_REFERENCE.get("chromosomeOrder")
 
     # if user settings for igv tracks exist -> use these settings, otherwise display default tracks ---> Genes, ClinVar and ClinVar CNVs
     custom_tracks_names = (
