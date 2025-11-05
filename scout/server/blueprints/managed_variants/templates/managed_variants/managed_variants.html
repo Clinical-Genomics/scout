@@ -171,7 +171,7 @@
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
-           <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
+           <button type="button" class="btn btn-primary btn-sm" onclick="editVariant('{{ variant.variant_id }}')">Save</button>
            <button name="cancel" id="cancel" type="cancel" class="btn btn-secondary btn-sm">Cancel</button>
          </div>
       </td>
@@ -281,6 +281,34 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+  function editVariant(variantId) {
+    const form = document.getElementById(`modify_variant_${variantId}`);
+    if (!form) return;
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest" // helps Flask detect AJAX
+      }
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.status === "ok") {
+        // After successful edit, resubmit the filter form
+        const filterForm = document.getElementById("filters_form");
+        if (filterForm) {
+          filterForm.submit();
+        }
+      } else {
+        alert("Error editing variant: " + data.message);
+      }
+    })
+    .catch(err => console.error("Edit variant request failed:", err));
+  }
 
   $(document).ready(function(){
     setChromosomes();

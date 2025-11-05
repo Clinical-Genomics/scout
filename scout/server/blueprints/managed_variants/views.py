@@ -55,12 +55,16 @@ def modify_managed_variant(variant_id):
     edit_form = ManagedVariantModifyForm(request.form)
 
     if not controllers.modify_managed_variant(store, variant_id, edit_form):
-        flash(
-            "Could not modify variant - does the new variant perhaps already exist?",
-            "warning",
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"Could not modify managed variant {variant_id}: {str(e)}",
+                }
+            ),
+            400,
         )
-
-    return safe_redirect_back(request)
+    return jsonify({"status": "ok", "variant_id": variant_id})
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
