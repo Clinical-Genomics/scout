@@ -288,7 +288,7 @@
     fetch(`/managed_variant/${variantId}/remove`, {
         method: "POST",
     }).finally(() => {
-        location.reload();
+        document.getElementById("filters_form").submit();
     });
   }
 
