@@ -50,7 +50,8 @@
                         fastaURL: "{{ reference_track.fastaURL }}",
                         indexURL: "{{ reference_track.indexURL }}",
                         cytobandURL: "{{ reference_track.cytobandURL }}",
-                        aliasURL: "{{ reference_track.aliasURL }}"
+                        aliasURL: "{{ reference_track.aliasURL }}",
+                      {% if reference_track.chromosomeOrder %}chromosomeOrder: "{{ reference_track.chromosomeOrder }}",{% endif %}
                     },
                 locus: '{{ locus }}',
                 tracks:
