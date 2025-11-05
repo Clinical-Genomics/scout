@@ -27,7 +27,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - GnomAD links for the STR variant page (#5823)
 - `get_gene_complete_coverage` breaking for genes with no intervals on chanjo2, which is returning 'NA' instead of numerical stats (#5830)
 - Cleaner managed variant VCF export and detailed error messages for variants which are not included (#5813)
-- keep page filters alive when removing managed variants (#5836)
+- Chromosome order for hg38 in IGV.js view (#5838)
+- Keep any active page filters alive when removing managed variants (#5836)
 
 ## [4.105.2]
 ### Fixed
