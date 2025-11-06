@@ -29,7 +29,7 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
     If a special symbol is used in the description it indicates the disease status.
 
     """
-    parsed_diseases = []
+    parsed_diseases = {}
 
     for phenotype_info in phenotype_entry.split(";"):
         if not phenotype_info:
@@ -71,15 +71,39 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
             if term in inheritance_text:
                 inheritance.add(INHERITANCE_TERMS_MAPPER[term])
 
-        parsed_diseases.append(
-            {
-                "mim_number": disease_mim,
-                "inheritance": inheritance,
-                "description": disease_description.strip(r"?{}"),
-                "status": disease_status,
-            }
+        parsed_disease_entry = {
+            "mim_number": disease_mim,
+            "inheritance": inheritance,
+            "description": disease_description.strip(r"?{}"),
+            "status": disease_status,
+        }
+        _merge_disease_entries(parsed_diseases, parsed_disease_entry)
+
+    return list(parsed_diseases.values())
+
+
+def _merge_disease_entries(parsed_diseases: dict, parsed_entry: dict):
+    """Merge parsed disease entry into the current dict of parsed diseases.
+    If the old entry was already established, just append the descriptions.
+    Otherwise, the recent entry is set as the first, with the parsed disease entry status.
+    Either way, join the inheritance pattern.
+    """
+    disease_mim = parsed_entry["mim_number"]
+
+    if disease_mim not in parsed_diseases:
+        parsed_diseases[disease_mim] = parsed_entry
+        return
+
+    if parsed_diseases[disease_mim]["status"] == "established":
+        parsed_diseases[disease_mim]["description"] = (
+            parsed_diseases[disease_mim]["description"] + ". " + parsed_entry["description"]
         )
-    return parsed_diseases
+    else:
+        parsed_diseases[disease_mim]["description"] = (
+            parsed_entry["description"] + ". " + parsed_diseases[disease_mim]["description"]
+        )
+        parsed_diseases[disease_mim]["status"] = parsed_entry["status"]
+    parsed_diseases[disease_mim]["inheritance"].update(parsed_entry["inheritance"])
 
 
 def parse_genemap2(lines):
