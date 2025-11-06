@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Decipher query was treated as a primary - now secondary again (#5832)
 - Expansion support display on STR GT card (#5840)
 - Keep any active page filters alive when editing/removing managed variants (#5833 & #5836)
+- MIM diseases can have multiple descriptions - merge them instead of using the first (#5814)
 
 ## [4.105.2]
 ### Fixed
