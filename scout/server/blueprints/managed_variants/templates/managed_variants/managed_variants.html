@@ -173,8 +173,8 @@
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
-           <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
-           <button name="cancel" id="cancel" type="cancel" class="btn btn-secondary btn-sm">Cancel</button>
+           <button type="button" class="btn btn-primary btn-sm" onclick="editVariant('{{ variant.variant_id }}')">Save</button>
+           <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('filters_form').submit()">Cancel</button>
          </div>
       </td>
   </form>
@@ -283,6 +283,14 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+  function editVariant(variantId) {
+    const form = document.getElementById(`modify_variant_${variantId}`);
+    if (!form) return;
+
+    fetch(form.action, { method: "POST", body: new FormData(form) })
+      .finally(() => document.getElementById("filters_form").submit());
+  }
 
   function removeVariant(variantId) {
     fetch(`/managed_variant/${variantId}/remove`, {
