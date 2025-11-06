@@ -30,8 +30,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chromosome order for hg38 in IGV.js view (#5838)
 - Clinical filter for outlier variants (#5832)
 - Decipher query was treated as a primary - now secondary again (#5832)
-- Keep any active page filters alive when removing managed variants (#5836)
 - Expansion support display on STR GT card (#5840)
+- Keep any active page filters alive when editing/removing managed variants (#5833 & #5836)
 
 ## [4.105.2]
 ### Fixed
