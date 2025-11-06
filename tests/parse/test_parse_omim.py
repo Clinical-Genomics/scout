@@ -33,6 +33,27 @@ def test_parse_genemap2_phenotype_entry_single():
     assert parsed_entry["status"] == "established"
 
 
+def test_parse_genemap2_phenotype_multiple_entries_same_line():
+    # GIVEN a phenotype description with a more complex entry
+    entry = "{Amyotrophic lateral sclerosis, susceptibility to, 13}, 183090 (3), Autosomal dominant; Spinocerebellar ataxia 2, 183090 (3), Autosomal dominant; {Parkinson disease, late-onset, susceptibility to}, 168600 (3), Multifactorial, Autosomal dominant"
+    # WHEN parsing the entry
+    parsed_entries = parse_genemap2_diseases(entry)
+
+    # THEN both MIM disease entities should be parsed out
+    mims = [parsed_entry["mim_number"] for parsed_entry in parsed_entries]
+    assert 183090 in mims
+    assert 168600 in mims
+    # THEN the MIM with two different descriptions shall have been correctly merged
+    for parsed_entry in parsed_entries:
+        if parsed_entry["mim_number"] == 183090:
+            assert parsed_entry["inheritance"] == {"AD"}
+            # THEN the description shall still be established, even if one susceptibility description was added
+            assert parsed_entry["status"] == "established"
+            # THEN the description shall start with the name for an established disease if one exists with that MIM number
+            assert parsed_entry["description"].startswith("Spinocerebellar ataxia 2")
+    print(parsed_entries)
+
+
 def test_parse_genemap(genemap_lines):
     for res in parse_genemap2(genemap_lines):
         assert res["Chromosome"] == "chr1"
