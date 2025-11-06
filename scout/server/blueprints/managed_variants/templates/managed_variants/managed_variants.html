@@ -391,8 +391,12 @@
       start_coord_field.disabled = true;
       end_coord_field.disabled = true;
     }
-    start_coord_field.value={{filters_form.position.data|safe}};
-    end_coord_field.value={{filters_form.end.data|safe}};
+    if("{{filters_form.position.data|safe}}" !== "None") {
+      start_coord_field.value ={{filters_form.position.data|safe}};
+    }
+    if("{{filters_form.end.data|safe}}" !== "None") {
+      end_coord_field.value ={{filters_form.end.data|safe}};
+    }
   }
 
   // Set cytobands select options according to selected chrom
@@ -400,14 +404,14 @@
     clearSelect(cytoStart)
     clearSelect(cytoEnd)
     // set cytoband selects options only if a chromosome is selected
-    selectedChrom = chromSelect.value;
+    let selectedChrom = chromSelect.value;
     let build = document.forms["filters_form"].elements["build"].value;
-    if (selectedChrom !== 'undefined' && selectedChrom !== "All" ){
+    if (selectedChrom !== undefined && selectedChrom !== "" && selectedChrom !== "All"){
       cytoband_options = {{ cytobands_37|safe }};
       if (build === "38"){
         cytoband_options = {{ cytobands_38|safe }};
       }
-      chrom_cytobands = cytoband_options[selectedChrom]["cytobands"]; //list of cytoband objects
+      let chrom_cytobands = cytoband_options[selectedChrom]["cytobands"]; //list of cytoband objects
 
       // Add each cytoband as an select to the 2 cytoband selects
       cytoStartOptions = [["",""]]
