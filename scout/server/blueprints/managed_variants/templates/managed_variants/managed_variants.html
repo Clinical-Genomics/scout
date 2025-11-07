@@ -105,8 +105,8 @@
           <td>{{ variant.end }}</td>
           <td>{{ variant.reference }}</td>
           <td>{{ variant.alternative }}</td>
-          <td>{{ variant.category }}</td>
-          <td>{{ variant.sub_category }}</td>
+          <td>{{ variant.category|upper }}</td>
+          <td>{{ variant.sub_category|upper }}</td>
           <td>
             {{ variant.description }}
             <div class="float-end">
@@ -152,10 +152,10 @@
           {% endfor %}
         </select>
       </td>
-      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}" required></td>
-      <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
-      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}" required></td>
-      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}" required></td>
+      <td>{{ wtf.form_field(modify_form.position, class="form-control", type="number", value=variant.position) }} </td>
+      <td>{{ wtf.form_field(modify_form.end, class="form-control", type="number", value=variant.end) }}</td>
+      <td>{{ wtf.form_field(modify_form.reference, class="form-control", value=variant.reference) }}
+      <td>{{ wtf.form_field(modify_form.alternative, class="form-control", value=variant.alternative) }}
       <td>
         <select name="category" id="category" class="form-control" onchange="populateSubTypeSelect('modify_variant_{{variant.variant_id}}')">
           {% for ctg,ctg_display in modify_form.category.choices %}
@@ -214,10 +214,10 @@
     <tbody>
       <tr>
       <td>{{ add_form.chromosome(class_="form-control") }}</td>
-      <td><input type="number" name="position" id="position" class="form-control" required min="1"></td>
-      <td><input type="number" name="end" id="end" class="form-control" min="1"></td>
-      <td><input type="text" name="reference" id="reference" class="form-control" required></td>
-      <td><input type="text" name="alternative" id="alternative" class="form-control" required></td>
+      <td>{{ wtf.form_field(add_form.position, class="form-control", type="number") }} </td>
+      <td>{{ wtf.form_field(add_form.end, class="form-control", type="number") }}</td>
+      <td>{{ wtf.form_field(add_form.reference, class="form-control") }}
+      <td>{{ wtf.form_field(add_form.alternative, class="form-control") }}
       <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
       <td>{{ add_form.sub_category(class_="form-control") }}</td>
       <td>

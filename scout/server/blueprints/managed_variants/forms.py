@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
 
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -8,6 +9,7 @@ from wtforms import (
     SelectMultipleField,
     StringField,
     SubmitField,
+    ValidationError,
     validators,
 )
 from wtforms.widgets import NumberInput
@@ -41,8 +43,6 @@ class ManagedVariantForm(FlaskForm):
         ],
         widget=NumberInput(min=1),
     )
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
     description = StringField(label="Description")
     build = SelectField(
         "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
@@ -55,15 +55,68 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectMultipleField("Kind", choices=SUBCATEGORY_CHOICES)
 
+    cytoband_start = SelectField("Cytoband start", choices=[])
+    cytoband_end = SelectField("Cytoband end", choices=[])
+
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
 
+def check_alternative(form, field):
+    ref = form.reference.data
+    alt = field.data
+    category = form.category.data
+
+    print(f"Validating {category} variant {ref} {alt}")
+
+    if (category.upper() in {"SNV", "INDEL"}) and not re.match(
+        r"^[ATGCN.]+$", alt, flags=re.IGNORECASE
+    ):
+        raise ValidationError("Invalid ALT base for an SNV/INDEL")
+
+    if category.upper() == "SV" and not re.match(r"[^ACGTN\[\]chr0-9MXY]+$", alt):
+        raise ValidationError("Invalid ALT base for an SV")
+
+    if ref.endswith(alt):
+        raise ValidationError(
+            "The variant is not normalised - it has extra nucleotides on the right side"
+        )
+
+    if ref == alt:
+        raise ValidationError("The ref and alt are identical")
+
+    if len(ref) > 1 and ref.startswith(alt):
+        raise ValidationError(
+            "The variant is not normalised - it has extra nucleotides on the left side"
+        )
+
+
 class ManagedVariantEditForm(ManagedVariantForm):
+
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = StringField(label="Ref", validators=[validators.InputRequired()])
-    alternative = StringField(label="Alt", validators=[validators.InputRequired()])
+    position = IntegerField(
+        "Start position",
+        [
+            validators.InputRequired(),
+            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+
+    reference = StringField(
+        label="Ref",
+        validators=[
+            validators.Regexp(r"^[ACGTN]+$", message="Invalid reference base"),
+        ],
+    )
+    alternative = StringField(
+        label="Alt",
+        validators=[
+            validators.InputRequired(),
+            check_alternative,
+        ],
+    )
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)

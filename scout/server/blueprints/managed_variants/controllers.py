@@ -108,6 +108,10 @@ def add_managed_variant(request):
     institutes = list(user_institutes(store, current_user))
     current_user_id = current_user._id
 
+    if not add_form.validate():
+        for error, message in add_form.errors.items():
+            flash(f"Error in field {error}: {message} ", "danger")
+
     managed_variant_obj = build_managed_variant(
         dict(
             chromosome=add_form["chromosome"].data,
