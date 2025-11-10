@@ -135,7 +135,7 @@
       {{ case.display_track }}
     </td>
     <td>
-      {% if case.clinvar_variants %}
+      {% if case.clinvar_variants or case.onco_clinvar_variants %}
         <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="ClinVar - info about submitted variants available on Case page or ClinVar submissions page (Institute sidebar)"><em class="fas fa-database"></em></span>
       {% endif %}
       {% if case.mme_submission %}
