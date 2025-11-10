@@ -15,6 +15,12 @@ from wtforms import (
 from wtforms.widgets import NumberInput
 
 from scout.constants import CHROMOSOMES, SV_TYPES
+from scout.utils.vcf import (
+    is_symbolic_alt,
+    validate_bnd_alt,
+    validate_snv_alt,
+    validate_symbolic_alt,
+)
 
 LOG = logging.getLogger(__name__)
 CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
@@ -66,29 +72,39 @@ def check_alternative(form, field):
     ref = form.reference.data
     alt = field.data
     category = form.category.data
+    sub_category = form.sub_category.data
 
     print(f"Validating {category} variant {ref} {alt}")
 
-    if (category.upper() in {"SNV", "INDEL"}) and not re.match(
-        r"^[ATGCN.]+$", alt, flags=re.IGNORECASE
-    ):
-        raise ValidationError("Invalid ALT base for an SNV/INDEL")
-
-    if category.upper() == "SV" and not re.match(r"[^ACGTN\[\]chr0-9MXY]+$", alt):
-        raise ValidationError("Invalid ALT base for an SV")
+    if ref == alt and ref != "N":
+        raise ValidationError("The ref and alt are identical")
 
     if ref.endswith(alt):
         raise ValidationError(
             "The variant is not normalised - it has extra nucleotides on the right side"
         )
 
-    if ref == alt:
-        raise ValidationError("The ref and alt are identical")
-
     if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
         raise ValidationError(
             "The variant is not normalised - it has extra nucleotides on the left side"
         )
+
+    alt_validator = None
+
+    match sub_category.upper():
+        case "SNV" | "INDEL":
+            alt_validator = validate_snv_alt
+        case "BND":
+            alt_validator = validate_bnd_alt
+
+    if is_symbolic_alt(alt):
+        alt_validator = validate_symbolic_alt
+
+    if alt_validator:
+        status, msg = alt_validator(alt)
+        if not status:
+            raise ValidationError(msg)
+        return True
 
 
 class ManagedVariantEditForm(ManagedVariantForm):
