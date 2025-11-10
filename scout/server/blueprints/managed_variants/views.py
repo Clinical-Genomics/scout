@@ -56,12 +56,13 @@ def modify_managed_variant(variant_id):
     edit_form = ManagedVariantModifyForm(request.form)
 
     if not edit_form.validate():
-
+        message = f"Could not modify managed variant {variant_id}. Fields {edit_form.errors.keys()} had errors {edit_form.errors.values()}"
+        flash(message, "danger")
         return (
             jsonify(
                 {
                     "status": "error",
-                    "message": f"Could not modify managed variant {variant_id}. Fields {edit_form.errors.keys()} had errors {edit_form.errors.values()}",
+                    "message": message,
                 }
             ),
             400,

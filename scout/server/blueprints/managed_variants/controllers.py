@@ -110,7 +110,8 @@ def add_managed_variant(request):
 
     if not add_form.validate():
         for error, message in add_form.errors.items():
-            flash(f"Error in field {error}: {message} ", "danger")
+            flash(f"Error in field {error}: {message}", "danger")
+        return False
 
     managed_variant_obj = build_managed_variant(
         dict(

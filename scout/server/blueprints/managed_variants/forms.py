@@ -85,7 +85,7 @@ def check_alternative(form, field):
     if ref == alt:
         raise ValidationError("The ref and alt are identical")
 
-    if len(ref) > 1 and ref.startswith(alt):
+    if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
         raise ValidationError(
             "The variant is not normalised - it has extra nucleotides on the left side"
         )
