@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Set
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, url_for
+from flask import current_app, flash, url_for
 from flask_login import current_user
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
