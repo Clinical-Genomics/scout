@@ -582,13 +582,16 @@
         </li>
       {% endfor %}
     </ul>
+      {{ clinvar_vars_summary(case, institute) }}
       </div>
   </div>
 {% endmacro %}
 
 {% macro clinvar_var_status(variant, case, institute) %}
     {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
-      (included in a ClinVar submission
+      <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Variant included in a germline ClinVar submission"><em class="fas fa-database"></em></span>
+    {% elif case.onco_clinvar_variants and variant._id in case.onco_clinvar_variants %}
+      <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Variant included in an oncogenic ClinVar submission"><em class="fas fa-database"></em></span>
     {% elif variant._id and variant.category in ["snv", "sv"] %}
         <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
@@ -598,6 +601,21 @@
           <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
         </form>
     {% endif %}
+{% endmacro %}
+
+
+{% macro clinvar_vars_summary(case, institute) %}
+  {% if case.clinvar_variants %}
+    <div class="card-footer d-flex justify-content-center pb-0" style="background-color:inherit;">
+        <a href="{{url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id)}}"
+           class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar submissions <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  {% elif case.onco_clinvar_variants %}
+    <div class="card-footer d-flex justify-content-center pb-0" style="background-color:inherit;">
+        <a href="{{url_for('clinvar.clinvar_onc_submissions', institute_id=institute._id)}}"
+           class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar submissions <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro matching_causatives(other_causatives, institute, case, default=False) %}
