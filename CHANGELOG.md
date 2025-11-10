@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.106]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
 - Delete flag for update individual command (#5793)
