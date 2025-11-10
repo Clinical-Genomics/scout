@@ -588,7 +588,7 @@
 
 {% macro clinvar_var_status(variant, case, institute) %}
     {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
-      (included in a ClinVar submission)
+      (included in a ClinVar submission
     {% elif variant._id and variant.category in ["snv", "sv"] %}
         <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>

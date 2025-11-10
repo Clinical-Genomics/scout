@@ -701,7 +701,11 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
         all_analyses_dates
     )
 
-    case_obj["clinvar_variants"] = store.case_to_clinvars(case_obj["_id"])
+    if case_obj.get("track") == "cancer":
+        case_obj["onco_clinvar_variants"] = store.case_to_onco_clinvars(case_obj["_id"])
+    else:
+        case_obj["clinvar_variants"] = store.case_to_clinvars(case_obj["_id"])
+
     case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
 
 
