@@ -1,6 +1,5 @@
 import logging
 import math
-import random
 import time
 from datetime import datetime
 from typing import List, Set
