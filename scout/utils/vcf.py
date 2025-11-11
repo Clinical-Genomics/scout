@@ -34,7 +34,7 @@ def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, st
 
     svtype = extract_svtype(info)
     if svtype is None:
-        return False, f"Missing SVTYPE in INFO"
+        return False, "Missing SVTYPE in INFO"
 
     if svtype == "BND":
         return validate_bnd_alt(alt)
@@ -109,7 +109,7 @@ def validate_info(var_type: str, info: str) -> tuple[bool, str | None]:
                 return False, f"Empty INFO segment: {info}"
 
         if var_type == "SVTYPE" and "SVTYPE=" not in info:
-            return False, f"SV line missing SVTYPE in INFO."
+            return False, "SV line missing SVTYPE in INFO."
 
     return True, None
 
