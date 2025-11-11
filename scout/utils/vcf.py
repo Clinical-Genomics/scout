@@ -1,6 +1,8 @@
 import logging
 import re
 
+nucleotide_re = re.compile(r"[ACGTN,]+")
+
 from scout.constants.variant_tags import SV_TYPES
 
 LOG = logging.getLogger(__name__)
@@ -49,7 +51,7 @@ def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, st
 
 
 def validate_snv_alt(alt: str) -> tuple[bool, str | None]:
-    if re.fullmatch(r"[ACGTN,]+", alt):
+    if re.fullmatch(nucleotide_re, alt):
         return True, None
     return False, f"Invalid SNV ALT: {alt}"
 
@@ -77,9 +79,22 @@ def validate_symbolic_alt(alt: str) -> tuple[bool, str | None]:
 
 
 def validate_ref_alt(alt: str, ref: str) -> tuple[bool, str | None]:
-    if alt == ref or (len(ref) > 1 and ref.startswith(alt)):
-        return True, None
-    return False, f"Invalid SV ALT for REF-based SV: {alt}"
+    if alt == ref and ref != "N":
+        return False, f"Invalid (identical) ref and alt: {alt}"
+
+    if ref.endswith(alt):
+        return (
+            False,
+            "The variant is not normalised - it has extra nucleotides on the right (3-prime) side",
+        )
+
+    if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
+        return (
+            False,
+            "The variant is not normalised - it has extra nucleotides on the left (5-prime) side",
+        )
+
+    return True, None
 
 
 def validate_qual(qual: str) -> tuple[bool, str | None]:

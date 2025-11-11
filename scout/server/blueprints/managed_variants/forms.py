@@ -17,6 +17,7 @@ from scout.constants import CHROMOSOMES, SV_TYPES
 from scout.utils.vcf import (
     is_symbolic_alt,
     validate_bnd_alt,
+    validate_ref_alt,
     validate_snv_alt,
     validate_symbolic_alt,
 )
@@ -72,18 +73,9 @@ def check_alternative(form, field):
     alt = field.data
     sub_category = form.sub_category.data
 
-    if ref == alt and ref != "N":
-        raise ValidationError("The ref and alt are identical")
-
-    if ref.endswith(alt):
-        raise ValidationError(
-            "The variant is not normalised - it has extra nucleotides on the right (3-prime) side"
-        )
-
-    if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
-        raise ValidationError(
-            "The variant is not normalised - it has extra nucleotides on the left (5-prime) side"
-        )
+    status, msg = validate_ref_alt(alt=alt, ref=ref)
+    if not status:
+        raise ValidationError(msg)
 
     alt_validator = None
 

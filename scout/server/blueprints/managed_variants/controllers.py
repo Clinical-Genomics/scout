@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 
 from flask import flash
 from flask_login import current_user
@@ -11,6 +12,7 @@ from scout.server.utils import user_institutes
 from scout.utils.vcf import (
     is_symbolic_alt,
     validate_bnd_alt,
+    validate_ref_alt,
     validate_snv_alt,
     validate_symbolic_alt,
 )
@@ -170,14 +172,9 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     return new_managed_variants, total_variant_lines
 
 
-def validate_managed_variant(managed_variant_info):
+def validate_managed_variant(managed_variant_info: dict) -> Tuple[bool, str]:
     """
-    Returns true
-    Args:
-        managed_variant_info: dict
-
-    Returns:
-        boolean
+    Validate managed variants. Returns True, None for successful
     """
     mandatory_fields = [
         "chromosome",
@@ -190,26 +187,15 @@ def validate_managed_variant(managed_variant_info):
 
     for mandatory_field in mandatory_fields:
         if not managed_variant_info.get(mandatory_field):
-            return False
+            return False, f"Missing mandatory field {mandatory_field}"
 
     ref = managed_variant_info.get("reference")
     alt = managed_variant_info.get("alternative")
     sub_category = managed_variant_info.get("sub_category")
 
-    if ref == alt and ref != "N":
-        return False, "The ref and alt are identical"
-
-    if ref.endswith(alt):
-        return (
-            False,
-            "The variant is not normalised - it has extra nucleotides on the right (3-prime) side",
-        )
-
-    if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
-        return (
-            False,
-            "The variant is not normalised - it has extra nucleotides on the left (5-prime) side",
-        )
+    status, msg = validate_ref_alt(alt=alt, ref=ref)
+    if not status:
+        return (status, msg)
 
     alt_validator = None
 
