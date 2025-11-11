@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't build in editable mode for Docker images (#5819)
 - Restored installation of chanjo-report from PyPI (#5820)
 - Export of managed variants to VCF is subject to validation. Variants failing validation will raise a warning instead of being included in the VCF file (#5813)
+- Reintroduced a link to ClinVar submissions page on variant page - now also for oncogenic variants (#5844)
 ### Fixed
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
@@ -35,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Keep any active page filters alive when editing/removing managed variants (#5833 & #5836)
 - MIM diseases can have multiple descriptions - merge them instead of using the first (#5814)
 - Cytobands chrom select undefined at managed variants page load - js console warning cleanup (#5841)
+- Cancer case page not showing if a pinned variant is included in an oncogenic ClinVar submission (#5844)
 
 ## [4.105.2]
 ### Fixed
