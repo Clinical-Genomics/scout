@@ -152,10 +152,10 @@
           {% endfor %}
         </select>
       </td>
-      <td>{{ wtf.form_field(modify_form.position, class="form-control", type="number", value=variant.position) }} </td>
-      <td>{{ wtf.form_field(modify_form.end, class="form-control", type="number", value=variant.end) }}</td>
-      <td>{{ wtf.form_field(modify_form.reference, class="form-control", value=variant.reference) }}
-      <td>{{ wtf.form_field(modify_form.alternative, class="form-control", value=variant.alternative) }}
+      <td>{{ modify_form.position(class="form-control", type="number", value=variant.position) }} </td>
+      <td>{{ modify_form.end(class="form-control", type="number", value=variant.end) }}</td>
+      <td>{{ modify_form.reference(class="form-control", value=variant.reference) }}
+      <td>{{ modify_form.alternative(class="form-control", value=variant.alternative) }}
       <td>
         <select name="category" id="category" class="form-control" onchange="populateSubTypeSelect('modify_variant_{{variant.variant_id}}')">
           {% for ctg,ctg_display in modify_form.category.choices %}

@@ -1,5 +1,4 @@
 import logging
-from typing import Tuple
 
 from flask import flash
 from flask_login import current_user
@@ -172,7 +171,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     return new_managed_variants, total_variant_lines
 
 
-def validate_managed_variant(managed_variant_info: dict) -> Tuple[bool, str]:
+def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     """
     Validate managed variants. Returns True, None for successful
     """
@@ -208,7 +207,7 @@ def validate_managed_variant(managed_variant_info: dict) -> Tuple[bool, str]:
     if is_symbolic_alt(alt):
         alt_validator = validate_symbolic_alt
 
-    return alt_validator(alt) if alt_validator else True
+    return alt_validator(alt) if alt_validator else (True, None)
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):
