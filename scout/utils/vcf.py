@@ -29,8 +29,14 @@ def validate_ref(ref: str) -> tuple[bool, str | None]:
 def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, str | None]:
     """
     Validate the ALT field for a VCF line.
+     For SNVs and INDELS, this is mostly a matter of having valid nucleotides.
+
     Returns (is_valid, error_message)
     """
+    status, msg = validate_ref_alt(alt, ref)
+    if not status:
+        return status, msg
+
     if var_type != "SVTYPE":
         return validate_snv_alt(alt)
 
@@ -38,22 +44,31 @@ def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, st
     if svtype is None:
         return False, "Missing SVTYPE in INFO"
 
+    return validate_sv_alt(svtype, ref, alt)
+
+
+def validate_sv_alt(svtype: str, ref: str, alt: str) -> tuple[bool, str | None]:
+    """
+    Validate SV alt.
+
+    For BNDs, the format shall match the VCF standard.
+    For other SVs,
+        the ALT can either be symbolic, in which case a bracket notation "<DEL>" is required,
+        or completely described with nucleotides, so same criteria as for SNVs. This is the default here.
+    """
     if svtype == "BND":
         return validate_bnd_alt(alt)
 
     if is_symbolic_alt(alt):
         return validate_symbolic_alt(alt)
 
-    if svtype in {"DEL", "INS", "DUP", "INV"}:
-        return validate_ref_alt(alt, ref)
-
-    return False, f"Invalid SV ALT for SVTYPE {svtype}: {alt}"
+    return validate_snv_alt(alt)
 
 
 def validate_snv_alt(alt: str) -> tuple[bool, str | None]:
     if re.fullmatch(nucleotide_re, alt):
         return True, None
-    return False, f"Invalid SNV ALT: {alt}"
+    return False, f"Invalid ALT: {alt}"
 
 
 def extract_svtype(info: str) -> str | None:

@@ -15,11 +15,8 @@ from wtforms.widgets import NumberInput
 
 from scout.constants import CHROMOSOMES, SV_TYPES
 from scout.utils.vcf import (
-    is_symbolic_alt,
-    validate_bnd_alt,
     validate_ref_alt,
-    validate_snv_alt,
-    validate_symbolic_alt,
+    validate_sv_alt,
 )
 
 LOG = logging.getLogger(__name__)
@@ -71,12 +68,6 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 def check_alternative(form, field):
     """
     Validate ALT allele.
-
-    For SNVs and INDELS, this is mostly a matter of having valid nucleotides.
-    For BNDs, the format shall match the VCF standard.
-    For other SVs,
-        the ALT can either be symbolic, in which case a bracket notation "<DEL>" is required,
-        or completely described with nucleotides, so same criteria as for SNVs.
     """
     ref = form.reference.data
     alt = field.data
@@ -86,18 +77,7 @@ def check_alternative(form, field):
     if not status:
         raise ValidationError(msg)
 
-    alt_validator = validate_snv_alt
-
-    match sub_category.upper():
-        case "SNV" | "INDEL":
-            alt_validator = validate_snv_alt
-        case "BND":
-            alt_validator = validate_bnd_alt
-
-    if is_symbolic_alt(alt):
-        alt_validator = validate_symbolic_alt
-
-    status, msg = alt_validator(alt)
+    status, msg = validate_sv_alt(sub_category, ref, alt)
     if not status:
         raise ValidationError(msg)
     return True

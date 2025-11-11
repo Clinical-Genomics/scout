@@ -9,11 +9,8 @@ from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.vcf import (
-    is_symbolic_alt,
-    validate_bnd_alt,
     validate_ref_alt,
-    validate_snv_alt,
-    validate_symbolic_alt,
+    validate_sv_alt,
 )
 
 from .forms import (
@@ -199,18 +196,7 @@ def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     if not status:
         return (status, msg)
 
-    alt_validator = validate_snv_alt
-
-    match sub_category.upper():
-        case "SNV" | "INDEL":
-            alt_validator = validate_snv_alt
-        case "BND":
-            alt_validator = validate_bnd_alt
-
-    if is_symbolic_alt(alt):
-        alt_validator = validate_symbolic_alt
-
-    return alt_validator(alt)
+    return validate_sv_alt(sub_category.upper(), ref, alt)
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):
