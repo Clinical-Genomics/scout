@@ -1,5 +1,6 @@
 import logging
 import math
+import random
 import time
 from datetime import datetime
 from typing import List, Set
@@ -54,7 +55,8 @@ def get_panelapp_genes(
 
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
-            time.sleep(3)  # Avoid 429 Client Error: Too Many Requests
+            pause = random.uniform(2.0, 4.0)
+            time.sleep(pause)  # Avoid 429 Client Error: Too Many Requests
             panel_dict: dict = panelapp.get_panel(panel_id)
             panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
             # Parse panel only if it's of the expect type(s)
