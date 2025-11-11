@@ -44,10 +44,10 @@ def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, st
     if svtype is None:
         return False, "Missing SVTYPE in INFO"
 
-    return validate_sv_alt(svtype, ref, alt)
+    return validate_sv_alt(svtype, alt)
 
 
-def validate_sv_alt(svtype: str, ref: str, alt: str) -> tuple[bool, str | None]:
+def validate_sv_alt(svtype: str, alt: str) -> tuple[bool, str | None]:
     """
     Validate SV alt.
 
@@ -59,7 +59,7 @@ def validate_sv_alt(svtype: str, ref: str, alt: str) -> tuple[bool, str | None]:
     if svtype == "BND":
         return validate_bnd_alt(alt)
 
-    if is_symbolic_alt(alt):
+    if svtype in {"CNV", "DEL", "DUP", "INS", "INV"} and is_symbolic_alt(alt):
         return validate_symbolic_alt(alt)
 
     return validate_snv_alt(alt)

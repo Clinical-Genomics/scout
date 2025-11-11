@@ -77,7 +77,7 @@ def check_alternative(form, field):
     if not status:
         raise ValidationError(msg)
 
-    status, msg = validate_sv_alt(sub_category, ref, alt)
+    status, msg = validate_sv_alt(sub_category, alt)
     if not status:
         raise ValidationError(msg)
     return True

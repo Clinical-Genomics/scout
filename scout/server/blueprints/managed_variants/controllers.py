@@ -9,6 +9,9 @@ from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.vcf import (
+    validate_chrom,
+    validate_pos,
+    validate_ref,
     validate_ref_alt,
     validate_sv_alt,
 )
@@ -188,15 +191,24 @@ def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
         if not managed_variant_info.get(mandatory_field):
             return False, f"Missing mandatory field {mandatory_field}"
 
+    chrom = managed_variant_info.get("chromosome")
+    pos = managed_variant_info.get("position")
     ref = managed_variant_info.get("reference")
     alt = managed_variant_info.get("alternative")
     sub_category = managed_variant_info.get("sub_category")
 
-    status, msg = validate_ref_alt(alt=alt, ref=ref)
-    if not status:
-        return (status, msg)
+    validators = [
+        validate_chrom(chrom),
+        validate_pos(pos),
+        validate_ref(ref),
+        validate_ref_alt(alt=alt, ref=ref),
+        validate_sv_alt(sub_category.upper(), alt),
+    ]
 
-    return validate_sv_alt(sub_category.upper(), ref, alt)
+    return next(
+        ((status, msg) for status, msg in validators if not status),
+        (True, None),
+    )
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):
