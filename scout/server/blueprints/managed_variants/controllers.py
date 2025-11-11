@@ -8,6 +8,12 @@ from scout.constants import CHROMOSOMES, CHROMOSOMES_38
 from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
+from scout.utils.vcf import (
+    is_symbolic_alt,
+    validate_bnd_alt,
+    validate_snv_alt,
+    validate_symbolic_alt,
+)
 
 from .forms import (
     CATEGORY_CHOICES,
@@ -141,9 +147,10 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
         for managed_variant_info in parse_managed_variant_lines(lines):
             total_variant_lines += 1
 
-            if not validate_managed_variant(managed_variant_info):
+            status, message = validate_managed_variant(managed_variant_info)
+            if not status:
                 flash(
-                    f"Managed variant info line {total_variant_lines} has errors ({managed_variant_info})",
+                    f"❌ Managed variant info line {total_variant_lines} has errors {message} ({managed_variant_info})",
                     "warning",
                 )
                 continue
@@ -181,12 +188,41 @@ def validate_managed_variant(managed_variant_info):
         "sub_category",
     ]
 
-    record_ok = True
     for mandatory_field in mandatory_fields:
         if not managed_variant_info.get(mandatory_field):
-            record_ok = False
+            return False
 
-    return record_ok
+    ref = managed_variant_info.get("reference")
+    alt = managed_variant_info.get("alternative")
+    sub_category = managed_variant_info.get("sub_category")
+
+    if ref == alt and ref != "N":
+        return False, "The ref and alt are identical"
+
+    if ref.endswith(alt):
+        return (
+            False,
+            "The variant is not normalised - it has extra nucleotides on the right (3-prime) side",
+        )
+
+    if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
+        return (
+            False,
+            "The variant is not normalised - it has extra nucleotides on the left (5-prime) side",
+        )
+
+    alt_validator = None
+
+    match sub_category.upper():
+        case "SNV" | "INDEL":
+            alt_validator = validate_snv_alt
+        case "BND":
+            alt_validator = validate_bnd_alt
+
+    if is_symbolic_alt(alt):
+        alt_validator = validate_symbolic_alt
+
+    return alt_validator(alt) if alt_validator else True
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import re
 
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -71,22 +70,19 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 def check_alternative(form, field):
     ref = form.reference.data
     alt = field.data
-    category = form.category.data
     sub_category = form.sub_category.data
-
-    print(f"Validating {category} variant {ref} {alt}")
 
     if ref == alt and ref != "N":
         raise ValidationError("The ref and alt are identical")
 
     if ref.endswith(alt):
         raise ValidationError(
-            "The variant is not normalised - it has extra nucleotides on the right side"
+            "The variant is not normalised - it has extra nucleotides on the right (3-prime) side"
         )
 
     if len(ref) > 1 and len(alt) > 1 and (ref.startswith(alt) or alt.startswith(ref)):
         raise ValidationError(
-            "The variant is not normalised - it has extra nucleotides on the left side"
+            "The variant is not normalised - it has extra nucleotides on the left (5-prime) side"
         )
 
     alt_validator = None
