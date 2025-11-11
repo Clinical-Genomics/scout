@@ -69,6 +69,15 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 
 
 def check_alternative(form, field):
+    """
+    Validate ALT allele.
+
+    For SNVs and INDELS, this is mostly a matter of having valid nucleotides.
+    For BNDs, the format shall match the VCF standard.
+    For other SVs,
+        the ALT can either be symbolic, in which case a bracket notation "<DEL>" is required,
+        or completely described with nucleotides, so same criteria as for SNVs.
+    """
     ref = form.reference.data
     alt = field.data
     sub_category = form.sub_category.data
@@ -77,7 +86,7 @@ def check_alternative(form, field):
     if not status:
         raise ValidationError(msg)
 
-    alt_validator = None
+    alt_validator = validate_snv_alt
 
     match sub_category.upper():
         case "SNV" | "INDEL":
@@ -88,11 +97,10 @@ def check_alternative(form, field):
     if is_symbolic_alt(alt):
         alt_validator = validate_symbolic_alt
 
-    if alt_validator:
-        status, msg = alt_validator(alt)
-        if not status:
-            raise ValidationError(msg)
-        return True
+    status, msg = alt_validator(alt)
+    if not status:
+        raise ValidationError(msg)
+    return True
 
 
 class ManagedVariantEditForm(ManagedVariantForm):

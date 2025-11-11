@@ -62,6 +62,10 @@ def extract_svtype(info: str) -> str | None:
 
 
 def validate_bnd_alt(alt: str) -> tuple[bool, str | None]:
+    """BND fields shall have either [ or ] chars, in addition to contig coordinates and the ref char replacement, and
+    any extra nucleotides."""
+    if not re.fullmatch(r"[\w\[\]:.-]+", alt):
+        return False, f"Invalid char in BND ALT: {alt}"
     if "[" in alt or "]" in alt:
         return True, None
     return False, f"Invalid BND ALT: {alt}"

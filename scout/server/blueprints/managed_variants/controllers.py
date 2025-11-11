@@ -174,6 +174,9 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
 def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     """
     Validate managed variants. Returns True, None for successful
+
+    Check that all mandatory fields are present.
+    Check that the ALT and REF alleles broadly follow the standard.
     """
     mandatory_fields = [
         "chromosome",
@@ -196,7 +199,7 @@ def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     if not status:
         return (status, msg)
 
-    alt_validator = None
+    alt_validator = validate_snv_alt
 
     match sub_category.upper():
         case "SNV" | "INDEL":
@@ -207,7 +210,7 @@ def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     if is_symbolic_alt(alt):
         alt_validator = validate_symbolic_alt
 
-    return alt_validator(alt) if alt_validator else (True, None)
+    return alt_validator(alt)
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):
