@@ -334,7 +334,7 @@ def _get_suspects_or_causatives(
     return marked_vars
 
 
-def set_case_clinvar_variants(case_obj: dict):
+def set_case_clinvar_submission_variants(case_obj: dict):
     """Sets clinvar_variants and onco_clinvar_variants for a case."""
 
     is_cancer = case_obj.get("track") == "cancer"
