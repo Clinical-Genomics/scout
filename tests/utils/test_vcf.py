@@ -46,6 +46,9 @@ def test_validate_vcf_line():
     bnd3 = "6\t6000\t.\tN\tA]chr1:11111]\t.\t.\tSVTYPE=BND"
     assert validate_vcf_line("SVTYPE", bnd3)[0] is True
 
+    bnd4 = "6\t6000\t.\tN\tA]chr1:11111/testing/testing]\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", bnd4)[0] is False
+
     # --- Invalid BND ALT ---
     invalid_bnd = "7\t7000\t.\tN\t<DEL>\t.\t.\tSVTYPE=BND"
     assert validate_vcf_line("SVTYPE", invalid_bnd)[0] is False
