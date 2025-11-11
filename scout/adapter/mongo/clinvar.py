@@ -450,15 +450,28 @@ class ClinVarHandler(object):
         )
 
     def case_to_clinvars(self, case_id: str) -> Dict[str, dict]:
-        """Get all variants included in ClinVar submissions for a case. Returns a dictionary with variant IDs as keys and submissions as values."""
-        query = dict(case_id=case_id, csv_type="variant")
-        germline_clinvar_objs = list(self.clinvar_collection.find(query))
-        oncogenic_clinvar_objs = []
-        submitted_vars = {}
-        for clinvar in germline_clinvar_objs + oncogenic_clinvar_objs:
-            submitted_vars[clinvar.get("local_id")] = clinvar
+        """Returns the ID of all variants included in any germline submission for a case."""
+        query = {"case_id": case_id, "csv_type": "variant"}
+        case_germline_clinvars = {}
+        for germvar in self.clinvar_collection.find(query):
+            case_germline_clinvars[germvar.get("local_id")] = germvar
+        return case_germline_clinvars
 
-        return submitted_vars
+    def case_to_onco_clinvars(self, case_id: str) -> Dict[str, dict]:
+        """Returns the ID of all variants included in any oncogenic submission for a case."""
+        query = {
+            "type": "oncogenicity",
+            "oncogenicitySubmission.case_id": case_id,
+        }
+        case_onco_clinvars = {}
+        for onco_subm in self.clinvar_submission_collection.find(query):
+            for oncovar in onco_subm.get("oncogenicitySubmission"):
+                if (
+                    oncovar.get("case_id") != case_id
+                ):  # A submission might contain variants from different cases
+                    continue
+                case_onco_clinvars[oncovar["variant_id"]] = oncovar
+        return case_onco_clinvars
 
     def clinvar_cases(self, institute_id: str = None) -> List[str]:
         """Fetch all cases with variants contained in a ClinVar submission object"""
