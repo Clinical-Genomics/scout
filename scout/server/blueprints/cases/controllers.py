@@ -334,6 +334,17 @@ def _get_suspects_or_causatives(
     return marked_vars
 
 
+def set_case_clinvar_submission_variants(case_obj: dict):
+    """Sets clinvar_variants and onco_clinvar_variants for a case."""
+
+    is_cancer = case_obj.get("track") == "cancer"
+
+    case_obj["onco_clinvar_variants"] = (
+        store.case_to_onco_clinvars(case_obj["_id"]) if is_cancer else {}
+    )
+    case_obj["clinvar_variants"] = {} if is_cancer else store.case_to_clinvars(case_obj["_id"])
+
+
 def case(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, hide_matching: bool = True
 ) -> dict:
@@ -373,7 +384,7 @@ def case(
     partial_causatives = _get_partial_causatives(store, institute_obj, case_obj)
     _populate_assessments(partial_causatives)
 
-    case_obj["clinvar_variants"] = store.case_to_clinvars(case_obj["_id"])
+    set_case_clinvar_submission_variants(case_obj)
 
     # check for variants submitted to clinVar but not present in suspects for the case
     clinvar_variants_not_in_suspects = [
