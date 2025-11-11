@@ -20,7 +20,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.server.blueprints.cases.controllers import set_case_clinvar_variants
+from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
 from scout.server.blueprints.variant.utils import (
     predictions,
     update_representative_gene,
@@ -702,7 +702,7 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
         all_analyses_dates
     )
 
-    set_case_clinvar_variants(case_obj)
+    set_case_clinvar_submission_variants(case_obj)
 
     case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
 
