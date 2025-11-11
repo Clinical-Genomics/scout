@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import List, Optional
 
 import requests
@@ -58,6 +59,7 @@ class PanelAppClient:
 
         # Iterate over remaining pages of results
         while json_panels["next"] is not None:
+            time.sleep(3)  # Avoid 429 Client Error: Too Many Requests
             json_panels = self.get_panels(signed_off=signed_off, page=self.panels_page)
             get_ids(json_panels=json_panels)
             self.set_panel_types(json_panels=json_panels)
