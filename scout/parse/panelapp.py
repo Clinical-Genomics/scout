@@ -82,7 +82,7 @@ def parse_panelapp_panel(
             continue
         gene_panel["genes"].append(gene_info)
 
-    LOG.info("Number of genes in panel %s", nr_genes)
+    LOG.info("Number of genes in panel: %s", nr_genes)
     LOG.info("Number of genes excluded due to confidence threshold: %s", nr_excluded)
 
     return gene_panel
