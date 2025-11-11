@@ -202,27 +202,25 @@
     <thead>
       <tr>
         <th>Chr</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Ref</th>
-        <th>Alt</th>
-        <th>Category</th>
-        <th>Kind</th>
-        <th>Description</th>
+        <th>{{ add_form.position.label }}</th>
+        <th>{{ add_form.end.label }}</th>
+        <th>{{ add_form.reference.label }}</th>
+        <th>{{ add_form.alternative.label }}</th>
+        <th>{{ add_form.category.label }}</th>
+        <th>{{ add_form.sub_category.label }}</th>
+        <th>{{ add_form.description.label }}</th>
       </tr>
     </thead>
     <tbody>
       <tr>
       <td>{{ add_form.chromosome(class_="form-control") }}</td>
-      <td>{{ wtf.form_field(add_form.position, class="form-control", type="number") }} </td>
-      <td>{{ wtf.form_field(add_form.end, class="form-control", type="number") }}</td>
-      <td>{{ wtf.form_field(add_form.reference, class="form-control") }}
-      <td>{{ wtf.form_field(add_form.alternative, class="form-control") }}
-      <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
-      <td>{{ add_form.sub_category(class_="form-control") }}</td>
-      <td>
-        <input type="text" name="description" id="description" class="form-control">
-      </td>
+      <td>{{ add_form.position(class="form-control", type="number") }}</td>
+      <td>{{ add_form.end(class="form-control", type="number") }}</td>
+      <td>{{ add_form.reference(class="form-control") }}
+      <td>{{ add_form.alternative(class="form-control") }}
+      <td>{{ add_form.category(class="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
+      <td>{{ add_form.sub_category(class="form-control") }}</td>
+      <td>{{ add_form.description(class="form-control") }}</td>
       </tr>
       <tr>
         <td colspan=12>
