@@ -665,7 +665,7 @@ def test_build_sv_coordinate_query(adapter):
 
 def test_build_size_query(adapter, case_obj):
     """Test"build query when filters contain size parameter."""
-    # GIVEN a query with variant size - even missing "size_selector"
+    # GIVEN a query with variant size - even with missing or None "size_selector"
     size = 2000
     query = {"size_selector": None, "size": size}
     # THEN query builder should return a query which works
