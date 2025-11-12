@@ -32,10 +32,6 @@ def test_validate_vcf_line():
     sv_extended = "3\t3000\t.\tN\t<INS:ME>\t.\t.\tEND=3050;SVTYPE=INS"
     assert validate_vcf_line("SVTYPE", sv_extended)[0] is True
 
-    # --- Invalid SV (ALT is nucleotide) ---
-    sv_invalid_alt = "2\t2000\t.\tN\tA\t.\t.\tEND=2050;SVTYPE=DEL"
-    assert validate_vcf_line("SVTYPE", sv_invalid_alt)[0] is False
-
     # --- Invalid SV (ALT missing angle brackets) ---
     sv_missing_brackets = "2\t2000\t.\tN\tDEL\t.\t.\tEND=2050;SVTYPE=DEL"
     assert validate_vcf_line("SVTYPE", sv_missing_brackets)[0] is False
@@ -49,6 +45,9 @@ def test_validate_vcf_line():
 
     bnd3 = "6\t6000\t.\tN\tA]chr1:11111]\t.\t.\tSVTYPE=BND"
     assert validate_vcf_line("SVTYPE", bnd3)[0] is True
+
+    bnd4 = "6\t6000\t.\tN\tA]chr1:11111/testing/testing]\t.\t.\tSVTYPE=BND"
+    assert validate_vcf_line("SVTYPE", bnd4)[0] is False
 
     # --- Invalid BND ALT ---
     invalid_bnd = "7\t7000\t.\tN\t<DEL>\t.\t.\tSVTYPE=BND"

@@ -8,11 +8,16 @@ from wtforms import (
     SelectMultipleField,
     StringField,
     SubmitField,
+    ValidationError,
     validators,
 )
 from wtforms.widgets import NumberInput
 
 from scout.constants import CHROMOSOMES, SV_TYPES
+from scout.utils.vcf import (
+    validate_ref_alt,
+    validate_sv_alt,
+)
 
 LOG = logging.getLogger(__name__)
 CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
@@ -41,8 +46,6 @@ class ManagedVariantForm(FlaskForm):
         ],
         widget=NumberInput(min=1),
     )
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
     description = StringField(label="Description")
     build = SelectField(
         "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
@@ -55,15 +58,57 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectMultipleField("Kind", choices=SUBCATEGORY_CHOICES)
 
+    cytoband_start = SelectField("Cytoband start", choices=[])
+    cytoband_end = SelectField("Cytoband end", choices=[])
+
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
 
+def check_alternative(form, field):
+    """
+    Validate ALT allele.
+    """
+    ref = form.reference.data
+    alt = field.data
+    sub_category = form.sub_category.data
+
+    status, msg = validate_ref_alt(alt=alt, ref=ref)
+    if not status:
+        raise ValidationError(msg)
+
+    status, msg = validate_sv_alt(sub_category.upper(), alt)
+    if not status:
+        raise ValidationError(msg)
+    return True
+
+
 class ManagedVariantEditForm(ManagedVariantForm):
+
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = StringField(label="Ref", validators=[validators.InputRequired()])
-    alternative = StringField(label="Alt", validators=[validators.InputRequired()])
+    position = IntegerField(
+        "Start position",
+        [
+            validators.InputRequired(),
+            validators.NumberRange(min=0, message="Start position must be 1 or greater."),
+        ],
+        widget=NumberInput(min=1),
+    )
+
+    reference = StringField(
+        label="Ref",
+        validators=[
+            validators.Regexp(r"^[ACGTN]+$", message="Invalid reference base"),
+        ],
+    )
+    alternative = StringField(
+        label="Alt",
+        validators=[
+            validators.InputRequired(),
+            check_alternative,
+        ],
+    )
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)

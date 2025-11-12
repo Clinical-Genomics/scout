@@ -54,6 +54,20 @@ def upload_managed_variants():
 def modify_managed_variant(variant_id):
     """Edit one managed variant."""
     edit_form = ManagedVariantModifyForm(request.form)
+
+    if not edit_form.validate():
+        message = f"Could not modify managed variant {variant_id}. Fields {edit_form.errors.keys()} had errors {edit_form.errors.values()}"
+        flash(message, "danger")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": message,
+                }
+            ),
+            400,
+        )
+
     if not controllers.modify_managed_variant(store, variant_id, edit_form):
         return (
             jsonify(
