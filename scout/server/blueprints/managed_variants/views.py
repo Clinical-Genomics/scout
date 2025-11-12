@@ -108,5 +108,3 @@ def add_managed_variant():
         ),
         code=307,
     )
-
-    return safe_redirect_back(request)
