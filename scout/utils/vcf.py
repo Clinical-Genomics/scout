@@ -100,9 +100,9 @@ def validate_ref_alt(alt: str, ref: str) -> tuple[bool, str | None]:
     """
     Validate the REF and ALT fields of a VCF record for basic consistency and normalization.
 
-    This function performs minimal validation to catch obvious issues:
       - Flags identical REF and ALT alleles (except when REF == 'N')
-      - Flags variants that appear non-normalized, i.e. containing redundant nucleotides on the 3' (right) or 5' (left) side.
+      - Flags variants that appear non-normalized, i.e. containing redundant nucleotides on the 3' (right) or 5' (left) side
+        Example: TAA -> TA invalid (non-normalized)
     """
 
     if alt == ref and ref != "N":
