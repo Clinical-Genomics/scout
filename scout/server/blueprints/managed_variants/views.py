@@ -100,4 +100,13 @@ def remove_managed_variant(variant_id):
 def add_managed_variant():
     """Add a managed variant using form data filled in by user"""
     controllers.add_managed_variant(request)
+
+    return redirect(
+        url_for(
+            ".managed_variants",
+            **request.form,
+        ),
+        code=307,
+    )
+
     return safe_redirect_back(request)
