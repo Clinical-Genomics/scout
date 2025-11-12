@@ -8,6 +8,13 @@ from scout.constants import CHROMOSOMES, CHROMOSOMES_38
 from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
+from scout.utils.vcf import (
+    validate_chrom,
+    validate_pos,
+    validate_ref,
+    validate_ref_alt,
+    validate_sv_alt,
+)
 
 from .forms import (
     CATEGORY_CHOICES,
@@ -108,6 +115,11 @@ def add_managed_variant(request):
     institutes = list(user_institutes(store, current_user))
     current_user_id = current_user._id
 
+    if not add_form.validate():
+        for error, message in add_form.errors.items():
+            flash(f"Error in field {error}: {message}", "danger")
+        return False
+
     managed_variant_obj = build_managed_variant(
         dict(
             chromosome=add_form["chromosome"].data,
@@ -136,9 +148,10 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
         for managed_variant_info in parse_managed_variant_lines(lines):
             total_variant_lines += 1
 
-            if not validate_managed_variant(managed_variant_info):
+            status, message = validate_managed_variant(managed_variant_info)
+            if not status:
                 flash(
-                    f"Managed variant info line {total_variant_lines} has errors ({managed_variant_info})",
+                    f"❌ Managed variant info line {total_variant_lines} has errors {message} ({managed_variant_info})",
                     "warning",
                 )
                 continue
@@ -158,14 +171,12 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     return new_managed_variants, total_variant_lines
 
 
-def validate_managed_variant(managed_variant_info):
+def validate_managed_variant(managed_variant_info: dict) -> tuple[bool, str]:
     """
-    Returns true
-    Args:
-        managed_variant_info: dict
+    Validate managed variants. Returns True, None for successful
 
-    Returns:
-        boolean
+    Check that all mandatory fields are present.
+    Check that the ALT and REF alleles broadly follow the standard.
     """
     mandatory_fields = [
         "chromosome",
@@ -176,12 +187,28 @@ def validate_managed_variant(managed_variant_info):
         "sub_category",
     ]
 
-    record_ok = True
     for mandatory_field in mandatory_fields:
         if not managed_variant_info.get(mandatory_field):
-            record_ok = False
+            return False, f"Missing mandatory field {mandatory_field}"
 
-    return record_ok
+    chrom = managed_variant_info.get("chromosome")
+    pos = managed_variant_info.get("position")
+    ref = managed_variant_info.get("reference")
+    alt = managed_variant_info.get("alternative")
+    sub_category = managed_variant_info.get("sub_category")
+
+    validators = [
+        validate_chrom(chrom),
+        validate_pos(pos),
+        validate_ref(ref),
+        validate_ref_alt(alt=alt, ref=ref),
+        validate_sv_alt(sub_category.upper(), alt),
+    ]
+
+    return next(
+        ((status, msg) for status, msg in validators if not status),
+        (True, None),
+    )
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):
