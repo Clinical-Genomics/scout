@@ -49,7 +49,6 @@ def validate_alt(var_type: str, alt: str, ref: str, info: str) -> tuple[bool, st
 
 def validate_sv_alt(svtype: str, alt: str) -> tuple[bool, str | None]:
     """
-    Validate SV alt.
 
     For BNDs, the format shall match the VCF standard.
     For other SVs,
