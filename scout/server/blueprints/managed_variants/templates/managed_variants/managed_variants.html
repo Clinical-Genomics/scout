@@ -105,8 +105,8 @@
           <td>{{ variant.end }}</td>
           <td>{{ variant.reference }}</td>
           <td>{{ variant.alternative }}</td>
-          <td>{{ variant.category }}</td>
-          <td>{{ variant.sub_category }}</td>
+          <td>{{ variant.category|upper }}</td>
+          <td>{{ variant.sub_category|upper }}</td>
           <td>
             {{ variant.description }}
             <div class="float-end">
@@ -152,10 +152,10 @@
           {% endfor %}
         </select>
       </td>
-      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}" required></td>
-      <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
-      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}" required></td>
-      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}" required></td>
+      <td>{{ modify_form.position(class="form-control", type="number", value=variant.position) }} </td>
+      <td>{{ modify_form.end(class="form-control", type="number", value=variant.end) }}</td>
+      <td>{{ modify_form.reference(class="form-control", value=variant.reference) }}
+      <td>{{ modify_form.alternative(class="form-control", value=variant.alternative) }}
       <td>
         <select name="category" id="category" class="form-control" onchange="populateSubTypeSelect('modify_variant_{{variant.variant_id}}')">
           {% for ctg,ctg_display in modify_form.category.choices %}
@@ -202,27 +202,25 @@
     <thead>
       <tr>
         <th>Chr</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Ref</th>
-        <th>Alt</th>
-        <th>Category</th>
-        <th>Kind</th>
-        <th>Description</th>
+        <th>{{ add_form.position.label }}</th>
+        <th>{{ add_form.end.label }}</th>
+        <th>{{ add_form.reference.label }}</th>
+        <th>{{ add_form.alternative.label }}</th>
+        <th>{{ add_form.category.label }}</th>
+        <th>{{ add_form.sub_category.label }}</th>
+        <th>{{ add_form.description.label }}</th>
       </tr>
     </thead>
     <tbody>
       <tr>
       <td>{{ add_form.chromosome(class_="form-control") }}</td>
-      <td><input type="number" name="position" id="position" class="form-control" required min="1"></td>
-      <td><input type="number" name="end" id="end" class="form-control" min="1"></td>
-      <td><input type="text" name="reference" id="reference" class="form-control" required></td>
-      <td><input type="text" name="alternative" id="alternative" class="form-control" required></td>
-      <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
-      <td>{{ add_form.sub_category(class_="form-control") }}</td>
-      <td>
-        <input type="text" name="description" id="description" class="form-control">
-      </td>
+      <td>{{ add_form.position(class="form-control", type="number") }}</td>
+      <td>{{ add_form.end(class="form-control", type="number") }}</td>
+      <td>{{ add_form.reference(class="form-control") }}
+      <td>{{ add_form.alternative(class="form-control") }}
+      <td>{{ add_form.category(class="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
+      <td>{{ add_form.sub_category(class="form-control") }}</td>
+      <td>{{ add_form.description(class="form-control") }}</td>
       </tr>
       <tr>
         <td colspan=12>
@@ -269,12 +267,14 @@
       </div>
     </div>
     <div class="row justify-content-center mt-3">
-      <div class="col col-md-8">
-        <div class="row">
-          <div class="col">
-            {{ filters_form.filter_variants(class_="btn btn-primary form-control") }}
-          </div>
-        </div>
+      <div class="col-4">
+        {{ filters_form.filter_variants(class_="btn btn-primary form-control") }}
+      </div>
+
+      <div class="col-2">
+        <a href="{{ url_for('managed_variants.managed_variants')}}" class="btn btn-secondary" style="color: #ffffff !important;">
+          Reset&nbsp;filters
+        </a>
       </div>
     </div>
 {% endmacro %}
