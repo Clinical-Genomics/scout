@@ -2,6 +2,7 @@ import re
 
 from pymongo import ReturnDocument
 
+from scout.adapter.mongo.query import NOT_EXISTS
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
@@ -218,7 +219,7 @@ def test_build_gnomad_query(adapter):
         {
             "$or": [
                 {"gnomad_frequency": {"$lt": freq}},
-                {"gnomad_frequency": {"$exists": False}},
+                {"gnomad_frequency": NOT_EXISTS},
             ]
         }
     ]
@@ -244,7 +245,7 @@ def test_build_cadd_inclusive(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query["$and"] == [
-        {"$or": [{"cadd_score": {"$gt": cadd}}, {"cadd_score": {"$exists": False}}]}
+        {"$or": [{"cadd_score": {"$gt": cadd}}, {"cadd_score": NOT_EXISTS}]}
     ]
 
 
@@ -260,7 +261,7 @@ def test_build_gnomad_and_cadd(adapter):
         {
             "$or": [
                 {"gnomad_frequency": {"$lt": freq}},
-                {"gnomad_frequency": {"$exists": False}},
+                {"gnomad_frequency": NOT_EXISTS},
             ]
         },
         {"cadd_score": {"$gt": cadd}},
@@ -308,7 +309,7 @@ def test_build_clinsig_filter_exclude_status(adapter):
     mongo_query = adapter.build_query(case_id="cust000", query=query)
 
     # THEN the mongo query should contain the expected elements, either the variant has no ClinVar signififcance
-    assert {"clnsig": {"$exists": False}} in mongo_query["$or"]
+    assert {"clnsig": NOT_EXISTS} in mongo_query["$or"]
     assert {"clnsig": {"$eq": None}} in mongo_query["$or"]
 
     # OR the clinical significance doesn't contain the selected terms
@@ -464,7 +465,7 @@ def test_build_clinsig_high_confidence_plus_region_and_gnomad(real_variant_datab
                 {
                     "$or": [
                         {"gnomad_frequency": {"$lt": freq}},
-                        {"gnomad_frequency": {"$exists": False}},
+                        {"gnomad_frequency": NOT_EXISTS},
                     ]
                 },
                 {"genes.region_annotation": {"$in": region_annotation}},
@@ -531,7 +532,7 @@ def test_build_spidex_not_reported(adapter):
 
     mongo_query = adapter.build_query(case_id, query=query)
 
-    assert mongo_query["$and"] == [{"$or": [{"spidex": {"$exists": False}}]}]
+    assert mongo_query["$and"] == [{"$or": [{"spidex": NOT_EXISTS}]}]
 
 
 def test_build_spidex_high(adapter):
@@ -662,6 +663,21 @@ def test_build_sv_coordinate_query(adapter):
     assert mongo_query["$and"] == [adapter.get_position_query(chrom, start, end)]
 
 
+def test_build_size_query(adapter, case_obj):
+    """Test"build query when filters contain size parameter."""
+    # GIVEN a query with variant size - even missing "size_selector"
+    size = 2000
+    query = {"size_selector": None, "size": size}
+    # THEN query builder should return a query which works
+    mongo_query = adapter.build_query(case_id=case_obj["_id"], query=query)
+
+    size_query_or = [
+        {"$expr": {"$gte": [{"$abs": "$length"}, size]}},
+        {"length": NOT_EXISTS},
+    ]
+    assert mongo_query["$and"][0]["$or"] == size_query_or
+
+
 def test_build_ngi_sv(adapter):
     case_id = "cust000"
     count = 1
@@ -671,7 +687,7 @@ def test_build_ngi_sv(adapter):
     assert mongo_query["$and"] == [
         {
             "$or": [
-                {"clingen_ngi": {"$exists": False}},
+                {"clingen_ngi": NOT_EXISTS},
                 {"clingen_ngi": {"$lt": query["clingen_ngi"] + 1}},
             ]
         }
@@ -687,7 +703,7 @@ def test_build_swegen_sv(adapter):
     assert mongo_query["$and"] == [
         {
             "$or": [
-                {"swegen": {"$exists": False}},
+                {"swegen": NOT_EXISTS},
                 {"swegen": {"$lt": query["swegen"] + 1}},
             ]
         }
@@ -778,7 +794,7 @@ def test_build_query_exclude_clnsig_oncogenicity(adapter, case_obj):
         {
             "$or": [
                 {"clnsig_onc.value": {"$not": re.compile("benign|likely_benign")}},
-                {"clnsig_onc": {"$exists": False}},
+                {"clnsig_onc": NOT_EXISTS},
                 {"clnsig_onc": {"$eq": None}},
             ]
         }
@@ -815,7 +831,7 @@ def test_build_wts_query(adapter):
             "$or": [
                 {param: {"$gt": query.get(param)}},
                 {param: {"$lt": -query.get(param)}},
-                {param: {"$exists": False}},
+                {param: NOT_EXISTS},
                 {param: None},
             ]
         } in mongo_query["$and"]
