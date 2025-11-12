@@ -690,7 +690,7 @@ class QueryHandler(object):
 
                 case "size":
                     size = query["size"]
-                    size_selector = query.get("size_selector", "$gte")
+                    size_selector = query.get("size_selector") or "$gte"
 
                     size_query = {
                         "$or": [
