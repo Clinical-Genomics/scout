@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
+
 ## [4.106]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
