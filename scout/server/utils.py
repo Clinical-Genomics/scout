@@ -126,7 +126,7 @@ def safe_redirect_back(request: LocalProxy, link: Optional[str] = None) -> Respo
     if referrer:
         parsed_referrer = urlparse(referrer)
         if parsed_referrer.netloc == request.host:
-            return redirect(link or referrer, code=307)
+            return redirect(link or referrer)
     return redirect("/")
 
 
