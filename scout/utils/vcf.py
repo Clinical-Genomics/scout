@@ -103,9 +103,13 @@ def validate_ref_alt(alt: str, ref: str) -> tuple[bool, str | None]:
       - Flags identical REF and ALT alleles (except when REF == 'N')
       - Flags variants that appear non-normalized, i.e. containing redundant nucleotides on the 3' (right) or 5' (left) side
         Examples:
-            REF=A, ALT=A → invalid unless N
-            REF=GGTT, ALT=TT → 3-prime-trimmable deletion
-            REF=TTAA, ALT=TT → 5-prime-trimmable variant
+            REF=A, ALT=A           → invalid unless REF is 'N'
+            REF=GGTT, ALT=TT       → 3-prime-trimmable deletion
+            REF=TTAA, ALT=TT       → 5-prime-trimmable variant
+            REF=TT, ALT=TTAAGG     → 3-prime-trimmable insertion
+            Substitutions (A→T) are simple and pass
+
+        Reference: https://genome.sph.umich.edu/wiki/Variant_Normalization
     """
 
     if alt == ref and ref != "N":
