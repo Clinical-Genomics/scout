@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.106]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
 - Delete flag for update individual command (#5793)
@@ -24,11 +24,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter `f` hotkey not working on cancer variantS pages (#5788)
 - IGV.js updated to v3.5.4 (#5790)
 - Broken ClinVar germline submission page when submission contains SVs (#5805)
-- Missing size_selector in old filters containing a size criterion, causing the variantS page to crash (#5817 and and #5855)
+- Missing size_selector in old filters containing a size criterion, causing the variantS page to crash (#5817 and #5855)
 - Avoid backslash in f-strings, to preserve backwards compatibility with old python (#5818)
 - GnomAD links for the STR variant page (#5823)
 - `get_gene_complete_coverage` breaking for genes with no intervals on chanjo2, which is returning 'NA' instead of numerical stats (#5830)
-- Cleaner managed variant VCF export and detailed error messages for variants which are not included (#5813)
 - Chromosome order for hg38 in IGV.js view (#5838)
 - Clinical filter for outlier variants (#5832)
 - Decipher query was treated as a primary - now secondary again (#5832)
