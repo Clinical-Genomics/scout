@@ -107,7 +107,6 @@ def validate_ref_alt(alt: str, ref: str) -> tuple[bool, str | None]:
             REF=GGTT, ALT=TT       → 3-prime-trimmable deletion
             REF=TTAA, ALT=TT       → 5-prime-trimmable variant
             REF=TT, ALT=TTAAGG     → 3-prime-trimmable insertion
-            Substitutions (A→T) are simple and pass
 
         Reference: https://genome.sph.umich.edu/wiki/Variant_Normalization
     """
