@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, flash, jsonify, redirect, request
+from flask import Blueprint, flash, jsonify, redirect, request, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -100,4 +100,11 @@ def remove_managed_variant(variant_id):
 def add_managed_variant():
     """Add a managed variant using form data filled in by user"""
     controllers.add_managed_variant(request)
-    return safe_redirect_back(request)
+
+    return redirect(
+        url_for(
+            ".managed_variants",
+            **request.form,
+        ),
+        code=307,
+    )
