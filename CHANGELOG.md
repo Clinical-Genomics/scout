@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer case page not showing if a pinned variant is included in an oncogenic ClinVar submission (#5844)
 - `429 Client Error: Too Many Requests` when updating the PanelApp GREEN panel using the command line (#5849)
 - Revert general POST redirect and introduce separate such for managed variants (#5857)
+- Prevent false positives in REF/ALT validation of managed variants (#5859)
 
 ## [4.105.2]
 ### Fixed
