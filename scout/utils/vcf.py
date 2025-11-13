@@ -97,10 +97,24 @@ def validate_symbolic_alt(alt: str) -> tuple[bool, str | None]:
 
 
 def validate_ref_alt(alt: str, ref: str) -> tuple[bool, str | None]:
+    """
+    Validate the REF and ALT fields of a VCF record for basic consistency and normalization.
+
+      - Flags identical REF and ALT alleles (except when REF == 'N')
+      - Flags variants that appear non-normalized, i.e. containing redundant nucleotides on the 3' (right) or 5' (left) side
+        Examples:
+            REF=A, ALT=A           → invalid unless REF is 'N'
+            REF=GGTT, ALT=TT       → 3-prime-trimmable deletion
+            REF=TTAA, ALT=TT       → 5-prime-trimmable variant
+            REF=TT, ALT=TTAAGG     → 3-prime-trimmable insertion
+
+        Reference: https://genome.sph.umich.edu/wiki/Variant_Normalization
+    """
+
     if alt == ref and ref != "N":
         return False, f"Invalid (identical) ref and alt: {alt}"
 
-    if ref.endswith(alt):
+    if len(ref) > 1 and len(alt) > 1 and (ref.endswith(alt) or alt.endswith(ref)):
         return (
             False,
             "The variant is not normalised - it has extra nucleotides on the right (3-prime) side",
