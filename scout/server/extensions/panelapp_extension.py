@@ -9,6 +9,34 @@ API_PANELS_URL = "https://panelapp.genomicsengland.co.uk/api/v1/panels/"
 LOG = logging.getLogger(__name__)
 
 
+def _get_with_retry_after(url, headers=None, max_retries=5):
+    """GET wrapper that respects PanelApp 429 Retry-After."""
+    attempts = 0
+    while True:
+        resp = requests.get(url, headers=headers or {})
+        if resp.status_code in (200, 304):
+            return resp
+
+        if resp.status_code == 429:
+            retry_after = resp.headers.get("Retry-After")
+            try:
+                wait = int(retry_after) if retry_after else 60
+            except ValueError:
+                wait = 60
+
+            LOG.warning(
+                f"PanelApp rate limit reached (429). Waiting {wait}s "
+                f"(attempt {attempts+1}/{max_retries})"
+            )
+            time.sleep(wait)
+            attempts += 1
+            if attempts >= max_retries:
+                raise RuntimeError("Too many 429 responses from PanelApp")
+            continue
+
+        resp.raise_for_status()
+
+
 class PanelAppClient:
     """Class that retrieves PanelAll green genes using the NHS-NGS/panelapp library."""
 
@@ -28,10 +56,7 @@ class PanelAppClient:
         if signed_off:
             panels_url = f"{API_PANELS_URL}signedoff/?page={page}"
 
-        resp = requests.get(panels_url, headers={"Content-Type": "application/json"})
-        if not resp.ok:
-            resp.raise_for_status()
-            return
+        resp = _get_with_retry_after(panels_url, headers={"Content-Type": "application/json"})
 
         return resp.json()
 
@@ -59,7 +84,6 @@ class PanelAppClient:
 
         # Iterate over remaining pages of results
         while json_panels["next"] is not None:
-            time.sleep(5)  # Avoid 429 Client Error: Too Many Requests
             json_panels = self.get_panels(signed_off=signed_off, page=self.panels_page)
             get_ids(json_panels=json_panels)
             self.set_panel_types(json_panels=json_panels)
@@ -69,9 +93,6 @@ class PanelAppClient:
     def get_panel(self, panel_id: str) -> Optional[dict]:
         """Retrieve a gene_panel. Apply filters on panel type, if available."""
         panel_url = f"{API_PANELS_URL}{panel_id}"
-        resp = requests.get(panel_url, headers={"Content-Type": "application/json"})
-        if not resp.ok:
-            resp.raise_for_status()
-            return
+        resp = _get_with_retry_after(panel_url, headers={"Content-Type": "application/json"})
 
         return resp.json()
