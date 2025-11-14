@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
+- Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
 
 ## [4.106]
 ### Added
