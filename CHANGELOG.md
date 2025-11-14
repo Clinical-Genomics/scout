@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
+
 ## [4.106]
 ### Added
 - Bulk dismiss STR variants from variantS page (#5774)
