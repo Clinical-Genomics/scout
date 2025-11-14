@@ -48,7 +48,7 @@ def test_build_query(adapter):
     assert query["variant_type"] == "clinical"
 
 
-def test_build_query_hide_not_in_affected(adapter, case_obj):
+def test_build_query_hide_not_in_affected(real_variant_database):
     """Test variants query build with show_unaffected parameter"""
 
     # GIVEN a database with a case with one affected individual
@@ -155,6 +155,16 @@ def test_genotype_query_heterozygous(adapter, case_obj):
 
     # WHEN a value is provided for 'genotypes' in variants query
     query = {"genotypes": "0/1 or 1/0", "show_unaffected": True}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+    # THEN mongo query should contain the expected value
+    assert mongo_query["samples"]["$elemMatch"]["$or"] == {"$in": ["0/1", "1/0"]}
+
+
+def test_genotype_query_heterozygous_affected_only(adapter, case_obj):
+    """Test variants query using a 'genotypes' field in variants filter to filter for heterozygous variants"""
+
+    # WHEN a value is provided for 'genotypes' in variants query
+    query = {"genotypes": "0/1 or 1/0", "show_unaffected": False}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
     # THEN mongo query should contain the expected value
     assert mongo_query["$and"] == [{"samples.genotype_call": {"$in": ["0/1", "1/0"]}}]
