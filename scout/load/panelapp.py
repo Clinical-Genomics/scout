@@ -1,6 +1,5 @@
 import logging
 import math
-import time
 from datetime import datetime
 from typing import List, Set
 
@@ -29,7 +28,6 @@ def load_panelapp_panel(
         panel_ids: List[str] = panelapp.get_panel_ids(signed_off=False)
 
     for panel_id in panel_ids:
-        time.sleep(5)  # Avoid 429 Client Error: Too Many Requests
         panel_info: dict = panelapp.get_panel(panel_id)
         parsed_panel = parse_panelapp_panel(
             hgnc_gene_ids=adapter.hgnc_ids(),
@@ -54,7 +52,6 @@ def get_panelapp_genes(
 
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
-            time.sleep(5)  # Avoid 429 Client Error: Too Many Requests
             panel_dict: dict = panelapp.get_panel(panel_id)
             panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
             # Parse panel only if it's of the expect type(s)
