@@ -470,6 +470,7 @@ class VariantHandler(VariantLoader):
             for subject in case_obj.get("individuals"):
                 if subject.get("phenotype") == 2:
                     affected_ids.append(subject.get("individual_id"))
+                    affected_ids.append(subject.get("display_name"))
                     if subject.get("omics_sample_id"):
                         affected_ids.append(subject["omics_sample_id"])
 
