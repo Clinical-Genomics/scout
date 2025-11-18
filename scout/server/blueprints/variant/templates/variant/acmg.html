@@ -220,7 +220,7 @@
   // Force light mode on all child elements
   const allElements = container.querySelectorAll('*');
   allElements.forEach(el => {
-    const computed = window.getComputedStyle(el);
+    const computed = globalThis.getComputedStyle(el);
     if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
       el.dataset.originalBg = el.style.backgroundColor;
       el.style.backgroundColor = 'white';
@@ -266,7 +266,7 @@
 
     // Generate PDF
     const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
+    const { jsPDF } = globalThis.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
