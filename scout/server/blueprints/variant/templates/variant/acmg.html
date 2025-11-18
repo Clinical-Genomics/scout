@@ -198,24 +198,60 @@
 
     // Export to PDF
     document.getElementById('download-pdf').addEventListener('click', async function() {
-    const container = document.querySelector('.container.mt-3.mb-5');
-    const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+  const container = document.querySelector('.container.mt-3.mb-5');
+  const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
 
-    // Move the footer to the end of the container temporarily
-    let originalParent = null;
-    let originalNextSibling = null;
-    if (footer) {
-      originalParent = footer.parentNode;
-      originalNextSibling = footer.nextSibling;
-      footer.style.position = 'relative';
-      footer.style.bottom = '0';
-      container.appendChild(footer);
+  if (!container) {
+    alert('Container not found');
+    return;
+  }
+
+  // Move footer into container temporarily
+  let originalParent = null;
+  let originalNextSibling = null;
+  if (footer) {
+    originalParent = footer.parentNode;
+    originalNextSibling = footer.nextSibling;
+    footer.style.position = 'relative';
+    footer.style.bottom = '0';
+    container.appendChild(footer);
+  }
+
+  // Force light mode on all child elements
+  const allElements = container.querySelectorAll('*');
+  allElements.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
+      el.dataset.originalBg = el.style.backgroundColor;
+      el.style.backgroundColor = 'white';
     }
+    if (computed.color) {
+      el.dataset.originalColor = el.style.color;
+      el.style.color = 'black';
+    }
+    if (computed.borderColor) {
+      el.dataset.originalBorder = el.style.borderColor;
+      el.style.borderColor = '#ccc';
+    }
+  });
 
-    const canvas = await html2canvas(container, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff'
+  // Capture PDF
+    const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+
+    // Restore original styles
+    allElements.forEach(el => {
+      if (el.dataset.originalBg !== undefined) {
+        el.style.backgroundColor = el.dataset.originalBg;
+        delete el.dataset.originalBg;
+      }
+      if (el.dataset.originalColor !== undefined) {
+        el.style.color = el.dataset.originalColor;
+        delete el.dataset.originalColor;
+      }
+      if (el.dataset.originalBorder !== undefined) {
+        el.style.borderColor = el.dataset.originalBorder;
+        delete el.dataset.originalBorder;
+      }
     });
 
     // Restore footer to original position
@@ -228,13 +264,12 @@
       footer.style.position = 'fixed';
     }
 
+    // Generate PDF
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
-
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save('evaluation.pdf');
   });
