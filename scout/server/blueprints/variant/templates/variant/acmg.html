@@ -257,7 +257,7 @@
     // Restore footer to original position
     if (footer) {
       if (originalNextSibling) {
-        originalParent.insertBefore(footer, originalNextSibling);
+        originalNextSibling.before(footer);
       } else {
         originalParent.appendChild(footer);
       }
