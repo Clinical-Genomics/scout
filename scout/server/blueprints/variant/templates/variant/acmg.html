@@ -136,9 +136,8 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js" integrity="sha384-Wm+alMbg1fxSJBbLMXKBb1ZfoWBd0FwJml5aEbKolDB41cMjTfek0cLKgCku6MAF" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js" integrity="sha384-GwHhSt8QjC7J+v0zZ0Flfho/T76YHEcCL9w4rvjTIUHauh6gWJeBSIi3vWXxNhtA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.min.js" integrity="sha384-xRdpZbmFBrCOR+8YH0bFeoEFdIhM9BYZeyX+oKraQnckDv30U4BfQoGK0v7TEbTH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
 
     window.onload=function() {
@@ -198,46 +197,46 @@
     }
 
     // Export to PDF
-    document.getElementById('download-pdf').addEventListener('click', function() {
-        const container = document.querySelector('.container.mt-3.mb-5');
-        const bottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+    document.getElementById('download-pdf').addEventListener('click', async function() {
+    const container = document.querySelector('.container.mt-3.mb-5');
+    const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
 
-        if (!container || !bottomBar) {
-            alert('Required elements not found');
-            return;
-        }
+    // Move the footer to the end of the container temporarily
+    let originalParent = null;
+    let originalNextSibling = null;
+    if (footer) {
+      originalParent = footer.parentNode;
+      originalNextSibling = footer.nextSibling;
+      footer.style.position = 'relative';
+      footer.style.bottom = '0';
+      container.appendChild(footer);
+    }
 
-        // Remember original classes/styles
-        const originalClass = bottomBar.className;
-        const originalStyle = bottomBar.getAttribute('style') || '';
-
-        // Temporarily move and restyle bottom bar for PDF
-        bottomBar.classList.remove('fixed-bottom');
-        bottomBar.style.position = 'relative';
-        bottomBar.style.marginTop = '50px';
-        bottomBar.style.fontSize = '0.7em';  // shrink text
-
-        container.appendChild(bottomBar);
-
-        const opt = {
-            margin: 10,
-            filename: '{{ variant.display_name }}.pdf',
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale: 2,                  // high resolution
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                html2canvas: window.html2canvas // use html2canvas-pro
-            },
-            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(container).save().then(() => {
-            // Restore bottom bar to original state
-            bottomBar.className = originalClass;
-            bottomBar.setAttribute('style', originalStyle);
-            document.body.appendChild(bottomBar);
-        });
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
     });
+
+    // Restore footer to original position
+    if (footer) {
+      if (originalNextSibling) {
+        originalParent.insertBefore(footer, originalNextSibling);
+      } else {
+        originalParent.appendChild(footer);
+      }
+      footer.style.position = 'fixed';
+    }
+
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('evaluation.pdf');
+  });
   </script>
 {% endblock %}
