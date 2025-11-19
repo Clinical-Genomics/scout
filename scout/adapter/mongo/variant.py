@@ -461,17 +461,22 @@ class VariantHandler(VariantLoader):
             case_obj (dict): A Case object
 
         Returns:
-            affected (list): a list of affected IDs (collected as "individual_id" and "omics_sample_id").
+            affected (list): all IDs that exist for any affected individuals/samples
         """
 
-        # affected is phenotype == 2; assume
+        if not case_obj:
+            return []
+
         affected_ids = []
-        if case_obj:
-            for subject in case_obj.get("individuals"):
-                if subject.get("phenotype") == 2:
-                    affected_ids.append(subject.get("individual_id"))
-                    if subject.get("omics_sample_id"):
-                        affected_ids.append(subject["omics_sample_id"])
+
+        for subject in case_obj.get("individuals", []):
+            if subject.get("phenotype") != 2:
+                continue
+
+            for key in ("individual_id", "display_name", "sample_name", "omics_sample_id"):
+                value = subject.get(key)
+                if value:
+                    affected_ids.append(value)
 
         return affected_ids
 

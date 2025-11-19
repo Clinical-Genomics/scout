@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Collect matching WTS outliers from cases whose samples `omics_sample_id` is missing but matching `display_name` or `sample_name`
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
