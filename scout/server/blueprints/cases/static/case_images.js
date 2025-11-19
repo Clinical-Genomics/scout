@@ -202,7 +202,7 @@ function create_path(institute, case_name, individual, dir_name){
  *
  */
 function static_path_ideograms(genome_build){
-	if(genome_build === "38") {
+	if genome_build.includes("38") {
 		return "/public/static/ideograms/hg38/chromosome-"
 	} else {
     return "/public/static/ideograms/chromosome-"
