@@ -654,14 +654,13 @@ def get_and_set_cases_by_status(
     return case_groups
 
 
-def cases(store: MongoAdapter, request: request, institute_id: str):
+def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     """Preprocess case objects for the 'cases' view.
 
     Returns data dict for view display, or response in case of file export.
     """
     data = {}
 
-    # Initialize data (institute info, filters, and case counts)
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
     data["form"] = CaseFilterForm(request.form)
@@ -680,9 +679,45 @@ def cases(store: MongoAdapter, request: request, institute_id: str):
 
     case_groups = get_and_set_cases_by_status(store, request, institute_obj, all_cases, data)
 
-    # Compile the final data
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
     return data
+
+
+def case_has_rna(case: dict) -> bool:
+    """Return True/False depending on whether the case has RNA-related data."""
+
+    def exists(value):
+        return value not in (None, "")
+
+    # --- top-level RNA report keys ---
+    for key in [
+        "gene_fusion_report",
+        "gene_fusion_report_research",
+        "RNAfusion_report",
+        "RNAfusion_report_research",
+        "RNAfusion_inspector",
+        "RNAfusion_inspector_research",
+    ]:
+        if exists(case.get(key)):
+            return True
+
+    # --- omics_files.* ---
+    omics = case.get("omics_files", {})
+    if exists(omics.get("fraser")):
+        return True
+    if exists(omics.get("outrider")):
+        return True
+
+    # --- individuals[].* ---
+    for ind in case.get("individuals", []):
+        if exists(ind.get("rna_alignment_path")):
+            return True
+        if exists(ind.get("splice_junctions_bed")):
+            return True
+        if exists(ind.get("rna_coverage_bigwig")):
+            return True
+
+    return False
 
 
 def populate_case_obj(case_obj: dict, store: MongoAdapter):
@@ -705,6 +740,7 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
     set_case_clinvar_submission_variants(case_obj)
 
     case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
+    case_obj["has_rna"] = case_has_rna(case_obj)
 
 
 def _get_unevaluated_variants_for_case(
