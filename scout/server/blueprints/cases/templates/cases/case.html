@@ -627,7 +627,8 @@
     function add_image_panels(){
         add_image_to_individual_panel( {{case.individuals|tojson}},
                                        "{{institute._id}}",
-                                       "{{case.display_name}}"
+                                       "{{case.display_name}}",
+                                        {{ case.genome_build }}
                                      );
     }
   {% endif %}
