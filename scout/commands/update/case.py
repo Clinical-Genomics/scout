@@ -197,6 +197,7 @@ def case(
 
     if case_changed:
         institute_obj = store.institute(case_obj["owner"])
+        case_obj["status"] = "inactive"
         store.update_case_cli(case_obj, institute_obj)
 
     if reupload_sv:
