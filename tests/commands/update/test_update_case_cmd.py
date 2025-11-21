@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+from pymongo import ReturnDocument
 
 from scout.commands import cli
 from scout.server.extensions import store
@@ -92,6 +93,14 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
     # GIVEN a new VCF variant path to save in case document
     vcf_path = str(custom_temp_file(".vcf.gz"))
 
+    # GIVEN an active case
+    case_obj = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {"$set": {"status": "active"}},
+        return_document=ReturnDocument.AFTER,
+    )
+    assert case_obj["status"] == "active"
+
     ## GIVEN a CLI object
     runner = mock_app.test_cli_runner()
     ## WHEN updating the VCF path of a specific variant type
@@ -112,6 +121,9 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
     ## THEN assert that the file is set correct
     assert res["vcf_files"][vcf_key] == vcf_path
 
+    ## AND the case is inactivated
+    assert res["status"] == "inactive"
+
 
 @pytest.mark.parametrize(
     "omics_key",
@@ -122,11 +134,19 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
         "outrider_research",
     ],
 )
-def test_update_case_vcf_path(mock_app, case_obj, omics_key, custom_temp_file):
+def test_update_case_outliers_path(mock_app, case_obj, omics_key, custom_temp_file):
     """Test the CLI function that updates the case document with paths to different variant types."""
 
     # GIVEN a new VCF variant path to save in case document
     omics_path = str(custom_temp_file(".tsv"))
+
+    # GIVEN an active case
+    case_obj = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {"$set": {"status": "active"}},
+        return_document=ReturnDocument.AFTER,
+    )
+    assert case_obj["status"] == "active"
 
     ## GIVEN a CLI object
     runner = mock_app.test_cli_runner()
@@ -144,6 +164,9 @@ def test_update_case_vcf_path(mock_app, case_obj, omics_key, custom_temp_file):
     res = store.case_collection.find_one({"_id": case_obj["_id"]})
     ## THEN assert that the file is set correct
     assert res["omics_files"][omics_key] == omics_path
+
+    ## AND the case is inactivated
+    assert res["status"] == "inactive"
 
 
 def test_update_case_rna_genome_build(mock_app, case_obj):

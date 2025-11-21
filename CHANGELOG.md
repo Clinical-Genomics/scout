@@ -6,10 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
+- A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
 - On ACMG classification form, move `Submit` button at the bottom and ClinGen gene links to the top (#5876)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
+- Tests for cli command to update VCF files not running (#5888)
 
 ## [4.106]
 ### Added
