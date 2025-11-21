@@ -130,6 +130,9 @@
     </td>
     <td>
       {{ analysis_type(case.analysis_types) }}
+      {% if case.has_rna %}
+        <span class="badge bg-success">RNA</span>
+      {% endif %}
     </td>
     <td>
       {{ case.display_track }}
