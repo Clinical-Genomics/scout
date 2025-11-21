@@ -684,6 +684,13 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
 
 
 def case_has_rna(case: dict) -> bool:
+    """Return True/False depending on whether the case has RNA-related data.
+    This function checks:
+        - case-level RNA report keys
+        - case-level keys present in the omics_files folder
+        - Keys present at the case individual level
+    """
+
     def exists(value):
         return value not in (None, "")
 
