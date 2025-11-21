@@ -42,9 +42,13 @@
             <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
               Download as PDF
             </button>
-          {% elif not evaluation %}
-            <button class="btn btn-primary form-control">Submit</button>
+            <br>
           {% endif %}
+            <!-- external links -->
+            Search ClinGen Criteria Specifications (CSPEC):
+            {% for gene in variant.genes %}
+              <a href="{{ gene.cspec_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</a>
+            {% endfor %}
           <div id="conflicts_div" class="bg-warning"></div>
         </div>
       </div>
@@ -108,15 +112,11 @@
           </div>
         {% endfor %}
       </div>
-    <!-- external links -->
-    <div class="card panel-default mt-3">
-      <div class="card-body">
-        Search ClinGen Criteria Specifications (CSPEC):
-        {% for gene in variant.genes %}
-          <a href="{{ gene.cspec_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</a>
-        {% endfor %}
-      </div>
-    </div>
+
+    {% if not evaluation %}
+      <button class="btn btn-primary form-control mt-3">Submit</button>
+    {%endif %}
+
     <!-- classification preview in the footer-->
       <div class="mt-3 fixed-bottom bg-light border">
         <div class="row">
