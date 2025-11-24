@@ -2,6 +2,7 @@ import logging
 
 from flask import flash
 from flask_login import current_user
+from werkzeug.local import LocalProxy
 
 from scout.build import build_managed_variant
 from scout.constants import CHROMOSOMES, CHROMOSOMES_38
@@ -46,15 +47,8 @@ def set_query_coordinates(query_options, request_form):
         query_options["end"] = int(request_form.get("end"))
 
 
-def managed_variants(request):
-    """Create and return managed variants' data
-
-    Args:
-        request(werkzeug.local.LocalProxy): request containing form data
-
-    Returns
-        data(dict): data to be displayed in template page
-    """
+def managed_variants(request: LocalProxy) -> dict:
+    """Create and return managed variants' data."""
 
     page = int(request.form.get("page", 1))
     skip_count = VARS_PER_PAGE * max(page - 1, 0)
@@ -104,15 +98,11 @@ def managed_variants(request):
     }
 
 
-def add_managed_variant(request):
-    """Add a managed variant.
-
-    Args:
-        request(werkzeug.local.LocalProxy): request containing form data
-    """
+def add_managed_variant(request: LocalProxy):
+    """Add a managed variant."""
 
     add_form = ManagedVariantAddForm(request.form)
-    institutes = list(user_institutes(store, current_user))
+    institutes = [institute["_id"] for institute in user_institutes(store, current_user)]
     current_user_id = current_user._id
 
     if not add_form.validate():
