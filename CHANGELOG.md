@@ -78,7 +78,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Better access to ALT allele for SVs (#5694)
 - Remove unused `variant_count` parameter from several functions involved with variant queries (#5700)
-<<<<<<< HEAD
 - Consolidated and simplified case handling tests (#5708)
 - Authorize access to IGV.js track files at endpoint, instead of by session cookie. Allows huge case groups and many open IGV.js sessions. (#5712)
 - On the variant page, the corresponding button opens the ACMG and CCV classification tools in a new tab (#5723)
@@ -90,9 +89,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replaced deprecated `flask-ldapconn` library with `flask-ldap3-login`. Modified LDAP login module accordingly (#5719)
 - Update IGV.js to v3.5.3 (#5757)
 - Specify in the MT report that Chanjo2 stats are based on full chromosomes MT and 14, not transcript intervals. (#5771)
-=======
-- Refactored and simplified SV, cancer SV and MEI variants views (#5701)
->>>>>>> ae7c9251a (Fix also cancer SVs view)
 ### Fixed
 - Typo in PR template (#5682)
 - Highlight affected individuals/samples on `GT call` tables (#5683)
