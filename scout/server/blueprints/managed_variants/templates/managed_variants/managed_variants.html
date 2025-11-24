@@ -94,8 +94,8 @@
         <th style="width:10%">Alt</th>
         <th style="width:5%">Category</th>
         <th style="width:5%">Kind</th>
-        <th style="width:20%">Description</th>
-        <th style="width:20%">Created by</th>
+        <th style="width:25%">Description</th>
+        <th style="width:15%">Created by</th>
         <th style="width:5%"></th>
       </tr>
     </thead>
@@ -112,7 +112,18 @@
           <td>
             {{ variant.description }}
           </td>
-          <td>{{variant.maintainer|join(', ')}} {% if variant.institute %}({{ variant.institute|join(', ')}}){% endif %}</td>
+          <td>{{variant.maintainer|join(', ')}}
+            {% if variant.institute %}
+              <span
+                class="badge bg-secondary ms-2"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="{{ variant.institute | join(', ') }}"
+              >
+                {{ variant.institute | length }}
+              </span>
+            {% endif %}
+          </td>
           <td>
             <div class="float-end">
               <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
