@@ -221,8 +221,8 @@ def modify_managed_variant(store, managed_variant_id, edit_form):
             "category": edit_form["category"].data,
             "sub_category": edit_form["sub_category"].data,
             "description": edit_form["description"].data,
-            "maintainer": managed_variant.get("maintainer") or [],
-            "institute": managed_variant.get("institute") or None,
+            "maintainer": [current_user._id],
+            "institute": [institute["_id"] for institute in user_institutes(store, current_user)],
         }
     )
 
