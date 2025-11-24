@@ -117,7 +117,7 @@ def add_managed_variant(request: LocalProxy):
             end=add_form["end"].data,
             reference=add_form["reference"].data,
             alternative=add_form["alternative"].data,
-            institutes=institutes,
+            institute=institutes,
             maintainer=[current_user_id],
             category=add_form["category"].data,
             sub_category=add_form["sub_category"].data,
@@ -221,6 +221,8 @@ def modify_managed_variant(store, managed_variant_id, edit_form):
             "category": edit_form["category"].data,
             "sub_category": edit_form["sub_category"].data,
             "description": edit_form["description"].data,
+            "maintainer": managed_variant.get("maintainer") or [],
+            "institute": managed_variant.get("institute") or None,
         }
     )
 

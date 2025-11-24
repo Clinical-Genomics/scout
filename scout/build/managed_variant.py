@@ -29,7 +29,7 @@ def build_managed_variant(managed_variant_info):
             alternative=managed_variant_info["alternative"],
             build=managed_variant_info.get("build", "37"),
             maintainer=managed_variant_info.get("maintainer", []),
-            institute=managed_variant_info.get("institutes", ""),
+            institute=managed_variant_info.get("institute", ""),
             category=managed_variant_info.get("category", "snv"),
             sub_category=managed_variant_info.get("sub_category", "snv"),
             description=managed_variant_info.get("description", ""),
