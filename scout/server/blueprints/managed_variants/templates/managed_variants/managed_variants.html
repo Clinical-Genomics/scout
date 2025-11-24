@@ -87,14 +87,16 @@
   <table class="table table-bordered table-hover">
     <thead class="thead table-light">
       <tr>
-        <th style="width:10%">Chr</th>
+        <th style="width:5%">Chr</th>
         <th style="width:10%">Start</th>
         <th style="width:10%">End</th>
         <th style="width:10%">Ref</th>
         <th style="width:10%">Alt</th>
-        <th style="width:10%">Category</th>
-        <th style="width:10%">Kind</th>
-        <th style="width:30%">Description</th>
+        <th style="width:5%">Category</th>
+        <th style="width:5%">Kind</th>
+        <th style="width:25%">Description</th>
+        <th style="width:15%">Last edited by</th>
+        <th style="width:5%"></th>
       </tr>
     </thead>
     <tbody>
@@ -109,6 +111,20 @@
           <td>{{ variant.sub_category|upper }}</td>
           <td>
             {{ variant.description }}
+          </td>
+          <td>{{variant.maintainer|join(', ')}}
+            {% if variant.institute %}
+              <span
+                class="badge bg-secondary ms-2"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="{{ variant.institute | join(', ') }}"
+              >
+                {{ variant.institute | length }}
+              </span>
+            {% endif %}
+          </td>
+          <td>
             <div class="float-end">
               <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
                   <button id="{{variant._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
@@ -170,12 +186,10 @@
           {% endfor %}
         </select>
       </td>
-      <td>
-         <div class="input-group">
-           <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
-           <button type="button" class="btn btn-primary btn-sm" onclick="editVariant('{{ variant.variant_id }}')">Save</button>
-           <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('filters_form').submit()">Cancel</button>
-         </div>
+      <td><input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}"></td>
+      <td colspan="2" class="text-end">
+         <button type="button" class="btn btn-primary btn-sm" onclick="editVariant('{{ variant.variant_id }}')">Save</button>
+         <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('filters_form').submit()">Cancel</button>
       </td>
   </form>
 {% endmacro %}
