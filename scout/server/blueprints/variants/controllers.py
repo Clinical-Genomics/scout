@@ -114,14 +114,6 @@ def populate_chrom_choices(form, case_obj):
     form.chrom.choices = [(chrom, chrom) for chrom in chromosomes]
 
 
-def populate_institute_soft_filters(form, institute_obj):
-    """Populate the hidden field 'institute_soft_filters' with a string containing all institute's soft filters."""
-    if institute_obj.get("soft_filters"):
-        form.institute_soft_filters.data = [
-            (filter, filter) for filter in institute_obj["soft_filters"]
-        ]
-
-
 def set_overlapping_variants(variant_obj: dict, limit_samples: list):
     """Define DNA or WTS variants that are overlapping with a gene of a variant."""
     overlapping_variants, overlapping_outliers = store.hgnc_overlapping(variant_obj, limit_samples)
@@ -272,7 +264,6 @@ def render_variants_page(
 
     # Populate common filter choices
     populate_chrom_choices(form, case_obj)
-    populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
     genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)

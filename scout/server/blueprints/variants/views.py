@@ -106,9 +106,6 @@ def variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
@@ -227,9 +224,6 @@ def str_variants(institute_id, case_name):
 
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
@@ -409,9 +403,6 @@ def cancer_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
     genome_build = get_case_genome_build(case_obj)
@@ -489,9 +480,6 @@ def fusion_variants(institute_id, case_name):
 
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
     genome_build = get_case_genome_build(case_obj)
     cytobands = store.cytoband_by_chrom(genome_build)

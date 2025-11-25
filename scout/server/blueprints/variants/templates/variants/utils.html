@@ -132,8 +132,7 @@
         <!-- Multiselect -->
         <select name="{{ form.institute_soft_filters.name }}"
             id="{{ form.institute_soft_filters.id }}"
-            class="selectpicker">
-            multiple>
+            class="selectpicker" multiple>
             {% for filter in institute.soft_filters %}
               <option value="{{ filter }}"
                   {% if filter in form.institute_soft_filters.data %}
