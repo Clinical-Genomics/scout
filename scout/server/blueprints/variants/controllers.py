@@ -6,7 +6,8 @@ from typing import Any, Dict, List, Optional, Union
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
-from pymongo.cursor import CursorType
+from pymongo import ASCENDING
+from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
 from werkzeug.local import LocalProxy
 from wtforms import DecimalField
@@ -243,7 +244,9 @@ def _get_group_assessments(store, case_obj, variant_obj):
     return group_assessments
 
 
-def render_variants_page(category, institute_id, case_name, form_builder, data_exporter) -> dict:
+def render_variants_page(
+    category, institute_id, case_name, form_builder, data_exporter, decorator
+) -> dict:
     """Shared logic for SV and MEI variants routes."""
     page = get_variants_page(request.form)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -293,10 +296,10 @@ def render_variants_page(category, institute_id, case_name, form_builder, data_e
     if request.form.get("export"):
         return data_exporter(store, case_obj, variants_query)
 
-    data = sv_mei_variants(
+    data = decorator(
         store=store,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
+        institute=institute_obj,
+        case=case_obj,
         variants_query=variants_query,
         page=page,
     )
@@ -333,7 +336,7 @@ def sv_mei_variants(
     store: MongoAdapter,
     institute_obj: dict,
     case_obj: dict,
-    variants_query: CursorType,
+    variants_query: Cursor,
     page: int = 1,
     per_page: int = 50,
 ) -> Dict[str, Any]:
@@ -374,8 +377,25 @@ def sv_mei_variants(
     return {"variants": variants}
 
 
-def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def str_variants(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variants_query: Cursor,
+    page: int = 1,
+    per_page: int = 50,
+):
     """Pre-process list of STR variants."""
+
+    variants_query = variants_query.sort(
+        [
+            ("hgnc_symbols.0", ASCENDING),
+            ("str_repid", ASCENDING),
+            ("str_trid", ASCENDING),
+            ("chromosome", ASCENDING),
+            ("position", ASCENDING),
+        ]
+    )
 
     return_view_data = {}
 
@@ -1126,7 +1146,7 @@ def download_str_variants(_, case_obj, variant_objs):
 
 
 def download_variants(
-    store: MongoAdapter, case_obj: dict, variant_objs: CursorType, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variant_objs: Cursor, category: Optional[str] = None
 ) -> Response:
     """Download filtered variants for a case to a CSV file
 
@@ -1306,7 +1326,7 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
 
 
 def variant_export_lines(
-    store: MongoAdapter, case_obj: dict, variants_query: CursorType, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
 ) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant.
 

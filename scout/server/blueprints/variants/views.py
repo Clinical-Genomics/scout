@@ -182,64 +182,6 @@ def variants(institute_id, case_name):
     )
 
 
-"""
-@variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
-@templated("variants/str-variants.html")
-def str_variants(institute_id, case_name):
-    Display a list of STR variants.
-
-
-
-    query = form.data
-    query["variant_type"] = variant_type
-
-    variants_query = store.variants(
-        case_obj["_id"], category=category, query=query, build=genome_build
-    ).sort(
-        [
-            ("hgnc_symbols.0", pymongo.ASCENDING),
-            ("str_repid", pymongo.ASCENDING),
-            ("str_trid", pymongo.ASCENDING),
-            ("chromosome", pymongo.ASCENDING),
-            ("position", pymongo.ASCENDING),
-        ]
-    )
-
-    result_size = store.count_variants(case_obj["_id"], query, None, category, build=genome_build)
-
-    if request.form.get("export"):
-        return controllers.download_str_variants(case_obj, variants_query)
-
-    data = controllers.str_variants(
-        store=store,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
-        variants_query=variants_query,
-        page=page,
-    )
-
-    return dict(
-        case=case_obj,
-        cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        result_size=result_size,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        variant_type=variant_type,
-        **data,
-    )
-"""
-
-
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")
 def str_variants(institute_id: str, case_name: str):
@@ -251,8 +193,11 @@ def str_variants(institute_id: str, case_name: str):
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    def data_exporter(_, case_obj, variants_query):
-        return controllers.download_str_variants(_, case_obj, variants_query)
+    def data_exporter(_, case, variants_query):
+        return controllers.download_str_variants(_, case, variants_query)
+
+    def decorator(store, institute, case, variants_query, page):
+        return controllers.str_variants(store, institute, case, variants_query, page)
 
     return controllers.render_variants_page(
         category="str",
@@ -260,6 +205,7 @@ def str_variants(institute_id: str, case_name: str):
         case_name=case_name,
         form_builder=form_builder,
         data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 
@@ -274,8 +220,11 @@ def sv_variants(institute_id: str, case_name: str):
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    def data_exporter(store, case_obj, variants_query):
-        return controllers.download_variants(store, case_obj, variants_query)
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
+
+    def decorator(store, institute, case, variants_query, page):
+        return controllers.sv_mei_variants(store, institute, case, variants_query, page)
 
     return controllers.render_variants_page(
         category="sv",
@@ -283,6 +232,7 @@ def sv_variants(institute_id: str, case_name: str):
         case_name=case_name,
         form_builder=form_builder,
         data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 
@@ -297,8 +247,11 @@ def cancer_sv_variants(institute_id: str, case_name: str):
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    def data_exporter(store, case_obj, variants_query):
-        return controllers.download_variants(store, case_obj, variants_query)
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
+
+    def decorator(store, institute, case, variants_query, page):
+        return controllers.sv_mei_variants(store, institute, case, variants_query, page)
 
     return controllers.render_variants_page(
         category="cancer_sv",
@@ -306,6 +259,7 @@ def cancer_sv_variants(institute_id: str, case_name: str):
         case_name=case_name,
         form_builder=form_builder,
         data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 
@@ -320,8 +274,11 @@ def mei_variants(institute_id: str, case_name: str):
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-    def data_exporter(store, case_obj, variants_query):
-        return controllers.download_variants(store, case_obj, variants_query)
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
+
+    def decorator(store, institute, case, variants_query, page):
+        return controllers.sv_mei_variants(store, institute, case, variants_query, page)
 
     return controllers.render_variants_page(
         category="mei",
@@ -329,6 +286,7 @@ def mei_variants(institute_id: str, case_name: str):
         case_name=case_name,
         form_builder=form_builder,
         data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 
