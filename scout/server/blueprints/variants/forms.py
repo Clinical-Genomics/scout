@@ -175,7 +175,7 @@ class VariantFiltersForm(FlaskForm):
 
     show_unaffected = BooleanField("Include variants present only in unaffected", default=True)
     show_soft_filtered = BooleanField(f"Include soft-filtered variants", default=False)
-    institute_soft_filters = HiddenField()
+    institute_soft_filters = NonValidatingSelectMultipleField(choices=[])
 
 
 class FiltersForm(VariantFiltersForm):

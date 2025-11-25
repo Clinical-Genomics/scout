@@ -117,16 +117,34 @@
         {{ form.hide_dismissed.label(class="form-check-label ms-2") }}
       </div>
       {% if institute.soft_filters %} <!-- Available only for institutes with soft filters in settings -->
-        <div class="form-check d-flex justify-content-start">
-          {{ form.show_soft_filtered(class="form-check-input") }}
-          {{ form.show_soft_filtered.label(
-              class="form-check-label ms-2",
-              data_bs_toggle="tooltip",
-              title="Filters are defined by an admin in the institute settings. Current filters are: " ~
-                form.institute_soft_filters.data|safe
-          ) }}
-          {{ form.institute_soft_filters() }}
+      <div class="d-flex align-items-center gap-3">
+        <!-- Checkbox -->
+        <div class="form-check flex-shrink-0 mb-0">
+            {{ form.show_soft_filtered(class="form-check-input") }}
+            {{ form.show_soft_filtered.label(
+                class="form-check-label",
+                style="white-space: nowrap;",
+                data_bs_toggle="tooltip",
+                title="Filters are defined by an admin in the institute settings. Current filters are: " ~
+                      form.institute_soft_filters.data|join(', ')|safe
+            ) }}
         </div>
+        <!-- Multiselect -->
+        <select name="{{ form.institute_soft_filters.name }}"
+            id="{{ form.institute_soft_filters.id }}"
+            class="selectpicker">
+            multiple>
+            {% for filter in institute.soft_filters %}
+              <option value="{{ filter }}"
+                  {% if filter in form.institute_soft_filters.data %}
+                      selected
+                  {% endif %}
+              >
+                  {{ filter }}
+            </option>
+            {% endfor %}
+        </select>
+      </div>
       {% endif %}
       <div class="form-check d-flex justify-content-start">
         {% if institute.check_show_all_vars %}
