@@ -371,7 +371,7 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
 
 
 def vutr(tx: dict) -> str:
-    """Return link to VuTR, if transcript exists and is"""
+    """Return link to VuTR, if transcript exists and is canonical."""
 
     if not tx:
         return None
