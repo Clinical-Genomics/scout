@@ -365,16 +365,23 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
     tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
     tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
-    tx_obj["vutr_link"] = vutr(ensembl_id)
+    tx_obj["vutr_link"] = vutr(tx_obj)
 
     return tx_obj
 
 
-def vutr(ensembl_tx_id):
-    link = f"https://vutr.rarediseasegenomics.org/viewer/{ensembl_tx_id}"
-    if not ensembl_tx_id:
+def vutr(tx: dict) -> str:
+    """Return link to VuTR, if transcript exists and is"""
+
+    if not tx:
         return None
-    return link
+
+    ensembl_tx_id = tx.get("transcript_id")
+
+    if not all([ensembl_tx_id, tx.get("is_canonical")]):
+        return None
+
+    return f"https://vutr.rarediseasegenomics.org/viewer/{ensembl_tx_id}"
 
 
 # Transcript links
