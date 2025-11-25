@@ -3,7 +3,6 @@
 import io
 import logging
 
-import pymongo
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
