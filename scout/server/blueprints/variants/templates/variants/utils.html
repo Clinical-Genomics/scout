@@ -47,9 +47,9 @@
       the_form.submit();
     }}
 
-    var show_soft_filtered = document.getElementById('show_soft_filtered');
-    if (show_soft_filtered) {
-      show_soft_filtered.onchange = function() {
+    var exclude_soft_filtered = document.getElementById('exclude_soft_filtered');
+    if (exclude_soft_filtered) {
+      exclude_soft_filtered.onchange = function() {
       the_form.submit();
     }}
 
@@ -120,8 +120,8 @@
       <div class="d-flex align-items-center gap-3">
         <!-- Checkbox -->
         <div class="form-check flex-shrink-0 mb-0">
-            {{ form.show_soft_filtered(class="form-check-input") }}
-            {{ form.show_soft_filtered.label(
+            {{ form.exclude_soft_filtered(class="form-check-input") }}
+            {{ form.exclude_soft_filtered.label(
                 class="form-check-label",
                 style="white-space: nowrap;",
                 data_bs_toggle="tooltip",
@@ -131,16 +131,20 @@
         </div>
         <!-- Multiselect -->
         <select name="{{ form.institute_soft_filters.name }}"
-            id="{{ form.institute_soft_filters.id }}"
-            class="selectpicker" multiple>
+                id="{{ form.institute_soft_filters.id }}"
+                class="selectpicker"
+                multiple
+                data-width="200px"
+                onchange="this.form.submit()">
+            {% set selected_values = form.institute_soft_filters.data or institute.soft_filters %}
             {% for filter in institute.soft_filters %}
               <option value="{{ filter }}"
-                  {% if filter in form.institute_soft_filters.data %}
+                  {% if filter in selected_values %}
                       selected
                   {% endif %}
               >
                   {{ filter }}
-            </option>
+              </option>
             {% endfor %}
         </select>
       </div>

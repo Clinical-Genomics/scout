@@ -137,12 +137,12 @@ def test_soft_filters_query(adapter, case_obj):
 
     # GIVEN some soft filters saved at the institute level:
     institute_soft_filters = ["germline_risk", "in_normal"]
-    show_soft_filtered = False
+    exclude_soft_filtered = True
 
     # WHEN user query contains this data:
     query = {
         "institute_soft_filters": institute_soft_filters,
-        "show_soft_filtered": show_soft_filtered,
+        "exclude_soft_filtered": exclude_soft_filtered,
     }
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 

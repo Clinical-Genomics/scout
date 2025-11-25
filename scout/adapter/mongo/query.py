@@ -264,8 +264,8 @@ class QueryHandler(object):
                     if query.get(criterion) is False:
                         self.affected_inds_query(mongo_query, case_id, _get_genotype_query(query))
 
-                case "show_soft_filtered":
-                    if query.get(criterion) is False:
+                case "exclude_soft_filtered":
+                    if query.get(criterion) is True:
                         self.soft_filters_query(query=query, mongo_query=mongo_query)
 
         ##### end of fundamental query params
@@ -340,7 +340,6 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.warning(mongo_query)
         return mongo_query
 
     def soft_filters_query(self, query: dict, mongo_query: dict):
