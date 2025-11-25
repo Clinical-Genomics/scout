@@ -293,9 +293,6 @@ def render_variants_page(
         case_obj["_id"], form.data, None, category, build=genome_build
     )
 
-    if request.form.get("export"):
-        return data_exporter(store, case_obj, variants_query)
-
     data = decorator(
         store=store,
         institute=institute_obj,
@@ -303,6 +300,9 @@ def render_variants_page(
         variants_query=variants_query,
         page=page,
     )
+
+    if request.form.get("export"):
+        return data_exporter(store, case_obj, variants_query)
 
     dismiss_variant_options = (
         {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
