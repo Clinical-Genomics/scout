@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save and display maintainer/institutes for managed variants (#5890)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
+- Enhance variants filters by allowing selection of individual soft filters (#5897)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
