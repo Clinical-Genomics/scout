@@ -56,13 +56,15 @@ def api_panels(panel_name):
 def panels():
     """Show all panels for a user"""
 
+    institutes = list(user_institutes(store, current_user))
+
     # Add search box and add results if applicable
     panels_found = []
     search_string = ""
-    if request.method == "POST" and request.form.get("search_for"):
+    if request.method == "POST" and request.form.get("searchGene"):
         # Query db for panels containing the search string. This is done with autocompletion
         # therefor only one(1) hgnc_id will be received from the form.
-        search_string = escape(request.form.get("search_for"))
+        search_string = escape(request.form.get("searchGene"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
             hgnc_id = hgnc_symbols.pop()
@@ -71,7 +73,9 @@ def panels():
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        panels_found = store.search_panels_hgnc_id(hgnc_id)
+        panels_found = store.search_panels_hgnc_id(
+            hgnc_id=hgnc_id, institute_ids=[inst["_id"] for inst in institutes]
+        )
 
     # Add new panel
     elif request.method == "POST":
@@ -82,7 +86,6 @@ def panels():
 
         return redirect(url_for("panels.panels"))
 
-    institutes = list(user_institutes(store, current_user))
     panel_names = [
         name
         for institute in institutes
