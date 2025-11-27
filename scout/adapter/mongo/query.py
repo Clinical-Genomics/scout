@@ -867,7 +867,7 @@ def _get_outlier_query(query: dict) -> dict:
                 }
 
             outlier_padjust_query["$or"].append(pval_struct)
-
+        outlier_padjust_query["$or"].append({pval_name: {"$exists": False}})
     return outlier_padjust_query
 
 
