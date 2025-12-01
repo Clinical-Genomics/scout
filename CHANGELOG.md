@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - On cases page, print a `RNA` label whenever WGS or WES cases have associated RNA data (#5886)
 - Save and display maintainer/institutes for managed variants (#5890)
+- Link to VuTR at the transcript level from the variant page (#5893)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
 - On ACMG classification form, move `Submit` button at the bottom and ClinGen gene links to the top (#5876)
