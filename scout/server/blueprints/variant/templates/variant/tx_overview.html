@@ -93,6 +93,10 @@
                   <a href="{{ tx.mutalyzer_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="Mutalyzer">M</a>
                 {% endif %}
+                {% if tx.vutr_link %}
+                  <a href="{{ tx.vutr_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
+                    data-bs-toggle="tooltip" title="VuTR at raredisease genomics">VuTR</a>
+                {% endif %}
                 {% if tx.varsome_link %}
                   <a href="{{ tx.varsome_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="Varsome">V</a>
