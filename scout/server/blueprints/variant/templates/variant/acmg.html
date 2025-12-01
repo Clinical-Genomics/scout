@@ -150,7 +150,6 @@
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js" integrity="sha384-Wm+alMbg1fxSJBbLMXKBb1ZfoWBd0FwJml5aEbKolDB41cMjTfek0cLKgCku6MAF" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js" integrity="sha384-GwHhSt8QjC7J+v0zZ0Flfho/T76YHEcCL9w4rvjTIUHauh6gWJeBSIi3vWXxNhtA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.min.js" integrity="sha384-xRdpZbmFBrCOR+8YH0bFeoEFdIhM9BYZeyX+oKraQnckDv30U4BfQoGK0v7TEbTH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
 
     window.onload=function() {
@@ -210,46 +209,81 @@
     }
 
     // Export to PDF
-    document.getElementById('download-pdf').addEventListener('click', function() {
-        const container = document.querySelector('.container.mt-3.mb-5');
-        const bottomBar = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+    document.getElementById('download-pdf').addEventListener('click', async function() {
+  const container = document.querySelector('.container.mt-3.mb-5');
+  const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
 
-        if (!container || !bottomBar) {
-            alert('Required elements not found');
-            return;
-        }
+  if (!container) {
+    alert('Container not found');
+    return;
+  }
 
-        // Remember original classes/styles
-        const originalClass = bottomBar.className;
-        const originalStyle = bottomBar.getAttribute('style') || '';
+  // Move footer into container temporarily
+  let originalParent = null;
+  let originalNextSibling = null;
+  if (footer) {
+    originalParent = footer.parentNode;
+    originalNextSibling = footer.nextSibling;
+    footer.style.position = 'relative';
+    footer.style.bottom = '0';
+    container.appendChild(footer);
+  }
 
-        // Temporarily move and restyle bottom bar for PDF
-        bottomBar.classList.remove('fixed-bottom');
-        bottomBar.style.position = 'relative';
-        bottomBar.style.marginTop = '50px';
-        bottomBar.style.fontSize = '0.7em';  // shrink text
+  // Force light mode on all child elements
+  const allElements = container.querySelectorAll('*');
+  allElements.forEach(el => {
+    const computed = globalThis.getComputedStyle(el);
+    if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
+      el.dataset.originalBg = el.style.backgroundColor;
+      el.style.backgroundColor = 'white';
+    }
+    if (computed.color) {
+      el.dataset.originalColor = el.style.color;
+      el.style.color = 'black';
+    }
+    if (computed.borderColor) {
+      el.dataset.originalBorder = el.style.borderColor;
+      el.style.borderColor = '#ccc';
+    }
+  });
 
-        container.appendChild(bottomBar);
+  // Capture PDF
+    const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
 
-        const opt = {
-            margin: 10,
-            filename: '{{ variant.display_name }}.pdf',
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale: 2,                  // high resolution
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                html2canvas: window.html2canvas // use html2canvas-pro
-            },
-            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(container).save().then(() => {
-            // Restore bottom bar to original state
-            bottomBar.className = originalClass;
-            bottomBar.setAttribute('style', originalStyle);
-            document.body.appendChild(bottomBar);
-        });
+    // Restore original styles
+    allElements.forEach(el => {
+      if (el.dataset.originalBg !== undefined) {
+        el.style.backgroundColor = el.dataset.originalBg;
+        delete el.dataset.originalBg;
+      }
+      if (el.dataset.originalColor !== undefined) {
+        el.style.color = el.dataset.originalColor;
+        delete el.dataset.originalColor;
+      }
+      if (el.dataset.originalBorder !== undefined) {
+        el.style.borderColor = el.dataset.originalBorder;
+        delete el.dataset.originalBorder;
+      }
     });
+
+    // Restore footer to original position
+    if (footer) {
+      if (originalNextSibling) {
+        originalNextSibling.before(footer);
+      } else {
+        originalParent.appendChild(footer);
+      }
+      footer.style.position = 'fixed';
+    }
+
+    // Generate PDF
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = globalThis.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('evaluation.pdf');
+  });
   </script>
 {% endblock %}

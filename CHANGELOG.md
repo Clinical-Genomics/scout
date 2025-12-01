@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
 - Tests for cli command to update VCF files not running (#5888)
 - Gene in panels search results broken layout - overflow when a panel has many panel versions containing the gene (#5899)
+- ACMG evaluation PDF export, both style and colors (#5879)
 
 ## [4.106]
 ### Added
