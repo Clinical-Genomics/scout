@@ -13,6 +13,7 @@ from scout.server.links import (
     mutalyzer,
     mycancergenome,
     snp_links,
+    vutr,
 )
 
 BUILD_37 = 37
@@ -109,6 +110,20 @@ def test_add_gene_links_build37():
     add_gene_links(gene_obj, BUILD_37)
     # THEN assert some links are added
     assert "hgnc_link" in gene_obj
+
+
+def test_add_vutr_link():
+    """Test adding a VuTR link"""
+    # GIVEN a minimal transcript obj
+    tx_obj = {
+        "is_canonical": True,
+        "hgnc_id": 12442,
+        "transcript_id": "ENST00000263321",
+    }
+    # WHEN parsing tx for a link
+    link = vutr(tx_obj)
+    # THEN the link is assigned the tx id
+    assert tx_obj["transcript_id"] in link
 
 
 def test_add_gene_links_build38():
