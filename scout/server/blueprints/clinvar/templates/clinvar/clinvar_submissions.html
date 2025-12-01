@@ -29,6 +29,16 @@
   <!-- Modal end -->
   <br>
   {% if submissions %}
+
+    <div class="container my-3">
+      <form id="search-form" class="d-flex gap-2 align-items-start">
+        <input type="text" id="submission-search" class="form-control"
+               placeholder="Enter ClinVar submission ID…" required
+               style="max-width: 250px;">
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+    </div>
+
     <div style="overflow-y: auto; height: 1000px;">
     {% for status in ['open', 'closed', 'submitted'] %}
       {% for submission in submissions|sort(attribute='status') %}
@@ -47,9 +57,9 @@
 {% macro submission_panel(subm_obj) %}
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
-    <h2 class="accordion-header" id="header-{{subm_obj._id}}">
+    <h2 class="accordion-header" id="{{subm_obj.clinvar_subm_id or subm_obj._id}}">
       <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+        Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id or subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
       </a>
     </h2>
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
@@ -320,7 +330,55 @@
 
 {% block scripts %}
   {{ super() }}
-  <script type="text/javascript">
+  <scripts type="text/javascript">
+
+  document.addEventListener("DOMContentLoaded", function() {
+  const searchForm = document.getElementById("search-form");
+  const searchInput = document.getElementById("submission-search");
+
+  function searchSubmission(id) {
+    if (!id) return;
+
+    // Get header by ID
+    const header = document.getElementById(`header-${id}`);
+    if (!header) {
+      alert("Submission ID not found");
+      return;
+    }
+
+    // Expand the accordion
+    const collapseSelector = header.querySelector(".accordion-button").getAttribute("data-bs-target");
+    const collapseNode = document.querySelector(collapseSelector);
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseNode);
+    bsCollapse.show();
+
+    // Scroll & highlight after expansion
+    collapseNode.addEventListener("shown.bs.collapse", () => {
+      header.scrollIntoView({ behavior: "smooth", block: "center" });
+      header.classList.add("highlight");
+      setTimeout(() => header.classList.remove("highlight"), 1500);
+    }, { once: true });
+  }
+
+  // Handle form submission
+  searchForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const searchValue = searchInput.value.trim();
+    searchSubmission(searchValue);
+
+    // Update URL hash for sharing
+    if (searchValue) window.location.hash = searchValue;
+  });
+
+  // Auto-search if URL has a hash
+  if (window.location.hash) {
+    const hashValue = decodeURIComponent(window.location.hash.substring(1));
+    if (hashValue) {
+      searchInput.value = hashValue;
+      searchSubmission(hashValue);
+    }
+  }
+});
 
   $(function () {
       $('.casedata  div').hide();
@@ -348,6 +406,6 @@
           }
       });
   });
-</script>
 
+</scripts>
 {% endblock %}
