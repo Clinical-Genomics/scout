@@ -60,7 +60,7 @@
 {% macro submission_panel(subm_obj) %}
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
-    <h2 class="accordion-header" id="{{subm_obj.clinvar_subm_id or subm_obj._id}}" data-clinvar-id="{{ subm_obj.clinvar_subm_id or subm_obj._id }}">
+    <h2 class="accordion-header" id="header-{{subm_obj._id}}">
       <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
         Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id or subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
       </a>
@@ -333,7 +333,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <scripts type="text/javascript">
+  <script type="text/javascript">
 
   $(function () {
       $('.casedata  div').hide();
@@ -362,5 +362,5 @@
       });
   });
 
-</scripts>
+</script>
 {% endblock %}

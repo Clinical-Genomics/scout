@@ -205,7 +205,3 @@ input[type='checkbox']{
 input[type='radio']{
   color-scheme: only light;
 }
-
-.highlight {
-    background-color: yellow !important;
-}
