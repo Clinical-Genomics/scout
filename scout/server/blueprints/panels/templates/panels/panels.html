@@ -43,7 +43,9 @@
 <div class="container-float">
   <div class="card mt-3">
     <div class="card-body">
-      <form action="{{ url_for('panels.panels') }}"  method="POST">
+
+      <!-- Search Form -->
+      <form action="{{ url_for('panels.panels') }}" method="POST">
         <div class="row">
           <div class="col-5">
             <input type="text" name="searchGene" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
@@ -52,44 +54,45 @@
           <div class="col">
             <button type="submit" name="action" value="searchGeneSubmit" class="btn btn-secondary">Search</button>
           </div>
+        </div>
       </form>
 
-      <div id="SearchResults" class="card-body">
+      <!-- Search Results -->
+      <div id="SearchResults" class="mt-3">
         {% if search_result %}
-        <div class="card-body">
-          <strong> <em>{{search_string}}</em> found in: </strong> <br>
-          <table class="table table-striped" aria-describedby="Searchresults">
-            <thead>
-              <tr>
-                <th style="width: 15%">Panel Name</th>
-                <th style="width: 85%">Versions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in search_result %}
-              <tr>
-                <td> {{item['_id']}} </td>
-                <td>
-                  <table  style="border-spacing: 40px 10px;" role="presentation" aria-describedby="Versions">
-                    <tr>
-                      {% for version in item['versions'] %}
-                      <td style="padding:0 10px"> {{version}} </td>
-                      {% endfor %}
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% elif search_string  %}
-          <strong> <em>{{search_string}} </em> not found. </strong>
-          {% endif %}
-        </div>
+        <strong><em>{{ search_string }}</em> found in:</strong>
+        <br>
+        <table class="table table-striped" aria-describedby="Searchresults">
+          <thead>
+            <tr>
+              <th style="width: 15%">Panel Name</th>
+              <th style="width: 85%">Versions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in search_result %}
+            <tr>
+              <td>{{ item['_id'] }}</td>
+              <td class="p-2">
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                  {% for version in item['versions'] %}
+                  <span>{{ version }}</span>
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% elif search_string %}
+        <strong><em>{{ search_string }}</em> not found.</strong>
+        {% endif %}
       </div>
-      </div>
-    </div>
-  </div>
+
+    </div> <!-- end card-body -->
+  </div> <!-- end card -->
+</div> <!-- end container-float -->
 {% endmacro %}
 
 
