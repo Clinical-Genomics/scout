@@ -267,9 +267,14 @@ class ClinVarHandler(object):
         query = {"institute_id": institute_id, "type": "oncogenicity"}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
-    def get_clinvar_germline_submissions(self, institute_id: str) -> List[dict]:
+    def get_clinvar_germline_submissions(
+        self, institute_id: str, clinvar_id_filter: Optional[str] = None
+    ) -> List[dict]:
         """Collect all open and closed ClinVar germline submissions for an institute."""
         query = {"institute_id": institute_id, "type": {"$exists": False}}
+        if clinvar_id_filter:
+            query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
+
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
         )

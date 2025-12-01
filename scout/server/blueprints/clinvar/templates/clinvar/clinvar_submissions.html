@@ -28,12 +28,19 @@
   {{ clinvar_howto_modal() }}
   <!-- Modal end -->
   <br>
-  {% if submissions %}
 
-    <form method="GET" action="{{ url_for('clinvar.clinvar_germline_submissions') }}" class="d-flex gap-2">
-      <input type="text" name="clinvar_id" class="form-control" placeholder="Enter ClinVar submission ID…">
-      <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+  <div class="mb-2">
+      <form id="search-form" class="d-flex gap-2 align-items-start" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
+        <input type="text" class="form-control" name="clinvar_id_filter"
+               placeholder="Enter ClinVar submission ID…"
+               value="{{clinvar_id_filter if clinvar_id_filter}}"
+               style="max-width: 250px;">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" class="btn btn-secondary text-white">Show All</a>
+      </form>
+    </div>
+
+  {% if submissions %}
 
     <div style="overflow-y: auto; height: 1000px;">
     {% for status in ['open', 'closed', 'submitted'] %}
