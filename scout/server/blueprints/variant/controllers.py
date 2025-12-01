@@ -132,6 +132,7 @@ def tx_overview(variant_obj: dict):
             ovw_tx["tp53_link"] = tx.get("tp53_link")
             ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
             ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
+            ovw_tx["vutr_link"] = tx.get("vutr_link")
 
             ensembl_txid_mane_transcripts[tx.get("transcript_id")] = {
                 "mane": ovw_tx["mane"],
