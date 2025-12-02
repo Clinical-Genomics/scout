@@ -264,8 +264,8 @@ class QueryHandler(object):
                     if query.get(criterion) is False:
                         self.affected_inds_query(mongo_query, case_id, _get_genotype_query(query))
 
-                case "show_soft_filtered":
-                    if query.get(criterion) is False:
+                case "exclude_soft_filtered":
+                    if query.get(criterion) is True:
                         self.soft_filters_query(query=query, mongo_query=mongo_query)
 
         ##### end of fundamental query params
@@ -345,7 +345,7 @@ class QueryHandler(object):
     def soft_filters_query(self, query: dict, mongo_query: dict):
         """Adds info to variants query to exclude variants flagged by specific filters."""
         if query.get("institute_soft_filters"):
-            mongo_query["filters"] = {"$nin": query["institute_soft_filters"].split(",")}
+            mongo_query["filters"] = {"$nin": query["institute_soft_filters"]}
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
         """Add info to variants query to filter out variants which are only in unaffected individuals
