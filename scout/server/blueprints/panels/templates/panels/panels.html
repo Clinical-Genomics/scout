@@ -66,13 +66,15 @@
           <thead>
             <tr>
               <th style="width: 15%">Panel Name</th>
-              <th style="width: 85%">Versions</th>
+              <th style="width: 10%">Institute</th>
+              <th style="width: 75%">Versions</th>
             </tr>
           </thead>
           <tbody>
             {% for item in search_result %}
             <tr>
               <td>{{ item['_id'] }}</td>
+              <td>{{ item['institute'] }}</td>
               <td class="p-2">
                 <div class="d-flex flex-wrap gap-3 align-items-center">
                   {% for version in item['versions'] %}
