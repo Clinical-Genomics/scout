@@ -18,7 +18,7 @@ FUNDAMENTAL_CRITERIA = [
     "variant_ids",
     "hide_dismissed",
     "show_unaffected",
-    "show_soft_filtered",
+    "exclude_soft_filtered",
 ]
 
 # If there is only one primary criterion given without any secondary, it will also be
