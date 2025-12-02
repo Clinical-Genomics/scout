@@ -262,15 +262,31 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.cursor.Cursor:
-        """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
-        query = {"institute_id": institute_id, "type": "oncogenicity"}
-        return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
-
     def get_clinvar_germline_submissions(
         self, institute_id: str, clinvar_id_filter: Optional[str] = None
     ) -> List[dict]:
         """Collect all open and closed ClinVar germline submissions for an institute."""
+
+        def populate_cases_from_variant_data(variant_data, institute_id):
+            cases = {}
+            for var_info in variant_data:
+                case_id = var_info["_id"].rsplit("_", 1)[0]
+                CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
+                var_info["added_by"] = self.clinvar_variant_submitter(
+                    institute_id=institute_id,
+                    case_id=case_id,
+                    variant_id=var_info["local_id"],
+                )
+                case_obj = self.case(
+                    case_id=case_id,
+                    projection=CASE_CLINVAR_SUBMISSION_PROJECTION,
+                )
+                if not case_obj:
+                    cases[case_id] = f"{case_id} (N/A)"
+                    continue
+                cases[case_id] = case_obj.get("display_name")
+            return cases
+
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
@@ -293,19 +309,9 @@ class ClinVarHandler(object):
                         "last_evaluated", pymongo.ASCENDING
                     )
                 )
-                for var_info in submission["variant_data"]:
-                    case_id = var_info["_id"].rsplit("_", 1)[0]
-                    CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
-                    var_info["added_by"] = self.clinvar_variant_submitter(
-                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
-                    )
-                    case_obj = self.case(
-                        case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
-                    )
-                    if not case_obj:
-                        cases[case_id] = f"{case_id} (N/A)"  # Situation when case has been removed
-                        continue
-                    cases[case_id] = case_obj.get("display_name")
+
+                # moved out → reduces cognitive complexity in this function
+                cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
 
             submission["cases"] = cases
 
