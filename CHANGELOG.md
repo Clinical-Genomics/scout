@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter germline ClinVar submission IDs by ClinVar ID (#5907)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
+- Enhance variants filters by allowing selection of individual soft filters (#5897)
 - Search panels by gene only within user’s institutes (#5902)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
