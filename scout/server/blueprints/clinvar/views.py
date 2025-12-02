@@ -98,13 +98,22 @@ def clinvar_germline_submissions(institute_id):
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
+    clinvar_id_filter = (
+        request.args.get("clinvar_id_filter").strip()
+        if request.args.get("clinvar_id_filter")
+        else None
+    )
+
     data = {
-        "submissions": store.get_clinvar_germline_submissions(institute_id),
+        "submissions": store.get_clinvar_germline_submissions(
+            institute_id, clinvar_id_filter=clinvar_id_filter
+        ),
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
+        "clinvar_id_filter": clinvar_id_filter,
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 

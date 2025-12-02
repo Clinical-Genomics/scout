@@ -28,7 +28,20 @@
   {{ clinvar_howto_modal() }}
   <!-- Modal end -->
   <br>
+
+  <div class="mb-2">
+      <form id="search-form" class="d-flex gap-2 align-items-start" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
+        <input type="text" class="form-control" name="clinvar_id_filter"
+               placeholder="Enter ClinVar submission ID…"
+               value="{{clinvar_id_filter if clinvar_id_filter}}"
+               style="max-width: 250px;">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" class="btn btn-secondary text-white">Show All</a>
+      </form>
+    </div>
+
   {% if submissions %}
+
     <div style="overflow-y: auto; height: 1000px;">
     {% for status in ['open', 'closed', 'submitted'] %}
       {% for submission in submissions|sort(attribute='status') %}
@@ -49,7 +62,7 @@
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
       <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+        Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id or subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
       </a>
     </h2>
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
@@ -348,6 +361,6 @@
           }
       });
   });
-</script>
 
+</script>
 {% endblock %}
