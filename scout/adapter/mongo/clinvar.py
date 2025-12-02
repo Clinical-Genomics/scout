@@ -310,7 +310,6 @@ class ClinVarHandler(object):
                     )
                 )
 
-                # moved out → reduces cognitive complexity in this function
                 cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
 
             submission["cases"] = cases
