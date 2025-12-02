@@ -136,18 +136,18 @@ def test_soft_filters_query(adapter, case_obj):
     """Test variants query by providing a form with soft filters data."""
 
     # GIVEN some soft filters saved at the institute level:
-    institute_soft_filters = "germline_risk,in_normal"
-    show_soft_filtered = False
+    institute_soft_filters = ["germline_risk", "in_normal"]
+    exclude_soft_filtered = True
 
     # WHEN user query contains this data:
     query = {
         "institute_soft_filters": institute_soft_filters,
-        "show_soft_filtered": show_soft_filtered,
+        "exclude_soft_filtered": exclude_soft_filtered,
     }
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the MongoDB query should contain soft filters:
-    assert mongo_query["filters"] == {"$nin": institute_soft_filters.split(",")}
+    assert mongo_query["filters"] == {"$nin": institute_soft_filters}
 
 
 def test_genotype_query_heterozygous(adapter, case_obj):
