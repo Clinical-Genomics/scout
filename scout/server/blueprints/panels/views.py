@@ -56,13 +56,16 @@ def api_panels(panel_name):
 def panels():
     """Show all panels for a user"""
 
+    institutes = list(user_institutes(store, current_user))
+    user_institute_ids = {inst["_id"] for inst in institutes}
+
     # Add search box and add results if applicable
-    panels_found = []
+    institute_panels_with_gene = []
     search_string = ""
-    if request.method == "POST" and request.form.get("search_for"):
+    if request.method == "POST" and request.form.get("searchGene"):
         # Query db for panels containing the search string. This is done with autocompletion
         # therefor only one(1) hgnc_id will be received from the form.
-        search_string = escape(request.form.get("search_for"))
+        search_string = escape(request.form.get("searchGene"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
             hgnc_id = hgnc_symbols.pop()
@@ -71,7 +74,11 @@ def panels():
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        panels_found = store.search_panels_hgnc_id(hgnc_id)
+        institute_panels_with_gene = [
+            panel
+            for panel in store.search_panels_hgnc_id(hgnc_id)
+            if panel["institute"] in user_institute_ids
+        ]
 
     # Add new panel
     elif request.method == "POST":
@@ -82,14 +89,14 @@ def panels():
 
         return redirect(url_for("panels.panels"))
 
-    institutes = list(user_institutes(store, current_user))
     panel_names = [
         name
-        for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"], include_hidden=True).distinct(
+        for institute_id in user_institute_ids
+        for name in store.gene_panels(institute_id=institute_id, include_hidden=True).distinct(
             "panel_name"
         )
     ]
+
     panel_versions = {}
     for name in panel_names:
         panels = store.gene_panels(panel_id=name, include_hidden=True)
@@ -111,7 +118,7 @@ def panels():
         panel_versions=panel_versions,
         institutes=institutes,
         search_string=search_string,
-        search_result=panels_found,
+        search_result=institute_panels_with_gene,
     )
 
 

@@ -48,18 +48,11 @@
       <form action="{{ url_for('panels.panels') }}" method="POST">
         <div class="row">
           <div class="col-5">
-            <input type="text"
-                   name="search_for"
-                   class="form-control typeahead_gene mb-1"
-                   data-provide="typeahead"
-                   autocomplete="off"
-                   placeholder="Search Gene in Panels"
-                   required
-                   pattern="^[0-9]+\s*\|\s*.*"
-                   title="Search for gene symbol. Type name or number and the field autocompletes a full description. Allowed patterns have a numerical hgnc id and a pipe character.">
+            <input type="text" name="searchGene" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
+                   pattern="^[0-9]+\s*\|\s*.*" title="Search for gene symbol. Type name or number and the field autocompletes a full description. Allowed patterns have a numerical hgnc id and a pipe character.">
           </div>
           <div class="col">
-            <button type="submit" name="action" value="ADDGENE" class="btn btn-secondary">Search!</button>
+            <button type="submit" name="action" value="searchGeneSubmit" class="btn btn-secondary">Search</button>
           </div>
         </div>
       </form>
@@ -73,13 +66,15 @@
           <thead>
             <tr>
               <th style="width: 15%">Panel Name</th>
-              <th style="width: 85%">Versions</th>
+              <th style="width: 10%">Institute</th>
+              <th style="width: 75%">Versions</th>
             </tr>
           </thead>
           <tbody>
             {% for item in search_result %}
             <tr>
               <td>{{ item['_id'] }}</td>
+              <td>{{ item['institute'] }}</td>
               <td class="p-2">
                 <div class="d-flex flex-wrap gap-3 align-items-center">
                   {% for version in item['versions'] %}
