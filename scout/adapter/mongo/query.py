@@ -582,9 +582,6 @@ class QueryHandler(object):
 
         if query.get("padjust") or query.get("p_adjust_gene"):
             mongo_secondary_query.append(_get_outlier_query(query))
-            LOG.info(
-                f"using padjust for filtering - query was {query}, secondary filter is {mongo_secondary_query}"
-            )
 
         for criterion in SECONDARY_CRITERIA:
             if not query.get(criterion):
@@ -855,10 +852,12 @@ def _get_outlier_query(query: dict) -> dict:
     }
 
     for pval_name in {"padjust", "p_adjust_gene"}:
-        if pval := query.get(pval_name):
-            pval_struct = {pval_name: {"$lt": pval}}
+        provided_pval = query.get(pval_name)
 
-            if (abs_delta_psi := query.get("delta_psi")) and pval_name == "p_adjust_gene":
+        if provided_pval is not None:
+            pval_struct = {pval_name: {"$lt": provided_pval}}
+
+            if pval_name == "p_adjust_gene" and (abs_delta_psi := query.get("delta_psi")):
                 pval_struct = {
                     "$and": [
                         pval_struct,
@@ -874,6 +873,9 @@ def _get_outlier_query(query: dict) -> dict:
             outlier_padjust_query["$or"].append(
                 {"$and": [pval_struct, {mutual_exclusion[pval_name]: {"$exists": False}}]}
             )
+
+        else:
+            outlier_padjust_query["$or"].append({pval_name: {"$exists": False}})
 
     return outlier_padjust_query
 
