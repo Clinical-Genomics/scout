@@ -849,7 +849,6 @@ def _get_outlier_query(query: dict) -> dict:
 
     outlier_padjust_query = {"$or": []}
 
-    # Mapping of field -> field that must NOT exist if this one is used
     mutual_exclusion = {
         "padjust": "p_adjust_gene",
         "p_adjust_gene": "padjust",
@@ -857,10 +856,8 @@ def _get_outlier_query(query: dict) -> dict:
 
     for pval_name in {"padjust", "p_adjust_gene"}:
         if pval := query.get(pval_name):
-            # Threshold condition
             pval_struct = {pval_name: {"$lt": pval}}
 
-            # Special delta_psi logic for Fraser (p_adjust_gene)
             if (abs_delta_psi := query.get("delta_psi")) and pval_name == "p_adjust_gene":
                 pval_struct = {
                     "$and": [
@@ -874,7 +871,6 @@ def _get_outlier_query(query: dict) -> dict:
                     ]
                 }
 
-            # Add condition AND enforce the other p-value is missing
             outlier_padjust_query["$or"].append(
                 {"$and": [pval_struct, {mutual_exclusion[pval_name]: {"$exists": False}}]}
             )
