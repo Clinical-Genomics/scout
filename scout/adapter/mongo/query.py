@@ -857,7 +857,7 @@ def _get_outlier_query(query: dict) -> dict:
         if provided_pval is not None:
             pval_struct = {pval_name: {"$lt": provided_pval}}
 
-            if pval_name == "p_adjust_gene" and (abs_delta_psi := query.get("delta_psi")):
+            if (abs_delta_psi := query.get("delta_psi")) and pval_name == "p_adjust_gene":
                 pval_struct = {
                     "$and": [
                         pval_struct,
