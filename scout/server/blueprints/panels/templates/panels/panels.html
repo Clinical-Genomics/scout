@@ -74,14 +74,59 @@
                 <td>{{ panel.version }}</td>
                 <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length }}</span></td>
                 <td>
-                  <button class="btn btn-primary btn-xs" data-bs-toggle="collapse" data-bs-target="#paneldiv_{{ panel._id }}">
+
+                  <!-- HISTORY button opens modal -->
+                  <button type="button" class="btn btn-primary btn-xs" data-bs-toggle="modal"
+                          data-bs-target="#historyModal_{{ panel._id }}">
                     <span class="fa fa-search-plus"></span>
                   </button>
+
+                  <!-- HISTORY Modal -->
+                  <div class="modal fade" id="historyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">History for {{ panel.display_name }}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <ul>
+                            <li><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
+                              {{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes
+                            </a></li>
+                            <!-- Add more history items here -->
+                          </ul>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </td>
                 <td>
+                  <!-- MODIFY button opens modal -->
                   <button class="btn btn-warning btn-xs" data-bs-toggle="collapse" data-bs-target="#modifydiv_{{ panel._id }}">
                     <span class="fa fa-pen-square"></span>
                   </button>
+                  <!-- MODIFY Modal -->
+                  <div class="modal fade" id="modifyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Modify {{ panel.display_name }}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <!-- Include your modify form or content here -->
+                          <p>Modify form for panel {{ panel.display_name }} goes here.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </td>
                 <td>
                   {% if panel.hidden %}
@@ -97,26 +142,17 @@
                 </td>
               </tr>
 
-              <!-- Collapsible rows -->
-              <tr class="collapse" id="paneldiv_{{ panel._id }}">
-                <td colspan="8">
-                  <ul>
-                    <li>{{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes</li>
-                  </ul>
-                </td>
-              </tr>
-
-              <tr class="collapse" id="modifydiv_{{ panel._id }}">
-                <td colspan="8">
-                  {{ modify_panel(panel._id, panel) }}
-                </td>
-              </tr>
-
-              {{ remove_gene_panel_modal(institute, panel) }}
               {% endfor %}
             {% endfor %}
           </tbody>
         </table>
+      </div>
+
+      {% for institute, panels in panel_groups %}
+        {% for panel in panels %}
+          {{ remove_gene_panel_modal(institute, panel) }}
+        {% endfor %}
+      {% endfor %}
       </div>
     {% else %}
       <div class="panel-body">No gene panels found.</div>
@@ -262,22 +298,6 @@
   </form>
 {% endmacro %}
 
-{% macro history_view(panel_id, panel_name) %}
-  <div id="paneldiv_{{panel_id}}" class="collapse">
-    <ul>
-    {% for version in panel_versions[panel_name]|sort(attribute='version', reverse=True) %}
-      <li><a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a></li>
-    {% endfor %}
-    </ul>
-  </div>
-{% endmacro %}
-
-{% macro modify_panel(panel_id, panel_obj) %}
-  <tr id="modifydiv_{{panel_id}}" class="collapse">
-    <td colspan=5>{{ modify_form(panel_obj) }}</td>
-  </tr>
-{% endmacro %}
-
 {% macro modify_form(panel_obj) %}
   <strong>{{panel_obj.display_name}}</strong><br>
   <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
@@ -337,28 +357,6 @@ var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
 tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
-
-$('.history_btn').on('click', function(){
-    var bid = $(this)[0].id;
-    var sel = '#paneldiv_' + bid;
-    if($(sel).is(':visible')){
-      $(sel).hide();
-    }
-    else{
-      $(sel).fadeToggle();
-    }
-});
-
-$('.modify_btn').on('click', function(){
-    var bid = $(this)[0].id;
-    var sel = '#modifydiv_' + bid;
-    if($(sel).is(':visible')){
-      $(sel).hide();
-    }
-    else{
-      $(sel).fadeToggle();
-    }
-});
 
 function toggleRow(hideCheck) {
   var els = document.getElementsByClassName("hidableRow");
