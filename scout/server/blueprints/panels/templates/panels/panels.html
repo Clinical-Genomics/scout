@@ -348,15 +348,6 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Select all Modify buttons in the table
-  document.querySelectorAll("button.btn-warning").forEach(function(btn) {
-    btn.addEventListener("click", function(event) {
-      console.log("Modify button clicked for ID:", btn.getAttribute("data-bs-target"));
-    });
-  });
-});
-
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -374,7 +365,6 @@ $(function(){
         source: getNameTerms,
         minLength: 3,
       });
-
 
   });
 
