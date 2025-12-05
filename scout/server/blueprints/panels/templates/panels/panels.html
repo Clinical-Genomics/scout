@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Initialize all tooltips on the page
   [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     .forEach(function (tooltipTriggerEl) {
-      new bootstrap.Tooltip(tooltipTriggerEl)
+      new bootstrap.Tooltip(tooltipTriggerEl) // eslint-disable-line no-new
     });
 });
 
