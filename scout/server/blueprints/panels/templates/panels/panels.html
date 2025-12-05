@@ -59,7 +59,7 @@
           <tbody class="list">
             {% for institute, panels in panel_groups %}
               {% for panel in panels %}
-              <tr {% if panel.hidden %} class="removed" {% endif %}>
+              <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
                 <td class="institute">{{ institute.display_name }} ({{ institute._id }})</td>
                 <td class="panelName">
                   <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
@@ -352,6 +352,19 @@ var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
 tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
+function toggleRow(hideCheck) {
+  var els = document.getElementsByClassName("hidableRow");
+  for(var i=0;i<els.length;i++){
+    collapse = bootstrap.Collapse.getOrCreateInstance(els[i])
+    if(hideCheck.checked){
+      collapse.hide();
+    }
+    else{
+      collapse.show();
+    }
+  }
+}
 
 $(function(){
       function getNameTerms(query, process) {
