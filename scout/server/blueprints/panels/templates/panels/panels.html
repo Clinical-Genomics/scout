@@ -74,60 +74,17 @@
                 <td>{{ panel.version }}</td>
                 <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length }}</span></td>
                 <td>
-
                   <!-- HISTORY button opens modal -->
                   <button type="button" class="btn btn-primary btn-xs" data-bs-toggle="modal"
                           data-bs-target="#historyModal_{{ panel._id }}">
                     <span class="fa fa-search-plus"></span>
                   </button>
-
-                  <!-- HISTORY Modal -->
-                  <div class="modal fade" id="historyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">History for {{ panel.display_name }}</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <ul>
-                            <li><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-                              {{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes
-                            </a></li>
-                            <!-- Add more history items here -->
-                          </ul>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </td>
                 <td>
                   <!-- MODIFY button opens modal -->
-                  <button class="btn btn-warning btn-xs" data-bs-toggle="collapse" data-bs-target="#modifydiv_{{ panel._id }}">
+                  <button class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modifyModal_{{ panel._id }}">
                     <span class="fa fa-pen-square"></span>
                   </button>
-                  <!-- MODIFY Modal -->
-                  <div class="modal fade" id="modifyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Modify {{ panel.display_name }}</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <!-- Include your modify form or content here -->
-                          <p>Modify form for panel {{ panel.display_name }} goes here.</p>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </td>
                 <td>
                   {% if panel.hidden %}
                     <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
@@ -150,6 +107,8 @@
 
       {% for institute, panels in panel_groups %}
         {% for panel in panels %}
+          {{ panel_history_modal(panel) }}
+          {{ panel_edit_modal(panel) }}
           {{ remove_gene_panel_modal(institute, panel) }}
         {% endfor %}
       {% endfor %}
@@ -273,6 +232,29 @@
 </div>
 {% endmacro %}
 
+{% macro panel_history_modal(panel) %}
+<div class="modal fade" id="historyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">History for {{ panel.display_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
+            {{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes
+          </a></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro remove_gene_panel_modal(institute, panel) %}
   <form action="{{ url_for('panels.panel_delete', panel_id=panel._id) }}"
         method="POST">
@@ -298,33 +280,46 @@
   </form>
 {% endmacro %}
 
-{% macro modify_form(panel_obj) %}
-  <strong>{{panel_obj.display_name}}</strong><br>
-  <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
-    <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
-    <div class="row">
-      <div class="col-sm-5">
-        <div class="custom-control custom-radio">
-          <input type="radio" id="add_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
-          <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from text file</label>
+{% macro panel_edit_modal(panel) %}
+  <div class="modal fade" id="modifyModal_{{ panel._id }}" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modify {{ panel.display_name }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="custom-control custom-radio">
-          <input type="radio" id="replace_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="replace">
-          <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using text file</label>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
+            <input type="hidden" name="panel_name" value="{{panel.panel_name}}">
+            <div class="row">
+              <div class="col-sm-5">
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="add_{{panel.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
+                  <label class="custom-control-label" for="add_{{panel.display_name}}">Add genes from text file</label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="replace_{{panel.display_name}}" name="modify_option" class="custom-control-input" value="replace">
+                  <label class="custom-control-label" for="replace_{{panel.display_name}}">Replace genes using text file</label>
+                </div>
+              </div><!--end of col-->
+              <div class="col-sm-7">
+                <input type="file" name="panel_file" class="custom-file-input" required>
+                <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" rel="noopener" target="_blank">gene panel file</a>?</p>
+              </div><!--end of col-->
+            </div><!--end of row-->
+            <div class="row">
+              <div class="col text-center">
+                <button id="submit" type="submit" class="btn btn-secondary">Submit</button>
+              </div>
+            </div>
+          </form>
         </div>
-      </div><!--end of col-->
-      <div class="col-sm-7">
-        <input type="file" name="panel_file" class="custom-file-input" required>
-        <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" rel="noopener" target="_blank">gene panel file</a>?</p>
-      </div><!--end of col-->
-    </div><!--end of row-->
-    <div class="row">
-      <div class="col text-center">
-        <button id="submit" type="submit" class="btn btn-secondary">Submit</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
-  </form>
-  <br>
+  </div>
 {% endmacro %}
 
 
@@ -353,24 +348,19 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  // Select all Modify buttons in the table
+  document.querySelectorAll("button.btn-warning").forEach(function(btn) {
+    btn.addEventListener("click", function(event) {
+      console.log("Modify button clicked for ID:", btn.getAttribute("data-bs-target"));
+    });
+  });
+});
+
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
-
-function toggleRow(hideCheck) {
-  var els = document.getElementsByClassName("hidableRow");
-  for(var i=0;i<els.length;i++){
-    collapse = bootstrap.Collapse.getOrCreateInstance(els[i])
-    if(hideCheck.checked){
-      collapse.hide();
-    }
-    else{
-      collapse.show();
-    }
-  }
-}
-
 
 $(function(){
       function getNameTerms(query, process) {
