@@ -20,7 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for cli command to update VCF files not running (#5888)
 - Gene in panels search results broken layout - overflow when a panel has many panel versions containing the gene (#5899)
 - ACMG evaluation PDF export, both style and colors (#5879)
-- Genotype query for singletons when not selecting include only in unaffected (#)
+- Genotype query for singletons when not selecting include only in unaffected (#5914)
 
 ## [4.106]
 ### Added
