@@ -327,7 +327,6 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.0.2/list.min.js" integrity="sha512-MT5YyrGWqMGkIbwkVUZEWGrRDjlNx8loukEdFyzLo4s8INKVxnDQy2eFcpmnWGrFwJ+X8mRTQOJpWCayXz7+Og==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
 
@@ -348,12 +347,11 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Initialize all tooltips on the page
-  [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    .forEach(function (tooltipTriggerEl) {
-      new bootstrap.Tooltip(tooltipTriggerEl) // eslint-disable-line no-new
-    });
+document.addEventListener("DOMContentLoaded", () => {
+  const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(el => {
+    new bootstrap.Tooltip(el);
+  });
 });
 
 function toggleRow(hideCheck) {
