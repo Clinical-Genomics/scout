@@ -29,9 +29,94 @@
       <span class="float-end me-3 mt-3">
         <input type="checkbox" name="hideLine" checked onclick="toggleRow(this)"> Hide removed panels</input>
       </span>
-      {% for institute,panels in panel_groups %}
-        {{ panel_view(institute,panels) }}
-      {% endfor %}
+      <div id="panel-list">
+
+        <!-- Filters -->
+        <div class="d-flex gap-3 mt-3">
+          <input class="search form-control w-auto" placeholder="Search panels..." />
+          <select id="instituteFilter" class="form-select w-auto">
+            <option value="">All institutes</option>
+            {% for institute, panels in panel_groups %}
+              <option value="{{ institute._id }}">{{ institute.display_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-striped table-bordered w-100">
+          <thead>
+            <tr>
+              <th>Institute</th>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Version</th>
+              <th>Number of genes</th>
+              <th>History</th>
+              <th>Modify</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody class="list">
+            {% for institute, panels in panel_groups %}
+              {% for panel in panels %}
+              <tr {% if panel.hidden %} class="removed" {% endif %}>
+                <td class="institute">{{ institute.display_name }} ({{ institute._id }})</td>
+                <td class="panelName">
+                  <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
+                  {% if current_user.email in panel.maintainer %}
+                    <span class="badge bg-dark"><span class="fa fa-tools"></span></span>
+                  {% endif %}
+                  {% if panel.hidden %}
+                    <span class="badge bg-danger">Removed</span>
+                  {% endif %}
+                </td>
+                <td class="panelID">{{ panel.panel_name }}</td>
+                <td>{{ panel.version }}</td>
+                <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length }}</span></td>
+                <td>
+                  <button class="btn btn-primary btn-xs" data-bs-toggle="collapse" data-bs-target="#paneldiv_{{ panel._id }}">
+                    <span class="fa fa-search-plus"></span>
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-warning btn-xs" data-bs-toggle="collapse" data-bs-target="#modifydiv_{{ panel._id }}">
+                    <span class="fa fa-pen-square"></span>
+                  </button>
+                </td>
+                <td>
+                  {% if panel.hidden %}
+                    <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
+                      <button class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
+                    </form>
+                  {% else %}
+                    <button class="btn btn-danger btn-xs" data-bs-toggle="modal"
+                            data-bs-target="#remove-gene-panel-modal-{{ panel._id }}">
+                      <span class="fa fa-trash"></span>
+                    </button>
+                  {% endif %}
+                </td>
+              </tr>
+
+              <!-- Collapsible rows -->
+              <tr class="collapse" id="paneldiv_{{ panel._id }}">
+                <td colspan="8">
+                  <ul>
+                    <li>{{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes</li>
+                  </ul>
+                </td>
+              </tr>
+
+              <tr class="collapse" id="modifydiv_{{ panel._id }}">
+                <td colspan="8">
+                  {{ modify_panel(panel._id, panel) }}
+                </td>
+              </tr>
+
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
       <div class="panel-body">No gene panels found.</div>
     {% endif %}
@@ -151,59 +236,6 @@
 </div>
 {% endmacro %}
 
-{% macro panel_view(institute, panels) %}
-  <div class="card panel-default w-100 mt-3 justify-content-center">
-    <div class="card-title d-flex justify-content-between">
-      <span><strong>{{ institute.display_name }} ({{institute._id}})</strong> - Panels</span>
-    </div>
-    <div class="card-body">
-        <table class="table table-striped" id="panelTable" style="table-layout: fixed;">
-        <thead>
-          <tr>
-            <th style="width: 20%">Name</th>
-            <th style="width: 20%">Version</th>
-            <th>Number of genes</th>
-            <th>History</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-      {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
-        <!--create table for each panel-->
-          <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
-            <td>
-              <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
-              {% if current_user.email in panel.maintainer %}
-                <span class="badge bg-dark" data-bs-toggle="tooltip" title="You are a maintainer of this panel"><span class="fa fa-tools"></span></span>
-              {% endif %}
-              {% if panel.hidden %}
-                <span class="badge bg-danger" data-bs-toggle="tooltip" title="This panel was removed">Removed</span>
-              {% endif %}
-            </td>
-            <td>{{ panel.version }} ({{panel._id.generation_time.strftime('%Y-%m-%d')}} {% if panel.hidden %} deleted:{{ panel.date.date()}} {% endif %})</td>
-            <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length}}</span></td>
-            <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#paneldiv_{{panel._id}}" aria-expanded="false" aria-controls="paneldiv_{{panel._id}}" class="btn btn-primary btn-xs"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pen-square"></span></button></td>
-            <td>
-              {% if panel.hidden %}
-                <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
-                  <button {{panel.writable}} id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
-                </form>
-              {% else %}
-              <button {{panel.writable}} id="{{panel._id}}" type="button" data-bs-toggle="modal" data-bs-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
-              {% endif %}
-            </td>
-          </tr>
-          {{ modify_panel(panel._id, panel) }}
-
-        {{ remove_gene_panel_modal(institute, panel) }}
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-{% endmacro %}
-
 {% macro remove_gene_panel_modal(institute, panel) %}
   <form action="{{ url_for('panels.panel_delete', panel_id=panel._id) }}"
         method="POST">
@@ -280,7 +312,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/list.js@2/dist/list.min.js"></script>
 <script type="text/javascript">
+
+document.addEventListener("DOMContentLoaded", function() {
+  const options = {
+    valueNames: ['institute', 'panelName', 'panelID']
+  };
+  const panelList = new List('panel-list', options);
+
+  // Custom filter by institute dropdown
+  const instituteFilter = document.getElementById('instituteFilter');
+  instituteFilter.addEventListener('change', function() {
+    const val = this.value.toLowerCase();
+    panelList.filter(function(item) {
+      if (!val) return true; // no filter
+      return item.values().institute.toLowerCase().includes(val);
+    });
+  });
+});
 
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 tooltipTriggerList.map(function (tooltipTriggerEl) {
