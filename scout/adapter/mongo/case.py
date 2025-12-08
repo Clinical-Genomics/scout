@@ -1142,7 +1142,6 @@ class CaseHandler(object):
                     ind["age"] = old_ind.get("age")
                 if ind.get("tissue_type") is None:
                     ind["tissue_type"] = old_ind.get("tissue_type")
-
         analysis_date = case_obj["analysis_date"]
         old_analysis_date = old_case["analysis_date"]
         update_actions = {
