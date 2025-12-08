@@ -463,7 +463,7 @@ def rna(case_id):
     deleted_count = store.omics_variant_collection.delete_many({"case_id": case_id}).deleted_count
     click.echo(f"Deleted {deleted_count} omics variant documents for case {case_id}.")
 
-    # Update variants count
+    # Update variants count in case document
     adapter.case_variants_count(case_id, case_obj["owner"], True)
 
 
