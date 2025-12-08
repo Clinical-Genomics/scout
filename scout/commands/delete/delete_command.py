@@ -454,7 +454,7 @@ def rna(case_id):
     )
 
     click.echo(
-        f"Removed keys: {', '.join(sorted(removed_keys))}"
+        f"Updated/removed keys: {', '.join(sorted(removed_keys))}"
         if removed_keys
         else "No matching RNA keys found."
     )
