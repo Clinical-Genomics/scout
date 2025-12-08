@@ -173,7 +173,7 @@ def test_genotype_query_other(adapter, case_obj):
 
 
 def test_gene_symbol_gene_panel_query(adapter, case_obj):
-    """Test variants query using a gene panel cointaining a certain gene and a hgnc symbol of another gene"""
+    """Test variants query using a gene panel containing a certain gene and a hgnc symbol of another gene"""
 
     # GIVEN a database containing a minimal gene panel
     test_gene = "POT1"
@@ -199,7 +199,7 @@ def test_gene_symbol_gene_panel_query(adapter, case_obj):
     query = {"hgnc_symbols": ["ATM"], "gene_panels": ["POT panel"]}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
-    # THEN the query should countain both genes in the hgnc_symbols list
+    # THEN the query should contain both genes in the hgnc_symbols list
     mongo_query_gene_list = mongo_query["hgnc_ids"]["$in"]
     for gene in [test_gene_hgnc_id, other_gene_hgnc_id]:
         assert gene in mongo_query_gene_list

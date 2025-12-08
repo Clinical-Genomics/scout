@@ -183,13 +183,22 @@ class ManagedVariantHandler(object):
                     "$options": "i",
                 }
 
+            start = max(int(query_options.get("position", 1)), 1)
+            end = max(int(query_options.get("end", 1)), 1)
+
             if "position" in query_options:
-                position = max(int(query_options["position"]), 1)
-                query["end"] = {"$gte": position}
+                query["position"] = {"$gte": start}
+                if "end" in query_options:
+                    query["position"]["$lte"] = end
 
             if "end" in query_options:
-                end = max(int(query_options["end"]), 1)
-                query["position"] = {"$lte": end}
+                query.setdefault("$or", []).extend(
+                    [
+                        {"end": {"$gte": start, "$lte": end}},
+                        {"end": {"$exists": False}},
+                        {"end": {"$in": [None, ""]}},
+                    ]
+                )
 
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
