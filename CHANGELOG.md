@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save and display maintainer/institutes for managed variants (#5890)
 - Link to VuTR at the transcript level from the variant page (#5893)
 - Filter germline ClinVar submission IDs by ClinVar ID (#5907)
+- `scout remove rna -c <case-id>` command to remove all RNA-related data from a case (#5916)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
 - Enhance variants filters by allowing selection of individual soft filters (#5897)
