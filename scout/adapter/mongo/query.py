@@ -349,11 +349,12 @@ class QueryHandler(object):
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
         """Add info to variants query to filter out variants which are only in unaffected individuals
+        For singleton cases, we apply this only if a direct user query for genotype is given in gt_query
 
         Accepts:
             mongo_query(dict): a dictionary containing a query key/values
             case_id(str): _id of a case
-            gt_selected(dict or None): dict if user specified a genotype value in genotypes form field, else None
+            gt_query(dict or None): dict if user specified a genotype value in genotypes form field, else None
         """
         CASE_AFFECTED_INDS_PROJECTION = {"individuals": 1}
         case_obj = self.case(case_id=case_id, projection=CASE_AFFECTED_INDS_PROJECTION)
@@ -361,7 +362,7 @@ class QueryHandler(object):
 
         gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}
 
-        if len(case_inds) == 1:  # No point in adding this filter
+        if len(case_inds) == 1 and not gt_query:
             return
 
         affected_query = {
@@ -569,9 +570,6 @@ class QueryHandler(object):
 
         We first set the sample genotype call fiter if the somewhat mixed fundamental criterion "show unaffected"
         is given.
-
-        When looping over the secondary criteria, note that we only should apply the outlier filter once, if either
-        of the clincial
         """
         LOG.debug("Creating a query object with secondary parameters")
 
