@@ -490,13 +490,13 @@ class QueryHandler(object):
                                         {"position": {"$lte": start}},
                                         {"end": {"$gte": end}},
                                     ]
-                                },  # Case 3
+                                },  # Case 4
                                 {
                                     "$and": [
                                         {"position": {"$gte": start}},
                                         {"end": {"$lte": end}},
                                     ]
-                                },  # Case 4
+                                },  # Case 3
                             ]
                         },
                     ]

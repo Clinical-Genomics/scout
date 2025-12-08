@@ -174,7 +174,9 @@ class ManagedVariantHandler(object):
         return self.managed_variant_collection.count_documents(query_with_options)
 
     def add_options(self, query, query_options):
-        """Update query with `query_options`"""
+        """Update query with `query_options`.
+        For description of query intervals, compare main query get_position_query().
+        """
 
         if query_options:
             if "description" in query_options:
@@ -184,21 +186,26 @@ class ManagedVariantHandler(object):
                 }
 
             start = max(int(query_options.get("position", 1)), 1)
-            end = max(int(query_options.get("end", 1)), 1)
+            end = max(int(query_options.get("end", 1000000000)), 1)
 
-            if "position" in query_options:
-                query["position"] = {"$gte": start}
-                if "end" in query_options:
-                    query["position"]["$lte"] = end
-
-            if "end" in query_options:
-                query.setdefault("$or", []).extend(
-                    [
-                        {"end": {"$gte": start, "$lte": end}},
-                        {"end": {"$exists": False}},
-                        {"end": {"$in": [None, ""]}},
-                    ]
-                )
+            query.setdefault("$or", []).extend(
+                [
+                    {"end": {"$gte": start, "$lte": end}},
+                    {"position": {"$gte": start, "$lte": end}},
+                    {
+                        "$and": [
+                            {"position": {"$gte": start}},
+                            {"end": {"$lte": end}},
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {"position": {"$lte": start}},
+                            {"end": {"$gte": end}},
+                        ]
+                    },
+                ]
+            )
 
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
