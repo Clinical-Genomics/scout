@@ -138,27 +138,27 @@
 {% endmacro %}
 
 {% macro analysis_type(analysis_types) %}
-  {% for analysis_type in analysis_types %}
-    {% if analysis_type == 'wgs' %}
+  {% for type in analysis_types %}
+    {% if type == 'wgs' %}
       {% set badge_class = 'primary' %}
-    {% elif analysis_type == 'wes' %}
+    {% elif type == 'wes' %}
       {% set badge_class = 'warning' %}
-    {% elif analysis_type == 'tga' %}
+    {% elif type == 'tga' %}
       {% set badge_class = 'info' %}
-    {% elif analysis_type in ['panel', 'panel-umi'] %}
+    {% elif type in ['panel', 'panel-umi'] %}
       {% set badge_class = 'info' %}
-    {% elif analysis_type == 'mixed' %}
+    {% elif type == 'mixed' %}
       {% set badge_class = 'dark' %}
-    {% elif analysis_type == 'external' %}
+    {% elif type == 'external' %}
       {% set badge_class = 'danger' %}
-    {% elif analysis_type == 'wts' %}
+    {% elif type == 'wts' %}
       {% set badge_class = 'success' %}
     {% else %}
       {% set badge_class = 'default' %}
     {% endif %}
 
     <span class="badge bg-{{ badge_class }}">
-      {{ analysis_type|upper }}
+      {{ type|upper }}
     </span>
   {% endfor %}
 
@@ -499,7 +499,6 @@
       <tbody>
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
-          {% set analysis_types = [] %} <!-- this will be used later in Analysis type column -->
           <tr>
             <td>
               {% if variant.category == "fusion" %}
@@ -644,7 +643,7 @@
               {% endif %}
             </td>
             <td>
-              {{ analysis_type(analysis_types|unique) }}
+              {{ analysis_type(case.analysis_types|unique) }}
             </td>
             <td><!-- Validated status -->
               {% if variant.validation %}
