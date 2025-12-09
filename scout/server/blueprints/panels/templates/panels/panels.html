@@ -62,7 +62,7 @@
               <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
                 <td class="institute">{{ institute.display_name }} ({{ institute._id }})</td>
                 <td class="panelName">
-                  <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
+                  <a href="{{ url_for('panels.panel', panel_id=panel._id) }}" target="_blank" rel="noopener noreferrer">{{ panel.display_name }}</a>
                   {% if current_user.email in panel.maintainer %}
                     <span class="badge bg-dark" data-bs-toggle="tooltip" title="You are a maintainer of this panel"><span class="fa fa-tools"></span></span>
                   {% endif %}
