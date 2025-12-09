@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
 - Enhance variants filters by allowing selection of individual soft filters (#5897)
 - On ACMG classification form, move `Submit` button at the bottom and ClinGen gene links to the top (#5876)
+- Search panels by gene only within user’s institutes (#5902)
 - A more compact gene panels page with panel search options (#5913)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
