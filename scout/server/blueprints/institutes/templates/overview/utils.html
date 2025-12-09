@@ -138,27 +138,27 @@
 {% endmacro %}
 
 {% macro analysis_type(analysis_types) %}
-  {% for type in analysis_types %}
-    {% if type == 'wgs' %}
+  {% for atype in analysis_types %}
+    {% if atype == 'wgs' %}
       {% set badge_class = 'primary' %}
-    {% elif type == 'wes' %}
+    {% elif atype == 'wes' %}
       {% set badge_class = 'warning' %}
-    {% elif type == 'tga' %}
+    {% elif atype == 'tga' %}
       {% set badge_class = 'info' %}
-    {% elif type in ['panel', 'panel-umi'] %}
+    {% elif atype in ['panel', 'panel-umi'] %}
       {% set badge_class = 'info' %}
-    {% elif type == 'mixed' %}
+    {% elif atype == 'mixed' %}
       {% set badge_class = 'dark' %}
-    {% elif type == 'external' %}
+    {% elif atype == 'external' %}
       {% set badge_class = 'danger' %}
-    {% elif type == 'wts' %}
+    {% elif atype == 'wts' %}
       {% set badge_class = 'success' %}
     {% else %}
       {% set badge_class = 'default' %}
     {% endif %}
 
     <span class="badge bg-{{ badge_class }}">
-      {{ type|upper }}
+      {{ atype|upper }}
     </span>
   {% endfor %}
 
