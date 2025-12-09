@@ -227,6 +227,27 @@
 </div>
 {% endmacro %}
 
+{% macro history_view(panel_id, panel_name) %}
+  <ul class="list-group list-group-flush">
+    {% for version in panel_versions[panel_name] | sort(attribute='version', reverse=True) %}
+      <a
+        href="{{ url_for('panels.panel', panel_id=version._id) }}"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-2 text-decoration-none"
+      >
+        <span class="fw-semibold">{{ version.version }}</span>
+        <small class="text-muted">{{ version.date.date() }}</small>
+        <span class="badge bg-secondary rounded-pill">{{ version.genes|length }} genes</span>
+      </a>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro modify_panel(panel_id, panel_obj) %}
+  <tr id="modifydiv_{{panel_id}}" class="collapse">
+    <td colspan=5>{{ modify_form(panel_obj) }}</td>
+  </tr>
+{% endmacro %}
+
 {% macro panel_history_modal(panel) %}
 <div class="modal fade" id="historyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -236,11 +257,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <ul>
-          <li><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">
-            {{ panel.version }} {{ panel._id.generation_time.strftime('%Y-%m-%d') }} {{ panel.genes|length }} genes
-          </a></li>
-        </ul>
+        {{ history_view(panel._id, panel.panel_name) }}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
