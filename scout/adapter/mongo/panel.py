@@ -546,28 +546,30 @@ class PanelHandler:
         )
         return set(item["_id"] for item in query_result)
 
-    def search_panels_hgnc_id(self, hgnc_id):
-        """Return all panels and versions that contain given gene, list is sorted
-        Args:
-            self: PanelHandler()
-            hgnc_id: hgnsc_id (int) to search
-
-        Returns:
-             list(dict): example: [{_id: {display_name: 'panel1'}, versions: [1.0, 2.0]}, ...]
-        """
+    def search_panels_hgnc_id(self, hgnc_id: int) -> list[dict]:
+        """Return all panels and versions that contain given gene,list is sorted"""
         query = [
             {"$match": {"genes.hgnc_id": hgnc_id}},
             {
                 "$group": {
-                    "_id": "$display_name",
+                    "_id": {"name": "$display_name", "institute": "$institute"},
                     "versions": {"$addToSet": "$version"},
+                    "panel_ids": {"$addToSet": "$_id"},
                 }
             },
             {"$unwind": "$versions"},
-            {"$sort": {"_id": 1, "versions": 1}},
-            {"$group": {"_id": "$_id", "versions": {"$push": "$versions"}}},
+            {"$sort": {"_id.name": 1, "versions": 1}},
+            {
+                "$group": {
+                    "_id": "$_id.name",
+                    "institute": {"$first": "$_id.institute"},
+                    "versions": {"$push": "$versions"},
+                    "panel_ids": {"$first": "$panel_ids"},
+                }
+            },
             {"$sort": {"_id": 1}},
         ]
 
         result = list(self.panel_collection.aggregate(query))
+
         return result
