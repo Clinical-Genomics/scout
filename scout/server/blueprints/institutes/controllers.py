@@ -140,6 +140,7 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
     """Fetch data relative to causative/verified variants to be displayed in the institute pages."""
 
     case_obj = store.case(variant_obj["case_id"])
+    set_case_analysis_type(case_obj)
     if not case_obj:
         return
     variant_genes = variant_obj.get("genes", [])
@@ -152,6 +153,7 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
         "display_name": case_obj["display_name"],
         "individuals": case_obj["individuals"],
         "status": case_obj.get("status"),
+        "analysis_types": case_obj.get("analysis_types"),
         "partial_causatives": case_obj.get("partial_causatives", []),
         "rank_model_version": case_obj.get("rank_model_version"),
         "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
