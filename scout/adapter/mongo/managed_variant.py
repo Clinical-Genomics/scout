@@ -174,7 +174,11 @@ class ManagedVariantHandler(object):
         return self.managed_variant_collection.count_documents(query_with_options)
 
     def add_options(self, query, query_options):
-        """Update query with `query_options`"""
+        """Update query with `query_options`.
+        This includes searching the description, sub_category, and chromosome and position-end coordinates.
+        For a description of query intervals for coordinates, see its function. Note that this also helps with
+        including variants with unset end.
+        """
 
         if query_options:
             if "description" in query_options:
@@ -183,13 +187,10 @@ class ManagedVariantHandler(object):
                     "$options": "i",
                 }
 
-            if "position" in query_options:
-                position = max(int(query_options["position"]), 1)
-                query["end"] = {"$gte": position}
+            start = max(int(query_options.get("position", 1)), 1)
+            end = max(int(query_options.get("end", 1000000000)), 1)
 
-            if "end" in query_options:
-                end = max(int(query_options["end"]), 1)
-                query["position"] = {"$lte": end}
+            query.setdefault("$or", []).extend(self.get_overlap_coords_query(start, end))
 
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
