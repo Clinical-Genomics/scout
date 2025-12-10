@@ -188,24 +188,7 @@ class ManagedVariantHandler(object):
             start = max(int(query_options.get("position", 1)), 1)
             end = max(int(query_options.get("end", 1000000000)), 1)
 
-            query.setdefault("$or", []).extend(
-                [
-                    {"end": {"$gte": start, "$lte": end}},
-                    {"position": {"$gte": start, "$lte": end}},
-                    {
-                        "$and": [
-                            {"position": {"$gte": start}},
-                            {"end": {"$lte": end}},
-                        ]
-                    },
-                    {
-                        "$and": [
-                            {"position": {"$lte": start}},
-                            {"end": {"$gte": end}},
-                        ]
-                    },
-                ]
-            )
+            query.setdefault("$or", []).extend(self.get_overlap_coords_query(start, end))
 
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
