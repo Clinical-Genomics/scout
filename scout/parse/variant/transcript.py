@@ -46,10 +46,14 @@ def parse_transcripts(raw_transcripts):
         transcript["sift_prediction"] = get_sift_prediction(entry)
 
         if entry.get("REVEL_RANKSCORE"):
-            transcript["revel_rankscore"] = float(entry.get("REVEL_RANKSCORE"))
+            transcript["revel_rankscore"] = get_highest_float_score_in_string(
+                entry.get("REVEL_RANKSCORE")
+            )
 
         if entry.get("REVEL_SCORE"):
-            transcript["revel_raw_score"] = float(entry.get("REVEL_SCORE"))
+            transcript["revel_raw_score"] = get_highest_float_score_in_string(
+                entry.get("REVEL_SCORE")
+            )
 
         parse_transcripts_spliceai(transcript, entry)
 
@@ -366,3 +370,19 @@ def set_variant_frequencies(transcript, entry):
         LOG.debug("Exception details", exc_info=True)
         LOG.debug("Current entry: %s", entry)
         LOG.warning("Only decomposed/split and normalised VEP v90+ frequencies are supported")
+
+
+def get_highest_float_score_in_string(value: str) -> Optional[float]:
+    """Return the highest float from a string with numbers possibly separated by '&'."""
+    if not value:
+        return None
+
+    floats = []
+    for part in value.split("&"):
+        part = part.strip()
+        try:
+            floats.append(float(part))
+        except (ValueError, TypeError):
+            continue
+
+    return max(floats) if floats else None
