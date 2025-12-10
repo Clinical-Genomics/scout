@@ -29,9 +29,90 @@
       <span class="float-end me-3 mt-3">
         <input type="checkbox" name="hideLine" checked onclick="toggleRow(this)"> Hide removed panels</input>
       </span>
-      {% for institute,panels in panel_groups %}
-        {{ panel_view(institute,panels) }}
+      <div id="panel-list">
+
+        <!-- Filters -->
+        <div class="d-flex gap-3 mt-3">
+          <input class="search form-control w-auto" placeholder="Search panels..." />
+          <select id="instituteFilter" class="form-select w-auto">
+            <option value="">All institutes</option>
+            {% for institute, panels in panel_groups %}
+              <option value="{{ institute._id }}">{{ institute.display_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-striped table-bordered w-100">
+          <thead>
+            <tr>
+              <th>Institute</th>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Version</th>
+              <th>Number of genes</th>
+              <th>History</th>
+              <th>Modify</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody class="list">
+            {% for institute, panels in panel_groups %}
+              {% for panel in panels %}
+              <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
+                <td class="institute">{{ institute.display_name }} ({{ institute._id }})</td>
+                <td class="panelName">
+                  <a href="{{ url_for('panels.panel', panel_id=panel._id) }}" target="_blank" rel="noopener noreferrer">{{ panel.display_name }}</a>
+                  {% if current_user.email in panel.maintainer %}
+                    <span class="badge bg-dark" data-bs-toggle="tooltip" title="You are a maintainer of this panel"><span class="fa fa-tools"></span></span>
+                  {% endif %}
+                  {% if panel.hidden %}
+                    <span class="badge bg-danger">Removed</span>
+                  {% endif %}
+                </td>
+                <td class="panelID">{{ panel.panel_name }}</td>
+                <td>{{ panel.version }}</td>
+                <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length }}</span></td>
+                <td>
+                  <!-- HISTORY button opens modal -->
+                  <button type="button" class="btn btn-primary btn-xs" data-bs-toggle="modal"
+                          data-bs-target="#historyModal_{{ panel._id }}">
+                    <span class="fa fa-search-plus"></span>
+                  </button>
+                </td>
+                <td>
+                  <!-- MODIFY button opens modal -->
+                  <button class="btn btn-warning btn-xs" data-bs-toggle="modal" data-bs-target="#modifyModal_{{ panel._id }}">
+                    <span class="fa fa-pen-square"></span>
+                  </button>
+                <td>
+                  {% if panel.hidden %}
+                    <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
+                      <button class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
+                    </form>
+                  {% else %}
+                    <button class="btn btn-danger btn-xs" data-bs-toggle="modal"
+                            data-bs-target="#remove-gene-panel-modal-{{ panel._id }}">
+                      <span class="fa fa-trash"></span>
+                    </button>
+                  {% endif %}
+                </td>
+              </tr>
+
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% for institute, panels in panel_groups %}
+        {% for panel in panels %}
+          {{ panel_history_modal(panel) }}
+          {{ panel_edit_modal(panel) }}
+          {{ remove_gene_panel_modal(institute, panel) }}
+        {% endfor %}
       {% endfor %}
+      </div>
     {% else %}
       <div class="panel-body">No gene panels found.</div>
     {% endif %}
@@ -146,57 +227,44 @@
 </div>
 {% endmacro %}
 
-{% macro panel_view(institute, panels) %}
-  <div class="card panel-default w-100 mt-3 justify-content-center">
-    <div class="card-title d-flex justify-content-between">
-      <span><strong>{{ institute.display_name }} ({{institute._id}})</strong> - Panels</span>
-    </div>
-    <div class="card-body">
-        <table class="table table-striped" id="panelTable" style="table-layout: fixed;">
-        <thead>
-          <tr>
-            <th style="width: 20%">Name</th>
-            <th style="width: 20%">Version</th>
-            <th>Number of genes</th>
-            <th>History</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-      {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
-        <!--create table for each panel-->
-          <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
-            <td>
-              <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
-              {% if current_user.email in panel.maintainer %}
-                <span class="badge bg-dark" data-bs-toggle="tooltip" title="You are a maintainer of this panel"><span class="fa fa-tools"></span></span>
-              {% endif %}
-              {% if panel.hidden %}
-                <span class="badge bg-danger" data-bs-toggle="tooltip" title="This panel was removed">Removed</span>
-              {% endif %}
-            </td>
-            <td>{{ panel.version }} ({{panel._id.generation_time.strftime('%Y-%m-%d')}} {% if panel.hidden %} deleted:{{ panel.date.date()}} {% endif %})</td>
-            <td><span class="badge rounded-pill bg-secondary">{{ panel.genes|length}}</span></td>
-            <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#paneldiv_{{panel._id}}" aria-expanded="false" aria-controls="paneldiv_{{panel._id}}" class="btn btn-primary btn-xs"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td><button id="{{panel._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pen-square"></span></button></td>
-            <td>
-              {% if panel.hidden %}
-                <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
-                  <button {{panel.writable}} id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
-                </form>
-              {% else %}
-              <button {{panel.writable}} id="{{panel._id}}" type="button" data-bs-toggle="modal" data-bs-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
-              {% endif %}
-            </td>
-          </tr>
-          {{ modify_panel(panel._id, panel) }}
+{% macro history_view(panel_id, panel_name) %}
+  <ul class="list-group list-group-flush">
+    {% for version in panel_versions[panel_name] | sort(attribute='version', reverse=True) %}
+      <a
+        href="{{ url_for('panels.panel', panel_id=version._id) }}"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-2 text-decoration-none"
+      >
+        <span class="fw-semibold">{{ version.version }}</span>
+        <small class="text-muted">{{ version.date.date() }}</small>
+        <span class="badge bg-secondary rounded-pill">{{ version.genes|length }} genes</span>
+      </a>
+    {% endfor %}
+  </ul>
+{% endmacro %}
 
-        {{ remove_gene_panel_modal(institute, panel) }}
-        {% endfor %}
-        </tbody>
-      </table>
+{% macro modify_panel(panel_id, panel_obj) %}
+  <tr id="modifydiv_{{panel_id}}" class="collapse">
+    <td colspan=5>{{ modify_form(panel_obj) }}</td>
+  </tr>
+{% endmacro %}
+
+{% macro panel_history_modal(panel) %}
+<div class="modal fade" id="historyModal_{{ panel._id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">History for {{ panel.display_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ history_view(panel._id, panel.panel_name) }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
+</div>
 {% endmacro %}
 
 {% macro remove_gene_panel_modal(institute, panel) %}
@@ -224,49 +292,46 @@
   </form>
 {% endmacro %}
 
-{% macro history_view(panel_id, panel_name) %}
-  <div id="paneldiv_{{panel_id}}" class="collapse">
-    <ul>
-    {% for version in panel_versions[panel_name]|sort(attribute='version', reverse=True) %}
-      <li><a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a></li>
-    {% endfor %}
-    </ul>
-  </div>
-{% endmacro %}
-
-{% macro modify_panel(panel_id, panel_obj) %}
-  <tr id="modifydiv_{{panel_id}}" class="collapse">
-    <td colspan=5>{{ modify_form(panel_obj) }}</td>
-  </tr>
-{% endmacro %}
-
-{% macro modify_form(panel_obj) %}
-  <strong>{{panel_obj.display_name}}</strong><br>
-  <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
-    <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
-    <div class="row">
-      <div class="col-sm-5">
-        <div class="custom-control custom-radio">
-          <input type="radio" id="add_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
-          <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from text file</label>
+{% macro panel_edit_modal(panel) %}
+  <div class="modal fade" id="modifyModal_{{ panel._id }}" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modify {{ panel.display_name }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="custom-control custom-radio">
-          <input type="radio" id="replace_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="replace">
-          <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using text file</label>
+        <div class="modal-body">
+          <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
+            <input type="hidden" name="panel_name" value="{{panel.panel_name}}">
+            <div class="row">
+              <div class="col-sm-5">
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="add_{{panel.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
+                  <label class="custom-control-label" for="add_{{panel.display_name}}">Add genes from text file</label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="replace_{{panel.display_name}}" name="modify_option" class="custom-control-input" value="replace">
+                  <label class="custom-control-label" for="replace_{{panel.display_name}}">Replace genes using text file</label>
+                </div>
+              </div><!--end of col-->
+              <div class="col-sm-7">
+                <input type="file" name="panel_file" class="custom-file-input" required>
+                <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" rel="noopener" target="_blank">gene panel file</a>?</p>
+              </div><!--end of col-->
+            </div><!--end of row-->
+            <div class="row">
+              <div class="col text-center">
+                <button id="submit" type="submit" class="btn btn-secondary">Submit</button>
+              </div>
+            </div>
+          </form>
         </div>
-      </div><!--end of col-->
-      <div class="col-sm-7">
-        <input type="file" name="panel_file" class="custom-file-input" required>
-        <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" rel="noopener" target="_blank">gene panel file</a>?</p>
-      </div><!--end of col-->
-    </div><!--end of row-->
-    <div class="row">
-      <div class="col text-center">
-        <button id="submit" type="submit" class="btn btn-secondary">Submit</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
-  </form>
-  <br>
+  </div>
 {% endmacro %}
 
 
@@ -274,34 +339,29 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js" integrity="sha512-93wYgwrIFL+b+P3RvYxi/WUFRXXUDSLCT2JQk9zhVGXuS2mHl2axj6d+R6pP+gcU5isMHRj1u0oYE/mWyt/RjA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
 
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-tooltipTriggerList.map(function (tooltipTriggerEl) {
-  return new bootstrap.Tooltip(tooltipTriggerEl)
-})
+document.addEventListener("DOMContentLoaded", function() {
+  const options = {
+    valueNames: ['institute', 'panelName', 'panelID']
+  };
+  const panelList = new List('panel-list', options);
 
-$('.history_btn').on('click', function(){
-    var bid = $(this)[0].id;
-    var sel = '#paneldiv_' + bid;
-    if($(sel).is(':visible')){
-      $(sel).hide();
-    }
-    else{
-      $(sel).fadeToggle();
-    }
+  // Custom filter by institute dropdown
+  const instituteFilter = document.getElementById('instituteFilter');
+  instituteFilter.addEventListener('change', function() {
+    const val = this.value.toLowerCase();
+    panelList.filter(function(item) {
+      if (!val) return true; // no filter
+      return item.values().institute.toLowerCase().includes(val);
+    });
+  });
 });
 
-$('.modify_btn').on('click', function(){
-    var bid = $(this)[0].id;
-    var sel = '#modifydiv_' + bid;
-    if($(sel).is(':visible')){
-      $(sel).hide();
-    }
-    else{
-      $(sel).fadeToggle();
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  const tooltips = tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 });
 
 function toggleRow(hideCheck) {
@@ -317,7 +377,6 @@ function toggleRow(hideCheck) {
   }
 }
 
-
 $(function(){
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
@@ -330,7 +389,6 @@ $(function(){
         source: getNameTerms,
         minLength: 3,
       });
-
 
   });
 
