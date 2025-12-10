@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On ACMG classification form, move `Submit` button at the bottom and ClinGen gene links to the top (#5876)
 - Search panels by gene only within user’s institutes (#5902)
 - A more compact gene panels page with panel search options (#5913)
+- Support multi-value REVEL scores when parsing each transcript (#5921)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
