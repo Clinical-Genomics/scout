@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG evaluation PDF export, both style and colors (#5879)
 - Genotype query for singletons when not selecting include only in unaffected (#5914)
 - Restored Analysis type label on verified/causatives view (#5915)
+- Start to end interval search for managed variants (#5917)
 
 ## [4.106]
 ### Added

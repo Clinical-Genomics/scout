@@ -446,34 +446,55 @@ class QueryHandler(object):
 
         return mongo_query
 
+    def get_overlap_coords_query(self, start: int, end: int) -> list:
+        """
+        Here are the possible overlapping search scenarios:
+         # Case 1
+         # filter                 xxxxxxxxx
+         # Variant           xxxxxxxx
+
+         # Case 2
+         # filter                 xxxxxxxxx
+         # Variant                    xxxxxxxx
+
+         # Case 3
+         # filter                 xxxxxxxxx
+         # Variant                   xx
+
+         # Case 4
+         # filter                 xxxxxxxxx
+         # Variant             xxxxxxxxxxxxxx
+        """
+        return [
+            # Overlapping cases 1-4 (chromosome == end_chrom)
+            {"end": {"$gte": start, "$lte": end}},  # Case 1
+            {"position": {"$gte": start, "$lte": end}},  # Case 2
+            {
+                "$and": [
+                    {"position": {"$gte": start}},
+                    {"end": {"$lte": end}},
+                ]
+            },  # Case 3
+            {
+                "$and": [
+                    {"position": {"$lte": start}},
+                    {"end": {"$gte": end}},
+                ]
+            },  # Case 4
+        ]
+
     def get_position_query(self, chrom: str, start: int, end: int) -> dict:
         """Helper function that returns a dictionary containing start and stop coordinates.
 
         The position query consists of 3 parts, each of them elements of the $or
         First part applies to searches when chromosome and end_chrom are the same.
-        Here are the possible overlapping search scenarios:
-        # Case 1
-        # filter                 xxxxxxxxx
-        # Variant           xxxxxxxx
-
-        # Case 2
-        # filter                 xxxxxxxxx
-        # Variant                    xxxxxxxx
-
-        # Case 3
-        # filter                 xxxxxxxxx
-        # Variant                   xx
-
-        # Case 4
-        # filter                 xxxxxxxxx
-        # Variant             xxxxxxxxxxxxxx
+        The alternatives in this scenario are listed in the get_overlap_coords_query helper.
 
         Second and third elements of the $or cover queries for variants where chromosome != end_chrom.
         In this situation there are the following scenarios:
         - Case chromosome != end_chrom, position matching 'chromosome'
         - Case chromosome != end_chrom, position matching 'end_chrom'
         """
-
         return {
             "$or": [
                 # Case chromosome == end_chrom
@@ -481,25 +502,7 @@ class QueryHandler(object):
                     "$and": [
                         {"chromosome": chrom},
                         {"end_chrom": chrom},
-                        {
-                            "$or": [
-                                # Overlapping cases 1-4 (chromosome == end_chrom)
-                                {"end": {"$gte": start, "$lte": end}},  # Case 1
-                                {"position": {"$gte": start, "$lte": end}},  # Case 2
-                                {
-                                    "$and": [
-                                        {"position": {"$lte": start}},
-                                        {"end": {"$gte": end}},
-                                    ]
-                                },  # Case 3
-                                {
-                                    "$and": [
-                                        {"position": {"$gte": start}},
-                                        {"end": {"$lte": end}},
-                                    ]
-                                },  # Case 4
-                            ]
-                        },
+                        {"$or": self.get_overlap_coords_query(start, end)},
                     ]
                 },
                 # Case chromosome != end_chrom, position matching 'chromosome'
