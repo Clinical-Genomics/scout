@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 from scout.constants import SO_TERMS
 from scout.utils.convert import call_safe
