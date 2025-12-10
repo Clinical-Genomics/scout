@@ -488,7 +488,7 @@ class QueryHandler(object):
 
         The position query consists of 3 parts, each of them elements of the $or
         First part applies to searches when chromosome and end_chrom are the same.
-        The alternatives in this scenario are listed in the overlap coordinates query helper.
+        The alternatives in this scenario are listed in the get_overlap_coords_query helper.
 
         Second and third elements of the $or cover queries for variants where chromosome != end_chrom.
         In this situation there are the following scenarios:

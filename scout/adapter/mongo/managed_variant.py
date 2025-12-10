@@ -175,7 +175,9 @@ class ManagedVariantHandler(object):
 
     def add_options(self, query, query_options):
         """Update query with `query_options`.
-        For description of query intervals, compare main query get_position_query().
+        This includes searching the description, sub_category, and chromosome and position-end coordinates.
+        For a description of query intervals for coordinates, see its function. Note that this also helps with
+        including variants with unset end.
         """
 
         if query_options:
