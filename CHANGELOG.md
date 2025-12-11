@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On ACMG classification form, move `Submit` button at the bottom and ClinGen gene links to the top (#5876)
 - Search panels by gene only within user’s institutes (#5902)
 - A more compact gene panels page with panel search options (#5913)
+- Extra space for sequencing type badges on cases page (#5920)
 - Refactored code for collecting and displaying STR variants, which now shares same routines as SV and MEI variants (#5895)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
