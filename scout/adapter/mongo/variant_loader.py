@@ -398,24 +398,20 @@ class VariantLoader(object):
         ) as bar:
             for idx, variant in enumerate(bar):
                 # All MT variants are loaded
-                mt_variant = variant.CHROM in ["M", "MT"]
                 rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
-                pathogenic = is_pathogenic(variant)
-                managed = self._is_managed(variant, category)
-                causative = self._is_causative_other_cases(variant, category)
 
                 # Check if the variant should be loaded at all
                 # if rank score is None means there are no rank scores annotated, all variants will be loaded
-                # Otherwise we load all variants above a rank score treshold
+                # Otherwise we load all variants above a rank score threshold
                 # Except for MT variants where we load all variants
                 if (
                     (rank_score is None)
                     or (rank_score > rank_threshold)
-                    or mt_variant
-                    or pathogenic
-                    or causative
-                    or managed
+                    or variant.CHROM in ["M", "MT"]
                     or category in ["str"]
+                    or is_pathogenic(variant)
+                    or self._is_managed(variant, category)
+                    or self._is_causative_other_cases(variant, category)
                 ):
                     nr_inserted += 1
                     # Parse the vcf variant
