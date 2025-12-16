@@ -264,15 +264,17 @@ def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcr
     parsed_variant["spidex"] = call_safe(float, variant.INFO.get("SPIDEX"))
 
     if len(parsed_transcripts) > 0:
-        parsed_variant["revel_score"] = get_highest_revel_score(
+        parsed_variant["revel_score"] = get_highest_revel_score_in_transcripts(
             parsed_transcripts=parsed_transcripts, key="revel_rankscore"
         )  # will be displayed as "REVEL rank score"
-        parsed_variant["revel"] = get_highest_revel_score(
+        parsed_variant["revel"] = get_highest_revel_score_in_transcripts(
             parsed_transcripts=parsed_transcripts, key="revel_raw_score"
         )  # will be displayed as "REVEL score"
 
 
-def get_highest_revel_score(parsed_transcripts: List[dict], key: str) -> Optional[float]:
+def get_highest_revel_score_in_transcripts(
+    parsed_transcripts: List[dict], key: str
+) -> Optional[float]:
     """Retrieve the highest REVEL score values from parsed variant transcripts."""
     tx_revel_scores: List(float) = [tx.get(key) for tx in parsed_transcripts if tx.get(key) != None]
     if tx_revel_scores:
