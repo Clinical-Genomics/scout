@@ -248,7 +248,6 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
         vcf_fields.append("GT")
         vcf_fields.extend(sample["genotype_call"] for sample in variant_obj["samples"])
 
-    LOG.debug(f"Fields for export {vcf_fields}")
     variant_string = "\t".join(vcf_fields)
 
     if validate_vcf_line(var_type=var_type, line=variant_string)[0]:
