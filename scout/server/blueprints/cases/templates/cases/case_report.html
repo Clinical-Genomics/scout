@@ -1,4 +1,4 @@
-{% from "cases/utils.html" import filter_audits %}
+{% from "cases/utils.html" import filter_audits, pretty_link_variant %}
 {% from "utils.html" import comments_table, variant_related_comments_table %}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import fusion_variants_header, default_fusion_variant_cells %}
@@ -1189,7 +1189,7 @@
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
     <div>
-    # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
+    # {{ pretty_link_variant(variant, case) }} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
     &nbsp;<span class="badge rounded-pill bg-info py-1">{{variant.category | upper}}</span>
     </div>
     {{ variant_phenotypes(variant) }}
