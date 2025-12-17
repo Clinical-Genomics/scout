@@ -236,10 +236,10 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     vcf_fields = [
         variant_obj["chromosome"],
         str(pos),
-        variant_obj.get("dbsnp_id", "."),
+        variant_obj.get("dbsnp_id", ".") or ".",
         ref,
         alt,
-        str(variant_obj.get("quality", ".")),
+        str(variant_obj.get("quality", ".") or "."),
         filters,
         info_field,
     ]
