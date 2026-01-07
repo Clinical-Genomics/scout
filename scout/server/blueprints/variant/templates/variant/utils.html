@@ -383,6 +383,15 @@
             disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA
           </a>
         </span>
+      {% elif variant.length == 100000000000 %}
+        <span>
+          <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=variant.chromosome, end_chrom=variant.end_chrom, start=variant.position, stop=variant.end)}}"
+            target="_blank"
+            class="btn btn-secondary btn-sm text-white"><span class="fa fa-magnifying-glass fa-fw me-1"></span>
+            IGV {% if variant.is_mitochondrial %}mt{% else %}g{% endif %}DNA
+          </a>
+        </span>
+
       {% else %}
         <span>
           <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end)}}"

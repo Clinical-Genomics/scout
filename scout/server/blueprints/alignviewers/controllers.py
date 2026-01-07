@@ -161,6 +161,7 @@ def make_igv_tracks(
     chrom: Optional[str] = None,
     start: Optional[int] = None,
     stop: Optional[int] = None,
+    end_chrom: Optional[str] = None,
 ) -> dict:
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
@@ -171,6 +172,7 @@ def make_igv_tracks(
         chrom: requested chromosome [1-22], X, Y, [M-MT]
         start: start of the genomic interval to be displayed
         stop: stop of the genomic interval to be displayed
+        end_chrom: chromosome of end coordinate if different from start chromosome - generate locus list for such loci
 
     Returns:
         display_obj: A display object containing case name, list of genes, locus and tracks
@@ -187,7 +189,15 @@ def make_igv_tracks(
 
     if all([start, stop, chrom]):
         chromosome = chrom.replace("MT", "M")
-        display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
+
+        if end_chrom:
+            end_chromosome = end_chrom.replace("MT", "M")
+            display_obj["loci"] = [
+                f"chr{chromosome}:{start}",
+                f"chr{end_chromosome}:{start}-{stop}",
+            ]
+        else:
+            display_obj["locus"] = f"chr{chromosome}:{start}-{stop}"
 
     # Set genome build for displaying alignments:
     if get_case_genome_build(case_obj) == "38" or chromosome == "M":
