@@ -194,7 +194,7 @@ def make_igv_tracks(
             end_chromosome = end_chrom.replace("MT", "M")
             display_obj["loci"] = [
                 f"chr{chromosome}:{start}",
-                f"chr{end_chromosome}:{start}-{stop}",
+                f"chr{end_chromosome}:{stop}",
             ]
         else:
             display_obj["locus"] = f"chr{chromosome}:{start}-{stop}"
