@@ -8,21 +8,18 @@ jobs:
 
     name: Lint-and-fix
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.12]
 
     steps:
 
     # Check out Scout code
     - name: Check out git repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     # Set up python
-    - name: Set up Python ${{ matrix.python-version}}
-      uses: actions/setup-python@v5
+    - name: Set up Python
+      uses: actions/setup-python@v6
       with:
-        python-version: ${{ matrix.python-version}}
+        python-version-file: ".python-version"
 
     - name: Install Python Dependencies
       run: |
