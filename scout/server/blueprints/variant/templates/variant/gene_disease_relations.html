@@ -73,7 +73,7 @@
   </div>
 {% endmacro %}
 
-{% macro inheritance_panel(variant) %}
+{% macro inheritance_panel(variant, inherit_palette) %}
   <div class="card panel-default">
     <div class="panel-heading">Gene annotations</div>
     <div class="card-body">
@@ -82,7 +82,7 @@
           Variant inheritance models
           <span class="float-end">
             {% for model in variant.genetic_models|sort %}
-              <span class="badge bg-info">{{ model }}</span>
+              {{ inheritance_badge(model, inherit_palette) }}
             {% else %}
               <span class="badge bg-warning">No models followed</span>
             {% endfor %}
@@ -116,8 +116,8 @@
 {% endmacro %}
 
 {% macro inheritance_badge(model,inherit_palette) %}
-  {% if inherit_palette.get(model) %}
-    <span class="badge {{inherit_palette[model].bgcolor}} {{inherit_palette[model].text_color}}">{{ model }}</span>
+  {% if inherit_palette.get(model.split('_')[0]) %}
+    <span class="badge {{inherit_palette[model.split('_')[0]].bgcolor}} {{inherit_palette[model.split('_')[0]].text_color}}">{{ model }}</span>
   {% else %}
     <span class="badge bg-info">{{ model }}</span>
   {% endif %}
