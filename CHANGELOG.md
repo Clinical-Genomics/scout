@@ -18,6 +18,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A more compact gene panels page with panel search options (#5913)
 - Extra space for sequencing type badges on cases page (#5920)
 - Support multi-value REVEL scores when parsing each transcript (#5923)
+- Update GitHub workflows (#5935)
+- IGV.js to version 3.7.1 (#5931)
 - Dual locus IGV view for BNDs with breaks on different chromosomes (#5939)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
@@ -28,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genotype query for singletons when not selecting include only in unaffected (#5914)
 - Restored Analysis type label on verified/causatives view (#5915)
 - Start to end interval search for managed variants (#5917)
+- Export causatives from CLI when variant id or quality is unset (#5929)
 
 ## [4.106]
 ### Added
