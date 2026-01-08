@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support multi-value REVEL scores when parsing each transcript (#5923)
 - Update GitHub workflows (#5935)
 - IGV.js to version 3.7.1 (#5931)
+- Refactored code for collecting and displaying STR variants, which now shares same routines as SV and MEI variants (#5895)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
@@ -31,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restored Analysis type label on verified/causatives view (#5915)
 - Start to end interval search for managed variants (#5917)
 - Export causatives from CLI when variant id or quality is unset (#5929)
+- Add color to inheritance tags under "Gene annotations", on variant page (#5940)
 
 ## [4.106]
 ### Added
