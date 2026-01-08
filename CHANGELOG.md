@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genotype query for singletons when not selecting include only in unaffected (#5914)
 - Restored Analysis type label on verified/causatives view (#5915)
 - Start to end interval search for managed variants (#5917)
+- Export causatives from CLI when variant id or quality is unset (#5929)
 - STR allele sequences no longer printed in full on general report (#5928)
 
 ## [4.106]
