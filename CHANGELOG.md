@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extra space for sequencing type badges on cases page (#5920)
 - Support multi-value REVEL scores when parsing each transcript (#5923)
 - Update GitHub workflows (#5935)
+- IGV.js to version 3.7.1 (#5931)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
