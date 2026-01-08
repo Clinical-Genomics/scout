@@ -7,7 +7,7 @@ jobs:
         name: mkdocs serve strict
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: astral-sh/setup-uv@v3
+            - uses: actions/checkout@v6
+            - uses: astral-sh/setup-uv@v7
             - name: launch mkdocs in strict mode
               run: uv run --only-group docs mkdocs build --strict
