@@ -1,13 +1,15 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
-from pymongo.cursor import CursorType
+from pymongo import ASCENDING
+from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
+from werkzeug.local import LocalProxy
 from wtforms import DecimalField
 
 from scout.adapter import MongoAdapter
@@ -59,9 +61,19 @@ from .forms import (
     CancerSvFiltersForm,
     FusionFiltersForm,
     MeiFiltersForm,
+    StrFiltersForm,
     SvFiltersForm,
 )
 from .utils import update_case_panels
+
+SV_VARIANT_PAGE = "variant.sv_variant"
+VARIANT_PAGE = "variant.variant"
+DISMISS_VARIANT_LINK = {
+    "sv": SV_VARIANT_PAGE,
+    "cancer_sv": SV_VARIANT_PAGE,
+    "mai": SV_VARIANT_PAGE,
+    "str": VARIANT_PAGE,
+}
 
 LOG = logging.getLogger(__name__)
 
@@ -234,10 +246,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
 
 
 def render_variants_page(
-    category,
-    institute_id,
-    case_name,
-    form_builder,
+    category, institute_id, case_name, form_builder, data_exporter, decorator
 ) -> dict:
     """Shared logic for SV and MEI variants routes."""
     page = get_variants_page(request.form)
@@ -259,7 +268,7 @@ def render_variants_page(
             store,
             institute_obj,
             case_obj,
-            "variant.sv_variant",  # both SV and MEI use this
+            DISMISS_VARIANT_LINK["category"],
             request.form.getlist("dismiss"),
             request.form.getlist("dismiss_choices"),
         )
@@ -286,12 +295,12 @@ def render_variants_page(
     )
 
     if request.form.get("export"):
-        return download_variants(store, case_obj, variants_query)
+        return data_exporter(store, case_obj, variants_query)
 
-    data = sv_mei_variants(
+    data = decorator(
         store=store,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
+        institute=institute_obj,
+        case=case_obj,
         variants_query=variants_query,
         page=page,
     )
@@ -328,7 +337,7 @@ def sv_mei_variants(
     store: MongoAdapter,
     institute_obj: dict,
     case_obj: dict,
-    variants_query: CursorType,
+    variants_query: Cursor,
     page: int = 1,
     per_page: int = 50,
 ) -> Dict[str, Any]:
@@ -369,8 +378,25 @@ def sv_mei_variants(
     return {"variants": variants}
 
 
-def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def str_variants(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variants_query: Cursor,
+    page: int = 1,
+    per_page: int = 50,
+):
     """Pre-process list of STR variants."""
+
+    variants_query = variants_query.sort(
+        [
+            ("hgnc_symbols.0", ASCENDING),
+            ("str_repid", ASCENDING),
+            ("str_trid", ASCENDING),
+            ("chromosome", ASCENDING),
+            ("position", ASCENDING),
+        ]
+    )
 
     return_view_data = {}
 
@@ -1055,7 +1081,7 @@ def parse_variant(
     return variant_obj
 
 
-def download_str_variants(case_obj, variant_objs):
+def download_str_variants(_, case_obj, variant_objs):
     """Download filtered STR variants for a case to a CSV file
 
     Args:
@@ -1121,7 +1147,7 @@ def download_str_variants(case_obj, variant_objs):
 
 
 def download_variants(
-    store: MongoAdapter, case_obj: dict, variant_objs: CursorType, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variant_objs: Cursor, category: Optional[str] = None
 ) -> Response:
     """Download filtered variants for a case to a CSV file
 
@@ -1301,7 +1327,7 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
 
 
 def variant_export_lines(
-    store: MongoAdapter, case_obj: dict, variants_query: CursorType, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
 ) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant.
 
@@ -1802,35 +1828,19 @@ def case_default_panels(case_obj):
     return case_panels
 
 
-def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, request_obj):
-    """Populate a filters form object of the type SvFiltersForm
+def populate_sv_mei_str_filters_form(
+    store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
+) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
+    """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
 
-    Accepts:
-        store(adapter.MongoAdapter)
-        institute_obj(dict)
-        case_obj(dict)
-        category(str)
-        request_obj(Flask.requests obj)
-
-    Returns:
-        form(SvFiltersForm)
-    """
-
-    form = SvFiltersForm(request_obj.args)
     user_obj = store.user(current_user.email)
-
     variant_type = request_obj.values.get("variant_type", "clinical")
 
-    if request_obj.method == "GET":
-        if category == "sv":
-            form = SvFiltersForm(request_obj.args)
-        elif category == "cancer_sv":
-            form = CancerSvFiltersForm(request_obj.args)
-        elif category == "mei":
-            form = MeiFiltersForm(request_obj.args)
+    form_class = FILTERSFORMCLASS[category]
 
-        # set chromosome to all chromosomes
-        form.chrom.data = request_obj.args.get("chrom", "")
+    if request_obj.method == "GET":
+        form = form_class(request_obj.args)
+        form.chrom.data = request_obj.args.get("chrom", "")  # set chromosome to all chromosomes
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
 
@@ -1840,9 +1850,7 @@ def populate_sv_mei_filters_form(store, institute_obj, case_obj, category, reque
         )
 
     form.variant_type.data = variant_type
-
     populate_force_show_unaffected_vars(institute_obj, form)
-    # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
     return form
