@@ -197,7 +197,7 @@ def make_igv_tracks(
                 f"chr{end_chromosome}:{stop}",
             ]
         else:
-            display_obj["locus"] = f"chr{chromosome}:{start}-{stop}"
+            display_obj["loci"] = [f"chr{chromosome}:{start}-{stop}"]
 
     # Set genome build for displaying alignments:
     if get_case_genome_build(case_obj) == "38" or chromosome == "M":
