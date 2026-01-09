@@ -139,6 +139,10 @@ def sashimi_igv(
     "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
 )  # from SV variant page, where you have to pass breakpoints coordinates
 @alignviewers_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<end_chrom>/<stop>/igv",
+    methods=["GET"],
+)  # from SV variant page BND, where you have to pass breakpoints coordinates and end chromosome
+@alignviewers_bp.route(
     "/<institute_id>/<case_name>/<chrom>/<start>/<stop>/igv", methods=["GET"]
 )  # from SMN variant page
 def igv(
@@ -146,6 +150,7 @@ def igv(
     case_name: str,
     variant_id: Optional[str] = None,
     chrom: Optional[str] = None,
+    end_chrom: Optional[str] = None,
     start: Optional[int] = None,
     stop: Optional[int] = None,
 ) -> Response:
@@ -154,7 +159,9 @@ def igv(
         store, institute_id, case_name
     )  # This function takes care of checking if user is authorized to see resource
 
-    display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
+    display_obj = controllers.make_igv_tracks(
+        case_obj, variant_id, chrom, start, stop, end_chrom=end_chrom
+    )
 
     response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
     return response
