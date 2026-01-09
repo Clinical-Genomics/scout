@@ -202,9 +202,7 @@ def case(
         store.update_case_cli(case_obj, institute_obj)
 
     if reupload_sv:
-        LOG.info(
-            "Reupload-sv is deprecated and will be removed in Scout v5.0 in favor of separate needs check marking and generic variant type re-uploads."
-        )
+        LOG.info("The reupload-sv option is deprecated and will be removed in Scout v5.")
         LOG.info("Set needs_check to True for case %s", case_id)
         updates = {"needs_check": True}
         if sv_rankmodel_version:
