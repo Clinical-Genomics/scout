@@ -395,8 +395,6 @@ class VariantLoader(object):
         managed_variants_cache = self._cache_managed_variants(category, build)
         causative_variants_cache = self._cache_causative_other_cases()
 
-        LOG.info(f"Causatives cache: {causative_variants_cache}")
-
         LOG.info(f"Number of variants present on the VCF file:{nr_variants}")
         with progressbar(
             variants, label="Loading variants", length=nr_variants, file=sys.stdout
