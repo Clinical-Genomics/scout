@@ -363,7 +363,7 @@
               style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{variant.end_chrom}}:{{variant.end}}" title="Copy to clipboard">
               </button>
     {% elif zoom == "length" %}
-      <span style="white-space: nowrap;">{{ '-' if variant.length == 100000000000 else variant.length|human_longint|safe }}</span>
+      <span style="white-space: nowrap;">{{ '-' if variant.chromosome != variant.end_chrom else variant.length|human_longint|safe }}</span>
     {% endif %}
     </div>
     <div class="col-3">
@@ -383,12 +383,12 @@
             disabled" title="Alignment file(s) missing" data-bs-toggle="tooltip" aria-disabled="true"><span class="fa fa-times-circle fa-fw me-1"></span>IGV gDNA
           </a>
         </span>
-      {% elif variant.length == 100000000000 %}
+      {% elif variant.chromosome != variant.end_chrom %}
         <span>
           <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=variant.chromosome, end_chrom=variant.end_chrom, start=variant.position, stop=variant.end)}}"
             target="_blank"
             class="btn btn-secondary btn-sm text-white"><span class="fa fa-magnifying-glass fa-fw me-1"></span>
-            IGV {% if variant.is_mitochondrial %}mt{% else %}g{% endif %}DNA
+            IGV {% if variant.is_mitochondrial %}mt{% else %}g{% endif %}DNA {% if zoom == "length" %}split view{% endif %}
           </a>
         </span>
 
