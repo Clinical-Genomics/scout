@@ -116,7 +116,7 @@ def test_make_igv_tracks(app, case_obj, variant_obj):
         display_obj = controllers.make_igv_tracks(case_obj, variant_obj["_id"], "MT", 100, 101)
 
         # The function should return a track list with the expected tracks
-        assert display_obj["locus"] == "chrM:100-101"
+        assert display_obj["loci"] == ["chrM:100-101"]
         assert display_obj["display_center_guide"] == True
         assert display_obj["reference_track"]
         assert display_obj["custom_tracks"]
