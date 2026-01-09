@@ -17,7 +17,7 @@ const CHROMSPECS_LIST =
        {name: '5', length: 367, cent_start: 102, cent_length: 10 },
        {name: '6', length: 346, cent_start: 125, cent_length: 13 },
        {name: '7', length: 321, cent_start: 125, cent_length: 10 },
-       {name: '8', length: 293, cent_start: 98, cent_length: 8 }, //
+       {name: '8', length: 293, cent_start: 98, cent_length: 8 },
        {name: '9', length: 283, cent_start: 107, cent_length: 8 },
        {name: '10', length: 271, cent_start: 88, cent_length: 8 },
        {name: '11', length: 270, cent_start: 111, cent_length: 10 },
@@ -40,10 +40,10 @@ const CHROMSPECS_LIST =
  * Iterate case.individuals. If a path to a image directory
  * is set, get panels on the page and add image content
  */
-function add_image_to_individual_panel(individuals, institute, case_name){
+function add_image_to_individual_panel(individuals, institute, case_name, genome_build){
     for (var i=0; i<individuals.length; i++){
         if(individuals[i].chromograph_images){
-            draw_tracks(individuals[i], institute, case_name)
+            draw_tracks(individuals[i], institute, case_name, genome_build)
         }
     }
 }
@@ -53,7 +53,7 @@ function add_image_to_individual_panel(individuals, institute, case_name){
  * Draw RHO call pictures -coverage- and UPD pictures -color coded
  * genome regions- onto the dashboard.
  */
-function draw_tracks(individual, institute, case_name){
+function draw_tracks(individual, institute, case_name, genome_build){
     // First add all new image elements to a fragment, then lastly add the fragmen to main DOM.
     var fragment = document.createDocumentFragment();
     const CYT_HEIGHT = 50 ;
@@ -81,8 +81,7 @@ function draw_tracks(individual, institute, case_name){
         var coverage_images = make_names("coverage-");
     }
 
-    // ideograms always exist
-    var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
+    var ideo_imgPath = static_path_ideograms(genome_build)
     var ideo_images = make_names('')
     var autozygous_imgObj = new Image()
     var upd_regions_imgObj = new Image()
@@ -197,12 +196,17 @@ function create_path(institute, case_name, individual, dir_name){
 /**
  * Create an URL path. Ideaograms are static on format:
  *
- *     http://localhost:5000/public/static/ideograms/chromosome-1.png
+ *     http://host:port/public/static/ideograms/chromosome-1.png
+ *     or
+ *     http://host:port/public/static/ideograms/hg38/chromosome-1.png
  *
  */
-// TODO: accesses not as above, couldn't figure out how to get the correct URL for Flask
-function static_path_ideograms(institute, case_name, individual, dir_name){
+function static_path_ideograms(genome_build){
+	if(genome_build.includes("38")) {
+		return "/public/static/ideograms/hg38/chromosome-"
+	} else {
     return "/public/static/ideograms/chromosome-"
+	}
 }
 
 
