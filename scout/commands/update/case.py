@@ -95,6 +95,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option(
     "--reupload-sv",
+    deprecated=True,
     is_flag=True,
     help="Remove all SVs and re upload from existing files",
 )
@@ -201,6 +202,7 @@ def case(
         store.update_case_cli(case_obj, institute_obj)
 
     if reupload_sv:
+        LOG.info("The reupload-sv option is deprecated and will be removed in Scout v5.")
         LOG.info("Set needs_check to True for case %s", case_id)
         updates = {"needs_check": True}
         if sv_rankmodel_version:
