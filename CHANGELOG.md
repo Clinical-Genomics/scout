@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export causatives from CLI when variant id or quality is unset (#5929)
 - Add color to inheritance tags under "Gene annotations", on variant page (#5940)
 - STR allele sequences no longer printed in full on general report (#5928)
+- Include outliers with missing p-value fields in filtering logic (#5903)
 
 ## [4.106]
 ### Added
