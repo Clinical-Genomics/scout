@@ -392,7 +392,7 @@ class VariantLoader(object):
         bulk = {}
         current_region = None
 
-        managed_variants_cache = list(self.managed_variants(category=[category], build=build))
+        managed_variants_cache = self._cache_managed_variants(category, build)
         causative_variants_cache = self._cache_causative_other_cases()
 
         LOG.info(f"Causatives cache: {causative_variants_cache}")
@@ -606,6 +606,12 @@ class VariantLoader(object):
             )
         )
         return var_causative_events_count > 0
+
+    def _cache_managed_variants(self, category: str = "snv", build: str = "37") -> list:
+        """Cache a list of managed variant ids for lookup during load."""
+
+        managed_vars = list(self.managed_variants(category=[category], build=build))
+        return [managed_variant.get("variant_id") for managed_variant in managed_vars]
 
     def _is_managed(
         self,
