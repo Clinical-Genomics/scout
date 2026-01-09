@@ -52,7 +52,7 @@
                         aliasURL: "{{ reference_track.aliasURL }}",
                         {% if reference_track.chromosomeOrder %}chromosomeOrder: "{{ reference_track.chromosomeOrder }}",{% endif %}
                     },
-                    locus: "{{locus}}",
+                    locus: {% if loci|length > 1 %}[{% for locus in loci %}"{{locus}}",{% endfor %}]{% else %} "{{ loci[0] }}"{% endif %},
                     tracks: [
                       {% for custTrack in custom_tracks %}
                         {
