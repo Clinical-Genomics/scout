@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter germline ClinVar submission IDs by ClinVar ID (#5907)
 - Link to ACMG classification form on SV page - with warnings (#5891)
 - `scout remove rna -c <case-id>` command to remove all RNA-related data from a case (#5916)
+- Chromograph ideograms for hg38 (#5883)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
 - Enhance variants filters by allowing selection of individual soft filters (#5897)
