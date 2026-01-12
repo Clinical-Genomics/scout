@@ -803,7 +803,7 @@ def variant_acmg_post(
 
     user_obj = store.user(user_email)
     variant_link = url_for(
-        "variant.variant",
+        "variant.variant" if variant_obj.get("category") == "snv" else "variant.sv_variant",
         institute_id=institute_id,
         case_name=case_name,
         variant_id=variant_id,
