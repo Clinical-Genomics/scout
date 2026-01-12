@@ -23,6 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored code for collecting and displaying STR variants, which now shares same routines as SV and MEI variants (#5895)
 - Deprecate reupload_sv (#5933)
 - Dual locus IGV view for BNDs with breaks on different chromosomes (#5939)
+- Lazier checking of variant load criteria: most costly query last (#5924)
+- Caching variant load criteria queries for considerable speedup for large variant files (#5924)
 ### Fixed
 - Fix PanelApp fetch failures caused by 429 responses - Retry-After support (#5864)
 - Parsing of `REVEL rank score` field for LRS from all transcript of a LRS variant (#5860)
