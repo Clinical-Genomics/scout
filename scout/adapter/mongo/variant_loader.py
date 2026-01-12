@@ -392,30 +392,37 @@ class VariantLoader(object):
         bulk = {}
         current_region = None
 
+        managed_variants_cache = self._cache_managed_variants(category, build)
+        causative_variants_cache = self._cache_causative_other_cases()
+
         LOG.info(f"Number of variants present on the VCF file:{nr_variants}")
         with progressbar(
             variants, label="Loading variants", length=nr_variants, file=sys.stdout
         ) as bar:
             for idx, variant in enumerate(bar):
                 # All MT variants are loaded
-                mt_variant = variant.CHROM in ["M", "MT"]
                 rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
-                pathogenic = is_pathogenic(variant)
-                managed = self._is_managed(variant, category)
-                causative = self._is_causative_other_cases(variant, category)
 
                 # Check if the variant should be loaded at all
                 # if rank score is None means there are no rank scores annotated, all variants will be loaded
-                # Otherwise we load all variants above a rank score treshold
+                # Otherwise we load all variants above a rank score threshold
                 # Except for MT variants where we load all variants
                 if (
                     (rank_score is None)
                     or (rank_score > rank_threshold)
-                    or mt_variant
-                    or pathogenic
-                    or causative
-                    or managed
+                    or variant.CHROM in ["M", "MT"]
                     or category in ["str"]
+                    or is_pathogenic(variant)
+                    or self._is_managed(
+                        variant=variant,
+                        category=category,
+                        managed_variants_cache=managed_variants_cache,
+                    )
+                    or self._is_causative_other_cases(
+                        variant=variant,
+                        category=category,
+                        causative_variants_cache=causative_variants_cache,
+                    )
                 ):
                     nr_inserted += 1
                     # Parse the vcf variant
@@ -536,11 +543,33 @@ class VariantLoader(object):
 
         return nr_inserted
 
+    def _cache_causative_other_cases(
+        self,
+    ) -> list[str]:
+        """Return a list of subject (variant ids) from all mark causatives events.
+        This is a list of all possible candidate variants: variants and cases may have been updated and unmarked later.
+        """
+
+        return [
+            event.get("subject")
+            for event in self.event_collection.find(
+                {
+                    "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                    "category": "variant",
+                },
+                {
+                    "_id": 0,
+                    "subject": 1,
+                },
+            )
+        ]
+
     def _is_causative_other_cases(
         self,
         variant: cyvcf2.Variant,
         category: str = "snv",
         build: str = "37",
+        causative_variants_cache: Optional[list] = None,
     ) -> bool:
         """Check if variant is on the list of causatives from other cases, also from other institutes.
         All variants that have been marked causative will be loaded, even if the other case does not exist anymore, or has been reclassified.
@@ -557,6 +586,12 @@ class VariantLoader(object):
         clinical_variant = "".join([variant_prefix, "_clinical"])
         research_variant = "".join([variant_prefix, "_research"])
 
+        if causative_variants_cache:
+            return (
+                clinical_variant in causative_variants_cache
+                or research_variant in causative_variants_cache
+            )
+
         var_causative_events_count = len(
             list(
                 self.event_collection.find(
@@ -570,11 +605,18 @@ class VariantLoader(object):
         )
         return var_causative_events_count > 0
 
+    def _cache_managed_variants(self, category: str = "snv", build: str = "37") -> list[str]:
+        """Cache a list of managed variant ids for lookup during load."""
+
+        managed_vars = list(self.managed_variants(category=[category], build=build))
+        return [managed_variant.get("variant_id") for managed_variant in managed_vars]
+
     def _is_managed(
         self,
         variant: cyvcf2.Variant,
         category: str = "snv",
         build: str = "37",
+        managed_variants_cache: Optional[list] = None,
     ) -> bool:
         """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
@@ -603,6 +645,8 @@ class VariantLoader(object):
             ]
         )
 
+        if managed_variants_cache:
+            return variant_id in managed_variants_cache
         return self.find_managed_variant_id(variant_id) is not None
 
     def _has_variants_in_file(self, variant_file: str) -> bool:
