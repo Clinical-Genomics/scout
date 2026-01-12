@@ -60,7 +60,7 @@
             <div class="col-sm-2">
               Safe variant matching:
               {% if institute.gene_panels_matching %}
-                <span class="badge rounded-pill bg-warning text-dark" data-bs-toggle="toovltip" data-bs-placement="left" title="To avoid incidental findings, eventual matching causatives and managed variants displayed on case page are filteres using a list of 'safe' panels. Modify institute settings to edit list of 'safe' panels. Current safe panels: {{ institute.gene_panels_matching.values()|list }}">on</span>
+                <span class="badge rounded-pill bg-warning text-dark" data-bs-toggle="tooltip" data-bs-placement="left" title="To avoid incidental findings, eventual matching causatives and managed variants displayed on case page are filteres using a list of 'safe' panels. Modify institute settings to edit list of 'safe' panels. Current safe panels: {{ institute.gene_panels_matching.values()|list }}">on</span>
               {% else %}
                 <span class="badge rounded-pill bg-info text-body" data-bs-toggle="tooltip" data-bs-placement="left" title="Matching causatives and managed variants displayed on case page are NOT filtered by gene panel. Use caution to avoid incidental findings.">off</span>
               {% endif %}
