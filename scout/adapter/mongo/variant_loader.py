@@ -545,7 +545,7 @@ class VariantLoader(object):
 
     def _cache_causative_other_cases(
         self,
-    ) -> list:
+    ) -> list[str]:
         """Return a list of subject (variant ids) from all mark causatives events.
         This is a list of all possible candidate variants: variants and cases may have been updated and unmarked later.
         """
@@ -605,7 +605,7 @@ class VariantLoader(object):
         )
         return var_causative_events_count > 0
 
-    def _cache_managed_variants(self, category: str = "snv", build: str = "37") -> list:
+    def _cache_managed_variants(self, category: str = "snv", build: str = "37") -> list[str]:
         """Cache a list of managed variant ids for lookup during load."""
 
         managed_vars = list(self.managed_variants(category=[category], build=build))
