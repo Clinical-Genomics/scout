@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save and display maintainer/institutes for managed variants (#5890)
 - Link to VuTR at the transcript level from the variant page (#5893)
 - Filter germline ClinVar submission IDs by ClinVar ID (#5907)
+- Link to ACMG classification form on SV page - with warnings (#5891)
 - Chromograph ideograms for hg38 (#5883)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
