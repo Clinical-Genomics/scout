@@ -222,9 +222,10 @@ def variant_acmg(institute_id, case_name, variant_id):
         store, institute_id, case_name, variant_id, current_user.email, criteria
     )
     flash("classified as: {}".format(acmg), "info")
+    variant_obj = store.variant(variant_id)
     return redirect(
         url_for(
-            ".variant",
+            ".variant" if variant_obj.get("category") == "snv" else ".sv_variant",
             institute_id=institute_id,
             case_name=case_name,
             variant_id=variant_id,

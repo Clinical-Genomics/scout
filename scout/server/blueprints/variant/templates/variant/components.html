@@ -232,14 +232,35 @@
 {% endmacro %}
 
 {% macro panel_classify_sv(variant, institute, case, ACMG_OPTIONS, evaluations) %}
-  <div class="mt-3">
-    ACMG (INDEL) <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="text-decoration: inherit;" data-bs-toggle="tooltip" title="Richards et al 2015">classification</a>
+  <div class="mt-3" data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     title="⚠ SNV rules (Richards 2015). May apply for small SVs. Otherwise follow ACMG SV guidelines (Riggs 2020), which are not yet in Scout. Use the CNVcalc guide link below to classify, and annotate using the manual Variant tag.">
+    <i class="fa fa-exclamation-triangle text-warning me-1"></i>
+    ACMG <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="text-decoration: inherit;" data-bs-toggle="tooltip" title="Richards et al 2015">classification</a>
   </div>
   <div>
     {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
   </div>
   <div class="mt-3">
-    ACMG SV classification <a href="https://pubmed.ncbi.nlm.nih.gov/31690835/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guidelines</a> & <a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">guide</a>.
+    <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
+       class="btn btn-warning form-control"
+       target="_blank"
+       rel="noopener noreferrer"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       title="⚠ Caution! This classification page is designed for SNVs. It may apply to small SVs. Otherwise follow ACMG SV guidelines (Riggs 2020), which are not yet in Scout. Use the CNVcalc guide link below to classify, and annotate using the manual Variant tag.">
+       <i class="fa fa-exclamation-triangle me-1"></i> Classify
+    </a>
+  </div>
+  <div class="mt-3">
+    ACMG SV classification references:
+
+    <a href="https://pubmed.ncbi.nlm.nih.gov/31690835/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">
+        Riggs 2020
+    </a>,
+    <a href="https://cnvcalc.clinicalgenome.org/cnvcalc/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">
+        CNVcalc
+    </a>
   </div>
   {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
     <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
