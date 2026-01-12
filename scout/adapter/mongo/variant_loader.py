@@ -616,7 +616,7 @@ class VariantLoader(object):
         variant: cyvcf2.Variant,
         category: str = "snv",
         build: str = "37",
-        managed_variants_cache: list[Optional] = None,
+        managed_variants_cache: Optional[list] = None,
     ) -> bool:
         """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
