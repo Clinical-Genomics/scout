@@ -234,7 +234,7 @@
 {% macro panel_classify_sv(variant, institute, case, ACMG_OPTIONS, evaluations) %}
   <div class="mt-3" data-bs-toggle="tooltip"
      data-bs-placement="top"
-     title="⚠ CNVs follow Riggs 2020 formal rules. SNV rules (Richards 2015) may apply only for indels. Other SV types require extreme caution.">
+     title="⚠ SNV rules (Richards 2015). May apply for small SVs. Otherwise follow ACMG SV guidelines (Riggs 2020), which are not yet in Scout. Use the CNVcalc guide link below to classify, and annotate using the manual Variant tag.">
     <i class="fa fa-exclamation-triangle text-warning me-1"></i>
     ACMG <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf"  rel="noopener noreferrer" target="_blank" style="text-decoration: inherit;" data-bs-toggle="tooltip" title="Richards et al 2015">classification</a>
   </div>
@@ -248,7 +248,7 @@
        rel="noopener noreferrer"
        data-bs-toggle="tooltip"
        data-bs-placement="top"
-       title="⚠ Caution! This classification page is designed for SNVs. For SVs, it may apply to small intragenic events. SVs otherwise follow ACMG SV guidelines (Riggs, 2020), which is not yet in Scout. Use guide link below to classify, and annotate using the manual Variant tag.">
+       title="⚠ Caution! This classification page is designed for SNVs. It may apply to small SVs. Otherwise follow ACMG SV guidelines (Riggs 2020), which are not yet in Scout. Use the CNVcalc guide link below to classify, and annotate using the manual Variant tag.">
        <i class="fa fa-exclamation-triangle me-1"></i> Classify
     </a>
   </div>
