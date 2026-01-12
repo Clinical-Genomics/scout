@@ -19,8 +19,20 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">{{ variant.display_name }}</span>
+  <li class="nav-item active d-flex align-items-center"
+    {% if variant.category == "sv" %}
+    data-bs-toggle="tooltip"
+    data-bs-placement="bottom"
+    title="⚠ You are viewing a structural variant. This classification page is designed for SNVs. It may apply to small SVs. Otherwise follow ACMG SV guidelines (Riggs 2020), which are not yet in Scout. Use the manual Variant tag instead."
+    {% endif %}>
+
+    {% if variant.category == "sv" %}
+        <i class="fa fa-exclamation-triangle text-warning me-1"></i>
+    {% endif %}
+
+    <span class="navbar-text">
+        {{ variant.display_name|truncate(20, True) }}
+    </span>
   </li>
 {% endblock %}
 
