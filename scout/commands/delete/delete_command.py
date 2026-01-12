@@ -460,7 +460,12 @@ def rna(case_id):
     )
 
     # Remove outliers variants
-    deleted_count = store.omics_variant_collection.delete_many({"case_id": case_id}).deleted_count
+    deleted_count = store.omics_variant_collection.delete_many(
+        {
+            "case_id": case_id,
+            "sub_category": {"$in": ["splicing", "expression"]},
+        }
+    ).deleted_count
     click.echo(f"Deleted {deleted_count} omics variant documents for case {case_id}.")
 
     # Update variants count in case document
