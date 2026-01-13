@@ -429,22 +429,13 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
-    def check_managed(self, case_obj=None, institute_obj=None, limit_genes=None):
+    def check_managed(self, case_obj: dict = None, limit_genes: list[int] = None):
         """Check if there are any variants in case that match a managed variant.
 
             Given a case, limit search to affected individuals.
-
-        Args:
-            case_obj (dict): A Case object
-            institute_obj (dict): check across the whole institute
-            limit_genes (list): list of gene hgnc_ids to limit the search to
-
         Returns:
             managed_variants(iterable(Variant))
         """
-
-        institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
-
         positional_variant_ids = self.get_managed_variants()
 
         if len(positional_variant_ids) == 0:

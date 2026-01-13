@@ -5,13 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Searching for matching managed variants from case page crash (#5956)
+- Dismissing SVs/STRs/MEIs directly from SVs page (#5955)
+
+## [4.107]
 ### Added
 - On cases page, print a `RNA` label whenever WGS or WES cases have associated RNA data (#5886)
 - Save and display maintainer/institutes for managed variants (#5890)
 - Link to VuTR at the transcript level from the variant page (#5893)
 - Filter germline ClinVar submission IDs by ClinVar ID (#5907)
 - Link to ACMG classification form on SV page - with warnings (#5891)
-- `scout remove rna -c <case-id>` command to remove all RNA-related data from a case (#5916)
+- `scout delete rna -c <case-id>` command to remove all RNA-related data from a case (#5916)
 - Chromograph ideograms for hg38 (#5883)
 ### Changed
 - A case becomes inactive whenever there is a change to any VCF or RNA-associated file (#5888)
