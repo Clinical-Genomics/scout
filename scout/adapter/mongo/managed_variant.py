@@ -180,8 +180,6 @@ class ManagedVariantHandler(object):
         including variants with unset end.
         """
 
-        LOG.warning(query_options)
-
         if query_options:
             if "description" in query_options:
                 query["description"] = {
