@@ -180,6 +180,8 @@ class ManagedVariantHandler(object):
         including variants with unset end.
         """
 
+        LOG.warning(query_options)
+
         if query_options:
             if "description" in query_options:
                 query["description"] = {
@@ -201,7 +203,7 @@ class ManagedVariantHandler(object):
         return query
 
     def get_managed_variants(
-        self, category: list = ["snv"], build: str = "37", institute: str = None
+        self, category: list = ["snv", "sv"], build: str = "37", institute: str = None
     ):
         """Return managed variant_ids. Limit by institute, category and build.
 
@@ -217,7 +219,9 @@ class ManagedVariantHandler(object):
 
         return [
             managed_variant["variant_id"]
-            for managed_variant in self.managed_variants(category, build, institute)
+            for managed_variant in self.managed_variants(
+                category=category, build=build, institute=institute
+            )
         ]
 
     def delete_managed_variant(self, managed_variant_id):
