@@ -252,7 +252,6 @@ def add_gene_info(
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:
             hgnc_id = variant_gene["hgnc_id"]
-            # Get the hgnc_gene
             hgnc_gene = store.hgnc_gene(hgnc_id, build=genome_build)
 
             if not hgnc_gene:
@@ -270,6 +269,7 @@ def add_gene_info(
             update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
 
             variant_gene["common"] = hgnc_gene
+            LOG.warning(variant_gene)
             add_gene_links(variant_gene, genome_build, institute=institute)
 
             # Add disease associated transcripts from panel to variant
