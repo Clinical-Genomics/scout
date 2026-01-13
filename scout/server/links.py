@@ -259,7 +259,6 @@ def clingen(hgnc_id):
 
 
 def clingen_cspec(hgnc_id):
-    print(hgnc_id)
     link = "https://cspec.genome.network/cspec/ui/svi/?search=HGNC:{}"
     if not hgnc_id:
         return None

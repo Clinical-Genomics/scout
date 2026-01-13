@@ -56,8 +56,6 @@ from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
 from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
-from .utils import add_gene_info
-
 LOG = logging.getLogger(__name__)
 
 variant_bp = Blueprint(
