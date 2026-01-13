@@ -71,7 +71,7 @@ VARIANT_PAGE = "variant.variant"
 DISMISS_VARIANT_LINK = {
     "sv": SV_VARIANT_PAGE,
     "cancer_sv": SV_VARIANT_PAGE,
-    "mai": SV_VARIANT_PAGE,
+    "mei": SV_VARIANT_PAGE,
     "str": VARIANT_PAGE,
 }
 
