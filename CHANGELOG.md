@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.107.1]
 ### Fixed
 - Searching for matching managed variants from case page crash (#5956)
 - Dismissing SVs/STRs/MEIs directly from SVs page (#5955)
