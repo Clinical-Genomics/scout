@@ -252,7 +252,6 @@ def add_gene_info(
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:
             hgnc_id = variant_gene["hgnc_id"]
-            # Get the hgnc_gene
             hgnc_gene = store.hgnc_gene(hgnc_id, build=genome_build)
 
             if not hgnc_gene:
