@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Dismissing SVs directly from SVs page (#5951)
+
 ## [4.107]
 ### Added
 - On cases page, print a `RNA` label whenever WGS or WES cases have associated RNA data (#5886)
