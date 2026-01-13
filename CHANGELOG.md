@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Dismissing SVs directly from SVs page (#5951)
+- Dismissing SVs/STRs directly from SVs page (#5955)
 
 ## [4.107]
 ### Added
