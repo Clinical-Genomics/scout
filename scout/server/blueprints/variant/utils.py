@@ -269,7 +269,6 @@ def add_gene_info(
             update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
 
             variant_gene["common"] = hgnc_gene
-            LOG.warning(variant_gene)
             add_gene_links(variant_gene, genome_build, institute=institute)
 
             # Add disease associated transcripts from panel to variant
