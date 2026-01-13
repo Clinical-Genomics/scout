@@ -425,12 +425,19 @@ def evaluation(evaluation_id):
 
         return safe_redirect_back(request)
 
+    acmg_decorated_variant = acmg_controller(
+        store=store,
+        institute_id=evaluation_obj["institute_id"],
+        case_name=evaluation_obj["case"]["display_name"],
+        variant_id=evaluation_obj["variant_specific"],
+    ).get("variant")
+
     return dict(
         evaluation=evaluation_obj,
         edit=bool(request.args.get("edit")),
         institute=evaluation_obj["institute"],
         case=evaluation_obj["case"],
-        variant=evaluation_obj["variant"],
+        variant=acmg_decorated_variant,
         CRITERIA=ACMG_CRITERIA,
         ACMG_OPTIONS=ACMG_OPTIONS,
     )
