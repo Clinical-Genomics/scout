@@ -268,7 +268,7 @@ def render_variants_page(
             store,
             institute_obj,
             case_obj,
-            DISMISS_VARIANT_LINK["category"],
+            DISMISS_VARIANT_LINK[category],
             request.form.getlist("dismiss"),
             request.form.getlist("dismiss_choices"),
         )
