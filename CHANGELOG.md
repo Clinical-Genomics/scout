@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.107.2]
+### Fixed
+- Fix ClinVar Oncogenic submissions page crashing (#5960)
+
 ## [4.107.1]
 ### Fixed
 - Searching for matching managed variants from case page crash (#5956)
