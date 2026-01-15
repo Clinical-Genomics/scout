@@ -113,7 +113,7 @@ def panels():
 
         panel_groups.append((institute_obj, institute_panels))
     return dict(
-        panel_groups=sorted(panel_groups, key=lambda x: x[0]["display_name"]),
+        panel_groups=sorted(panel_groups, key=lambda x: x[0]["display_name"]).lower(),
         panel_names=panel_names,
         panel_versions=panel_versions,
         institutes=institutes,
