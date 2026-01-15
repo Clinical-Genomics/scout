@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [changed]
+## [unreleased]
 ### Changed
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
 
