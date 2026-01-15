@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [changed]
+### Changed
+- Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
+
 ## [4.107.2]
 ### Fixed
 - Fix ClinVar Oncogenic submissions page crashing (#5960)
