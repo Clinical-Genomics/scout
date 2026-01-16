@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)
+
 ## [4.107.2]
 ### Fixed
 - Fix ClinVar Oncogenic submissions page crashing (#5960)
