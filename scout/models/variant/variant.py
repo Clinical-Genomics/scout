@@ -102,7 +102,7 @@ gt_call = dict(
     so=str,
 )
 
-RANK_SCORE_OTHER = {
-    "mivmir": {"MivmirScore": float, "MivmirExplanation": dict},
-    "gicam": {"GicamScore": float},
-}
+MIMVIR_SCORE = {"MivmirScore": float, "MivmirExplanation": dict}
+GICAM_SCORE = {"GicamScore": float}
+
+RANK_SCORE_OTHER = {"snv": {"mivmir": MIMVIR_SCORE, "gicam": GICAM_SCORE}}
