@@ -93,6 +93,7 @@ def build_variant(
         position = int, # required
         quality = float,
         rank_score = float, # required
+        rank_score_other = dict # optional
         rank_score_results = list, # List if dictionaries
         reference = str, # required
         revel = float, REVEL score
@@ -402,11 +403,8 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
     variant_obj["hgnc_symbols"] = hgnc_symbols
 
 
-def add_rank_score(variant_obj, variant):
-    """Add the rank score results
-    Args: variant_obj (Dict)
-          variant (Dict)
-    Returns: None"""
+def add_rank_score(variant_obj:dict, variant:dict):
+    """Add the rank score results."""
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}
@@ -414,6 +412,9 @@ def add_rank_score(variant_obj, variant):
 
     if rank_results:
         variant_obj["rank_score_results"] = rank_results
+
+    if variant.get("rank_score_other"):
+        variant_obj["rank_score_other"] = variant["rank_score_other"]
 
 
 def add_frequencies(variant_obj, frequencies):

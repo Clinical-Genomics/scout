@@ -7,6 +7,16 @@
   {% if variant.rank_score is defined and variant.rank_score is not none %}{{ variant.rank_score|int }} {% endif %} {% if variant.norm_rank_score is defined and variant.norm_rank_score is not none %} ({{variant.norm_rank_score|round(2)}}) {% endif %}
 {% endmacro %}
 
+{% macro variant_rank_score_other(variant) %}
+  {% if variant.rank_score_other %}
+    {% for score_name, score in variant.rank_score_other.items() %}
+      <span class="badge bg-light text-dark">
+        {{ score_name }}:{{ '%.6f'|format(score.value) }}
+      </span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
 {% macro filter_script_main(cytobands) %}
   <script type="text/javascript">
     var startElem = document.getElementById("start");
