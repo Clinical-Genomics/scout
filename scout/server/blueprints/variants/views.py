@@ -157,12 +157,14 @@ def variants(institute_id, case_name):
         query_form=form.data,
     )
 
+    scroll_pos = request.form.get("scroll_pos", 0)
+
     return dict(
         cancer_tier_options=CANCER_TIER_OPTIONS,
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        scroll_pos=request.form.get("scroll_pos", 0),
+        scroll_pos=scroll_pos,
         escat_tier_options=ESCAT_TIER_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
@@ -383,13 +385,15 @@ def cancer_variants(institute_id, case_name):
         page=page,
     )
 
+    scroll_pos = request.form.get("scroll_pos", 0)
+
     return dict(
         cytobands=cytobands,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        scroll_pos=request.form.get("scroll_pos", 0),
+        scroll_pos=scroll_pos,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
