@@ -54,7 +54,7 @@ variant = dict(
     position=int,  # required
     rank_score=float,  # required
     rank_score_results=list,  # List if dictionaries
-    rank_score_other=Optional[RANK_SCORE_OTHER],
+    rank_score_other=Optional[dict],
     reference=str,  # required
     samtools=str,  # choices=VARIANT_CALL, default='Not Used'
     samples=list,  # list of dictionaries that are <gt_calls>
@@ -102,7 +102,11 @@ gt_call = dict(
     so=str,
 )
 
-MIMVIR_SCORE = {"MivmirScore": float, "MivmirExplanation": dict}
-GICAM_SCORE = {"GicamScore": float}
+MIMVIR_SCORE = {
+    "score_key": "INFO.MivmirScore",
+    "score_transform": float,
+    "score_desc": "INFO.MivmirExplanation",  # dict
+}
+GICAM_SCORE = {"score_key": "INFO.GicamScore", "score_transform": float}
 
 RANK_SCORE_OTHER = {"snv": {"mivmir": MIMVIR_SCORE, "gicam": GICAM_SCORE}}

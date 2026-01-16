@@ -42,121 +42,86 @@ def build_variant(
     variant = dict(
         # document_id is a md5 string created by institute_genelist_caseid_variantid:
         _id = str, # required, same as document_id
-        document_id = str, # required
-        # variant_id is a md5 string created by chrom_pos_ref_alt (simple_id)
-        variant_id = str, # required
-        # display name is variant_id (no md5)
-        display_name = str, # required
-
-        # chrom_pos_ref_alt
-        simple_id = str,
-        # The variant can be either research or clinical.
-        # For research variants we display all the available information while
-        # the clinical variants have limited annotation fields.
-        variant_type = str, # required, choices=('research', 'clinical'))
-
-        category = str, # choices=('sv', 'snv', 'str', 'fusion')
-        sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
-        mate_id = str, # For SVs this identifies the other end
-
-        case_id = str, # case_id is a string like owner_caseid
-        chromosome = str, # required
-        position = int, # required
-        end = int, # required
-        length = int, # required
-        reference = str, # required
+        acmg_evaluation = str, # choices=ACMG_TERMS
         alternative = str, # required
-
-        rank_score = float, # required
-        variant_rank = int, # required
-        rank_score_results = list, # List if dictionaries
-        variant_rank = int, # required
-
-        institute = str, # institute_id, required
-
-        sanger_ordered = bool,
-        validation = str, # Sanger validation, choices=('True positive', 'False positive')
-
-        quality = float,
-        filters = list, # list of strings
-        samples = list, # list of dictionaries that are <gt_calls>
-        genetic_models = list, # list of strings choices=GENETIC_MODELS
+        cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
+        case_id = str, # case_id is a string like owner_caseid
+        category = str, # choices=('sv', 'snv', 'str', 'fusion')
+        chromosome = str, # required
+        clnsig = list, # list of <clinsig>
         compounds = list, # sorted list of <compound> ordering='combined_score'
-
-        genes = list, # list with <gene>
+        simple_id = str, # chrom_pos_ref_alt
+        cadd_score = float,
         dbsnp_id = str,
-
-        # Gene ids:
+        dismiss_variant = list,
+        display_name = str, # required
+        document_id = str, # required
+        end = int, # required
+        escat_tier = str # choices=['1A', '1B', '1C', '2A', '2B', '3A', '3B' '4A', '4B', '5', 'X]
+        exac_frequency = float,
+        filters = list, # list of strings
+        freebayes = str, # choices=VARIANT_CALL, default='Not Used'
+        gatk = str, # choices=VARIANT_CALL, default='Not Used'
+        gene_lists = list,
+        genes = list, # list with <gene>
+        genetic_models = list, # list of strings choices=GENETIC_MODELS
+        gerp_conservation = list, # list of str, choices=CONSERVATION
         hgnc_ids = list, # list of hgnc ids (int)
         hgnc_symbols = list, # list of hgnc symbols (str)
-        panels = list, # list of panel names that the variant ovelapps
-
-        # Frequencies:
-        thousand_genomes_frequency = float,
-        thousand_genomes_frequency_left = float,
-        thousand_genomes_frequency_right = float,
-        exac_frequency = float,
-        max_thousand_genomes_frequency = float,
-        max_exac_frequency = float,
+        institute = str, # institute_id, required
+        length = int, # required
         local_frequency = float,
         local_obs_old = int,
         local_obs_hom_old = int,
         local_obs_old_freq = float,
-        # cancer caller (balsamic) loqusdb frequencies
-        local_obs_cancer_germline_old=int, # germline counts
-        local_obs_cancer_germline_hom_old=int, # germline counts for homoz
-        local_obs_cancer_germline_old_freq=float, # germline frequency
-
-        local_obs_cancer_somatic_old=int,# somatic counts
-        local_obs_cancer_somatic_hom_old=int, # somatic counts for homoz
-        local_obs_cancer_somatic_old_freq=float, # somatic frequency
-
-        # Predicted deleteriousness:
-        cadd_score = float,
-        revel_score = float, REVEL rankscore
-        revel = float, REVEL score
-        clnsig = list, # list of <clinsig>
-
-        spidex = float,
-
-        missing_data = bool, # default False
-
-        # STR specific information
-        str_repid = str, repeat id generally corresponds to gene symbol
-        str_ru = str, Repeat Unit used e g in PanelApp naming of STRs
-        str_ref = int, reference copy number
-        str_len = int, number of repeats found in case
-        str_status = str, this indicates the severity of the expansion level
-        str_normal_max = int, max number of repeats to call an STR variant normal
-        str_pathologic_min = int, min number of repeats to call an STR variant pathologic
-        str_disease = str, Associated disease name
-        str_inheritance_mode = str, STR disease mode of inheritance "AD", "XR", "AR", "-"
-        str_source = dict, STR source dict with keys {"display": str, "type": str ("PubMed", "GeneReviews"), "id": str}
-        str_swegen_mean = float, STR norm pop mean
-        str_swegen_std = float, STR norm pop stdev
-
-        # MEI specific information
-        mei_name = str, Mobile element name from retroseq MEINFO tag
-        mei_polarity = str, Mobile element polarity from retroseq MEINFO tag
-
-        # Callers
-        gatk = str, # choices=VARIANT_CALL, default='Not Used'
-        samtools = str, # choices=VARIANT_CALL, default='Not Used'
-        freebayes = str, # choices=VARIANT_CALL, default='Not Used'
-
-        # Conservation:
-        phast_conservation = list, # list of str, choices=CONSERVATION
-        gerp_conservation = list, # list of str, choices=CONSERVATION
-        phylop_conservation = list, # list of str, choices=CONSERVATION
-
-        # Database options:
-        gene_lists = list,
+        local_obs_cancer_germline_old = int, # germline counts
+        local_obs_cancer_germline_hom_old = int, # germline counts for homoz
+        local_obs_cancer_germline_old_freq = float, # germline frequency
+        local_obs_cancer_somatic_old = int, # somatic counts
+        local_obs_cancer_somatic_hom_old = int, # somatic counts for homoz
+        local_obs_cancer_somatic_old_freq = float, # somatic frequency
         manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
-        cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
-        escat_tier = str # choices=['1A', '1B', '1C', '2A', '2B', '3A', '3B' '4A', '4B', '5', 'X]
-        dismiss_variant = list,
-
-        acmg_evaluation = str, # choices=ACMG_TERMS
+        mate_id = str, # For SVs this identifies the other end
+        max_exac_frequency = float,
+        max_thousand_genomes_frequency = float,
+        missing_data = bool, # default False
+        mei_name = str, # Mobile element name from retroseq MEINFO tag
+        mei_polarity = str, # Mobile element polarity from retroseq MEINFO tag
+        panels = list, # list of panel names that the variant ovelapps
+        phast_conservation = list, # list of str, choices=CONSERVATION
+        phylop_conservation = list, # list of str, choices=CONSERVATION
+        position = int, # required
+        quality = float,
+        rank_score = float, # required
+        rank_score_results = list, # List if dictionaries
+        reference = str, # required
+        revel = float, REVEL score
+        revel_score = float, REVEL rankscore
+        samtools = str, # choices=VARIANT_CALL, default='Not Used'
+        samples = list, # list of dictionaries that are <gt_calls>
+        sanger_ordered = bool,
+        spidex = float,
+        sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
+        str_disease = str, # Associated disease name
+        str_inheritance_mode = str, # STR disease mode of inheritance "AD", "XR", "AR", "-"
+        str_len = int, # number of repeats found in case
+        str_normal_max = int, # max number of repeats to call an STR variant normal
+        str_pathologic_min = int, # min number of repeats to call an STR variant pathologic
+        str_ref = int, # reference copy number
+        str_repid = str, # repeat id generally corresponds to gene symbol
+        str_ru = str, # Repeat Unit used e g in PanelApp naming of STRs
+        str_source = dict, # STR source dict with keys {"display": str, "type": str ("PubMed", "GeneReviews"), "id": str}
+        str_status = str, # this indicates the severity of the expansion level
+        str_swegen_mean = float, # STR norm pop mean
+        str_swegen_std = float, # STR norm pop stdev
+        thousand_genomes_frequency = float,
+        thousand_genomes_frequency_left = float,
+        thousand_genomes_frequency_right = float,
+        validation = str, # Sanger validation, choices=('True positive', 'False positive')
+        variant_id = str, # required
+        variant_rank = int, # required
+        variant_rank = int, # required
+        variant_type = str, # required, choices=('research', 'clinical'))
     )
     """
     gene_to_panels = gene_to_panels or {}
