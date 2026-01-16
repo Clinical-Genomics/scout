@@ -109,4 +109,4 @@ MIMVIR_SCORE = {
 }
 GICAM_SCORE = {"score_key": "INFO.GicamScore", "score_transform": float}
 
-RANK_SCORE_OTHER = {"snv": {"mivmir": MIMVIR_SCORE, "gicam": GICAM_SCORE}}
+RANK_SCORE_OTHER = {"snv": {"Mivmir": MIMVIR_SCORE, "Gicam": GICAM_SCORE}}
