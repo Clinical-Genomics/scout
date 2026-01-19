@@ -13,6 +13,7 @@ The hgnc file will determine which genes that are added and most of the meta inf
 The ensembl gene file will add coordinates and the exac file will add pLi scores.
 
 """
+
 import logging
 import os
 import tempfile
