@@ -207,21 +207,26 @@ def variant_acmg(institute_id, case_name, variant_id):
         data = acmg_controller(store, institute_id, case_name, variant_id)
         return data
 
-    criteria = []
     criteria_terms = request.form.getlist("criteria")
-    for term in criteria_terms:
-        criteria.append(
-            dict(
-                term=term,
-                comment=request.form.get("comment-{}".format(term)),
-                links=[request.form.get("link-{}".format(term))],
-                modifier=request.form.get("modifier-{}".format(term)),
+
+    if criteria_terms:
+        criteria = []
+        for term in criteria_terms:
+            criteria.append(
+                dict(
+                    term=term,
+                    comment=request.form.get("comment-{}".format(term)),
+                    links=[request.form.get("link-{}".format(term))],
+                    modifier=request.form.get("modifier-{}".format(term)),
+                )
             )
+        acmg = variant_acmg_post(
+            store, institute_id, case_name, variant_id, current_user.email, criteria
         )
-    acmg = variant_acmg_post(
-        store, institute_id, case_name, variant_id, current_user.email, criteria
-    )
-    flash("classified as: {}".format(acmg), "info")
+        flash("classified as: {}".format(acmg), "info")
+    else:
+        flash("Empty ACMG criteria, redirecting", "info")
+
     variant_obj = store.variant(variant_id)
     return redirect(
         url_for(
