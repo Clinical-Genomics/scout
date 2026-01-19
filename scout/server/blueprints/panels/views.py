@@ -74,7 +74,7 @@ def panels():
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        institute_panels_with_gene = [panel for panel in store.search_panels_hgnc_id(hgnc_id)]
+        institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
     # Add new panel
     elif request.method == "POST":
