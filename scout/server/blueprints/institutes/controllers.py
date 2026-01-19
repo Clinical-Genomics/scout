@@ -998,7 +998,7 @@ def update_variant_genes(store, variant_obj, genome_build):
         region_annotations.append(gene_obj.get("region_annotation"))
 
         # gather HGVS info from gene transcripts
-        (canonical_transcript, hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
+        canonical_transcript, hgvs_nucleotide, hgvs_protein = get_hgvs(gene_obj)
 
         canonical_transcripts.append(canonical_transcript)
         hgvs_c.append(hgvs_nucleotide)

@@ -249,7 +249,7 @@ def get_acmg(acmg_terms: set) -> Optional[str]:
     if not acmg_terms:
         return None
 
-    (pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms) = get_acmg_criteria(acmg_terms)
+    pvs, ps_terms, pm_terms, pp_terms, ba, bs_terms, bp_terms = get_acmg_criteria(acmg_terms)
 
     if ba:
         return "benign"
@@ -315,7 +315,7 @@ def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     if not acmg_terms:
         return {}
 
-    (pvs_terms, ps_terms, pm_terms, pp_terms, ba_terms, bs_terms, bp_terms) = get_acmg_criteria(
+    pvs_terms, ps_terms, pm_terms, pp_terms, ba_terms, bs_terms, bp_terms = get_acmg_criteria(
         acmg_terms
     )
 

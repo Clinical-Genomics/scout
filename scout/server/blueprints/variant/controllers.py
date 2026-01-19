@@ -226,7 +226,7 @@ def variant(
         return abort(404)
 
     if not (institute_obj and case_obj):
-        (institute_obj, case_obj) = variant_institute_and_case(
+        institute_obj, case_obj = variant_institute_and_case(
             store, variant_obj, institute_id, case_name
         )
 
@@ -527,7 +527,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
             for score in rank_score_results:
                 category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
                 score["model_ranges"] = store.get_ranges_info(rank_model, category)
-                (score["min"], score["max"]) = store.range_span(score["model_ranges"])
+                score["min"], score["max"] = store.range_span(score["model_ranges"])
 
     return rank_score_results
 

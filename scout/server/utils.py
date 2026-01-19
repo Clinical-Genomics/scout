@@ -148,7 +148,7 @@ def variant_institute_and_case(
     if not institute_id:
         institute_id = variant_obj["institute"]
 
-    (institute_obj, case_obj) = institute_and_case(store, institute_id, case_name)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     if case_obj is None:
         return abort(404)

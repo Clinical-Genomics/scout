@@ -53,7 +53,7 @@ def variant(
 ) -> Optional[Response]:
     """Display a specific SNV variant."""
 
-    (_, _, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
+    _, _, variant_obj = _lookup_variant(variant_id, institute_id, case_name)
 
     return Response(json_util.dumps(variant_obj), mimetype="application/json")
 
@@ -65,7 +65,7 @@ def pin_variant(
 ):
     """Pin an existing variant"""
 
-    (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
+    institute_obj, case_obj, variant_obj = _lookup_variant(variant_id, institute_id, case_name)
 
     if not institute_id:
         institute_id = variant_obj["institute"]
@@ -92,7 +92,7 @@ def unpin_variant(
 ):
     """Un-pin an existing, pinned variant"""
 
-    (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
+    institute_obj, case_obj, variant_obj = _lookup_variant(variant_id, institute_id, case_name)
 
     if not institute_id:
         institute_id = variant_obj["institute"]
