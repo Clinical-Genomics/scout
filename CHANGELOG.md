@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
+### Fixed
+- Do not try to save an ACMG classification when user provided no criteria (#4962)
 
 ## [4.107.2]
 ### Fixed
