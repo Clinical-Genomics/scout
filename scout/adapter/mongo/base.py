@@ -27,6 +27,7 @@ Created by Måns Magnusson on 2017-02-15.
 Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 
 """
+
 import logging
 
 from flask import current_app
