@@ -7,7 +7,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
-=======
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 
