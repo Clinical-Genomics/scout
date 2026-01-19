@@ -66,22 +66,18 @@
 {% macro case_row(case) %}
   <tr data-target="_blank" data-href="{{ case_link_href(case) }}" class="{% if case.status == 'solved' %}causative{% elif case.dimmed_in_search %}dismiss{% endif %}">
     <td>
-      <a class="me-2"
-         {% if case.individuals|length == 1 %} data-bs-toggle="tooltip" title="{{case.individuals[0].display_name}}" {% endif %}
-         href="{{ case_link_href(case) }}" target="_blank">
+      <a class="me-2" href="{{ case_link_href(case) }}" target="_blank">
         {{ case.display_name }}
       </a>
-      {% if case.individuals|length > 1 %}
-        {% for sample in case.individuals %}
-          <span class="badge {{'bg-danger' if sample.phenotype == 2 else 'bg-primary'}}" style="margin:-3px !important;" data-bs-toggle="tooltip" title="{{sample.display_name}}">
-          {% if case.track == "cancer" %}
-            <span class="fa fa-vial"></span>
-          {% else %} <!-- rare disease case -->
-            <span class="fa fa-user"></span>
-          {% endif %}
-          </span>
-        {% endfor %}
-      {% endif %}
+      {% for sample in case.individuals %}
+        <span class="badge {{'bg-danger' if sample.phenotype == 2 else 'bg-primary'}}" style="margin:-3px !important;" data-bs-toggle="tooltip" title="Sample {{ sample.display_name }}, internal ID {{ sample.individual_id }}{% if sample.subject_id %}, subject ID {{ sample.subject_id }}{% endif %}.">
+        {% if case.track == "cancer" %}
+          <span class="fa fa-vial"></span>
+        {% else %} <!-- rare disease case -->
+          <span class="fa fa-user"></span>
+        {% endif %}
+        </span>
+      {% endfor %}
       {% for user in case.assignees %}
         <span class="badge bg-secondary">{{ user.name }}</span>
       {% endfor %}
