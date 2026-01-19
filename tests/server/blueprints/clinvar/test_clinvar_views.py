@@ -37,7 +37,25 @@ def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
-def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
+def test_clinvar_oncogenic_submissions(app, institute_obj):
+    """Test that the ClinVar oncogenic submissions page works."""
+
+    # GIVEN a logged user
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # THEN clinvar_onc_submissions endpoint should return a valid page
+        resp = client.get(
+            url_for(
+                "clinvar.clinvar_onc_submissions",
+                institute_id=institute_obj["internal_id"],
+            ),
+        )
+
+        assert resp.status_code == 200
+
+
+def test_clinvar_germline_submissions(app, institute_obj, case_obj, clinvar_form):
     """Test the page that shows all ClinVar submissions for an institute"""
 
     # GIVEN an initialized app
