@@ -37,7 +37,7 @@
           <select id="instituteFilter" class="form-select w-auto">
             <option value="">All institutes</option>
             {% for institute, panels in panel_groups %}
-              <option value="{{ institute._id }}">{{ institute.display_name }}</option>
+              <option value="{{ institute._id }}">{{ institute.display_name }} ({{institute._id}})</option>
             {% endfor %}
           </select>
         </div>
