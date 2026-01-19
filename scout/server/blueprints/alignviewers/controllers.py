@@ -340,7 +340,7 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> tup
 def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     """Given a variant obj, construct a locus string across variant plus a percent size offset around the variant."""
 
-    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
+    chrom, locus_start, locus_end = get_locus_from_variant(variant_obj, case_obj, build)
     return f"{chrom}:{locus_start}-{locus_end}"
 
 
@@ -353,7 +353,7 @@ def make_locus_from_gene(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     The returned locus will so span all genes the variant falls into.
     """
 
-    (chrom, locus_start, locus_end) = get_locus_from_variant(variant_obj, case_obj, build)
+    chrom, locus_start, locus_end = get_locus_from_variant(variant_obj, case_obj, build)
     locus_start_coords = [locus_start]
     locus_end_coords = [locus_end]
 
