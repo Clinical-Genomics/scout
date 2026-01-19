@@ -95,26 +95,26 @@ def parse_genotype(variant, ind, pos):
     # STR specific
     gt_call["so"] = get_str_so(variant, pos)
 
-    (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
-    (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
-    (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
+    spanning_ref, spanning_alt = _parse_format_entry(variant, pos, "ADSP")
+    flanking_ref, flanking_alt = _parse_format_entry(variant, pos, "ADFL")
+    inrepeat_ref, inrepeat_alt = _parse_format_entry(variant, pos, "ADIR")
 
     # TRGT long read STR specific
-    (_, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
+    _, mc_alt = _parse_format_entry_trgt_mc(variant, pos)
     gt_call["alt_mc"] = mc_alt
 
-    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", int)
-    (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
-    (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
+    sd_ref, sd_alt = _parse_format_entry(variant, pos, "SD", int)
+    ap_ref, ap_alt = _parse_format_entry(variant, pos, "AP", float)
+    am_ref, am_alt = _parse_format_entry(variant, pos, "AM", float)
 
     # MEI specific
-    (spanning_mei_ref, clip5_alt, clip3_alt) = get_mei_reads(
+    spanning_mei_ref, clip5_alt, clip3_alt = get_mei_reads(
         variant, pos
     )  # allowing mei SP to override STR ADSP for spanning
 
     # SV specific
-    (paired_end_ref, paired_end_alt) = get_paired_ends(variant, pos)
-    (split_read_ref, split_read_alt) = get_split_reads(variant, pos)
+    paired_end_ref, paired_end_alt = get_paired_ends(variant, pos)
+    split_read_ref, split_read_alt = get_split_reads(variant, pos)
 
     alt_depth = get_alt_depth(
         variant,
