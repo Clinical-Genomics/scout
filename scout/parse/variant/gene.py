@@ -9,6 +9,7 @@ Created by Måns Magnusson on 2014-11-10.
 Copyright (c) 2014 __MoonsoInc__. All rights reserved.
 
 """
+
 import logging
 
 from scout.constants import SO_TERMS

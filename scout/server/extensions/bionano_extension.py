@@ -176,7 +176,7 @@ class BioNanoAccessAPI:
         Returns None if access failed.
         """
         try:
-            (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
+            project_uid, sample_uid = self._get_uids_from_names(project_name, sample_name)
         except ValueError:
             return None
 

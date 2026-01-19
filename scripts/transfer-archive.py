@@ -9,6 +9,7 @@ Created by Måns Magnusson on 2016-05-11.
 Copyright (c) 2016 ScoutTeam__. All rights reserved.
 
 """
+
 import logging
 
 import click

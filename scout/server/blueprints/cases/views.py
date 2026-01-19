@@ -1002,7 +1002,7 @@ def download_hpo_genes(institute_id, case_name, category):
 def vcf2cytosure(institute_id, case_name, individual_id):
     """Download vcf2cytosure file for individual."""
 
-    (display_name, vcf2cytosure) = controllers.vcf2cytosure(
+    display_name, vcf2cytosure = controllers.vcf2cytosure(
         store, institute_id, case_name, individual_id
     )
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
