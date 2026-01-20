@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "cases/utils.html" import pretty_link_variant %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }} - Classify
@@ -46,7 +47,7 @@
               {{ evaluation.classification.label }}
               <span class="badge bg-info">{{ evaluation.classification.short|safe }}</span>
             </h4>
-            On case: {{ case.display_name }} Variant:{{ variant.display_name|truncate(20, True) }}<br>
+            On case: {{ case.display_name }}. Variant:{{ pretty_link_variant(variant, case) }}<br>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
             <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
               Download as PDF
