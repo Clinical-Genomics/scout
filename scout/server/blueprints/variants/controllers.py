@@ -1600,7 +1600,6 @@ def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict)
     all_panels = case_panels + institute_panels
     all_panels.sort(key=lambda t: t[1].lower())
 
-    # Add HPO at the end
     all_panels.append(("hpo", "HPO"))
 
     return all_panels
