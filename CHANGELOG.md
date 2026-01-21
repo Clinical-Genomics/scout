@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Gene-overlapping variants shown also for STRs (#5977)
+- Case and variant-specific information on ACMG page and PDF export (#5978)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
