@@ -15,11 +15,11 @@
           </tr>
         </thead>
         <tbody>
-          {% for panel in case.panels %}
+          {% for panel in case.panels | sort(attribute='display_name') %}
             <tr {% if panel.is_default %} class="bg-info" {% endif %}>
               <td>
                 <a {% if panel.is_default %} class="text-white" {% endif %} href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}" target="_blank" rel="noopener">
-                  {{ panel.display_name|truncate(30, True) }}
+                  {{ panel.display_name|truncate(30, True)}} ({{panel.panel_name}})
                 </a>
                 {% if panel.removed %}
                   <span class="badge bg-danger">Removed</span>
