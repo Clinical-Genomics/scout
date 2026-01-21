@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Do not try to save an ACMG classification when user provided no criteria (#4962)
 - When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)
+- Smalled PDFs exported from ACMG classification page (#5976)
 
 ## [4.107.2]
 ### Fixed
