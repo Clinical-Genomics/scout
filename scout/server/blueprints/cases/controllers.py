@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Set
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, url_for
+from flask import current_app, flash, url_for
 from flask_login import current_user
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
@@ -398,10 +398,6 @@ def case(
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
     _set_panel_removed(store, case_obj)
-    case_obj["panels"] = sorted(
-        case_obj.get("panels", []),
-        key=lambda p: (p.get("display_name") or p.get("panel_name") or "").lower(),
-    )
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
