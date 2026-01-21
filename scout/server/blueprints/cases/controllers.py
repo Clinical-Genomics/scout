@@ -398,6 +398,10 @@ def case(
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
     _set_panel_removed(store, case_obj)
+    case_obj["panels"] = sorted(
+        case_obj.get("panels", []),
+        key=lambda p: (p.get("display_name") or p.get("panel_name") or "").lower(),
+    )
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
