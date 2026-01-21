@@ -1591,15 +1591,14 @@ def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict)
         or not store.gene_panel(p["panel_name"]).get("hidden", False)
     ]
 
-    # Step 2: Collect institute panels not already in case panels
     institute_panels = [
         (name, display)
         for name, display in institute_obj.get("gene_panels", {}).items()
         if (name, display) not in case_panels
     ]
 
-    # Combine all panels and sort once by display_name, case-insensitive
     all_panels = case_panels + institute_panels
+    all_panels.sort(key=lambda t: t[1].lower())
 
     # Add HPO at the end
     all_panels.append(("hpo", "HPO"))
