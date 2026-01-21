@@ -1584,25 +1584,26 @@ def upload_panel(store, institute_id, case_name, stream):
 
 def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> list(tuple):
     """Populates the multiselect containing all the gene panels to be used in variants filtering."""
-    case_panels = [
-        (p["panel_name"], f'{p["display_name"]} *')
-        for p in case_obj.get("panels", [])
-        if store.gene_panel(p["panel_name"]) is None
-        or not store.gene_panel(p["panel_name"]).get("hidden", False)
-    ]
 
-    institute_panels = [
-        (name, display)
-        for name, display in institute_obj.get("gene_panels", {}).items()
-        if (name, display) not in case_panels
-    ]
+    panel_list = []
+    seen_panels = set()
 
-    all_panels = case_panels + institute_panels
-    all_panels.sort(key=lambda t: t[1].lower())
+    for p in case_obj.get("panels", []):
+        panel_name = p["panel_name"]
+        if store.gene_panel(panel_name) is None or not store.gene_panel(panel_name).get(
+            "hidden", False
+        ):
+            panel_list.append((panel_name, f'{p["display_name"]} *'))
+            seen_panels.add(panel_name)
 
-    all_panels.append(("hpo", "HPO"))
+    for name, display in institute_obj.get("gene_panels", {}).items():
+        if name not in seen_panels:
+            panel_list.append((name, display))
 
-    return all_panels
+    panel_list.sort(key=lambda t: t[1].lower())
+    panel_list.append(("hpo", "HPO"))
+
+    return panel_list
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):

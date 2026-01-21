@@ -433,7 +433,7 @@ def test_gene_panel_choices(app, institute_obj, case_obj):
     panel_options = gene_panel_choices(store, institute_obj, case_obj)
 
     # THEN case-specific panel should be represented
-    case_panel_option = (case_panel["panel_name"], case_panel["display_name"])
+    case_panel_option = (case_panel["panel_name"], f'{case_panel["display_name"]} *')
     assert case_panel_option in panel_options
 
     # HPO panel should also be represented
