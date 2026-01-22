@@ -414,7 +414,8 @@ def case(institute, case_id, display_name):
 
 @click.command("rna", short_help="Remove all RNA data from a case")
 @click.option("-c", "--case-id", required=True)
-def rna(case_id):
+@click.option("--force", is_flag=True, help="Do not ask for confirmation.")
+def rna(case_id, force):
     """
     Delete all RNA-associated data from a case. This removes RNA information from the case document and related variants.
     The case document will not show any signs of having been modified,
@@ -427,10 +428,11 @@ def rna(case_id):
         click.echo(f"Couldn't find any case in database with ID {case_id}.")
         raise click.Abort()
 
-    click.confirm(
-        "This will permanently delete all RNA-related data from the case. Continue?",
-        abort=True,
-    )
+    if not force:
+        click.confirm(
+            "This will permanently delete all RNA-related data from the case. Continue?",
+            abort=True,
+        )
     removed_keys = set()
 
     # Remove case-level associated key/values
