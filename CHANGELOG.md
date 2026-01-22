@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Gene-overlapping variants shown also for STRs (#5977)
 - Case and variant-specific information on ACMG page and PDF export (#5978)
+- Allow bypassing the confirmation prompt for the `delete rna` command via a new `--force` option (#5982)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
