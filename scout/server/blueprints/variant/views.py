@@ -199,6 +199,13 @@ def reviewer_aln(institute_id, case_name, variant_id):
     )
 
 
+@variant_bp.route("/acmg-test", methods=["GET"])
+@templated("variant/empty_acmg.html")
+def empty_acmg() -> dict:
+    """Return an empty ACMG page for the sake of testing the algorithm."""
+    return dict(CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
+
+
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"])
 @templated("variant/acmg.html")
 def variant_acmg(institute_id, case_name, variant_id):
