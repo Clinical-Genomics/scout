@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Gene-overlapping variants shown also for STRs (#5977)
 - Case and variant-specific information on ACMG page and PDF export (#5978)
+<<<<<<< HEAD
 - Allow bypassing the confirmation prompt for the `delete rna` command via a new `--force` option (#5982)
 - Parse phasing information and store on genotype call (#5988)
 - Link to GTEx for gene, from gene and variant pages (#5995)
