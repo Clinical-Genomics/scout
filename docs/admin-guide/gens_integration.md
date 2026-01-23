@@ -21,6 +21,6 @@ GENS_PORT = 5001
 ```
 
 ## Result
-Now scout will display a button called "GENS" or "Show CN profile" in the case view and in the variant view for structural variants.
+Now scout will display a button called "Gens" in the case view and in the variant view for structural variants.
 
 [gens]: https://github.com/Clinical-Genomics-Lund/gens
