@@ -32,7 +32,7 @@
           {% for ind in case.individuals %}
             <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
               <td>{{ ind.display_name }}{% if gens_info.display %}
-                  <a style="font-size: .8rem;" class="btn btn-secondary text-white btn-sm float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">CN profile</a>
+                  <a style="font-size: .8rem;" class="btn btn-secondary text-white btn-sm float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">Gens</a>
                 {% endif %}</td>
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
@@ -132,7 +132,7 @@
                   </div>
                 </label>
                 {% if gens_info.display %}
-                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm text-white float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">CN profile</a>
+                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm text-white float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">Gens</a>
                 {% endif %}
                 </td>
               <td>
