@@ -16,14 +16,24 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
+    def deprecate_type_none_germline_submissions(self):
+        """Set status 'deprecated' to all existing submissions which have no type (either 'germline' or 'oncogenicity') set."""
+        result = self.clinvar_submission_collection.update_many(
+            {"type": {"$exists": False}}, {"$set": {"status": "deprecated"}}
+        )
+        print(f"Deprecated ClinVar submission objects: {result.modified_count} ")
+
     def create_germline_submission(self, institute_id: str, user_id: str) -> ObjectId:
         """Create an open ClinVar germline submission for an institute."""
 
         submission_obj = {
             "status": "open",
+            "type": "germline",
             "created_at": datetime.now(),
             "institute_id": institute_id,
             "created_by": user_id,
+            "assertionCriteria": {"db": ASSERTION_GERM_GERM_DB, "id": ASSERTION_CRITERIA_GERM_ID},
+            "germlineSubmission": [],
         }
         LOG.info("Creating a new ClinVar germline submission for institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
@@ -132,7 +142,7 @@ class ClinVarHandler(object):
         return updated_submission
 
     def get_clinvar_id(self, submission_id):
-        """Returns the official Clinvar submission ID for a submission object
+        """Returns the official ClinVar submission ID for a submission object
 
         Args:
             submission_id(str): submission_id(str) : id of the submission
@@ -149,68 +159,10 @@ class ClinVarHandler(object):
         )  # This key does not exist if it was not previously provided by user
         return clinvar_subm_id
 
-    def add_to_submission(self, submission_id, submission_objects):
-        """Adds submission_objects to clinvar collection and update the coresponding submission object with their id
-
-        Args:
-            submission_id(str) : id of the submission to be updated
-            submission_objects(tuple): a tuple of 2 elements of this type: (scout.models.clinvar.clinvar_variant, [scout.models.clinvar.clinvar_casedata1, ..] )
-
-        Returns:
-            updated_submission(obj): an open clinvar submission object, updated
-        """
-
-        LOG.info(
-            "Adding new variants and case data to clinvar submission '%s'",
-            submission_id,
-        )
-
-        # Insert variant submission_objects into clinvar collection
-        # Loop over the objects
-        var_dict = submission_objects[0]
-        try:
-            result = self.clinvar_collection.insert_one(var_dict)
-            self.clinvar_submission_collection.update_one(
-                {"_id": submission_id},
-                {"$push": {"variant_data": str(result.inserted_id)}},
-                upsert=True,
-            )
-        except pymongo.errors.DuplicateKeyError:
-            LOG.error("Attepted to insert a clinvar variant which is already in DB!")
-
-        # Insert casedata submission_objects into clinvar collection
-        if submission_objects[1]:
-            # Loop over the objects
-            for casedata_obj in submission_objects[1]:
-                try:
-                    result = self.clinvar_collection.insert_one(casedata_obj)
-                    self.clinvar_submission_collection.update_one(
-                        {"_id": submission_id},
-                        {"$push": {"case_data": str(result.inserted_id)}},
-                        upsert=True,
-                    )
-                except pymongo.errors.DuplicateKeyError:
-                    LOG.error(
-                        "One or more casedata object is already present in clinvar collection!"
-                    )
-
-        updated_submission = self.clinvar_submission_collection.find_one_and_update(
-            {"_id": submission_id},
-            {"$set": {"updated_at": datetime.now()}},
-            return_document=pymongo.ReturnDocument.AFTER,
-        )
-        return updated_submission
-
-    def update_clinvar_submission_status(self, institute_id, submission_id, status):
-        """Set a clinvar submission ID to 'closed'
-
-        Args:
-            submission_id(str): the ID of the clinvar submission to updte status for
-
-        Return
-            updated_submission(obj): the submission object with a 'closed' status
-
-        """
+    def update_clinvar_submission_status(
+        self, institute_id: str, submission_id: str, status: str
+    ) -> dict:
+        """Update the status of a ClinVar submission object."""
         # When setting one submission as open
         # Close all other submissions for this institute first
         if status == "open":
@@ -267,10 +219,10 @@ class ClinVarHandler(object):
         query = {"institute_id": institute_id, "type": "oncogenicity"}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
-    def get_clinvar_germline_submissions(
+    def get_deprecated_clinvar_germline_submissions(
         self, institute_id: str, clinvar_id_filter: Optional[str] = None
     ) -> List[dict]:
-        """Collect all open and closed ClinVar germline submissions for an institute."""
+        """Collect all deprecated ClinVar germline submissions for an institute."""
 
         def populate_cases_from_variant_data(variant_data, institute_id):
             cases = {}

@@ -43,7 +43,7 @@
   {% if submissions %}
 
     <div style="overflow-y: auto; height: 1000px;">
-    {% for status in ['open', 'closed', 'submitted'] %}
+    {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
           {{ submission_panel(submission) }}
@@ -79,7 +79,7 @@
               {% if subm_obj.status=='open'%}
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
               {% else %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
+                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs" {% if not subm_obj.type %}disabled{% endif %}>Re-open submission</button></li>
               {% endif %}
               {% if subm_obj.status != 'submitted' %}
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
@@ -229,9 +229,9 @@
                 {% for case in subm_obj.case_data %}
                   <tr>
                     <td>{{loop.index}}</td>
-                    <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
+                    <form id="rename_cd_{{subm_obj._id}}" action="#" method="POST">
                     <td>
-                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pen-square" aria-hidden="true"></span></button>
+                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3" disabled><span class="fa fa-pen-square" aria-hidden="true"></span></button>
                     </td>
                     </form>
                     <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>

@@ -69,19 +69,6 @@ def clinvar_submission_delete(submission_id):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
-def clinvar_add_variant(institute_id, case_name):
-    """Create a ClinVar submission document in database for one or more variants from a case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {
-        "institute": institute_obj,
-        "case": case_obj,
-        "germline_classif_terms": GERMLINE_CLASSIF_TERMS,
-    }
-    controllers.set_clinvar_form(request.form.get("var_id"), data)
-    return render_template("clinvar/multistep_add_variant.html", **data)
-
-
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_save(institute_id: str, case_name: str):
     """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
@@ -104,10 +91,14 @@ def clinvar_germline_submissions(institute_id):
         else None
     )
 
+    deprecated_submissions = store.get_deprecated_clinvar_germline_submissions(
+        institute_id, clinvar_id_filter=clinvar_id_filter
+    )
+    if deprecated_submissions:
+        store.deprecate_type_none_germline_submissions
+
     data = {
-        "submissions": store.get_clinvar_germline_submissions(
-            institute_id, clinvar_id_filter=clinvar_id_filter
-        ),
+        "submissions": deprecated_submissions,
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
@@ -116,15 +107,6 @@ def clinvar_germline_submissions(institute_id):
         "clinvar_id_filter": clinvar_id_filter,
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
-
-
-@clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
-def clinvar_rename_casedata(submission, case, old_name):
-    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
-
-    new_name = request.form.get("new_name")
-    controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
-    return safe_redirect_back(request, request.referrer + f"#cdata_{submission}")
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
