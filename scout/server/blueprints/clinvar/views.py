@@ -69,6 +69,14 @@ def clinvar_submission_delete(submission_id):
     return safe_redirect_back(request)
 
 
+@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
+def clinvar_add_variant(institute_id, case_name):
+    """Add a germline variant to a germline submission object."""
+
+    flash("This functionality is currently disabled.", "warning")
+    return safe_redirect_back(request)
+
+
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_save(institute_id: str, case_name: str):
     """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
