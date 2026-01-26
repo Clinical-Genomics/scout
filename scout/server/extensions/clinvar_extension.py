@@ -6,7 +6,7 @@ from typing import Any, Optional, Tuple
 import requests
 from flask import flash
 
-from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT, PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 
 LOG = logging.getLogger(__name__)
 
@@ -18,44 +18,7 @@ class ClinVarApi:
     """
 
     def init_app(self, app):
-        self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.delete_service = "/".join([PRECLINVAR_URL, "delete"])
         self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
-
-    def set_header(self, api_key) -> dict:
-        """Creates a header to be submitted a in a POST rquest to the CLinVar API
-        Args:
-            api_key(str): API key to be used to submit to ClinVar (64 alphanumeric characters)
-        Returns:
-            header(dict): contains "Content-type: application/json" and "SP-API-KEY: <API-KEY>" key/values
-        """
-        header = {
-            "Content-Type": "application/json",
-            "SP-API-KEY": api_key,
-        }
-        return header
-
-    def convert_to_json(self, variant_file, casedata_file, extra_params={}):
-        """Sends a POST request to the API (tsv_2_json endpoint) and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
-
-        Args:
-            variant_file(tempfile._TemporaryFileWrapper): a tempfile containing Variant data
-            casedata_file(tempfile._TemporaryFileWrapper): a tempfile containing CaseData data
-            extra_params(dict): a dictionary containing key/values to be sent as extra params to the csv_2_json endpoint (assertion criteria, genome assembly etc)
-
-        Returns:
-            tuple: example -> 400, "Created json file contains validation errors"
-                           -> 200, {dict representation of the submission}
-        """
-        files = [
-            ("files", (variant_file, open(variant_file, "r"))),
-            ("files", (casedata_file, open(casedata_file, "r"))),
-        ]
-        try:
-            resp = requests.post(self.convert_service, params=extra_params, files=files)
-            return resp.status_code, resp.json()
-        except Exception as ex:
-            return None, ex
 
     def submit_json(self, json_data, api_key=None):
         """Submit a ClinVar submission object using the official ClinVar API
