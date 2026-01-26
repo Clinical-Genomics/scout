@@ -279,7 +279,7 @@
 {% macro variants_common_filters(form, type) %}
 <div class="row mb-2">
   <div class="col-2">
-    <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
+    <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels. ") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
   </div>
@@ -593,7 +593,7 @@
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="row">
   <div class="col-2">
-    <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
+    <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
   </div>
@@ -757,7 +757,7 @@
     {{ form.variant_type() }}
     <div class="row">
       <div class="col-2">
-        <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
+        <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label",  data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
         {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
       </div>
@@ -897,7 +897,7 @@
     {{ form.variant_type() }}
     <div class="row mb-3">
       <div class="col-2">
-        <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
+        <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
         <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
         {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
       </div>
