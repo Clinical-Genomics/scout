@@ -39,10 +39,10 @@ def parse_genotypes(
     return genotypes
 
 
-def parse_genotype(variant, ind, pos):
+def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     """Get the genotype information in the proper format
 
-    SV specific format fields:
+    SV specific format fields
     ##FORMAT=<ID=DV,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
     ##FORMAT=<ID=PE,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
     ##FORMAT=<ID=PR,Number=.,Type=Integer,Description="Spanning paired-read support for the ref and alt alleles in the order listed">
@@ -54,7 +54,7 @@ def parse_genotype(variant, ind, pos):
     ##FORMAT=<ID=SR,Number=1,Type=Integer,Description="Number of split reads that support the event">
     ##FORMAT=<ID=CN,Number=1,Type=Float,Description="Copy number genotype for imprecise events">
 
-    STR specific format fields:
+    STR specific format fields
     ##FORMAT=<ID=LC,Number=1,Type=Float,Description="Locus coverage">
     ##FORMAT=<ID=REPCI,Number=1,Type=String,Description="Confidence interval for REPCN">
     ##FORMAT=<ID=REPCN,Number=1,Type=String,Description="Number of repeat units spanned by the allele">
@@ -63,20 +63,27 @@ def parse_genotype(variant, ind, pos):
     ##FORMAT=<ID=ADIR,Number=1,Type=String,Description="Number of in-repeat reads consistent with the allele">
     ##FORMAT=<ID=ADSP,Number=1,Type=String,Description="Number of spanning reads consistent with the allele">
 
+    TRGT
+    ##FORMAT=<ID=AL,Number=.,Type=Integer,Description="Length of each allele">
+    ##FORMAT=<ID=ALLR,Number=.,Type=String,Description="Length range per allele">
+    ##FORMAT=<ID=SD,Number=.,Type=Integer,Description="Number of spanning reads supporting per allele">
+    ##FORMAT=<ID=MC,Number=.,Type=String,Description="Motif counts per allele">
+    ##FORMAT=<ID=MS,Number=.,Type=String,Description="Motif spans per allele">
+    ##FORMAT=<ID=AP,Number=.,Type=Float,Description="Allele purity per allele">
+    ##FORMAT=<ID=AM,Number=.,Type=Float,Description="Mean methylation level per allele">
+    ##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Phase set identifier">
+
+    STRDROP
+    ##FORMAT=<ID=SDP,Number=1,Type=Float,Description="Strdrop coverage sequencing depth level probability">
+    ##FORMAT=<ID=EDR,Number=1,Type=Float,Description="Strdrop allele similarity Levenshtein edit distance ratio">
+    ##FORMAT=<ID=SDR,Number=1,Type=Float,Description="Strdrop case average adjusted sequencing depth ratio">
+    ##FORMAT=<ID=DROP,Number=1,Type=String,Description="Strdrop coverage drop detected, 1 for LowDepth">
+
     MEI specific format fields
     ##FORMAT=<ID=CLIP3,Number=1,Type=Float,Description="Number of soft clipped reads downstream of the breakpoint">
     ##FORMAT=<ID=CLIP5,Number=1,Type=Float,Description="Number of soft clipped reads upstream of the breakpoint">
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
-
-    Args:
-        variant(cyvcf2.Variant)
-        ind_id(dict): A dictionary with individual information
-        pos(int): What position the ind has in vcf
-
-    Returns:
-        gt_call(dict)
-
     """
 
     gt_call = {"individual_id": ind["individual_id"], "display_name": ind["display_name"]}
@@ -103,8 +110,12 @@ def parse_genotype(variant, ind, pos):
     gt_call["alt_mc"] = mc_alt
 
     sd_ref, sd_alt = _parse_format_entry(variant, pos, "SD", int)
-    ap_ref, ap_alt = _parse_format_entry(variant, pos, "AP", float)
-    am_ref, am_alt = _parse_format_entry(variant, pos, "AM", float)
+
+    # STRdrop long read STR specific
+    gt_call["sdp"] = _parse_format_entry(variant, pos, "SDP", float)
+    gt_call["edr"] = _parse_format_entry(variant, pos, "EDR", float)
+    gt_call["sdr"] = _parse_format_entry(variant, pos, "SDR", float)
+    gt_call["drop"] = _parse_format_entry(variant, pos, "DROP", str)
 
     # MEI specific
     spanning_mei_ref, clip5_alt, clip3_alt = get_mei_reads(
@@ -436,7 +447,7 @@ def _parse_format_entry(
     variant: cyvcf2.Variant,
     pos: int,
     format_entry_name: str,
-    number_format: Optional[Union[float, int]] = int,
+    number_format: Optional[Union[float, int, str]] = int,
 ) -> Tuple[Union[float, int], ...]:
     """Parse genotype format entry for named integer values.
     Expects that ref/alt values could be separated by "/" or ",".
