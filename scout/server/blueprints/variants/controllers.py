@@ -1582,41 +1582,27 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def gene_panel_choices(store, institute_obj, case_obj):
-    """Populates the multiselect containing all the gene panels to be used in variants filtering
-    Args:
-        institute_obj(dict): an institute dictionary
-        case_obj(dict): a case dictionary
+def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> list(tuple):
+    """Populates the multiselect containing all the gene panels to be used in variants filtering."""
 
-    Returns:
-        panel_list(list): a list of tuples containing the multiselect panel values/display name
-    """
-    panel_list = []
-    # Add case default panels and the institute-specific panels to the panel select options
-    for panel in case_obj.get("panels", []):
-        latest_panel = store.gene_panel(panel["panel_name"])
-        if latest_panel is None or not latest_panel.get("hidden", False):
-            panel_option = (panel["panel_name"], panel["display_name"])
-            panel_list.append(panel_option)
+    case_panels = [
+        (p["panel_name"], f'{p["display_name"]}')
+        for p in case_obj.get("panels", [])
+        if store.gene_panel(p["panel_name"]) is None
+        or not store.gene_panel(p["panel_name"]).get("hidden", False)
+    ]
 
-    panel_list.sort(key=lambda t: t[1])
+    institute_panels = [
+        (name, f"{display_name} *")
+        for name, display_name in institute_obj.get("gene_panels", {}).items()
+        if (name, display_name) not in case_panels
+    ]
 
-    institute_choices = institute_obj.get("gene_panels", {})
+    all_panels = case_panels + institute_panels
+    all_panels.sort(key=lambda t: t[1].lower())
+    all_panels.append(("hpo", "HPO"))
 
-    institute_panel_list = []
-    for panel_name, display_name in institute_choices.items():
-        panel_option = (panel_name, display_name)
-
-        if panel_option not in panel_list:
-            institute_panel_list.append(panel_option)
-
-    institute_panel_list.sort(key=lambda t: t[1])
-    if institute_panel_list:
-        panel_list.extend(institute_panel_list)
-
-    # Add HPO panel
-    panel_list.append(("hpo", "HPO"))
-    return panel_list
+    return all_panels
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
