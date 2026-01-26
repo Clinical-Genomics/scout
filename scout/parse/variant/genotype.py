@@ -78,19 +78,18 @@ def parse_genotype(variant, ind, pos):
         gt_call(dict)
 
     """
-    gt_call = {}
-    ind_id = ind["individual_id"]
 
-    gt_call["individual_id"] = ind_id
-    gt_call["display_name"] = ind["display_name"]
+    gt_call = {"individual_id": ind["individual_id"], "display_name": ind["display_name"]}
 
     # Fill the object with the relevant information:
+
     if "GT" in variant.FORMAT:
         genotype = variant.genotypes[pos]
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
+        phase_sep = "|" if variant.gt_phases[pos] else "/"
+        gt_call["genotype_call"] = phase_sep.join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
     gt_call["so"] = get_str_so(variant, pos)
