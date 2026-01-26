@@ -88,7 +88,7 @@ def parse_genotype(variant, ind, pos):
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        phase_sep = "|" if variant.gt_phases else "/"
+        phase_sep = "|" if variant.gt_phases[pos] else "/"
         gt_call["genotype_call"] = phase_sep.join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
