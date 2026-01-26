@@ -440,7 +440,7 @@ def test_gene_panel_choices(app, institute_obj, case_obj):
     assert ("hpo", "HPO") in panel_options
 
     # And institute-specific panel should be in the choices as well
-    assert ("institute_panel_name", "Institute Panel display name") in panel_options
+    assert ("institute_panel_name", "Institute Panel display name *") in panel_options
 
 
 def test_variants_assessment_shared_with_group(
