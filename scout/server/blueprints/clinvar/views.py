@@ -69,12 +69,18 @@ def clinvar_submission_delete(submission_id):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
-def clinvar_add_variant(institute_id, case_name):
+@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_germline_variant", methods=["POST"])
+def clinvar_add_germline_variant(institute_id, case_name):
     """Add a germline variant to a germline submission object."""
 
-    flash("This functionality is currently disabled.", "warning")
-    return safe_redirect_back(request)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "germline_classif_terms": GERMLINE_CLASSIF_TERMS,
+    }
+    controllers.set_clinvar_form(request.form.get("var_id"), data)
+    return render_template("clinvar/multistep_add_germline_variant.html", **data)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
@@ -89,7 +95,7 @@ def clinvar_save(institute_id: str, case_name: str):
 
 @clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET"])
 def clinvar_germline_submissions(institute_id):
-    """Handle clinVar submission objects and files"""
+    """Handle germline ClinVar submissions."""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
@@ -103,7 +109,7 @@ def clinvar_germline_submissions(institute_id):
         institute_id, clinvar_id_filter=clinvar_id_filter
     )
     if deprecated_submissions:
-        store.deprecate_type_none_germline_submissions
+        store.deprecate_type_none_germline_submissions()
 
     data = {
         "submissions": deprecated_submissions,
@@ -197,7 +203,7 @@ def clinvar_add_onc_variant(institute_id: str, case_name: str):
         "case": case_obj,
         "onc_classif_terms": ONCOGENIC_CLASSIF_TERMS,
     }
-    controllers.set_onc_clinvar_form(request.form.get("var_id"), data)
+    controllers.set_clinvar_form(request.form.get("var_id"), data)
     return render_template("clinvar/multistep_add_onc_variant.html", **data)
 
 

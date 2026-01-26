@@ -663,7 +663,7 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
 ### ClinVar oncogenicity variants submissions controllers
 
 
-def set_onc_clinvar_form(var_id: str, data: dict):
+def set_clinvar_form(var_id: str, data: dict):
     """Adds form key/values to the form used in ClinVar to create a multistep submission page for an oncogenic variant."""
 
     var_obj = store.variant(var_id)

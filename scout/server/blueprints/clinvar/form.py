@@ -44,17 +44,51 @@ class MultiCheckboxField(SelectMultipleField):
 
 
 class ClinVarVariantForm(FlaskForm):
-    """Contains the key/values to fill in to specify a single general variant in the ClinVar submssion creation page"""
+    """Contains the key/values to fill in to specify a single general variant in the ClinVar submission creation page"""
 
-    # Variant-specific fields
-    case_id = HiddenField()
-    category = HiddenField()
-    local_id = HiddenField()
-    linking_id = HiddenField()
-    ref = HiddenField()
+    # Hidden fields
     alt = HiddenField()
     assembly = HiddenField()
+    case_id = HiddenField()
+    category = HiddenField()
+    linking_id = HiddenField()
+    local_id = HiddenField()
+    record_status = HiddenField(default="novel")
+    ref = HiddenField()
+
+    # Custom fields
+    assertion_method_cit_db = SelectField(
+        "Citation DB",
+        default="clinical testing",
+        choices=[(item, item) for item in CITATION_DBS_API],
+    )
+    assertion_method_cit_id = StringField("Citation ID")
+    clinsig_comment = TextAreaField("Comment on classification")
+    condition_type = SelectField(
+        "Condition ID type", choices=[(item, item) for item in CONDITION_DBS_API]
+    )
+    conditions = SelectMultipleField("Condition ID")
     gene_symbol = StringField("Gene symbols, comma-separated")
+    hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
+    last_evaluated = DateField("Date evaluated")
+    multiple_condition_explanation = SelectField(
+        "Explanation for multiple conditions",
+        choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
+    )
+    omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
+    orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
+
+    """
+
+    # Variant-specific fields
+
+
+
+
+
+
+
+
     inheritance_mode = SelectField(
         "Inheritance model",
         choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
@@ -62,34 +96,22 @@ class ClinVarVariantForm(FlaskForm):
     clinsig = SelectField(
         "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS[:5]]
     )
-    clinsig_comment = TextAreaField("Comment on classification")
+
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
-    last_evaluated = DateField("Date evaluated")
-    hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
-    omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
-    orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
+
+
+
+
     condition_comment = TextAreaField("Additional comments describing condition")
-    condition_type = SelectField(
-        "Condition ID type", choices=[(key, key) for key, value in CONDITION_PREFIX.items()]
-    )
+
     conditions = SelectMultipleField("Condition ID value, without prefix")
-    multiple_condition_explanation = SelectField(
-        "Explanation for multiple conditions",
-        choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
-    )
+
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
-    # assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
-    assertion_method_cit_db = SelectField(
-        "Assertion method citation type",
-        choices=[(item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS],
-        default=ASSERTION_METHOD_CIT.split(":")[0],
-    )
-    assertion_method_cit_id = StringField(
-        "Assertion method citation id",
-        default=ASSERTION_METHOD_CIT.split(":")[1],
-    )
+
+
+    """
 
 
 class SNVariantForm(ClinVarVariantForm):
@@ -158,19 +180,8 @@ class CaseDataForm(FlaskForm):
 class CancerSNVariantForm(SNVariantForm):
     """Contains the form element to add a cancer variant to a ClinVar oncogenicity submission object."""
 
-    # Form step 1: Oncogenicity classification
-    record_status = HiddenField(default="novel")
+    # Form step 1: oncogenicity classification
     onc_classification = SelectField(
         "Oncogenicity classification",
         choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
-    )
-    assertion_method_cit_db = SelectField(  # Overriding default values
-        "Citation DB",
-        default="clinical testing",
-        choices=[(item, item) for item in CITATION_DBS_API],
-    )
-    assertion_method_cit_id = StringField("Citation ID")  # Overriding default values
-
-    condition_type = SelectField(
-        "Condition ID type", choices=[(item, item) for item in CONDITION_DBS_API]
     )

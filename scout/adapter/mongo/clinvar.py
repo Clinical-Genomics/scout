@@ -98,12 +98,8 @@ class ClinVarHandler(object):
         """Retrieve the database id of an open ClinVar germline submission for an institute,
         if none is available then creates a new submission dictionary and returns it.
         """
+        query = dict(institute_id=institute_id, status="open", type="germline")
 
-        query = {
-            "institute_id": institute_id,
-            "status": "open",
-            "type": {"$exists": False},
-        }
         submission = self.clinvar_submission_collection.find_one(query)
 
         # If there is no open submission for this institute, create one
