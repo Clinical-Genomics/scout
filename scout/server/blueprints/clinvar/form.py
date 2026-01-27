@@ -66,7 +66,7 @@ class ClinVarVariantForm(FlaskForm):
     )
     conditions = SelectMultipleField("Condition ID")
     gene_symbol = StringField("Gene symbols, comma-separated")
-    germline_classification = SelectField(
+    classification = SelectField(
         "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS]
     )
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
@@ -81,20 +81,6 @@ class ClinVarVariantForm(FlaskForm):
     )
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
-
-    """
-
-
-    condition_comment = TextAreaField("Additional comments describing condition")
-
-    conditions = SelectMultipleField("Condition ID value, without prefix")
-
-
-    # Extra fields:
-    assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
-
-
-    """
 
 
 class SNVariantForm(ClinVarVariantForm):
@@ -157,13 +143,10 @@ class CaseDataForm(FlaskForm):
     )
 
 
-### Cancer variant - related forms
-
-
 class CancerSNVariantForm(SNVariantForm):
     """Contains the form element to add a cancer variant to a ClinVar oncogenicity submission object."""
 
-    onc_classification = SelectField(
+    classification = SelectField(
         "Oncogenicity classification",
         choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
     )

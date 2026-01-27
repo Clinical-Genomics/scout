@@ -65,9 +65,9 @@
                 <!-- end hidden fields -->
                 <br><br>
                 <div class="mb-3">
-                    {{variant_data.var_form.germline_classification.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                    <select name="germline_classification" class="form-control, btn-secondary">
-                      {% for classif, classif_value in variant_data.var_form.germline_classification.choices %}
+                    {{variant_data.var_form.classification.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
+                    <select name="classification" class="form-control, btn-secondary">
+                      {% for classif, classif_value in variant_data.var_form.classification.choices %}
                         <option value="{{classif_value}}" {% if classif==scout_classif|capitalize %} selected {% endif %}>{{classif}}</option>
                       {% endfor %}
                     </select>
