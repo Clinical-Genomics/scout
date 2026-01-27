@@ -84,12 +84,11 @@ def clinvar_add_germline_variant(institute_id, case_name):
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
-def clinvar_save(institute_id: str, case_name: str):
-    """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
+def clinvar_germline_save(institute_id: str, case_name: str):
+    """Adds one germline variant with eventual observations to an open (or new) ClinVar submission."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    LOG.warning(request.form)
     controllers.add_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form, is_germline=True
     )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 

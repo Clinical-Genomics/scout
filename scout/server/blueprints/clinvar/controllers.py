@@ -18,7 +18,7 @@ from scout.constants.clinvar import (
     SCOUT_CLINVAR_SV_TYPES_MAP,
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import OncogenicitySubmissionItem, clinvar_variant
+from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import get_case_genome_build, safe_redirect_back
@@ -784,7 +784,7 @@ def add_variant_to_submission(
         if is_germline is False:
             OncogenicitySubmissionItem(**subm_item)
         else:
-            return
+            GermlineSubmissionItem(**subm_item)
     except ValidationError as ve:
         LOG.error(ve)
         flash(str(ve), "warning")
