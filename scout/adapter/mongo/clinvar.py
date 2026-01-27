@@ -8,7 +8,12 @@ import pymongo
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
-from scout.constants.clinvar import ASSERTION_CRITERIA_ONC_ID, ASSERTION_ONC_ONC_DB
+from scout.constants.clinvar import (
+    ASSERTION_CRITERIA_GERM_ID,
+    ASSERTION_CRITERIA_ONC_ID,
+    ASSERTION_GERM_GERM_DB,
+    ASSERTION_ONC_ONC_DB,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -94,33 +99,18 @@ class ClinVarHandler(object):
         # return deleted_count, deleted_submissions
         return deleted_objects, deleted_submissions
 
-    def get_open_germline_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
-        """Retrieve the database id of an open ClinVar germline submission for an institute,
+    def get_open_clinvar_submission(self, institute_id: str, user_id: str, type: str) -> dict:
+        """Retrieve the database id of an open ClinVar submission (germline or oncogenicity) for an institute,
         if none is available then creates a new submission dictionary and returns it.
         """
-        query = dict(institute_id=institute_id, status="open", type="germline")
-
+        query = dict(institute_id=institute_id, status="open", type=type)
         submission = self.clinvar_submission_collection.find_one(query)
-
-        # If there is no open submission for this institute, create one
         if submission is None:
-            submission_id = self.create_germline_submission(institute_id, user_id)
+            if type == "germline":
+                submission_id = self.create_germline_submission(institute_id, user_id)
+            else:
+                submission_id = self.create_oncogenicity_submission(institute_id, user_id)
             submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
-
-        return submission
-
-    def get_open_onc_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
-        """Retrieve the database id of an open ClinVar oncogenicity submission for an institute,
-        if none is available then creates a new submission dictionary and returns it.
-        """
-
-        query = dict(institute_id=institute_id, status="open", type="oncogenicity")
-        submission = self.clinvar_submission_collection.find_one(query)
-        # If there is no open submission for this institute, create one
-        if submission is None:
-            submission_id = self.create_oncogenicity_submission(institute_id, user_id)
-            submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
-
         return submission
 
     def update_clinvar_id(self, clinvar_id, submission_id):

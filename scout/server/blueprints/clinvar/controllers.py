@@ -779,23 +779,26 @@ def add_variant_to_submission(
     subm_item["variant_id"] = form.get("linking_id")
 
     # Validate API models
-    LOG.warning(subm_item)
+
     try:
         if is_germline is False:
             OncogenicitySubmissionItem(**subm_item)
+            submission_type = "oncogenicity"
         else:
             GermlineSubmissionItem(**subm_item)
+            submission_type = "germline"
     except ValidationError as ve:
         LOG.error(ve)
         flash(str(ve), "warning")
         return
 
     # retrieve or create an open ClinVar submission:
-    subm: dict = store.get_open_onc_clinvar_submission(
-        institute_id=institute_obj["_id"], user_id=current_user._id
+    subm: dict = store.get_open_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=current_user._id, type=submission_type
     )
+
     # Add variant to submission object
-    subm.setdefault("oncogenicitySubmission", []).append(subm_item)
+    subm.setdefault(f"{submission_type}Submission", []).append(subm_item)
     subm["updated_at"] = datetime.now()
     store.clinvar_submission_collection.find_one_and_replace({"_id": subm["_id"]}, subm)
 
