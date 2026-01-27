@@ -13,6 +13,9 @@ from pydantic import AliasChoices, BaseModel, Field, field_validator, model_vali
 
 LOG = logging.getLogger(__name__)
 
+SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
+SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
+
 
 class OmicsVariantLoader(BaseModel):
     """Omics variants loader
@@ -276,4 +279,9 @@ def get_qualification(values: dict) -> str:
         qualification = "up" if float(values.get("zScore", 0)) > 0 else "down"
     if values.get("sub_category") == "splicing":
         qualification = values.get("potentialImpact")
+    if values.get("sub_category") == "methylation":
+        if values.get("summary_label") in SIGNIFICANT_METHBAT_SUMMARY:
+            qualification = values.get("summary_label")
+        if values.get("compare_label") in SIGNIFICANT_METHBAT_COMPARE:
+            qualification = values.get("compare_label")
     return qualification

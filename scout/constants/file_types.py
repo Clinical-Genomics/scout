@@ -94,7 +94,7 @@ ORDERED_OMICS_FILE_TYPE_MAP = OrderedDict(
                 "format": "tsv",
                 "analysis_type": "wgs",
                 "category": "outlier",
-                "sub_category": "expression",
+                "sub_category": "methylation",
                 "variant_type": "research",
             },
         ),
