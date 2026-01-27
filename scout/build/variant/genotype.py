@@ -1,7 +1,7 @@
 def build_genotype(gt_call: dict) -> dict:
     """Build a genotype call
 
-    Format tags only expected on some variant types are only set if present.
+    Format tags only expected on some variant types are set if present.
     """
     gt_obj = dict(
         sample_id=gt_call["individual_id"],
