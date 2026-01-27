@@ -14,19 +14,19 @@
           <tr>
             <th rowspan="2">Sample</th>
             <th rowspan="2">Genotype (GT)</th>
-            <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+            <th colspan="2"><div data-bs-toggle="tooltip" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</div></th>
             {% if variant.category == "cancer" %}
               <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
             {% elif variant.category == "sv" %}
               <th rowspan="2" colspan="1" title="Copy number" scope="copy_number">Copy number</th>
-              <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
+              <th rowspan="2" colspan="1" ><div data-bs-toggle="tooltip" title="SV caller specific quality score. Note different scales for different callers.">SV quality</div></th>
             {% elif variant.category == "str" %}
-              <th rowspan="2" colspan="1" title="Call support status from Expansion hunter, or STRdrop ratio and probability in parenthesis if available.">Expansion support</th>
+              <th rowspan="2" colspan="1"><div data-bs-toggle="tooltip"  title="Call support status from Expansion hunter, or STRdrop ratio and probability in parenthesis if available.">Expansion support</div></th>
             {% else %}
 	      {% if variant.category == "snv" and (variant.is_mitochondrial or case_has_capture) %}
                 <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
 	      {% endif %}
-              <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+              <th rowspan="2" colspan="1"><div data-bs-toggle="tooltip" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</div></th>
             {% endif %}
             <tr>
               <th>Reference</th>
