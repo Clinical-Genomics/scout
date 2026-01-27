@@ -212,13 +212,19 @@ class OmicsVariantLoader(BaseModel):
     @model_validator(mode="before")
     def genes_become_lists(cls, values):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
-        Convert to a list with a single member in omics_variants for storage."""
+        Convert to a list with a single member in omics_variants for storage.
+
+        In case of MethBat the CPG_label is formed as nanoimprint_PLAGL1_HGNC:9046.
+        """
 
         if "hgncId" in values:
             values["hgncId"] = [int(values.get("hgncId"))]
         elif "hgnc_id" in values:
             values["hgncId"] = [int(values.get("hgnc_id"))]
-
+        elif "cpg_label" in values:
+            cpg_label = values.get("cpg_label").split("_")
+            values["hgncSymbol"] = [cpg_label[1]]
+            values["hgncId"] = [cpg_label[2].split(":")[1]]
         if "hgncSymbol" in values:
             values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
 
