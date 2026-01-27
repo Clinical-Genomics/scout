@@ -51,7 +51,6 @@ class ClinVarVariantForm(FlaskForm):
     category = HiddenField()
     linking_id = HiddenField()
     local_id = HiddenField()
-    record_status = HiddenField(default="novel")
     ref = HiddenField()
 
     # Custom fields
@@ -60,14 +59,21 @@ class ClinVarVariantForm(FlaskForm):
         default="clinical testing",
         choices=[(item, item) for item in CITATION_DBS_API],
     )
-    assertion_method_cit_id = StringField("Citation ID")
+    assertion_method_cit_id = StringField("Citation ID", render_kw={"placeholder": "e.g. 12345678"})
     clinsig_comment = TextAreaField("Comment on classification")
     condition_type = SelectField(
         "Condition ID type", choices=[(item, item) for item in CONDITION_DBS_API]
     )
     conditions = SelectMultipleField("Condition ID")
     gene_symbol = StringField("Gene symbols, comma-separated")
+    germline_classification = SelectField(
+        "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS]
+    )
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
+    inheritance_mode = SelectField(
+        "Inheritance model",
+        choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
+    )
     last_evaluated = DateField("Date evaluated")
     multiple_condition_explanation = SelectField(
         "Explanation for multiple conditions",
@@ -77,27 +83,6 @@ class ClinVarVariantForm(FlaskForm):
     orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
 
     """
-
-    # Variant-specific fields
-
-
-
-
-
-
-
-
-    inheritance_mode = SelectField(
-        "Inheritance model",
-        choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
-    )
-    clinsig = SelectField(
-        "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS[:5]]
-    )
-
-    clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
-
-
 
 
     condition_comment = TextAreaField("Additional comments describing condition")
@@ -178,8 +163,8 @@ class CaseDataForm(FlaskForm):
 class CancerSNVariantForm(SNVariantForm):
     """Contains the form element to add a cancer variant to a ClinVar oncogenicity submission object."""
 
-    # Form step 1: oncogenicity classification
     onc_classification = SelectField(
         "Oncogenicity classification",
         choices=[(item, item) for item in ONCOGENIC_CLASSIF_TERMS],
     )
+    assertion_method_cit_id = StringField("Citation ID", render_kw={"placeholder": "e.g. 21084639"})

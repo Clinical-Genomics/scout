@@ -604,29 +604,6 @@ def add_clinvar_events(institute_obj: dict, case_obj: dict, variant_id: str):
         )
 
 
-def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
-    """It is invoked by the 'clinvar_save' endpoint. Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission."""
-
-    variant_data: dict = parse_variant_form_fields(form)
-    casedata_list: List[dict] = parse_casedata_form_fields(form)
-    institute_id = institute_obj["_id"]
-
-    # retrieve or create an open germline ClinVar submission:
-    subm: dict = store.get_open_germline_clinvar_submission(institute_id, current_user._id)
-    # save submission objects in submission:
-    result: Optional[dict] = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
-    if result:
-        flash(
-            "An open ClinVar submission was updated correctly with submitted data",
-            "success",
-        )
-
-        # Create user-related events
-        add_clinvar_events(
-            institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
-        )
-
-
 def remove_item_from_submission(submission: str, object_type: str, subm_variant_id: str):
     """It is invoked by the clinvar_delete_object endpoint. Removes a variant (+ casedata) or casedata info only from one ClinVar submission object."""
 
@@ -658,9 +635,6 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
                 variant=variant_obj,
                 subject=variant_obj["display_name"],
             )
-
-
-### ClinVar oncogenicity variants submissions controllers
 
 
 def set_clinvar_form(var_id: str, data: dict):
@@ -767,8 +741,8 @@ def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
         onc_item["observedIn"].append(obs)
 
 
-def parse_clinvar_onc_item(form: ImmutableMultiDict) -> dict:
-    """Parse form fields for an oncogenic classication of a variant and converts it into the format extected by ClinVar (json dict)."""
+def parse_clinvar_form(form: ImmutableMultiDict) -> dict:
+    """Parse form fields for a germline or oncogenic classification of a variant and converts it into the format expected by the ClinVar API (json dict)."""
     onc_item = {"recordStatus": "novel"}
     _parse_onc_classification(onc_item, form)
     _parse_onc_assertion(onc_item, form)
@@ -779,33 +753,35 @@ def parse_clinvar_onc_item(form: ImmutableMultiDict) -> dict:
     return onc_item
 
 
-def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
-    """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
+def add_variant_to_submission(
+    institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, is_germline=True
+):
+    """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists create it."""
 
-    onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
+    subm_item: dict = parse_clinvar_form(form)  # The variant item to add to an open submission
 
     # Add case specifics to the submission item
-    onc_item["institute_id"] = institute_obj["_id"]
-    onc_item["case_id"] = case_obj["_id"]
-    onc_item["case_name"] = case_obj.get("display_name", "_id")
-    onc_item["variant_id"] = form.get("linking_id")
+    subm_item["institute_id"] = institute_obj["_id"]
+    subm_item["case_id"] = case_obj["_id"]
+    subm_item["case_name"] = case_obj.get("display_name", "_id")
+    subm_item["variant_id"] = form.get("linking_id")
 
     # Validate oncogenicity item model
     try:
-        OncogenicitySubmissionItem(**onc_item)
+        OncogenicitySubmissionItem(**subm_item)
     except ValidationError as ve:
         LOG.error(ve)
         flash(str(ve), "warning")
         return
 
     # retrieve or create an open ClinVar submission:
-    onc_subm: dict = store.get_open_onc_clinvar_submission(
+    subm: dict = store.get_open_onc_clinvar_submission(
         institute_id=institute_obj["_id"], user_id=current_user._id
     )
     # Add variant to submission object
-    onc_subm.setdefault("oncogenicitySubmission", []).append(onc_item)
-    onc_subm["updated_at"] = datetime.now()
-    store.clinvar_submission_collection.find_one_and_replace({"_id": onc_subm["_id"]}, onc_subm)
+    subm.setdefault("oncogenicitySubmission", []).append(subm_item)
+    subm["updated_at"] = datetime.now()
+    store.clinvar_submission_collection.find_one_and_replace({"_id": subm["_id"]}, subm)
 
     # update case with submission info
     add_clinvar_events(
@@ -816,3 +792,28 @@ def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: Imm
         "An open ClinVar submission was updated correctly with the variant details.",
         "success",
     )
+
+
+"""
+def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
+    It is invoked by the 'clinvar_save' endpoint. Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission.
+
+    variant_data: dict = parse_variant_form_fields(form)
+    casedata_list: List[dict] = parse_casedata_form_fields(form)
+    institute_id = institute_obj["_id"]
+
+    # retrieve or create an open germline ClinVar submission:
+    subm: dict = store.get_open_germline_clinvar_submission(institute_id, current_user._id)
+    # save submission objects in submission:
+    result: Optional[dict] = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
+    if result:
+        flash(
+            "An open ClinVar submission was updated correctly with submitted data",
+            "success",
+        )
+
+        # Create user-related events
+        add_clinvar_events(
+            institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
+        )
+"""

@@ -24,12 +24,11 @@
       <div class="col-md-10">
           <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
               <!-- progressbar -->
-              <ul id="progressbar" class="steps-7">
+              <ul id="progressbar" class="steps-6">
                   <li class="active">Start</li>
-                  <li>Assertion Criteria</li>
+                  <li>Germline Classification</li>
                   <li>Variant Details</li>
                   <li>Inheritance Model</li>
-                  <li>Germline Classification</li>
                   <li>Associated conditions</li>
                   <li>Observation Data</li>
               </ul>
@@ -45,8 +44,7 @@
               </fieldset>
 
               <fieldset data-step="2">
-                <legend class="text-dark">Assertion criteria <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
-                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></legend>
+                <legend class="text-dark">Germline Classification</legend>
 
                 <!-- hidden fields -->
                 {{ variant_data.var_form.csrf_token }}
@@ -65,23 +63,41 @@
                   {{ variant_data.var_form.stop() }}
                 {% endif %}
                 <!-- end hidden fields -->
-                <h3 class="fs-subtitle"></h3>
-                  {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
-                  {{variant_data.var_form.last_evaluated(class="bg-white")}}
-                  <br><br>
-                  {{variant_data.var_form.assertion_method.label(class="fw-bold text-dark")}}
-                  {{variant_data.var_form.assertion_method(class="bg-white")}}
-                  <br><br>
-                  <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
-                  {{variant_data.var_form.assertion_method_cit_db.label(class="fw-bold text-dark my-2 mx-lg-2")}}
-                  {{variant_data.var_form.assertion_method_cit_db(class="btn-secondary my-2 mx-lg-2")}}
-                  <div class="my-2 mx-lg-2">{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}}
-                    <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format">
-                      <strong>?</strong>
-                    </span>
+                <br><br>
+                <div class="mb-3">
+                    {{variant_data.var_form.germline_classification.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
+                    <select name="germline_classification" class="form-control, btn-secondary">
+                      {% for classif, classif_value in variant_data.var_form.germline_classification.choices %}
+                        <option value="{{classif_value}}" {% if classif==scout_classif|capitalize %} selected {% endif %}>{{classif}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
-                  <div class="my-2 mx-lg-2" style="width:30%; display: inline">{{variant_data.var_form.assertion_method_cit_id(class="bg-white")}}</div>
+                  <br><br>
+                  <div class="mb-3 col-md-2 offset-md-5">
+                    {{ variant_data.var_form.last_evaluated.label }}
+                    {{ variant_data.var_form.last_evaluated }}
                   </div>
+
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.clinsig_comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
+                    {{ variant_data.var_form.clinsig_comment(rows=4, class="form-control") }}
+                  </div>
+                  <br><br>
+                  <div class="mb-3">
+                    {{ variant_data.var_form.assertion_method_cit_db.label }}
+                    {{ variant_data.var_form.assertion_method_cit_db }}
+                    <span class="text-danger" data-bs-toggle='tooltip' title="This citation is specific to this variant only. Leave blanc if unsure. Note the whole submission, containing one or more variants, will be already containing the following citation reference: 'Standards and guidelines for the interpretation of sequence variants: a joint consensus recommendation of the American College of Medical Genetics and Genomics and the Association for Molecular Pathology. Genet Med. 2015 (Pubmed:25741868)'."><strong>?</strong></span>
+                    <span data-bs-toggle='tooltip' title="Optional field"><strong>*</strong></span>
+                  </div>
+
+                  <div class="mb-3 col-md-6 offset-md-3">
+                    {{ variant_data.var_form.assertion_method_cit_id.label(
+                        id="citation_tooltip",
+                        **{'data-bs-toggle': 'tooltip', 'title': 'Original tooltip text'}
+                    ) }}
+                    {{ variant_data.var_form.assertion_method_cit_id }}
+                  </div>
+
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
@@ -159,37 +175,6 @@
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
-              <fieldset data-step="5">
-                <legend class="text-dark">Germline Classification</legend>
-                <h3 class="fs-subtitle">Represents a variant-level classification for a disease, rather than an interpretation of the clinical significance of a variant for a specific patient.</h3>
-
-                {% set scout_classif = variant_data.var_obj.classification|replace("_"," ") if variant_data.var_obj.classification else "n.a." %}
-
-                <div class="row">
-                  <div class="col-4">
-                    <span class="text-dark">Classification in Scout:</span><br>
-                    <span class="badge bg-secondary">{{ scout_classif|upper }}</span>
-                  </div>
-                  <div class="col-8">
-                    {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                    <select name="clinsig" class="form-control, btn-secondary">
-                      {% for classif, classif_value in variant_data.var_form.clinsig.choices %}
-                        <option value="{{classif_value}}" {% if classif==scout_classif|capitalize %} selected {% endif %}>{{classif}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <br><br><br>
-                {{variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>?</strong></span>
-                {{variant_data.var_form.clinsig_comment(class="form-control, bg-white", placeholder="(optional)")}}
-                <br><br>
-                {{variant_data.var_form.clinsig_cit.label(class="fw-bold, text-dark")}}
-                {{variant_data.var_form.clinsig_cit(class="form-control, bg-white", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
-
-                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                <input type="button" name="next" class="next action-button" value="Next"/>
-              </fieldset>
-
               <fieldset data-step="6">
                 <legend class="text-dark">Associated Conditions</legend>
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a></h3>
@@ -225,59 +210,5 @@
 {% include "clinvar/scripts.html" %}
 
 <script>
-
-//Function definition for keeping the tooltip updated for each Assertion method database option
-function updateTooltip(){
-      let selectedDBId = $("#assertion_method_cit_db option:selected").text();
-      let tooltipText=undefined
-      let defaultValue=undefined
-          switch (selectedDBId) {
-              case "PMID":
-                  tooltipText = "PubMed ID (PMID) is written as digits only, e.g. 25741868"
-                  defaultValue="25741868"
-                  break
-              case "DOI":
-                  tooltipText = "DOI ID is written including prefix, forward slash, and suffix, e.g. 10.1038/gim.2015.30"
-                  defaultValue="10.1038/gim.2015.30"
-                  break
-              case "pmc":
-                  tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 4544753"
-                  defaultValue="4544753"
-                  break
-              default:
-                return
-          }
-         $("#assertion_method_cit_id_tooltip").attr("data-bs-original-title",tooltipText)
-         $("#assertion_method_cit_id").val(defaultValue)
-}
-//Run function after load to set the initial value of the tooltip
-updateTooltip()
-//Add eventhandler for change of the DB id, keeping the tooltip updated
-$(function () {
-    $("#assertion_method_cit_db").change(function () {
-        updateTooltip()
-    })
-});
-
-// Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
-$(function(){
-  $("#assertion_method_cit_db, #assertion_method_cit_id").change(function(){
-    let synonymsACMG=["pmc:4544753", "PMID:25741868", "DOI:10.1038/gim.2015.30"]
-
-    let assertCitDB = document.getElementById('assertion_method_cit_db').value;
-    let assertCitID = document.getElementById('assertion_method_cit_id').value;
-    var choices = {{germline_classif_terms|safe}}; // all germline classification terms
-
-    if (synonymsACMG.includes(`${assertCitDB}:${assertCitID}`)){ // populate select with ACMG terms only
-      choices = {{germline_classif_terms[:5]|safe}};
-    }
-    $("#clinsig").empty(); // remove all options from clinsig select
-    //Create and append the conditional options to the germline classification select
-    for (var i = 0; i < choices.length; i++){
-      var newOption = new Option(choices[i], choices[i], true, false);
-      $('#clinsig').append(newOption).trigger('change');
-    }
-  });
-});
 </script>
 {% endblock %}

@@ -87,6 +87,7 @@ def clinvar_add_germline_variant(institute_id, case_name):
 def clinvar_save(institute_id: str, case_name: str):
     """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    LOG.warning(request.form)
     controllers.add_variant_to_submission(
         institute_obj=institute_obj, case_obj=case_obj, form=request.form
     )
@@ -213,8 +214,8 @@ def clinvar_add_onc_variant(institute_id: str, case_name: str):
 def clinvar_onc_save(institute_id: str, case_name: str):
     """Adds one somatic variant with eventual CaseData observations to an open (or new) ClinVar congenicity submission"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    controllers.add_onc_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+    controllers.add_variant_to_submission(
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form, is_germline=False
     )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
