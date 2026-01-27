@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "clinvar/components.html" import update_submission_status_form %}
+{% from "clinvar/components.html" import render_dict_array, update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -130,15 +130,6 @@
     </div>
   </div>
 </div>
-{% endmacro %}
-
-{% macro render_dict_array(list_of_dicts) %}
-  {% for item in list_of_dicts %}
-    {% for key, value in item.items() %}
-      {{key}} : {{value}}<br>
-    {% endfor %}
-  {% endfor %}
-  {% if list_of_dicts|length > 1%}<br>{% endif %}
 {% endmacro %}
 
 {% macro action_modal(action_type, subm_id) %}

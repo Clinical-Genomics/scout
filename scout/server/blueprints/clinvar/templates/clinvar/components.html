@@ -1,3 +1,12 @@
+{% macro render_dict_array(list_of_dicts) %}
+  {% for item in list_of_dicts %}
+    {% for key, value in item.items() %}
+      {{key}} : {{value}}<br>
+    {% endfor %}
+  {% endfor %}
+  {% if list_of_dicts|length > 1%}<br>{% endif %}
+{% endmacro %}
+
 {% macro update_submission_status_form(institute, subm_obj) %}
 <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
   <nav aria-label="breadcrumb">
