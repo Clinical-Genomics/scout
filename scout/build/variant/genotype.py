@@ -14,7 +14,7 @@ def build_genotype(gt_call: dict) -> dict:
     )
 
     for format_tag in ["alt_mc", "copy_number", "ffpm", "sdp", "sdr", "so", "split_read"]:
-        if gt_call[format_tag]:
+        if format_tag in gt_call:
             gt_obj[format_tag] = gt_call[format_tag]
 
     return gt_obj

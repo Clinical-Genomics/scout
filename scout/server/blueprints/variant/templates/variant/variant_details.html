@@ -90,7 +90,7 @@
                   {% endif%})
                   </td>
                 {% elif variant.category == "str" %}
-                  <td><small>{% if sample.so %}{{ sample.so }}{% elif sample.sdr and sample.sdp %}{{ sample.sdr }} ({{ sample.sdp}}){% endif %}</small></td>
+                  <td><small>{% if sample.so %}{{ sample.so }}{% elif sample.sdr and sample.sdp %}{{ sample.sdr|round(4) }} ({{ sample.sdp|round(4)}}){% endif %}</small></td>
                 {% else %}
                   <td>{{ sample.genotype_quality }}</td>
                 {% endif %}

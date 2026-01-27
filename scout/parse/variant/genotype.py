@@ -112,10 +112,10 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     sd_ref, sd_alt = _parse_format_entry(variant, pos, "SD", int)
 
     # STRdrop long read STR specific
-    gt_call["sdp"] = _parse_format_entry(variant, pos, "SDP", float)
-    gt_call["edr"] = _parse_format_entry(variant, pos, "EDR", float)
-    gt_call["sdr"] = _parse_format_entry(variant, pos, "SDR", float)
-    gt_call["drop"] = _parse_format_entry(variant, pos, "DROP", str)
+    gt_call["sdp"] = _parse_format_entry_single(variant, pos, "SDP", float)
+    gt_call["edr"] = _parse_format_entry_single(variant, pos, "EDR", float)
+    gt_call["sdr"] = _parse_format_entry_single(variant, pos, "SDR", float)
+    gt_call["drop"] = _parse_format_entry_single(variant, pos, "DROP", str)
 
     # MEI specific
     spanning_mei_ref, clip5_alt, clip3_alt = get_mei_reads(
@@ -448,7 +448,7 @@ def _parse_format_entry(
     pos: int,
     format_entry_name: str,
     number_format: Optional[Union[float, int, str]] = int,
-) -> Tuple[Union[float, int], ...]:
+) -> Tuple[Union[float, int, str], ...]:
     """Parse genotype format entry for named integer values.
     Expects that ref/alt values could be separated by "/" or ",".
     Give individual position in VCF as pos and name of format entry to parse as format_entry_name.
@@ -481,6 +481,23 @@ def _parse_format_entry(
         except (ValueError, TypeError) as _ignore_error:
             pass
     return (ref, alt)
+
+
+def _parse_format_entry_single(
+    variant: cyvcf2.Variant,
+    pos: int,
+    format_entry_name: str,
+    format_type: Optional[Union[float, int, str]] = int,
+) -> Tuple[Union[float, int, str], ...]:
+    """Parse genotype format entry for named values of given type.
+    Assume only one (alt) entry, as for VCF FORMAT Number==1.
+    """
+    (ref, alt) = _parse_format_entry(variant, pos, format_entry_name, format_type)
+
+    if not alt and ref:
+        alt = ref
+
+    return alt
 
 
 def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
