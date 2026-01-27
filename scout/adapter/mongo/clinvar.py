@@ -204,9 +204,9 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.cursor.Cursor:
+    def get_clinvar_submissions(self, institute_id: str, type: str) -> pymongo.cursor.Cursor:
         """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
-        query = {"institute_id": institute_id, "type": "oncogenicity"}
+        query = {"institute_id": institute_id, "type": type}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
     def get_deprecated_clinvar_germline_submissions(
