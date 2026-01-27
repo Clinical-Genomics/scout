@@ -34,6 +34,35 @@ class OmicsVariantLoader(BaseModel):
     display_name: str
     omics_variant_id: str
 
+    # MethBat single dataset comparison profile TSVs
+
+    # the CPG label is temp and will be split into HGNC id, type etc.
+    cpg_label: str = None
+
+    # NoData, Uncategorized < Methylated, Unmethylated << AlleleSpecificMethylation
+    summary_label: Optional[str] = None
+
+    # InsufficientData, Uncategorized << HypoASM, HyperASM < HypoMethylated, HyperMethylated
+    compare_label: Optional[str] = None
+    background_category: Optional[str] = None
+
+    category_pop_count: Optional[int] = None
+    category_pop_freq: Optional[float] = None
+
+    mean_meth_delta: Optional[float] = None
+    mean_abs_meth_delta_zscore: Optional[float] = None
+    asm_fishers_pvalue: Optional[float] = None
+
+    mean_combined_methyl: Optional[float] = None
+    mean_combined_methyl_zscore: Optional[float] = None
+
+    num_phased_cpgs: Optional[float] = None
+    num_partial_cpgs: Optional[float] = None
+    num_unphased_cpgs: Optional[float] = None
+    median_total_coverage: Optional[float] = None
+    median_hap1_coverage: Optional[float] = None
+    median_hap2_coverage: Optional[float] = None
+
     # DROP Fraser and Outrider outlier TSVs
 
     # sample id is mandatory: each row pertains to one outlier event in one individual as compared to others
