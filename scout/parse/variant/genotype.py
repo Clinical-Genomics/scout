@@ -492,7 +492,7 @@ def _parse_format_entry_single(
     """Parse genotype format entry for named values of given type.
     Assume only one (alt) entry, as for VCF FORMAT Number==1.
     """
-    (ref, alt) = _parse_format_entry(variant, pos, format_entry_name, format_type)
+    ref, alt = _parse_format_entry(variant, pos, format_entry_name, format_type)
 
     if not alt and ref:
         alt = ref
