@@ -57,6 +57,7 @@ def add_gene_links(
     gene_obj["cspec_link"] = clingen_cspec(hgnc_id)
     gene_obj["gencc_link"] = gencc(hgnc_id)
     gene_obj["expression_atlas_link"] = expression_atlas(ensembl_id)
+    gene_obj["gtex_link"] = gtex(ensembl_id)
     gene_obj["exac_link"] = exac(ensembl_id)
     gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     # Add links that use entrez_id
@@ -274,6 +275,14 @@ def gencc(hgnc_id):
 
 def expression_atlas(ensembl_id):
     link = "https://www.ebi.ac.uk/gxa/genes/{}"
+    if not ensembl_id:
+        return None
+
+    return link.format(ensembl_id)
+
+
+def gtex(ensembl_id):
+    link = "https://www.gtexportal.org/home/gene/{}"
     if not ensembl_id:
         return None
 
