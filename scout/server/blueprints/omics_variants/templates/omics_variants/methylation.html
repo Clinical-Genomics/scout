@@ -6,9 +6,10 @@
 {% from "variants/utils.html" import stash_filter_buttons %}
 {% from "variant/buttons.html" import splice_junctions_button %}
 {% from "variant/components.html" import variant_scripts %}
+{% from "omics_variants/outliers.html" import omics_filter_form_footer %}
 
 {% block category_title %}
-  WTS outlier variants
+  WGS-LR methylation variants
 {% endblock %}
 
 {% block variants_form_action%}
@@ -16,7 +17,7 @@
 {% endblock %}
 
 {% block variants_filter %}
-  {{ outlier_filters(form, institute, case) }}
+  {{ methylation_filters(form, institute, case) }}
 {% endblock %}
 
 {% block variants_filter_form_footer %}
@@ -28,9 +29,9 @@
     <tr>
       <th scope="col" style="width:14%" title="HGNC symbols">Gene</th>
       <th scope="col" style="width:7%" title="Sub-category">Type</th>
-      <th scope="col" style="width:7%" title="Value - delta Psi or l2fc">Value</th>
-      <th scope="col" title="Functional annotation">Func. annotation</th>
-      <th scope="col" style="width:7%" title="P-value">P-value</th>
+      <th scope="col" style="width:7%" title="Summary">Summary</th>
+      <th scope="col" title="Compare">Compare</th>
+      <th scope="col" style="width:7%" title="Value">Value</th>
       <th scope="col" style="width:10%" title="Individual">Ind</th>
       <th scope="col" style="width:3%" title="Chromosome">Chr</th>
       <th scope="col" title="Position">Pos</th>
@@ -67,18 +68,11 @@
          </div>
       </td>
       <td>{{ variant.sub_category }}</td>
-      <td class="text-end"> {%  if variant.sub_category == "splicing" %}
-          <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
-          {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
-        {% else %}
-          <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
-          {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
-        {% endif %}
+      <td class="text-end">
+          <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label' rel="noopener noreferrer">{{ variant.summary_label }}</a>
       </td>
       <td>
-        {% if variant.sub_category == "splicing" %}
-          {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
-        {% endif %}
+        <a target="_blank" title='MethBat compare label' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{{ variant.compare_label }}</a>
       </td>
       <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
         {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
@@ -207,26 +201,5 @@
         {{ form.sort_order(class="form-select btn btn-primary") }}
       </div>
     </div>
-</div>
-{% endmacro %}
-
-{% macro omics_filter_form_footer(form, result_size, total_variants, page, nvars, institute) %}
-<div class="card-footer text-center">
-  <div class="row">
-    <div class="col-4">
-      <div class="form-check d-flex justify-content-start">
-        {% if institute.check_show_all_vars %}
-          <input type="checkbox" class="form-check-input" name="show_unaffected" id="show_unaffected" checked disabled>
-          {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'Modify general institute settings to be able to edit this checkbox'}) }}
-        {% else %}
-          {{ form.show_unaffected(class="form-check-input") }}
-          {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'This filter applies only to cases with more than one sample. When this is unchecked, only variants that are predicted by callers to be present in an affected individual genotype are shown.'}) }}
-        {% endif %}
-      </div>
-    </div>
-    <div class="col-4 d-flex justify-content-center align-items-center">
-      <div class="d-flex me-1 justify-content-center align-items-center">Showing page {{page}}</div>
-    </div>
-  </div>
 </div>
 {% endmacro %}
