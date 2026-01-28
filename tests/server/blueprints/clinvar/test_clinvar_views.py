@@ -4,7 +4,7 @@ from flask import url_for
 from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 from scout.server.extensions import store
 
-SAVE_ENDPOINT = "clinvar.clinvar_save"
+SAVE_ENDPOINT = "clinvar.clinvar_germline_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
@@ -25,7 +25,7 @@ def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
         data = {"var_id": variant_obj["_id"]}
         resp = client.post(
             url_for(
-                "clinvar.clinvar_add_variant",
+                "clinvar.clinvar_add_germline_variant",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
@@ -82,53 +82,6 @@ def test_clinvar_germline_submissions(app, institute_obj, case_obj, clinvar_form
         assert resp.status_code == 200
 
 
-def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
-    """Test form to rename case individuals linked to a given variant submission"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-
-        # GIVEN a submission object
-        subm_obj = store.clinvar_submission_collection.find_one()
-
-        old_ind_name = clinvar_form.get("include_ind")
-
-        form_data = dict(
-            new_name="new_name",
-        )
-
-        # WHEN the form to rename a submission's individual is used
-        referer = url_for(
-            "clinvar.clinvar_germline_submissions", institute_id=institute_obj["internal_id"]
-        )
-        client.post(
-            url_for(
-                f"clinvar.clinvar_rename_casedata",
-                submission=subm_obj["_id"],
-                case=case_obj["_id"],
-                old_name=old_ind_name,
-            ),
-            data=form_data,
-            headers={"referer": referer},
-        )
-
-        # THEN the individual in the submission should be renamed
-        casedata_document = store.clinvar_collection.find_one({"csv_type": "casedata"})
-        assert casedata_document["individual_id"] == "new_name"
-
-
 def test_delete_clinvar_object_case_data(app, institute_obj, case_obj, clinvar_form):
     """Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
 
@@ -166,7 +119,7 @@ def test_delete_clinvar_object_case_data(app, institute_obj, case_obj, clinvar_f
         assert store.clinvar_submission_collection.find_one({"csv_type": "casedata"}) is None
 
 
-def test_delete_clinvar_object_varant_data(app, institute_obj, case_obj, clinvar_form):
+def test_delete_clinvar_object_variant_data(app, institute_obj, case_obj, clinvar_form):
     """ "Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
 
     # GIVEN an initialized app
