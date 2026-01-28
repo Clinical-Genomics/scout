@@ -408,29 +408,34 @@ class ClinVarHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-    def case_to_clinvars(self, case_id: str) -> Dict[str, dict]:
+    def case_to_germline_clinvars(self, case_id: str) -> Dict[str, dict]:
         """Returns the ID of all variants included in any germline submission for a case."""
+
+        # Query deprecated ClinVar submissions
         query = {"case_id": case_id, "csv_type": "variant"}
         case_germline_clinvars = {}
         for germvar in self.clinvar_collection.find(query):
             case_germline_clinvars[germvar.get("local_id")] = germvar
+
+        case_germline_clinvars.update(self.case_to_api_clinvar(case_id=case_id, type="germline"))
+
         return case_germline_clinvars
 
-    def case_to_onco_clinvars(self, case_id: str) -> Dict[str, dict]:
-        """Returns the ID of all variants included in any oncogenic submission for a case."""
+    def case_to_api_clinvar(self, case_id: str, type: str) -> dict[str, dict]:
+        """Returns all variants dict(var_id:var_obj) for a case that belong to a ClinVar submission."""
         query = {
-            "type": "oncogenicity",
-            "oncogenicitySubmission.case_id": case_id,
+            "type": type,
+            f"{type}Submission.case_id": case_id,
         }
-        case_onco_clinvars = {}
-        for onco_subm in self.clinvar_submission_collection.find(query):
-            for oncovar in onco_subm.get("oncogenicitySubmission"):
+        case_clinvars = {}
+        for subm_obj in self.clinvar_submission_collection.find(query):
+            for var in subm_obj.get(f"{type}Submission"):
                 if (
-                    oncovar.get("case_id") != case_id
+                    var.get("case_id") != case_id
                 ):  # A submission might contain variants from different cases
                     continue
-                case_onco_clinvars[oncovar["variant_id"]] = oncovar
-        return case_onco_clinvars
+                case_clinvars[var["variant_id"]] = var
+        return case_clinvars
 
     def clinvar_cases(self, institute_id: str = None) -> List[str]:
         """Fetch all cases with variants contained in a ClinVar submission object"""
