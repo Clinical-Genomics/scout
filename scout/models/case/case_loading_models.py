@@ -444,7 +444,6 @@ class CaseLoader(BaseModel):
     somalier_ancestry: Optional[str] = None
     somalier_pairs: Optional[str] = None
     somalier_samples: Optional[str] = None
-    exe_ver: Optional[str] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     reference_info: Optional[str] = None
