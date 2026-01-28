@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants filters form, sort gene panels alphabetically and mark panels that don't belong to the case's clinical panels with asterisk (#5981)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
+- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 ### Fixed
 - Do not try to save an ACMG classification when user provided no criteria (#4962)
 - When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)

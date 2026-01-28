@@ -1,15 +1,13 @@
 import responses
 from flask import url_for
 
-from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT, PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
-API_CSV_2_JSON_URL = "/".join([PRECLINVAR_URL, "csv_2_json"])
-API_VALIDATE_ENDPOINT = "/".join([PRECLINVAR_URL, "validate"])
 
 
 def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):

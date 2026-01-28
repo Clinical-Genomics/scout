@@ -20,6 +20,19 @@ class ClinVarApi:
     def init_app(self, app):
         self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
 
+    def set_header(self, api_key) -> dict:
+        """Creates a header to be submitted a in a POST rquest to the CLinVar API
+        Args:
+            api_key(str): API key to be used to submit to ClinVar (64 alphanumeric characters)
+        Returns:
+            header(dict): contains "Content-type: application/json" and "SP-API-KEY: <API-KEY>" key/values
+        """
+        header = {
+            "Content-Type": "application/json",
+            "SP-API-KEY": api_key,
+        }
+        return header
+
     def submit_json(self, json_data, api_key=None):
         """Submit a ClinVar submission object using the official ClinVar API
 
@@ -71,33 +84,3 @@ class ClinVarApi:
                 )
                 return
             return submission_data["identifiers"]["clinvarAccession"]
-
-    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> Tuple[int, dict]:
-        """Remove a successfully processed submission from ClinVar."""
-
-        try:
-            submission_status_doc: dict = self.json_submission_status(
-                submission_id=submission_id, api_key=api_key
-            )
-
-            subm_response: dict = submission_status_doc["actions"][0]["responses"][0]
-            submission_status = subm_response["status"]
-
-            if submission_status != "processed":
-                return (
-                    500,
-                    f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
-                )
-
-            # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
-            subm_summary_url: str = subm_response["files"][0]["url"]
-            scv_accession: Optional(str) = self.get_clinvar_scv_accession(url=subm_summary_url)
-
-            # Remove ClinVar submission using preClinVar's 'delete' endpoint
-            resp = requests.post(
-                self.delete_service, data={"api_key": api_key, "clinvar_accession": scv_accession}
-            )
-            return resp.status_code, resp.json()
-
-        except Exception as ex:
-            return 500, str(ex)

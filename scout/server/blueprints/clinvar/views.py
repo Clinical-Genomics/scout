@@ -54,21 +54,6 @@ def clinvar_submission_status(submission_id):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/clinvar/delete-enquiry/<submission_id>", methods=["POST"])
-def clinvar_submission_delete(submission_id):
-    """Sends a request to ClinVar to delete a successfully processed submission."""
-
-    # Retrieve the actual submission status:
-    delete_res: Tuple[int, dict] = clinvar_api.delete_clinvar_submission(
-        submission_id=submission_id, api_key=request.form.get("apiKey")
-    )
-    flash(
-        f"ClinVar response: { str(delete_res[1]) }",
-        "success" if delete_res[0] == 201 else "warning",
-    )
-    return safe_redirect_back(request)
-
-
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_germline_variant", methods=["POST"])
 def clinvar_add_germline_variant(institute_id, case_name):
     """Add a germline variant to a germline submission object."""

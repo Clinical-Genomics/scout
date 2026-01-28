@@ -91,10 +91,6 @@
                    {{ action_modal("status", subm_obj._id) }}
                    <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
                  </form>
-                <form id="deleteApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_delete', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ action_modal("remove", subm_obj._id) }}
-                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-danger form-control" name="_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#removeModal_{{subm_obj._id}}">Delete submission from ClinVar</button></td>
-                 </form>
               {% endif %}
             </tr>
           </table>
