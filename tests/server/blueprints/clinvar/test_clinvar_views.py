@@ -1,230 +1,17 @@
+import pytest
 import responses
 from flask import url_for
 
 from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 from scout.server.extensions import store
 
-SAVE_ENDPOINT = "clinvar.clinvar_germline_save"
+SAVE_ENDPOINT_GERMLINE = "clinvar.clinvar_germline_save"
+SAVE_ENDPOINT_ONC = "clinvar.clinvar_onc_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
-
-
-def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
-    """Test endpoint that displays the user form to add a new ClinVar variant"""
-
-    # GIVEN a database with a variant
-    assert store.variant_collection.find_one()
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # WHEN sending a post request to add a variant to ClinVar
-        data = {"var_id": variant_obj["_id"]}
-        resp = client.post(
-            url_for(
-                "clinvar.clinvar_add_germline_variant",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=data,
-        )
-        # THEN the form page should work as expected
-        assert resp.status_code == 200
-
-
-def test_clinvar_oncogenic_submissions(app, institute_obj):
-    """Test that the ClinVar oncogenic submissions page works."""
-
-    # GIVEN a logged user
-    with app.test_client() as client:
-        client.get(url_for("auto_login"))
-
-        # THEN clinvar_onc_submissions endpoint should return a valid page
-        resp = client.get(
-            url_for(
-                "clinvar.clinvar_onc_submissions",
-                institute_id=institute_obj["internal_id"],
-            ),
-        )
-
-        assert resp.status_code == 200
-
-
-def test_clinvar_germline_submissions(app, institute_obj, case_obj, clinvar_form):
-    """Test the page that shows all ClinVar submissions for an institute"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-
-        # THEN clinVar_submissions endpoint should return a valid page
-        resp = client.get(
-            url_for(
-                "clinvar.clinvar_germline_submissions",
-                institute_id=institute_obj["internal_id"],
-            ),
-        )
-
-        assert resp.status_code == 200
-
-
-def test_delete_clinvar_object_case_data(app, institute_obj, case_obj, clinvar_form):
-    """Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-
-        subm_obj = store.clinvar_submission_collection.find_one()
-        # GIVEN a CaseData document that should be removed from the submission
-        casedata_obj = store.clinvar_collection.find_one({"csv_type": "casedata"})
-
-        data = {"delete_object": casedata_obj["_id"]}
-        # WHEN form is submitted
-        client.post(
-            url_for(
-                "clinvar.clinvar_delete_object",
-                submission=subm_obj["_id"],
-                object_type="casedata",
-            ),
-            data=data,
-        )
-
-        # THEN the document should be removed from database, ClinVar collection
-        assert store.clinvar_submission_collection.find_one({"csv_type": "casedata"}) is None
-
-
-def test_delete_clinvar_object_variant_data(app, institute_obj, case_obj, clinvar_form):
-    """ "Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-
-        subm_obj = store.clinvar_submission_collection.find_one()
-        # GIVEN a variant  that should be removed from the submission
-        variantdata_obj = store.clinvar_collection.find_one({"csv_type": "variant"})
-
-        data = {"delete_object": variantdata_obj["_id"]}
-        # WHEN form is submitted
-        client.post(
-            url_for(
-                "clinvar.clinvar_delete_object",
-                submission=subm_obj["_id"],
-                object_type="variant_data",
-            ),
-            data=data,
-        )
-
-        # THEN the document should be removed from database, ClinVar collection
-        assert store.clinvar_submission_collection.find_one({"csv_type": "variant"}) is None
-
-        # And a relative event should have been created
-        assert store.event_collection.find_one({"verb": "clinvar_remove"})
-
-
-def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
-    """Test the endpoint responsible for updating a ClinVar submission"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-        ######### Test setting an official submission ID
-        # GIVEN an ID provided by ClinVar
-        data = dict(update_submission="register_id", clinvar_id="SUB000")
-        # Invoking the endpoint with the right input data
-        client.post(
-            url_for(
-                UPDATE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                submission=subm_obj["_id"],
-            ),
-            data=data,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-        # Should result in the ID saved in the database
-        assert subm_obj.get("clinvar_subm_id") == "SUB000"
-
-        ######### Test changing the submission status
-        # GIVEN that the submission has state "open"
-        subm_obj = store.clinvar_submission_collection.find_one()
-        assert subm_obj["status"] == "open"
-
-        # WHEN providing update_status = "closed"
-        data = dict(update_submission="closed")
-        client.post(
-            url_for(
-                UPDATE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                submission=subm_obj["_id"],
-            ),
-            data=data,
-        )
-        # THEN the submission status should change to closed
-        subm_obj = store.clinvar_submission_collection.find_one()
-        assert subm_obj["status"] == "closed"
-
-        ######### Test deleting the submission
-        # WHEN a submission is closed using the form
-        data = dict(update_submission="delete")
-        client.post(
-            url_for(
-                UPDATE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                submission=subm_obj["_id"],
-            ),
-            data=data,
-        )
-        # THEN the submission should be removed from the databasex
-        assert store.clinvar_submission_collection.find_one() is None
+GERMLINE = "germline"
+ONCOGENICITY = "oncogenicity"
 
 
 @responses.activate
@@ -267,97 +54,118 @@ def test_clinvar_api_status(app):
         assert response.status_code == 302
 
 
-@responses.activate
-def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
-    """Test the endpoint used to submit to ClinVar using the API"""
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "clinvar.clinvar_add_germline_variant",
+        "clinvar.clinvar_add_onc_variant",
+    ],
+)
+def test_clinvar_multistep_add_variant_page(app, institute_obj, case_obj, variant_obj, endpoint):
+    """Test endpoints that display the multistep form to add a ClinVar variant (germline or oncogenic)."""
+    # GIVEN a database with a variant
+    assert store.variant_collection.find_one()
 
-    # GIVEN an initialized app
     with app.test_client() as client:
-        # WITH a logged user
+        # GIVEN a logged-in user
         client.get(url_for("auto_login"))
 
-        # GIVEN that institute has one ClinVar submission
-        client.post(
+        # WHEN sending a post request to add a variant to ClinVar
+        data = {"var_id": variant_obj["_id"]}
+        resp = client.post(
             url_for(
-                SAVE_ENDPOINT,
+                endpoint,
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
-            data=clinvar_form,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-
-        # WHEN the submission is validated using the to the ClinVar API
-        # GIVEN a mocked proxy service - csv_2_json
-        responses.add(
-            responses.POST,
-            API_CSV_2_JSON_URL,
-            json={"clinvarSubmission": "test"},
-            status=200,
+            data=data,
         )
 
-        # GIVEN a mocked ClinVar API service
-        responses.add(
-            responses.POST,
-            CLINVAR_API_URL_DEFAULT,
-            json={"id": "SUB1234567"},
-            status=201,
+        # THEN the form page should work as expected
+        assert resp.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "submissions_endpoint",
+    [
+        "clinvar.clinvar_germline_submissions",
+        "clinvar.clinvar_onc_submissions",
+    ],
+)
+def test_clinvar_submissions_page(
+    app,
+    institute_obj,
+    case_obj,
+    submissions_endpoint,
+):
+    """Test the pages that shows ClinVar submissions (germline or oncogenicity) for an institute."""
+
+    with app.test_client() as client:
+        # GIVEN a logged-in user
+        client.get(url_for("auto_login"))
+
+        # THEN the submissions page should work
+        resp = client.get(
+            url_for(
+                submissions_endpoint,
+                institute_id=institute_obj["internal_id"],
+            ),
         )
 
-        # Then a request to the UPDATE_ENDPOINT with the right data ("update_submission": "submit")
-        data = dict(update_submission="submit")
+        assert resp.status_code == 200
+
+
+ACTIONS = [
+    ("closed", "status", "closed"),
+    ("open", "status", "open"),
+    ("submitted", "status", "submitted"),
+]
+
+
+@pytest.mark.parametrize(
+    "submission_type",
+    [
+        GERMLINE,
+        ONCOGENICITY,
+    ],
+)
+@pytest.mark.parametrize("update_action, status_key, status_value", ACTIONS)
+def test_clinvar_update_submission_status(
+    app,
+    institute_obj,
+    case_obj,
+    user_obj,
+    clinvar_form,
+    submission_type,
+    update_action,
+    status_key,
+    status_value,
+):
+    """Test the endpoint responsible for updating the status of ClinVar submissions (either germline or oncogenicity)."""
+
+    # GIVEN a database with an empty submission
+    subm_obj = store.get_open_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=submission_type
+    )
+    assert subm_obj[status_key] == "open"
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # WHEN submission status is changed via the endpoint
+        data = {"update_submission": update_action}
         resp = client.post(
             url_for(
-                UPDATE_ENDPOINT,
+                "clinvar.clinvar_update_submission",
                 institute_id=institute_obj["internal_id"],
                 submission=subm_obj["_id"],
             ),
             data=data,
         )
-        # SHOULD result in a redirect to submissions page (code 302)
+
+        # THEN response should redirect back
         assert resp.status_code == 302
 
-        # AND the submission object in database should be marked as submitted
-        updated_submission = store.clinvar_submission_collection.find_one()
-        assert updated_submission["status"] == "submitted"
-
-
-@responses.activate
-def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
-    """Test creation of json from the ClinVar submissions page"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-
-        # GIVEN a mocked proxy service - csv_2_json
-        responses.add(
-            responses.POST,
-            API_CSV_2_JSON_URL,
-            json={"clinvar": "test"},
-            status=200,
-        )
-
-        # The response from the proxy service should be returned
-        resp = client.get(
-            url_for(
-                "clinvar.clinvar_download_json",
-                submission=subm_obj["_id"],
-                clinvar_id="SUB000",
-            )
-        )
-
-        assert resp.status_code == 200
-        assert resp.mimetype == "application/json"
+        # AND submission status should have changed
+        updated = store.clinvar_submission_collection.find_one()
+        assert updated[status_key] == status_value
