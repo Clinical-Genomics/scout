@@ -40,7 +40,7 @@ class OmicsVariantLoader(BaseModel):
     # MethBat single dataset comparison profile TSVs
 
     # the CPG label is temp and will be split into HGNC id, type etc.
-    cpg_label: str = None
+    cpg_label: Optional[str] = None
 
     # NoData, Uncategorized < Methylated, Unmethylated << AlleleSpecificMethylation
     summary_label: Optional[str] = None
@@ -59,12 +59,12 @@ class OmicsVariantLoader(BaseModel):
     mean_combined_methyl: Optional[float] = None
     mean_combined_methyl_zscore: Optional[float] = None
 
-    num_phased_cpgs: Optional[float] = None
-    num_partial_cpgs: Optional[float] = None
-    num_unphased_cpgs: Optional[float] = None
-    median_total_coverage: Optional[float] = None
-    median_hap1_coverage: Optional[float] = None
-    median_hap2_coverage: Optional[float] = None
+    num_phased_cpgs: Optional[int] = None
+    num_partial_cpgs: Optional[int] = None
+    num_unphased_cpgs: Optional[int] = None
+    median_total_coverage: Optional[int] = None
+    median_hap1_coverage: Optional[int] = None
+    median_hap2_coverage: Optional[int] = None
 
     # DROP Fraser and Outrider outlier TSVs
 
