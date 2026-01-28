@@ -34,6 +34,14 @@ LOG = logging.getLogger(__name__)
     help="Path to research WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
 )
 @click.option(
+    "--methbat",
+    help="Path to clinical LRS OMICS outlier MethBat TSV file to be added - NB variants are NOT loaded",
+)
+@click.option(
+    "--methbat-research",
+    help="Path to research LRS OMICS outlier MethBat TSV file to be added - NB variants are NOT loaded",
+)
+@click.option(
     "--rna-genome-build",
     type=click.Choice(["37", "38"]),
     help="RNA human genome build - should match RNA alignment files and IGV tracks",
@@ -110,6 +118,8 @@ def case(
     collaborator,
     fraser,
     fraser_research,
+    methbat,
+    methbat_research,
     outrider,
     outrider_research,
     vcf,
@@ -180,6 +190,8 @@ def case(
         ("fraser_research", fraser_research),
         ("outrider", outrider),
         ("outrider_research", outrider_research),
+        ("methbat", methbat),
+        ("methbat_research", methbat_research),
     ]:
         if key is None:
             continue
@@ -190,6 +202,10 @@ def case(
 
         case_obj["omics_files"][key_name] = key
         case_obj["has_outliers"] = True
+
+        if "meth" in key_name:
+            case_obj["has_methylation"] = True
+
         case_changed = True
 
     if rna_genome_build:

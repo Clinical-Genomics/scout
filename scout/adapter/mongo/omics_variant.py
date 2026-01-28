@@ -180,12 +180,12 @@ class OmicsVariantHandler:
     def omics_variants(
         self,
         case_id: str,
-        query=None,
-        category: str = "outlier",
+        query: Optional[dict] = None,
+        category: Optional[str] = "outlier",
         nr_of_variants=50,
         skip=0,
         projection: Optional[Dict] = None,
-        build="37",
+        build: str = "37",
     ):
         """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
 
