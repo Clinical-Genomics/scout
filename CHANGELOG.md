@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case and variant-specific information on ACMG page and PDF export (#5978)
 - Allow bypassing the confirmation prompt for the `delete rna` command via a new `--force` option (#5982)
 - Parse phasing information and store on genotype call (#5988)
+- Link to GTEx for gene, from gene and variant pages (#5995)
 - An `ACMG algorithm` link included in the main dropdown, pointing to a blank classification page to be used as an ACMG sandbox (#5983)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
