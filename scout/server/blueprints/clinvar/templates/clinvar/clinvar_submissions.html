@@ -131,7 +131,7 @@
                   <td>{{render_dict_array(var.conditionSet.condition)}}</td>
                   <td>{{render_dict_array(var.observedIn)}}</td>
                   <td>
-                    <form id="delete_onc_var_item_{{subm_obj._id}}_{{var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_onc_variant', submission=subm_obj._id) }}" method="POST">
+                    <form id="delete_var_item_{{subm_obj._id}}_{{var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_variant', submission_id=subm_obj._id, submission_type='germline') }}" method="POST">
                       <button type="submit" name="delete_object" value="{{var.variant_id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
                     </form>
                   </td>

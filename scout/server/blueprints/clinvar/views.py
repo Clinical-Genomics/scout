@@ -221,12 +221,13 @@ def clinvar_onc_save(institute_id: str, case_name: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<submission>/clinvar_onc/delete_variant", methods=["POST"])
-def clinvar_delete_onc_variant(submission: str):
-    """Delete a single variant (oncogenicitySubmission) from the ClinVar submissions collection."""
-    store.delete_clinvar_onc_var(
-        submission=submission,
+@clinvar_bp.route("/<submission_id>/<submission_type>/delete_variant", methods=["POST"])
+def clinvar_delete_variant(submission_id: str, submission_type: str):
+    """Delete a single variant from a ClinVar submission document."""
+    store.delete_variant_from_submission(
+        submission_id=submission_id,
         variant_id=request.form.get("delete_object"),
+        type=submission_type,
     )
     return safe_redirect_back(request)
 
