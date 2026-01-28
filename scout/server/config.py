@@ -87,6 +87,16 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
 
+# Define here the VCF keys you want to be parsed for eventual custom archived LoqusDB instances.
+# Comment out if no archived LoqusDB instance is annotated in your VCF files
+LOQUSDB_ARCHIVE_VCF_INFO_FIELDS = {
+    "Obs": {"field": "local_obs_old", "type": int},
+    "Hom": {"field": "local_obs_hom_old", "type": int},
+    "Frq": {"field": "local_obs_old_freq", "type": float},
+    "clinical_genomics_loqusObs": {"field": "local_obs_old", "type": int},
+    "clinical_genomics_loqusFrq": {"field": "local_obs_old_freq", "type": float},
+}
+
 # Connection details for Scout REViewer service
 # SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
