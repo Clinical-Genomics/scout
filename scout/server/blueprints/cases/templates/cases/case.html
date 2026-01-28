@@ -266,8 +266,11 @@
         {% if case.vcf_files.vcf_fusion %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical fusion variants</a>
         {% endif %}
-        {% if case.has_outliers %}
+        {% if case.omics_files and (case.omics_files.fraser or case.omics_files.outrider) %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical WTS outliers</a>
+        {% endif %}
+        {% if case.omics_files and case.omics_files.methbat %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('omics_variants.outliers', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', svtype='methylation') }}">Clinical LRS methylation outliers</a>
         {% endif %}
       </div>
     </div>
