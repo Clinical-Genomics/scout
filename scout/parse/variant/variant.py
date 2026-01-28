@@ -19,7 +19,7 @@ from .gene import parse_genes
 from .genotype import parse_genotypes
 from .ids import parse_ids
 from .models import parse_genetic_models
-from .rank_score import parse_rank_score
+from .rank_score import parse_rank_score, parse_rank_score_other
 from .transcript import parse_transcripts
 
 LOG = logging.getLogger(__name__)
@@ -163,6 +163,9 @@ def parse_variant(
     set_mei_specific_annotations(parsed_variant, variant)
 
     set_cancer_specific_annotations(parsed_variant, variant)
+
+    ########## Add eventual additional rank scores #############
+    parse_rank_score_other(parsed_variant, variant)
 
     remove_nonetype(parsed_variant)
     return parsed_variant
