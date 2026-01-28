@@ -120,7 +120,7 @@ def clinvar_germline_submissions(institute_id):
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
     }
-    return render_template("clinvar/clinvar_submissions.html", **data)
+    return render_template("clinvar/clinvar_germline_submissions.html", **data)
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])

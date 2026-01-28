@@ -19,10 +19,12 @@
       {% if subm_obj.status=='open'%}
         <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
       {% else %}
-        <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
+        <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs" {% if not subm_obj.type %}disabled{% endif %}>Re-open submission</button></li>
       {% endif %}
       {% if subm_obj.status != 'submitted' %}
         <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
+      {% elif not subm_obj.type %}
+        <li class="breadcrumb-item"><button type="submit" name="update_submission" value="deprecated" class="btn btn-secondary btn-xs">Revert to deprecated</button></li>
       {% endif %}
         <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission from Scout</button></li>
     </ol>
