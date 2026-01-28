@@ -114,14 +114,14 @@ class ClinVarHandler(object):
         return submission
 
     def update_clinvar_id(self, clinvar_id, submission_id):
-        """saves an official clinvar submission ID in a clinvar submission object
+        """saves an official ClinVar submission ID in a ClinVar submission object
 
         Args:
-            clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
+            clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from ClinVar portal when starting a new submission
             submission_id(str): submission_id(str) : id of the submission to be updated
 
         Returns:
-            updated_submission(obj): a clinvar submission object, updated
+            updated_submission(obj): a ClinVar submission object, updated
         """
         updated_submission = self.clinvar_submission_collection.find_one_and_update(
             {"_id": ObjectId(submission_id)},
@@ -205,7 +205,7 @@ class ClinVarHandler(object):
         }
 
     def get_clinvar_submissions(self, institute_id: str, type: str) -> pymongo.cursor.Cursor:
-        """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
+        """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
         query = {"institute_id": institute_id, "type": type}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 

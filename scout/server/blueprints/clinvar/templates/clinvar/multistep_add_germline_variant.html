@@ -65,6 +65,7 @@
                 <!-- end hidden fields -->
                 <br><br>
                 <div class="mb-3">
+                    {% set scout_classif = variant_data.var_obj.classification|replace("_"," ") if variant_data.var_obj.classification else "n.a." %}
                     {{variant_data.var_form.classification.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
                     <select name="classification" class="form-control, btn-secondary">
                       {% for classif, classif_value in variant_data.var_form.classification.choices %}
