@@ -74,7 +74,7 @@
          </div>
       </td>
       <td>{{ variant.sub_category }}</td>
-      <td class="text-end"> {%  if variant.sub_category == "splicing" %}
+      <td class="text-end"> {% if variant.sub_category == "splicing" %}
           <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
           {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
         {% elif variant.sub_category == "expression" %}
@@ -92,17 +92,17 @@
         {% endif %}
       </td>
       {% if variant.sub_category == "methylation" %}
-        <td class="text-end"><div data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
+        <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
           Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>
           Mean abs methylation delta Z-score: {{ '%.3e' % variant.mean_abs_meth_delta_zscore }}<br>
           Mean combined methylation: {{ '%.3e' % variant.mean_combined_methyl }} (Z-score {{ '%.3e' % variant.mean_combined_methyl_zscore }})<br>
           Num phased cpgs: {{ variant.num_phased_cpgs }} partial: {{ variant.num_partial_cpgs }} unphased: {{ variant.num_unphase_cpgs }}<br>
           Median cov: {{ variant.median_total_coverage }} hap1: {{ variant.median_hap1_coverage }} hap2: {{ variant.median_hap2_coverage }}<br>
-          ">{{ '%.3e' % variant.mean_abs_meth_delta_zscore }}</div></td>
+          ">{{ '%.3e' % variant.mean_abs_meth_delta_zscore }}</td>
       {% else %}
-        <td class="text-end"><div data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
+        <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
           {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
-          ">{{ '%.3e' % variant.p_value }}</div></td>
+          ">{{ '%.3e' % variant.p_value }}</td>
       {% endif %}
       <td>{% for sample in variant.samples %}
           {% if sample.genotype_call != "./." %}
