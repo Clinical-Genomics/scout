@@ -206,12 +206,21 @@ def send_api_submission(institute_id, submission, subm_type):
     if code in [200, 201]:
         clinvar_id = submit_res.json().get("id")
         flash(
-            f"Submission sent to API URL '{service_url}'. Saved successfully with ID: {clinvar_id}",
+            f"Submission sent to API URL '{service_url}'. Submitted with ID: {clinvar_id}. Please wait a few minutes before checking its status.",
             "success",
+        )
+        # Update ClinVar submission ID with the ID returned from ClinVar
+        store.update_clinvar_id(
+            clinvar_id=clinvar_id,
+            submission_id=submission_id,
+        )
+        # Update submission status as submitted
+        store.update_clinvar_submission_status(
+            institute_id=institute_id, submission_id=submission_id, status="submitted"
         )
     else:
         flash(
-            f"Submission sent to API URL '{service_url}'. Returned error: {submit_res}",
+            f"Submission sent to API URL '{service_url}'. Returned error {code}: {submit_res.json()}",
             "warning",
         )
 
