@@ -1,11 +1,10 @@
 import logging
-from json import dumps
-from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple
+from typing import List
 
 from flask import (
     Blueprint,
     Response,
+    abort,
     flash,
     redirect,
     render_template,

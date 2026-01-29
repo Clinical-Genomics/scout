@@ -1,8 +1,6 @@
-import csv
 import logging
 from datetime import datetime
-from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 from flask import flash, request
 from flask_login import current_user
@@ -21,7 +19,7 @@ from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import clinvar_api, store
-from scout.server.utils import get_case_genome_build, safe_redirect_back
+from scout.server.utils import get_case_genome_build
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 

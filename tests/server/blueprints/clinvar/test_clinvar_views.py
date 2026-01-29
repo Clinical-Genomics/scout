@@ -135,7 +135,6 @@ def test_clinvar_update_submission_status(
     institute_obj,
     case_obj,
     user_obj,
-    clinvar_form,
     submission_type,
     update_action,
     status_key,
