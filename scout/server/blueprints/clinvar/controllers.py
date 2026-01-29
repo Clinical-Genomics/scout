@@ -394,58 +394,6 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         send_api_submission(institute_id, submission_id, submitter_key)
 
 
-def json_api_submission(submission_id: str) -> Tuple[int, dict]:
-    """Returns an integer and a json submission object as a dict. If the submission is of type "oncogenicity" there is no need for conversion and can be used as is.
-    Germline submission objects (Variant and Casedata database documents) are converted to a json submission using
-    the PreClinVar service.
-    """
-
-    json_submission: dict = store.get_onc_submission_json(
-        submission=submission_id
-    )  # Oncogenicity submissions are already saved in the desired format
-    if json_submission:
-        return 200, json_submission
-
-    variant_data: list = store.clinvar_objs(submission_id, "variant_data")
-    obs_data: list = store.clinvar_objs(submission_id, "case_data")
-
-    if not variant_data or not obs_data:
-        return (400, "Submission must contain both Variant and CaseData info")
-
-    # Retrieve eventual assertion criteria for the submission
-    extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
-
-    # Retrieve genome build for the case submitted
-    case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
-    extra_params["assembly"] = "GRCh37" if "37" in get_case_genome_build(case_obj) else "GRCh38"
-
-    def _write_file(afile, header, lines):  # Write temp CSV file
-        writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
-        writes.writerow(header)
-        for line in lines:
-            writes.writerow(line)
-        afile.flush()
-        afile.seek(0)
-
-    with (
-        NamedTemporaryFile(mode="a+", prefix="Variant", suffix=".csv") as variant_file,
-        NamedTemporaryFile(mode="a+", prefix="CaseData", suffix=".csv") as casedata_file,
-    ):
-        # Write temp Variant CSV file
-        _, variants_header, variants_lines = clinvar_submission_file(
-            submission_id, "variant_data", "SUB000"
-        )
-        _write_file(variant_file, variants_header, variants_lines)
-
-        # Write temp CaseData CSV file
-        _, casedata_header, casedata_lines = clinvar_submission_file(
-            submission_id, "case_data", "SUB000"
-        )
-        _write_file(casedata_file, casedata_header, casedata_lines)
-
-        return clinvar_api.convert_to_json(variant_file.name, casedata_file.name, extra_params)
-
-
 def send_api_submission(institute_id, submission_id, key):
     """Convert and validate ClinVar submission data to json.
        If json submission is validated, submit it using the ClinVar API

@@ -11,11 +11,11 @@
 <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb align-items-center">
-      <li class="breadcrumb-item">
+      <li class="breadcrumb-item" data-bs-toggle="tooltip" title="Functionality is disabled for deprecated submissions">
         <a
           id="download_clinvar_json"
           {% if subm_obj.type %}
-            href="{{ url_for('clinvar.clinvar_download', submission=subm_obj._id) }}"
+            href="{{ url_for('clinvar.clinvar_download_as_json', submission=subm_obj._id, type=subm_obj.type) }}"
             class="btn btn-primary btn-xs text-white"
             target="_blank"
             rel="noopener"
@@ -26,7 +26,7 @@
             aria-disabled="true"
           {% endif %}
         >
-          Download submission json file
+          View as json file
         </a>
       </li>
       {% if subm_obj.status=='open'%}

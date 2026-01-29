@@ -315,37 +315,6 @@ class ClinVarHandler(object):
 
         return []
 
-    def rename_casedata_samples(self, submission_id, case_id, old_name, new_name):
-        """Rename all samples associated to a clinVar submission
-
-        Args:
-            submission_id(str): the _id key of a clinvar submission
-            case_id(str): id of case
-            old_name(str): old name of an individual in case data
-            new_name(str): new name of an individual in case data
-
-        Returns:
-            renamed_samples(int)
-        """
-        renamed_samples = 0
-        LOG.info(
-            f"Renaming clinvar submission {submission_id}, case {case_id} individual {old_name} to {new_name}"
-        )
-
-        casedata_objs = self.clinvar_objs(submission_id, "case_data")
-
-        for obj in casedata_objs:
-            if obj.get("individual_id") == old_name and obj.get("case_id") == case_id:
-                result = self.clinvar_collection.find_one_and_update(
-                    {"_id": obj["_id"]},
-                    {"$set": {"individual_id": new_name}},
-                    return_document=ReturnDocument.AFTER,
-                )
-                if result:
-                    renamed_samples += 1
-
-        return renamed_samples
-
     def delete_clinvar_object(self, object_id: str, object_type: str, submission_id: str) -> dict:
         """Remove a variant object from ClinVar database and update the relative submission object
 
@@ -467,15 +436,16 @@ class ClinVarHandler(object):
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
 
-    def get_onc_submission_json(self, submission: str) -> Optional[dict]:
-        """Returns a json oncogenicity submission file, as a json."""
+    def get_json_submission(self, submission: str, type: str) -> Optional[dict]:
+        """Returns a submission file ready to be submitted to ClinVar, as a dictionary."""
 
         submission_dict = self.clinvar_submission_collection.find_one(
-            {"_id": ObjectId(submission), "type": "oncogenicity"}
+            {"_id": ObjectId(submission), "type": type}
         )
         if not submission_dict:
             return
 
+        # Remove keys that are scout-specific from main submission doc
         for key in [
             "_id",
             "clinvar_subm_id",
@@ -488,7 +458,8 @@ class ClinVarHandler(object):
         ]:
             submission_dict.pop(key, None)
 
-        for var in submission_dict.get("oncogenicitySubmission", []):
+        # And from variant objects
+        for var in submission_dict.get(f"{type}Submission", []):
             for key in ["institute_id", "case_id", "case_name", "variant_id"]:
                 var.pop(key, None)
 

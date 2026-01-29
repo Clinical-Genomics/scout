@@ -23,7 +23,7 @@
 
 {% macro submissions_macro(submissions) %}
 <div class="container-float">
-  <h3 class="mt-3">ClinVar submissions page</h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a><br>
+  <h3 class="mt-3">ClinVar germline submissions</h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a><br>
   <!-- Modal -->
   {{ clinvar_howto_modal() }}
   <!-- Modal end -->
@@ -344,6 +344,12 @@
 {% block scripts %}
   {{ super() }}
   <script type="text/javascript">
+
+  // Enable tooltips
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
 
   $(function () {
       $('.casedata  div').hide();

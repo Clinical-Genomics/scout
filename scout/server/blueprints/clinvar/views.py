@@ -181,42 +181,8 @@ def clinvar_update_submission(institute_id, submission):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
-def clinvar_download_json(submission: str, clinvar_id: Optional[str]) -> Response:
-    """Download a json for a clinVar submission.
+@clinvar_bp.route("/<submission>/<type>/download", methods=["GET"])
+def clinvar_download_as_json(submission, type):
+    """Download a json file for a clinVar submission."""
 
-    Accepts:
-        submission:. It's the _id of the submission in the database
-        clinvar_id: It's the submission number (i.e. SUB123456). Might be available or not in the submission dictionary
-
-    """
-    filename = clinvar_id if clinvar_id != "None" else submission
-
-    code, conversion_res = controllers.json_api_submission(submission_id=submission)
-
-    if code in [200, 201]:
-        # Write temp CSV file and serve it in response
-        tmp_json = NamedTemporaryFile(mode="a+", prefix=filename, suffix=".json")
-        tmp_json.write(dumps(conversion_res, indent=4))
-
-        tmp_json.flush()
-        tmp_json.seek(0)
-        return send_file(
-            tmp_json.name,
-            download_name=f"{filename}.json",
-            mimetype="application/json",
-            as_attachment=True,
-        )
-    else:
-        flash(
-            f"JSON file could not be crated for ClinVar submission: {filename}: {conversion_res}",
-            "warning",
-        )
-        return safe_redirect_back(request)
-
-
-@clinvar_bp.route("/<submission>/download", methods=["GET"])
-def clinvar_download(submission):
-    """Download a json file for a clinVar submission. This function is only used for oncogenocity submissions for the time being"""
-
-    return store.get_onc_submission_json(submission)
+    return store.get_json_submission(submission, type)
