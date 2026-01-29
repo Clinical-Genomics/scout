@@ -15,6 +15,7 @@ LOG = logging.getLogger(__name__)
 
 SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
 SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
+SIGNIFICANT_METHBAT_CPG_LABEL = "imprint"
 
 
 class OmicsVariantLoader(BaseModel):
@@ -280,6 +281,8 @@ def get_qualification(values: dict) -> str:
     if values.get("sub_category") == "splicing":
         qualification = values.get("potentialImpact")
     if values.get("sub_category") == "methylation":
+        if SIGNIFICANT_METHBAT_CPG_LABEL in values.get("cpg_label"):
+            qualification = "Imprinting"
         if values.get("summary_label") in SIGNIFICANT_METHBAT_SUMMARY:
             qualification = values.get("summary_label")
         if values.get("compare_label") in SIGNIFICANT_METHBAT_COMPARE:
