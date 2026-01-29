@@ -47,13 +47,13 @@
       <tr>
       <td class="text-end">
         <div class="d-flex flex-row justify-content-between">
-        {% if variant.cpg_label %}
-          <div>{{ variant.cpg_label }}</div>
-        {% endif %}
         {% if variant.genes %}
           {{ gene_cell(variant, inherit_palette) }}
         {% else %}
           {{ variant.gene_name_orig }}
+        {% endif %}
+        {% if variant.cpg_label %}
+          <div style="white-space: nowrap;">{{ variant.cpg_label }}</div>
         {% endif %}
           <div class="d-flex justify-content-center">
           {% if case.vcf_files.vcf_snv %}

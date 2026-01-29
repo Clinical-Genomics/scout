@@ -60,7 +60,7 @@ def outliers(institute_id, case_name):
     if request.method == "GET":
         form = OutlierFiltersForm(request.args)
 
-        if "methylation" in form.svtype:
+        if "methylation" in form.data.get("svtype"):
             is_methylation = True
 
         # set chromosome to all chromosomes
@@ -82,7 +82,7 @@ def outliers(institute_id, case_name):
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
-        if "methylation" in form["svtype"]:
+        if "methylation" in form.data.get("svtype"):
             is_methylation = True
 
     form.variant_type.data = variant_type
