@@ -55,8 +55,13 @@ def outliers(institute_id, case_name):
     # update status of case if visited for the first time
     activate_case(store, institute_obj, case_obj, current_user)
 
+    # flag requests for methylation outliers for a slightly different page
+    is_methylation = False
     if request.method == "GET":
         form = OutlierFiltersForm(request.args)
+
+        if "methylation" in form.svtype:
+            is_methylation = True
 
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
@@ -77,6 +82,8 @@ def outliers(institute_id, case_name):
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
+        if "methylation" in form["svtype"]:
+            is_methylation = True
 
     form.variant_type.data = variant_type
 
@@ -119,5 +126,6 @@ def outliers(institute_id, case_name):
         show_dismiss_block=get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
+        is_methylation=is_methylation,
         **data,
     )

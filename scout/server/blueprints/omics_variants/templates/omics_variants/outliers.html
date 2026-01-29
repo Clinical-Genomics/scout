@@ -8,7 +8,7 @@
 {% from "variant/components.html" import variant_scripts %}
 
 {% block category_title %}
-  WTS outlier variants
+  {% if is_methylation %}WGS-LR methylation{% else %}WTS outlier{% endif %} variants
 {% endblock %}
 
 {% block variants_form_action%}
@@ -16,7 +16,11 @@
 {% endblock %}
 
 {% block variants_filter %}
-  {{ outlier_filters(form, institute, case) }}
+  {% if is_methylation %}
+    {{ outlier_filters(form, institute, case) }}
+  {% else %}
+    {{ outlier_filters(form, institute, case) }}
+  {% endif %}
 {% endblock %}
 
 {% block variants_filter_form_footer %}
@@ -28,8 +32,8 @@
     <tr>
       <th scope="col" style="width:14%" title="HGNC symbols">Gene</th>
       <th scope="col" style="width:7%" title="Sub-category">Type</th>
-      <th scope="col" style="width:7%" title="Value - delta Psi or l2fc">Value</th>
-      <th scope="col" title="Functional annotation">Func. annotation</th>
+      <th scope="col" style="width:7%" title="Value - delta Psi or l2fc">{% if is_methylation %}Compare{% else %}Value{% endif %}</th>
+      <th scope="col" title="Functional annotation">{% if is_methylation %}Summary{% else %}Func. annotation{% endif %}</th>
       <th scope="col" style="width:7%" title="P-value">P-value</th>
       <th scope="col" style="width:10%" title="Individual">Ind</th>
       <th scope="col" style="width:3%" title="Chromosome">Chr</th>
@@ -43,6 +47,9 @@
       <tr>
       <td class="text-end">
         <div class="d-flex flex-row justify-content-between">
+        {% if variant.cpg_label %}
+          {{ variant.cpg_label }}
+        {% endif %}
         {% if variant.genes %}
           {{ gene_cell(variant, inherit_palette) }}
         {% else %}
@@ -70,25 +77,40 @@
       <td class="text-end"> {%  if variant.sub_category == "splicing" %}
           <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
           {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
-        {% else %}
+        {% elif variant.sub_category == "expression" %}
           <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
           {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
+        {% elif variant.sub_category == "methylation" %}
+          <a target="_blank" title='MethBat compare label' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{{ variant.compare_label }}</a>
         {% endif %}
       </td>
       <td>
         {% if variant.sub_category == "splicing" %}
           {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
+        {% elif variant.sub_category == "methylation" %}
+          <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label' rel="noopener noreferrer">{{ variant.summary_label }}</a>
         {% endif %}
       </td>
-      <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
-        {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
-        ">{{ '%.3e' % variant.p_value }}</td>
+      {% if variant.sub_category == "methylation" %}
+        <td class="text-end"><div data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
+          Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>
+          Mean abs methylation delta Z-score: {{ '%.3e' % variant.mean_abs_meth_delta_zscore }}<br>
+          Mean combined methylation: {{ '%.3e' % variant.mean_combined_methyl }} (Z-score {{ '%.3e' % variant.mean_combined_methyl_zscore }})<br>
+          Num phased cpgs: {{ variant.num_phased_cpgs }} partial: {{ variant.num_partial_cpgs }} unphased: {{ variant.num_unphase_cpgs }}<br>
+          Median cov: {{ variant.median_total_coverage }} hap1: {{ variant.median_hap1_coverage }} hap2: {{ variant.median_hap2_coverage }}<br>
+          ">{{ '%.3e' % variant.mean_abs_meth_delta_zscore }}</div></td>
+      {% else %}
+        <td class="text-end"><div data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
+          {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
+          ">{{ '%.3e' % variant.p_value }}</div></td>
+      {% endif %}
       <td>{% for sample in variant.samples %}
           {% if sample.genotype_call != "./." %}
             <div>{{ sample.display_name }}</div>
           {% endif %}
         {% endfor %}
       </td>
+
       <td class="text-end">{{ variant.chromosome }}</td>
         <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
           <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
