@@ -100,6 +100,8 @@ gt_call = dict(
     alt_mc=int,
     genotype_quality=int,
     so=str,
+    sdr=float,  # STRdrop case average adjusted sequencing depth ratio
+    sdp=float,  # Strdrop coverage sequencing depth level probability
 )
 
 MIMVIR_SCORE = {

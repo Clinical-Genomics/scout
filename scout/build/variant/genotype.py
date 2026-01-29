@@ -1,23 +1,7 @@
-def build_genotype(gt_call):
+def build_genotype(gt_call: dict) -> dict:
     """Build a genotype call
 
-    Args:
-        gt_call(dict)
-
-    Returns:
-        gt_obj(dict)
-
-    gt_call = dict(
-        sample_id = str,
-        display_name = str,
-        genotype_call = str,
-        allele_depths = list, # int
-        read_depth = int,
-        genotype_quality = int,
-        alt_mc = int, # STR
-        so = str, # STR type of reads that support allele: "a/a" where a in [SPANNING, FLANKING, INREPEAT]
-    )
-
+    Format tags only expected on some variant types are set if present.
     """
     gt_obj = dict(
         sample_id=gt_call["individual_id"],
@@ -27,13 +11,10 @@ def build_genotype(gt_call):
         read_depth=gt_call["read_depth"],
         alt_frequency=gt_call["alt_frequency"] or -1,
         genotype_quality=gt_call["genotype_quality"],
-        so=gt_call["so"],
-        alt_mc=gt_call["alt_mc"],
-        ffpm=gt_call["ffpm"],
-        split_read=gt_call["split_read"],
     )
 
-    if gt_call["copy_number"]:
-        gt_obj["copy_number"] = gt_call["copy_number"]
+    for format_tag in ["alt_mc", "copy_number", "ffpm", "sdp", "sdr", "so", "split_read"]:
+        if format_tag in gt_call:
+            gt_obj[format_tag] = gt_call[format_tag]
 
     return gt_obj

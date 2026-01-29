@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow bypassing the confirmation prompt for the `delete rna` command via a new `--force` option (#5982)
 - Parse phasing information and store on genotype call (#5988)
 - Link to GTEx for gene, from gene and variant pages (#5995)
+- Parse STRdrop details where available (#5991)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
