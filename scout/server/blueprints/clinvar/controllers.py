@@ -18,7 +18,7 @@ from scout.constants.clinvar import (
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
-from scout.server.extensions import clinvar_api, store
+from scout.server.extensions import store
 from scout.server.utils import get_case_genome_build
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
@@ -365,95 +365,6 @@ def update_clinvar_submission_status(request_obj: dict, institute_id: str, submi
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
-
-
-"""
-def send_api_submission(institute_id: str, submission_id: str, key: str):
-    Collect the submission object as json and validate it.
-    If json submission is validated, submit it using the ClinVar API.
-
-
-    json_subm_obj = store.get_json_submission()
-
-
-    if code != 200:  # Connection or conversion object errors
-        flash(str(conversion_res), "warning")
-        return
-
-    clinvar_id = store.get_clinvar_id(
-        submission_id
-    )  # This is the official ID associated with this submission in Clinvar (ex: SUB999999)
-
-    if clinvar_id:  # Check if submission object has already an associated ClinVar ID
-        conversion_res["submissionName"] = clinvar_id
-
-    service_url, code, submit_res = clinvar_api.submit_json(conversion_res, key)
-
-    if code in [200, 201]:
-        clinvar_id = submit_res.json().get("id")
-        flash(
-            f"Submission sent to API URL '{service_url}'. Saved successfully with ID: {clinvar_id}",
-            "success",
-        )
-
-        # Update ClinVar submission ID with the ID returned from ClinVar
-        store.update_clinvar_id(
-            clinvar_id=clinvar_id,
-            submission_id=submission_id,
-        )
-        # Update submission status as submitted
-        store.update_clinvar_submission_status(
-            institute_id=institute_id, submission_id=submission_id, status="submitted"
-        )
-
-    else:
-        flash(
-            f"Submission sent to API URL '{service_url}'. Returned the following error: {str(submit_res.json())}",
-            "warning",
-        )
-    """
-
-
-def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
-    """Prepare content (header and lines) of a csv clinvar submission file
-    Args:
-        submission_id(str): the database id of a clinvar submission
-        csv_type(str): 'variant_data' or 'case_data'
-        clinvar_subm_id(str): The ID assigned to this submission by ClinVar
-    Returns:
-        (filename, csv_header, csv_lines):
-            filename(str) name of file to be downloaded
-            csv_header(list) content of header cells
-            csv_lines(list of lists) content of file lines, one for each variant/case data
-    """
-    if clinvar_subm_id == "None":
-        flash(
-            "In order to download a submission CSV file you should register a Clinvar submission Name first!",
-            "warning",
-        )
-        return
-
-    submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type)
-
-    if submission_objs is None or len(submission_objs) == 0:
-        flash(
-            f"There are no submission objects of type '{csv_type}' to include in the csv file!",
-            "warning",
-        )
-        return
-
-    # Download file
-    csv_header_obj = _clinvar_submission_header(submission_objs, csv_type)
-    csv_lines = _clinvar_submission_lines(submission_objs, csv_header_obj)
-    csv_header = list(csv_header_obj.values())
-
-    today = str(datetime.now().strftime("%Y-%m-%d"))
-    if csv_type == "variant_data":
-        filename = f"{clinvar_subm_id}_{today}.Variant.csv"
-    else:
-        filename = f"{clinvar_subm_id}_{today}.CaseData.csv"
-
-    return (filename, csv_header, csv_lines)
 
 
 def _clinvar_submission_lines(submission_objs, submission_header):
