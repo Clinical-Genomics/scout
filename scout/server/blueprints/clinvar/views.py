@@ -212,11 +212,11 @@ def send_api_submission(institute_id, submission, subm_type):
         # Update ClinVar submission ID with the ID returned from ClinVar
         store.update_clinvar_id(
             clinvar_id=clinvar_id,
-            submission_id=submission_id,
+            submission_id=submission,
         )
         # Update submission status as submitted
         store.update_clinvar_submission_status(
-            institute_id=institute_id, submission_id=submission_id, status="submitted"
+            institute_id=institute_id, submission_id=submission, status="submitted"
         )
     else:
         flash(
