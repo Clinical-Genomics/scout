@@ -165,3 +165,5 @@ SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
 # Uncomment and customise to log users' activity to file
 # USERS_ACTIVITY_LOG_PATH = "users_activity.log"
+
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"

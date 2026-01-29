@@ -2,24 +2,21 @@ import pytest
 import responses
 from flask import url_for
 
-from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 from scout.server.extensions import store
 
-SAVE_ENDPOINT_GERMLINE = "clinvar.clinvar_germline_save"
-SAVE_ENDPOINT_ONC = "clinvar.clinvar_onc_save"
+CLINVAR_API_URL_TEST = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
 GERMLINE = "germline"
 ONCOGENICITY = "oncogenicity"
+DEMO_SUBMISSION_ID = "SUB12345678"
+DEMO_API_KEY = "test_key"
 
 
 @responses.activate
 def test_clinvar_api_status(app):
     """Test the endpoint used to check the status of a ClinVar submission."""
-
-    DEMO_SUBMISSION_ID = "SUB12345678"
-    DEMO_API_KEY = "test_key"
 
     # GIVEN a mocked submitted response from ClinVar:
     actions: list[dict] = [
@@ -34,7 +31,7 @@ def test_clinvar_api_status(app):
 
     responses.add(
         responses.GET,
-        f"{CLINVAR_API_URL_DEFAULT}{DEMO_SUBMISSION_ID}/actions/",
+        f"{CLINVAR_API_URL_TEST}{DEMO_SUBMISSION_ID}/actions/",
         json={"actions": actions},
         status=200,
     )
