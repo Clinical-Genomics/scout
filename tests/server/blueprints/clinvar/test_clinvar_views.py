@@ -169,3 +169,27 @@ def test_clinvar_update_submission_status(
         # AND submission status should have changed
         updated = store.clinvar_submission_collection.find_one()
         assert updated[status_key] == status_value
+
+
+def test_get_submission_as_json(institute_obj, user_obj, app):
+    """Test the endpoint that returns the submission object as a json file."""
+
+    SUBM_TYPE = "germline"
+
+    # GIVEN a database with a submission
+    subm_obj = store.get_open_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=SUBM_TYPE
+    )
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # THEN the submission should be viewable as json
+        resp = client.get(
+            url_for(
+                "clinvar.get_submission_as_json", submission=subm_obj["_id"], subm_type=SUBM_TYPE
+            )
+        )
+
+        assert resp.status_code == 200
+        assert resp.is_json

@@ -436,11 +436,11 @@ class ClinVarHandler(object):
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
 
-    def get_json_submission(self, submission: str, type: str) -> Optional[dict]:
+    def get_json_submission(self, submission: str, subm_type: str) -> Optional[dict]:
         """Returns a submission file ready to be submitted to ClinVar, as a dictionary."""
 
         submission_dict = self.clinvar_submission_collection.find_one(
-            {"_id": ObjectId(submission), "type": type}
+            {"_id": ObjectId(submission), "type": subm_type}
         )
         if not submission_dict:
             return
@@ -459,7 +459,7 @@ class ClinVarHandler(object):
             submission_dict.pop(key, None)
 
         # And from variant objects
-        for var in submission_dict.get(f"{type}Submission", []):
+        for var in submission_dict.get(f"{subm_type}Submission", []):
             for key in ["institute_id", "case_id", "case_name", "variant_id"]:
                 var.pop(key, None)
 

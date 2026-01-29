@@ -181,8 +181,11 @@ def clinvar_update_submission(institute_id, submission):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/<submission>/<type>/download", methods=["GET"])
-def clinvar_download_as_json(submission, type):
-    """Download a json file for a clinVar submission."""
+@clinvar_bp.route("/<submission>/<subm_type>/download", methods=["GET"])
+def get_submission_as_json(submission, subm_type) -> dict:
+    """Returns a json file for a clinVar submission."""
 
-    return store.get_json_submission(submission, type)
+    data = store.get_json_submission(submission, subm_type)
+    if data is None:
+        abort(404, "Submission not found")
+    return data
