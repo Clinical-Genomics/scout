@@ -69,38 +69,61 @@ def successful_submission_summary_file_content() -> dict:
 
 
 @pytest.fixture(scope="function")
-def clinvar_form(request):
-    """Mocks a ClinVar form compiled by the user. Contains Variant and CaseData input data"""
+def clinvar_germline_snv_form():
+    """Mocks a germline SNV form compiled by the user"""
     data = ImmutableMultiDict(
         {
+            "affected_status": [
+                "yes",
+                "no",
+                "no",
+            ],
+            "allele_of_origin": [
+                "germline",
+                "germline",
+                "germline",
+            ],
+            "alt": "A",
+            "assertion_method_cit_db": "PubMed",
+            "assertion_method_cit_id": "12345",
             "case_id": "internal_id",
             "category": "snv",
-            "local_id": "4c7d5c70d955875504db72ef8e1abe77",
-            "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
             "chromosome": "7",
+            "classification": "Pathogenic",
+            "clinsig_comment": "A classification comment",
+            "collection_method": [
+                "clinical testing",
+                "clinical testing",
+                "clinical testing",
+            ],
+            "condition_type": "HP",
+            "conditions": "0001298",
+            "gene_symbol": "POT1",
+            "include_ind": [
+                "NA12882",
+                "NA12877",
+            ],
+            "individual_id": [
+                "NA12882",
+                "NA12877",
+                "NA12878",
+            ],
+            "inheritance_mode": "Autosomal recessive inheritance",
+            "last_evaluated": "2026-01-29",
+            "linking_id": [
+                "4c7d5c70d955875504db72ef8e1abe77",
+                "4c7d5c70d955875504db72ef8e1abe77",
+                "4c7d5c70d955875504db72ef8e1abe77",
+                "4c7d5c70d955875504db72ef8e1abe77",
+            ],
+            "local_id": "4c7d5c70d955875504db72ef8e1abe77",
+            "multiple_condition_explanation": "",
             "ref": "C",
-            "alt": "A",
             "start": "124491972",
             "stop": "124491972",
-            "gene_symbol": "POT1",
-            "last_evaluated": "2022-09-19",
-            "inheritance_mode": "Autosomal dominant inheritance",
-            "assertion_method": "ACMG Guidelines, 2015",
-            "assertion_method_cit_db": "PMID",
-            "assertion_method_cit_id": "25741868",
+            "submit": "Add to submission",
+            "tx_hgvs": "NM_015450.3:c.903G>T",
             "variations_ids": "rs116916706",
-            "clinsig": "Likely pathogenic, low penetrance",
-            "clinsig_comment": "test clinsig comment",
-            "clinsig_cit": "test clinsig cit",
-            "condition_comment": "test condition comment",
-            "include_ind": ["NA12882"],
-            "individual_id": ["NA12882", "NA12877", "NA12878"],
-            "affected_status": ["yes", "no", "no"],
-            "allele_of_origin": ["germline"] * 3,
-            "collection_method": ["clinical testing"] * 3,
-            "condition_type": "HPO",
-            "conditions": ["0001298", "0001250"],
-            "multiple_condition_explanation": "Novel disease",
         }
     )
     return data

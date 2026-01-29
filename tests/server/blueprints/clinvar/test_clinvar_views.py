@@ -2,16 +2,29 @@ import pytest
 import responses
 from flask import url_for
 
+from scout.constants.clinvar import ASSERTION_CRITERIA_GERM_ID, ASSERTION_GERM_GERM_DB
 from scout.server.extensions import store
 
-CLINVAR_API_URL_TEST = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
-UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
-STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
-VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
 GERMLINE = "germline"
 ONCOGENICITY = "oncogenicity"
+
+CLINVAR_API_URL_TEST = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
+UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
+SAVE_GERMLINE_ENDPOINT = "clinvar.clinvar_germline_save"
+SAVE_ONC_ENDPOINT = "clinvar.clinvar_onc_save"
 DEMO_SUBMISSION_ID = "SUB12345678"
 DEMO_API_KEY = "test_key"
+
+EXPECTED_SUBMISSION_KEYS = [
+    "recordStatus",
+    "variantSet",
+    "conditionSet",
+    "observedIn",
+    "institute_id",
+    "case_name",
+    "variant_id",
+]
 
 
 @responses.activate
@@ -38,6 +51,7 @@ def test_clinvar_api_status(app):
 
     # GIVEN an initialized app
     with app.test_client() as client:
+
         # WITH a logged user
         client.get(url_for("auto_login"))
 
@@ -139,11 +153,12 @@ def test_clinvar_update_submission_status(
 ):
     """Test the endpoint responsible for updating the status of ClinVar submissions (either germline or oncogenicity)."""
 
-    # GIVEN a database with an empty submission
+    # GIVEN a database with a submission
     subm_obj = store.get_open_clinvar_submission(
         institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=submission_type
     )
     assert subm_obj[status_key] == "open"
+    assert store.clinvar_submission_collection.find_one()
 
     with app.test_client() as client:
         client.get(url_for("auto_login"))
@@ -152,7 +167,7 @@ def test_clinvar_update_submission_status(
         data = {"update_submission": update_action}
         resp = client.post(
             url_for(
-                "clinvar.clinvar_update_submission",
+                UPDATE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 submission=subm_obj["_id"],
             ),
@@ -167,14 +182,54 @@ def test_clinvar_update_submission_status(
         assert updated[status_key] == status_value
 
 
-def test_get_submission_as_json(institute_obj, user_obj, app):
-    """Test the endpoint that returns the submission object as a json file."""
-
-    SUBM_TYPE = "germline"
+@pytest.mark.parametrize(
+    "submission_type",
+    [
+        GERMLINE,
+        ONCOGENICITY,
+    ],
+)
+def test_clinvar_update_submission_delete(app, institute_obj, user_obj, submission_type):
+    """Test deleting one submission document using the status update endpoint."""
 
     # GIVEN a database with a submission
     subm_obj = store.get_open_clinvar_submission(
-        institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=SUBM_TYPE
+        institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=submission_type
+    )
+
+    assert store.clinvar_submission_collection.find_one()
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # WHEN submission is removed via the 'clinvar_update_submission' endpoint
+        data = {"update_submission": "delete"}
+        client.post(
+            url_for(
+                UPDATE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+
+        # THEN the submission should be removed
+        assert store.clinvar_submission_collection.find_one() is None
+
+
+@pytest.mark.parametrize(
+    "submission_type",
+    [
+        GERMLINE,
+        ONCOGENICITY,
+    ],
+)
+def test_get_submission_as_json(institute_obj, user_obj, app, submission_type):
+    """Test the endpoint that returns the submission object as a json file."""
+
+    # GIVEN a database with a submission
+    subm_obj = store.get_open_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=user_obj["_id"], type=submission_type
     )
 
     with app.test_client() as client:
@@ -183,9 +238,44 @@ def test_get_submission_as_json(institute_obj, user_obj, app):
         # THEN the submission should be viewable as json
         resp = client.get(
             url_for(
-                "clinvar.get_submission_as_json", submission=subm_obj["_id"], subm_type=SUBM_TYPE
+                "clinvar.get_submission_as_json",
+                submission=subm_obj["_id"],
+                subm_type=submission_type,
             )
         )
 
         assert resp.status_code == 200
         assert resp.is_json
+
+
+def test_clinvar_germline_save(app, institute_obj, case_obj, clinvar_germline_snv_form):
+    """Test the endpoint that parses the multistep user form and adds a germline variant to a germline submission."""
+
+    # GIVEN a database with no ClinVar submission documents
+    assert store.clinvar_submission_collection.find_one() is None
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # WHEN a variant is included in a germline submission via the 'clinvar_germline_save' endpoint
+        client.post(
+            url_for(
+                SAVE_GERMLINE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_germline_snv_form,
+        )
+
+        # THEN a germline submission should exist
+        subm_obj = store.clinvar_submission_collection.find_one()
+        assert subm_obj["type"] == GERMLINE
+
+        # WHICH contains assertion criteria
+        assert subm_obj["assertionCriteria"]["db"] == ASSERTION_GERM_GERM_DB
+        assert subm_obj["assertionCriteria"]["id"] == ASSERTION_CRITERIA_GERM_ID
+
+        # AND the submitted variant with the expected keys
+        for var in subm_obj[f"{GERMLINE}Submission"]:
+            for key in EXPECTED_SUBMISSION_KEYS + [f"{GERMLINE}Classification"]:
+                assert key in var

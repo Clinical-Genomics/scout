@@ -84,6 +84,7 @@ def clinvar_add_onc_variant(institute_id: str, case_name: str):
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_germline_save(institute_id: str, case_name: str):
     """Adds one germline variant with eventual observations to an open (or new) ClinVar submission."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.add_variant_to_submission(
         institute_obj=institute_obj, case_obj=case_obj, form=request.form, is_germline=True
