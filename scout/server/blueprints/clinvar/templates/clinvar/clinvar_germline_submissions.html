@@ -81,7 +81,7 @@
               <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
               </form>
               {% if subm_obj.status == 'open' and show_submit  %}
-                <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+                <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.send_api_submission', institute_id=institute._id, submission=subm_obj._id, subm_type='germline') }}" method="POST">
                 {{ submit_modal() }}
                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
                 </form>

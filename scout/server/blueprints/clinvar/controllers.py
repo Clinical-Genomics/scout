@@ -366,22 +366,15 @@ def update_clinvar_submission_status(request_obj: dict, institute_id: str, submi
             "info",
         )
 
-    if update_status == "submit":
-        submitter_key = request_obj.form.get("apiKey")
-        send_api_submission(institute_id, submission_id, submitter_key)
 
-
-def send_api_submission(institute_id: sict, submission_id: dict, key: str):
-    """Collect the submission object as json and validate it.
+"""
+def send_api_submission(institute_id: str, submission_id: str, key: str):
+    Collect the submission object as json and validate it.
     If json submission is validated, submit it using the ClinVar API.
-    """
 
-    LOG.warning("SUBMISSTING BITCHES")
 
-    # Convert submission objects to json:
-    code, conversion_res = json_api_submission(submission_id)
+    json_subm_obj = store.get_json_submission()
 
-    """
 
     if code != 200:  # Connection or conversion object errors
         flash(str(conversion_res), "warning")

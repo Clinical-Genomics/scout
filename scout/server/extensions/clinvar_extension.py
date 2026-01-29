@@ -33,7 +33,7 @@ class ClinVarApi:
         }
         return header
 
-    def submit_json(self, json_data, api_key=None):
+    def submit_json(self, json_data: dict, api_key: Optional[str] = None) -> tuple:
         """Submit a ClinVar submission object using the official ClinVar API
 
         Args:
@@ -45,6 +45,7 @@ class ClinVarApi:
             tuple: example -> 400, "{Validation errors}"
                            -> [201, 200, 204], Response object
         """
+
         header = self.set_header(api_key)
         data = {
             "actions": [{"type": "AddData", "targetDb": "clinvar", "data": {"content": json_data}}]

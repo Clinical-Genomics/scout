@@ -188,3 +188,31 @@ def get_submission_as_json(submission, subm_type) -> dict:
     if data is None:
         abort(404, "Submission not found")
     return data
+
+
+@clinvar_bp.route("/<institute_id>/<submission>/<subm_type>/send", methods=["POST"])
+def send_api_submission(institute_id, submission, subm_type):
+    """Send a submission object to ClinVar using the API."""
+    institute_obj = institute_and_case(store, institute_id)
+
+    json_subm_obj = store.get_json_submission(submission=submission, subm_type=subm_type)
+    if not json_subm_obj:
+        return safe_redirect_back(request)
+
+    service_url, code, submit_res = clinvar_api.submit_json(
+        json_subm_obj, request.form.get("apiKey")
+    )
+
+    if code in [200, 201]:
+        clinvar_id = submit_res.json().get("id")
+        flash(
+            f"Submission sent to API URL '{service_url}'. Saved successfully with ID: {clinvar_id}",
+            "success",
+        )
+    else:
+        flash(
+            f"Submission sent to API URL '{service_url}'. Returned error: {submit_res}",
+            "warning",
+        )
+
+    return safe_redirect_back(request)
