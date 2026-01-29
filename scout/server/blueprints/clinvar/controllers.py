@@ -347,29 +347,8 @@ def parse_casedata_form_fields(form):
     return casedata_list
 
 
-def update_clinvar_sample_names(submission_id, case_id, old_name, new_name):
-    """Update casedata sample names
-    Args:
-        submission_id(str) the database id of a clinvar submission
-        case_id(str): case id
-        old_name(str): old name of an individual in case data
-        new_name(str): new name of an individual in case data
-    """
-    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
-    flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
-        "info",
-    )
-
-
-def update_clinvar_submission_status(request_obj, institute_id, submission_id):
-    """Update the status of a clinVar submission
-    Args:
-        store(adapter.MongoAdapter)
-        request_obj(flask.request) POST request sent by form submission
-        institute_id(str) institute id
-        submission_id(str) the database id of a clinvar submission
-    """
+def update_clinvar_submission_status(request_obj: dict, institute_id: str, submission_id: str):
+    """Update the status of a clinVar submission"""
     update_status = request_obj.form.get("update_submission")
 
     if update_status in ["open", "closed", "submitted"]:  # open or close a submission
@@ -392,17 +371,17 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         send_api_submission(institute_id, submission_id, submitter_key)
 
 
-def send_api_submission(institute_id, submission_id, key):
-    """Convert and validate ClinVar submission data to json.
-       If json submission is validated, submit it using the ClinVar API
-
-    Args:
-        institute_id(str): _id of an institute
-        submission_id(str): the database id of a clinvar submission
-        key(str): a 64 alphanumeric characters' key
+def send_api_submission(institute_id: sict, submission_id: dict, key: str):
+    """Collect the submission object as json and validate it.
+    If json submission is validated, submit it using the ClinVar API.
     """
+
+    LOG.warning("SUBMISSTING BITCHES")
+
     # Convert submission objects to json:
     code, conversion_res = json_api_submission(submission_id)
+
+    """
 
     if code != 200:  # Connection or conversion object errors
         flash(str(conversion_res), "warning")
@@ -439,6 +418,7 @@ def send_api_submission(institute_id, submission_id, key):
             f"Submission sent to API URL '{service_url}'. Returned the following error: {str(submit_res.json())}",
             "warning",
         )
+    """
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
