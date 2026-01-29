@@ -193,7 +193,7 @@ def get_submission_as_json(submission, subm_type) -> dict:
 @clinvar_bp.route("/<institute_id>/<submission>/<subm_type>/send", methods=["POST"])
 def send_api_submission(institute_id, submission, subm_type):
     """Send a submission object to ClinVar using the API."""
-    institute_obj = institute_and_case(store, institute_id)
+    _ = institute_and_case(store, institute_id)
 
     json_subm_obj = store.get_json_submission(submission=submission, subm_type=subm_type)
     if not json_subm_obj:
