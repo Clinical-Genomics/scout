@@ -174,6 +174,8 @@ class OmicsFiles(BaseModel):
     fraser_research: Optional[str] = None
     outrider: Optional[str] = None
     outrider_research: Optional[str] = None
+    methbat: Optional[str] = None
+    methbat_research: Optional[str] = None
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "OmicsFiles":

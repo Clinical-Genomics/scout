@@ -95,7 +95,9 @@ class OmicsVariantLoader(BaseModel):
     )
 
     # coordinates if applicable
-    chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
+    chromosome: Optional[str] = Field(
+        validation_alias=AliasChoices("seqnames", "chrom"), serialization_alias="chromosome"
+    )
     position: Optional[int] = Field(alias="start", serialization_alias="position")
     end: Optional[int]
     width: Optional[int] = None
@@ -228,7 +230,7 @@ class OmicsVariantLoader(BaseModel):
         elif "cpg_label" in values:
             cpg_label = values.get("cpg_label").split("_")
             values["hgncSymbol"] = [cpg_label[1]]
-            values["hgncId"] = [cpg_label[2].split(":")[1]]
+            values["hgncId"] = [int(cpg_label[2].split(":")[1])]
         if "hgncSymbol" in values:
             values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
 
@@ -240,11 +242,11 @@ class OmicsVariantLoader(BaseModel):
 
         values["display_name"] = "_".join(
             [
-                values.get("hgncSymbol"),
+                values.get("hgncSymbol") or values.get("cpg_label"),
                 values.get("category"),
                 values.get("sub_category"),
                 get_qualification(values=values),
-                values.get("seqnames"),  # chrom, unserialised
+                values.get("seqnames") or values.get("chrom"),  # chrom, unserialised
                 str(values.get("start")),
                 str(values.get("end")),
                 values.get("variant_type"),
@@ -256,18 +258,17 @@ class OmicsVariantLoader(BaseModel):
     def set_omics_variant_id(cls, values) -> "OmicsVariantLoader":
         """Set OMICS variant id based on the kind of variant."""
 
-        values["omics_variant_id"] = "_".join(
-            [
-                values.get("seqnames"),  # chrom, unserialised
-                str(values.get("start")),
-                str(values.get("end")),
-                values.get("build"),
-                values.get("hgncSymbol"),
-                values.get("sub_category"),
-                get_qualification(values=values),
-                values.get("variant_type"),
-            ]
-        )
+        omics_variant_id_values = [
+            values.get("seqnames") or values.get("chrom"),  # chrom, unserialised
+            str(values.get("start")),
+            str(values.get("end")),
+            values.get("build"),
+            values.get("hgncSymbol") or values.get("cpg_label"),
+            values.get("sub_category"),
+            get_qualification(values=values),
+            values.get("variant_type"),
+        ]
+        values["omics_variant_id"] = "_".join(omics_variant_id_values)
         return values
 
 
