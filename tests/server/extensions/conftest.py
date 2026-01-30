@@ -195,3 +195,69 @@ def bionano_app(bionano_config, bionano_response):
 
     app = create_app(config=bionano_config)
     return app
+
+
+#############################################################
+##################### Clinvar fixtures ######################
+#############################################################
+@pytest.fixture
+def processed_submission() -> dict:
+    """Mocks a dictionary corresponding to a processed submission coming from ClinVar.
+    Copied from the ClinVar howto pages: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+    """
+
+    return {
+        "actions": [
+            {
+                "id": "SUB999999-1",
+                "responses": [
+                    {
+                        "status": "processed",
+                        "message": {
+                            "errorCode": None,
+                            "severity": "info",
+                            "text": 'Your ClinVar submission processing status is "Success". Please find the details in the file referenced by actions[0].responses[0].files[0].url.',
+                        },
+                        "files": [
+                            {
+                                "url": "https://submit.ncbi.nlm.nih.gov/api/2.0/files/xxxxxxxx/sub999999-summary-report.json/?format=attachment"
+                            }
+                        ],
+                        "objects": [],
+                    }
+                ],
+                "status": "processed",
+                "targetDb": "clinvar",
+                "updated": "2021-03-24T04:22:04.101297Z",
+            }
+        ]
+    }
+
+
+@pytest.fixture
+def successful_submission_summary_file_content() -> dict:
+    """Mocks the submission summary file which is downloadable from the ClinVar API. The submission contains the status 'Success'.
+    Based on the example collected from ClinVar API howto: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+    """
+
+    return {
+        "submissionName": "SUB673156",
+        "submissionDate": "2021-03-25",
+        "batchProcessingStatus": "Success",
+        "batchReleaseStatus": "Not released",
+        "totalCount": 1,
+        "totalErrors": 0,
+        "totalSuccess": 1,
+        "totalPublic": 0,
+        "submissions": [
+            {
+                "identifiers": {
+                    "localID": "adefc5ed-7d59-4119-8b3d-07dcdc504c09_success1",
+                    "clinvarLocalKey": "adefc5ed-7d59-4119-8b3d-07dcdc504c09_success1",
+                    "localKey": "adefc5ed-7d59-4119-8b3d-07dcdc504c09_success1",
+                    "clinvarAccession": "SCV000839746",
+                },
+                "processingStatus": "Success",
+            },
+        ],
+    }
