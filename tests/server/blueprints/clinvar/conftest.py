@@ -1,6 +1,8 @@
 import pytest
 from werkzeug.datastructures import ImmutableMultiDict
 
+CLINICAL_TESTING = "clinical testing"
+
 #############################################################
 ##################### Clinvar fixtures ######################
 #############################################################
@@ -30,9 +32,9 @@ def clinvar_snv_form():
             "classification": "Pathogenic",
             "clinsig_comment": "A classification comment",
             "collection_method": [
-                "clinical testing",
-                "clinical testing",
-                "clinical testing",
+                CLINICAL_TESTING,
+                CLINICAL_TESTING,
+                CLINICAL_TESTING",
             ],
             "condition_type": "HP",
             "conditions": "0001298",

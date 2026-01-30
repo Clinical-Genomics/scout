@@ -103,7 +103,7 @@ class ClinVarHandler(object):
         """Retrieve the database id of an open ClinVar submission (germline or oncogenicity) for an institute,
         if none is available then creates a new submission dictionary and returns it.
         """
-        query = dict(institute_id=institute_id, status="open", type=type)
+        query = {"institute_id": institute_id, "status": "open", "type": type}
         submission = self.clinvar_submission_collection.find_one(query)
         if submission is None:
             if type == "germline":

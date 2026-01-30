@@ -491,9 +491,7 @@ def _parse_classification(subm_item: dict, form: ImmutableMultiDict, submission_
     """Assigns a classification to a submission item based on the user form."""
     subm_item[submission_type] = {"dateLastEvaluated": form.get("last_evaluated")}
 
-    if submission_type == "oncogenicityClassification":
-        subm_item[submission_type][f"{submission_type}Description"] = form.get("classification")
-    elif submission_type == "germlineClassification":
+    if submission_type in ("oncogenicityClassification", "germlineClassification"):
         subm_item[submission_type][f"{submission_type}Description"] = form.get("classification")
 
     if form.get("clinsig_comment"):
