@@ -1,5 +1,5 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import cell_rank, filter_form_footer, mark_heteroplasmic_mt, snv_filters, variant_link_href, variant_rank_score, variant_rank_score_other %}
+{% from "variants/utils.html" import cell_rank, filter_form_footer, mark_heteroplasmic_mt, snv_filters, variant_link_href, variant_rank_score %}
 {% from "variants/components.html" import cell_cadd, cell_models, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
@@ -57,8 +57,7 @@
     {% endif %}
     <td class="no-row-click"><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-    <td class="text-start">{{variant_rank_score(variant)}}
-      {{ variant_rank_score_other(variant) }}
+    <td class="text-start">{{variant_rank_score(variant=variant, collapsible=True)}}
     </td>
     <td>
       {{ variant.chromosome }}

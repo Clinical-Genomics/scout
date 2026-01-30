@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "variant/buttons.html" import database_buttons %}
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
-{% from "variants/utils.html" import compounds_table, variant_rank_score, variant_rank_score_other %}
+{% from "variants/utils.html" import compounds_table, variant_rank_score %}
 {% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel, custom_annotations, gene_panels %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
@@ -264,7 +264,6 @@
             <td>
               Rank score
               <span><strong>{{variant_rank_score(variant)}}</strong></span>
-              {{ variant_rank_score_other(variant) }}
             </td>
             <td>
               CADD score
