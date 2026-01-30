@@ -26,7 +26,7 @@ class ClinVarHandler(object):
         result = self.clinvar_submission_collection.update_many(
             {"type": {"$exists": False}}, {"$set": {"status": "deprecated"}}
         )
-        print(f"Deprecated ClinVar submission objects: {result.modified_count} ")
+        LOG.info(f"Deprecated ClinVar submission objects: {result.modified_count} ")
 
     def create_germline_submission(self, institute_id: str, user_id: str) -> ObjectId:
         """Create an open ClinVar germline submission for an institute."""
