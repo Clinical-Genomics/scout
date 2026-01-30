@@ -34,7 +34,7 @@ def clinvar_snv_form():
             "collection_method": [
                 CLINICAL_TESTING,
                 CLINICAL_TESTING,
-                CLINICAL_TESTING",
+                CLINICAL_TESTING,
             ],
             "condition_type": "HP",
             "conditions": "0001298",
