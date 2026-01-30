@@ -465,8 +465,8 @@
 
   {% if variant.overlapping_outliers %}
     <a href="#" class="badge bg-success text-white" data-bs-toggle="popover" data-bs-placement="left"
-    data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene overlapping WTS outliers</div>
-      {{ overlapping_tooltip_table(institute, case, variant.overlapping_outliers[:40]) }}">Gene overlapping (WTS)</a>
+    data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene overlapping omics outliers - WTS or LRS methylation</div>
+      {{ overlapping_tooltip_table(institute, case, variant.overlapping_outliers[:40]) }}">Gene overlapping (omics)</a>
   {% endif %}
 {% endmacro %}
 
