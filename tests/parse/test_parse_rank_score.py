@@ -23,7 +23,7 @@ def test_parse_rank_score_no_score():
     assert parsed_rank_score == None
 
 
-def test_parse_rank_score_variant(cyvcf2_variant, case_obj, scout_config):
+def test_parse_rank_score_variant(cyvcf2_variant, case_obj):
     ## GIVEN a variant
     rank_score = 15
     case_id = case_obj["_id"]
@@ -35,3 +35,19 @@ def test_parse_rank_score_variant(cyvcf2_variant, case_obj, scout_config):
     var_info = parse_variant(cyvcf2_variant, case_obj)
     ## THEN assert that the correct score is parsed
     assert var_info["rank_score"] == rank_score
+
+
+def test_parse_rank_score_mivmir_gicam(cyvcf2_variant, case_obj):
+    """Make sure any rank score found under scout.models.variant.variant.RANK_SCORE_OTHER is parsed from cyVCF2 variant."""
+
+    ## GIVEN a cyvcf2 variant with other rank scores (Mivmir, Gicam)
+    GICAM = 0.076
+    MIVMIR = 0.0045
+    cyvcf2_variant.INFO["MivmirScore"] = MIVMIR
+    cyvcf2_variant.INFO["GicamScore"] = GICAM
+
+    ## When variant is parsed
+    var_info = parse_variant(cyvcf2_variant, case_obj)
+
+    # THEN other score should be extracted as expected
+    assert var_info["rank_score_other"] == {"Gicam": {"value": GICAM}, "Mivmir": {"value": MIVMIR}}
