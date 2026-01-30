@@ -105,10 +105,10 @@ gt_call = dict(
 )
 
 MIMVIR_SCORE = {
-    "score_key": "INFO.MivmirScore",
+    "score_key": "MivmirScore",
     "score_type": float,
-    "score_desc": "INFO.MivmirExplanation",  # dict
+    "score_desc": "MivmirExplanation",  # dict
 }
-GICAM_SCORE = {"score_key": "INFO.GicamScore", "score_type": float}
+GICAM_SCORE = {"score_key": "GicamScore", "score_type": float}
 
 RANK_SCORE_OTHER = {"snv": {"Mivmir": MIMVIR_SCORE, "Gicam": GICAM_SCORE}}

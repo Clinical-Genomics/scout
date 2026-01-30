@@ -19,18 +19,6 @@ def parse_rank_score(rank_score_entry: str, case_id: str) -> float:
     return rank_score
 
 
-def cyvcf2_get_field(obj: Variant, path: str) -> Any:
-    """Walk the provided path in a cyvcf2 variant and collect a potential value."""
-    if not path:
-        return None
-
-    for p in path.split("."):
-        if obj is None:
-            return None
-        obj = obj.get(p) if hasattr(obj, "get") else getattr(obj, p, None)
-    return obj
-
-
 def parse_rank_score_other(parsed_variant: dict, variant: dict):
     """Parse variant and save any additional rank scores.
     These scores are defined under scout.models.variant.variant.RANK_SCORE_OTHER
@@ -40,7 +28,7 @@ def parse_rank_score_other(parsed_variant: dict, variant: dict):
             continue
 
         for score, features in scores.items():
-            raw_score = cyvcf2_get_field(variant, features.get("score_key"))
+            raw_score = variant.INFO.get(features.get("score_key"))
             if not raw_score:
                 continue
 
