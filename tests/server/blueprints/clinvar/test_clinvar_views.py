@@ -299,6 +299,7 @@ def test_clinvar_save(app, institute_obj, case_obj, clinvar_snv_form):
         ONCOGENICITY,
     ],
 )
+@responses.activate
 def test_send_api_submission(app, institute_obj, user_obj, submission_type):
     """Test sending a submission to the ClinVar API."""
 
