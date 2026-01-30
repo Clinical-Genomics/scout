@@ -3,7 +3,7 @@
 {% from "cases/utils.html" import pretty_link_variant %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
-{% macro variant_rank_score(variant, uid, collapsible=False) %}
+{% macro variant_rank_score(variant, uid, tooltip=False) %}
   {% if variant.rank_score is defined and variant.rank_score is not none %}
     {{ variant.rank_score|int }}
   {% endif %}
@@ -12,16 +12,16 @@
   {% endif %}
 
   {% if variant.rank_score_other %}
-    {% if collapsible %}
-      <a
-        class="ms-1 text-muted text-decoration-none"
-        data-bs-toggle="collapse"
-        href="#rank-score-other-{{ uid }}"
-      >…</a>
-
-      <span class="collapse" id="rank-score-other-{{ uid }}">
-        {{ variant_rank_score_other(variant) }}
-      </span>
+    {% if tooltip %}
+      {# Capture the macro output as a string #}
+      {% set badge_html = variant_rank_score_other(variant) | replace('"', '&quot;') %}
+      <span
+        class="ms-1 text-muted"
+        data-bs-toggle="tooltip"
+        data-bs-html="true"
+        title="{{ badge_html }}"
+        style="cursor: help;"
+      >...</span>
     {% else %}
       {{ variant_rank_score_other(variant) }}
     {% endif %}
