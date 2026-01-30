@@ -78,5 +78,25 @@ ORDERED_OMICS_FILE_TYPE_MAP = OrderedDict(
                 "variant_type": "research",
             },
         ),
+        (
+            "methbat",
+            {
+                "format": "tsv",
+                "analysis_type": "wgs",
+                "category": "outlier",
+                "sub_category": "methylation",
+                "variant_type": "clinical",
+            },
+        ),
+        (
+            "methbat_research",
+            {
+                "format": "tsv",
+                "analysis_type": "wgs",
+                "category": "outlier",
+                "sub_category": "methylation",
+                "variant_type": "research",
+            },
+        ),
     ]
 )

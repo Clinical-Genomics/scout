@@ -53,7 +53,7 @@ FEATURE_TYPES = (
 
 SV_TYPES = ("ins", "del", "dup", "cnv", "inv", "bnd")
 
-OUTLIER_TYPES = ("splicing", "expression")
+OUTLIER_TYPES = ("splicing", "expression", "methylation")
 
 GENETIC_MODELS = (
     ("AR_hom", "Autosomal Recessive Homozygote"),
