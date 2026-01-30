@@ -4,7 +4,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 CLINICAL_TESTING = "clinical testing"
 
 #############################################################
-##################### Clinvar fixtures ######################
+##################### ClinVar fixtures ######################
 #############################################################
 
 
