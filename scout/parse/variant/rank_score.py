@@ -32,7 +32,7 @@ def cyvcf2_get_field(obj: Variant, path: str) -> Any:
 
 
 def parse_rank_score_other(parsed_variant: dict, variant: dict):
-    """Parse variant and save eventual additional ranking scores.
+    """Parse variant and save any additional rank scores.
     These scores are defined under scout.models.variant.variant.RANK_SCORE_OTHER
     """
     for category, scores in RANK_SCORE_OTHER.items():
