@@ -20,7 +20,7 @@ def parse_rank_score(rank_score_entry: str, case_id: str) -> float:
 
 
 def cyvcf2_get_field(obj: Variant, path: str) -> Any:
-    """Walk the provided path in a cyvcf2 variant and collect an eventual value."""
+    """Walk the provided path in a cyvcf2 variant and collect a potential value."""
     if not path:
         return None
 
