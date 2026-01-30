@@ -162,11 +162,7 @@ def variants(institute_id, case_name):
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        scroll_pos=(
-            int(request.values.get("scroll_pos", 0))
-            if (request.values.get("scroll_pos") or "0").isdigit()
-            else 0
-        ),
+        scroll_pos=int(request.values.get("scroll_pos") or 0),
         escat_tier_options=ESCAT_TIER_OPTIONS,
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
@@ -393,11 +389,7 @@ def cancer_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        scroll_pos=(
-            int(request.values.get("scroll_pos", 0))
-            if (request.values.get("scroll_pos") or "0").isdigit()
-            else 0
-        ),
+        scroll_pos=int(request.values.get("scroll_pos") or 0),
         expand_search=controllers.get_expand_search(request.form),
         filters=controllers.populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
