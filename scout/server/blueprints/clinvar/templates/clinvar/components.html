@@ -413,3 +413,47 @@
 <p>No case data provided for the above variants</p>
 {% endif %}
 {% endmacro %}
+
+
+{% macro action_modal(action_type, institute, subm_id) %}
+<div class="modal fade" id="{{action_type}}Modal_{{subm_id}}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Submission {{action_type}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="{{action_type}}" value="{{action_type}}" class="btn btn-primary">Submission {{action_type}} enquiry</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% macro submit_modal(institute) %}
+<div class="modal fade" id="submitModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ClinVar API submission</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="update_submission" value="submit" class="btn btn-primary">Submit variants</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}

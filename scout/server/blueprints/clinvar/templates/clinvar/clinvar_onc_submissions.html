@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "clinvar/components.html" import render_dict_array, update_submission_status_form, variant_submission_table %}
+{% from "clinvar/components.html" import action_modal, render_dict_array, submit_modal, update_submission_status_form, variant_submission_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -65,13 +65,13 @@
               </form>
               {% if subm_obj.status == 'open' and show_submit  %}
                 <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.send_api_submission', institute_id=institute._id, submission=subm_obj._id, subm_type='oncogenicity') }}" method="POST">
-                {{ submit_modal() }}
+                {{ submit_modal(institute) }}
                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
                 </form>
               {% endif %}
               {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
                  <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ action_modal("status", subm_obj._id) }}
+                   {{ action_modal("status", institute, subm_obj._id) }}
                    <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
                  </form>
               {% endif %}
@@ -85,48 +85,6 @@
             <p>This submission is open but has no variants yet.</p>
           {% endif %}
         </div> <!--variant data div end -->
-      </div>
-    </div>
-  </div>
-</div>
-{% endmacro %}
-
-{% macro action_modal(action_type, subm_id) %}
-<div class="modal fade" id="{{action_type}}Modal_{{subm_id}}" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Submission {{action_type}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
-        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" name="{{action_type}}" value="{{action_type}}" class="btn btn-primary">Submission {{action_type}} enquiry</button>
-      </div>
-    </div>
-  </div>
-</div>
-{% endmacro %}
-
-{% macro submit_modal() %}
-<div class="modal fade" id="submitModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">ClinVar API submission</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
-        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" name="update_submission" value="submit" class="btn btn-primary">Submit variants</button>
       </div>
     </div>
   </div>
