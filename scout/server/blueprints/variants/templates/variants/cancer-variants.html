@@ -58,7 +58,7 @@
     >
   {% endif %}
     <td class="no-row-click">
-      <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
+      <input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
       {{ pin_indicator(variant, case) }}
     </td>
     <td>{{ gene_cell(variant) }}</td>
