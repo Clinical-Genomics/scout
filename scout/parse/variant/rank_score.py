@@ -47,6 +47,4 @@ def parse_rank_score_other(parsed_variant: dict, variant: dict):
             parsed_variant.setdefault("rank_score_other", {})
             parsed_variant["rank_score_other"].setdefault(score, {})
 
-            parsed_variant["rank_score_other"][score]["value"] = features["score_transform"](
-                raw_score
-            )
+            parsed_variant["rank_score_other"][score]["value"] = features["score_type"](raw_score)
