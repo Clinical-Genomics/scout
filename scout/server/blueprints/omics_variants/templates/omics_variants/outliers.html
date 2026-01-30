@@ -45,80 +45,84 @@
 {% block variants_table_rows %}
     {% for variant in variants %}
       <tr>
-      <td class="text-end">
-        <div class="d-flex flex-row justify-content-between">
-        {% if variant.genes %}
-          {{ gene_cell(variant, inherit_palette) }}
-        {% else %}
-          {{ variant.gene_name_orig }}
-        {% endif %}
-        {% if variant.cpg_label %}
-          <div style="white-space: nowrap;">{{ variant.cpg_label }}</div>
-        {% endif %}
-          <div class="d-flex justify-content-center">
-          {% if case.vcf_files.vcf_snv %}
-            <form action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-            <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
+        <td class="text-end">
+          <div class="d-flex flex-row justify-content-between">
+          {% if variant.genes %}
+            {{ gene_cell(variant, inherit_palette) }}
+          {% else %}
+            {{ variant.gene_name_orig }}
+          {% endif %}
+          {% if variant.cpg_label %}
+            {% set cpg_label_parts = variant.cpg_label.split("_") %}
+            <div style="white-space: nowrap;">{{ cpg_label_parts[0] }}</div>
+          {% endif %}
+            <div class="d-flex justify-content-center">
+            {% if case.vcf_files.vcf_snv %}
+              <form action="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+              <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+              <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+              <span><button type="submit" class="btn btn-secondary btn-sm" style="float: right;" data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SNVs</button></span>
+              </form>
+            {% endif %}
+            {% if case.vcf_files.vcf_sv %}
+              <form action="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+              <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
+              <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+              <span><button type="submit" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
             </form>
+            {% endif %}
+              </div>
+           </div>
+        </td>
+        <td>{{ variant.sub_category }}</td>
+        <td class="text-end"> {% if variant.sub_category == "splicing" %}
+            <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
+            {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
+          {% elif variant.sub_category == "expression" %}
+            <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
+            {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
+          {% elif variant.sub_category == "methylation" %}
+            <a target="_blank" title='MethBat compare label' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{{ variant.compare_label }}</a>
           {% endif %}
-          {% if case.vcf_files.vcf_sv %}
-            <form action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-            <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %}"></input>
-            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-            <span><button type="submit" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="SV variants view filtered for the gene(s) {% for gene in variant.genes %}{{gene.hgnc_symbol}}{{ ", " if not loop.last else "" }}{% endfor %} ">SVs</button></span>
-          </form>
+        </td>
+        <td>
+          {% if variant.sub_category == "splicing" %}
+            {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
+          {% elif variant.sub_category == "methylation" %}
+            <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label' rel="noopener noreferrer">{{ variant.summary_label }}</a>
           {% endif %}
-            </div>
-         </div>
-      </td>
-      <td>{{ variant.sub_category }}</td>
-      <td class="text-end"> {% if variant.sub_category == "splicing" %}
-          <span data-bs-toggle="tooltip" data-bs-html="true" title='The ∆ψ-value, which is the difference between the actual observed ψ (intron Jaccard Index splice metric) and the expected ψ - see FRASER vignette for details.'>
-          {{ variant.delta_psi }}&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/FRASER/inst/doc/FRASER.pdf" rel="noopener noreferrer">&Delta;&psi;</a></span>
-        {% elif variant.sub_category == "expression" %}
-          <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
-          {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
-        {% elif variant.sub_category == "methylation" %}
-          <a target="_blank" title='MethBat compare label' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{{ variant.compare_label }}</a>
+        </td>
+        {% if variant.sub_category == "methylation" %}
+          <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
+            {% if "mean_meth_delta" in variant %}
+            Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>{% endif %}
+            {% if "mean_abs_meth_delta_zscore" in variant %}
+            Mean abs methylation delta Z-score: {{ '%.3e' % variant.mean_abs_meth_delta_zscore }}<br>{% endif %}
+            {% if "mean_combined_methyl" in variant %}
+            Mean combined methylation: {{ '%.3e' % variant.mean_combined_methyl }}{% endif %}{% if "mean_combined_methyl_zscore" in variant %} (Z-score {{ '%.3e' % variant.mean_combined_methyl_zscore }}){% endif %}<br>
+            Num phased cpgs: {{ variant.num_phased_cpgs }} partial: {{ variant.num_partial_cpgs }} unphased: {{ variant.num_unphase_cpgs }}<br>
+            Median cov: {{ variant.median_total_coverage }} hap1: {{ variant.median_hap1_coverage }} hap2: {{ variant.median_hap2_coverage }}<br>
+            ">{% if "asm_fishers_pvalue" in variant %}{{ '%.3e' % variant.asm_fishers_pvalue }}{% endif %}</td>
+        {% else %}
+          <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
+            {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
+            ">{{ '%.3e' % variant.p_value }}</td>
         {% endif %}
-      </td>
-      <td>
-        {% if variant.sub_category == "splicing" %}
-          {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
-        {% elif variant.sub_category == "methylation" %}
-          <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label' rel="noopener noreferrer">{{ variant.summary_label }}</a>
-        {% endif %}
-      </td>
-      {% if variant.sub_category == "methylation" %}
-        <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
-          {% if "mean_meth_delta" in variant %}
-          Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>{% endif %}
-          {% if "mean_abs_meth_delta_zscore" in variant %}
-          Mean abs methylation delta Z-score: {{ '%.3e' % variant.mean_abs_meth_delta_zscore }}<br>{% endif %}
-          {% if "mean_combined_methyl" in variant %}
-          Mean combined methylation: {{ '%.3e' % variant.mean_combined_methyl }}{% endif %}{% if "mean_combined_methyl_zscore" in variant %} (Z-score {{ '%.3e' % variant.mean_combined_methyl_zscore }}){% endif %}<br>
-          Num phased cpgs: {{ variant.num_phased_cpgs }} partial: {{ variant.num_partial_cpgs }} unphased: {{ variant.num_unphase_cpgs }}<br>
-          Median cov: {{ variant.median_total_coverage }} hap1: {{ variant.median_hap1_coverage }} hap2: {{ variant.median_hap2_coverage }}<br>
-          ">{% if "mean_abs_meth_delta_zscore" in variant %}{{ '%.3e' % variant.mean_abs_meth_delta_zscore }}{% elif "mean_combined_methyl_delta" in variant %} {{ '%.3e' % variant.mean_combined_methyl_delta }} {% endif %}</td>
-      {% else %}
-        <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
-          {% if variant.padjust %} Adjusted P-value (Outrider) {{ '%.3e' % variant.padjust }} {% elif variant.p_adjust_gene %} Adjusted P-value (Fraser) {{ '%.3e' % variant.p_adjust_gene }}{% endif %}
-          ">{{ '%.3e' % variant.p_value }}</td>
-      {% endif %}
-      <td>{% for sample in variant.samples %}
-          {% if sample.genotype_call != "./." %}
-            <div>{{ sample.display_name }}</div>
-          {% endif %}
-        {% endfor %}
-      </td>
+        <td>{% for sample in variant.samples %}
+            {% if sample.genotype_call != "./." %}
+              <div>{{ sample.display_name }}</div>
+            {% endif %}
+          {% endfor %}
+        </td>
 
-      <td class="text-end">{{ variant.chromosome }}</td>
+        <td class="text-end">{{ variant.chromosome }}</td>
         <td class="text-end"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span>-<span style="white-space: nowrap;">{{ variant.end|human_longint|safe }}</span>
           <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
             style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" title="Copy to clipboard">
           </button>
+        {%  if variant.sub_category == "methylation" %}
+           <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], omics_variant_id=variant['omics_variant_id'])}}" rel="noopener" target="_blank">
+        {% endif %}
         {% if case.has_rna_tracks %}
           {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
         {% endif %}
