@@ -9,7 +9,6 @@ from flask import (
     redirect,
     render_template,
     request,
-    send_file,
     url_for,
 )
 from flask_login import current_user
@@ -81,25 +80,13 @@ def clinvar_add_onc_variant(institute_id: str, case_name: str):
     return render_template("clinvar/multistep_add_onc_variant.html", **data)
 
 
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
-def clinvar_germline_save(institute_id: str, case_name: str):
-    """Adds one germline variant with eventual observations to an open (or new) ClinVar submission."""
+@clinvar_bp.route("/<institute_id>/<case_name>/<subm_type>/clinvar_add_variant", methods=["POST"])
+def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
+    """Adds one variant with eventual observations to an open (or new) ClinVar submission document."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.add_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form, is_germline=True
-    )
-    return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
-
-
-@clinvar_bp.route(
-    "/<institute_id>/<case_name>/clinvar_onc/clinvar_save_onc_variant", methods=["POST"]
-)
-def clinvar_onc_save(institute_id: str, case_name: str):
-    """Adds one oncogenic variant with eventual observations to an open (or new) ClinVar ongenicity submission."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    controllers.add_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form, is_germline=False
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form, subm_type=subm_type
     )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 

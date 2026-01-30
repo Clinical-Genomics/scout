@@ -22,7 +22,7 @@
   <!-- MultiStep Form -->
   <div class="row d-flex justify-content-center">
       <div class="col-md-10">
-          <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_onc_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
+          <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_variant_save', institute_id=institute._id, case_name=case.display_name, subm_type='oncogenicity') }}" id="{{variant_data.var_id}}_form">
               <!-- progressbar -->
               <ul id="progressbar" class="steps-5">
                   <li class="active">Start</li>

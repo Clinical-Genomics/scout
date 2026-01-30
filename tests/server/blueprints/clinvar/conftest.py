@@ -7,7 +7,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 
 @pytest.fixture(scope="function")
-def clinvar_germline_snv_form():
+def clinvar_snv_form():
     """Mocks a germline SNV form compiled by the user"""
     data = ImmutableMultiDict(
         {

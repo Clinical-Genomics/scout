@@ -487,24 +487,24 @@ def set_clinvar_form(var_id: str, data: dict):
     data["variant_data"] = variant_data
 
 
-def _parse_classification(subm_item: dict, form: ImmutableMultiDict, type: str):
+def _parse_classification(subm_item: dict, form: ImmutableMultiDict, submission_type: str):
     """Assigns a classification to a submission item based on the user form."""
-    subm_item[type] = {"dateLastEvaluated": form.get("last_evaluated")}
+    subm_item[submission_type] = {"dateLastEvaluated": form.get("last_evaluated")}
 
-    if type == "oncogenicityClassification":
-        subm_item[type][f"{type}Description"] = form.get("classification")
-    elif type == "germlineClassification":
-        subm_item[type][f"{type}Description"] = form.get("classification")
+    if submission_type == "oncogenicityClassification":
+        subm_item[submission_type][f"{submission_type}Description"] = form.get("classification")
+    elif submission_type == "germlineClassification":
+        subm_item[submission_type][f"{submission_type}Description"] = form.get("classification")
 
     if form.get("clinsig_comment"):
-        subm_item[type]["comment"] = form.get("clinsig_comment")
+        subm_item[submission_type]["comment"] = form.get("clinsig_comment")
 
 
-def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, type: str):
+def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, submission_type: str):
     """Adds to a classification item the specifics of the user classification."""
 
     if form.get("assertion_method_cit_id"):
-        subm_item[type]["citation"] = [
+        subm_item[submission_type]["citation"] = [
             {
                 "db": form.get("assertion_method_cit_db"),
                 "id": form.get("assertion_method_cit_id"),
@@ -546,7 +546,7 @@ def _parse_condition_set(subm_item: dict, form: ImmutableMultiDict):
         )
 
 
-def _parse_observations(subm_item: dict, form: ImmutableMultiDict, is_germline: bool):
+def _parse_observations(subm_item: dict, form: ImmutableMultiDict, subm_type: str):
     """Associates observations to a variant of a ClinVar submission."""
     subm_item["observedIn"] = []
     include_inds = form.getlist("include_ind")
@@ -555,7 +555,7 @@ def _parse_observations(subm_item: dict, form: ImmutableMultiDict, is_germline: 
     allele_origin_list = form.getlist("allele_of_origin")
     collection_method_list = form.getlist("collection_method")
 
-    if is_germline is False:
+    if subm_type == "oncogenicity":
         somatic_fraction = form.getlist("somatic_allele_fraction")
         somatic_in_normal = form.getlist("somatic_allele_in_normal")
 
@@ -569,37 +569,35 @@ def _parse_observations(subm_item: dict, form: ImmutableMultiDict, is_germline: 
             "collectionMethod": collection_method_list[idx],
             "numberOfIndividuals": 1,
         }
-        if is_germline is False and somatic_in_normal:
+        if subm_type == "oncogenicity" and somatic_in_normal:
             obs["presenceOfSomaticVariantInNormalTissue"] = somatic_in_normal[idx]
-        if is_germline is False and somatic_fraction[idx]:
+        if subm_type == "oncogenicity" and somatic_fraction[idx]:
             obs["somaticVariantAlleleFraction"] = int(somatic_fraction[idx])
 
         subm_item["observedIn"].append(obs)
 
 
-def parse_clinvar_form(form: ImmutableMultiDict, is_germline: bool) -> dict:
+def parse_clinvar_form(form: ImmutableMultiDict, subm_type: str) -> dict:
     """Parse form fields for a germline or oncogenic classification of a variant and converts it into the format expected by the ClinVar API (json dict)."""
     subm_item = {"recordStatus": "novel"}
-    if is_germline is True:
-        submission_type = "germlineClassification"
-    else:
-        submission_type = "oncogenicityClassification"
-    _parse_classification(subm_item=subm_item, form=form, type=submission_type)
-    _parse_assertion(subm_item=subm_item, form=form, type=submission_type)
+    submission_type = f"{subm_type}Classification"
+
+    _parse_classification(subm_item=subm_item, form=form, submission_type=submission_type)
+    _parse_assertion(subm_item=subm_item, form=form, submission_type=submission_type)
     _parse_variant_set(subm_item=subm_item, form=form)
     _parse_condition_set(subm_item=subm_item, form=form)
-    _parse_observations(subm_item=subm_item, form=form, is_germline=is_germline)
+    _parse_observations(subm_item=subm_item, form=form, subm_type=subm_type)
 
     return subm_item
 
 
 def add_variant_to_submission(
-    institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, is_germline
+    institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, subm_type: str
 ):
     """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists create it."""
 
     subm_item: dict = parse_clinvar_form(
-        form=form, is_germline=is_germline
+        form=form, subm_type=subm_type
     )  # The variant item to add to an open submission
 
     # Add case specifics to the submission item
@@ -609,14 +607,11 @@ def add_variant_to_submission(
     subm_item["variant_id"] = form.get("linking_id")
 
     # Validate API models
-
     try:
-        if is_germline is False:
+        if subm_type == "oncogenicity":
             OncogenicitySubmissionItem(**subm_item)
-            submission_type = "oncogenicity"
         else:
             GermlineSubmissionItem(**subm_item)
-            submission_type = "germline"
     except ValidationError as ve:
         LOG.error(ve)
         flash(str(ve), "warning")
@@ -624,11 +619,11 @@ def add_variant_to_submission(
 
     # retrieve or create an open ClinVar submission:
     subm: dict = store.get_open_clinvar_submission(
-        institute_id=institute_obj["_id"], user_id=current_user._id, type=submission_type
+        institute_id=institute_obj["_id"], user_id=current_user._id, type=subm_type
     )
 
     # Add variant to submission object
-    subm.setdefault(f"{submission_type}Submission", []).append(subm_item)
+    subm.setdefault(f"{subm_type}Submission", []).append(subm_item)
     subm["updated_at"] = datetime.now()
     store.clinvar_submission_collection.find_one_and_replace({"_id": subm["_id"]}, subm)
 

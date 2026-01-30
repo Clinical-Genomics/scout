@@ -11,8 +11,7 @@ ONCOGENICITY = "oncogenicity"
 CLINVAR_API_URL_TEST = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
-SAVE_GERMLINE_ENDPOINT = "clinvar.clinvar_germline_save"
-SAVE_ONC_ENDPOINT = "clinvar.clinvar_onc_save"
+VAR_SAVE_ENDPOINT = "clinvar.clinvar_variant_save"
 DEMO_SUBMISSION_ID = "SUB12345678"
 DEMO_API_KEY = "test_key"
 
@@ -248,7 +247,7 @@ def test_get_submission_as_json(institute_obj, user_obj, app, submission_type):
         assert resp.is_json
 
 
-def test_clinvar_germline_save(app, institute_obj, case_obj, clinvar_germline_snv_form):
+def test_clinvar_save(app, institute_obj, case_obj, clinvar_snv_form):
     """Test the endpoint that parses the multistep user form and adds a germline variant to a germline submission."""
 
     # GIVEN a database with no ClinVar submission documents
@@ -260,15 +259,17 @@ def test_clinvar_germline_save(app, institute_obj, case_obj, clinvar_germline_sn
         # WHEN a variant is included in a germline submission via the 'clinvar_germline_save' endpoint
         client.post(
             url_for(
-                SAVE_GERMLINE_ENDPOINT,
+                VAR_SAVE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
+                subm_type=GERMLINE,
             ),
-            data=clinvar_germline_snv_form,
+            data=clinvar_snv_form,
         )
 
-        # THEN a germline submission should exist
+        # THEN a submission should exist
         subm_obj = store.clinvar_submission_collection.find_one()
+        # Of the specified type
         assert subm_obj["type"] == GERMLINE
 
         # WHICH contains assertion criteria
