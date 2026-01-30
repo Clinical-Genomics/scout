@@ -220,3 +220,196 @@
   {% endfor %}
 </ul>
 {% endmacro %}
+
+
+{% macro variant_submission_table(subm_obj, subm_type) %}
+<table class="table table-striped">
+  <caption></caption>
+  <thead>
+    <tr>
+      <th>Case</th>
+      <th>Variant</th>
+      <th>Classification</th>
+      <th>Last evaluated</th>
+      <th>Comment</th>
+      <th>Citation</th>
+      <th>Variant</th>
+      <th>Associated conditions</th>
+      <th>Observations</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for var in subm_obj.get(subm_type + 'Submission', []) %}
+      <tr>
+        <td>
+          <a href="{{ url_for('cases.case', institute_id=var.institute_id, case_name=var.case_name) }}" target="_blank">
+            {{ var.case_name }}
+          </a>
+        </td>
+        <td>
+          <a href="{{ url_for('variant.variant', institute_id=var.institute_id, case_name=var.case_name, variant_id=var.variant_id) }}" target="_blank">
+            link
+          </a>
+        </td>
+
+        {# Safe dictionary access #}
+        {% set cls = var.get(subm_type + 'Classification', {}) %}
+        {% set desc = cls.get(subm_type + 'ClassificationDescription', '') %}
+
+        <td>{{ desc }}</td>
+        <td>{{ cls.get('dateLastEvaluated', '') }}</td>
+        <td>{{ cls.get('comment', '') }}</td>
+        <td>{{ render_dict_array(cls.get('citation', [])) }}</td>
+
+        <td>{{ render_dict_array(var.get('variantSet', {}).get('variant', [])) }}</td>
+        <td>{{ render_dict_array(var.get('conditionSet', {}).get('condition', [])) }}</td>
+        <td>{{ render_dict_array(var.get('observedIn', [])) }}</td>
+
+        <td>
+          <form id="delete_var_item_{{ subm_obj._id }}_{{ var.variant_id }}"
+                action="{{ url_for('clinvar.clinvar_delete_variant', submission_id=subm_obj._id, submission_type=subm_type) }}"
+                method="POST">
+            <button type="submit" name="delete_object" value="{{ var.variant_id }}" class="btn btn-danger btn-xs">
+              <span class="fa fa-trash" aria-hidden="true"></span>
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+
+{% macro deprecated_submission_table(subm_obj) %}
+<table class="table table-striped">
+  <caption></caption>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Variant</th>
+      <th></th>
+      <th>Type</th>
+      <th>Case</th>
+      <th>Refseq</th>
+      <th>Gene</th>
+      <th>HGVS</th>
+      <th>Classification</th>
+      <th>Added by</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set var_key_name = {} %}
+
+    {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
+      {% set case_name = subm_obj.cases[subm_variant.case_id] %}
+      <tr>
+        <td>{{loop.index}}</td>
+          {% if subm_variant.category == 'sv' or subm_variant.breakpoint1 %}
+            {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
+            <td>
+              {% if "N/A" not in case_name %}
+                <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+              {% else %}
+                {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
+              {% endif %}
+            </td>
+            <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+            <td><div class="badge bg-warning">SV</div></td>
+          {% else %} <!-- SNV -->
+            {% if subm_variant.ref_seq and subm_variant.hgvs %}
+              {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.ref_seq, subm_variant.hgvs])} ) %}
+            {% else %}
+              {% do var_key_name.update({subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+            {% endif %}
+            <td>
+              {% if "N/A" not in case_name %}
+                <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case_name, variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
+              {% else %}
+                {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
+              {% endif %}
+            </td>
+            <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+            <td><div class="badge bg-success">SNV</div></td>
+          {% endif %}
+        </td>
+        <td>{{ case_link(institute_id=institute._id, case_name=case_name) }}</td>
+        <td>{{subm_variant.ref_seq or '-'}}</td>
+        <td>{{subm_variant.gene_symbol or '-'}}</td>
+        <td>{{subm_variant.hgvs|truncate(100,true,'..') or '-'}}</td>
+        <td>{{subm_variant.clinsig}}</td>
+        <td>{{subm_variant.added_by or "N/A"}}</td>
+        <td>
+          <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
+            <button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+          </form>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=11>
+          <div class="vardata">
+            <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
+                <ul class="list-group">
+                {% for key, value in variant_header_fields.items() %}
+                  {% if subm_variant[key]%}
+                    <li class="list-group-item">{{ value }}: <strong>{{ subm_variant[key]}}</strong></li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if subm_obj.case_data and subm_obj.case_data | length > 0 %}
+<table class="table table-striped">
+  <caption></caption>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Individual</th>
+      <th></th>
+      <th>Case</th>
+      <th>Variant</th>
+      <th>Allele origin</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for case in subm_obj.case_data %}
+      <tr>
+        <td>{{loop.index}}</td>
+        <td>{{case.individual_id}}</td>
+        <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+        <td>{{ case_link(institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}</td>
+        <td>{{var_key_name[case.linking_id]|truncate(100,true,'..')}}</td>
+        <td>{{case.allele_origin}}</td>
+        <td>
+          <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
+            <button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+          </form>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=8>
+          <div id="cddiv{{case._id}}" class="panel-body" style="display:none;">
+            <ul class="list-group">
+            {% for key, value in casedata_header_fields.items() %}
+              {% if case[key]%}
+                <li class="list-group-item">{{ value }}: <strong>{{ case[key] }}</strong></li>
+              {% endif %}
+            {% endfor %}
+            </ul>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No case data provided for the above variants</p>
+{% endif %}
+{% endmacro %}

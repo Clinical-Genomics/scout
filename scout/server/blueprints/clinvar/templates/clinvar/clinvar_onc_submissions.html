@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "clinvar/components.html" import render_dict_array, update_submission_status_form %}
+{% from "clinvar/components.html" import render_dict_array, update_submission_status_form, variant_submission_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -80,43 +80,7 @@
         </div>
         <div>
           {% if subm_obj.oncogenicitySubmission and subm_obj.oncogenicitySubmission | length > 0 %}
-          <table class="table table-striped">
-            <caption></caption>
-            <thead>
-              <tr>
-                <th>Case</th>
-                <th>Variant</th>
-                <th>Classification</th>
-                <th>Last evaluated</th>
-                <th>Comment</th>
-                <th>Citation</th>
-                <th>Variant</th>
-                <th>Associated conditions</th>
-                <th>Observations</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for onc_var in subm_obj.oncogenicitySubmission %}
-                <tr>
-                  <td><a href="{{ url_for('cases.case', institute_id=onc_var.institute_id, case_name=onc_var.case_name) }}" target="_blank">{{onc_var.case_name}}</a></td>
-                  <td><a href="{{ url_for('variant.cancer_variant', institute_id=onc_var.institute_id, case_name=onc_var.case_name, variant_id=onc_var.variant_id) }}" target="_blank">link</a></td>
-                  <td>{{onc_var.oncogenicityClassification.oncogenicityClassificationDescription}}</td>
-                  <td>{{onc_var.oncogenicityClassification.dateLastEvaluated}}</td>
-                  <td>{{onc_var.oncogenicityClassification.comment}}</td>
-                  <td>{{render_dict_array(onc_var.oncogenicityClassification.citation)}}</td>
-                  <td>{{render_dict_array(onc_var.variantSet.variant)}}</td>
-                  <td>{{render_dict_array(onc_var.conditionSet.condition)}}</td>
-                  <td>{{render_dict_array(onc_var.observedIn)}}</td>
-                  <td>
-                    <form id="delete_var_item_{{subm_obj._id}}_{{onc_var.variant_id}}" action="{{ url_for('clinvar.clinvar_delete_variant', submission_id=subm_obj._id, submission_type='oncogenicity') }}" method="POST">
-                      <button type="submit" name="delete_object" value="{{onc_var.variant_id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
-                    </form>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+            {{ variant_submission_table(subm_obj, "oncogenicity") }}
           {% else %}
             <p>This submission is open but has no variants yet.</p>
           {% endif %}
