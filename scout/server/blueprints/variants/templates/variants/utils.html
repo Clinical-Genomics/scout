@@ -11,7 +11,7 @@
   {% if variant.rank_score_other %}
     {% for score_name, score in variant.rank_score_other.items() %}
       <span class="badge bg-light text-dark">
-        {{ score_name }}:{{ '%.6f'|format(score.value) }}
+        {{ score_name }}:{{ '%.4f'|format(score.value) }}
       </span>
     {% endfor %}
   {% endif %}
