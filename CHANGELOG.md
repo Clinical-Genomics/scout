@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Smalled PDFs exported from ACMG classification page (#5976)
 - When adding a germline variant to a ClinVar submission, make sure it ends up in a germline submission (#5990)
 - Invalid scroll_pos handling in variants view (#5999)
+- Native type hint of iterable with subtype not compatible with python 3.11 (#6007)
 - Top left SNVs button on omics outliers page (#6001)
 
 ## [4.107.2]
