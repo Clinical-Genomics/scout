@@ -119,6 +119,7 @@ def parse_hpo_genes(hpo_lines: Iterable[str]) -> dict:
     """Parse HPO gene information.
     The first line in the genes_to_phenotype file is a header
     """
+    genes = {}
     for index, line in enumerate(hpo_lines):
         if index == 0:
             continue
