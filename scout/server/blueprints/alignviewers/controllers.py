@@ -305,8 +305,10 @@ def make_merged_splice_track(ind: dict) -> dict:
 
 def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, display_build: str) -> tuple:
     """
-    Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
-    Use original coordinates only if genome build was already 38 or liftover didn't work.
+    Check if variant coordinates are in display genome build (typically 38), otherwise do variant coords liftover.
+    Use original coordinates only if genome build was already 38 or liftover didn't work. If no display build is given,
+    assume it is the same as the case genome build.
+    Omics variants have build set on them, but for ordinary DNA variants we need to fetch case build.
     Collect locus coordinates.
     """
     MIN_LOCUS_SIZE_OFFSET = 100
@@ -317,7 +319,11 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, display_build: str
     if not display_build:
         display_build = str(case_obj.get("genome_build"))
 
-    if variant_obj["build"] not in display_build:
+    variant_build = (
+        variant_obj["build"] if "variant" in variant_obj else case_obj.get("genome_build")
+    )
+
+    if variant_build not in display_build:
         client = EnsemblRestApiClient()
         mapped_coords = client.liftover(
             case_obj.get("genome_build"),
