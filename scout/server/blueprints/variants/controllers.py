@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
@@ -1583,7 +1583,7 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> list(tuple):
+def gene_panel_choices(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> List[Tuple]:
     """Populates the multiselect containing all the gene panels to be used in variants filtering."""
 
     case_panels = [
