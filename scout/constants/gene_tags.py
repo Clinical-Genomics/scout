@@ -31,7 +31,7 @@ INHERITANCE_PALETTE = {
     "digenic": {"bgcolor": "bg-secondary", "text_color": "text-white"},
     "AEI": {"bgcolor": "bg-light", "text_color": "text-dark"},
     "other": {"bgcolor": "bg-light", "text_color": "text-dark"},
-    "IP": {"bgcolor": "bg-light", "text_color": "text-dark"},
+    "IP": {"bgcolor": "bg-success", "text_color": "text-white"},
 }
 
 INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "None": None, "Complete": False, "Incomplete": True}

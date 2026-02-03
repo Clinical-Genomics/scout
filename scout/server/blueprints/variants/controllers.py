@@ -645,7 +645,11 @@ def update_variant_genes(store, variant_obj, genome_build):
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
+            if (
+                gene_obj.get("hgnc_symbol") is None
+                or gene_obj.get("phenotypes") is None
+                or gene_obj.get("incomplete_penetrance") is None
+            ):
                 hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
                 if not hgnc_gene:
                     continue
@@ -653,6 +657,7 @@ def update_variant_genes(store, variant_obj, genome_build):
                 gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
                 # phenotypes may not exist for the hgnc_gene either, but try
                 gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
+                gene_obj["incomplete_penetrance"] = hgnc_gene.get("incomplete_penetrance")
             add_gene_links(gene_obj, genome_build)
 
     return has_changed
