@@ -171,6 +171,9 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
+        {% if gene.incomplete_penetrance %}
+          <strong>Incomplete penetrance (HPO)</strong>
+        {% endif %}
         {% if gene.phenotypes %}
           <div><strong>OMIM disease</strong>
           {% for disease in gene.phenotypes %}
@@ -235,11 +238,11 @@
           {% for model in gene.inheritance %}
             {{ inheritance_badge(model, inherit_palette) }}
           {% endfor %}
+          {{ incomplete_penetrance_badge(gene, inherit_palette) }}
           {{ panel_badge(variant, gene.hgnc_id) }}
         </div>
       {% endfor %}
     {% endif %}
-
   </div>
 {% endmacro %}
 

@@ -121,7 +121,12 @@
   {% else %}
     <span class="badge bg-info">{{ model }}</span>
   {% endif %}
+{% endmacro %}
 
+{% macro incomplete_penetrance_badge(gene, inherit_palette) %}
+  {% if gene.incomplete_penetrance %}
+    <span class="badge" {{inherit_palette["IP"].bgcolor}} {{inherit_palette["IP"].text_color}}>IP</span>
+  {% endif %}
 {% endmacro %}
 
 {% macro genemodels_panel(variant, inherit_palette) %}
@@ -158,7 +163,7 @@
                 {% endfor %}
               </td>
               <td>
-                {% if gene.omim_penetrance %}
+                {% if gene.incomplete_penetrance %}
                   <span class="badge bg-success">yes</span>
                 {% else %}
                   <span class="badge bg-secondary">no</span>
