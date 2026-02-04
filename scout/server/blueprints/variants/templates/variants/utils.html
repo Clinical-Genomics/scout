@@ -14,7 +14,7 @@
   {% if variant.rank_score_other %}
     {% if tooltip %}
       {# Capture the macro output as a string #}
-      {% set badge_html = variant_rank_score_other(variant) | replace('"', '&quot;') %}
+      {% set badge_html = variant_rank_score_other(variant, tooltip) | replace('"', '&quot;') %}
       <span
         class="ms-1 text-muted"
         data-bs-toggle="tooltip"
@@ -28,11 +28,17 @@
   {% endif %}
 {% endmacro %}
 
-{% macro variant_rank_score_other(variant) %}
+{% macro variant_rank_score_other(variant, tooltip) %}
   {% if variant.rank_score_other %}
     {% for score_name, score in variant.rank_score_other.items() %}
-      <span class="badge bg-light text-dark">
-        {{ score_name }}:{{ '%.4f'|format(score.value) }}
+      <span class="badge bg-light text-dark"
+        {% if not tooltip and score.desc %}
+          data-bs-toggle="tooltip"
+          data-bs-html="true"
+          title="[{{ score.desc | dictsort | map('join', '=') | join(', ') }}]"
+        {% endif %}
+      >
+        {{ score_name }}: {{ '%.6f'|format(score.value) }}
       </span>
     {% endfor %}
   {% endif %}
@@ -203,14 +209,14 @@
     <div class="row d-flex align-items-center my-1 mx-1 mb-1 ms-1">
       <div class="col-2 "><button type="button" class="btn-close" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#dismiss_bar" aria-controls="dismiss_bar" onclick='fetch("{{ url_for('variants.toggle_show_dismiss_block') }}")'></button> Dismiss selected variants:</div>
       <div class="col-4 align-items-start">
-        <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
+        <select form="filters_form" multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
           {% for value, data in dismiss_variant_options.items() %}
             <option value="{{ value }}">{{ data.label }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-2">
-        <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
+        <button form="filters_form" type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
       </div>
       <div class="offset-2 col-2">
         <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right me-3">Reset all dismissed</a>
