@@ -316,12 +316,11 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, display_build: str
     locus_start_coord = variant_obj.get("position")
     locus_end_coord = variant_obj.get("end")
 
+    case_build = get_case_genome_build(case_obj)
     if not display_build:
-        display_build = str(case_obj.get("genome_build"))
+        display_build = case_build
 
-    variant_build = (
-        variant_obj["build"] if "variant" in variant_obj else case_obj.get("genome_build")
-    )
+    variant_build = variant_obj["build"] if "variant" in variant_obj else case_build
 
     if variant_build not in display_build:
         client = EnsemblRestApiClient()
