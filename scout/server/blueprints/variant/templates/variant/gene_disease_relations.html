@@ -121,7 +121,12 @@
   {% else %}
     <span class="badge bg-info">{{ model }}</span>
   {% endif %}
+{% endmacro %}
 
+{% macro incomplete_penetrance_badge(gene, inherit_palette) %}
+  {% if gene.incomplete_penetrance %}
+    <span class="badge {{inherit_palette["IP"].bgcolor}} {{inherit_palette["IP"].text_color}}" data-bs-toggle="tooltip" title="Genotype phenotype relation typified by incomplete penetrance according to HPO">IP</span>
+  {% endif %}
 {% endmacro %}
 
 {% macro genemodels_panel(variant, inherit_palette) %}
@@ -138,7 +143,7 @@
           <tr>
             <th>OMIM</th>
             <th data-bs-toggle="tooltip" title="Manual inheritance models from default gene panels">Manual</th>
-            <th>OMIM</th>
+            <th data-bs-toggle="tooltip" title="Genotype phenotype relation typified by incomplete penetrance according to HPO">HPO</th>
             <th data-bs-toggle="tooltip" title="Manual penetrance information from default gene panels">Manual</th>
           </tr>
         </thead>
@@ -158,11 +163,7 @@
                 {% endfor %}
               </td>
               <td>
-                {% if gene.omim_penetrance %}
-                  <span class="badge bg-success">yes</span>
-                {% else %}
-                  <span class="badge bg-secondary">no</span>
-                {% endif %}
+                {{ incomplete_penetrance_badge(gene, inherit_palette) }}
               </td>
               <td>
                 {% if gene.manual_penetrance %}
