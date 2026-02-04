@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Revert search of genes in panels. Now search is NOT limited to user's institutes panels any more (#5974)
 - Name for Gens buttons: `CN profile` to `Gens`(#5985)
 - On variants filters form, sort gene panels alphabetically and mark panels that don't belong to the case's clinical panels with asterisk (#5981)
+- Display inheritance models on structural variantS pages (#6009)
 ### Fixed
 - Do not try to save an ACMG classification when user provided no criteria (#4962)
 - When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)
