@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse phasing information and store on genotype call (#5988)
 - Link to GTEx for gene, from gene and variant pages (#5995)
 - Parse STRdrop details where available (#5991)
+- Incomplete penetrance badge, according to HPO (#6008)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
