@@ -73,7 +73,7 @@ class VariantHandler(VariantLoader):
             hgnc_gene["transcripts_dict"] = transcripts_dict
 
             if hgnc_gene.get("incomplete_penetrance"):
-                variant_gene["omim_penetrance"] = True
+                variant_gene["incomplete_penetrance"] = True
 
             ############# PANEL SPECIFIC INFORMATION #############
             # Panels can have extra information about genes and transcripts
