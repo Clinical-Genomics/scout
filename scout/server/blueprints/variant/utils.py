@@ -259,7 +259,7 @@ def add_gene_info(
             hgnc_symbol = hgnc_gene["hgnc_symbol"]
             # Add omim information if gene is annotated to have incomplete penetrance
             if hgnc_gene.get("incomplete_penetrance"):
-                variant_gene["omim_penetrance"] = True
+                variant_gene["incomplete_penetrance"] = True
 
             ############# PANEL SPECIFIC INFORMATION #############
             # Panels can have extra information about genes and transcripts
