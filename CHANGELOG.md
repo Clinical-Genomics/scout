@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse phasing information and store on genotype call (#5988)
 - Link to GTEx for gene, from gene and variant pages (#5995)
 - Parse STRdrop details where available (#5991)
+- Incomplete penetrance badge, according to HPO (#6008)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
