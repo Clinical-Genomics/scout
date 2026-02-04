@@ -147,7 +147,7 @@ def test_make_omics_locus(app, case_obj):
     # GIVEN an OMICS variants
     omics_variant = store.omics_variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
-    # GIVEN that the OMICS variant is the same buid as the case (liftover not triggered)
+    # GIVEN that the OMICS variant is the same build as the case (liftover not triggered)
     build = case_obj["genome_build"]
     omics_variant["build"] = build
 
