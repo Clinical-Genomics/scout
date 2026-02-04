@@ -1,4 +1,4 @@
-{% from "variant/gene_disease_relations.html" import inheritance_badge %}
+{% from "variant/gene_disease_relations.html" import incomplete_penetrance_badge, inheritance_badge %}
 {% from "variants/utils.html" import compounds_table, overlapping_tooltip_table %}
 
 {% macro variant_gene_symbols_cell(variant, inherit_palette) %}
@@ -171,6 +171,9 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
+        {% if gene.incomplete_penetrance %}
+          <strong>Incomplete penetrance (HPO)</strong>
+        {% endif %}
         {% if gene.phenotypes %}
           <div><strong>OMIM disease</strong>
           {% for disease in gene.phenotypes %}
@@ -235,11 +238,11 @@
           {% for model in gene.inheritance %}
             {{ inheritance_badge(model, inherit_palette) }}
           {% endfor %}
+          {{ incomplete_penetrance_badge(gene, inherit_palette) }}
           {{ panel_badge(variant, gene.hgnc_id) }}
         </div>
       {% endfor %}
     {% endif %}
-
   </div>
 {% endmacro %}
 
