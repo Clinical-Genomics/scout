@@ -38,32 +38,33 @@
 {% endblock %}
 
 {% block content_main %}
-  <form method="POST" id="filters_form" action="{% block variants_form_action %}{% endblock %}"
+  <div class="container-float">
+   <div class="card panel-default" id="accordion">
+      <form method="POST" id="filters_form" action="{% block variants_form_action %}{% endblock %}"
        enctype="multipart/form-data" onsubmit="return validateForm()">
-    <div class="container-float">
-     {{ pagination_hidden_div(page, result_size) }}
-     <div class="card panel-default" id="accordion">
-       {{ filters_form_header(result_size, total_variants) }}
-       <!--Expand filters form if filters were used in a previous POST request-->
-       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
-         {% block variants_filter %}{% endblock %}
-       </div>
-       {% block variants_filter_form_footer %}{% endblock %}
-     </div>
-     <div class="card mt-3">
-       <table class="table table-hover table-bordered" aria-label="{{ self.category_title() }} table">
-         <thead class="table-light thead">
-         {% block variants_table_header %}{% endblock %}
-         </thead>
-         <tbody>
-          {% block variants_table_rows %}{% endblock %}
-         </tbody>
-       </table>
-     </div> <!-- end of card -->
-    </div> <!-- end of container-float -->
-    {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
-    <input type="hidden" name="scroll_pos" id="scroll_pos">
-  </form> <!-- end of form containing filters and variants' table elements -->
+        {{ pagination_hidden_div(page, result_size) }}
+        <input type="hidden" name="scroll_pos" id="scroll_pos">
+        {{ filters_form_header(result_size, total_variants) }}
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
+          {% block variants_filter %}{% endblock %}
+        </div>
+        {% block variants_filter_form_footer %}{% endblock %}
+      </form> <!-- end of form containing filters and variants' table elements. Further use needs form id. -->
+    </div>
+   <div class="card mt-3">
+     <table class="table table-hover table-bordered" aria-label="{{ self.category_title() }} table">
+       <thead class="table-light thead">
+       {% block variants_table_header %}{% endblock %}
+       </thead>
+       <tbody>
+        {% block variants_table_rows %}{% endblock %}
+       </tbody>
+     </table>
+   </div> <!-- end of card -->
+  </div> <!-- end of container-float -->
+  {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
+
   <div class="container-fluid" style="padding-bottom: 100px">
     {{ pagination_footer(page, result_size) }}
   </div>
