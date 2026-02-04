@@ -1,7 +1,4 @@
 import logging
-from typing import Any
-
-from cyvcf2.cyvcf2 import Variant
 
 from scout.models.variant.variant import RANK_SCORE_OTHER
 
@@ -36,3 +33,11 @@ def parse_rank_score_other(parsed_variant: dict, variant: dict):
             parsed_variant["rank_score_other"].setdefault(score, {})
 
             parsed_variant["rank_score_other"][score]["value"] = features["score_type"](raw_score)
+
+            if features.get("score_desc"):
+                raw_desc = variant.INFO.get(features["score_desc"]).strip("[]").rstrip(",")
+                if raw_desc:
+                    parsed_variant["rank_score_other"][score]["desc"] = {
+                        k: float(v) for k, v in (item.split("=") for item in raw_desc.split(","))
+                    }
+                    LOG.warning(parsed_variant["rank_score_other"][score]["desc"])

@@ -6,10 +6,10 @@ family: 'internal_id_2'
 family_name: '643595'
 samples:
   - analysis_type: wes
-    sample_id: ADM1059A2
+    sample_id: ACC17113A6
     capture_kit: Agilent_SureSelectCRE.V1
-    father: ADM1059A1
-    mother: ADM1059A3
+    father:
+    mother:
     sample_name: NA12882
     phenotype: affected
     sex: male
@@ -20,35 +20,7 @@ samples:
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
 
-  - analysis_type: wes
-    sample_id: ADM1059A1
-    capture_kit: Agilent_SureSelectCRE.V1
-    father: '0'
-    mother: '0'
-    sample_name: NA12877
-    phenotype: unaffected
-    sex: male
-    expected_coverage: 30
-    mt_bam: scout/demo/reduced_mt.bam
-    vcf2cytosure: scout/demo/ADM1059A1.test.cgh
-    tissue_type: blood
-
-  - analysis_type: wes
-    sample_id: ADM1059A3
-    capture_kit: Agilent_SureSelectCRE.V1
-    father: '0'
-    mother: '0'
-    sample_name: NA12878
-    phenotype: unaffected
-    sex: female
-    expected_coverage: 30
-    mt_bam: scout/demo/reduced_mt.bam
-    vcf2cytosure: scout/demo/ADM1059A3.test.cgh
-    tissue_type: blood
-
-vcf_snv: scout/demo/643595.clinical.vcf.gz
-vcf_sv: scout/demo/643595.clinical.SV.vcf.gz
-vcf_str: scout/demo/643595.clinical.str.stranger.vcf.gz
+vcf_snv: /Users/chiararasi/Documents/work/scout_real_case/legiblemarlin/contentnewt-sample-ACC17113A6.vcf
 
 madeline: scout/demo/madeline.xml
 

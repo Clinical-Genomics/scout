@@ -14,7 +14,7 @@
   {% if variant.rank_score_other %}
     {% if tooltip %}
       {# Capture the macro output as a string #}
-      {% set badge_html = variant_rank_score_other(variant) | replace('"', '&quot;') %}
+      {% set badge_html = variant_rank_score_other(variant, tooltip) | replace('"', '&quot;') %}
       <span
         class="ms-1 text-muted"
         data-bs-toggle="tooltip"
@@ -28,11 +28,17 @@
   {% endif %}
 {% endmacro %}
 
-{% macro variant_rank_score_other(variant) %}
+{% macro variant_rank_score_other(variant, tooltip) %}
   {% if variant.rank_score_other %}
     {% for score_name, score in variant.rank_score_other.items() %}
-      <span class="badge bg-light text-dark">
-        {{ score_name }}:{{ '%.4f'|format(score.value) }}
+      <span class="badge bg-light text-dark"
+        {% if not tooltip and score.desc %}
+          data-bs-toggle="tooltip"
+          data-bs-html="true"
+          title="[{{ score.desc | dictsort | map('join', '=') | join(', ') }}]"
+        {% endif %}
+      >
+        {{ score_name }}: {{ '%.6f'|format(score.value) }}
       </span>
     {% endfor %}
   {% endif %}
