@@ -34,8 +34,8 @@ def parse_rank_score_other(parsed_variant: dict, variant: dict):
 
             parsed_variant["rank_score_other"][score]["value"] = features["score_type"](raw_score)
 
-            if features.get("score_desc"):
-                raw_desc = variant.INFO.get(features["score_desc"]).strip("[]").rstrip(",")
+            if features.get("score_desc") and variant.INFO.get(features["score_desc"]):
+                raw_desc = variant.INFO[features["score_desc"]].strip("[]").rstrip(",")
                 if raw_desc:
                     parsed_variant["rank_score_other"][score]["desc"] = {
                         k: float(v) for k, v in (item.split("=") for item in raw_desc.split(","))
