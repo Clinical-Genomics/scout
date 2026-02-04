@@ -17,26 +17,26 @@ def parse_rank_score(rank_score_entry: str, case_id: str) -> float:
 
 
 def parse_rank_score_other(parsed_variant: dict, variant: dict):
-    """Parse variant and save any additional rank scores.
-    These scores are defined under scout.models.variant.variant.RANK_SCORE_OTHER
-    """
-    for category, scores in RANK_SCORE_OTHER.items():
-        if parsed_variant["category"] != category:
+    """Parse variant and save additional rank scores from RANK_SCORE_OTHER."""
+
+    category_scores = RANK_SCORE_OTHER.get(parsed_variant["category"])
+    if not category_scores:
+        return
+
+    rank_scores = parsed_variant.setdefault("rank_score_other", {})
+
+    for score_name, features in category_scores.items():
+        raw_score = variant.INFO.get(features.get("score_key"))
+        if raw_score is None:
             continue
 
-        for score, features in scores.items():
-            raw_score = variant.INFO.get(features.get("score_key"))
-            if not raw_score:
-                continue
+        score_entry = rank_scores.setdefault(score_name, {})
+        score_entry["value"] = features["score_type"](raw_score)
 
-            parsed_variant.setdefault("rank_score_other", {})
-            parsed_variant["rank_score_other"].setdefault(score, {})
-
-            parsed_variant["rank_score_other"][score]["value"] = features["score_type"](raw_score)
-
-            if features.get("score_desc") and variant.INFO.get(features["score_desc"]):
-                raw_desc = variant.INFO[features["score_desc"]].strip("[]").rstrip(",")
-                if raw_desc:
-                    parsed_variant["rank_score_other"][score]["desc"] = {
-                        k: float(v) for k, v in (item.split("=") for item in raw_desc.split(","))
-                    }
+        score_desc_key = features.get("score_desc")
+        if score_desc_key and variant.INFO.get(score_desc_key):
+            raw_desc = variant.INFO[score_desc_key].strip("[]").rstrip(",")
+            if raw_desc:
+                score_entry["desc"] = {
+                    k: float(v) for k, v in (item.split("=") for item in raw_desc.split(","))
+                }
