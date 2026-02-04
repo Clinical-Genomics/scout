@@ -148,7 +148,10 @@ def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
 
 
 def add_incomplete_penetrance(genes, alias_genes, hpo_lines):
-    """Add information of incomplete penetrance"""
+    """Add information of incomplete penetrance based on HPO genes_to_phenotype.
+    We use this file since OMIM do not appear to carry incomplete penetrance info on their inheritance patterns,
+    only in their free text."""
+
     LOG.info("Add incomplete penetrance info")
     for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
