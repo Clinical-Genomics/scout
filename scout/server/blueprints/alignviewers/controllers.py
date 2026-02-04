@@ -324,13 +324,12 @@ def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, display_build: str
 
     if variant_build not in display_build:
         client = EnsemblRestApiClient()
-        mapped_coords = client.liftover(
+        if mapped_coords := client.liftover(
             case_obj.get("genome_build"),
             variant_obj.get("chromosome"),
             variant_obj.get("position"),
             variant_obj.get("end"),
-        )
-        if mapped_coords:
+        ):
             mapped_start = mapped_coords[0]["mapped"].get("start")
             mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
             locus_start_coord = mapped_start
