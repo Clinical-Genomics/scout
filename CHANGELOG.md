@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Native type hint of iterable with subtype not compatible with python 3.11 (#6007)
 - Error in parsing reduced penetrance from HPO genes to phenotypes (#6004)
 - Top left SNVs button on omics outliers page (#6001)
+- Omics variants RNA sashimi button locus generation does not follow RNA genome build (#6002)
 
 ## [4.107.2]
 ### Fixed
