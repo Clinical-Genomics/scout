@@ -43,11 +43,19 @@ def test_parse_rank_score_mivmir_gicam(cyvcf2_variant, case_obj):
     ## GIVEN a cyvcf2 variant with other rank scores (Mivmir, Gicam)
     GICAM = 0.076
     MIVMIR = 0.0045
+    MIVMIR_DESC = "[CSQ_CLINVAR_CLNSIG=0.48,CSQ_CLINVAR_CLNREVSTAT=0.24,]"
     cyvcf2_variant.INFO["MivmirScore"] = MIVMIR
     cyvcf2_variant.INFO["GicamScore"] = GICAM
+    cyvcf2_variant.INFO["MivmirExplanation"] = MIVMIR_DESC
 
     ## When variant is parsed
     var_info = parse_variant(cyvcf2_variant, case_obj)
 
     # THEN other score should be extracted as expected
-    assert var_info["rank_score_other"] == {"Gicam": {"value": GICAM}, "Mivmir": {"value": MIVMIR}}
+    assert var_info["rank_score_other"] == {
+        "Gicam": {"value": GICAM},
+        "Mivmir": {
+            "value": MIVMIR,
+            "desc": {"CSQ_CLINVAR_CLNSIG": 0.48, "CSQ_CLINVAR_CLNREVSTAT": 0.24},
+        },
+    }

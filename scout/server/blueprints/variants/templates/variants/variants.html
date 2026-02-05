@@ -57,7 +57,7 @@
     {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-    <td class="text-start">{{variant_rank_score(variant=variant, tooltip=True)}}
+    <td class="text-start">{{variant_rank_score(variant=variant, other_score_as_tooltip=True)}}
     </td>
     <td>
       {{ variant.chromosome }}
