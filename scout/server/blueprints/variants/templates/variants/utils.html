@@ -3,7 +3,7 @@
 {% from "cases/utils.html" import pretty_link_variant %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
-{% macro variant_rank_score(variant, uid, tooltip=False) %}
+{% macro variant_rank_score(variant, uid, other_score_as_tooltip=False) %}
   {% if variant.rank_score is defined and variant.rank_score is not none %}
     {{ variant.rank_score|int }}
   {% endif %}
@@ -12,9 +12,9 @@
   {% endif %}
 
   {% if variant.rank_score_other %}
-    {% if tooltip %}
+    {% if other_score_as_tooltip %}
       {# Capture the macro output as a string #}
-      {% set badge_html = variant_rank_score_other(variant, tooltip) | replace('"', '&quot;') %}
+      {% set badge_html = variant_rank_score_other(variant, other_score_as_tooltip) | replace('"', '&quot;') %}
       <span
         class="ms-1 text-muted"
         data-bs-toggle="tooltip"
@@ -23,16 +23,16 @@
         style="cursor: help;"
       >...</span>
     {% else %}
-      {{ variant_rank_score_other(variant) }}
+      {{ variant_rank_score_other(variant, other_score_as_tooltip) }}
     {% endif %}
   {% endif %}
 {% endmacro %}
 
-{% macro variant_rank_score_other(variant, tooltip) %}
+{% macro variant_rank_score_other(variant, other_score_as_tooltip) %}
   {% if variant.rank_score_other %}
     {% for score_name, score in variant.rank_score_other.items() %}
       <span class="badge bg-light text-dark"
-        {% if not tooltip and score.desc %}
+        {% if not other_score_as_tooltip and score.desc %}
           data-bs-toggle="tooltip"
           data-bs-html="true"
           title="[{{ score.desc | dictsort | map('join', '=') | join(', ') }}]"
