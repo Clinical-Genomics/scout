@@ -1,6 +1,6 @@
 {% extends "variants/variants_layout.html" %}
 {% from "variants/utils.html" import callers_cell, cell_rank, filter_form_footer, sv_filters, variant_link_href, variant_rank_score %}
-{% from "variants/components.html" import frequency_cell_general, observed_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
+{% from "variants/components.html" import cell_models, frequency_cell_general, observed_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
   Structural variants
@@ -33,6 +33,7 @@
     <th scope="col" title="Observed database matches">Observed</th>
     <th scope="col">Gene(s)</th>
     <th scope="col" title="Functional annotation">Function</th>
+    <th scope="col" style="width:14%" title="Inheritance models">Inheritance model</th>
     <th scope="col" title="Gene overlapping variants in affected individuals">Overlap</th>
   </tr>
 {% endblock %}
@@ -79,6 +80,7 @@
     <td style="word-wrap:break-word;">
       {{ variant_funct_anno_cell(variant) }}
     </td>
+    <td>{{ cell_models(variant, genetic_models_palette) }}</td>
     <td>{{ overlapping_cell(variant, institute, case) }}</td>
   </tr>
 {% endmacro %}

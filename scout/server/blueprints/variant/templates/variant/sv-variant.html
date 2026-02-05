@@ -4,7 +4,7 @@
 {% from "variant/components.html" import clinsig_table, external_scripts, external_stylesheets, list_edge_genes, matching_variants, panel_classify_sv, variant_scripts, variant_genes %}
 {% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel, custom_annotations, gene_panels %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
-{% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
+{% from "variant/gene_disease_relations.html" import inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
 {% from "variant/buttons.html" import dismiss_variant_button, splice_junctions_button, variant_tag_button %}
 {% from "variants/utils.html" import variant_rank_score %}
@@ -115,6 +115,7 @@
     </div>
     <div class="col-md-6">
       {{ orpha_omim_phenotypes(variant) }}
+      {{ inheritance_panel(variant, inherit_palette) }}
     </div>
   </div>
 
