@@ -1,5 +1,7 @@
 import logging
 
+from cyvcf2.cyvcf2 import Variant
+
 from scout.models.variant.variant import RANK_SCORE_OTHER
 
 LOG = logging.getLogger(__name__)
