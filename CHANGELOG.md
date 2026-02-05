@@ -14,7 +14,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse STRdrop details where available (#5991)
 - Incomplete penetrance badge, according to HPO (#6008)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
+<<<<<<< parse_mivmirexplanation
 - Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
+=======
+- Display inheritance models on structural variantS pages (#6015)
+>>>>>>> main
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
