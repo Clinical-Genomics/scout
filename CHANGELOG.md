@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Error in parsing reduced penetrance from HPO genes to phenotypes (#6004)
 - Top left SNVs button on omics outliers page (#6001)
 - Omics variants RNA sashimi button locus generation does not follow RNA genome build (#6002)
+- HGVSp display encoding on gene-variants (SNV and SVs) page (#6018)
 
 ## [4.107.2]
 ### Fixed

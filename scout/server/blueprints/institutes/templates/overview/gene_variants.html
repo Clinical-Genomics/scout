@@ -96,7 +96,7 @@
     <a href="{{ url_for('variant.sv_variant', institute_id=variant.institute,
             case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
        {% if hgvs in variant %}
-        {{ variant.hgvs }}
+        {{ (variant.hgvs or '')|url_decode|truncate(30,True) }}
        {% else %}
         {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
        {% endif %}
