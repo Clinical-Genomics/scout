@@ -339,7 +339,7 @@ def register_filters(app):
                         primary_tx = tx_id
                     continue
                 canonical_tx = tx_id
-                protein = tx.get("protein_sequence_name")
+                protein = tx.get("protein_sequence_name") or ""
                 break
 
             line_components = [f"{canonical_tx or primary_tx or tx_id} ({gene_symbol})"]
