@@ -29,6 +29,7 @@ from scout.constants import (
     EXPORT_HEADER,
     EXPORTED_VARIANTS_LIMIT,
     FUSION_EXPORT_HEADER,
+    GENETIC_MODELS_PALETTE,
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
@@ -321,6 +322,7 @@ def render_variants_page(
             institute_id=institute_id, category=category, form=form
         ),
         form=form,
+        genetic_models_palette=GENETIC_MODELS_PALETTE,
         inherit_palette=INHERITANCE_PALETTE,
         institute=institute_obj,
         manual_rank_options=MANUAL_RANK_OPTIONS,
