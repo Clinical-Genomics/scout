@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse STRdrop details where available (#5991)
 - Incomplete penetrance badge, according to HPO (#6008)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
+- Display inheritance models on structural variantS pages (#6015)
 - Methylation outliers from LRS MethBat from Nallo as omics variants (#5993)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
