@@ -16,7 +16,7 @@ def parse_rank_score(rank_score_entry: str, case_id: str) -> float:
     return rank_score
 
 
-def parse_rank_score_other(parsed_variant: dict, variant: dict):
+def parse_rank_score_other(parsed_variant: dict, variant: Variant):
     """Parse variant and save additional rank scores from RANK_SCORE_OTHER."""
 
     category_scores = RANK_SCORE_OTHER.get(parsed_variant["category"])
