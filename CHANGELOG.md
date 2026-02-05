@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Incomplete penetrance badge, according to HPO (#6008)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 - Display inheritance models on structural variantS pages (#6015)
+- Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
 - An `ACMG algorithm` link included in the main dropdown, pointing to a blank classification page to be used as an ACMG sandbox (#5983)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
