@@ -346,7 +346,7 @@ def register_filters(app):
             if hgvs:
                 line_components.append(unquote(hgvs))
             if protein:
-                line_components.append(protein)
+                line_components.append(unquote(protein))
 
             lines.add(" ".join(line_components))
 
