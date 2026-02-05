@@ -531,7 +531,7 @@
             <td><!-- HGVS[c] -->
               <span class="text-muted">
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
-                {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
+                {{ variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
               {% else %}
                 -
               {% endif %}
@@ -540,7 +540,7 @@
             <td><!-- HGVS[p] -->
               <span class="text-muted">
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
-                  {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
+                  {{(variant.first_rep_gene.hgvsp_identifier or '')|url_decode|truncate(15, True)}}
               {% else %}
                 -
               {% endif %}
