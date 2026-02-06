@@ -404,13 +404,14 @@ def refseq(refseq_id):
     return link.format(refseq_id)
 
 
-def popeve(tx_obj: dict) -> str:
+def popeve(tx_obj: dict) -> Optional[str]:
     """Generates a PopEVE link for a transcript by extracting the RefSeq protein_id, if present."""
     protein_id = tx_obj.get("protein_id")
     if not protein_id or not protein_id.startswith("NP_"):
         return None
 
     protein_id = protein_id.replace(".", "-")  # Format RefSeq protein ID for PopEVE URL
+    LOG.warning(protein_id)
     return f"https://pop.evemodel.org/protein/{protein_id}"
 
 
