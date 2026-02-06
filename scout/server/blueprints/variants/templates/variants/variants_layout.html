@@ -111,10 +111,14 @@
 
     {{ clickable_table_row_script() }}
 
-    document.querySelector("#filters_form").addEventListener("submit", function () {
-       document.getElementById("scroll_pos").value = window.scrollY;
+    document.querySelector("#filters_form").addEventListener("submit", function (event) {
+      const submitter = event.submitter;
+      if (submitter && submitter.id && submitter.id.startsWith("paginate-")) {
+        document.getElementById("scroll_pos").value = 0;
+      } else {
+        document.getElementById("scroll_pos").value = window.scrollY;
+      }
     });
-
 
   </script>
   {{ enable_variants_hotkeys() }}

@@ -316,7 +316,7 @@ def render_variants_page(
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=dismiss_variant_options,
-        scroll_pos=int(request.values.get("scroll_pos") or 0),
+        scroll_pos=int(float(request.values.get("scroll_pos", 0) or 0)),
         expand_search=get_expand_search(request.form),
         filters=populate_persistent_filters_choices(
             institute_id=institute_id, category=category, form=form
