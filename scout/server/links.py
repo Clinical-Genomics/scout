@@ -411,7 +411,7 @@ def popeve(tx_obj: dict) -> Optional[str]:
         return None
 
     protein_id = protein_id.replace(".", "-")  # Format RefSeq protein ID for PopEVE URL
-    LOG.warning(protein_id)
+    print(protein_id)
     return f"https://pop.evemodel.org/protein/{protein_id}"
 
 
