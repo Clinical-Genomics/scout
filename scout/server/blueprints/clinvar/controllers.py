@@ -1,8 +1,6 @@
-import csv
 import logging
 from datetime import datetime
-from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 from flask import flash, request
 from flask_login import current_user
@@ -18,10 +16,10 @@ from scout.constants.clinvar import (
     SCOUT_CLINVAR_SV_TYPES_MAP,
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import OncogenicitySubmissionItem, clinvar_variant
+from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem, clinvar_variant
 from scout.server.blueprints.variant.utils import add_gene_info
-from scout.server.extensions import clinvar_api, store
-from scout.server.utils import get_case_genome_build, safe_redirect_back
+from scout.server.extensions import store
+from scout.server.utils import get_case_genome_build
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
@@ -349,29 +347,8 @@ def parse_casedata_form_fields(form):
     return casedata_list
 
 
-def update_clinvar_sample_names(submission_id, case_id, old_name, new_name):
-    """Update casedata sample names
-    Args:
-        submission_id(str) the database id of a clinvar submission
-        case_id(str): case id
-        old_name(str): old name of an individual in case data
-        new_name(str): new name of an individual in case data
-    """
-    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
-    flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
-        "info",
-    )
-
-
-def update_clinvar_submission_status(request_obj, institute_id, submission_id):
-    """Update the status of a clinVar submission
-    Args:
-        store(adapter.MongoAdapter)
-        request_obj(flask.request) POST request sent by form submission
-        institute_id(str) institute id
-        submission_id(str) the database id of a clinvar submission
-    """
+def update_clinvar_submission_status(request_obj: dict, institute_id: str, submission_id: str):
+    """Update the status of a clinVar submission"""
     update_status = request_obj.form.get("update_submission")
 
     if update_status in ["open", "closed", "submitted"]:  # open or close a submission
@@ -388,153 +365,6 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
-
-    if update_status == "submit":
-        submitter_key = request_obj.form.get("apiKey")
-        send_api_submission(institute_id, submission_id, submitter_key)
-
-
-def json_api_submission(submission_id: str) -> Tuple[int, dict]:
-    """Returns an integer and a json submission object as a dict. If the submission is of type "oncogenocity" there is no need for conversion and can be used as is.
-    Germline submission objects (Variant and Casedata database documents) are converted to a json submission using
-    the PreClinVar service.
-    """
-
-    json_submission: dict = store.get_onc_submission_json(
-        submission=submission_id
-    )  # Oncogenocity submissions are already saved in the desired format
-    if json_submission:
-        return 200, json_submission
-
-    variant_data: list = store.clinvar_objs(submission_id, "variant_data")
-    obs_data: list = store.clinvar_objs(submission_id, "case_data")
-
-    if not variant_data or not obs_data:
-        return (400, "Submission must contain both Variant and CaseData info")
-
-    # Retrieve eventual assertion criteria for the submission
-    extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
-
-    # Retrieve genome build for the case submitted
-    case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
-    extra_params["assembly"] = "GRCh37" if "37" in get_case_genome_build(case_obj) else "GRCh38"
-
-    def _write_file(afile, header, lines):  # Write temp CSV file
-        writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
-        writes.writerow(header)
-        for line in lines:
-            writes.writerow(line)
-        afile.flush()
-        afile.seek(0)
-
-    with (
-        NamedTemporaryFile(mode="a+", prefix="Variant", suffix=".csv") as variant_file,
-        NamedTemporaryFile(mode="a+", prefix="CaseData", suffix=".csv") as casedata_file,
-    ):
-        # Write temp Variant CSV file
-        _, variants_header, variants_lines = clinvar_submission_file(
-            submission_id, "variant_data", "SUB000"
-        )
-        _write_file(variant_file, variants_header, variants_lines)
-
-        # Write temp CaseData CSV file
-        _, casedata_header, casedata_lines = clinvar_submission_file(
-            submission_id, "case_data", "SUB000"
-        )
-        _write_file(casedata_file, casedata_header, casedata_lines)
-
-        return clinvar_api.convert_to_json(variant_file.name, casedata_file.name, extra_params)
-
-
-def send_api_submission(institute_id, submission_id, key):
-    """Convert and validate ClinVar submission data to json.
-       If json submission is validated, submit it using the ClinVar API
-
-    Args:
-        institute_id(str): _id of an institute
-        submission_id(str): the database id of a clinvar submission
-        key(str): a 64 alphanumeric characters' key
-    """
-    # Convert submission objects to json:
-    code, conversion_res = json_api_submission(submission_id)
-
-    if code != 200:  # Connection or conversion object errors
-        flash(str(conversion_res), "warning")
-        return
-
-    clinvar_id = store.get_clinvar_id(
-        submission_id
-    )  # This is the official ID associated with this submission in Clinvar (ex: SUB999999)
-
-    if clinvar_id:  # Check if submission object has already an associated ClinVar ID
-        conversion_res["submissionName"] = clinvar_id
-
-    service_url, code, submit_res = clinvar_api.submit_json(conversion_res, key)
-
-    if code in [200, 201]:
-        clinvar_id = submit_res.json().get("id")
-        flash(
-            f"Submission sent to API URL '{service_url}'. Saved successfully with ID: {clinvar_id}",
-            "success",
-        )
-
-        # Update ClinVar submission ID with the ID returned from ClinVar
-        store.update_clinvar_id(
-            clinvar_id=clinvar_id,
-            submission_id=submission_id,
-        )
-        # Update submission status as submitted
-        store.update_clinvar_submission_status(
-            institute_id=institute_id, submission_id=submission_id, status="submitted"
-        )
-
-    else:
-        flash(
-            f"Submission sent to API URL '{service_url}'. Returned the following error: {str(submit_res.json())}",
-            "warning",
-        )
-
-
-def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
-    """Prepare content (header and lines) of a csv clinvar submission file
-    Args:
-        submission_id(str): the database id of a clinvar submission
-        csv_type(str): 'variant_data' or 'case_data'
-        clinvar_subm_id(str): The ID assigned to this submission by ClinVar
-    Returns:
-        (filename, csv_header, csv_lines):
-            filename(str) name of file to be downloaded
-            csv_header(list) content of header cells
-            csv_lines(list of lists) content of file lines, one for each variant/case data
-    """
-    if clinvar_subm_id == "None":
-        flash(
-            "In order to download a submission CSV file you should register a Clinvar submission Name first!",
-            "warning",
-        )
-        return
-
-    submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type)
-
-    if submission_objs is None or len(submission_objs) == 0:
-        flash(
-            f"There are no submission objects of type '{csv_type}' to include in the csv file!",
-            "warning",
-        )
-        return
-
-    # Download file
-    csv_header_obj = _clinvar_submission_header(submission_objs, csv_type)
-    csv_lines = _clinvar_submission_lines(submission_objs, csv_header_obj)
-    csv_header = list(csv_header_obj.values())
-
-    today = str(datetime.now().strftime("%Y-%m-%d"))
-    if csv_type == "variant_data":
-        filename = f"{clinvar_subm_id}_{today}.Variant.csv"
-    else:
-        filename = f"{clinvar_subm_id}_{today}.CaseData.csv"
-
-    return (filename, csv_header, csv_lines)
 
 
 def _clinvar_submission_lines(submission_objs, submission_header):
@@ -604,29 +434,6 @@ def add_clinvar_events(institute_obj: dict, case_obj: dict, variant_id: str):
         )
 
 
-def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
-    """It is invoked by the 'clinvar_save' endpoint. Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission."""
-
-    variant_data: dict = parse_variant_form_fields(form)
-    casedata_list: List[dict] = parse_casedata_form_fields(form)
-    institute_id = institute_obj["_id"]
-
-    # retrieve or create an open germline ClinVar submission:
-    subm: dict = store.get_open_germline_clinvar_submission(institute_id, current_user._id)
-    # save submission objects in submission:
-    result: Optional[dict] = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
-    if result:
-        flash(
-            "An open ClinVar submission was updated correctly with submitted data",
-            "success",
-        )
-
-        # Create user-related events
-        add_clinvar_events(
-            institute_obj=institute_obj, case_obj=case_obj, variant_id=form.get("linking_id")
-        )
-
-
 def remove_item_from_submission(submission: str, object_type: str, subm_variant_id: str):
     """It is invoked by the clinvar_delete_object endpoint. Removes a variant (+ casedata) or casedata info only from one ClinVar submission object."""
 
@@ -660,11 +467,8 @@ def remove_item_from_submission(submission: str, object_type: str, subm_variant_
             )
 
 
-### ClinVar oncogenicity variants submissions controllers
-
-
-def set_onc_clinvar_form(var_id: str, data: dict):
-    """Adds form key/values to the form used in ClinVar to create a multistep submission page for an oncogenic variant."""
+def set_clinvar_form(var_id: str, data: dict):
+    """Adds form key/values to the form used in ClinVar to create a multistep submission page for a variant."""
 
     var_obj = store.variant(var_id)
     if not var_obj:
@@ -683,21 +487,22 @@ def set_onc_clinvar_form(var_id: str, data: dict):
     data["variant_data"] = variant_data
 
 
-def _parse_onc_classification(onc_item: dict, form: ImmutableMultiDict):
-    """Assigns an oncogenicity classification to a submission item based on the user form."""
-    onc_item["oncogenicityClassification"] = {
-        "oncogenicityClassificationDescription": form.get("onc_classification"),
-        "dateLastEvaluated": form.get("last_evaluated"),
-    }
+def _parse_classification(subm_item: dict, form: ImmutableMultiDict, submission_type: str):
+    """Assigns a classification to a submission item based on the user form."""
+    subm_item[submission_type] = {"dateLastEvaluated": form.get("last_evaluated")}
+
+    if submission_type in ("oncogenicityClassification", "germlineClassification"):
+        subm_item[submission_type][f"{submission_type}Description"] = form.get("classification")
+
     if form.get("clinsig_comment"):
-        onc_item["oncogenicityClassification"]["comment"] = form.get("clinsig_comment")
+        subm_item[submission_type]["comment"] = form.get("clinsig_comment")
 
 
-def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
-    """Adds to an oncogenicity classification item the specifics of the user classification."""
+def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, submission_type: str):
+    """Adds to a classification item the specifics of the user classification."""
 
     if form.get("assertion_method_cit_id"):
-        onc_item["oncogenicityClassification"]["citation"] = [
+        subm_item[submission_type]["citation"] = [
             {
                 "db": form.get("assertion_method_cit_db"),
                 "id": form.get("assertion_method_cit_id"),
@@ -705,7 +510,7 @@ def _parse_onc_assertion(onc_item: dict, form: ImmutableMultiDict):
         ]
 
 
-def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
+def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
     """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
 
     variant = {}
@@ -723,32 +528,34 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
 
-    onc_item["variantSet"] = {"variant": [variant]}
+    subm_item["variantSet"] = {"variant": [variant]}
 
 
-def _parse_condition_set(onc_item: dict, form: ImmutableMultiDict):
+def _parse_condition_set(subm_item: dict, form: ImmutableMultiDict):
     """Associate one or more phenotype conditions to a variant of a ClinVar submission."""
-    onc_item["conditionSet"] = {"condition": []}
+    subm_item["conditionSet"] = {"condition": []}
     selected_db = form.get("condition_type")
     selected_conditions: List[str] = form.getlist("conditions")
     for cond in selected_conditions:
-        onc_item["conditionSet"]["condition"].append({"db": selected_db, "id": cond})
+        subm_item["conditionSet"]["condition"].append({"db": selected_db, "id": cond})
     if form.get("multiple_condition_explanation"):
-        onc_item["conditionSet"]["multipleConditionExplanation"] = form.get(
+        subm_item["conditionSet"]["multipleConditionExplanation"] = form.get(
             "multiple_condition_explanation"
         )
 
 
-def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
+def _parse_observations(subm_item: dict, form: ImmutableMultiDict, subm_type: str):
     """Associates observations to a variant of a ClinVar submission."""
-    onc_item["observedIn"] = []
+    subm_item["observedIn"] = []
     include_inds = form.getlist("include_ind")
     ind_list = form.getlist("individual_id")
     affected_status_list = form.getlist("affected_status")
     allele_origin_list = form.getlist("allele_of_origin")
     collection_method_list = form.getlist("collection_method")
-    somatic_fraction = form.getlist("somatic_allele_fraction")
-    somatic_in_normal = form.getlist("somatic_allele_in_normal")
+
+    if subm_type == "oncogenicity":
+        somatic_fraction = form.getlist("somatic_allele_fraction")
+        somatic_in_normal = form.getlist("somatic_allele_in_normal")
 
     for idx, ind_id in enumerate(ind_list):
         if ind_id not in include_inds:
@@ -759,53 +566,64 @@ def _parse_observations(onc_item: dict, form: ImmutableMultiDict):
             "affectedStatus": affected_status_list[idx],
             "collectionMethod": collection_method_list[idx],
             "numberOfIndividuals": 1,
-            "presenceOfSomaticVariantInNormalTissue": somatic_in_normal[idx],
         }
-        if somatic_fraction[idx]:
+        if subm_type == "oncogenicity" and somatic_in_normal:
+            obs["presenceOfSomaticVariantInNormalTissue"] = somatic_in_normal[idx]
+        if subm_type == "oncogenicity" and somatic_fraction[idx]:
             obs["somaticVariantAlleleFraction"] = int(somatic_fraction[idx])
 
-        onc_item["observedIn"].append(obs)
+        subm_item["observedIn"].append(obs)
 
 
-def parse_clinvar_onc_item(form: ImmutableMultiDict) -> dict:
-    """Parse form fields for an oncogenic classication of a variant and converts it into the format extected by ClinVar (json dict)."""
-    onc_item = {"recordStatus": "novel"}
-    _parse_onc_classification(onc_item, form)
-    _parse_onc_assertion(onc_item, form)
-    _parse_variant_set(onc_item, form)
-    _parse_condition_set(onc_item, form)
-    _parse_observations(onc_item, form)
+def parse_clinvar_form(form: ImmutableMultiDict, subm_type: str) -> dict:
+    """Parse form fields for a germline or oncogenic classification of a variant and converts it into the format expected by the ClinVar API (json dict)."""
+    subm_item = {"recordStatus": "novel"}
+    submission_type = f"{subm_type}Classification"
 
-    return onc_item
+    _parse_classification(subm_item=subm_item, form=form, submission_type=submission_type)
+    _parse_assertion(subm_item=subm_item, form=form, submission_type=submission_type)
+    _parse_variant_set(subm_item=subm_item, form=form)
+    _parse_condition_set(subm_item=subm_item, form=form)
+    _parse_observations(subm_item=subm_item, form=form, subm_type=subm_type)
+
+    return subm_item
 
 
-def add_onc_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
-    """Adds a somatic variant to a pre-existing open oncogeginicty seubmission. If the latter doesn't exists it creates it."""
+def add_variant_to_submission(
+    institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, subm_type: str
+):
+    """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists create it."""
 
-    onc_item: dict = parse_clinvar_onc_item(form)  # The variant item to add to an open submission
+    subm_item: dict = parse_clinvar_form(
+        form=form, subm_type=subm_type
+    )  # The variant item to add to an open submission
 
     # Add case specifics to the submission item
-    onc_item["institute_id"] = institute_obj["_id"]
-    onc_item["case_id"] = case_obj["_id"]
-    onc_item["case_name"] = case_obj.get("display_name", "_id")
-    onc_item["variant_id"] = form.get("linking_id")
+    subm_item["institute_id"] = institute_obj["_id"]
+    subm_item["case_id"] = case_obj["_id"]
+    subm_item["case_name"] = case_obj.get("display_name", "_id")
+    subm_item["variant_id"] = form.get("linking_id")
 
-    # Validate oncogenicity item model
+    # Validate API models
     try:
-        OncogenicitySubmissionItem(**onc_item)
+        if subm_type == "oncogenicity":
+            OncogenicitySubmissionItem(**subm_item)
+        else:
+            GermlineSubmissionItem(**subm_item)
     except ValidationError as ve:
         LOG.error(ve)
         flash(str(ve), "warning")
         return
 
     # retrieve or create an open ClinVar submission:
-    onc_subm: dict = store.get_open_onc_clinvar_submission(
-        institute_id=institute_obj["_id"], user_id=current_user._id
+    subm: dict = store.get_open_clinvar_submission(
+        institute_id=institute_obj["_id"], user_id=current_user._id, type=subm_type
     )
+
     # Add variant to submission object
-    onc_subm.setdefault("oncogenicitySubmission", []).append(onc_item)
-    onc_subm["updated_at"] = datetime.now()
-    store.clinvar_submission_collection.find_one_and_replace({"_id": onc_subm["_id"]}, onc_subm)
+    subm.setdefault(f"{subm_type}Submission", []).append(subm_item)
+    subm["updated_at"] = datetime.now()
+    store.clinvar_submission_collection.find_one_and_replace({"_id": subm["_id"]}, subm)
 
     # update case with submission info
     add_clinvar_events(
