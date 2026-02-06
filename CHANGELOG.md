@@ -14,11 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse STRdrop details where available (#5991)
 - Incomplete penetrance badge, according to HPO (#6008)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
-<<<<<<< parse_mivmirexplanation
 - Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
-=======
 - Display inheritance models on structural variantS pages (#6015)
->>>>>>> main
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
@@ -30,7 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)
 - Smalled PDFs exported from ACMG classification page (#5976)
 - When adding a germline variant to a ClinVar submission, make sure it ends up in a germline submission (#5990)
-- Invalid scroll_pos handling in variants view (#5999)
+- Invalid scroll_pos handling in variants view (#5999 and #6022)
 - Native type hint of iterable with subtype not compatible with python 3.11 (#6007)
 - Error in parsing reduced penetrance from HPO genes to phenotypes (#6004)
 - Top left SNVs button on omics outliers page (#6001)
