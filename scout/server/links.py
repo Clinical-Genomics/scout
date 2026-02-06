@@ -405,9 +405,7 @@ def refseq(refseq_id):
 
 
 def popeve(tx_obj: dict) -> str:
-    """Generates a PopEVE link for a canonical transcript by extracting the RefSeq protein_id, if present."""
-    if not tx_obj.get("is_canonical"):
-        return None
+    """Generates a PopEVE link for a transcript by extracting the RefSeq protein_id, if present."""
     protein_id = tx_obj.get("protein_id")
     if not protein_id or not protein_id.startswith("NP_"):
         return None
