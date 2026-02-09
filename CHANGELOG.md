@@ -16,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 - Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
 - Display inheritance models on structural variantS pages (#6015)
-- Analysis types wgs-lr and panel-lr (#6021)
+- Analysis types wgs-lr and panel-lr (#6029)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
