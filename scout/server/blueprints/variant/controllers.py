@@ -98,8 +98,11 @@ def tx_overview(variant_obj: dict):
             ovw_tx["mane"] = tx.get("mane_select_transcript", "")
             ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
 
-            ovw_tx["decorated_refseq_ids"] = []
-            ovw_tx["muted_refseq_ids"] = []
+            ovw_tx["decorated_refseq_ids"] = set()
+            ovw_tx["muted_refseq_ids"] = set()
+
+            if not tx.get("transcript_id", "").startswith("ENST"):
+                ovw_tx["decorated_refseq_ids"].add(tx["transcript_id"])
 
             for refseq_id in tx.get("refseq_identifiers", []):
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
@@ -107,11 +110,11 @@ def tx_overview(variant_obj: dict):
                 elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
-                    ovw_tx["muted_refseq_ids"].append(refseq_id)
+                    ovw_tx["muted_refseq_ids"].add(refseq_id)
                     continue
-                else:
+                elif not tx.get("transcript_id", "").startswith("ENST"):
                     decorated_tx = refseq_id
-                ovw_tx["decorated_refseq_ids"].append(decorated_tx)
+                ovw_tx["decorated_refseq_ids"].add(decorated_tx)
 
             # ---- create content for ID column -----#
             ovw_tx["transcript_id"] = tx.get("transcript_id")
