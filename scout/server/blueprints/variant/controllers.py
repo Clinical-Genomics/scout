@@ -50,6 +50,7 @@ from scout.server.utils import (
 
 from .utils import (
     add_gene_info,
+    add_tx_links,
     associate_variant_genes_with_case_panels,
     ccv_evaluation,
     clinsig_human,
@@ -67,7 +68,7 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
-def tx_overview(variant_obj: dict):
+def tx_overview(variant_obj: dict, genome_build: str):
     """Prepares the content of the transcript overview to be shown on variant and general report pages.
        Basically show transcripts that contain RefSeq or are canonical.
 
@@ -129,6 +130,10 @@ def tx_overview(variant_obj: dict):
             ovw_tx["coding_sequence_name"] = tx.get("coding_sequence_name")
             ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
 
+            # Add transcript links
+            add_tx_links(ovw_tx, genome_build, ovw_tx["hgnc_symbol"])
+
+            """
             # ---- create content for links column -----#
             ovw_tx["varsome_link"] = tx.get("varsome_link")
             ovw_tx["mutalyzer_link"] = tx.get("mutalyzer_link")
@@ -136,6 +141,7 @@ def tx_overview(variant_obj: dict):
             ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
             ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
             ovw_tx["vutr_link"] = tx.get("vutr_link")
+            """
 
             ensembl_txid_mane_transcripts[tx.get("transcript_id")] = {
                 "mane": ovw_tx["mane"],
@@ -405,7 +411,7 @@ def variant(
         for disease in gene.get("disease_terms", []):
             disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
-    tx_overview(variant_obj)
+    tx_overview(variant_obj=variant_obj, genome_build=genome_build)
 
     return {
         "institute": institute_obj,

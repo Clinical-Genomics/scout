@@ -11,7 +11,7 @@ from scout.constants import (
     SO_TERMS,
     VARIANT_FILTERS,
 )
-from scout.server.links import add_gene_links, add_tx_links
+from scout.server.links import add_gene_links
 
 LOG = logging.getLogger(__name__)
 
@@ -155,9 +155,6 @@ def update_transcripts_information(
         # Check in the common information if it is a primary transcript
         if hgnc_transcript.get("is_primary"):
             transcript["is_primary"] = True
-
-        # Add the transcript links
-        add_tx_links(transcript, genome_build, hgnc_symbol)
 
         # If the transcript has a ref seq identifier we add that
         # to the variants transcript
