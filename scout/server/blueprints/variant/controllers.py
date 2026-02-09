@@ -130,17 +130,18 @@ def tx_overview(variant_obj: dict, genome_build: str):
             ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
 
             # Add transcript links
-            add_tx_links(ovw_tx, genome_build, ovw_tx["hgnc_symbol"])
+            add_tx_links(tx, genome_build, ovw_tx["hgnc_symbol"])
 
-            """
             # ---- create content for links column -----#
-            ovw_tx["varsome_link"] = tx.get("varsome_link")
-            ovw_tx["mutalyzer_link"] = tx.get("mutalyzer_link")
-            ovw_tx["tp53_link"] = tx.get("tp53_link")
-            ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
-            ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
-            ovw_tx["vutr_link"] = tx.get("vutr_link")
-            """
+            for link in [
+                "cbioportal_link",
+                "mutalyzer_link",
+                "mycancergenome_link",
+                "tp53_link",
+                "varsome_link",
+                "vutr_link",
+            ]:
+                ovw_tx[link] = tx.get(link)
 
             ensembl_txid_mane_transcripts[tx.get("transcript_id")] = {
                 "mane": ovw_tx["mane"],
