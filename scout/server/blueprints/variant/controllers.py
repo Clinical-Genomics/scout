@@ -35,7 +35,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, chanjo2, config_igv_tracks, gens
-from scout.server.links import disease_link, get_variant_links
+from scout.server.links import add_tx_links, disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_chanjo2_coverage,
@@ -50,7 +50,6 @@ from scout.server.utils import (
 
 from .utils import (
     add_gene_info,
-    add_tx_links,
     associate_variant_genes_with_case_panels,
     ccv_evaluation,
     clinsig_human,
