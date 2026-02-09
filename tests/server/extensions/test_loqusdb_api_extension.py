@@ -113,6 +113,7 @@ def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
         # THEN assert the info was retrieved correctly
         assert var_info["observations"] == loqus_api_variant["observations"]
 
+
 def test_loqusdb_api_snv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SNV variant info from loqusdb API with custom database name"""
 
@@ -134,6 +135,7 @@ def test_loqusdb_api_snv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_
         assert "/variants/a_variant" in captured_url
         assert "?db_name=loqus_test_db" in captured_url
         assert var_info["observations"] == loqus_api_variant["observations"]
+
 
 def test_loqusdb_api_sv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SV variant info from loqusdb API with custom database name"""
