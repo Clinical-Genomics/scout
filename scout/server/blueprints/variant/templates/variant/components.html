@@ -435,52 +435,57 @@
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
       <div class="panel-body">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-secondary text-white" rel="noopener" oreferrerpolicy="no-referrer" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRING</a>
-          <a href="{{ gene.genemania_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GENEMANIA</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">UCSC</a>
-          {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Entrez</a>
-          {% endif %}
-          {% if gene.pubmed_link %}
-            <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
-          {% endif %}
-          {% if gene.decipher_link %}
-            <a href="{{ gene.decipher_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Decipher</a>
-          {% endif %}
-          <a href="{{ gene.reactome_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.gtex_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GTEx</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">ClinGen</a>
-          <a href="{{ gene.gencc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GenCC</a>
-          <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
-          {% if variant.is_mitochondrial %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MitoMap</a>
-          {% endif %}
-          {% if variant.hmtvar_variant_id %}
-            <a href="{{ variant.hmtvar_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HmtVar</a>
-          {% endif %}
-          {% if gene.tp53_link %}
-            <a href="{{ gene.tp53_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MutanTP53</a>
-          {% endif %}
-          {% if gene.iarctp53_link %}
-            <a href="{{ gene.iarctp53_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">TP53 Database</a>
-          {% endif %}
-          {% if cancer %}
+        {% if cancer %}
+            <a href="{{ gene.cancer_hotspots_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Cancer Hotspots</a>
+        {% endif %}
+        {% if gene.clingen_link %}
+            <a href="{{ gene.clingen_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">ClinGen</a>
+        {% endif %}
+        {% if cancer %}
             <a href="{{ gene.cbioportal_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">cBioPortal</a>
-            <a href="{{ gene.oncokb_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">OncoKB</a>
             <a href="{{ gene.civic_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">CIViC</a>
             <a href="{{ gene.ckb_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">CKB</a>
-            <a href="{{ gene.cancer_hotspots_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Cancer Hotspots</a>
-          {% endif %}
-          {% if str %}
-            <a href="{{ gene.stripy_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRipy</a>
+        {% endif %}
+        {% if gene.decipher_link %}
+            <a href="{{ gene.decipher_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Decipher</a>
+        {% endif %}
+        <a href="{{ gene.ensembl_link }}" class="btn btn-secondary text-white" rel="noopener" oreferrerpolicy="no-referrer" target="_blank">Ensembl</a>
+        {% if gene.entrez_link %}
+            <a href="{{ gene.entrez_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Entrez</a>
+        {% endif %}
+        <a href="{{ gene.expression_atlas_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Expr. Atlas</a>
+        <a href="{{ gene.gencc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GenCC</a>
+        <a href="{{ gene.genemania_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GENEMANIA</a>
+        {% if str %}
             <a href="{{ gene.gnomad_str_link}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GnomAD STR</a>
-          {% endif %}
-          <a href="{{ gene.panelapp_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PanelApp</a>
-          <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MARRVEL</a>
-      </div>
+        {% endif %}
+        <a href="{{ gene.gtex_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GTEx</a>
+        <a href="{{ gene.hpa_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HPA</a>
+        {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HmtVar</a>
+        {% endif %}
+        {% if variant.is_mitochondrial %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MitoMap</a>
+        {% endif %}
+        <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MARRVEL</a>
+        <a href="{{ gene.panelapp_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PanelApp</a>
+        {% if gene.pubmed_link %}
+            <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
+        {% endif %}
+        <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
+        <a href="{{ gene.reactome_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
+        <a href="{{ gene.string_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRING</a>
+        {% if str %}
+            <a href="{{ gene.stripy_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRipy</a>
+        {% endif %}
+        {% if gene.tp53_link %}
+            <a href="{{ gene.tp53_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MutanTP53</a>
+        {% endif %}
+        {% if gene.iarctp53_link %}
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">TP53 Database</a>
+        {% endif %}
+        <a href="{{ variant.ucsc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">UCSC</a>
+    </div>
     {% endfor %}
   </div>
 {% endmacro %}
