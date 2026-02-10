@@ -159,7 +159,7 @@ def test_tx_overview(app):
     assert len(test_variant["genes"][0]["transcripts"]) > 1
 
     # WHEN the variant is used to prepare the transcript overview table using the controllers function
-    tx_overview(test_variant)
+    tx_overview(variant_obj=test_variant, genome_build="37")
     # THEN variant should be populated with overview_transcripts
     # Overview transcripts should contain the expected keys
     for tx in test_variant["overview_transcripts"]:
