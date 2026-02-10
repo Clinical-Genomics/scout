@@ -794,7 +794,7 @@ class VariantHandler(VariantLoader):
         'cancer_tier', 'escat_tier' or if they are commented.
 
         Dismissed variants can be very long lists and retrieving them using a list of variant_ids
-        has quite a negative impact on the query. For this reason their number is limited to 10.
+        has quite a negative impact on the query. For this reason their number is limited to 15.
 
         Return only if the variants still exist and still have the assessment.
         Variants can be removed on re-analysis, and assessments can be cleared.
