@@ -764,33 +764,17 @@ class VariantHandler(VariantLoader):
             ),
         )
 
-    def evaluated_variant_ids_from_events(self, case_id, institute_id):
-        """Returns variant ids for variants that have been evaluated
-           Return all variants, snvs/indels and svs from case case_id
-            which have an event entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
-            'cancer_tier', 'escat_tier', 'mosaic_tags'.
-        Args:
-            case_id(str)
-
-        Returns:
-            variants(iterable(Variant))
+    def evaluated_variant_ids_from_events(
+        self, case_id: str, institute_id: str, eval_verbs: List[str]
+    ) -> Iterable[dict]:
+        """Returns variant ids for variants that have been evaluated with a list of verbs.
+        Available verb values are described in scout/constants/
         """
-
-        evaluation_verbs = [
-            "acmg",
-            "ccv",
-            "manual_rank",
-            "cancer_tier",
-            "dismiss_variant",
-            "escat_tier",
-            "mosaic_tags",
-        ]
-
         query = {
             "category": "variant",
             "institute": institute_id,
             "case": case_id,
-            "verb": {"$in": evaluation_verbs},
+            "verb": {"$in": eval_verbs},
         }
         evaluation_events = self.event_collection.find(query)
         if evaluation_events is None:
@@ -802,27 +786,39 @@ class VariantHandler(VariantLoader):
 
         return evaluated_variant_ids
 
-    def evaluated_variants(self, case_id, institute_id):
+    def evaluated_variants(self, case_id: str, institute_id: str) -> Iterable[dict]:
         """Returns variants that have been evaluated
 
-        Return all variants, snvs/indels and svs from case case_id and institute_id
-        which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
+        Return all variants from case case_id and institute_id
+        which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank',
         'cancer_tier', 'escat_tier' or if they are commented.
 
+        Dismissed variants can be very long lists and retrieving them using a list of variant_ids
+        has quite a negative impact on the query. For this reason their number is limited to 10.
+
         Return only if the variants still exist and still have the assessment.
-        Variants can be removed on reanalyis, and assessments can be cleared.
-
-        Args:
-            case_id(str)
-            institute_id(str)
-
-        Returns:
-            variants(iterable(Variant))
+        Variants can be removed on re-analysis, and assessments can be cleared.
         """
 
-        # Get all variants that have been evaluated in some way for a case
-        variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
+        EVAL_VERBS = [
+            "acmg",
+            "ccv",
+            "manual_rank",
+            "cancer_tier",
+            "escat_tier",
+            "mosaic_tags",
+        ]
+        variant_ids_non_dismissed = self.evaluated_variant_ids_from_events(
+            case_id, institute_id, eval_verbs=EVAL_VERBS
+        )
+        variant_ids_dismissed = self.evaluated_variant_ids_from_events(
+            case_id, institute_id, eval_verbs=["dismiss_variant"]
+        )
 
+        LIMIT_DISMISSED = 15
+        variant_ids = (
+            list(variant_ids_non_dismissed) + list(variant_ids_dismissed)[:LIMIT_DISMISSED]
+        )
         query = {
             "$and": [
                 {"variant_id": {"$in": variant_ids}},
