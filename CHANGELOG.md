@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for additional variant scoring systems: `MivmirScore`, `GicamScore` (#5970)
 - Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
 - Display inheritance models on structural variantS pages (#6015)
+- Analysis types wgs-lr and panel-lr (#6029)
 - Methylation outliers from LRS MethBat from Nallo as omics variants (#5993)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
