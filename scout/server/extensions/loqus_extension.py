@@ -200,15 +200,15 @@ class LoqusDB:
         return self.get_api_loqus_variant(loqus_instance, variant_info)
 
     @staticmethod
-    def get_api_loqus_variant(loqusdb_instance, variant_info) -> dict:
+    def get_api_loqus_variant(loqusdb_instance: dict, variant_info: dict) -> dict:
         """get variant data using a Loqus instance available via REST API
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
         with coordinates.
 
         Args:
-            loqusdb_instance(dict): dictionary containing LoqusDB instance information
-            variant_info(dict): dictionary containing variant coordinates
+            loqusdb_instance: dictionary containing LoqusDB instance information
+            variant_info: dictionary containing variant coordinates
 
         Returns:
             res(dict)
