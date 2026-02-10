@@ -1,4 +1,16 @@
-ANALYSIS_TYPES = ("external", "mixed", "ogm", "panel", "panel-umi", "unknown", "wes", "wgs", "wts")
+ANALYSIS_TYPES = (
+    "external",
+    "mixed",
+    "ogm",
+    "panel",
+    "panel-lr",
+    "panel-umi",
+    "unknown",
+    "wes",
+    "wgs",
+    "wgs-lr",
+    "wts",
+)
 
 # keys are used in the load report cli, while key_name is saved in case database documents
 CUSTOM_CASE_REPORTS = {
