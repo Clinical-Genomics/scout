@@ -130,6 +130,7 @@ def tx_overview(variant_obj: dict, genome_build: str):
                 "cbioportal_link",
                 "mutalyzer_link",
                 "mycancergenome_link",
+                "popeve_link",
                 "tp53_link",
                 "varsome_link",
                 "vutr_link",
