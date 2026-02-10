@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Omics variants RNA sashimi button locus generation does not follow RNA genome build (#6002)
 - HGVSp display encoding on gene-variants (SNV and SVs) page (#6018)
 - `RefSeq transcripts` panel on variant page, which was missing RefSeq ID and links for some transcripts (#6027)
+- Phenotype_terms empty crash on case page (#6034)
 
 ## [4.107.2]
 ### Fixed
