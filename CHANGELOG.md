@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Top left SNVs button on omics outliers page (#6001)
 - Omics variants RNA sashimi button locus generation does not follow RNA genome build (#6002)
 - HGVSp display encoding on gene-variants (SNV and SVs) page (#6018)
+- `RefSeq transcripts` panel on variant page, which was missing RefSeq ID and links for some transcripts (#6027, #6031)
 - `RefSeq transcripts` panel on variant page, which was missing RefSeq ID and links for some transcripts (#6027)
 - On `Local Observations` panels, number of homozygous and total observations should be 0 and not N/A if Nr obs. is 0 (#6038)
 
