@@ -11,7 +11,7 @@ from scout.constants import (
     SO_TERMS,
     VARIANT_FILTERS,
 )
-from scout.server.links import add_gene_links
+from scout.server.links import add_gene_links, add_tx_links
 
 LOG = logging.getLogger(__name__)
 
@@ -116,62 +116,45 @@ def update_transcripts_information(
 ):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
 
-    Since the hgnc information are continuously being updated we need to run this each time a
+    Since the HGNC information are continuously being updated we need to run this each time a
     variant is fetched.
 
     This function will:
-        - Add a dictionary with tx_id -> tx_info to the hgnc variant
+        - Add a dictionary with tx_id -> tx_info to the HGNC variant
         - Add information from the panel
         - Adds a list of RefSeq transcripts
     """
     genome_build = genome_build or "37"
     disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
-    # Create a dictionary with transcripts information
-    # Use ensembl transcript id as keys
     transcripts_dict = {}
-    # Add transcript information from the hgnc gene
-    for transcript in hgnc_gene.get("transcripts", []):
-        tx_id = transcript["ensembl_transcript_id"]
-        transcripts_dict[tx_id] = transcript
 
     # Add the transcripts to the gene object
     hgnc_gene["transcripts_dict"] = transcripts_dict
     hgnc_symbol = hgnc_gene["hgnc_symbol"]
 
-    # First loop over the variants transcripts
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
-
-        hgnc_transcript = transcripts_dict.get(tx_id)
-        # If the tx does not exist in ensembl anymore we skip it
-        if not hgnc_transcript:
-            continue
-
         if genome_build == "38":
             update_transcript_mane(
                 hgnc_transcript=hgnc_transcript, transcript=transcript, variant_gene=variant_gene
             )
 
-        # Check in the common information if it is a primary transcript
-        if hgnc_transcript.get("is_primary"):
-            transcript["is_primary"] = True
+        if tx_id.startswith("ENST"):
+            refseq_id = transcript.get("refseq_id")
+        else:
+            refseq_id = tx_id
 
-        # If the transcript has a ref seq identifier we add that
-        # to the variants transcript
-        refseq_id = hgnc_transcript.get("refseq_id")
         if not refseq_id:
             continue
-        transcript["refseq_id"] = refseq_id
         variant_obj["has_refseq"] = True
 
-        # Check if the refseq id are disease associated
         if refseq_id in disease_associated_no_version:
             transcript["is_disease_associated"] = True
 
-        # Since an Ensembl transcript can have multiple RefSeq identifiers we add all of
-        # those
-        transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
         transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
+        add_tx_links(transcript, genome_build, hgnc_symbol)
+
+        transcripts_dict[tx_id] = transcript
 
 
 def update_variant_case_panels(case_obj: dict, variant_obj: dict):

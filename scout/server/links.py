@@ -347,24 +347,24 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
         build = 37
 
     ensembl_id = tx_obj.get("ensembl_transcript_id", tx_obj.get("transcript_id"))
-    ensembl_37_link = ensembl_tx(ensembl_id, 37)
-    ensembl_38_link = ensembl_tx(ensembl_id, 38)
+    if build == 37:
+        tx_obj["ensembl_37_link"] = ensembl_tx(ensembl_id, 37)
+        tx_obj["ensembl_38_link"] = None
+    elif build == 38:
+        tx_obj["ensembl_37_link"] = None
+        tx_obj["ensembl_38_link"] = ensembl_tx(ensembl_id, 38)
 
-    tx_obj["ensembl_37_link"] = ensembl_37_link
-    tx_obj["ensembl_38_link"] = ensembl_38_link
-    tx_obj["ensembl_link"] = ensembl_37_link
-    if build == 38:
-        tx_obj["ensembl_link"] = ensembl_38_link
+    tx_obj["ensembl_link"] = tx_obj["ensembl_37_link"] or tx_obj["ensembl_38_link"]
 
-    refseq_links = []
     refseq_id = tx_obj.get("refseq_id") or (
         tx_obj.get("transcript_id")
         if not tx_obj.get("transcript_id", "").startswith("ENST")
         else None
     )
-
+    refseq_links = []
     if refseq_id:
         refseq_links.append({"link": refseq(refseq_id), "id": refseq_id})
+
     tx_obj["refseq_links"] = refseq_links
     tx_obj["swiss_prot_link"] = swiss_prot(tx_obj.get("swiss_prot"))
     tx_obj["pfam_domain_link"] = pfam(tx_obj.get("pfam_domain"))
