@@ -35,7 +35,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, chanjo2, config_igv_tracks, gens
-from scout.server.links import alamut_file_links, disease_link, get_variant_links
+from scout.server.links import alamut_file_links, add_tx_links, disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_chanjo2_coverage,
@@ -67,39 +67,46 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
-def tx_overview(variant_obj: dict):
+def tx_overview(variant_obj: dict, genome_build: str):
     """Prepares the content of the transcript overview to be shown on variant and general report pages.
        Basically show transcripts that contain RefSeq or are canonical.
 
     Args:
         variant_obj(dict)
     """
-    overview_txs = []  # transcripts to be shown in transcripts overview
+    overview_txs = []
     ensembl_txid_mane_transcripts = {}
-    if variant_obj.get("genes") is None:
+
+    genes = variant_obj.get("genes") or []
+    if not genes:
         variant_obj["overview_transcripts"] = []
         return
-    for gene in variant_obj.get("genes", []):
+
+    for gene in genes:
+        common = gene.get("common", {})
+        hgnc_symbol = common.get("hgnc_symbol", gene.get("hgnc_id"))
+
         for tx in gene.get("transcripts", []):
-            ovw_tx = {}
+            if "refseq_identifiers" not in tx and not tx.get("is_canonical", False):
+                continue
 
-            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
-                continue  # collect only RefSeq or canonical transcripts
+            ovw_tx = {
+                "hgnc_symbol": hgnc_symbol,
+                "hgnc_id": gene.get("hgnc_id"),
+                "mane": tx.get("mane_select_transcript", ""),
+                "mane_plus": tx.get("mane_plus_clinical_transcript", ""),
+                "decorated_refseq_ids": set(),
+                "muted_refseq_ids": set(),
+                "transcript_id": tx.get("transcript_id"),
+                "is_primary": tx.get("refseq_id") in common.get("primary_transcripts", []),
+                "is_canonical": tx.get("is_canonical"),
+                "coding_sequence_name": tx.get("coding_sequence_name"),
+                "protein_sequence_name": tx.get("protein_sequence_name"),
+            }
 
-            # ---- create content for the gene column -----#
-            ovw_tx["hgnc_symbol"] = (
-                gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
-                if gene.get("common")
-                else gene.get("hgnc_id")
-            )
-            ovw_tx["hgnc_id"] = gene.get("hgnc_id")
-
-            # ---- create content for the Refseq IDs column -----#
-            ovw_tx["mane"] = tx.get("mane_select_transcript", "")
-            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
-
-            ovw_tx["decorated_refseq_ids"] = []
-            ovw_tx["muted_refseq_ids"] = []
+            tx_id = tx.get("transcript_id", "")
+            if not tx_id.startswith("ENST"):
+                ovw_tx["decorated_refseq_ids"].add(tx_id)
 
             for refseq_id in tx.get("refseq_identifiers", []):
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
@@ -107,40 +114,33 @@ def tx_overview(variant_obj: dict):
                 elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
-                    ovw_tx["muted_refseq_ids"].append(refseq_id)
+                    ovw_tx["muted_refseq_ids"].add(refseq_id)
                     continue
                 else:
                     decorated_tx = refseq_id
-                ovw_tx["decorated_refseq_ids"].append(decorated_tx)
 
-            # ---- create content for ID column -----#
-            ovw_tx["transcript_id"] = tx.get("transcript_id")
-            ovw_tx["is_primary"] = (
-                True
-                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
-                else False
-            )
-            ovw_tx["is_canonical"] = tx.get("is_canonical")
+                if decorated_tx:
+                    ovw_tx["decorated_refseq_ids"].add(decorated_tx)
 
-            # ---- create content for HGVS description column -----#
-            ovw_tx["coding_sequence_name"] = tx.get("coding_sequence_name")
-            ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
+            add_tx_links(tx, genome_build, hgnc_symbol)
 
-            # ---- create content for links column -----#
-            ovw_tx["varsome_link"] = tx.get("varsome_link")
-            ovw_tx["mutalyzer_link"] = tx.get("mutalyzer_link")
-            ovw_tx["tp53_link"] = tx.get("tp53_link")
-            ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
-            ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
-            ovw_tx["vutr_link"] = tx.get("vutr_link")
+            for link in (
+                "cbioportal_link",
+                "mutalyzer_link",
+                "mycancergenome_link",
+                "tp53_link",
+                "varsome_link",
+                "vutr_link",
+            ):
+                ovw_tx[link] = tx.get(link)
 
-            ensembl_txid_mane_transcripts[tx.get("transcript_id")] = {
+            ensembl_txid_mane_transcripts[tx_id] = {
                 "mane": ovw_tx["mane"],
                 "mane_plus": ovw_tx["mane_plus"],
             }
+
             overview_txs.append(ovw_tx)
 
-    # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
     variant_obj["overview_transcripts"] = sorted(
         overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
     )
@@ -404,7 +404,7 @@ def variant(
         for disease in gene.get("disease_terms", []):
             disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
-    tx_overview(variant_obj)
+    tx_overview(variant_obj=variant_obj, genome_build=genome_build)
 
     return {
         "institute": institute_obj,

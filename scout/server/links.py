@@ -357,20 +357,21 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
         tx_obj["ensembl_link"] = ensembl_38_link
 
     refseq_links = []
-    if tx_obj.get("refseq_id"):
-        refseq_id = tx_obj["refseq_id"]
+    refseq_id = tx_obj.get("refseq_id") or (
+        tx_obj.get("transcript_id")
+        if not tx_obj.get("transcript_id", "").startswith("ENST")
+        else None
+    )
+
+    if refseq_id:
         refseq_links.append({"link": refseq(refseq_id), "id": refseq_id})
     tx_obj["refseq_links"] = refseq_links
     tx_obj["swiss_prot_link"] = swiss_prot(tx_obj.get("swiss_prot"))
     tx_obj["pfam_domain_link"] = pfam(tx_obj.get("pfam_domain"))
     tx_obj["prosite_profile_link"] = prosite(tx_obj.get("prosite_profile"))
     tx_obj["smart_domain_link"] = smart(tx_obj.get("smart_domain"))
-    tx_obj["varsome_link"] = varsome(
-        build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
-    )
-    tx_obj["mutalyzer_link"] = mutalyzer(
-        tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
-    )
+    tx_obj["varsome_link"] = varsome(build, refseq_id, tx_obj.get("coding_sequence_name"))
+    tx_obj["mutalyzer_link"] = mutalyzer(refseq_id, tx_obj.get("coding_sequence_name"))
     tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
     tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
     tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
