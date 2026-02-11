@@ -235,7 +235,7 @@
 
       <!-- Display and remove added HPO terms -->
       <div class="mt-3">
-         {% if "phenotype_terms" in case and case.phenotype_terms and case.phenotype_terms|length > 0 %}
+         {% if case.phenotype_terms %}
            {% for hpo_term in case.phenotype_terms %}
              <div class="col-12"> {{ hpo_item(hpo_term, case) }} </div>
            {% endfor %}
