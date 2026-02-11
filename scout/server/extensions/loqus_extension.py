@@ -21,6 +21,7 @@ LOG = logging.getLogger(__name__)
 BINARY_PATH = "binary_path"
 CONFIG_PATH = "config_path"
 API_URL = "api_url"
+DB_NAME = "db_name"
 
 
 def execute_command(cmd):
@@ -196,27 +197,29 @@ class LoqusDB:
             return self.get_exec_loqus_variant(loqus_instance, variant_info)
 
         # Loqus instance is a REST API
-        return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
+        return self.get_api_loqus_variant(loqus_instance, variant_info)
 
     @staticmethod
-    def get_api_loqus_variant(api_url, variant_info) -> dict:
+    def get_api_loqus_variant(loqusdb_instance: dict, variant_info: dict) -> dict:
         """get variant data using a Loqus instance available via REST API
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
         with coordinates.
 
         Args:
-            api_url(str): query url for the Loqus API
-            variant_info(dict): dictionary containing variant coordinates
+            loqusdb_instance: dictionary containing LoqusDB instance information
+            variant_info: dictionary containing variant coordinates
 
         Returns:
             res(dict)
         """
         category = "variants" if variant_info["category"] == "snv" else "svs"
-        search_url = f"{api_url}/{category}"
+        search_url = f"{loqusdb_instance.get(API_URL)}/{category}"
 
         if category == "variants":  # SNVs
             search_url = f"{search_url}/{variant_info['_id']}"
+            if loqusdb_instance.get(DB_NAME) is not None:
+                search_url = f"{search_url}?db_name={loqusdb_instance.get(DB_NAME)}"
         else:  # SVs
             chrom = variant_info["chrom"]
             end_chrom = variant_info["end_chrom"]
@@ -225,7 +228,8 @@ class LoqusDB:
 
             sv_type = variant_info["variant_type"]
             search_url = f"{search_url}/?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
-
+            if loqusdb_instance.get(DB_NAME) is not None:
+                search_url = f"{search_url}&db_name={loqusdb_instance.get(DB_NAME)}"
         search_resp = api_get(search_url)
 
         if search_resp.get("status_code") == 200:
