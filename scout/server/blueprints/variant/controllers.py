@@ -330,7 +330,7 @@ def variant(
     if variant_category in ["snv", "cancer", "mei"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
-    # Format clinvar information
+    # Format ClinVar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
     variant_genes = variant_obj.get("genes", [])
