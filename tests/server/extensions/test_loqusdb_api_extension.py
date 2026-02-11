@@ -117,7 +117,7 @@ def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 def test_loqusdb_api_snv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SNV variant info from loqusdb API with custom database name"""
 
-    captured_url = None
+    captured_url = ""
 
     def mockapi(url):
         nonlocal captured_url
@@ -140,7 +140,7 @@ def test_loqusdb_api_snv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_
 def test_loqusdb_api_sv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SV variant info from loqusdb API with custom database name"""
 
-    captured_url = None
+    captured_url = ""
 
     def mockapi(url):
         nonlocal captured_url
