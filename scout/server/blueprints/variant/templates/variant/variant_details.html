@@ -240,11 +240,12 @@
         </thead>
         <tbody>
           {% for loqusid, obs in observations.items() %}
+              {% set obs_count = obs.observations %}
               <tr>
                 <td>{{ loqusid }}</td>
-               <td>{{ obs.observations|default('N/A') }}</td>
-               <td>{{ obs.homozygote|default('N/A') }}</td>
-               <td>{{ obs.total|default('N/A') }}</td>
+               <td>{{ render_obs(obs_count) }}</td>
+               <td>{{ render_obs(0 if obs_count == 0 else obs.homozygote) }}</td>
+               <td>{{ render_obs(0 if obs_count == 0 else obs.total) }}</td>
              </tr>
             {% if obs.cases or obs.observations == 1 %}
               <tr>
@@ -290,16 +291,15 @@
   </div>
 {% endmacro %}
 
+{% macro render_obs(value) %}
+  {% if value is not defined or value is none or value == -1 %}
+    N/A
+  {% else %}
+    {{ value }}
+  {% endif %}
+{% endmacro %}
+
 {% macro old_observations_table(variant) %}
-
-  {% macro render_obs(value) -%}
-    {% if value is not defined or value is none or value == -1 %}
-      N/A
-    {% else %}
-      {{ value }}
-    {% endif %}
-  {%- endmacro %}
-
   {% macro render_freq(freq, obs, nr_cases) -%}
     {% if freq is defined and freq is not none %}
       {{ freq|round(6) }}
@@ -322,28 +322,32 @@
       </tr>
     </thead>
     <tbody>
+      {% set obs_count = variant.local_obs_old %}
       <tr>
         <td>RD</td>
-        <td>{{ render_obs(variant.local_obs_old) }}</td>
-        <td>{{ render_obs(variant.local_obs_hom_old) }}</td>
+        <td>{{ render_obs(obs_count) }}</td>
+        <td>{{ render_obs(0 if obs_count == 0 else variant.local_obs_hom_old) }}</td>
         <td>{{ render_freq(variant.local_obs_old_freq, variant.local_obs_old, variant.local_obs_old_nr_cases) }}</td>
       </tr>
       {% if variant.category in ['cancer', 'cancer_sv'] %}
+        {% set obs_count = variant.local_obs_cancer_germline_old %}
         <tr>
           <td>Cancer Germline</td>
-          <td>{{ render_obs(variant.local_obs_cancer_germline_old) }}</td>
-          <td>{{ render_obs(variant.local_obs_cancer_germline_hom_old) }}</td>
+          <td>{{ render_obs(obs_count) }}</td>
+          <td>{{ render_obs(0 if obs_count == 0 else variant.local_obs_cancer_germline_hom_old) }}</td>
           <td>{{ render_freq(variant.local_obs_cancer_germline_old_freq, variant.local_obs_cancer_germline_old, variant.local_obs_cancer_germline_old_nr_cases) }}</td>
         </tr>
+        {% set obs_count = variant.local_obs_cancer_somatic_old %}
         <tr>
           <td>Cancer Somatic</td>
-          <td>{{ render_obs(variant.local_obs_cancer_somatic_old) }}</td>
-          <td>{{ render_obs(variant.local_obs_cancer_somatic_hom_old) }}</td>
+          <td>{{ render_obs(obs_count) }}</td>
+          <td>{{ render_obs(0 if obs_count == 0 else variant.local_obs_cancer_somatic_hom_old) }}</td>
           <td>{{ render_freq(variant.local_obs_cancer_somatic_old_freq, variant.local_obs_cancer_somatic_old, variant.local_obs_cancer_somatic_old_nr_cases) }}</td>
         </tr>
+        {% set obs_count = variant.local_obs_cancer_somatic_panel_old %}
         <tr>
           <td>Cancer Somatic panel</td>
-          <td>{{ render_obs(variant.local_obs_cancer_somatic_panel_old) }}</td>
+          <td>{{ render_obs(obs_count) }}</td>
           <td>N/A</td>
           <td>{{ render_freq(variant.local_obs_cancer_somatic_panel_old_freq, variant.local_obs_cancer_somatic_panel_old, None) }}</td>
         </tr>
