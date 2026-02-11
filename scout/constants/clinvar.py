@@ -1,11 +1,10 @@
 from scout.constants.clnsig import ONC_CLNSIG
 
 CLINVAR_API_URL_DEFAULT = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
-PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
-ASSERTION_METHOD = "ACMG Guidelines, 2015"
-ASSERTION_METHOD_CIT = "PMID:25741868"
-ASSERTION_ONC_ONC_DB = "PubMed"
+ASSERTION_GERM_GERM_DB = "PubMed"
+ASSERTION_CRITERIA_GERM_ID = "25741868"
+ASSERTION_ONC_ONC_DB = ASSERTION_GERM_GERM_DB
 ASSERTION_CRITERIA_ONC_ID = "36063163"
 NOT_PROVIDED = "not provided"
 
@@ -83,6 +82,9 @@ GERMLINE_CLASSIF_TERMS = [
     "Pathogenic",
     "Likely pathogenic",
     "Uncertain significance",
+    "VUS-high",
+    "VUS-mid",
+    "VUS-low",
     "Likely benign",
     "Benign",
     "Pathogenic, low penetrance",
