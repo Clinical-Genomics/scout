@@ -109,8 +109,6 @@ def tx_overview(variant_obj: dict, genome_build: str):
                 ovw_tx["decorated_refseq_ids"].add(tx_id)
 
             for refseq_id in tx.get("refseq_identifiers", []):
-                decorated_tx = None
-
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
                 elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
@@ -118,7 +116,7 @@ def tx_overview(variant_obj: dict, genome_build: str):
                 elif refseq_id.startswith("XM"):
                     ovw_tx["muted_refseq_ids"].add(refseq_id)
                     continue
-                elif not tx_id.startswith("ENST"):
+                else:
                     decorated_tx = refseq_id
 
                 if decorated_tx:
