@@ -809,16 +809,13 @@ class VariantHandler(VariantLoader):
         return variant_ids
 
     def evaluated_variants(
-        self, case_id: str, institute_id: str, limit_dismissed: int = 15
+        self, case_id: str, institute_id: str, limit_dismissed: Optional[int] = None
     ) -> Tuple(Iterable[dict], int):
         """Returns variants that have been evaluated
 
         Return all variants from case case_id and institute_id
         which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank',
         'cancer_tier', 'escat_tier' or if they are commented.
-
-        Dismissed variants can be very long lists and retrieving them using a list of variant_ids
-        has quite a negative impact on the query. For this reason their number is limited to 15.
 
         Return only if the variants still exist and still have the assessment.
         Variants can be removed on re-analysis, and assessments can be cleared.
@@ -836,15 +833,22 @@ class VariantHandler(VariantLoader):
             self.evaluated_variant_ids_from_events(case_id, institute_id, include_verbs=EVAL_VERBS)
         )  # These could have been dismissed
 
-        dismissed_not_in_other_verbs = variant_ids_dismissed - variant_ids_events
+        # Collect unique dismissed variants
+        dismissed_vars_ids: set = self.evaluated_true_dismissed(
+            case_id=case_id, institute_id=institute_id
+        )
+        n_unique_dismissed = len(dismissed_vars_ids)
+        if limit_dismissed:
+            search_ids = (
+                list(variant_ids_events)
+                + list(dismissed_vars_ids - variant_ids_events)[: limit_dismissed + 1]
+            )
+        else:
+            search_ids = list(variant_ids_events) + list(dismissed_vars_ids - variant_ids_events)
+
         query = {
             "$and": [
-                {
-                    "variant_id": {
-                        "$in": list(variant_ids_events)
-                        + list(dismissed_not_in_other_verbs)[0:limit_dismissed]
-                    }
-                },
+                {"variant_id": {"$in": search_ids}},
                 {"case_id": case_id},
                 {
                     "$or": [
@@ -871,7 +875,7 @@ class VariantHandler(VariantLoader):
         # Collect all variant comments from the case
         event_query = {"$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]}
 
-        # Get all variantids for commented variants
+        # Get all variant ids for commented variants
         comment_variants = {
             event["variant_id"] for event in self.event_collection.find(event_query)
         }
@@ -892,7 +896,7 @@ class VariantHandler(VariantLoader):
             variant_obj["is_commented"] = True
             variants[var_id] = variant_obj
 
-        return variants.values()
+        return variants.values(), n_unique_dismissed
 
     def get_variant_file(self, case_obj, category, variant_type):
         """Retrieve file name for file that should be parsed to extract variants
