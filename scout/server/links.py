@@ -341,6 +341,7 @@ def ucsc(ucsc_id):
 
 
 def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
+
     try:
         build = int(build)
     except ValueError:
@@ -366,6 +367,9 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
         refseq_links.append({"link": refseq(refseq_id), "id": refseq_id})
 
     tx_obj["refseq_links"] = refseq_links
+
+    print(tx_obj)
+
     tx_obj["swiss_prot_link"] = swiss_prot(tx_obj.get("swiss_prot"))
     tx_obj["pfam_domain_link"] = pfam(tx_obj.get("pfam_domain"))
     tx_obj["prosite_profile_link"] = prosite(tx_obj.get("prosite_profile"))
@@ -404,10 +408,10 @@ def refseq(refseq_id):
 
 
 def ensembl_tx(ens_tx_id, build=37):
-    link = "http://grch37.ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+    link = "https://grch37.ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
 
     if build == 38:
-        link = "http://ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+        link = "https://ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
     if not ens_tx_id:
         return None
 
