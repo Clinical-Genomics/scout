@@ -112,3 +112,60 @@ def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 
         # THEN assert the info was retrieved correctly
         assert var_info["observations"] == loqus_api_variant["observations"]
+
+
+def test_loqusdb_api_snv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
+    """Test fetching a SNV variant info from loqusdb API with custom database name"""
+
+    captured_url = ""
+
+    def mockapi(url):
+        nonlocal captured_url
+        captured_url = url
+        return {"content": loqus_api_variant, "status_code": 200}
+
+    monkeypatch.setattr(loqus_extension, "api_get", mockapi)
+
+    with loqus_api_app.app_context():
+
+        # WHEN fetching the variant info
+        var_info = loqusdb.get_variant({"_id": "a_variant", "category": "snv"})
+
+        # THEN the URL should contain the db_name parameter
+        assert "/variants/a_variant" in captured_url
+        assert "?db_name=loqus_test_db" in captured_url
+        assert var_info["observations"] == loqus_api_variant["observations"]
+
+
+def test_loqusdb_api_sv_variant_with_db_name(loqus_api_app, monkeypatch, loqus_api_variant):
+    """Test fetching a SV variant info from loqusdb API with custom database name"""
+
+    captured_url = ""
+
+    def mockapi(url):
+        nonlocal captured_url
+        captured_url = url
+        return {"content": loqus_api_variant, "status_code": 200}
+
+    monkeypatch.setattr(loqus_extension, "api_get", mockapi)
+
+    with loqus_api_app.app_context():
+        # GIVEN a loqusdb instance configured with a database name
+        loqusdb.loqusdb_settings["default"]["db_name"] = "my_custom_db"
+
+        # WHEN fetching the SV variant info
+        var_info = loqusdb.get_variant(
+            {
+                "chrom": "1",
+                "end_chrom": "1",
+                "pos": 7889972,
+                "end": 7889995,
+                "variant_type": "DUP",
+                "category": "sv",
+            }
+        )
+
+        # THEN the URL should contain the db_name parameter with &
+        assert "/svs/" in captured_url
+        assert "&db_name=my_custom_db" in captured_url
+        assert var_info["observations"] == loqus_api_variant["observations"]
