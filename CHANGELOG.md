@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and display `MivmirExplanation` key/values on variant page, when available (#6011)
 - Display inheritance models on structural variantS pages (#6015)
 - Analysis types wgs-lr and panel-lr (#6029)
+- Option to specify database name for the loqusdb API in the scout config file (#6028)
 - popEVE link on variant page, RefSeq transcripts table (#6016)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
