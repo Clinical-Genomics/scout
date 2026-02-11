@@ -73,7 +73,7 @@ def loqus_api_app():
     app = create_app(
         config=dict(
             TESTING=True,
-            LOQUSDB_SETTINGS={"api_url": "url/to/loqus/api"},
+            LOQUSDB_SETTINGS={"api_url": "url/to/loqus/api", "db_name": "loqus_test_db"},
         )
     )
     return app
