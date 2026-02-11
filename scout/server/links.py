@@ -356,6 +356,8 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     if build == 38:
         tx_obj["ensembl_link"] = ensembl_38_link
 
+    tx_obj["popeve_link"] = popeve(tx_obj)
+
     refseq_links = []
     refseq_id = tx_obj.get("refseq_id") or (
         tx_obj.get("transcript_id")
@@ -401,6 +403,16 @@ def refseq(refseq_id):
         return None
 
     return link.format(refseq_id)
+
+
+def popeve(tx_obj: dict) -> Optional[str]:
+    """Generates a PopEVE link for a transcript by extracting the RefSeq protein_id, if present."""
+    protein_id = tx_obj.get("protein_id")
+    if not protein_id or not protein_id.startswith("NP_"):
+        return None
+
+    protein_id = protein_id.replace(".", "-")  # Format RefSeq protein ID for PopEVE URL
+    return f"https://pop.evemodel.org/protein/{protein_id}"
 
 
 def ensembl_tx(ens_tx_id, build=37):
