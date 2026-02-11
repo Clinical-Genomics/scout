@@ -878,7 +878,8 @@ class CaseHandler(object):
 
         if keep_actions:
             # collect all variants with user actions for this case
-            return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
+            evaluated_vars, _ = self.evaluated_variants(case_obj["_id"], institute_obj["_id"])
+            return list(evaluated_vars)
 
     def update_case_phenotypes(self, old_case: dict, new_case: dict):
         """If case has been re-run/re-uploaded, remember phenotype-related settings from the old case, including assigned diseases, HPO terms, phenotype groups and HPO panels."""
@@ -1022,9 +1023,8 @@ class CaseHandler(object):
 
         if existing_case and keep_actions:
             # collect all variants with user actions for this case
-            old_evaluated_variants = list(
-                self.evaluated_variants(case_obj["_id"], case_obj["owner"])
-            )
+            eval_vars, _ = self.evaluated_variants(case_obj["_id"], case_obj["owner"])
+            old_evaluated_variants = list(eval_vars)
         try:
             self._load_clinical_variants(case_obj, build=genome_build, update=update)
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
