@@ -2,7 +2,7 @@
 # stdlib modules
 import logging
 import re
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 # Third party modules
 import pymongo
@@ -764,29 +764,53 @@ class VariantHandler(VariantLoader):
             ),
         )
 
-    def evaluated_variant_ids_from_events(
-        self, case_id: str, institute_id: str, eval_verbs: List[str]
-    ) -> Iterable[dict]:
-        """Returns variant ids for variants that have been evaluated with a list of verbs.
-        Available verb values are described in scout/constants/
-        """
-        query = {
-            "category": "variant",
-            "institute": institute_id,
-            "case": case_id,
-            "verb": {"$in": eval_verbs},
-        }
-        evaluation_events = self.event_collection.find(query)
-        if evaluation_events is None:
-            return []
+    def evaluated_true_dismissed(self, case_id: str, institute_id: str) -> Set[str]:
+        """Returns a unique set of variants which have been dismissed for a case."""
+        variant_ids_dismissed = set(
+            self.evaluated_variant_ids_from_events(
+                case_id, institute_id, include_verbs=["dismiss_variant"]
+            )
+        )  # Can contain duplicates
+        variant_ids_reset_dismissed = self.evaluated_variant_ids_from_events(
+            case_id, institute_id, include_verbs=["reset_dismiss_variant"]
+        )  # Can contain duplicates
 
-        evaluated_variant_ids = [
-            evaluation_event["variant_id"] for evaluation_event in evaluation_events
+        # Remove reset dismissed from list of variant_ids_dismissed
+        for vid in variant_ids_reset_dismissed:
+            if vid in variant_ids_dismissed:
+                variant_ids_dismissed.remove(vid)
+
+        return set(variant_ids_dismissed)  # Return unique variant_ids
+
+    def evaluated_variant_ids_from_events(
+        self,
+        case_id: str,
+        institute_id: str,
+        include_verbs: List[str],
+    ) -> list[str]:
+        """Returns variant ids for variants that have been evaluated with a list of verbs.
+        This version can include duplicates if the same variant appears in multiple events.
+        """
+        pipeline = [
+            {
+                "$match": {
+                    "category": "variant",
+                    "institute": institute_id,
+                    "case": case_id,
+                    "verb": {"$in": include_verbs},
+                }
+            },
+            {"$project": {"variant_id": 1, "_id": 0}},
         ]
 
-        return evaluated_variant_ids
+        result = list(self.event_collection.aggregate(pipeline))
+        variant_ids = [r["variant_id"] for r in result]
 
-    def evaluated_variants(self, case_id: str, institute_id: str) -> Iterable[dict]:
+        return variant_ids
+
+    def evaluated_variants(
+        self, case_id: str, institute_id: str, limit_dismissed: int = 15
+    ) -> Tuple(Iterable[dict], int):
         """Returns variants that have been evaluated
 
         Return all variants from case case_id and institute_id
@@ -808,20 +832,19 @@ class VariantHandler(VariantLoader):
             "escat_tier",
             "mosaic_tags",
         ]
-        variant_ids_non_dismissed = self.evaluated_variant_ids_from_events(
-            case_id, institute_id, eval_verbs=EVAL_VERBS
-        )
-        variant_ids_dismissed = self.evaluated_variant_ids_from_events(
-            case_id, institute_id, eval_verbs=["dismiss_variant"]
-        )
+        variant_ids_events = set(
+            self.evaluated_variant_ids_from_events(case_id, institute_id, include_verbs=EVAL_VERBS)
+        )  # These could have been dismissed
 
-        LIMIT_DISMISSED = 15
-        variant_ids = (
-            list(variant_ids_non_dismissed) + list(variant_ids_dismissed)[:LIMIT_DISMISSED]
-        )
+        dismissed_not_in_other_verbs = variant_ids_dismissed - variant_ids_events
         query = {
             "$and": [
-                {"variant_id": {"$in": variant_ids}},
+                {
+                    "variant_id": {
+                        "$in": list(variant_ids_events)
+                        + list(dismissed_not_in_other_verbs)[0:limit_dismissed]
+                    }
+                },
                 {"case_id": case_id},
                 {
                     "$or": [
@@ -869,7 +892,6 @@ class VariantHandler(VariantLoader):
             variant_obj["is_commented"] = True
             variants[var_id] = variant_obj
 
-        # Return a list with the variant objects
         return variants.values()
 
     def get_variant_file(self, case_obj, category, variant_type):
