@@ -98,11 +98,11 @@ def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
         variant_obj["first_rep_gene"] = None
 
 
-def update_transcript_mane(hgnc_transcript: dict, transcript: dict, variant_gene: dict):
+def update_transcript_mane(transcript: dict, variant_gene: dict):
     """Updates MANE key/values for a transcript in genome build 38. Updates variant gene with functional annotation derived from MANE transcripts."""
     for key in ["mane_select", "mane_plus_clinical"]:
-        if hgnc_transcript.get(key):
-            transcript[f"{key}_transcript"] = hgnc_transcript[key]
+        if transcript.get(key):
+            transcript[f"{key}_transcript"] = transcript[key]
             variant_gene[f"{key}_functional_annotation"] = transcript.get("functional_annotations")
         else:
             transcript.pop(f"{key}_transcript", None)
@@ -135,9 +135,7 @@ def update_transcripts_information(
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
         if genome_build == "38":
-            update_transcript_mane(
-                hgnc_transcript=hgnc_transcript, transcript=transcript, variant_gene=variant_gene
-            )
+            update_transcript_mane(transcript=transcript, variant_gene=variant_gene)
 
         if tx_id.startswith("ENST"):
             refseq_id = transcript.get("refseq_id")
