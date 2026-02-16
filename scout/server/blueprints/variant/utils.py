@@ -126,12 +126,7 @@ def update_transcripts_information(
     """
     genome_build = genome_build or "37"
     disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
-    # Create a dictionary with transcripts information
-    # Use ensembl transcript id as keys
     transcripts_dict = {}
-    # Add transcript information from the hgnc gene
-
-    # Add the transcripts to the gene object
     hgnc_gene["transcripts_dict"] = transcripts_dict
     hgnc_symbol = hgnc_gene["hgnc_symbol"]
 
@@ -139,18 +134,12 @@ def update_transcripts_information(
         tx_id = transcript["ensembl_transcript_id"]
         transcripts_dict[tx_id] = transcript
 
-    # First loop over the variants transcripts
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
 
         hgnc_transcript = transcripts_dict.get(tx_id)
 
-        if hgnc_transcript and hgnc_transcript.get("refseq_id"):
-            refseq_id = hgnc_transcript["refseq_id"]
-        elif transcript.get("refseq_id"):
-            refseq_id = transcript["refseq_id"]
-        else:
-            refseq_id = tx_id
+        refseq_id = (hgnc_transcript or {}).get("refseq_id") or transcript.get("refseq_id") or tx_id
 
         if genome_build == "38":
             update_transcript_mane(
@@ -159,14 +148,12 @@ def update_transcripts_information(
                 variant_gene=variant_gene,
             )
 
-        # Check in the common information if it is a primary transcript
         if hgnc_transcript and hgnc_transcript.get("is_primary"):
             transcript["is_primary"] = True
 
         transcript["refseq_id"] = refseq_id
         variant_obj["has_refseq"] = True
 
-        # Check if the refseq id are disease associated
         if refseq_id in disease_associated_no_version:
             transcript["is_disease_associated"] = True
 
