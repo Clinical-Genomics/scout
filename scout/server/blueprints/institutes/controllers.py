@@ -665,7 +665,11 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
 
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
-    data["form"] = CaseFilterForm(request.form)
+    form = CaseFilterForm(request.form)
+    if request.method == "GET":
+        form.analysis_type.data = [x for x, _ in ANALYSIS_TYPE_CHOICES]
+    data["form"] = form
+
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
 

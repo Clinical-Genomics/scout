@@ -271,6 +271,12 @@
 
   {{ clickable_table_row_script() }}
 
+  $(function () {
+      $('select[multiple]').selectpicker({
+          width: '100%'
+        });
+    });
+
   </script>
 {% endblock %}
 
