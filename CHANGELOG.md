@@ -38,7 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HGVSp display encoding on gene-variants (SNV and SVs) page (#6018)
 - `RefSeq transcripts` panel on variant page, which was missing RefSeq ID and links for some transcripts (#6027, #6031)
 - Phenotype_terms empty crash on case page (#6034)
-- Updated `supercharge/mongodb-github-action` to v.1.12.1 in order to fix automatic tests failing with "client too old → daemon too new" error before even starting (#6043)
+- Updated `supercharge/mongodb-github-action` to v1 (1.12.1) in order to fix automatic tests failing with "client too old → daemon too new" error before even starting (#6043,#6044)
 - On `Local Observations` panels, number of homozygous and total observations should be 0 and not N/A if Nr obs. is 0 (#6038)
 
 ## [4.107.2]
