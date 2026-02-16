@@ -221,6 +221,31 @@
   </div>
 {% endmacro %}
 
+{% macro transcript_td(transcript, variant) %}
+<td class="d-flex align-items-center">
+  {% if transcript.transcript_id.startswith("ENS") %}
+    <a target="_blank" class="float-start" href="{{transcript.ensembl_link}}">
+      {{ transcript.transcript_id }}
+    </a>
+  {% else %} <!-- use RefSeq link instead -->
+    <a target="_blank" class="float-start" href="{{transcript.refseq_links[0].link if transcript.refseq_links}}">
+      {{ transcript.transcript_id }}
+    </a>
+  {% endif %}
+  {% if transcript.transcript_id in variant.mane_transcripts %}
+    {% if variant.mane_transcripts[transcript.transcript_id].mane %}
+      <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{variant.mane_transcripts[transcript.transcript_id].mane}}"><span class="badge bg-success ms-3" title="MANE Select">M</span></a>
+    {% endif %}
+    {% if variant.mane_transcripts[transcript.transcript_id].mane_plus %}
+      <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{variant.mane_transcripts[transcript.transcript_id].mane_plus}}"><span class="badge bg-success ms-3" title="MANE Plus Clinical">M+</span></a>
+    {% endif %}
+  {% endif %}
+  {% if transcript.is_canonical %}
+    <span class="badge bg-info ms-3">C</span>
+  {% endif %}
+</td>
+{% endmacro %}
+
 {% macro transcripts_panel(variant) %}
   <div class="card panel-default">
     <table id="transcripts_panel_table" class="table table-bordered table-sm">
@@ -247,28 +272,7 @@
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </td>
-              <td class="d-flex align-items-center">
-                {% if transcript.transcript_id.startswith("ENS") %}
-                  <a target="_blank" class="float-start" href="{{transcript.ensembl_link}}">
-                    {{ transcript.transcript_id }}
-                  </a>
-                {% else %} <!-- use RefSeq link instead -->
-                  <a target="_blank" class="float-start" href="{{transcript.refseq_links[0].link if transcript.refseq_links}}">
-                    {{ transcript.transcript_id }}
-                  </a>
-                {% endif %}
-                {% if transcript.transcript_id in variant.mane_transcripts %}
-                  {% if variant.mane_transcripts[transcript.transcript_id].mane %}
-                    <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{variant.mane_transcripts[transcript.transcript_id].mane}}"><span class="badge bg-success ms-3" title="MANE Select">M</span></a>
-                  {% endif %}
-                  {% if variant.mane_transcripts[transcript.transcript_id].mane_plus %}
-                    <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{variant.mane_transcripts[transcript.transcript_id].mane_plus}}"><span class="badge bg-success ms-3" title="MANE Plus Clinical">M+</span></a>
-                  {% endif %}
-                {% endif %}
-                {% if transcript.is_canonical %}
-                  <span class="badge bg-info ms-3">C</span>
-                {% endif %}
-              </td>
+              {{ transcript_td(transcript=transcript, variant=variant) }}
               <td>
                 {{ transcript.refseq_identifiers|join(', ') }}
               </td>
@@ -312,17 +316,7 @@
           {% for transcript in gene.transcripts %}
             <tr>
               <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
-              <td>
-                {% if transcript.transcript_id.startswith("ENS") %}
-                  <a target="_blank" class="float-start" href="{{transcript.ensembl_link}}">
-                    {{ transcript.transcript_id }}
-                  </a>
-                {% else %} <!-- use RefSeq link instead -->
-                  <a target="_blank" class="float-start" href="{{transcript.refseq_links[0].link if transcript.refseq_links}}">
-                    {{ transcript.transcript_id }}
-                  </a>
-                {% endif %}
-              </td>
+              {{ transcript_td(transcript=transcript, variant=variant) }}
               <td>
                 {{ transcript.protein_id if transcript.protein_id }}</td>
               <td>
