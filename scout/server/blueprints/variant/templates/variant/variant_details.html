@@ -245,7 +245,7 @@
                 <td>{{ loqusid }}</td>
                <td>{{ render_obs(obs_count) }}</td>
                <td>{{ render_obs(0 if obs_count == 0 else obs.homozygote) }}</td>
-               <td>{{ render_obs(0 if obs_count == 0 else obs.total) }}</td>
+               <td>{{ render_obs(obs.total) }}</td>
              </tr>
             {% if obs.cases or obs.observations == 1 %}
               <tr>
