@@ -21,6 +21,7 @@ from scout.constants import (
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
+from scout.server.blueprints.institutes.forms import ANALYSIS_CHOICES
 from scout.server.blueprints.variant.utils import (
     predictions,
     update_representative_gene,
@@ -667,7 +668,7 @@ def cases(store: MongoAdapter, request: request, institute_id: str) -> dict:
     data["institute"] = institute_obj
     form = CaseFilterForm(request.form)
     if request.method == "GET":
-        form.analysis_type.data = [x for x, _ in ANALYSIS_TYPE_CHOICES]
+        form.analysis_type.data = [x for x, _ in ANALYSIS_CHOICES]
     data["form"] = form
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
