@@ -405,10 +405,10 @@ def refseq(refseq_id):
 
 
 def ensembl_tx(ens_tx_id, build=37):
-    link = "https://grch37.ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+    link = "https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t={}"
 
     if build == 38:
-        link = "https://ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+        link = "https://ensembl.org/Homo_sapiens/Gene/Summary?t={}"
     if not ens_tx_id:
         return None
 
