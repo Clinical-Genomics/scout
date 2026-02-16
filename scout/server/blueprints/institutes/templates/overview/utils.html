@@ -74,18 +74,8 @@
               {{ form.exact_dia(class="form-control", placeholder="example:OMIM:125310, ORPHA:585,..", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
           </div>
           <div class="col-md-2 mb-3">
-          <!-- Label on top -->
-          <label for="{{ form.analysis_type.id }}" class="form-label">
-              {{ form.analysis_type.label.text }}
-          </label>
-
-          <!-- Select below -->
-          {{ form.analysis_type(
-              class="form-select selectpicker",
-              id=form.analysis_type.id,
-              multiple=True,
-              data_style="btn-secondary"
-          ) }}
+          {{ form.analysis_type.label(class="control-label") }}<br>
+          {{ form.analysis_type(class="selectpicker", multiple="multiple") }}
         </div>
       </div>
       <div class="row">
