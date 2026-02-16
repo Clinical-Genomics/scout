@@ -367,9 +367,6 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
         refseq_links.append({"link": refseq(refseq_id), "id": refseq_id})
 
     tx_obj["refseq_links"] = refseq_links
-
-    print(tx_obj)
-
     tx_obj["swiss_prot_link"] = swiss_prot(tx_obj.get("swiss_prot"))
     tx_obj["pfam_domain_link"] = pfam(tx_obj.get("pfam_domain"))
     tx_obj["prosite_profile_link"] = prosite(tx_obj.get("prosite_profile"))
