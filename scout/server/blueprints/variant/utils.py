@@ -145,8 +145,10 @@ def update_transcripts_information(
 
         hgnc_transcript = transcripts_dict.get(tx_id)
 
-        if tx_id.startswith("ENST"):
-            refseq_id = transcript.get("refseq_id")
+        if transcript.get("refseq_id"):
+            refseq_id = transcript["refseq_id"]
+        elif hgnc_transcript.get("refseq_id"):
+            refseq_id = hgnc_transcript["refseq_id"]
         else:
             refseq_id = tx_id
 

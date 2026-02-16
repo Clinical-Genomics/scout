@@ -67,7 +67,7 @@ def test_update_transcripts_information_disease_associated(variant_gene, hgnc_ge
     ## WHEN updating the transcripts information
     update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has is disease associated
-    assert variant_obj["transcripts"][0].get("is_disease_associated") is True
+    assert variant_gene["transcripts"][0].get("is_disease_associated") is True
 
 
 def test_update_transcripts_information_refseq_id(variant_gene, hgnc_gene):
