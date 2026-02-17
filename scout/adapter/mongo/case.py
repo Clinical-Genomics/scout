@@ -388,13 +388,30 @@ class CaseHandler(object):
         has_clinvar_submission: bool = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        """Fetches cases from the database.
+        """
+            Fetches and filters cases from the database, applying multiple optional criteria.
+
+        This function dynamically builds a query to retrieve cases, supporting
+        advanced use cases such as:
+
+        - **Yielding the query dictionary directly**: if `yield_query=True`, the function
+          does not execute the query on the database. Instead, it returns the constructed
+          query dict, which can be reused in testing, compound queries, or for debugging.
+        - Filtering cases modified within a certain number of days (`within_days`).
+        - Handling phenotype similarity searches, ensuring results are returned
+          in descending similarity order when `name_query` includes a pheno-similarity filter.
+        - Filtering for special conditions like pending Sanger verification,
+          presence of causative variants, or existing RNA/ClinVar data.
+        - Prioritizing ownership vs. collaborator: if both are provided, collaborator is ignored.
 
         Returns:
-            Cases ordered by date.
-            If yield_query is True, does not pose query to db;
-                instead returns corresponding query dict
-                that can be reused in compound queries or for testing.
+            list or dict:
+            - By default, returns a cursor (iterable) to matching cases ordered by
+              most recently updated.
+            - If `yield_query=True`, returns the constructed query dictionary instead
+              of executing the database query.
+            - If a phenotype similarity search is performed, returns a list of results
+              ordered by descending similarity.
         """
 
         def _conditional_set_query_value(query, condition, set_key, set_value):

@@ -21,7 +21,6 @@ from scout.constants import (
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
-from scout.server.blueprints.institutes.forms import ANALYSIS_CHOICES
 from scout.server.blueprints.variant.utils import (
     predictions,
     update_representative_gene,
