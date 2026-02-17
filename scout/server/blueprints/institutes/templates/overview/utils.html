@@ -147,6 +147,8 @@
       {% set badge_class = 'primary' %}
     {% elif atype == 'wes' %}
       {% set badge_class = 'warning' %}
+    {% elif atype in ['wgs-lr', 'panel-lr'] %}
+      {% set badge_class = 'light' %}
     {% elif atype == 'tga' %}
       {% set badge_class = 'info' %}
     {% elif atype in ['panel', 'panel-umi'] %}
