@@ -131,12 +131,25 @@ def test_case_queries(
     # -----------------------------
     # THEN search by case individual should work
     # -----------------------------
-    CASE_INDIVIDUALS = [{"individual_id": "test", "display_name": "test_name"}]
+    CASE_INDIVIDUALS = [
+        {"individual_id": "test", "display_name": "test_name", "analysis_type": "wgs"}
+    ]
     case_obj["individuals"] = CASE_INDIVIDUALS
     adapter.update_case(case_obj)
     name_query = ImmutableMultiDict({"case": "test_name"})
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
     assert len(cases) == 1
+
+    # -----------------------------
+    # THEN search by analysis type should work
+    # -----------------------------
+    cases = list(
+        adapter.cases(
+            collaborator=case_obj["owner"],
+            name_query=ImmutableMultiDict([("analysis_type", "wgs")]),
+        )
+    )
+    assert cases
 
     # -----------------------------
     # Search by synopsis should work
