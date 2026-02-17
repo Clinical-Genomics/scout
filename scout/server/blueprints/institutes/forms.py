@@ -13,9 +13,10 @@ from wtforms import (
 )
 from wtforms.widgets import PasswordInput, TextInput
 
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import ANALYSIS_TYPES, PHENOTYPE_GROUPS
 from scout.models.case import STATUS
 
+ANALYSIS_CHOICES = [(t, t.upper()) for t in ANALYSIS_TYPES]
 CATEGORY_CHOICES = [("snv", "SNV"), ("sv", "SV")]
 
 
@@ -165,6 +166,9 @@ class GeneVariantFiltersForm(FlaskForm):
 class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering on cases page"""
 
+    analysis_type = SelectMultipleField(
+        "Type of analysis", choices=ANALYSIS_CHOICES, default=[x for x, _ in ANALYSIS_CHOICES]
+    )
     case = StringField("Case or Individual name", [validators.Optional()])
     exact_pheno = StringField("HPO terms, comma-separated", [validators.Optional()])
     exact_dia = StringField("Disease terms, comma-separated", [validators.Optional()])
