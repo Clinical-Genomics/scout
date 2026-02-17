@@ -8,6 +8,11 @@
   {{ super() }} - {{ institute.display_name }} - Cases
 {% endblock %}
 
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -237,6 +242,7 @@
 
 {% block scripts %}
   {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
   <script>
 
@@ -270,6 +276,12 @@
   })
 
   {{ clickable_table_row_script() }}
+
+  $(function () {
+      $('select[multiple]').selectpicker({
+          width: '100%'
+        });
+    });
 
   </script>
 {% endblock %}
