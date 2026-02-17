@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display inheritance models on structural variantS pages (#6015)
 - Analysis types wgs-lr and panel-lr (#6029)
 - Option to specify database name for the loqusdb API in the scout config file (#6028)
+- Allowing filtering cases by type of analysis (advanced options) (#6045)
 - An `ACMG algorithm` link included in the main dropdown, pointing to a blank classification page to be used as an ACMG sandbox (#5983)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
