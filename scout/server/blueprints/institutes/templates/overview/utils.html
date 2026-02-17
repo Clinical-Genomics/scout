@@ -73,6 +73,10 @@
               {{ form.exact_dia.label(class="form-label") }}
               {{ form.exact_dia(class="form-control", placeholder="example:OMIM:125310, ORPHA:585,..", pattern="[^\\\<\>\?\!\=\/]*", title="Characters \<>?!=/ are not allowed") }}
           </div>
+          <div class="col-md-2 mb-3">
+          {{ form.analysis_type.label(class="control-label") }}<br>
+          {{ form.analysis_type(class="selectpicker", multiple="multiple", data_style="btn-secondary") }}
+        </div>
       </div>
       <div class="row">
           <div class="col-md-4 mb-3">

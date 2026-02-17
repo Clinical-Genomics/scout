@@ -162,6 +162,10 @@ class CaseHandler(object):
         case_ids = [case["_id"] for case in cases_with_gene_doc]
         self._update_case_id_query(query, case_ids)
 
+    def set_analysis_types_query(self, query: Dict[str, Any], query_value: str):
+        """Set individual.analysis_type for case query."""
+        query["individuals.analysis_type"] = {"$in": query_value.split(",")}
+
     def _set_case_name_query(self, query: Dict[str, Any], query_value: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
 
@@ -231,6 +235,7 @@ class CaseHandler(object):
         def set_case_item_query(query: dict, query_field: str, query_value: str):
             # Mapping query fields to their corresponding handling functions
             handlers = {
+                "analysis_type": self.set_analysis_types_query,
                 "case": self._set_case_name_query,
                 "exact_pheno": self._set_case_phenotype_query,
                 "exact_dia": self._set_diagnosis_query,
@@ -249,6 +254,7 @@ class CaseHandler(object):
             }
 
             handler = handlers.get(query_field)
+
             if handler:
                 handler(query, query_value)
 
@@ -313,6 +319,7 @@ class CaseHandler(object):
 
         # POST request form from more advanced case search from cases page
         for query_field in [
+            "analysis_type",
             "case",
             "exact_pheno",
             "exact_dia",
@@ -329,7 +336,11 @@ class CaseHandler(object):
             "similar_case",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
             "similar_pheno",  # In order to be able to sort results by phenotype similarity, keep this at the bottom
         ]:
-            query_value = name_query.get(query_field)
+            if query_field == "analysis_type":  # it's a multiselect therefore handled differently
+                query_value = ",".join(name_query.getlist(query_field))
+            else:
+                query_value = name_query.get(query_field)
+
             if query_value not in ["", None]:
                 set_case_item_query(
                     query=query, query_field=query_field, query_value=query_value.strip()
@@ -377,40 +388,30 @@ class CaseHandler(object):
         has_clinvar_submission: bool = None,
         projection: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        """Fetches all cases from the backend.
+        """
+            Fetches and filters cases from the database, applying multiple optional criteria.
 
-        Args:
-            collaborator(str): If collaborator should be considered
-            owner(str): Query cases for specified case owner only
-            query(dict): If a specific query is used
-            skip_assigned(bool)
-            has_causatives(bool)
-            reruns(bool)
-            finished(bool)
-            research_requested(bool)
-            is_research(bool)
-            has_rna_data(bool): if case has RNA-seq data associated
-            status(str or dict expression)
-            tags(list(str)): search case tags
-            group(ObjectId): fetch all cases in a named case group
-            cohort(bool): Fetch all cases with cohort tags
-            phenotype_terms(bool): Fetch all cases with phenotype
-            pinned(bool): Fetch all cases with pinned variants
-            name_query(str): Could be hpo term, HPO-group, user, part of display name,
-                             part of ids or part of synopsis
-            yield_query(bool): If true, only return mongo query dict for use in
-                                compound querying.
-            within_days(int): timespan (in days) for latest event on case
-            assignee(str): id of an assignee
-            verification_pending(bool): If search should be restricted to cases with verification_pending
-            has_clinvar_submission(bool): If search should be limited to cases with a ClinVar submission
-            projection(dict): Sometimes only some values in each case are required. This saves memory.
+        This function dynamically builds a query to retrieve cases, supporting
+        advanced use cases such as:
+
+        - **Yielding the query dictionary directly**: if `yield_query=True`, the function
+          does not execute the query on the database. Instead, it returns the constructed
+          query dict, which can be reused in testing, compound queries, or for debugging.
+        - Filtering cases modified within a certain number of days (`within_days`).
+        - Handling phenotype similarity searches, ensuring results are returned
+          in descending similarity order when `name_query` includes a pheno-similarity filter.
+        - Filtering for special conditions like pending Sanger verification,
+          presence of causative variants, or existing RNA/ClinVar data.
+        - Prioritizing ownership vs. collaborator: if both are provided, collaborator is ignored.
 
         Returns:
-            Cases ordered by date.
-            If yield_query is True, does not pose query to db;
-                instead returns corresponding query dict
-                that can be reused in compound queries or for testing.
+            list or dict:
+            - By default, returns a cursor (iterable) to matching cases ordered by
+              most recently updated.
+            - If `yield_query=True`, returns the constructed query dictionary instead
+              of executing the database query.
+            - If a phenotype similarity search is performed, returns a list of results
+              ordered by descending similarity.
         """
 
         def _conditional_set_query_value(query, condition, set_key, set_value):
@@ -523,8 +524,7 @@ class CaseHandler(object):
             set_value={"$in": [assignee]},
         )
 
-        if name_query:
-            # Case search filter form query
+        if name_query:  # Case search filter form query
             self.populate_case_query(query, name_query, owner, collaborator)
 
         if within_days:
