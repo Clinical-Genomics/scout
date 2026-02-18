@@ -570,8 +570,6 @@ class PanelHandler:
             {"$sort": {"_id": 1}},
         ]
 
-        result = list(
-            self.panel_collection.aggregate(query, collation={"locale": "en", "strength": 2})
-        )
-
+        result = list(self.panel_collection.aggregate(query))
+        result.sort(key=lambda x: x["_id"].lower())
         return result
