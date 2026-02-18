@@ -42,7 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated `supercharge/mongodb-github-action` to v1 (1.12.1) in order to fix automatic tests failing with "client too old → daemon too new" error before even starting (#6043,#6044)
 - On `Local Observations` panels, set number of homozygous observations to 0 and not N/A if Nr obs. is 0 (#6038)
 - Color case LR badges (#6050)
-- Make sorting of gene panels containing a gene case-insensitive (#6052)
+- Make sorting of gene panels containing a gene case-insensitive (#6052 and #)
 
 ## [4.107.2]
 ### Fixed
