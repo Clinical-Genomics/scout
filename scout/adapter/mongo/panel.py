@@ -567,7 +567,6 @@ class PanelHandler:
                     "panel_ids": {"$first": "$panel_ids"},
                 }
             },
-            {"$sort": {"_id": 1}},
         ]
 
         result = list(self.panel_collection.aggregate(query))
