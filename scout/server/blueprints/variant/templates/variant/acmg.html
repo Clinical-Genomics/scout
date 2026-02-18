@@ -96,7 +96,6 @@
                       </div>
                       <div class="form-check form-switch">
                         <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
-                        <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
@@ -285,12 +284,12 @@
     }
 
     // Generate PDF
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/jpeg', 0.75);
     const { jsPDF } = globalThis.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
     pdf.save('{{case.display_name}}_{{variant.display_name}}_acmg.pdf');
   });
   </script>
