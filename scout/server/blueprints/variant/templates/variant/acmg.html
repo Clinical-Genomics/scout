@@ -96,7 +96,6 @@
                       </div>
                       <div class="form-check form-switch">
                         <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
-                        <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
