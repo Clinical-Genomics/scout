@@ -571,5 +571,5 @@ class PanelHandler:
         ]
 
         result = list(self.panel_collection.aggregate(query))
-
+        result.sort(key=lambda x: x["_id"].lower())
         return result
