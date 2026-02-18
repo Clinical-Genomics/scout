@@ -147,10 +147,15 @@
       {% set badge_class = 'primary' %}
     {% elif atype == 'wes' %}
       {% set badge_class = 'warning' %}
+      {% set text_class = 'text-dark' %}
+    {% elif atype in ['wgs-lr', 'panel-lr'] %}
+      {% set badge_class = 'light' %}
+      {% set text_class = 'text-dark' %}
     {% elif atype == 'tga' %}
       {% set badge_class = 'info' %}
     {% elif atype in ['panel', 'panel-umi'] %}
       {% set badge_class = 'info' %}
+      {% set text_class = 'text-dark' %}
     {% elif atype == 'mixed' %}
       {% set badge_class = 'dark' %}
     {% elif atype == 'external' %}
@@ -161,7 +166,7 @@
       {% set badge_class = 'default' %}
     {% endif %}
 
-    <span class="badge bg-{{ badge_class }}">
+    <span class="badge bg-{{ badge_class }} {{ text_class }}">
       {{ atype|upper }}
     </span>
   {% endfor %}
