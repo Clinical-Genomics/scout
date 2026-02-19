@@ -124,7 +124,11 @@
             style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" title="Copy to clipboard">
           </button>
         {%  if variant.sub_category == "methylation" %}
-          <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], omics_variant_id=variant['omics_variant_id'])}}" rel="noopener" target="_blank">IGV gDNA</a>
+          {% if case.bam_files %}
+            <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], omics_variant_id=variant['omics_variant_id'])}}" rel="noopener" target="_blank">IGV gDNA</a>
+          {% else %}
+            <span data-bs-toggle="tooltip" title="BAM file(s) missing"><button class="btn btn-secondary btn-sm" disabled><i class="fa fa-times-circle fa-fw me-1"></i>IGV gDNA</button></span>
+          {% endif %}
         {% endif %}
         {% if case.has_rna_tracks %}
           {{ splice_junctions_button(institute._id, case, None, variant.omics_variant_id) }}
