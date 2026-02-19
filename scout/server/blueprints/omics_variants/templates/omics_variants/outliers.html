@@ -97,6 +97,10 @@
         </td>
         {% if variant.sub_category == "methylation" %}
           <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="ASM Fisher P value: {{ '%.3e' % variant.asm_fishers_pvalue }}<br>
+            {%  if "category_pop_count" in variant %}
+            Category population count: {{ variant.category_pop_count}}<br>{% endif %}
+            {% if "category_pop_freq" in variant %}
+            Category pop freq: {{ '%.3e' % variant.mean_pop_freq }}<br>{% endif %}
             {% if "mean_meth_delta" in variant %}
             Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>{% endif %}
             {% if "mean_abs_meth_delta_zscore" in variant %}
