@@ -101,8 +101,8 @@
             {%  if "category_pop_count" in variant %}
             Category population count: {{ variant.category_pop_count}}<br>{% endif %}
             {% if "category_pop_freq" in variant %}
-            Category pop freq: {{ '%.3e' % variant.mean_pop_freq }}<br>{% endif %}
-            {% if "background_category" in variant %}{{ variant.background_category }}
+            Category population freq: {{ '%.3e' % variant.category_pop_freq }}<br>{% endif %}
+            {% if "background_category" in variant %}Background: {{ variant.background_category }}
             <br>{% endif %}
             {% if "mean_meth_delta" in variant %}
             Mean methylation delta: {{ '%.3e' % variant.mean_meth_delta }}<br>{% endif %}
@@ -110,8 +110,8 @@
             Mean abs methylation delta Z-score: {{ '%.3e' % variant.mean_abs_meth_delta_zscore }}<br>{% endif %}
             {% if "mean_combined_methyl" in variant %}
             Mean combined methylation: {{ '%.3e' % variant.mean_combined_methyl }}{% endif %}{% if "mean_combined_methyl_zscore" in variant %} (Z-score {{ '%.3e' % variant.mean_combined_methyl_zscore }}){% endif %}<br>
-            Num phased cpgs: {{ variant.num_phased_cpgs }} partial: {{ variant.num_partial_cpgs }} unphased: {{ variant.num_unphase_cpgs }}<br>
-            Median cov: {{ variant.median_total_coverage }} hap1: {{ variant.median_hap1_coverage }} hap2: {{ variant.median_hap2_coverage }}<br>
+            Num phased cpgs: {{ variant.num_phased_cpgs }}<br>partial: {{ variant.num_partial_cpgs }}<br>unphased: {{ variant.num_unphased_cpgs }}<br>
+            Median cov: {{ variant.median_total_coverage }}<br>hap1: {{ variant.median_hap1_coverage }}<br>hap2: {{ variant.median_hap2_coverage }}<br>
             ">{% if "asm_fishers_pvalue" in variant %}{{ '%.3e' % variant.asm_fishers_pvalue }}{% endif %}</td>
         {% else %}
           <td class="text-end" data-bs-toggle="tooltip" data-bs-html="true" title="P value: {{ '%.3e' % variant.p_value }}<br>
