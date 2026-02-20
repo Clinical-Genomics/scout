@@ -35,7 +35,7 @@
         {% if not other_score_as_tooltip and score.desc %}
           data-bs-toggle="tooltip"
           data-bs-html="true"
-          title="[{{ score.desc | dictsort | map('join', '=') | join(', ') }}]"
+          title="[{{ score.desc | dictsort(by='value', reverse=True) | map('join', '=') | join(', ') }}]"
         {% endif %}
       >
         {{ score_name }}: {{ '%.6f'|format(score.value) }}
