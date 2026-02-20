@@ -148,7 +148,8 @@ def variants(
     old_evaluated_variants = None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
 
     if keep_actions:  # collect all variants with user actions for this case
-        old_evaluated_variants = list(adapter.evaluated_variants(case_id, institute_id))
+        eval_variants, _ = adapter.evaluated_variants(case_id, institute_id)
+        old_evaluated_variants = list(eval_variants)
 
     def check_research(adapter: MongoAdapter, case_obj: dict, variant_type: str, force: bool):
         if variant_type == "research":

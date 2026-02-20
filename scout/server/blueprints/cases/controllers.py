@@ -378,7 +378,9 @@ def case(
     causatives = _get_suspects_or_causatives(store, institute_obj, case_obj, "causatives")
     _populate_assessments(causatives)
 
-    evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
+    evaluated_variants, _ = store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=case_obj["owner"]
+    )
     _populate_assessments(evaluated_variants)
 
     partial_causatives = _get_partial_causatives(store, institute_obj, case_obj)
@@ -714,15 +716,19 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                     store, var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj
                 )
             )
-
-    for var_obj in store.evaluated_variants(
-        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
-    ):
+    # Collect other evaluated variants (ACMG, CCV, manual_rank, cancer_tier, ascat_tier, mosaic_tags and dismissed)
+    evaluated_variants, n_unique_dismissed = store.evaluated_variants(
+        case_id=case_obj["_id"],
+        institute_id=institute_obj["_id"],
+        limit_dismissed=data["limit_dismissed"],
+    )
+    for var_obj in evaluated_variants:
         _append_evaluated_variant_by_type(
             evaluated_variants_by_type, var_obj, institute_obj, case_obj
         )
 
     data["variants"] = evaluated_variants_by_type
+    data["n_dismissed_variants"] = n_unique_dismissed
 
 
 def _get_decorated_var(
@@ -807,6 +813,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     data["current_scout_version"] = __version__
     data["hpo_link_url"] = HPO_LINK_URL
+    data["limit_dismissed"] = 15
 
     case_report_variants(store, case_obj, institute_obj, data)
 
