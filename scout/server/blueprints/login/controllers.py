@@ -52,7 +52,8 @@ def users(store):
     all_institutes = list(store.institutes())
     all_institutes.sort(key=lambda i: i.get("display_name", i.get("_id")).lower())
     new_user_form.institute.choices = [
-        (inst["_id"], f'{inst["display_name"]} - {inst["_id"]}') for inst in all_institutes
+        (inst["_id"], f'{inst.get("display_name", inst.get("_id"))} - {inst["_id"]}')
+        for inst in all_institutes
     ]
     for user_obj in user_objs:
         user_institutes = user_obj.get("institutes")
