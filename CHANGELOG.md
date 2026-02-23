@@ -48,7 +48,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
 
 
-
 ## [4.107.2]
 ### Fixed
 - Fix ClinVar Oncogenic submissions page crashing (#5960)
