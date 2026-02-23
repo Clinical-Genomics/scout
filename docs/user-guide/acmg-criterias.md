@@ -185,3 +185,8 @@ Or the recognition that variants sometimes do not meet the strict frequency crit
 We apply the modification nomenclature introduced by the [ClinGen variant interpretation working group in 2017](https://www.clinicalgenome.org/site/assets/files/3459/svi_criteria_nomenclature_recommendation_v1.pdf)
 Compare e.g. the [Baylor approved criteria](https://www.baylorgenetics.com/variant-classification/).
 
+Note that some conceivable combinations of modified criteria are not found in the Richards classification system.
+E.g. there can now be more than one modified VeryStrong criteria, but there is no rule that will give it a more pathogenic classification.
+The Bayesian classification framework score [(Tavtigian et al 2018)](https://pubmed.ncbi.nlm.nih.gov/29300386/) does reflect this however,
+giving more points from the modification and leading to a more pathogenic Bayesian classification as seen e.g. on the left of the ACMG classification page,
+or on the case general report.
