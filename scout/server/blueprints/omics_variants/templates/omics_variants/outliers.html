@@ -85,14 +85,14 @@
             <span data-bs-toggle="tooltip" data-bs-html="true" title='The log2 fold change (fold change) - click to see OUTRIDER vignette for details.'>
             {{ variant.l2fc }} ({{variant.l2fc|l2fc_2_fc|round(2)}}x) &nbsp;&nbsp;<a target="_blank" href="https://www.bioconductor.org/packages/devel/bioc/vignettes/OUTRIDER/inst/doc/OUTRIDER.pdf" rel="noopener noreferrer">{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}</a></span>
           {% elif variant.sub_category == "methylation" %}
-            <a target="_blank" title='MethBat compare label' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{{ variant.compare_label }}</a>
+            <a target="_blank" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat compare label {{ variant.compare_label }}' href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" rel="noopener noreferrer">{% if "Hyper" in variant.compare_label %}&uarr;{% elif "Hypo" in variant.compare_label %}&darr;{% endif %}{% if "ASM" in variant.compare_label %}ASM{% elif "InsufficientData" in variant.compare_label %}?{% elif "Uncategorized" in variant.compare_label %}&rarr;{% endif %}</a>
           {% endif %}
         </td>
         <td>
           {% if variant.sub_category == "splicing" %}
             {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
           {% elif variant.sub_category == "methylation" %}
-            <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label' rel="noopener noreferrer">{{ variant.summary_label }}</a>
+            <a target="_blank" href="https://github.com/PacificBiosciences/MethBat/blob/main/docs/profile_guide.md#single-dataset-profiles" data-bs-toggle="tooltip" data-bs-html="true" title='MethBat summary label {{ variant.summary_label }}' rel="noopener noreferrer">{% if "Methylated" in variant.summary_label %}&uarr;{% elif "Unmethylated" in variant.summary_label %}&darr;{% elif "AlleleSpecificMethylation" in variant.summary_label %}ASM{% elif "NoData" in variant.summary_label %}?{% else %}&rarr;{% endif %}</a>
           {% endif %}
         </td>
         {% if variant.sub_category == "methylation" %}
