@@ -13,6 +13,10 @@ from pydantic import AliasChoices, BaseModel, Field, field_validator, model_vali
 
 LOG = logging.getLogger(__name__)
 
+SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
+SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
+SIGNIFICANT_METHBAT_CPG_LABEL = "imprint"
+
 
 class OmicsVariantLoader(BaseModel):
     """Omics variants loader
@@ -33,6 +37,35 @@ class OmicsVariantLoader(BaseModel):
     date: datetime = datetime.now()
     display_name: str
     omics_variant_id: str
+
+    # MethBat single dataset comparison profile TSVs
+
+    # the CPG label is temp and will be split into HGNC id, type etc.
+    cpg_label: Optional[str] = None
+
+    # NoData, Uncategorized < Methylated, Unmethylated << AlleleSpecificMethylation
+    summary_label: Optional[str] = None
+
+    # InsufficientData, Uncategorized << HypoASM, HyperASM < HypoMethylated, HyperMethylated
+    compare_label: Optional[str] = None
+    background_category: Optional[str] = None
+
+    category_pop_count: Optional[int] = None
+    category_pop_freq: Optional[float] = None
+
+    mean_meth_delta: Optional[float] = None
+    mean_abs_meth_delta_zscore: Optional[float] = None
+    asm_fishers_pvalue: Optional[float] = None
+
+    mean_combined_methyl: Optional[float] = None
+    mean_combined_methyl_zscore: Optional[float] = None
+
+    num_phased_cpgs: Optional[int] = None
+    num_partial_cpgs: Optional[int] = None
+    num_unphased_cpgs: Optional[int] = None
+    median_total_coverage: Optional[int] = None
+    median_hap1_coverage: Optional[int] = None
+    median_hap2_coverage: Optional[int] = None
 
     # DROP Fraser and Outrider outlier TSVs
 
@@ -62,7 +95,9 @@ class OmicsVariantLoader(BaseModel):
     )
 
     # coordinates if applicable
-    chromosome: Optional[str] = Field(alias="seqnames", serialization_alias="chromosome")
+    chromosome: Optional[str] = Field(
+        validation_alias=AliasChoices("seqnames", "chrom"), serialization_alias="chromosome"
+    )
     position: Optional[int] = Field(alias="start", serialization_alias="position")
     end: Optional[int]
     width: Optional[int] = None
@@ -183,15 +218,24 @@ class OmicsVariantLoader(BaseModel):
     @model_validator(mode="before")
     def genes_become_lists(cls, values):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
-        Convert to a list with a single member in omics_variants for storage."""
+        Convert to a list with a single member in omics_variants for storage.
+
+        In case of MethBat we intend to have the same, but early versions will carry the gene symbol and HGNC id in
+        the CPG_label joined by underscore as nanoimprint_PLAGL1_HGNC:9046.
+        """
+
+        if "hgncSymbol" in values:
+            if not isinstance(values.get("hgncSymbol"), list):
+                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
 
         if "hgncId" in values:
             values["hgncId"] = [int(values.get("hgncId"))]
         elif "hgnc_id" in values:
             values["hgncId"] = [int(values.get("hgnc_id"))]
-
-        if "hgncSymbol" in values:
-            values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
+        elif "cpg_label" in values:
+            cpg_label = values.get("cpg_label").split("_")
+            values["hgncSymbol"] = [cpg_label[1]]
+            values["hgncId"] = [int(cpg_label[2].split(":")[1])]
 
         return values
 
@@ -201,11 +245,11 @@ class OmicsVariantLoader(BaseModel):
 
         values["display_name"] = "_".join(
             [
-                values.get("hgncSymbol"),
+                values.get("hgncSymbol") or values.get("cpg_label"),
                 values.get("category"),
                 values.get("sub_category"),
                 get_qualification(values=values),
-                values.get("seqnames"),  # chrom, unserialised
+                values.get("seqnames") or values.get("chrom"),  # chrom, unserialised
                 str(values.get("start")),
                 str(values.get("end")),
                 values.get("variant_type"),
@@ -217,18 +261,17 @@ class OmicsVariantLoader(BaseModel):
     def set_omics_variant_id(cls, values) -> "OmicsVariantLoader":
         """Set OMICS variant id based on the kind of variant."""
 
-        values["omics_variant_id"] = "_".join(
-            [
-                values.get("seqnames"),  # chrom, unserialised
-                str(values.get("start")),
-                str(values.get("end")),
-                values.get("build"),
-                values.get("hgncSymbol"),
-                values.get("sub_category"),
-                get_qualification(values=values),
-                values.get("variant_type"),
-            ]
-        )
+        omics_variant_id_values = [
+            values.get("seqnames") or values.get("chrom"),  # chrom, unserialised
+            str(values.get("start")),
+            str(values.get("end")),
+            values.get("build"),
+            values.get("hgncSymbol") or values.get("cpg_label"),
+            values.get("sub_category"),
+            get_qualification(values=values),
+            values.get("variant_type"),
+        ]
+        values["omics_variant_id"] = "_".join(omics_variant_id_values)
         return values
 
 
@@ -237,8 +280,19 @@ def get_qualification(values: dict) -> str:
     This string further qualifies the kind of omics event,
     e.g. for an expression outlier it could be 'up' or 'down'."""
     qualification = "affected"
-    if values.get("sub_category") == "expression":
-        qualification = "up" if float(values.get("zScore", 0)) > 0 else "down"
-    if values.get("sub_category") == "splicing":
-        qualification = values.get("potentialImpact")
+    match values.get("sub_category"):
+        case "expression":
+            qualification = "up" if float(values.get("zScore", 0)) > 0 else "down"
+        case "splicing":
+            qualification = values.get("potentialImpact")
+        case "methylation":
+            if values.get("compare_label") in SIGNIFICANT_METHBAT_COMPARE:
+                qualification = values.get("compare_label")
+                return qualification
+            if SIGNIFICANT_METHBAT_CPG_LABEL in values.get("cpg_label"):
+                qualification = "Imprinting"
+                return qualification
+            if values.get("summary_label") in SIGNIFICANT_METHBAT_SUMMARY:
+                qualification = values.get("summary_label")
+                return qualification
     return qualification
