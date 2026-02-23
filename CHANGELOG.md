@@ -45,6 +45,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On `Local Observations` panels, set number of homozygous observations to 0 and not N/A if Nr obs. is 0 (#6038)
 - Color case LR badges (#6050)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
+- Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
 
 ## [4.107.2]
 ### Fixed
