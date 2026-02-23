@@ -127,12 +127,7 @@ def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
 
 @pytest.mark.parametrize(
     "omics_key",
-    [
-        "fraser",
-        "fraser_research",
-        "outrider",
-        "outrider_research",
-    ],
+    ["fraser", "fraser_research", "outrider", "outrider_research", "methbat", "methbat_research"],
 )
 def test_update_case_outliers_path(mock_app, case_obj, omics_key, custom_temp_file):
     """Test the CLI function that updates the case document with paths to different variant types."""
