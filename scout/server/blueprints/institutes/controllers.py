@@ -302,7 +302,9 @@ def populate_institute_form(form, institute_obj):
     """
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
-    for inst in store.institutes():
+    all_institutes = list(store.institutes())
+    all_institutes.sort(key=lambda i: i.get("display_name", i["_id"]).lower())
+    for inst in all_institutes:
         if not inst["_id"] == institute_obj["_id"]:
             institutes_tuples.append((inst["_id"], f'{inst["display_name"]} - {inst["_id"]}'))
 
