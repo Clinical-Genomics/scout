@@ -220,16 +220,18 @@ class OmicsVariantLoader(BaseModel):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
         Convert to a list with a single member in omics_variants for storage.
 
-        In case of MethBat the CPG_label is formed as nanoimprint_PLAGL1_HGNC:9046.
+        In case of MethBat we intend to have the same, but early versions will carry the gene symbol and HGNC id in
+        the CPG_label joined by underscore as nanoimprint_PLAGL1_HGNC:9046.
         """
+
+        if "hgncSymbol" in values:
+            if not isinstance(values.get("hgncSymbol"), list):
+                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
 
         if "hgncId" in values:
             values["hgncId"] = [int(values.get("hgncId"))]
         elif "hgnc_id" in values:
             values["hgncId"] = [int(values.get("hgnc_id"))]
-        elif "hgncSymbol" in values:
-            if not isinstance(values.get("hgncSymbol"), list):
-                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
         elif "cpg_label" in values:
             cpg_label = values.get("cpg_label").split("_")
             values["hgncSymbol"] = [cpg_label[1]]
