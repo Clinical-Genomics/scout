@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants filters form, sort gene panels alphabetically and mark panels that don't belong to the case's clinical panels with asterisk (#5981)
 - Gene buttons at the bottom of variant page are now ordered alphabetically (#6024)
 - Mivmir score explanations sorted by descending value, from the biggest contributor to the smallest (#6058)
+- The ACMG classification documentation now more clearly explains about modifications not in Richards et al (#6065)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
@@ -51,6 +52,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Color case LR badges (#6050)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
+
 
 ## [4.107.2]
 ### Fixed
