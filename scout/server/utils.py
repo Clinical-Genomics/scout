@@ -231,6 +231,8 @@ def user_institutes(store, login_user):
     else:
         institutes = [store.institute(inst_id) for inst_id in login_user.institutes]
 
+    institutes.sort(key=lambda i: i.get("display_name", i.get("_id")).lower())
+
     return institutes
 
 
