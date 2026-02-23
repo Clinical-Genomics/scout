@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants filters form, sort gene panels alphabetically and mark panels that don't belong to the case's clinical panels with asterisk (#5981)
 - External links at the bottom of variant page are now ordered alphabetically (#6024)
 - Mivmir score explanations sorted by descending value, from the biggest contributor to the smallest (#6058)
+- The ACMG classification documentation now more clearly explains about modifications not in Richards et al (#6065)
 ### Fixed
 - Do not try to save an ACMG classification when user provided no criteria (#4962)
 - When dismissing variants from variantS page, reloaded page remembers variant selection position (#5969)
@@ -46,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Color case LR badges (#6050)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
+
 
 ## [4.107.2]
 ### Fixed
