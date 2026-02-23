@@ -277,15 +277,19 @@ def get_qualification(values: dict) -> str:
     This string further qualifies the kind of omics event,
     e.g. for an expression outlier it could be 'up' or 'down'."""
     qualification = "affected"
-    if values.get("sub_category") == "expression":
-        qualification = "up" if float(values.get("zScore", 0)) > 0 else "down"
-    if values.get("sub_category") == "splicing":
-        qualification = values.get("potentialImpact")
-    if values.get("sub_category") == "methylation":
-        if SIGNIFICANT_METHBAT_CPG_LABEL in values.get("cpg_label"):
-            qualification = "Imprinting"
-        if values.get("summary_label") in SIGNIFICANT_METHBAT_SUMMARY:
-            qualification = values.get("summary_label")
-        if values.get("compare_label") in SIGNIFICANT_METHBAT_COMPARE:
-            qualification = values.get("compare_label")
+    match values.get("sub_category"):
+        case "expression":
+            qualification = "up" if float(values.get("zScore", 0)) > 0 else "down"
+        case "splicing":
+            qualification = values.get("potentialImpact")
+        case "methylation":
+            if values.get("compare_label") in SIGNIFICANT_METHBAT_COMPARE:
+                qualification = values.get("compare_label")
+                return qualification
+            if SIGNIFICANT_METHBAT_CPG_LABEL in values.get("cpg_label"):
+                qualification = "Imprinting"
+                return qualification
+            if values.get("summary_label") in SIGNIFICANT_METHBAT_SUMMARY:
+                qualification = values.get("summary_label")
+                return qualification
     return qualification
