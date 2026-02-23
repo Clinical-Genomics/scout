@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
 from typing import Dict
-from scout import __version__
 
+from scout import __version__
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
 
@@ -302,8 +302,12 @@ def build_case(case_data, adapter):
     case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
 
     case_obj["has_outliers"] = bool(
-        case_obj["omics_files"].get("fraser") or case_obj["omics_files"].get("outrider")
+        case_obj["omics_files"].get("fraser")
+        or case_obj["omics_files"].get("outrider")
+        or case_obj["omics_files"].get("methbat")
     )
+
+    case_obj["has_methylation"] = bool(case_obj["omics_files"].get("methbat"))
 
     case_obj["is_migrated"] = False
 
