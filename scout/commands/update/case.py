@@ -19,27 +19,27 @@ LOG = logging.getLogger(__name__)
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
 @click.option(
     "--fraser",
-    help="Path to clinical WTS OMICS outlier FRASER TSV file to be added - NB variants are NOT loaded",
+    help="Path to clinical WTS OMICS outlier FRASER TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--fraser-research",
-    help="Path to research WTS OMICS outlier FRASER TSV file to be added - NB variants are NOT loaded",
+    help="Path to research WTS OMICS outlier FRASER TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--outrider",
-    help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
+    help="Path to clinical WTS OMICS outlier OUTRIDER TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--outrider-research",
-    help="Path to research WTS OMICS outlier OUTRIDER TSV file to be added - NB variants are NOT loaded",
+    help="Path to research WTS OMICS outlier OUTRIDER TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--methbat",
-    help="Path to clinical LRS OMICS outlier MethBat TSV file to be added - NB variants are NOT loaded",
+    help="Path to clinical LRS OMICS outlier MethBat TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--methbat-research",
-    help="Path to research LRS OMICS outlier MethBat TSV file to be added - NB variants are NOT loaded",
+    help="Path to research LRS OMICS outlier MethBat TSV file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--rna-genome-build",
@@ -49,7 +49,7 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--vcf",
     type=click.Path(exists=True),
-    help="Path to clinical VCF file to be added - NB variants are NOT loaded",
+    help="Path to clinical VCF file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-sv",
@@ -59,22 +59,22 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--vcf-str",
     type=click.Path(exists=True),
-    help="Path to clinical STR VCF file to be added - NB variants are NOT loaded",
+    help="Path to clinical STR VCF file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer",
     type=click.Path(exists=True),
-    help="Path to clinical cancer VCF file to be added - NB variants are NOT loaded",
+    help="Path to clinical cancer VCF file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer-sv",
     type=click.Path(exists=True),
-    help="Path to clinical cancer structural VCF file to be added - NB variants are NOT loaded",
+    help="Path to clinical cancer structural VCF file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-research",
     type=click.Path(exists=True),
-    help="Path to research VCF file to be added - NB variants are NOT loaded",
+    help="Path to research VCF file to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-sv-research",
@@ -84,22 +84,22 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--vcf-cancer-research",
     type=click.Path(exists=True),
-    help="Path to research VCF with cancer variants to be added - NB variants are NOT loaded",
+    help="Path to research VCF with cancer variants to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-cancer-sv-research",
     type=click.Path(exists=True),
-    help="Path to research VCF with cancer structural variants to be added - NB variants are NOT loaded",
+    help="Path to research VCF with cancer structural variants to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-mei",
     type=click.Path(exists=True),
-    help="Path to clinical mei variants to be added - NB variants are NOT loaded",
+    help="Path to clinical mei variants to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--vcf-mei-research",
     type=click.Path(exists=True),
-    help="Path to research mei variants to be added - NB variants are NOT loaded",
+    help="Path to research mei variants to be added - please note variants are NOT loaded",
 )
 @click.option(
     "--reupload-sv",
