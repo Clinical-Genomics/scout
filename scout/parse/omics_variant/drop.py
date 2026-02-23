@@ -2,7 +2,7 @@ from typing import Dict, Iterable, List
 
 
 def parse_omics_tsv(lines: Iterable[str]) -> List[Dict[str, str]]:
-    """Parse a DROP Outrider or Fraser TSV file."""
+    """Parse a DROP Outrider or Fraser, or MethBat TSV file."""
     omics_infos = []
     header = []
 
