@@ -25,8 +25,11 @@ def institute_select_choices():
     institute_choices = [("All", "All institutes")] if current_user.is_admin else []
     # Collect only institutes available to the user
     institute_objs = user_institutes(store, current_user)
+
     for inst in institute_objs:
-        institute_choices.append((inst["_id"], f'{inst["display_name"]} ({inst["_id"]})'))
+        institute_choices.append(
+            (inst["_id"], f'{inst.get("display_name", inst["_id"])} ({inst["_id"]})')
+        )
     return institute_choices
 
 
