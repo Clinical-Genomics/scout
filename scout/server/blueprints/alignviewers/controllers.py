@@ -157,11 +157,12 @@ def authorize_case_tracks(resource: str, case: dict):
 
 def make_igv_tracks(
     case_obj: dict,
-    variant_id: str,
+    variant_id: Optional[str] = None,
     chrom: Optional[str] = None,
     start: Optional[int] = None,
     stop: Optional[int] = None,
     end_chrom: Optional[str] = None,
+    omics_variant_id: Optional[str] = None,
 ) -> dict:
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
@@ -178,7 +179,10 @@ def make_igv_tracks(
         display_obj: A display object containing case name, list of genes, locus and tracks
     """
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
-    variant_obj = store.variant(document_id=variant_id)
+    if variant_id:
+        variant_obj = store.variant(document_id=variant_id)
+    if omics_variant_id:
+        variant_obj = store.omics_variant(variant_id=omics_variant_id)
 
     chromosome = "All"
     if variant_obj:

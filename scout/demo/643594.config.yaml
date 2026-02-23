@@ -134,6 +134,8 @@ omics_files:
     outrider: scout/demo/drop/outrider_top_hits_clinical.tsv
     fraser_research: scout/demo/drop/fraser_top_hits_clinical.tsv
     outrider_research: scout/demo/drop/outrider_top_hits_clinical.tsv
+    methbat: scout/demo/methbat/HM24385_methbat_sign.tsv
+    methbat_research: scout/demo/methbat/HM24385_methbat_sign.tsv
 
 smn_tsv: scout/demo/643594.solo.smn.tsv
 
