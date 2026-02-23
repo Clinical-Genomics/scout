@@ -297,14 +297,14 @@
            {% else %}
              {{gene.hgnc_id}}
            {% endif %}
-        {% endfor %} - {%  if variant.sub_category == "splicing" %}
+        {% endfor %} {% else %}
+          {{ variant.gene_name_orig }}{% endif %} - {% if variant.sub_category == "splicing" %}
           {{ variant.delta_psi }}&Delta;&psi;  {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
-        {% else %}
+        {% elif variant.sub_category == "expression" %}
           {{ variant.l2fc }}{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}
+        {% elif variant.sub_category == "methylation" %}
+          {{ variant.compare_label }} {{ variant.cpg_label.split("_")[0] }}
         {% endif %}
-      {% else %}
-        {{ variant.gene_name_orig }}
-      {% endif %}
     {% else %} <!-- structural variants -->
       {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
     {% endif %}

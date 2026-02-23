@@ -180,12 +180,12 @@ class OmicsVariantHandler:
     def omics_variants(
         self,
         case_id: str,
-        query=None,
-        category: str = "outlier",
-        nr_of_variants=50,
-        skip=0,
+        query: Optional[dict] = None,
+        category: Optional[str] = "outlier",
+        nr_of_variants: Optional[int] = 50,
+        skip: Optional[int] = 0,
         projection: Optional[Dict] = None,
-        build="37",
+        build: Optional[str] = "37",
     ):
         """Return omics variants for a case, of a particular type (clinical, research) and category (outlier, ...)."""
 
@@ -212,17 +212,14 @@ class OmicsVariantHandler:
         )
 
     def count_omics_variants(
-        self, case_id, query, variant_ids=None, category="outlier", build="37"
-    ):
-        """Returns number of variants
-
-        Arguments:
-            case_id(str): A string that represents the case
-            query(dict): A query dictionary
-
-        Returns:
-             integer
-        """
+        self,
+        case_id: str,
+        query: dict,
+        variant_ids: List[str] = None,
+        category: Optional[str] = "outlier",
+        build: Optional[str] = "37",
+    ) -> int:
+        """Returns the number of OMICs variants returned for a given query."""
 
         query = self.build_query(
             case_id, query=query, variant_ids=variant_ids, category=category, build=build
