@@ -228,7 +228,8 @@ class OmicsVariantLoader(BaseModel):
         elif "hgnc_id" in values:
             values["hgncId"] = [int(values.get("hgnc_id"))]
         elif "hgncSymbol" in values:
-            values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
+            if not isinstance(values.get("hgncSymbol"), list):
+                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
         elif "cpg_label" in values:
             cpg_label = values.get("cpg_label").split("_")
             values["hgncSymbol"] = [cpg_label[1]]
