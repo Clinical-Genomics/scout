@@ -87,7 +87,7 @@ def tx_overview(variant_obj: dict, genome_build: str):
         hgnc_symbol = common.get("hgnc_symbol", gene.get("hgnc_id"))
 
         for tx in gene.get("transcripts", []):
-            if "refseq_identifiers" not in tx and not tx.get("is_canonical", False):
+            if not tx.get("refseq_identifiers") and not tx.get("is_canonical", False):
                 continue
 
             ovw_tx = {
@@ -330,7 +330,7 @@ def variant(
     if variant_category in ["snv", "cancer", "mei"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
-    # Format clinvar information
+    # Format ClinVar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
     variant_genes = variant_obj.get("genes", [])
