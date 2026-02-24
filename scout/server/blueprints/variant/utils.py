@@ -127,7 +127,6 @@ def update_transcripts_information(
     genome_build = genome_build or "37"
     disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
     transcripts_dict = {}
-    hgnc_gene["transcripts_dict"] = transcripts_dict
     hgnc_symbol = hgnc_gene["hgnc_symbol"]
 
     for transcript in hgnc_gene.get("transcripts", []):
