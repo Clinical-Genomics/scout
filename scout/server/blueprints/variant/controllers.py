@@ -87,7 +87,7 @@ def tx_overview(variant_obj: dict, genome_build: str):
         hgnc_symbol = common.get("hgnc_symbol", gene.get("hgnc_id"))
 
         for tx in gene.get("transcripts", []):
-            if "refseq_identifiers" not in tx and not tx.get("is_canonical", False):
+            if not tx.get("refseq_identifiers") and not tx.get("is_canonical", False):
                 continue
 
             ovw_tx = {
