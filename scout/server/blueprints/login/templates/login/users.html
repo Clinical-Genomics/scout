@@ -114,7 +114,7 @@
     <!-- Institute -->
     <div class="col-12">
       {{ form.institute.label(class="form-label mb-1") }}
-      <select class="selectpicker w-75" name="{{ form.institute.name }}" multiple required>
+      <select class="selectpicker w-75" name="{{ form.institute.name }}" data-style="btn-secondary" multiple required>
       {% for option in form.institute.choices %}
         <option value="{{ option[0] }}"
           {% if edit_user and option[0] in edit_user.institutes %}selected{% endif %}>
@@ -174,7 +174,7 @@
     <!-- Role -->
     <div class="col-sm-6">
       {{ form.role.label(class="form-label mb-1") }}
-      <select class="selectpicker w-100" name="{{ form.role.name }}" multiple>
+      <select class="selectpicker w-100" name="{{ form.role.name }}" data-style="btn-secondary" multiple>
         {% for option in form.role.choices %}
           <option value="{{ option }}"
             {% if edit_user and option in edit_user.roles %}selected{% endif %}>
