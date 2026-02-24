@@ -47,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Color case LR badges (#6050)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
+- Add user dropdown selects visible in dark mode (#6068)
 
 
 ## [4.107.2]
