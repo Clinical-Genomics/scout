@@ -47,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Color case LR badges (#6050)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
+- Cases page crashing due to missing analysis date when a case is loaded using VCF + ped file (#6067)
 - General report page timeout when case has dozens of dismissed variants - show only the first 15 (#6032)
 
 
