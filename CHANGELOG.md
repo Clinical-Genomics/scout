@@ -49,7 +49,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make sorting of gene panels containing a gene case-insensitive (#6052 and #6056)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
 - Cases page crashing due to missing analysis date when a case is loaded using VCF + ped file (#6067)
-
+- Add user dropdown selects visible in dark mode (#6068)
 
 ## [4.107.2]
 ### Fixed
