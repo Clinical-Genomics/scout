@@ -839,7 +839,7 @@ class VariantHandler(VariantLoader):
         if limit_dismissed:
             search_ids = (
                 list(variant_ids_events)
-                + list(dismissed_vars_ids - variant_ids_events)[: limit_dismissed + 1]
+                + list(dismissed_vars_ids - variant_ids_events)[:limit_dismissed]
             )
         else:
             search_ids = list(variant_ids_events) + list(dismissed_vars_ids - variant_ids_events)
