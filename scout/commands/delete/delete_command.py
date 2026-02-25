@@ -203,7 +203,7 @@ def variants(
         if variants_threshold and case_n_variants < variants_threshold:
             continue
         # Get evaluated variants for the case that haven't been dismissed
-        case_evaluated = store.evaluated_variants(case_id=case_id, institute_id=institute_id)
+        case_evaluated, _ = store.evaluated_variants(case_id=case_id, institute_id=institute_id)
         evaluated_not_dismissed = [
             variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
         ]

@@ -804,7 +804,7 @@
 {% macro dismissed_panel() %}
   <div class="card border-danger mb-3" style="border-width: 5px; display: block;">
     <div class="card-header bg-danger text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
-      <p id="dismissedDesc"><a id="dismissed_variants"><strong>Dismissed Variants</strong></a></p>
+      <p id="dismissedDesc"><a id="dismissed_variants"><strong>Dismissed Variants (displaying {{ variants.dismissed_detailed|length }} results out of {{n_dismissed_variants}})</strong></a></p>
     </div>
     <div class="card-body">
       {% if variants.dismissed_detailed %}
