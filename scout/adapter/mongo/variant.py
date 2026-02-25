@@ -2,7 +2,7 @@
 # stdlib modules
 import logging
 import re
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 # Third party modules
 import pymongo
@@ -764,68 +764,97 @@ class VariantHandler(VariantLoader):
             ),
         )
 
-    def evaluated_variant_ids_from_events(self, case_id, institute_id):
-        """Returns variant ids for variants that have been evaluated
-           Return all variants, snvs/indels and svs from case case_id
-            which have an event entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
-            'cancer_tier', 'escat_tier', 'mosaic_tags'.
-        Args:
-            case_id(str)
+    def evaluated_true_dismissed(self, case_id: str, institute_id: str) -> Set[str]:
+        """Returns a unique set of variants which have been dismissed for a case."""
+        pipeline = [
+            {
+                "$match": {
+                    "case": case_id,
+                    "institute": institute_id,
+                    "category": "variant",
+                    "verb": {"$in": ["dismiss_variant", "reset_dismiss_variant"]},
+                }
+            },
+            # Newest events first for each variant
+            {"$sort": {"variant_id": 1, "created_at": -1}},
+            # Group so the first (newest) event per variant is captured
+            {"$group": {"_id": "$variant_id", "latestVerb": {"$first": "$verb"}}},
+            # Keep only those where the latest event is a dismissal
+            {"$match": {"latestVerb": "dismiss_variant"}},
+            # Project only the variant ID
+            {"$project": {"_id": 0, "variant_id": "$_id"}},
+        ]
+        cursor = self.event_collection.aggregate(pipeline)
+        return {doc["variant_id"] for doc in cursor}
 
-        Returns:
-            variants(iterable(Variant))
+    def evaluated_variant_ids_from_events(
+        self,
+        case_id: str,
+        institute_id: str,
+        include_verbs: List[str],
+    ) -> list[str]:
+        """Returns variant ids for variants that have been evaluated with a list of verbs.
+        This version can include duplicates if the same variant appears in multiple events.
+        """
+        pipeline = [
+            {
+                "$match": {
+                    "category": "variant",
+                    "institute": institute_id,
+                    "case": case_id,
+                    "verb": {"$in": include_verbs},
+                }
+            },
+            {"$project": {"variant_id": 1, "_id": 0}},
+        ]
+
+        result = list(self.event_collection.aggregate(pipeline))
+        variant_ids = [r["variant_id"] for r in result]
+
+        return variant_ids
+
+    def evaluated_variants(
+        self, case_id: str, institute_id: str, limit_dismissed: Optional[int] = None
+    ) -> Tuple(Iterable[dict], int):
+        """Returns variants that have been evaluated
+
+        Return all variants from case case_id and institute_id
+        which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank',
+        'cancer_tier', 'escat_tier' or if they are commented. These categories of variants might as well be dismissed.
+
+        Variants which are dismissed could have been reset to un-dismissed and that's why they are fetched from
+        a dedicated function "evaluated_true_dismissed".
+
+        Return only if the variants still exist and still have the assessment.
+        Variants can be removed on re-analysis, and assessments can be cleared.
         """
 
-        evaluation_verbs = [
+        EVAL_VERBS = [
             "acmg",
             "ccv",
             "manual_rank",
             "cancer_tier",
-            "dismiss_variant",
             "escat_tier",
             "mosaic_tags",
         ]
-
-        query = {
-            "category": "variant",
-            "institute": institute_id,
-            "case": case_id,
-            "verb": {"$in": evaluation_verbs},
-        }
-        evaluation_events = self.event_collection.find(query)
-        if evaluation_events is None:
-            return []
-
-        evaluated_variant_ids = [
-            evaluation_event["variant_id"] for evaluation_event in evaluation_events
-        ]
-
-        return evaluated_variant_ids
-
-    def evaluated_variants(self, case_id, institute_id):
-        """Returns variants that have been evaluated
-
-        Return all variants, snvs/indels and svs from case case_id and institute_id
-        which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank', 'dismiss_variant',
-        'cancer_tier', 'escat_tier' or if they are commented.
-
-        Return only if the variants still exist and still have the assessment.
-        Variants can be removed on reanalyis, and assessments can be cleared.
-
-        Args:
-            case_id(str)
-            institute_id(str)
-
-        Returns:
-            variants(iterable(Variant))
-        """
-
-        # Get all variants that have been evaluated in some way for a case
-        variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
+        variant_ids_events = set(
+            self.evaluated_variant_ids_from_events(case_id, institute_id, include_verbs=EVAL_VERBS)
+        )
+        dismissed_vars_ids: set = self.evaluated_true_dismissed(
+            case_id=case_id, institute_id=institute_id
+        )
+        n_unique_dismissed = len(dismissed_vars_ids)
+        if limit_dismissed:
+            search_ids = (
+                list(variant_ids_events)
+                + list(dismissed_vars_ids - variant_ids_events)[:limit_dismissed]
+            )
+        else:
+            search_ids = list(variant_ids_events) + list(dismissed_vars_ids - variant_ids_events)
 
         query = {
             "$and": [
-                {"variant_id": {"$in": variant_ids}},
+                {"variant_id": {"$in": search_ids}},
                 {"case_id": case_id},
                 {
                     "$or": [
@@ -852,7 +881,7 @@ class VariantHandler(VariantLoader):
         # Collect all variant comments from the case
         event_query = {"$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]}
 
-        # Get all variantids for commented variants
+        # Get all variant ids for commented variants
         comment_variants = {
             event["variant_id"] for event in self.event_collection.find(event_query)
         }
@@ -873,8 +902,7 @@ class VariantHandler(VariantLoader):
             variant_obj["is_commented"] = True
             variants[var_id] = variant_obj
 
-        # Return a list with the variant objects
-        return variants.values()
+        return variants.values(), n_unique_dismissed
 
     def get_variant_file(self, case_obj, category, variant_type):
         """Retrieve file name for file that should be parsed to extract variants
