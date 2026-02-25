@@ -766,19 +766,26 @@ class VariantHandler(VariantLoader):
 
     def evaluated_true_dismissed(self, case_id: str, institute_id: str) -> Set[str]:
         """Returns a unique set of variants which have been dismissed for a case."""
-        variant_ids_dismissed = self.evaluated_variant_ids_from_events(
-            case_id, institute_id, include_verbs=["dismiss_variant"]
-        )  # Can contain duplicates
-        variant_ids_reset_dismissed = self.evaluated_variant_ids_from_events(
-            case_id, institute_id, include_verbs=["reset_dismiss_variant"]
-        )  # Can contain duplicates
-
-        # Remove reset dismissed from list of variant_ids_dismissed
-        for vid in variant_ids_reset_dismissed:
-            if vid in variant_ids_dismissed:
-                variant_ids_dismissed.remove(vid)
-
-        return set(variant_ids_dismissed)
+        pipeline = [
+            {
+                "$match": {
+                    "case": case_id,
+                    "institute": institute_id,
+                    "category": "variant",
+                    "verb": {"$in": ["dismiss_variant", "reset_dismiss_variant"]},
+                }
+            },
+            # Newest events first for each variant
+            {"$sort": {"variant_id": 1, "created_at": -1}},
+            # Group so the first (newest) event per variant is captured
+            {"$group": {"_id": "$variant_id", "latestVerb": {"$first": "$verb"}}},
+            # Keep only those where the latest event is a dismissal
+            {"$match": {"latestVerb": "dismiss_variant"}},
+            # Project only the variant ID
+            {"$project": {"_id": 0, "variant_id": "$_id"}},
+        ]
+        cursor = self.event_collection.aggregate(pipeline)
+        return {doc["variant_id"] for doc in cursor}
 
     def evaluated_variant_ids_from_events(
         self,
