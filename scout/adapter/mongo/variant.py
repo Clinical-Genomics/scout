@@ -813,7 +813,10 @@ class VariantHandler(VariantLoader):
 
         Return all variants from case case_id and institute_id
         which have a entry for 'acmg_classification', 'ccv_classification', 'manual_rank',
-        'cancer_tier', 'escat_tier' or if they are commented.
+        'cancer_tier', 'escat_tier' or if they are commented. These categories of variants might as well be dismissed.
+
+        Variants which are dismissed could have been reset to un-dismissed and that's why they are fetched from
+        a dedicated function "evaluated_true_dismissed".
 
         Return only if the variants still exist and still have the assessment.
         Variants can be removed on re-analysis, and assessments can be cleared.
@@ -829,9 +832,7 @@ class VariantHandler(VariantLoader):
         ]
         variant_ids_events = set(
             self.evaluated_variant_ids_from_events(case_id, institute_id, include_verbs=EVAL_VERBS)
-        )  # These could have been dismissed
-
-        # Collect unique dismissed variants
+        )
         dismissed_vars_ids: set = self.evaluated_true_dismissed(
             case_id=case_id, institute_id=institute_id
         )
