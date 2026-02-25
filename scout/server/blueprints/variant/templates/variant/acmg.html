@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "variant/acmg_base.html" %}
 {% from "cases/utils.html" import pretty_link_variant %}
 
 {% block title %}
@@ -38,119 +38,7 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container mt-3 mb-5">
-    <form action="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-      <div class="card panel-default mt-3">
-        <div class="card-body">
-          {% if evaluation %}
-             <h4>
-              {{ evaluation.classification.label }}
-              <span class="badge bg-info">{{ evaluation.classification.short|safe }}</span>
-            </h4>
-            On case {{ case.display_name }}. Variant {{ pretty_link_variant(variant, case) }}.<br>
-            By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
-            <button type="button" id="download-pdf" class="btn btn-secondary btn-sm position-absolute" style="top: 10px; right: 10px;">
-              Download as PDF
-            </button>
-            <br>
-          {% endif %}
-            <!-- external links -->
-            <div class="small">
-              Search ClinGen Criteria Specifications (CSPEC):
-              {% for gene in variant.genes %}
-                <a href="{{ gene.cspec_link }}"
-                   class="btn btn-secondary btn-xs text-white"
-                   rel="noopener"
-                   referrerpolicy="no-referrer"
-                   target="_blank">
-                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              {% endfor %}
-            </div>
-          <div id="conflicts_div" class="bg-warning"></div>
-        </div>
-      </div>
-
-      <div class="d-flex flex-row justify-content-between mt-3">
-        {% for category, criteria_group in CRITERIA.items() %}
-          <div class="flex-column {{ 'me-3' if not loop.last }}">
-            <h4>Evidence of {{ category }}</h4>
-            {% for evidence, criteria in criteria_group.items() %}
-              <ul class="list-group mt-3">
-                <li class="list-group-item">{{ evidence }}</li>
-                {% for criterion_code, criterion in criteria.items() %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).comment %}
-                    {% set comment = evaluation.criteria.get(criterion_code).comment %}
-                  {% endif %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).links %}
-                    {% set link = evaluation.criteria.get(criterion_code).links[0] %}
-                  {% endif %}
-                  {% if evaluation and evaluation.criteria.get(criterion_code).modifier %}
-                    {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
-                  {% endif %}
-                  <div class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
-                        <span class="badge bg-info me-1">{{ criterion_code }}</span>
-                        {{ criterion.short|safe}}
-                      </div>
-                      <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
-                      </div>
-                    </div>
-                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
-                      {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe }}</span></div>{% endif %}
-                      <div class="row">
-                        <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
-                          <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
-                          {% set sa_level = "Stand-alone" %}
-                          {% if category == "pathogenicity" %}
-                            {% set sa_level = "Very Strong" %}
-                          {% endif %}
-                          {% for level in sa_level, "Strong", "Moderate", "Supporting" %}
-                            {% if(level != evidence) %}
-                              <option id="{{ criterion_code }}-{{ level }}" value="{{ level }}" {% if modifier == level %}selected{% endif %}>{{ level }}</option>
-                            {% endif %}
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="row">
-                        <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
-                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
-                      </div>
-                      <input type="url" {{ 'disabled' if evaluation and edit is false }} class="form-control" name="link-{{ criterion_code }}"
-                        placeholder="{{ link or 'Supporting link (optional)' }}" value="">
-                    </div>
-                  </div>
-                {% endfor %}
-                </li>
-              </ul>
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </div>
-
-    {% if not evaluation %}
-      <button class="btn btn-primary form-control mt-3">Submit</button>
-    {% elif edit %}
-      <button class="btn btn-primary form-control mt-3" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Reclassify</button>
-    {%endif %}
-
-    <!-- classification preview in the footer-->
-      <div class="mt-3 fixed-bottom bg-light border">
-        <div class="row">
-          <div class="col-3" style="font-size:1.5em">
-            <a href="https://clinicalgenome.org/docs/modeling-the-acmg-amp-variant-classification-gudielines-as-a-bayesian-classification-framework/" data-bs-toggle="tooltip" title="Classification based on the Bayesian score model in Tavtigian et al." rel="noopener noreferrer" target="_blank"><span id="temperature_span" class="badge"></span></a>
-          </div>
-          <div class="col-6 text-center">
-          {% for option in ACMG_OPTIONS %}
-            <a id="acmg-{{ option.code }}" href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf" class="btn acmg-preview" data-bs-toggle="tooltip" title="Suggested classification based on Richards et al 2015.">{{ option.label }}</a>
-          {% endfor %}
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
+  {{ evaluation_tables() }}
 {% endblock %}
 
 {% block scripts %}
@@ -158,139 +46,82 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.11/dist/html2canvas-pro.min.js" integrity="sha384-Wm+alMbg1fxSJBbLMXKBb1ZfoWBd0FwJml5aEbKolDB41cMjTfek0cLKgCku6MAF" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js" integrity="sha384-GwHhSt8QjC7J+v0zZ0Flfho/T76YHEcCL9w4rvjTIUHauh6gWJeBSIi3vWXxNhtA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-
-    window.onload=function() {
-        update_classification();
-    }
-
-    $(function () {
-      $('[data-bs-toggle="tooltip"]').tooltip();
-
-      $('.form-switch').change(function(event) {
-        var el = $('#comment-' + event.target.value);
-        if (event.target.checked) {
-          el.collapse('show');
-        } else {
-          el.collapse('hide');
-        }
-        update_classification()
-      });
-
-      $('.form-select').change(function(event) {
-            update_classification()
-      });
-    });
-
-
-    function update_classification() {
-      var criteria = $(':checked').map(function(idx, elem) {
-        const modifiers = ["Stand-alone", "Very Strong", "Strong", "Moderate", "Supporting"];
-        for (possible_modifier of modifiers) {
-          var modifier_option;
-          if(elem.value !== null && elem.value !== '') {
-            modifier_option = document.getElementById(elem.value + '-' + possible_modifier)
-          }
-          if(modifier_option) {
-            if (modifier_option.selected) {
-              return 'criterion=' + elem.value + '_' + possible_modifier
-            }
-          }
-        }
-        return 'criterion=' + elem.value
-      });
-
-      $.getJSON('/api/v1/acmg?' + criteria.toArray().join('&'), function(data) {
-        // reset the selection
-        $('.acmg-preview').removeClass('btn-primary');
-        // add new selection
-        $('#acmg-' + data.classification).addClass('btn-primary');
-
-        var temperature_span = document.getElementById("temperature_span");
-        temperature_span.innerHTML = 'Score ' + data.points + ' <span class="fa ' + data.temperature_icon + '"></span> ' + data.temperature + ' (' + data.point_classification + ')'
-        temperature_span.className = 'badge bg-' + data.temperature_class
-
-        // Update any classification conflicts
-        var conflicts_div = document.getElementById("conflicts_div");
-        conflicts_div.innerHTML = data.conflicts.join("<br>");
-      });
-    }
-
     // Export to PDF
     document.getElementById('download-pdf').addEventListener('click', async function() {
-  const container = document.querySelector('.container.mt-3.mb-5');
-  const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
+    const container = document.querySelector('.container.mt-3.mb-5');
+    const footer = document.querySelector('.mt-3.fixed-bottom.bg-light.border');
 
-  if (!container) {
-    alert('Container not found');
-    return;
-  }
-
-  // Move footer into container temporarily
-  let originalParent = null;
-  let originalNextSibling = null;
-  if (footer) {
-    originalParent = footer.parentNode;
-    originalNextSibling = footer.nextSibling;
-    footer.style.position = 'relative';
-    footer.style.bottom = '0';
-    container.appendChild(footer);
-  }
-
-  // Force light mode on all child elements
-  const allElements = container.querySelectorAll('*');
-  allElements.forEach(el => {
-    const computed = globalThis.getComputedStyle(el);
-    if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
-      el.dataset.originalBg = el.style.backgroundColor;
-      el.style.backgroundColor = 'white';
+    if (!container) {
+      alert('Container not found');
+      return;
     }
-    if (computed.color) {
-      el.dataset.originalColor = el.style.color;
-      el.style.color = 'black';
-    }
-    if (computed.borderColor) {
-      el.dataset.originalBorder = el.style.borderColor;
-      el.style.borderColor = '#ccc';
-    }
-  });
 
-  // Capture PDF
-    const canvas = await html2canvas(container, { scale: 1, useCORS: true, backgroundColor: '#ffffff' });
+    // Move footer into container temporarily
+    let originalParent = null;
+    let originalNextSibling = null;
+    if (footer) {
+      originalParent = footer.parentNode;
+      originalNextSibling = footer.nextSibling;
+      footer.style.position = 'relative';
+      footer.style.bottom = '0';
+      container.appendChild(footer);
+    }
 
-    // Restore original styles
+    // Force light mode on all child elements
+    const allElements = container.querySelectorAll('*');
     allElements.forEach(el => {
-      if (el.dataset.originalBg !== undefined) {
-        el.style.backgroundColor = el.dataset.originalBg;
-        delete el.dataset.originalBg;
+      const computed = globalThis.getComputedStyle(el);
+      if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
+        el.dataset.originalBg = el.style.backgroundColor;
+        el.style.backgroundColor = 'white';
       }
-      if (el.dataset.originalColor !== undefined) {
-        el.style.color = el.dataset.originalColor;
-        delete el.dataset.originalColor;
+      if (computed.color) {
+        el.dataset.originalColor = el.style.color;
+        el.style.color = 'black';
       }
-      if (el.dataset.originalBorder !== undefined) {
-        el.style.borderColor = el.dataset.originalBorder;
-        delete el.dataset.originalBorder;
+      if (computed.borderColor) {
+        el.dataset.originalBorder = el.style.borderColor;
+        el.style.borderColor = '#ccc';
       }
     });
 
-    // Restore footer to original position
-    if (footer) {
-      if (originalNextSibling) {
-        originalNextSibling.before(footer);
-      } else {
-        originalParent.appendChild(footer);
-      }
-      footer.style.position = 'fixed';
-    }
+    // Capture PDF
+      const canvas = await html2canvas(container, { scale: 1, useCORS: true, backgroundColor: '#ffffff' });
 
-    // Generate PDF
-    const imgData = canvas.toDataURL('image/jpeg', 0.75);
-    const { jsPDF } = globalThis.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('{{case.display_name}}_{{variant.display_name}}_acmg.pdf');
-  });
+      // Restore original styles
+      allElements.forEach(el => {
+        if (el.dataset.originalBg !== undefined) {
+          el.style.backgroundColor = el.dataset.originalBg;
+          delete el.dataset.originalBg;
+        }
+        if (el.dataset.originalColor !== undefined) {
+          el.style.color = el.dataset.originalColor;
+          delete el.dataset.originalColor;
+        }
+        if (el.dataset.originalBorder !== undefined) {
+          el.style.borderColor = el.dataset.originalBorder;
+          delete el.dataset.originalBorder;
+        }
+      });
+
+      // Restore footer to original position
+      if (footer) {
+        if (originalNextSibling) {
+          originalNextSibling.before(footer);
+        } else {
+          originalParent.appendChild(footer);
+        }
+        footer.style.position = 'fixed';
+      }
+
+      // Generate PDF
+      const imgData = canvas.toDataURL('image/jpeg', 0.75);
+      const { jsPDF } = globalThis.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('{{case.display_name}}_{{variant.display_name}}_acmg.pdf');
+    });
   </script>
 {% endblock %}

@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to specify database name for the loqusdb API in the scout config file (#6028)
 - Allowing filtering cases by type of analysis (advanced options) (#6045)
 - Methylation outliers from LRS MethBat from Nallo as omics variants (#5993)
+- An `ACMG sandbox` link included in the main dropdown, pointing to a blank classification page to be used to test the algorithm (#5983)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
