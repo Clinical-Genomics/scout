@@ -815,7 +815,7 @@ class VariantHandler(VariantLoader):
 
     def evaluated_variants(
         self, case_id: str, institute_id: str, limit_dismissed: Optional[int] = None
-    ) -> Tuple(Iterable[dict], int):
+    ) -> Tuple[Iterable[dict], int]:
         """Returns variants that have been evaluated
 
         Return all variants from case case_id and institute_id
