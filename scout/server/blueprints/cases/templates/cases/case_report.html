@@ -827,10 +827,12 @@
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
                 {% elif variant.category == 'cancer' %}
                   <a href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
-                {% elif variant.category == 'sv' %}
+                {% elif variant.category in ['sv', 'cancer_sv'] %}
                   <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
-                {% else %} <!--strs -->
+                {% elif variant.category == "str" %}
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>rep. {{variant.str_repid}}</strong></a>
+                {% elif variant.category == "mei"%}
+                  <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.mei_name}}</strong></a>
                 {% endif %}
               </td>
               <td style="width:5%;">{{variant.category|upper}}</td>
