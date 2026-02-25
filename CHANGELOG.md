@@ -58,6 +58,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed links to Ensembl and NCBI transcripts from main `Transcripts` and `Protein` panel on variant page (#6041)
 - Methbat methylation Uncategorized icon display (#6074)
 - General report page timeout when case has dozens of dismissed variants - show only the first 15 (#6035)
+- Fixed displaying dismissed MEIs and cancer SVs on general case report (#6077)
 
 ## [4.107.2]
 ### Fixed
