@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.108]
 ### Added
 - Gene-overlapping variants shown also for STRs (#5977)
 - Case and variant-specific information on ACMG page and PDF export (#5978)
-- Allow bypassing the confirmation prompt for the `delete rna` command via a new `--force` option (#5982)
+- Allow bypassing the confirmation prompt for the `delete rna` command via a new `--yes` option (#5982)
 - Parse phasing information and store on genotype call (#5988)
 - Link to GTEx for gene, from gene and variant pages (#5995)
 - Parse STRdrop details where available (#5991)
@@ -27,7 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Revert search of genes in panels. Now search is NOT limited to user's institutes panels any more (#5974)
 - Name for Gens buttons: `CN profile` to `Gens`(#5985)
 - On variants filters form, sort gene panels alphabetically and mark panels that don't belong to the case's clinical panels with asterisk (#5981)
-- Gene buttons at the bottom of variant page are now ordered alphabetically (#6024)
+- External links at the bottom of variant page are now ordered alphabetically (#6024)
 - Mivmir score explanations sorted by descending value, from the biggest contributor to the smallest (#6058)
 - The ACMG classification documentation now more clearly explains about modifications not in Richards et al (#6065)
 ### Fixed
