@@ -199,9 +199,9 @@ def reviewer_aln(institute_id, case_name, variant_id):
     )
 
 
-@variant_bp.route("/acmg-test", methods=["GET"])
-@templated("variant/empty_acmg.html")
-def empty_acmg() -> dict:
+@variant_bp.route("/acmg-sandbox", methods=["GET"])
+@templated("variant/acmg_base.html")
+def acmg_sandbox() -> dict:
     """Return an empty ACMG page for the sake of classifying variants not found in cases with the algorithm."""
     return dict(CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
 
