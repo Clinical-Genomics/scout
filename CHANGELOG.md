@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to specify database name for the loqusdb API in the scout config file (#6028)
 - Allowing filtering cases by type of analysis (advanced options) (#6045)
 - Methylation outliers from LRS MethBat from Nallo as omics variants (#5993)
+- An `ACMG sandbox` link included in the main dropdown, pointing to a blank classification page to be used to test the algorithm (#5983)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
@@ -49,6 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make sorting of institutes case-insensitive on new user form, dashboard and institute settings (#6061, #6062)
 - Cases page crashing due to missing analysis date when a case is loaded using VCF + ped file (#6067)
 - Add user dropdown selects visible in dark mode (#6068)
+- Fixed links to Ensembl and NCBI transcripts from main `Transcripts` and `Protein` panel on variant page (#6041)
 
 ## [4.107.2]
 ### Fixed
