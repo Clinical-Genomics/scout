@@ -766,10 +766,8 @@ class VariantHandler(VariantLoader):
 
     def evaluated_true_dismissed(self, case_id: str, institute_id: str) -> Set[str]:
         """Returns a unique set of variants which have been dismissed for a case."""
-        variant_ids_dismissed = set(
-            self.evaluated_variant_ids_from_events(
-                case_id, institute_id, include_verbs=["dismiss_variant"]
-            )
+        variant_ids_dismissed = self.evaluated_variant_ids_from_events(
+            case_id, institute_id, include_verbs=["dismiss_variant"]
         )  # Can contain duplicates
         variant_ids_reset_dismissed = self.evaluated_variant_ids_from_events(
             case_id, institute_id, include_verbs=["reset_dismiss_variant"]
@@ -780,7 +778,7 @@ class VariantHandler(VariantLoader):
             if vid in variant_ids_dismissed:
                 variant_ids_dismissed.remove(vid)
 
-        return set(variant_ids_dismissed)  # Return unique variant_ids
+        return set(variant_ids_dismissed)
 
     def evaluated_variant_ids_from_events(
         self,
