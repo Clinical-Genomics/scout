@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.108.1]
+### Fixed
+- Fix TypeError by replacing Tuple() instantiation with proper tuple return in VariantHandler (#6082)
+
 ## [4.108]
 ### Added
 - Gene-overlapping variants shown also for STRs (#5977)
