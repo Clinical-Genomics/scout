@@ -175,6 +175,7 @@ def make_igv_tracks(
         display_obj: A display object containing case name, list of genes, locus and tracks
     """
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
+    variant_obj = None
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
     if omics_variant_id:
