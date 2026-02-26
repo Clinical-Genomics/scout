@@ -8,7 +8,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - IGV browser page crashing when clicking on `IGV gDNA` or `IGV mtDNA` buttons (#6084)
 
-
 ## [4.108.1]
 ### Fixed
 - Fix TypeError by replacing Tuple() instantiation with proper tuple return in VariantHandler (#6082)
