@@ -1,0 +1,15 @@
+[data-md-color-scheme="slate"][data-md-color-primary="black"] {
+    --md-cg-color:       27;
+    --md-typeset-a-color: hsl(var(--md-cg-color), 92%, 64%);
+    --md-default-fg-color--light: hsla(var(--md-cg-color), 92%, 56%, 1);
+
+}
+
+[data-md-color-scheme="slate"] {
+    --md-typeset-table-color: hsla(var(--md-cg-color), 92%, 64%, 0.24);
+}
+
+[data-md-color-accent="cg-accent"] {
+    --md-accent-fg-color:              hsla(var(--md-cg-color), 92%, 56%, 1);
+    --md-accent-fg-color--transparent: hsla(var(--md-cg-color), 92%, 60%, 0.1);
+}
