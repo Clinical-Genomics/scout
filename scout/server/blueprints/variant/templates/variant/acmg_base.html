@@ -7,6 +7,26 @@
   </li>
 {% endblock %}
 
+{% block css %}
+  {{ super() }}
+  <style>
+  .limited-column {
+    max-width: 50vw !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .comment-box {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  </style>
+{% endblock %}
+
 {% macro evaluation_tables() %}
  <div class="container mt-3 mb-5">
    {% if not institute %}
@@ -47,7 +67,7 @@
 
       <div class="d-flex flex-row justify-content-between mt-3">
         {% for category, criteria_group in CRITERIA.items() %}
-          <div class="flex-column {{ 'me-3' if not loop.last }}">
+          <div class="flex-column {{ 'me-3' if not loop.last }} limited-column">
             <h4>Evidence of {{ category }}</h4>
             {% for evidence, criteria in criteria_group.items() %}
               <ul class="list-group mt-3">
@@ -90,8 +110,14 @@
                         </select>
                       </div>
                       <div class="row">
-                        <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
-                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
+                        {% if evaluation %}
+                          <div class="comment-box">
+                            {{ comment }}
+                          </div>
+                        {% else %}
+                          <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
+                            name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
+                        {% endif %}
                       </div>
                       <input type="url" {{ 'disabled' if evaluation and edit is false }} class="form-control" name="link-{{ criterion_code }}"
                         placeholder="{{ link or 'Supporting link (optional)' }}" value="">
