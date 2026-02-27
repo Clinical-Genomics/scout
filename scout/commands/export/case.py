@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 def validate_case_id(
     ctx: click.Context,
     param: click.Parameter,
-    value: Optional[str],
+    value: Optional[str]
 ) -> Optional[str]:
     """Make sure that user retrieves cases by either providing a single case _id or a combination of other parameters."""
     if value and any(
