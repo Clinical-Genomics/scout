@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Add a `--type` to the export case CLI, to limit the exported case search by analysis type (#6089)
 ### Changed
 - Export genotype with gene variantS search (#6088)
 ### Fixed

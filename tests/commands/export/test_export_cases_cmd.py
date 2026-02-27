@@ -24,15 +24,20 @@ def test_export_cases(mock_app, case_obj):
     assert "scout/demo/643594" in result.output
 
     # Test the command with -institute option
-    assert sum(1 for _ in store.case_collection.find()) > 0
     result = runner.invoke(cli, ["export", "cases", "-i", case_obj["owner"]])
 
     # Test case should be found
     assert result.exit_code == 0
     assert "scout/demo/643594" in result.output
 
+    # Test the command with -t (analysis type) option
+    result = runner.invoke(cli, ["export", "cases", "-t", "wes"])
+
+    # Test case should be found
+    assert result.exit_code == 0
+    assert "scout/demo/643594" in result.output
+
     # Test the command with -reruns option
-    assert sum(1 for _ in store.case_collection.find()) > 0
     result = runner.invoke(cli, ["export", "cases", "-r"])
     # Test case should NOT be found
     assert result.exit_code == 0
@@ -49,7 +54,6 @@ def test_export_cases(mock_app, case_obj):
     assert "scout/demo/643594" in result.output
 
     # Test the command with -finished option
-    assert sum(1 for _ in store.case_collection.find()) > 0
     result = runner.invoke(cli, ["export", "cases", "-f"])
     # Test case should NOT be found
     assert result.exit_code == 0
@@ -92,7 +96,6 @@ def test_export_cases(mock_app, case_obj):
     assert result.exit_code == 0
     assert "INFO No cases could be found" in result.output
 
-    # Use CLI to get research cases
     # Use CLI to get cases with research requested
     result = runner.invoke(cli, ["export", "cases", "--is-research"])
     # Test case should NOT be found
