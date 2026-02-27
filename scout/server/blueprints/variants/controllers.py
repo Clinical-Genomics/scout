@@ -1129,7 +1129,7 @@ def download_str_variants(_, case_obj, variant_objs):
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))
 
-        variant_line.append(_gt_cell(variant))
+        variant_line.append(gt_cell(variant))
         variant_line.append(variant["chromosome"])
         variant_line.append(str(variant["position"]))
 
