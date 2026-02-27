@@ -15,7 +15,11 @@ from .utils import json_option
 LOG = logging.getLogger(__name__)
 
 
-def validate_case_id(ctx, param, value):
+def validate_case_id(
+    ctx: click.Context,
+    param: click.Parameter,
+    value: Optional[str],
+) -> Optional[str]:
     """Make sure that user retrieves cases by either providing a single case _id or a combination of other parameters."""
     if value and any(
         ctx.params.get(p)
