@@ -59,28 +59,25 @@ class RankModelHandler(object):
 
         return {}
 
-    def rank_model_from_url(
-        self, rank_model_link_prefix, rank_model_version, rank_model_file_extension
-    ):
-        """Fetch a rank model configuration for A SNV or SV variant of a case
-
-        Args:
-            rank_model_link_prefix(str): specified in app config file
-            rank_model_version(string)
-            rank_model_file_extension(str): specified in app config file
-
-        Returns:
-            rank_model(dict)
-        """
+    def rank_model_url_from_version(
+        self, rank_model_link_prefix: str, rank_model_version: str, rank_model_file_extension: str
+    ) -> str:
+        """Make a rank model URL from version and link prefix- and postfix (passed here, specified in app config)."""
         rank_model_url = "".join(
             [rank_model_link_prefix, str(rank_model_version), rank_model_file_extension]
         )
 
-        # Check if rank model document is already present in scout database
-        rank_model = self.rank_model_collection.find_one(rank_model_url)
+        return rank_model_url
 
-        if not rank_model:  # Otherwise fetch it with HTTP request and save it to database
-            rank_model = self.add_rank_model(rank_model_url)
+    def rank_model_from_url(self, rank_model_url: str) -> dict:
+        """Fetch a rank model configuration for A SNV or SV variant of a case
+        Check if rank model document is already present in scout database.
+        Otherwise fetch it with HTTP request and save it to database.
+        """
+
+        rank_model = self.rank_model_collection.find_one(rank_model_url) or self.add_rank_model(
+            rank_model_url
+        )
 
         return rank_model
 

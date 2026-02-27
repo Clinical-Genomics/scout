@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Export genotype with gene variantS search (#6088)
+- Rework rank model file loading, allowing full URI (#6091)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 
