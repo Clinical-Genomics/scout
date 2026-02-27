@@ -5,13 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-<<<<<<< export_case_by_analysis_type
 ### Added
 - Add a `--type` to the export case CLI, to limit the exported case search by analysis type (#6089)
-=======
 ### Changed
 - Export genotype with gene variantS search (#6088)
->>>>>>> main
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 
