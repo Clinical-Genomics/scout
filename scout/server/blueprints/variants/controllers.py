@@ -1127,16 +1127,11 @@ def download_str_variants(_, case_obj, variant_objs):
         )  # Reference repeat unit
         variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
-        variant_line.append(str(variant.get("str_status", "")))  # Status
-        gt_cell = ""
-        for sample in variant["samples"]:
-            if sample["genotype_call"] == "./.":
-                continue
-            gt_cell += f"{sample['display_name']}:{sample['genotype_call']} "
+        variant_line.append(str(variant.get("str_status", "")))
 
-        variant_line.append(gt_cell)  # Genotype
-        variant_line.append(variant["chromosome"])  # Chromosome
-        variant_line.append(str(variant["position"]))  # Position
+        variant_line.append(_gt_cell(variant))
+        variant_line.append(variant["chromosome"])
+        variant_line.append(str(variant["position"]))
 
         export_lines.append(",".join(variant_line))
 
@@ -1152,6 +1147,18 @@ def download_str_variants(_, case_obj, variant_objs):
         mimetype="text/csv",
         headers=headers,
     )
+
+
+def gt_cell(variant: dict) -> str:
+    """Genotype cell with all individuals and sample genotype calls"""
+
+    gt_cell = ""
+    for sample in variant["samples"]:
+        if sample["genotype_call"] == "./.":
+            continue
+        gt_cell += f"{sample['display_name']}:{sample['genotype_call']} "
+
+    return gt_cell
 
 
 def download_variants(

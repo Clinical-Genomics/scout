@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Export genotype with gene variantS search (#6087)
+
 ## [4.108.2]
 ### Fixed
 - IGV browser page crashing when clicking on `IGV gDNA` or `IGV mtDNA` buttons (#6084)
