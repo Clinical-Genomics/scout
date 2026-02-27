@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Export genotype with gene variantS search (#6088)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 
