@@ -1,16 +1,14 @@
 import logging
-from json import dumps
-from tempfile import NamedTemporaryFile
-from typing import List, Optional, Tuple
+from typing import List
 
 from flask import (
     Blueprint,
     Response,
+    abort,
     flash,
     redirect,
     render_template,
     request,
-    send_file,
     url_for,
 )
 from flask_login import current_user
@@ -54,24 +52,10 @@ def clinvar_submission_status(submission_id):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/clinvar/delete-enquiry/<submission_id>", methods=["POST"])
-def clinvar_submission_delete(submission_id):
-    """Sends a request to ClinVar to delete a successfully processed submission."""
+@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_germline_variant", methods=["POST"])
+def clinvar_add_germline_variant(institute_id, case_name):
+    """Add a germline variant to a germline submission object."""
 
-    # Retrieve the actual submission status:
-    delete_res: Tuple[int, dict] = clinvar_api.delete_clinvar_submission(
-        submission_id=submission_id, api_key=request.form.get("apiKey")
-    )
-    flash(
-        f"ClinVar response: { str(delete_res[1]) }",
-        "success" if delete_res[0] == 201 else "warning",
-    )
-    return safe_redirect_back(request)
-
-
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
-def clinvar_add_variant(institute_id, case_name):
-    """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {
         "institute": institute_obj,
@@ -79,22 +63,37 @@ def clinvar_add_variant(institute_id, case_name):
         "germline_classif_terms": GERMLINE_CLASSIF_TERMS,
     }
     controllers.set_clinvar_form(request.form.get("var_id"), data)
-    return render_template("clinvar/multistep_add_variant.html", **data)
+    return render_template("clinvar/multistep_add_germline_variant.html", **data)
 
 
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
-def clinvar_save(institute_id: str, case_name: str):
-    """Adds one germline variant with eventual CaseData observations to an open (or new) ClinVar submission."""
+@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
+def clinvar_add_onc_variant(institute_id: str, case_name: str):
+    """Add an oncogenic variant to an oncogenicity submission object."""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "onc_classif_terms": ONCOGENIC_CLASSIF_TERMS,
+    }
+    controllers.set_clinvar_form(request.form.get("var_id"), data)
+    return render_template("clinvar/multistep_add_onc_variant.html", **data)
+
+
+@clinvar_bp.route("/<institute_id>/<case_name>/<subm_type>/clinvar_add_variant", methods=["POST"])
+def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
+    """Adds one variant with eventual observations to an open (or new) ClinVar submission document."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     controllers.add_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form, subm_type=subm_type
     )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
 @clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET"])
 def clinvar_germline_submissions(institute_id):
-    """Handle clinVar submission objects and files"""
+    """Handle germline ClinVar submissions."""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
@@ -103,11 +102,15 @@ def clinvar_germline_submissions(institute_id):
         if request.args.get("clinvar_id_filter")
         else None
     )
+    submissions = list(store.get_clinvar_submissions(institute_id=institute_id, type="germline"))
+    deprecated_submissions = store.get_deprecated_clinvar_germline_submissions(
+        institute_id, clinvar_id_filter=clinvar_id_filter
+    )
+    if deprecated_submissions:
+        store.deprecate_type_none_germline_submissions()
 
     data = {
-        "submissions": store.get_clinvar_germline_submissions(
-            institute_id, clinvar_id_filter=clinvar_id_filter
-        ),
+        "submissions": submissions + deprecated_submissions,
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
@@ -115,21 +118,40 @@ def clinvar_germline_submissions(institute_id):
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
     }
-    return render_template("clinvar/clinvar_submissions.html", **data)
+    return render_template("clinvar/clinvar_germline_submissions.html", **data)
 
 
-@clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
-def clinvar_rename_casedata(submission, case, old_name):
-    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+@clinvar_bp.route("/<institute_id>/clinvar_onc_submissions", methods=["GET"])
+def clinvar_onc_submissions(institute_id):
+    """Handle clinVar submission objects and files"""
 
-    new_name = request.form.get("new_name")
-    controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
-    return safe_redirect_back(request, request.referrer + f"#cdata_{submission}")
+    institute_obj = institute_and_case(store, institute_id)
+    institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
+    data = {
+        "submissions": list(
+            store.get_clinvar_submissions(institute_id=institute_id, type="oncogenicity")
+        ),
+        "institute": institute_obj,
+        "show_submit": current_user.email in institute_clinvar_submitters
+        or not institute_clinvar_submitters,
+    }
+    return render_template("clinvar/clinvar_onc_submissions.html", **data)
+
+
+@clinvar_bp.route("/<submission_id>/<submission_type>/delete_variant", methods=["POST"])
+def clinvar_delete_variant(submission_id: str, submission_type: str):
+    """Delete a single variant from a ClinVar submission document."""
+    store.delete_variant_from_submission(
+        submission_id=submission_id,
+        variant_id=request.form.get("delete_object"),
+        type=submission_type,
+    )
+    return safe_redirect_back(request)
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
 def clinvar_delete_object(submission: str, object_type: str):
-    """Delete a single object (variant_data or case_data) associated with a ClinVar submission"""
+    """Delete a single object (variant_data or case_data) associated with a DEPRECATED ClinVar submission object."""
 
     controllers.remove_item_from_submission(
         submission=submission,
@@ -146,95 +168,48 @@ def clinvar_update_submission(institute_id, submission):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/<submission>/download/json/<clinvar_id>", methods=["GET"])
-def clinvar_download_json(submission: str, clinvar_id: Optional[str]) -> Response:
-    """Download a json for a clinVar submission.
+@clinvar_bp.route("/<submission>/<subm_type>/download", methods=["GET"])
+def get_submission_as_json(submission, subm_type) -> dict:
+    """Returns a json file for a clinVar submission."""
 
-    Accepts:
-        submission:. It's the _id of the submission in the database
-        clinvar_id: It's the submission number (i.e. SUB123456). Might be available or not in the submission dictionary
+    data = store.get_json_submission(submission, subm_type)
+    if data is None:
+        abort(404, "Submission not found")
+    return data
 
-    """
-    filename = clinvar_id if clinvar_id != "None" else submission
 
-    code, conversion_res = controllers.json_api_submission(submission_id=submission)
+@clinvar_bp.route("/<institute_id>/<submission>/<subm_type>/send", methods=["POST"])
+def send_api_submission(institute_id, submission, subm_type):
+    """Send a submission object to ClinVar using the API."""
+    _ = institute_and_case(store, institute_id)
+
+    json_subm_obj = store.get_json_submission(submission=submission, subm_type=subm_type)
+    if not json_subm_obj:
+        return safe_redirect_back(request)
+
+    service_url, code, submit_res = clinvar_api.submit_json(
+        json_subm_obj, request.form.get("apiKey")
+    )
 
     if code in [200, 201]:
-        # Write temp CSV file and serve it in response
-        tmp_json = NamedTemporaryFile(mode="a+", prefix=filename, suffix=".json")
-        tmp_json.write(dumps(conversion_res, indent=4))
-
-        tmp_json.flush()
-        tmp_json.seek(0)
-        return send_file(
-            tmp_json.name,
-            download_name=f"{filename}.json",
-            mimetype="application/json",
-            as_attachment=True,
+        clinvar_id = submit_res.json().get("id")
+        flash(
+            f"Submission sent to API URL '{service_url}'. Submitted with ID: {clinvar_id}. Please wait a few minutes before checking its status.",
+            "success",
+        )
+        # Update ClinVar submission ID with the ID returned from ClinVar
+        store.update_clinvar_id(
+            clinvar_id=clinvar_id,
+            submission_id=submission,
+        )
+        # Update submission status as submitted
+        store.update_clinvar_submission_status(
+            institute_id=institute_id, submission_id=submission, status="submitted"
         )
     else:
         flash(
-            f"JSON file could not be crated for ClinVar submission: {filename}: {conversion_res}",
+            f"Submission sent to API URL '{service_url}'. Returned error {code}: {submit_res.json()}",
             "warning",
         )
-        return safe_redirect_back(request)
 
-
-### ClinVar oncogenicity variants submissions views
-
-
-@clinvar_bp.route("/<institute_id>/clinvar_onc_submissions", methods=["GET"])
-def clinvar_onc_submissions(institute_id):
-    """Handle clinVar submission objects and files"""
-
-    institute_obj = institute_and_case(store, institute_id)
-    institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
-    data = {
-        "submissions": list(store.get_clinvar_onc_submissions(institute_id)),
-        "institute": institute_obj,
-        "show_submit": current_user.email in institute_clinvar_submitters
-        or not institute_clinvar_submitters,
-    }
-    return render_template("clinvar/clinvar_onc_submissions.html", **data)
-
-
-@clinvar_bp.route("/<institute_id>/<case_name>/clinvar/clinvar_add_onc_variant", methods=["POST"])
-def clinvar_add_onc_variant(institute_id: str, case_name: str):
-    """Create a ClinVar submission document in database for one or more variants from a case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {
-        "institute": institute_obj,
-        "case": case_obj,
-        "onc_classif_terms": ONCOGENIC_CLASSIF_TERMS,
-    }
-    controllers.set_onc_clinvar_form(request.form.get("var_id"), data)
-    return render_template("clinvar/multistep_add_onc_variant.html", **data)
-
-
-@clinvar_bp.route(
-    "/<institute_id>/<case_name>/clinvar_onc/clinvar_save_onc_variant", methods=["POST"]
-)
-def clinvar_onc_save(institute_id: str, case_name: str):
-    """Adds one somatic variant with eventual CaseData observations to an open (or new) ClinVar congenicity submission"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    controllers.add_onc_variant_to_submission(
-        institute_obj=institute_obj, case_obj=case_obj, form=request.form
-    )
-    return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
-
-
-@clinvar_bp.route("/<submission>/clinvar_onc/delete_variant", methods=["POST"])
-def clinvar_delete_onc_variant(submission: str):
-    """Delete a single variant (oncogenicitySubmission) from the ClinVar submissions collection."""
-    store.delete_clinvar_onc_var(
-        submission=submission,
-        variant_id=request.form.get("delete_object"),
-    )
     return safe_redirect_back(request)
-
-
-@clinvar_bp.route("/<submission>/download", methods=["GET"])
-def clinvar_download(submission):
-    """Download a json file for a clinVar submission. This function is only used for oncogenocity submissions for the time being"""
-
-    return store.get_onc_submission_json(submission)

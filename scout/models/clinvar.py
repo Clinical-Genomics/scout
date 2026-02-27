@@ -6,7 +6,11 @@ from bson.objectid import ObjectId
 from pydantic import BaseModel
 
 from scout.constants import CHROMOSOMES
-from scout.constants.clinvar import CITATION_DBS_API, ONCOGENIC_CLASSIF_TERMS
+from scout.constants.clinvar import (
+    CITATION_DBS_API,
+    GERMLINE_CLASSIF_TERMS,
+    ONCOGENIC_CLASSIF_TERMS,
+)
 
 """Model of the document that gets saved/updated in the clinvar_submission collection
  for each institute that has cases with ClinVar submission objects"""
@@ -83,13 +87,17 @@ clinvar_casedata = {
     "reported_at": date,
 }
 
-### Models used for oncogenocity submissions via API
-
+### Models used for submissions via API
 
 CitationDB = Enum("CitationDB", {db.upper(): db for db in CITATION_DBS_API})
 OncogenicityClassificationDescription = Enum(
     "OncogenicityClassificationDescription",
     {term.upper().replace(" ", "_"): term for term in ONCOGENIC_CLASSIF_TERMS},
+)
+
+GermlineClassificationDescription = Enum(
+    "GermlineClassificationDescription",
+    {term.upper().replace(" ", "_"): term for term in GERMLINE_CLASSIF_TERMS},
 )
 
 
@@ -98,11 +106,18 @@ class Citation(BaseModel):
     id: str
 
 
-class OncogenicityClassification(BaseModel):
-    oncogenicityClassificationDescription: OncogenicityClassificationDescription
+class Classification(BaseModel):
     dateLastEvaluated: str
     comment: Optional[str] = None
     citation: Optional[List[Citation]] = None
+
+
+class OncogenicityClassification(Classification):
+    oncogenicityClassificationDescription: OncogenicityClassificationDescription
+
+
+class GermlineClassification(Classification):
+    GermlineClassificationDescription: GermlineClassificationDescription
 
 
 class ObservedIn(BaseModel):
@@ -110,6 +125,9 @@ class ObservedIn(BaseModel):
     affectedStatus: str
     collectionMethod: str
     numberOfIndividuals: int
+
+
+class OncoObservedIn(ObservedIn):
     presenceOfSomaticVariantInNormalTissue: str
     somaticVariantAlleleFraction: Optional[float] = None
 
@@ -149,11 +167,9 @@ class ConditionSet(BaseModel):
     condition: List[Condition]
 
 
-class OncogenicitySubmissionItem(BaseModel):
+class GenericSubmissionItem(BaseModel):
     # Field necessary for the API submissions:
     recordStatus: str
-    oncogenicityClassification: OncogenicityClassification
-    observedIn: List[ObservedIn]
     variantSet: VariantSet
     conditionSet: ConditionSet
 
@@ -162,3 +178,13 @@ class OncogenicitySubmissionItem(BaseModel):
     case_id: str
     case_name: str
     variant_id: str
+
+
+class OncogenicitySubmissionItem(GenericSubmissionItem):
+    # Field necessary for the API submissions:
+    oncogenicityClassification: OncogenicityClassification
+    observedIn: List[OncoObservedIn]
+
+
+class GermlineSubmissionItem(GenericSubmissionItem):
+    observedIn: List[ObservedIn]

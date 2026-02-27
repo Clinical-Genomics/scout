@@ -340,9 +340,11 @@ def set_case_clinvar_submission_variants(case_obj: dict):
     is_cancer = case_obj.get("track") == "cancer"
 
     case_obj["onco_clinvar_variants"] = (
-        store.case_to_onco_clinvars(case_obj["_id"]) if is_cancer else {}
+        store.case_to_api_clinvar(case_id=case_obj["_id"], type="oncogenicity") if is_cancer else {}
     )
-    case_obj["clinvar_variants"] = {} if is_cancer else store.case_to_clinvars(case_obj["_id"])
+    case_obj["clinvar_variants"] = (
+        {} if is_cancer else store.case_to_germline_clinvars(case_obj["_id"])
+    )
 
 
 def case(
