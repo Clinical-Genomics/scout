@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Export genotype with gene variantS search (#6087)
+- Export genotype with gene variantS search (#6088)
 
 ## [4.108.2]
 ### Fixed
