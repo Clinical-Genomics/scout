@@ -25,8 +25,7 @@ def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
             )
     """
     phenotype_obj = {}
-    phenotype = adapter.hpo_term(phenotype_id)
-    if phenotype:
+    if phenotype := adapter.hpo_term(phenotype_id):
         phenotype_obj["phenotype_id"] = phenotype["hpo_id"]
         phenotype_obj["feature"] = phenotype["description"]
     return phenotype_obj
@@ -43,15 +42,8 @@ def _populate_pipeline_info(case_obj, case_data):
         case_obj["pipeline_version"] = case_data["exe_ver"]
 
 
-def build_case(case_data, adapter):
+def build_case(case_data: dict, adapter) -> dict:
     """Build a case object that is to be inserted to the database
-
-    Args:
-        case_data (dict): A dictionary with the relevant case information
-        adapter (scout.adapter.MongoAdapter)
-
-    Returns:
-        case_obj (dict): A case object
 
     dict(
         case_id = str, # required=True, unique
@@ -213,14 +205,16 @@ def build_case(case_data, adapter):
 
     case_obj["rna_genome_build"] = case_data.get("rna_genome_build", "38")
 
-    if case_data.get("rank_model_version"):
-        case_obj["rank_model_version"] = str(case_data["rank_model_version"])
-
-    if case_data.get("sv_rank_model_version"):
-        case_obj["sv_rank_model_version"] = str(case_data["sv_rank_model_version"])
-
-    if case_data.get("rank_score_threshold"):
-        case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
+    # Rank model versions, URLs and score threshold - optional keys
+    for conditional_key, conditional_type in [
+        ("rank_model_url", str),
+        ("rank_model_version", str),
+        ("sv_rank_model_url", str),
+        ("sv_rank_model_version", str),
+        ("rank_score_threshold", float),
+    ]:
+        if case_data.get(conditional_key):
+            case_obj[conditional_key] = conditional_type(conditional_key)
 
     # Cohort information
     if case_data.get("cohorts"):
