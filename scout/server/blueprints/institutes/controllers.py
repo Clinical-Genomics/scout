@@ -25,6 +25,7 @@ from scout.server.blueprints.variant.utils import (
     predictions,
     update_representative_gene,
 )
+from scout.server.blueprints.variants.controllers import gt_cell
 from scout.server.extensions import beacon, store
 from scout.server.utils import (
     get_case_genome_build,
@@ -865,6 +866,7 @@ def export_gene_variants(store: MongoAdapter, gene_symbol: str, results: Cursor)
         "Case Display Name",
         "Institute",
         "Position",
+        "Genotype",
         "Score",
         "Genes",
         "GnomAD Frequency",
@@ -880,6 +882,7 @@ def export_gene_variants(store: MongoAdapter, gene_symbol: str, results: Cursor)
         variant_line.append(variant.get("case_display_name"))  # Case Display Name
         variant_line.append(variant.get("institute"))  # Institute
         variant_line.append(variant.get("display_name"))  # Position
+        variant_line.append(gt_cell(variant))
         variant_line.append(str(variant.get("rank_score", "")))  # Score
         variant_genes = [
             gene.get("hgnc_symbol", str(gene.get("hgnc_id"))) for gene in variant.get("genes", [])
