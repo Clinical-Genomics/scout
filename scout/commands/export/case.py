@@ -1,6 +1,7 @@
 import json as json_lib
 import logging
 from pprint import pprint as pp
+from typing import Optional
 
 import click
 from flask.cli import with_appcontext
