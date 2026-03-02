@@ -9,7 +9,7 @@ def test_rank_model_from_url_snv(adapter, case_obj):
     rank_model_version = case_obj["rank_model_version"]
 
     # WHEN a URL is formed with version and prefix/postfix
-    rank_model_url = adapter.rank_model_from_version(
+    rank_model_url = adapter.rank_model_url_from_version(
         RANK_MODEL_LINK_PREFIX, rank_model_version, RANK_MODEL_LINK_POSTFIX
     )
 
@@ -34,7 +34,7 @@ def test_rank_model_from_url_sv(adapter, case_obj):
     rank_model_version = case_obj["sv_rank_model_version"]
 
     # WHEN a URL is formed with SV model version and prefix/postfix
-    sv_rank_model_url = adapter.rank_model_from_version(
+    sv_rank_model_url = adapter.rank_model_url_from_version(
         SV_RANK_MODEL_LINK_PREFIX, rank_model_version, SV_RANK_MODEL_LINK_POSTFIX
     )
 
