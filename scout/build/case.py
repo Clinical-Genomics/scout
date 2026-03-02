@@ -43,78 +43,12 @@ def _populate_pipeline_info(case_obj, case_data):
         case_obj["pipeline_version"] = case_data["exe_ver"]
 
 
-def build_case(case_data, adapter):
-    """Build a case object that is to be inserted to the database
+def build_case(case_data: dict, adapter) -> dict:
+    """Build a case object that is to be inserted to the database"""
 
-    Args:
-        case_data (dict): A dictionary with the relevant case information
-        adapter (scout.adapter.MongoAdapter)
+    case = CaseFactory.build(case_data, adapter)
+    adapter.case_collection.insert_one(case.model_dump(by_alias=True))
 
-    Returns:
-        case_obj (dict): A case object
-
-    dict(
-        case_id = str, # required=True, unique
-        display_name = str, # If not display name use case_id
-        owner = str, # required
-
-        # These are the names of all the collaborators that are allowed to view the
-        # case, including the owner
-        collaborators = list, # List of institute_ids
-        assignee = str, # _id of a user
-        individuals = list, # list of dictionaries with individuals
-        created_at = datetime,
-        updated_at = datetime,
-        suspects = list, # List of variants referred by there _id
-        causatives = list, # List of variants referred by there _id
-
-        synopsis = str, # The synopsis is a text blob
-        status = str, # default='inactive', choices=STATUS
-        is_research = bool, # default=False
-        research_requested = bool, # default=False
-        rerun_requested = bool, # default=False
-        cohorts = list, # list of strings
-        analysis_date = datetime,
-        analyses = list, # list of dict
-
-        # default_panels specifies which panels that should be shown when
-        # the case is opened
-        panels = list, # list of dictionaries with panel information
-
-        dynamic_gene_list = list, # List of genes
-
-        genome_build = str, # This should be 37 or 38
-
-        rank_model_version = str,
-        rank_score_threshold = int, # default=8
-
-        phenotype_terms = list, # List of dictionaries with phenotype information
-        phenotype_groups = list, # List of dictionaries with phenotype information
-
-        madeline_info = str, # madeline info is a full xml file
-
-        multiqc = str, # path to dir with multiqc information
-
-        cnv_report = str, # path to file with cnv report
-        coverage_qc_report = str, # path to file with coverage and qc report
-        gene_fusion_report = str, # path to the gene fusions report
-        gene_fusion_report_research = str, # path to the research gene fusions report
-        RNAfusion_inspector = str, # path to the RNA fusion inspector report
-        RNAfusion_inspector_research = str, # path to the research RNA fusion inspector report
-        RNAfusion_report = str, # path to the RNA fusion report
-        RNAfusion_report_research = str, # path to the research RNA fusion report
-
-        vcf_files = dict, # A dictionary with vcf files
-
-        diagnosis_phenotypes = list, # List of references to diseases
-        diagnosis_genes = list, # List of references to genes
-
-        has_svvariants = bool, # default=False
-
-        is_migrated = bool # default=False
-
-    )
-    """
     LOG.info("build case with id: {0}".format(case_data["case_id"]))
     case_obj = {
         "_id": case_data["case_id"],
