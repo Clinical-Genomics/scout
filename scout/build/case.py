@@ -213,8 +213,8 @@ def build_case(case_data: dict, adapter) -> dict:
         ("sv_rank_model_version", str),
         ("rank_score_threshold", float),
     ]:
-        if case_data.get(conditional_key):
-            case_obj[conditional_key] = conditional_type(conditional_key)
+        if conditional_value := case_data.get(conditional_key):
+            case_obj[conditional_key] = conditional_type(conditional_value)
 
     # Cohort information
     if case_data.get("cohorts"):
