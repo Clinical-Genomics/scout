@@ -5,6 +5,7 @@ from typing import Dict
 from scout import __version__
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
+from scout.models.case import CaseFactory
 
 from . import build_individual
 

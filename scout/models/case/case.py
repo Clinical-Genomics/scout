@@ -286,8 +286,6 @@ class CaseFactory:
             validated = IndividualModel.model_validate(built)
             individuals.append(validated)
 
-        individuals = [IndividualModel.model_validate(ind) for ind in ind_objs]
-
         individuals.sort(key=lambda ind: -ind.phenotype)
 
         # ---- Panels ----
