@@ -489,15 +489,13 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
 
 
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
-    """Retrive rank score values and ranges for the variant
+    """Retrieve rank score values and ranges for the variant
 
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(dict)
-        variant_obj(dict)
-
-    Returns:
-        rank_score_results(list)
+    First, check if they are already stored on variant. If so, return them.
+    Second, differentiate between "sv" and "snv" (fallback) rank models.
+    If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
+    Once a URL is available, retrieve the rank model, and try to retrieve rank model param ranges to display on variant page.
+    Loop over each rank score category and collect model explanation to display on variant page.
     """
     rank_score_results = []
 
@@ -507,25 +505,29 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         rank_score_results = variant_obj.get("rank_score_results")
 
     if variant_obj.get("category") == "sv":
-        rank_model_version = case_obj.get("sv_rank_model_version")
-        rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
-        rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
+        rank_model_url = case_obj.get("sv_rank_model_url")
+        if not rank_model_url:
+            rank_model_version = case_obj.get("sv_rank_model_version")
+            rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
+            rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
     else:  # snv, cancer
-        rank_model_version = case_obj.get("rank_model_version")
-        rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
-        rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
-    if all(
-        [rank_model_version, rm_link_prefix, rm_file_extension]
-    ):  # Try to retrieve rank model param ranges to display on variant page
-        rank_model = store.rank_model_from_url(
-            rm_link_prefix, rank_model_version, rm_file_extension
+        rank_model_url = case_obj.get("rank_model_url")
+        if not rank_model_url:
+            rank_model_version = case_obj.get("rank_model_version")
+            rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
+            rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
+    if all([rank_model_version, rm_link_prefix, rm_file_extension]):
+        rank_model_url = store.rank_model_url_from_version(
+            rank_model_link_prefix=rm_link_prefix,
+            rank_model_version=rank_model_version,
+            rank_model_file_extension=rm_file_extension,
         )
-        # Loop over each rank score category and collect model explanation to display on variant page
-        if rank_model:
-            for score in rank_score_results:
-                category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
-                score["model_ranges"] = store.get_ranges_info(rank_model, category)
-                score["min"], score["max"] = store.range_span(score["model_ranges"])
+
+    if rank_model := store.rank_model_from_url(rank_model_url):
+        for score in rank_score_results:
+            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+            score["model_ranges"] = store.get_ranges_info(rank_model, category)
+            score["min"], score["max"] = store.range_span(score["model_ranges"])
 
     return rank_score_results
 
