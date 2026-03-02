@@ -13,6 +13,7 @@ from bson import ObjectId
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import (
+    ANALYSIS_TYPES,
     ID_PROJECTION,
     ORDERED_FILE_TYPE_MAP,
     ORDERED_OMICS_FILE_TYPE_MAP,

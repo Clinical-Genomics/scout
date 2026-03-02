@@ -1,11 +1,13 @@
 import json as json_lib
 import logging
 from pprint import pprint as pp
+from typing import Optional
 
 import click
 from flask.cli import with_appcontext
+from werkzeug.datastructures import ImmutableMultiDict
 
-from scout.constants import CASE_STATUSES
+from scout.constants import ANALYSIS_TYPES, CASE_STATUSES
 from scout.server.extensions import store
 from scout.server.utils import jsonconverter
 
@@ -14,8 +16,31 @@ from .utils import json_option
 LOG = logging.getLogger(__name__)
 
 
+def validate_case_id(
+    ctx: click.Context, param: click.Parameter, value: Optional[str]
+) -> Optional[str]:
+    """Make sure that user retrieves cases by either providing a single case _id or a combination of other parameters."""
+    if value and any(
+        ctx.params.get(p)
+        for p in (
+            "institute",
+            "reruns",
+            "finished",
+            "causatives",
+            "research_requested",
+            "rerun_monitor",
+            "is_research",
+            "status",
+            "type",
+            "within_days",
+        )
+    ):
+        raise click.UsageError("--case-id cannot be combined with other filter options.")
+    return value
+
+
 @click.command("cases", short_help="Fetch cases")
-@click.option("--case-id", help="Case id to search for")
+@click.option("--case-id", help="Case id to search for", callback=validate_case_id)
 @click.option("-i", "--institute", help="institute id of related cases")
 @click.option("-r", "--reruns", is_flag=True, help="requested to be rerun")
 @click.option("-f", "--finished", is_flag=True, help="archived or solved")
@@ -33,6 +58,13 @@ LOG = logging.getLogger(__name__)
     type=click.Choice(CASE_STATUSES),
     help="Specify what status to look for",
 )
+@click.option(
+    "-t",
+    "--type",
+    type=click.Choice(ANALYSIS_TYPES),
+    help="Limit search by analysis type",
+    multiple=True,
+)
 @click.option("--within-days", type=int, help="Days since event related to case")
 @json_option
 @with_appcontext
@@ -46,6 +78,7 @@ def cases(
     rerun_monitor,
     is_research,
     status,
+    type,
     within_days,
     json,
 ):
@@ -63,6 +96,10 @@ def cases(
             LOG.info("No case with id {}".format(case_id))
 
     else:
+        name_query = {}
+        if type:
+            name_query = ImmutableMultiDict(("analysis_type", value) for value in type)
+
         models = adapter.cases(
             collaborator=institute,
             reruns=reruns,
@@ -73,6 +110,7 @@ def cases(
             is_research=is_research,
             status=status,
             within_days=within_days,
+            name_query=name_query,
         )
         models = [case_obj for case_obj in models]
         if len(models) == 0:
