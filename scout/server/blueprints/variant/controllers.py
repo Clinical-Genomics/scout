@@ -374,7 +374,7 @@ def variant(
         ccv_evaluation(store, evaluation_obj)
         ccv_evaluations.append(evaluation_obj)
 
-    case_clinvars = store.case_to_clinvars(case_obj.get("display_name"))
+    case_clinvars = store.case_to_germline_clinvars(case_obj["_id"])
 
     if variant_id in case_clinvars:
         variant_obj["clinvar_clinsig"] = case_clinvars.get(variant_id)["clinsig"]

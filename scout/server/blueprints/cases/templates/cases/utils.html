@@ -592,8 +592,8 @@
       <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Variant included in a germline ClinVar submission"><em class="fas fa-database"></em></span>
     {% elif case.onco_clinvar_variants and variant._id in case.onco_clinvar_variants %}
       <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Variant included in an oncogenic ClinVar submission"><em class="fas fa-database"></em></span>
-    {% elif variant._id and variant.category in ["snv", "sv"] %}
-        <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+    {% elif variant._id and variant.category in ["snv"] %}
+        <form id="clinvar_submit" class="d-flex justify-content-center" action="{{ url_for('clinvar.clinvar_add_germline_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to ClinVar submission</button>
         </form>
     {% elif variant.category in ('cancer') %}
