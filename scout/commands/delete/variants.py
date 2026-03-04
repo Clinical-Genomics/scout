@@ -131,7 +131,7 @@ def _process_batch(
         total_deleted += remove_n_variants + remove_n_omics_variants
 
         if dry_run:
-            continue
+            return total_deleted
 
         # Post-delete: create event
         institute_obj = store.institute(institute_id)
