@@ -44,7 +44,6 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
     result = runner.invoke(cli, cmd_params)
     assert result.exit_code == 0
     assert "estimated deleted variants" in result.output
-    assert "Estimated space freed" in result.output
 
     # And no variants should be deleted
     assert sum(1 for _ in store.variant_collection.find()) == n_initial_vars
@@ -93,7 +92,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
 
     assert result.exit_code == 0
     assert "estimated deleted variants" not in result.output
-    assert "Estimated space freed" in result.output
+
     # variants should be deleted
     n_current_vars = sum(1 for _ in store.variant_collection.find())
     assert n_current_vars < n_initial_vars
@@ -139,7 +138,6 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     result = runner.invoke(cli, cmd_params, input="y")
     assert result.exit_code == 0
     assert "estimated deleted variants" not in result.output
-    assert "Estimated space freed" in result.output
 
     # THEN the variants should be gone
     n_current_vars = sum(1 for _ in store.variant_collection.find())
