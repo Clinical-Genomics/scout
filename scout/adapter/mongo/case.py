@@ -12,7 +12,6 @@ import pymongo
 from bson import ObjectId
 from werkzeug.datastructures import ImmutableMultiDict
 
-from scout.build.case import build_case
 from scout.constants import (
     ANALYSIS_TYPES,
     ID_PROJECTION,
@@ -20,6 +19,7 @@ from scout.constants import (
     ORDERED_OMICS_FILE_TYPE_MAP,
 )
 from scout.exceptions import ConfigError, IntegrityError
+from scout.models.case import CaseFactory
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
 
@@ -994,7 +994,7 @@ class CaseHandler(object):
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
         # Build the case object
-        case_obj = build_case(config_data, self)
+        case_obj = CaseFactory.build(config_data, self)
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
