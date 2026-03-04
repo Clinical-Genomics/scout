@@ -25,6 +25,7 @@ DELETE_VARIANTS_HEADER = [
 ]
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
 
+
 def _log_case(cases: List[Dict], cid: str, deleted_n: int) -> None:
     """Log deletion information for a single case."""
 
