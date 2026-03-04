@@ -46,6 +46,7 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
     # And no variants should be deleted
     assert sum(1 for _ in store.variant_collection.find()) == n_initial_vars
 
+
 def test_delete_variants(mock_app, case_obj, user_obj):
     """Test deleting variants using the delete variants command line"""
 
@@ -56,6 +57,7 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     )
     assert result.exit_code == 0
     nr_snvs = sum(1 for _ in store.variant_collection.find())
+    assert nr_snvs
 
     # AND WTS outliers
     result = runner.invoke(
@@ -63,6 +65,8 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     )
     assert result.exit_code == 0
     nr_outliers = sum(1 for _ in store.omics_variant_collection.find())
+    assert nr_outliers
+    assert nr_outliers
 
     n_initial_vars = nr_snvs + nr_outliers
 
@@ -99,10 +103,11 @@ def test_delete_variants(mock_app, case_obj, user_obj):
     assert event["case"] == case_obj["_id"]
     assert (
         event["content"]
-        == f"Rank-score threshold:0, case n. variants threshold:{VARIANTS_THRESHOLD}"
+        == f"Rank-score threshold:{RANK_THRESHOLD}, case n. variants threshold:{VARIANTS_THRESHOLD}"
     )
     # SNV variants should be gone
     assert sum(1 for _ in store.variant_collection.find()) == 0
+
     # WHILE outliers should still be available
     assert sum(1 for _ in store.omics_variant_collection.find()) == nr_outliers
 
@@ -137,7 +142,7 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     assert "estimated deleted variants" not in result.output
 
     # THEN the variants should be gone
-    n_current_vars = sum(1 for _ in store.variant_collection.find())
+    n_current_vars = sum(1 for _ in store.omics_variant_collection.find())
     assert n_current_vars == 0
     assert n_current_vars + n_variants_to_delete == n_initial_vars
     # and a relative event should be created

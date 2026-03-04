@@ -6,6 +6,7 @@ from flask import current_app, url_for
 from flask.cli import with_appcontext
 from pymongo import DeleteMany
 
+from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
@@ -46,95 +47,108 @@ def _log_case(cases: List[Dict], cid: str, deleted_n: int) -> None:
     )
 
 
+def handle_delete_variants(
+    store: MongoAdapter,
+    keep_ctg: List[str],
+    dry_run: bool,
+    variants_query: dict,
+) -> Tuple[int, int]:
+    """
+    Handle variant removal for a case.
+
+    If dry_run is True, counts how many variants *would be removed* without deleting.
+    Returns a tuple: (number_deleted_variants, number_deleted_omics_variants)
+    """
+
+    if dry_run:
+        remove_n_variants = store.variant_collection.count_documents(variants_query)
+        remove_n_omics_variants = (
+            store.omics_variant_collection.count_documents(variants_query)
+            if "outlier" not in keep_ctg
+            else 0
+        )
+    else:
+        remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
+        remove_n_omics_variants = (
+            store.omics_variant_collection.delete_many(variants_query).deleted_count
+            if "outlier" not in keep_ctg
+            else 0
+        )
+
+    return remove_n_variants, remove_n_omics_variants
+
+
 def _process_batch(
-    cases: List[Dict[str, Any]],
-    user_obj: Dict[str, Any],
+    cases: List[dict],
+    user_obj: Dict,
     rank_threshold: int | None,
     variants_threshold: int | None,
     keep_ctg: Iterable[str],
     dry_run: bool,
 ) -> int:
     """
-    Process a batch of cases by performing bulk deletion of variants.
+    Process a batch of cases, deleting variants using handle_delete_variants.
 
-    Creates events with threshold info, respecting optional thresholds.
+    - Keeps suspects/causatives/evaluated-not-dismissed variants
+    - Supports rank_threshold and variants_threshold
+    - Supports dry-run
+    - Creates events and updates variant counts per case
     """
 
-    total_deleted: int = 0
-    case_ids: List[Any] = [case["_id"] for case in cases]
-
-    # Optional variant count pre-computation
-    counts: Dict[Any, int] = {}
-    if variants_threshold is not None:
-        pipeline = [
-            {"$match": {"case_id": {"$in": case_ids}}},
-            {"$group": {"_id": "$case_id", "n": {"$sum": 1}}},
-        ]
-        for doc in store.variant_collection.aggregate(pipeline, allowDiskUse=True):
-            counts[doc["_id"]] = doc["n"]
-
-    delete_ops: List[DeleteMany] = []
-    case_delete_map: Dict[Any, Dict[str, Any]] = {}
+    total_deleted = 0
 
     for case in cases:
         cid = case["_id"]
+        institute_id = case["owner"]
 
-        # Skip case if variants_threshold is set
-        if variants_threshold is not None and counts.get(cid, 0) < variants_threshold:
+        # Skip case if below variants_threshold
+        if variants_threshold is not None:
+            n_case_variants = store.variant_collection.count_documents({"case_id": cid})
+            if n_case_variants < variants_threshold:
+                continue
+
+        # Protect variants to keep
+        case_evaluated, _ = store.evaluated_variants(case_id=cid, institute_id=institute_id)
+        evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
+        variants_to_keep = (
+            case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed
+        )
+
+        variants_query: dict = store.delete_variants_query(
+            case_id=cid,
+            variants_to_keep=variants_to_keep,
+            min_rank_threshold=rank_threshold,
+            keep_ctg=keep_ctg,
+        )
+
+        # Call original handle_delete_variants function
+        remove_n_variants, remove_n_omics_variants = handle_delete_variants(
+            store=store,
+            keep_ctg=list(keep_ctg),
+            dry_run=dry_run,
+            variants_query=variants_query,
+        )
+
+        total_deleted += remove_n_variants + remove_n_omics_variants
+
+        if dry_run:
             continue
 
-        delete_query: Dict[str, Any] = {
-            "case_id": cid,
-            "category": {"$nin": list(keep_ctg)},
-        }
-        if rank_threshold is not None:
-            delete_query["rank_score"] = {"$lt": rank_threshold}
-
-        delete_ops.append(DeleteMany(delete_query))
-        case_delete_map[cid] = delete_query
-
-    if not delete_ops:
-        return 0
-
-    # Dry-run mode
-    if dry_run:
-        for cid, query in case_delete_map.items():
-            n: int = store.variant_collection.count_documents(query)
-            total_deleted += n
-        return total_deleted
-
-    # Execute bulk delete
-    result: BulkWriteResult = store.variant_collection.bulk_write(
-        delete_ops,
-        ordered=False,
-    )
-    total_deleted += result.deleted_count
-
-    # Post-delete operations: events + variant count updates
-    for case in cases:
-        cid = case["_id"]
-        if cid not in case_delete_map:
-            continue
-
-        institute_obj: Dict[str, Any] = store.institute(case["owner"])
-
+        # Post-delete: create event
+        institute_obj = store.institute(institute_id)
         with current_app.test_request_context("/cases"):
-            url: str = url_for(
+            url = url_for(
                 "cases.case",
                 institute_id=institute_obj["_id"],
                 case_name=case["display_name"],
             )
 
-            # -----------------------------
-            # Build event content string
-            # -----------------------------
             threshold_parts: List[str] = []
             if rank_threshold is not None:
                 threshold_parts.append(f"Rank-score threshold:{rank_threshold}")
             if variants_threshold is not None:
                 threshold_parts.append(f"case n. variants threshold:{variants_threshold}")
-
-            content_str: str = ", ".join(threshold_parts)
+            content_str = ", ".join(threshold_parts)
 
             store.remove_variants_event(
                 institute=institute_obj,
@@ -144,7 +158,8 @@ def _process_batch(
                 content=content_str,
             )
 
-        store.case_variants_count(cid, institute_obj["_id"], True)
+        # Update case variant count
+        store.case_variants_count(cid, institute_id, True)
 
     return total_deleted
 
@@ -224,13 +239,13 @@ def _set_keep_ctg(
 @with_appcontext
 def variants(
     user: str,
+    rank_threshold: int,
     case_id: Optional[Tuple[str, ...]] = None,
     case_file: Optional[str] = None,
     institute: Optional[str] = None,
     status: Optional[Tuple[str, ...]] = None,
     older_than: Optional[int] = None,
     analysis_type: Optional[Tuple[str, ...]] = None,
-    rank_threshold: Optional[int] = None,
     variants_threshold: Optional[int] = None,
     rm_ctg: Optional[Tuple[str, ...]] = None,
     keep_ctg: Optional[Tuple[str, ...]] = None,
