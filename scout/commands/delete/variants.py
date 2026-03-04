@@ -4,7 +4,6 @@ from typing import Dict, Iterable, List, Optional, Tuple
 import click
 from flask import current_app, url_for
 from flask.cli import with_appcontext
-from pymongo import DeleteMany
 
 from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
