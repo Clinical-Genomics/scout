@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 from scout.build import build_individual
+from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
 
 logger = logging.getLogger(__name__)
@@ -233,6 +234,8 @@ class CaseModel(BaseModel):
     sv_rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[float] = None
 
+    pipeline_version: Optional[str] = None
+
     phenotype_terms: List[PhenotypeTerm] = Field(default_factory=list)
     phenotype_groups: List[PhenotypeGroup] = Field(default_factory=list)
 
@@ -270,15 +273,25 @@ class CaseFactory:
         if not institute_id:
             raise ConfigError("Case has to have a institute")
 
+        collaborators = set(case_data.get("collaborators", []))
+        collaborators.add(institute_id)
+
         institute_obj = adapter.institute(institute_id)
         if not institute_obj:
             raise IntegrityError(f"Institute {institute_id} not found")
 
-        # ---- Collaborators ----
-        collaborators = set(case_data.get("collaborators", []))
-        collaborators.add(institute_id)
+        def update_institute_cohorts(cohorts: list, institute_obj: dict):
+            """Update institute cohorts if this case has new ones"""
+            institute_cohorts = set(institute_obj.get("cohorts", []))
+            all_cohorts = institute_cohorts.union(set(cohorts))
+            if len(all_cohorts) > len(institute_cohorts):
+                logger.warning("Updating institute object with new cohort terms")
+                adapter.institute_collection.find_one_and_update(
+                    {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
+                )
 
-        # ---- Individuals ----
+        update_institute_cohorts(case_data, institute_obj)
+
         individuals = []
 
         for individual in case_data.get("individuals", []):
@@ -288,26 +301,93 @@ class CaseFactory:
 
         individuals.sort(key=lambda ind: -ind.phenotype)
 
-        # ---- Panels ----
-        panels = []
-        default_panels = set(case_data.get("default_panels", []))
+        panels = get_panels(adapter, case_data)
 
-        for panel_name in case_data.get("gene_panels", []):
-            panel_obj = adapter.gene_panel(panel_name)
-            if not panel_obj:
-                continue
+        def get_panels(adapter, case_data: dict) -> list:
+            panels = []
+            default_panels = set(case_data.get("default_panels", []))
 
-            panels.append(
-                PanelModel(
-                    panel_id=panel_obj["_id"],
-                    panel_name=panel_obj["panel_name"],
-                    display_name=panel_obj["display_name"],
-                    version=panel_obj["version"],
-                    updated_at=panel_obj["date"],
-                    nr_genes=len(panel_obj["genes"]),
-                    is_default=panel_name in default_panels,
+            for panel_name in case_data.get("gene_panels", []):
+                panel_obj = adapter.gene_panel(panel_name)
+                if not panel_obj:
+                    logger.warning(
+                        f"Panel {panel_name} does not exist in database and will not be saved in case document."
+                    )
+                    continue
+
+                panels.append(
+                    PanelModel(
+                        panel_id=panel_obj["_id"],
+                        panel_name=panel_obj["panel_name"],
+                        display_name=panel_obj["display_name"],
+                        version=panel_obj["version"],
+                        updated_at=panel_obj["date"],
+                        nr_genes=len(panel_obj["genes"]),
+                        is_default=panel_name in default_panels,
+                    )
                 )
-            )
+
+        panels = get_panels(adapter, case_data)
+
+        def get_phenotype_terms(adapter, case_data: dict) -> list:
+            """Retrieve phenotype terms from HPO collection"""
+            if case_data.get("phenotype_terms"):
+                phenotypes = []
+                for phenotype in case_data["phenotype_terms"]:
+                    phenotype_obj = adapter.hpo_term(phenotype)
+                    if phenotype_obj is None:
+                        logger.warning(
+                            f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
+                        )
+                        continue
+
+                    phenotypes.append(
+                        {"phenotype_id": phenotype, "feature": phenotype_obj.get("description")}
+                    )
+
+        phenotypes = get_phenotype_terms(adapter, case_data)
+
+        def get_phenotype_groups(
+            adapter,
+            case_data: dict,
+            institute_obj: dict,
+        ) -> List[PhenotypeGroup]:
+            """Get phenotype groups if present in Scout constants or institute terms."""
+            if case_data.get("phenotype_groups"):
+                phenotype_groups = []
+
+                institute_phenotype_groups = set(PHENOTYPE_GROUPS.keys())
+                if institute_obj.get("phenotype_groups"):
+                    institute_phenotype_groups.update(institute_obj.get("phenotype_groups").keys())
+
+                for phenotype in case_data["phenotype_groups"]:
+                    if phenotype not in institute_phenotype_groups:
+                        logger.warning(
+                            f"Could not find phenotype group term '{phenotype}' for institute '{institute_obj.get('_id')}'. It is not added to case."
+                        )
+                        continue
+
+                    phenotype_obj = get_phenotype(phenotype, adapter)
+                    if phenotype_obj:
+                        phenotype_groups.append(phenotype_obj)
+                    else:
+                        logger.warning(
+                            f"Could not find phenotype group term '{phenotype}' in term collection. It is not added to case."
+                        )
+
+                if phenotype_groups:
+                    case_obj["phenotype_groups"] = phenotype_groups
+
+        phenotype_groups = get_phenotype_groups(adapter, case_data)
+
+        def get_phenotype(phenotype_id: str, adapter) -> PhenotypeTerm:
+            """Build a small phenotype term object, based on a subset of phenotype info from the HPO collection."""
+            phenotype_term = {}
+            phenotype = adapter.hpo_term(phenotype_id)
+            if phenotype:
+                phenotype_term["phenotype_id"] = phenotype["hpo_id"]
+                phenotype_term["feature"] = phenotype["description"]
+            return phenotype_term
 
         # ---- Construct case ----
         case = CaseModel(
@@ -320,9 +400,14 @@ class CaseFactory:
             created_at=now,
             updated_at=now,
             analysis_date=case_data.get("analysis_date", now),
+            custom_images=case_data.get("custom_images"),
+            madeline_info=case_data.get("madeline_info"),
             synopsis=case_data.get("synopsis", ""),
             status=case_data.get("status") or "inactive",
             genome_build=case_data.get("genome_build", "37"),
+            phenotype_groups=phenotype_groups,
+            phenotype_terms=phenotypes,
+            pipeline_version=case_data.get("exe_ver"),
             rna_genome_build=case_data.get("rna_genome_build", "38"),
             rank_model_version=case_data.get("rank_model_version"),
             sv_rank_model_version=case_data.get("sv_rank_model_version"),
@@ -335,6 +420,10 @@ class CaseFactory:
             track=case_data.get("track", "rare"),
             group=case_data.get("group", []),
         )
+
+        for report_key in [report.get("key_name") for report in CUSTOM_CASE_REPORTS.values()]:
+            if report_key in case_data:
+                case_obj[report_key] = case_data.get(report_key)
 
         @computed_field
         @property
