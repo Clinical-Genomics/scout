@@ -90,25 +90,6 @@ def _create_delete_variants_event(
         )
 
 
-def is_case_older_than(case: dict, older_than: int | None) -> bool:
-    """Check if a case is older than the amount of months provided by the user."""
-    analysis_date: datetime = case.get("analysis_date")
-    if older_than is None or analysis_date is None:
-        return False
-    threshold_date = datetime.now(tz=analysis_date.tzinfo) - timedelta(days=older_than * 30)
-    return analysis_date < threshold_date
-
-
-def wrong_analysis_type(case: dict, analysis_type: list[str] | None) -> bool:
-    """Match individuals analysis type against types provided by the user."""
-    if not analysis_type:
-        return False
-    case_analysis_types = [ind.get("analysis_type") for ind in case.get("individuals")]
-    if set(case_analysis_types) & set(analysis_type):
-        return False
-    return True
-
-
 def _process_cases(
     cases: List[dict],
     user_obj: Dict,
@@ -129,7 +110,22 @@ def _process_cases(
     - Supports dry-run
     - Creates events and updates variant counts per case
     """
+
+    match_stage = {}
+    if cases:
+        match_stage["_id"] = {"$in": cases}
+    if institute:
+        match_stage["owner"] = institute
+    if status:
+        match_stage["status"] = {"$in": list(status)}
+    if older_than:
+        older_than_date = datetime.now() - timedelta(weeks=older_than * 4)
+        match_stage["analysis_date"] = {"$lt": older_than_date}
+    if analysis_type:
+        match_stage["individuals.analysis_type"] = {"$in": analysis_type}
+
     pipeline = [
+        {"$match": match_stage},
         {
             "$lookup": {
                 "from": "variant",
@@ -164,14 +160,6 @@ def _process_cases(
 
     for doc in store.case_collection.aggregate(pipeline, allowDiskUse=True):
         if cases and doc not in cases:
-            continue
-        if institute and doc["owner"] != institute:
-            continue
-        if status and doc["status"] not in status:
-            continue
-        if is_case_older_than(case=doc, older_than=older_than):
-            continue
-        if wrong_analysis_type(case=doc, analysis_type=analysis_type):
             continue
         if variants_threshold and doc["variant_count"] < variants_threshold:
             return
