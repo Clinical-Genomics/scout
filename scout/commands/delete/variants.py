@@ -9,11 +9,11 @@ from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
+case_counter = 0
 BATCH_SIZE = 100
 LOG = logging.getLogger(__name__)
 DELETE_VARIANTS_HEADER = [
     "Case n.",
-    "Ncases",
     "Institute",
     "Case name",
     "Case ID",
@@ -27,17 +27,21 @@ DELETE_VARIANTS_HEADER = [
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
 
 
-def _log_case(case: dict, total_deleted: int) -> None:
+def _log_case(case: dict, nr_total_variants: int, total_deleted: int) -> None:
     """Log deletion information for a single case."""
-
+    global case_counter
     click.echo(
         "\t".join(
             [
+                str(case_counter),
                 case["owner"],
                 case["display_name"],
                 case["_id"],
+                case.get("track", ""),
                 str(case.get("analysis_date", "")),
                 case.get("status", ""),
+                str(case.get("is_research", "")),
+                str(nr_total_variants),
                 str(total_deleted),
             ]
         )
@@ -98,10 +102,9 @@ def _process_batch(
         cid = case["_id"]
         institute_id = case["owner"]
 
-        if variants_threshold is not None:
-            n_case_variants = store.variant_collection.count_documents({"case_id": cid})
-            if n_case_variants < variants_threshold:
-                continue
+        nr_total_variants = store.variant_collection.count_documents({"case_id": cid})
+        if variants_threshold is not None and nr_total_variants < variants_threshold:
+            continue
 
         case_evaluated, _ = store.evaluated_variants(case_id=cid, institute_id=institute_id)
         evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
@@ -124,6 +127,13 @@ def _process_batch(
         )
 
         total_deleted += remove_n_variants + remove_n_omics_variants
+        global case_counter
+        case_counter += 1
+        _log_case(
+            case=case,
+            nr_total_variants=nr_total_variants,
+            total_deleted=total_deleted,
+        )
 
         if dry_run:
             return total_deleted
@@ -154,7 +164,6 @@ def _process_batch(
 
         # Update case variant count
         store.case_variants_count(cid, institute_id, True)
-        _log_case(case, total_deleted)
 
     return total_deleted
 
