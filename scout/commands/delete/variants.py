@@ -60,6 +60,7 @@ def handle_delete_variants(
 
 def _create_delete_variants_event(
     user_obj: dict,
+    case_id: str,
     institute_id: str,
     display_name: str,
     rank_threshold: int,
