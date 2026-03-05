@@ -95,8 +95,8 @@ def is_case_older_than(case: dict, older_than: int | None) -> bool:
     analysis_date: datetime = case.get("analysis_date")
     if older_than is None or analysis_date is None:
         return False
-    threshold_date = datetime.now() - timedelta(days=older_than * 30)
-    return analysis_date < threshold_date
+        threshold_date = datetime.now(tz=analysis_date.tzinfo) - timedelta(days=older_than * 30)
+        return analysis_date < threshold_date
 
 
 def wrong_analysis_type(case: dict, analysis_type: list[str] | None) -> bool:
@@ -123,52 +123,63 @@ def _process_cases(
 ) -> None:
     """
     Process removing variants from cases, deleting variants using handle_delete_variants.
-    A limitation of the query pipeline used in this function is that only cases with at least one DNA variant will be returned by the query and made available for variantS removal.
 
     - Keeps suspects/causatives/evaluated-not-dismissed variants
     - Supports rank_threshold and variants_threshold
     - Supports dry-run
     - Creates events and updates variant counts per case
     """
-
     pipeline = [
-        {"$group": {"_id": "$case_id", "variant_count": {"$sum": 1}}},
         {
             "$lookup": {
-                "from": "case",
-                "localField": "_id",
-                "foreignField": "_id",
-                "as": "case_info",
+                "from": "variant",
+                "let": {"caseId": "$_id"},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": ["$case_id", "$$caseId"]}}},
+                    {"$count": "count"},
+                ],
+                "as": "variant_count",
             }
         },
-        {"$unwind": "$case_info"},
+        {
+            "$addFields": {
+                "variant_count": {"$ifNull": [{"$arrayElemAt": ["$variant_count.count", 0]}, 0]}
+            }
+        },
         {
             "$project": {
                 "_id": 1,
+                "display_name": 1,
+                "analysis_date": 1,
+                "status": 1,
                 "variant_count": 1,
-                "display_name": "$case_info.display_name",
-                "owner": "$case_info.owner",
-                "analysis_date": "$case_info.analysis_date",
-                "suspects": "$case_info.suspects",
-                "causatives": "$case_info.causatives",
-                "individuals": "$case_info.individuals",
+                "owner": 1,
+                "suspects": 1,
+                "causatives": 1,
+                "individuals": 1,
             }
         },
         {"$sort": {"variant_count": -1}},
     ]
 
-    for doc in store.variant_collection.aggregate(pipeline, allowDiskUse=True):
+    for doc in store.case_collection.aggregate(pipeline, allowDiskUse=True):
         if cases and doc not in cases:
+            LOG.warning("HERE 1")
             continue
         if variants_threshold and doc["variant_count"] < variants_threshold:
+            LOG.warning("HERE 2")
             continue
         if institute and doc["owner"] != institute:
+            LOG.warning("HERE 3")
             continue
-        if status and doc["owner"] != status:
+        if status and doc["status"] not in status:
+            LOG.warning(f"HERE 4{status}")
             continue
         if is_case_older_than(case=doc, older_than=older_than):
+            LOG.warning("HERE 5")
             continue
         if wrong_analysis_type(case=doc, analysis_type=analysis_type):
+            LOG.warning("HERE 6")
             continue
 
         delete_stats["case_counter"] += 1
