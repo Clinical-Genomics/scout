@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
-from flask import current_app
+from flask import current_app, url_for
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
@@ -81,7 +81,7 @@ def _create_delete_variants_event(
 
         store.remove_variants_event(
             institute=institute_obj,
-            case=case,
+            case=store.case(case_id=case_id),
             user=user_obj,
             link=url,
             content=content_str,
@@ -170,6 +170,7 @@ def _process_cases(
 
         _create_delete_variants_event(
             user_obj=user_obj,
+            case_id=doc["_id"],
             institute_id=doc["owner"],
             display_name=doc["display_name"],
             rank_threshold=rank_threshold,
@@ -177,7 +178,7 @@ def _process_cases(
         )
 
         # Update case variant count
-        store.case_variants_count(cid, institute_id, True)
+        store.case_variants_count(doc["_id"], doc["owner"], True)
 
 
 def get_case_ids(case_file: Optional[str], case_id: Optional[List[str]]) -> List[str]:
