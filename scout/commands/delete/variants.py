@@ -164,23 +164,17 @@ def _process_cases(
 
     for doc in store.case_collection.aggregate(pipeline, allowDiskUse=True):
         if cases and doc not in cases:
-            LOG.warning("HERE 1")
-            continue
-        if variants_threshold and doc["variant_count"] < variants_threshold:
-            LOG.warning("HERE 2")
             continue
         if institute and doc["owner"] != institute:
-            LOG.warning("HERE 3")
             continue
         if status and doc["status"] not in status:
-            LOG.warning(f"HERE 4{status}")
             continue
         if is_case_older_than(case=doc, older_than=older_than):
-            LOG.warning("HERE 5")
             continue
         if wrong_analysis_type(case=doc, analysis_type=analysis_type):
-            LOG.warning("HERE 6")
             continue
+        if variants_threshold and doc["variant_count"] < variants_threshold:
+            return
 
         delete_stats["case_counter"] += 1
 
