@@ -118,7 +118,7 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     # Given a case with with (research) outlier variants
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
-        cli, ["load", "variants", "--outlier-research", case_obj["_id"], "--force"]
+        cli, ["load", "variants", "--snv", "--outlier-research", case_obj["_id"], "--force"]
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for _ in store.omics_variant_collection.find())
