@@ -26,6 +26,7 @@ DELETE_VARIANTS_HEADER = [
     "Removed Outlier variants",
 ]
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
+BATCH_SIZE = 100
 
 
 def handle_delete_variants(
@@ -90,6 +91,10 @@ def _create_delete_variants_event(
         )
 
 
+def _process_batch():
+    """"""
+
+
 def _process_cases(
     cases: List[dict],
     user_obj: Dict,
@@ -103,12 +108,7 @@ def _process_cases(
     dry_run: bool,
 ) -> None:
     """
-    Process removing variants from cases, deleting variants using handle_delete_variants.
-
-    - Keeps suspects/causatives/evaluated-not-dismissed variants
-    - Supports rank_threshold and variants_threshold
-    - Supports dry-run
-    - Creates events and updates variant counts per case
+    Process removing variants from cases in batches.
     """
 
     match_stage = {}
@@ -158,7 +158,33 @@ def _process_cases(
         {"$sort": {"variant_count": -1}},
     ]
 
-    for doc in store.case_collection.aggregate(pipeline, allowDiskUse=True):
+    cursor = store.case_collection.aggregate(pipeline, allowDiskUse=True, batchSize=BATCH_SIZE)
+    batch: list = []
+    for doc in cursor:
+        batch.append(doc)
+        if len(batch) >= BATCH_SIZE:
+            _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
+            batch.clear()
+
+    if batch:
+        _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
+
+
+def _process_batch(
+    batch: list,
+    user_obj: dict,
+    rank_threshold: int | None,
+    variants_threshold: int | None,
+    keep_ctg: Iterable[str],
+    dry_run: bool,
+):
+    """
+    Process a batch of cases:
+    - Deletes variants (honoring suspects/causatives/evaluated-not-dismissed)
+    - Updates counters in delete_stats
+    - Creates events and updates case variant counts"
+    """
+    for doc in batch:
         if variants_threshold and doc["variant_count"] < variants_threshold:
             return
         delete_stats["case_counter"] += 1
