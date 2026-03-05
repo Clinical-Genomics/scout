@@ -109,8 +109,8 @@ def _process_cases(
 ) -> None:
     """
     Process removing variants from cases in batches.
+    Uses pre-aggregated variant counts for speed.
     """
-
     match_stage = {}
     if cases:
         match_stage["_id"] = {"$in": cases}
@@ -124,48 +124,37 @@ def _process_cases(
     if analysis_type:
         match_stage["individuals.analysis_type"] = {"$in": analysis_type}
 
-    pipeline = [
-        {"$match": match_stage},
-        {
-            "$lookup": {
-                "from": "variant",
-                "let": {"caseId": "$_id"},
-                "pipeline": [
-                    {"$match": {"$expr": {"$eq": ["$case_id", "$$caseId"]}}},
-                    {"$count": "count"},
-                ],
-                "as": "variant_count",
-            }
+    variant_counts = {
+        doc["_id"]: doc["variant_count"]
+        for doc in store.variant_collection.aggregate(
+            [{"$group": {"_id": "$case_id", "variant_count": {"$sum": 1}}}]
+        )
+    }
+    cursor = store.case_collection.find(
+        match_stage,
+        projection={
+            "_id": 1,
+            "display_name": 1,
+            "analysis_date": 1,
+            "status": 1,
+            "owner": 1,
+            "suspects": 1,
+            "causatives": 1,
+            "individuals": 1,
         },
-        {
-            "$addFields": {
-                "variant_count": {"$ifNull": [{"$arrayElemAt": ["$variant_count.count", 0]}, 0]}
-            }
-        },
-        {
-            "$project": {
-                "_id": 1,
-                "display_name": 1,
-                "analysis_date": 1,
-                "status": 1,
-                "variant_count": 1,
-                "owner": 1,
-                "suspects": 1,
-                "causatives": 1,
-                "individuals": 1,
-            }
-        },
-        {"$sort": {"variant_count": -1}},
-    ]
+        batch_size=BATCH_SIZE,
+    )
 
-    cursor = store.case_collection.aggregate(pipeline, allowDiskUse=True, batchSize=BATCH_SIZE)
-    batch: list = []
+    batch = []
     for doc in cursor:
+        doc["variant_count"] = variant_counts.get(doc["_id"], 0)
+
         batch.append(doc)
         if len(batch) >= BATCH_SIZE:
             _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
             batch.clear()
 
+    # Process any remaining cases
     if batch:
         _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
 
