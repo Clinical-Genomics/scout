@@ -144,10 +144,8 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj):
     # THEN the variants should be gone
     n_current_vars = sum(1 for _ in store.omics_variant_collection.find())
     # assert n_current_vars == 0
-    """
     assert n_current_vars + n_variants_to_delete == n_initial_vars
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
     assert "Rank-score threshold:0" in event["content"]
-    """
