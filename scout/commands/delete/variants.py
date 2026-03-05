@@ -159,11 +159,8 @@ def _process_cases(
     ]
 
     for doc in store.case_collection.aggregate(pipeline, allowDiskUse=True):
-        if cases and doc not in cases:
-            continue
         if variants_threshold and doc["variant_count"] < variants_threshold:
             return
-
         delete_stats["case_counter"] += 1
 
         case_evaluated, _ = store.evaluated_variants(case_id=doc["_id"], institute_id=doc["owner"])
