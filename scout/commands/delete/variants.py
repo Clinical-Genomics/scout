@@ -2,15 +2,13 @@ import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
-from flask import current_app, url_for
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
-case_counter = 0
-BATCH_SIZE = 100
+{"case_counter": 0, "deleted_variant_counter": 0, "deleted_outlier_counter": 0}
 LOG = logging.getLogger(__name__)
 DELETE_VARIANTS_HEADER = [
     "Case n.",
@@ -21,31 +19,11 @@ DELETE_VARIANTS_HEADER = [
     "Analysis date",
     "Status",
     "Research",
-    "Total variants",
-    "Removed variants",
+    "DNA variants",
+    "Removed DNA variants",
+    "Removed Outlier variants",
 ]
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
-
-
-def _log_case(case: dict, nr_total_variants: int, total_deleted: int) -> None:
-    """Log deletion information for a single case."""
-    global case_counter
-    click.echo(
-        "\t".join(
-            [
-                str(case_counter),
-                case["owner"],
-                case["display_name"],
-                case["_id"],
-                case.get("track", ""),
-                str(case.get("analysis_date", "")),
-                case.get("status", ""),
-                str(case.get("is_research", "")),
-                str(nr_total_variants),
-                str(total_deleted),
-            ]
-        )
-    )
 
 
 def handle_delete_variants(
@@ -79,16 +57,16 @@ def handle_delete_variants(
     return remove_n_variants, remove_n_omics_variants
 
 
-def _process_batch(
+def _process_cases(
     cases: List[dict],
     user_obj: Dict,
     rank_threshold: int | None,
     variants_threshold: int | None,
     keep_ctg: Iterable[str],
     dry_run: bool,
-) -> int:
+) -> None:
     """
-    Process a batch of cases, deleting variants using handle_delete_variants.
+    Process removing variants from cases, deleting variants using handle_delete_variants.
 
     - Keeps suspects/causatives/evaluated-not-dismissed variants
     - Supports rank_threshold and variants_threshold
@@ -96,6 +74,62 @@ def _process_batch(
     - Creates events and updates variant counts per case
     """
 
+    pipeline = [
+        {"$group": {"_id": "$case_id", "variant_count": {"$sum": 1}}},
+        {
+            "$lookup": {
+                "from": "case",
+                "localField": "_id",
+                "foreignField": "_id",
+                "as": "case_info",
+            }
+        },
+        {"$unwind": "$case_info"},
+        {
+            "$project": {
+                "_id": 1,
+                "variant_count": 1,
+                "display_name": "$case_info.display_name",
+                "owner": "$case_info.owner",
+                "analysis_date": "$case_info.analysis_date",
+                "suspects": "$case_info.suspects",
+                "causatives": "$case_info.causatives",
+            }
+        },
+        {"$sort": {"variant_count": -1}},
+    ]
+
+    for doc in store.variant_collection.aggregate(pipeline, allowDiskUse=True):
+        if cases and doc not in cases:
+            continue
+        if variants_threshold and doc["variant_count"] < variants_threshold:
+            continue
+
+        case_evaluated, _ = store.evaluated_variants(case_id=doc["_id"], institute_id=doc["owner"])
+        evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
+        variants_to_keep = (
+            doc.get("suspects", []) + doc.get("causatives", []) + evaluated_not_dismissed
+        )
+
+        variants_query: dict = store.delete_variants_query(
+            case_id=doc["_id"],
+            variants_to_keep=variants_to_keep,
+            min_rank_threshold=rank_threshold,
+            keep_ctg=keep_ctg,
+        )
+
+        removed_variants, removed_omics_variants = handle_delete_variants(
+            store=store,
+            keep_ctg=list(keep_ctg),
+            dry_run=dry_run,
+            variants_query=variants_query,
+        )
+
+        click.echo(
+            f"{doc['_id']}\t{doc['owner']}\t{doc['display_name']}\t{doc.get('analysis_date')}\t{doc['variant_count']}\t{removed_variants}\t{removed_omics_variants}"
+        )
+
+    """
     total_deleted = 0
 
     for case in cases:
@@ -166,6 +200,7 @@ def _process_batch(
         store.case_variants_count(cid, institute_id, True)
 
     return total_deleted
+    """
 
 
 def get_case_ids(case_file: Optional[str], case_id: Optional[List[str]]) -> List[str]:
@@ -274,6 +309,18 @@ def variants(
         )
         items_name = "deleted variants"
 
+    keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
+    click.echo("\t".join(DELETE_VARIANTS_HEADER))
+    _process_cases(
+        cases=case_ids,
+        user_obj=user_obj,
+        rank_threshold=rank_threshold,
+        variants_threshold=variants_threshold,
+        keep_ctg=keep_ctg,
+        dry_run=dry_run,
+    )
+
+    """
     case_query = store.build_case_query(
         case_ids=case_ids,
         institute_id=institute,
@@ -282,7 +329,7 @@ def variants(
         analysis_type=analysis_type,
     )
 
-    keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
+
 
     # Stream minimal case info
     cases_cursor = store.case_collection.find(
@@ -302,7 +349,6 @@ def variants(
     total_deleted = 0
     batch = []
 
-    click.echo("\t".join(DELETE_VARIANTS_HEADER))
 
     for case in cases_cursor:
         batch.append(case)
@@ -328,4 +374,6 @@ def variants(
             dry_run,
         )
 
+
     click.echo(f"Total {items_name}: {total_deleted}")
+"""
