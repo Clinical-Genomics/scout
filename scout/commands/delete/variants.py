@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
@@ -89,16 +90,40 @@ def _create_delete_variants_event(
         )
 
 
+def is_case_older_than(case: dict, older_than: int | None) -> bool:
+    """Check if a case is older than the amount of months provided by the user."""
+    analysis_date: datetime = case.get("analysis_date")
+    if older_than is None or analysis_date is None:
+        return False
+    threshold_date = datetime.now() - timedelta(days=older_than * 30)
+    return analysis_date < threshold_date
+
+
+def wrong_analysis_type(case: dict, analysis_type: list[str] | None) -> bool:
+    """Match individuals analysis type against types provided by the user."""
+    if not analysis_type:
+        return False
+    case_analysis_types = [ind.get("analysis_type") for ind in case.get("individuals")]
+    if set(case_analysis_types) & set(analysis_type):
+        return False
+    return True
+
+
 def _process_cases(
     cases: List[dict],
     user_obj: Dict,
     rank_threshold: int | None,
     variants_threshold: int | None,
+    institute: str | None,
+    status: str | None,
+    older_than: int | None,
+    analysis_type: list | None,
     keep_ctg: Iterable[str],
     dry_run: bool,
 ) -> None:
     """
     Process removing variants from cases, deleting variants using handle_delete_variants.
+    A limitation of the query pipeline used in this function is that only cases with at least one DNA variant will be returned by the query and made available for variantS removal.
 
     - Keeps suspects/causatives/evaluated-not-dismissed variants
     - Supports rank_threshold and variants_threshold
@@ -126,6 +151,7 @@ def _process_cases(
                 "analysis_date": "$case_info.analysis_date",
                 "suspects": "$case_info.suspects",
                 "causatives": "$case_info.causatives",
+                "individuals": "$case_info.individuals",
             }
         },
         {"$sort": {"variant_count": -1}},
@@ -135,6 +161,14 @@ def _process_cases(
         if cases and doc not in cases:
             continue
         if variants_threshold and doc["variant_count"] < variants_threshold:
+            continue
+        if institute and doc["owner"] != institute:
+            continue
+        if status and doc["owner"] != status:
+            continue
+        if is_case_older_than(case=doc, older_than=older_than):
+            continue
+        if wrong_analysis_type(case=doc, analysis_type=analysis_type):
             continue
 
         delete_stats["case_counter"] += 1
@@ -226,7 +260,7 @@ def _set_keep_ctg(
     default=[],
     help="Restrict to cases with specified status",
 )
-@click.option("--older-than", type=click.INT, default=0, help="Older than (months)")
+@click.option("--older-than", type=click.INT, help="Older than (months)")
 @click.option(
     "--analysis-type",
     type=click.Choice(ANALYSIS_TYPES),
@@ -295,6 +329,10 @@ def variants(
         user_obj=user_obj,
         rank_threshold=rank_threshold,
         variants_threshold=variants_threshold,
+        institute=institute,
+        status=status,
+        older_than=older_than,
+        analysis_type=analysis_type,
         keep_ctg=keep_ctg,
         dry_run=dry_run,
     )
