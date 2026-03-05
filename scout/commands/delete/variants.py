@@ -27,20 +27,18 @@ DELETE_VARIANTS_HEADER = [
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
 
 
-def _log_case(cases: List[Dict], cid: str, deleted_n: int) -> None:
+def _log_case(case: dict, total_deleted: int) -> None:
     """Log deletion information for a single case."""
-
-    case = next(c for c in cases if c["_id"] == cid)
 
     click.echo(
         "\t".join(
             [
                 case["owner"],
                 case["display_name"],
-                str(cid),
+                case["_id"],
                 str(case.get("analysis_date", "")),
-                str(case.get("status", "")),
-                str(deleted_n),
+                case.get("status", ""),
+                str(total_deleted),
             ]
         )
     )
@@ -100,13 +98,11 @@ def _process_batch(
         cid = case["_id"]
         institute_id = case["owner"]
 
-        # Skip case if below variants_threshold
         if variants_threshold is not None:
             n_case_variants = store.variant_collection.count_documents({"case_id": cid})
             if n_case_variants < variants_threshold:
                 continue
 
-        # Protect variants to keep
         case_evaluated, _ = store.evaluated_variants(case_id=cid, institute_id=institute_id)
         evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
         variants_to_keep = (
@@ -120,7 +116,6 @@ def _process_batch(
             keep_ctg=keep_ctg,
         )
 
-        # Call original handle_delete_variants function
         remove_n_variants, remove_n_omics_variants = handle_delete_variants(
             store=store,
             keep_ctg=list(keep_ctg),
@@ -159,6 +154,7 @@ def _process_batch(
 
         # Update case variant count
         store.case_variants_count(cid, institute_id, True)
+        _log_case(case, total_deleted)
 
     return total_deleted
 
