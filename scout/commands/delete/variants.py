@@ -2,13 +2,14 @@ import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
-{"case_counter": 0, "deleted_variant_counter": 0, "deleted_outlier_counter": 0}
+delete_stats = {"case_counter": 0, "deleted_variant_counter": 0, "deleted_outlier_counter": 0}
 LOG = logging.getLogger(__name__)
 DELETE_VARIANTS_HEADER = [
     "Case n.",
@@ -55,6 +56,36 @@ def handle_delete_variants(
         )
 
     return remove_n_variants, remove_n_omics_variants
+
+
+def _create_delete_variants_event(
+    user_obj: dict,
+    institute_id: str,
+    display_name: str,
+    rank_threshold: int,
+    variants_threshold: Optional[int],
+) -> None:
+    institute_obj = store.institute(institute_id)
+    with current_app.test_request_context("/cases"):
+        url = url_for(
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=display_name,
+        )
+
+        threshold_parts: List[str] = []
+        threshold_parts.append(f"Rank-score threshold:{rank_threshold}")
+        if variants_threshold is not None:
+            threshold_parts.append(f"case n. variants threshold:{variants_threshold}")
+        content_str = ", ".join(threshold_parts)
+
+        store.remove_variants_event(
+            institute=institute_obj,
+            case=case,
+            user=user_obj,
+            link=url,
+            content=content_str,
+        )
 
 
 def _process_cases(
@@ -105,6 +136,8 @@ def _process_cases(
         if variants_threshold and doc["variant_count"] < variants_threshold:
             continue
 
+        delete_stats["case_counter"] += 1
+
         case_evaluated, _ = store.evaluated_variants(case_id=doc["_id"], institute_id=doc["owner"])
         evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
         variants_to_keep = (
@@ -125,82 +158,26 @@ def _process_cases(
             variants_query=variants_query,
         )
 
+        delete_stats["deleted_variant_counter"] += removed_variants
+        delete_stats["deleted_outlier_counter"] += removed_omics_variants
+
         click.echo(
-            f"{doc['_id']}\t{doc['owner']}\t{doc['display_name']}\t{doc.get('analysis_date')}\t{doc['variant_count']}\t{removed_variants}\t{removed_omics_variants}"
-        )
-
-    """
-    total_deleted = 0
-
-    for case in cases:
-        cid = case["_id"]
-        institute_id = case["owner"]
-
-        nr_total_variants = store.variant_collection.count_documents({"case_id": cid})
-        if variants_threshold is not None and nr_total_variants < variants_threshold:
-            continue
-
-        case_evaluated, _ = store.evaluated_variants(case_id=cid, institute_id=institute_id)
-        evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
-        variants_to_keep = (
-            case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed
-        )
-
-        variants_query: dict = store.delete_variants_query(
-            case_id=cid,
-            variants_to_keep=variants_to_keep,
-            min_rank_threshold=rank_threshold,
-            keep_ctg=keep_ctg,
-        )
-
-        remove_n_variants, remove_n_omics_variants = handle_delete_variants(
-            store=store,
-            keep_ctg=list(keep_ctg),
-            dry_run=dry_run,
-            variants_query=variants_query,
-        )
-
-        total_deleted += remove_n_variants + remove_n_omics_variants
-        global case_counter
-        case_counter += 1
-        _log_case(
-            case=case,
-            nr_total_variants=nr_total_variants,
-            total_deleted=total_deleted,
+            f"{delete_stats['case_counter']}\t{doc['_id']}\t{doc['owner']}\t{doc['display_name']}\t{doc.get('analysis_date')}\t{doc['variant_count']}\t{removed_variants}\t{removed_omics_variants}"
         )
 
         if dry_run:
-            return total_deleted
+            return
 
-        # Post-delete: create event
-        institute_obj = store.institute(institute_id)
-        with current_app.test_request_context("/cases"):
-            url = url_for(
-                "cases.case",
-                institute_id=institute_obj["_id"],
-                case_name=case["display_name"],
-            )
-
-            threshold_parts: List[str] = []
-            if rank_threshold is not None:
-                threshold_parts.append(f"Rank-score threshold:{rank_threshold}")
-            if variants_threshold is not None:
-                threshold_parts.append(f"case n. variants threshold:{variants_threshold}")
-            content_str = ", ".join(threshold_parts)
-
-            store.remove_variants_event(
-                institute=institute_obj,
-                case=case,
-                user=user_obj,
-                link=url,
-                content=content_str,
-            )
+        _create_delete_variants_event(
+            user_obj=user_obj,
+            institute_id=doc["owner"],
+            display_name=doc["display_name"],
+            rank_threshold=rank_threshold,
+            variants_threshold=variants_threshold,
+        )
 
         # Update case variant count
         store.case_variants_count(cid, institute_id, True)
-
-    return total_deleted
-    """
 
 
 def get_case_ids(case_file: Optional[str], case_id: Optional[List[str]]) -> List[str]:
@@ -319,61 +296,6 @@ def variants(
         keep_ctg=keep_ctg,
         dry_run=dry_run,
     )
-
-    """
-    case_query = store.build_case_query(
-        case_ids=case_ids,
-        institute_id=institute,
-        status=status,
-        older_than=older_than,
-        analysis_type=analysis_type,
+    click.echo(
+        f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}"
     )
-
-
-
-    # Stream minimal case info
-    cases_cursor = store.case_collection.find(
-        case_query,
-        projection={
-            "_id": 1,
-            "owner": 1,
-            "display_name": 1,
-            "analysis_date": 1,
-            "status": 1,
-            "is_research": 1,
-            "track": 1,
-        },
-        batch_size=50,
-    )
-
-    total_deleted = 0
-    batch = []
-
-
-    for case in cases_cursor:
-        batch.append(case)
-
-        if len(batch) >= BATCH_SIZE:
-            total_deleted += _process_batch(
-                batch,
-                user_obj,
-                rank_threshold,
-                variants_threshold,
-                keep_ctg,
-                dry_run,
-            )
-            batch.clear()
-
-    if batch:
-        total_deleted += _process_batch(
-            batch,
-            user_obj,
-            rank_threshold,
-            variants_threshold,
-            keep_ctg,
-            dry_run,
-        )
-
-
-    click.echo(f"Total {items_name}: {total_deleted}")
-"""
