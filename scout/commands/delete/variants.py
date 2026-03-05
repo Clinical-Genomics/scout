@@ -95,8 +95,8 @@ def is_case_older_than(case: dict, older_than: int | None) -> bool:
     analysis_date: datetime = case.get("analysis_date")
     if older_than is None or analysis_date is None:
         return False
-        threshold_date = datetime.now(tz=analysis_date.tzinfo) - timedelta(days=older_than * 30)
-        return analysis_date < threshold_date
+    threshold_date = datetime.now(tz=analysis_date.tzinfo) - timedelta(days=older_than * 30)
+    return analysis_date < threshold_date
 
 
 def wrong_analysis_type(case: dict, analysis_type: list[str] | None) -> bool:
