@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 from scout.commands import cli
-from scout.commands.delete.delete_command import CASE_RNA_KEYS
+from scout.commands.delete.rna import CASE_RNA_KEYS
 from scout.server.extensions import store
 
 
