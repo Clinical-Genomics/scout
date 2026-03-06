@@ -4,29 +4,6 @@ from scout.commands.delete.delete_command import CASE_RNA_KEYS
 from scout.server.extensions import store
 
 
-def test_delete_index(empty_mock_app):
-    "Test the CLI command that will drop indexes"
-    mock_app = empty_mock_app
-
-    runner = mock_app.test_cli_runner()
-    assert runner
-    ## GIVEN an adapter with indexes
-    store.load_indexes()
-    indexes = list(store.case_collection.list_indexes())
-    assert len(indexes) > 1
-
-    ## WHEN removing all indexes using the CLI
-    result = runner.invoke(cli, ["delete", "index"])
-
-    ## THEN assert that the function should not exit with error
-    assert result.exit_code == 0
-    assert "All indexes deleted" in result.output
-
-    ## THEN assert all indexes should be gone
-    indexes = list(store.case_collection.list_indexes())
-    assert len(indexes) == 1  # _id index is the only index left
-
-
 def test_delete_nonexisting_user(empty_mock_app, user_obj):
     "Test the CLI command that will delete a user"
     mock_app = empty_mock_app

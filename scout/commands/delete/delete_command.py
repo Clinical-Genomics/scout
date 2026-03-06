@@ -5,6 +5,7 @@ from flask import current_app, url_for
 from flask.cli import with_appcontext
 
 from scout.commands.delete.case import case as case_cmd
+from scout.commands.delete.index import index as index_cmd
 from scout.commands.delete.panel import panel as panel_cmd
 from scout.commands.delete.variants import variants as variants_cmd
 from scout.server.extensions import store
@@ -31,18 +32,6 @@ INDIVIDUAL_RNA_KEYS = [
     "rna_coverage_bigwig",
     "splice_junctions_bed",
 ]
-
-
-@click.command("index", short_help="Delete all indexes")
-@with_appcontext
-def index():
-    """Delete all indexes in the database"""
-    LOG.info("Running scout delete index")
-    adapter = store
-
-    for collection in adapter.db.list_collection_names():
-        adapter.db[collection].drop_indexes()
-    LOG.info("All indexes deleted")
 
 
 @click.command("user", short_help="Delete a user")
@@ -196,7 +185,7 @@ delete.add_command(panel_cmd)
 delete.add_command(genes)
 delete.add_command(case_cmd)
 delete.add_command(user)
-delete.add_command(index)
+delete.add_command(index_cmd)
 delete.add_command(exons)
 delete.add_command(rna)
 delete.add_command(variants_cmd)
