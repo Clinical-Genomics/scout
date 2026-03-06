@@ -164,12 +164,20 @@ def _process_single_case(
     - Updates counters in delete_stats
     - Creates events and updates case variant counts"
     """
+    LOG.warning(f"Case {case['display_name']}")
+    variant_count = store.variant_collection.count_documents(
+        {"case_id": case["_id"]}
+    ) + store.omics_variant_collection.count_documents({"case_id": case["_id"]})
 
-    variant_count = store.variant_collection.count_documents({"case_id": case["_id"]})
+    LOG.warning("variant_count")
+
     if variants_threshold and variant_count < variants_threshold:
         return
     delete_stats["case_counter"] += 1
-    case_evaluated, _ = store.evaluated_variants(case_id=case["_id"], institute_id=case["owner"])
+    case_evaluated, _ = store.evaluated_variants(
+        case_id=case["_id"], institute_id=case["owner"], limit_dismissed=5
+    )
+    LOG.warning("Evaluated variants")
     evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
     variants_to_keep = (
         case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed
@@ -187,6 +195,7 @@ def _process_single_case(
         dry_run=dry_run,
         variants_query=variants_query,
     )
+    LOG.warning("Delete vars")
     delete_stats["deleted_variant_counter"] += removed_variants
     delete_stats["deleted_outlier_counter"] += removed_omics_variants
 
