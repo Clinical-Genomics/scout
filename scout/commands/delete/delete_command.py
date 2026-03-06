@@ -6,6 +6,8 @@ from flask import current_app, url_for
 from flask.cli import with_appcontext
 
 from scout.adapter.mongo import MongoAdapter
+from scout.commands.delete.case import case as case_cmd
+from scout.commands.delete.panel import panel as panel_cmd
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
@@ -266,24 +268,6 @@ def variants(
     )
 
 
-@click.command("panel", short_help="Delete a gene panel")
-@click.option("--panel-id", help="The panel identifier name", required=True)
-@click.option("-v", "--version", type=float)
-@with_appcontext
-def panel(panel_id, version):
-    """Delete a version of a gene panel or all versions of a gene panel"""
-    LOG.info("Running scout delete panel")
-    adapter = store
-
-    res = adapter.gene_panels(panel_id=panel_id, version=version)
-    panel_objs = [panel_obj for panel_obj in res]
-    if len(panel_objs) == 0:
-        LOG.info("No panels found")
-
-    for panel_obj in panel_objs:
-        adapter.delete_panel(panel_obj)
-
-
 @click.command("index", short_help="Delete all indexes")
 @with_appcontext
 def index():
@@ -374,44 +358,6 @@ def exons(build):
     adapter.drop_exons(build)
 
 
-@click.command("case", short_help="Delete a case")
-@click.option("-i", "--institute", help="institute id of related cases")
-@click.option("-c", "--case-id")
-@click.option("-d", "--display-name")
-@with_appcontext
-def case(institute, case_id, display_name):
-    """Delete a case and it's variants from the database"""
-    adapter = store
-    case_obj = None
-
-    if not (case_id or display_name):
-        click.echo("Please specify what case to delete")
-        raise click.Abort()
-
-    if display_name:
-        if not institute:
-            click.echo(
-                "Please specify the owner of the case that should be "
-                "deleted with flag '-i/--institute'."
-            )
-            raise click.Abort()
-        case_obj = adapter.case(display_name=display_name, institute_id=institute)
-    else:
-        case_obj = adapter.case(case_id=case_id)
-
-    if not case_obj:
-        click.echo("Couldn't find any case in database matching the provided parameters.")
-        raise click.Abort()
-
-    LOG.info("Running deleting case {0}".format(case_id))
-    case = adapter.delete_case(case_id=case_obj["_id"])
-
-    adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
-    adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
-    adapter.delete_omics_variants_by_category(case_id=case_obj["_id"], variant_type="clinical")
-    adapter.delete_omics_variants_by_category(case_id=case_obj["_id"], variant_type="research")
-
-
 @click.command("rna", short_help="Remove all RNA data from a case")
 @click.option("-c", "--case-id", required=True)
 @click.option("--yes", "-y", is_flag=True, help="Automatically confirm and do not prompt.")
@@ -481,9 +427,9 @@ def delete():
     """
 
 
-delete.add_command(panel)
+delete.add_command(panel_cmd)
 delete.add_command(genes)
-delete.add_command(case)
+delete.add_command(case_cmd)
 delete.add_command(user)
 delete.add_command(index)
 delete.add_command(exons)
