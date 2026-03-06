@@ -91,10 +91,6 @@ def _create_delete_variants_event(
         )
 
 
-def _process_batch():
-    """"""
-
-
 def _process_cases(
     cases: List[dict],
     user_obj: Dict,
@@ -108,59 +104,50 @@ def _process_cases(
     dry_run: bool,
 ) -> None:
     """
-    Process removing variants from cases in batches.
-    Uses pre-aggregated variant counts for speed.
+    First fetches all cases according to user's filters (relatively light query).
+    Then processes them one by one by calling _process_single_case.
     """
-    match_stage = {}
+    match = {}
     if cases:
-        match_stage["_id"] = {"$in": cases}
+        match["_id"] = {"$in": cases}
     if institute:
-        match_stage["owner"] = institute
+        match["owner"] = institute
     if status:
-        match_stage["status"] = {"$in": list(status)}
+        match["status"] = {"$in": list(status)}
     if older_than:
         older_than_date = datetime.now() - timedelta(weeks=older_than * 4)
-        match_stage["analysis_date"] = {"$lt": older_than_date}
+        match["analysis_date"] = {"$lt": older_than_date}
     if analysis_type:
-        match_stage["individuals.analysis_type"] = {"$in": analysis_type}
+        match["individuals.analysis_type"] = {"$in": analysis_type}
 
-    variant_counts = {
-        doc["_id"]: doc["variant_count"]
-        for doc in store.variant_collection.aggregate(
-            [{"$group": {"_id": "$case_id", "variant_count": {"$sum": 1}}}]
-        )
+    projection = {
+        "_id": 1,
+        "display_name": 1,
+        "suspects": 1,
+        "causatives": 1,
+        "status": 1,
+        "owner": 1,
+        "analysis_date": 1,
+        "individuals": 1,
     }
-    cursor = store.case_collection.find(
-        match_stage,
-        projection={
-            "_id": 1,
-            "display_name": 1,
-            "analysis_date": 1,
-            "status": 1,
-            "owner": 1,
-            "suspects": 1,
-            "causatives": 1,
-            "individuals": 1,
-        },
-        batch_size=BATCH_SIZE,
-    )
 
-    batch = []
-    for doc in cursor:
-        doc["variant_count"] = variant_counts.get(doc["_id"], 0)
+    cases_cursor = store.case_collection.find(match, projection)
+    total_cases = store.case_collection.count_documents(match)
 
-        batch.append(doc)
-        if len(batch) >= BATCH_SIZE:
-            _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
-            batch.clear()
-
-    # Process any remaining cases
-    if batch:
-        _process_batch(batch, user_obj, rank_threshold, variants_threshold, keep_ctg, dry_run)
+    with click.progressbar(cases_cursor, length=total_cases, label="Processing cases") as cases_bar:
+        for case in cases_bar:
+            _process_single_case(
+                case=case,
+                user_obj=user_obj,
+                rank_threshold=rank_threshold,
+                variants_threshold=variants_threshold,
+                keep_ctg=keep_ctg,
+                dry_run=dry_run,
+            )
 
 
-def _process_batch(
-    batch: list,
+def _process_single_case(
+    case: dict,
     user_obj: dict,
     rank_threshold: int | None,
     variants_threshold: int | None,
@@ -168,57 +155,52 @@ def _process_batch(
     dry_run: bool,
 ):
     """
-    Process a batch of cases:
+    Process a single case
     - Deletes variants (honoring suspects/causatives/evaluated-not-dismissed)
     - Updates counters in delete_stats
     - Creates events and updates case variant counts"
     """
-    for doc in batch:
-        if variants_threshold and doc["variant_count"] < variants_threshold:
-            return
-        delete_stats["case_counter"] += 1
 
-        case_evaluated, _ = store.evaluated_variants(case_id=doc["_id"], institute_id=doc["owner"])
-        evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
-        variants_to_keep = (
-            doc.get("suspects", []) + doc.get("causatives", []) + evaluated_not_dismissed
-        )
+    variant_count = store.variant_collection.count_documents({"case_id": case["_id"]})
+    if variants_threshold and variant_count < variants_threshold:
+        return
+    delete_stats["case_counter"] += 1
+    case_evaluated, _ = store.evaluated_variants(case_id=case["_id"], institute_id=case["owner"])
+    evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
+    variants_to_keep = (
+        case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed
+    )
 
-        variants_query: dict = store.delete_variants_query(
-            case_id=doc["_id"],
-            variants_to_keep=variants_to_keep,
-            min_rank_threshold=rank_threshold,
-            keep_ctg=keep_ctg,
-        )
+    variants_query: dict = store.delete_variants_query(
+        case_id=case["_id"],
+        variants_to_keep=variants_to_keep,
+        min_rank_threshold=rank_threshold,
+        keep_ctg=keep_ctg,
+    )
+    removed_variants, removed_omics_variants = handle_delete_variants(
+        store=store,
+        keep_ctg=list(keep_ctg),
+        dry_run=dry_run,
+        variants_query=variants_query,
+    )
+    delete_stats["deleted_variant_counter"] += removed_variants
+    delete_stats["deleted_outlier_counter"] += removed_omics_variants
+    click.echo(
+        f"{delete_stats['case_counter']}\t{case['_id']}\t{case['owner']}\t{case['display_name']}\t{case.get('analysis_date')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}"
+    )
+    if dry_run:
+        return
+    _create_delete_variants_event(
+        user_obj=user_obj,
+        case_id=case["_id"],
+        institute_id=case["owner"],
+        display_name=case["display_name"],
+        rank_threshold=rank_threshold,
+        variants_threshold=variants_threshold,
+    )
 
-        removed_variants, removed_omics_variants = handle_delete_variants(
-            store=store,
-            keep_ctg=list(keep_ctg),
-            dry_run=dry_run,
-            variants_query=variants_query,
-        )
-
-        delete_stats["deleted_variant_counter"] += removed_variants
-        delete_stats["deleted_outlier_counter"] += removed_omics_variants
-
-        click.echo(
-            f"{delete_stats['case_counter']}\t{doc['_id']}\t{doc['owner']}\t{doc['display_name']}\t{doc.get('analysis_date')}\t{doc['variant_count']}\t{removed_variants}\t{removed_omics_variants}"
-        )
-
-        if dry_run:
-            return
-
-        _create_delete_variants_event(
-            user_obj=user_obj,
-            case_id=doc["_id"],
-            institute_id=doc["owner"],
-            display_name=doc["display_name"],
-            rank_threshold=rank_threshold,
-            variants_threshold=variants_threshold,
-        )
-
-        # Update case variant count
-        store.case_variants_count(doc["_id"], doc["owner"], True)
+    # Update case variant count
+    store.case_variants_count(case["_id"], case["owner"], True)
 
 
 def get_case_ids(case_file: Optional[str], case_id: Optional[List[str]]) -> List[str]:
