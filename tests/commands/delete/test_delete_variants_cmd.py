@@ -51,9 +51,9 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj, tmp_path):
 
     # THEN outfile should be populated
     file_content = out_file.read_text()
-    # with the expected data
-    assert "\t".join(DELETE_VARIANTS_HEADER) in file_content
-    assert "estimated deleted variants" in file_content
+    lines = [line for line in file_content.splitlines() if line.strip()]
+    assert len(lines) > 1
+    assert lines[0] == "\t".join(DELETE_VARIANTS_HEADER)
 
     # And no variants should be deleted
     assert sum(1 for _ in store.variant_collection.find()) == n_initial_vars
@@ -112,9 +112,9 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
 
     # THEN outfile should be populated
     file_content = out_file.read_text()
-    # with the expected data
-    assert "\t".join(DELETE_VARIANTS_HEADER) in file_content
-    assert "estimated deleted variants" not in file_content
+    lines = [line for line in file_content.splitlines() if line.strip()]
+    assert len(lines) > 1
+    assert lines[0] == "\t".join(DELETE_VARIANTS_HEADER)
 
     # variants should be deleted
     n_current_vars = sum(1 for _ in store.variant_collection.find())
@@ -169,9 +169,9 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj, tmp_path):
 
     # THEN outfile should be populated
     file_content = out_file.read_text()
-    # with the expected data
-    assert "\t".join(DELETE_VARIANTS_HEADER) in file_content
-    assert "estimated deleted variants" not in file_content
+    lines = [line for line in file_content.splitlines() if line.strip()]
+    assert len(lines) > 1
+    assert lines[0] == "\t".join(DELETE_VARIANTS_HEADER)
 
     # THEN the variants should be gone
     n_current_vars = sum(1 for _ in store.omics_variant_collection.find())

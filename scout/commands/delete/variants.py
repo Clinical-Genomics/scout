@@ -342,5 +342,4 @@ def variants(
         )
         click.echo(
             f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}",
-            file=out_file,
         )
