@@ -190,20 +190,6 @@ def _process_single_case(
     delete_stats["deleted_variant_counter"] += removed_variants
     delete_stats["deleted_outlier_counter"] += removed_omics_variants
 
-    DELETE_VARIANTS_HEADER = [
-        "Case n.",
-        "Institute",
-        "Case name",
-        "Case ID",
-        "Case track",
-        "Analysis date",
-        "Status",
-        "Research",
-        "DNA variants",
-        "Removed DNA variants",
-        "Removed Outlier variants",
-    ]
-
     click.echo(
         f"{delete_stats['case_counter']}\t{case['owner']}\t{case['display_name']}\t{case['_id']}\t{case.get('track','')}\t{case.get('analysis_date')}\t{case.get('status', '')}\t{case.get('is_research', '')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}",
         file=output_file,
@@ -355,5 +341,6 @@ def variants(
             output_file=output_file,
         )
         click.echo(
-            f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}"
+            f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}",
+            file=out_file,
         )

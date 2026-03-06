@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export genotype with gene variantS search (#6088)
 - igv.js version to 3.7.3 (#6096)
 - Refactor and speedup `scout delete variants` cmd (#6094)
+- `scout delete variants` commands now accepts an optional `--out-file` where it prints a detailed report of the deletion process (#6094)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 
