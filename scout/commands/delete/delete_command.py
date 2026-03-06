@@ -4,6 +4,8 @@ import click
 from flask.cli import with_appcontext
 
 from scout.commands.delete.case import case as case_cmd
+from scout.commands.delete.genes import exons as exons_cmd
+from scout.commands.delete.genes import genes as genes_cmd
 from scout.commands.delete.index import index as index_cmd
 from scout.commands.delete.panel import panel as panel_cmd
 from scout.commands.delete.user import user as user_cmd
@@ -32,32 +34,6 @@ INDIVIDUAL_RNA_KEYS = [
     "rna_coverage_bigwig",
     "splice_junctions_bed",
 ]
-
-
-@click.command("genes", short_help="Delete genes")
-@click.option("-b", "build", type=click.Choice(["37", "38"]))
-@with_appcontext
-def genes(build):
-    """Delete all genes in the database"""
-    LOG.info("Running scout delete genes")
-    adapter = store
-
-    if build:
-        LOG.info("Dropping genes collection for build: %s", build)
-    else:
-        LOG.info("Dropping all genes")
-    adapter.drop_genes(build=build)
-
-
-@click.command("exons", short_help="Delete exons")
-@click.option("-b", "build", type=click.Choice(["37", "38"]))
-@with_appcontext
-def exons(build):
-    """Delete all exons in the database"""
-    LOG.info("Running scout delete exons")
-    adapter = store
-
-    adapter.drop_exons(build)
 
 
 @click.command("rna", short_help="Remove all RNA data from a case")
@@ -130,10 +106,10 @@ def delete():
 
 
 delete.add_command(panel_cmd)
-delete.add_command(genes)
+delete.add_command(genes_cmd)
 delete.add_command(case_cmd)
 delete.add_command(user_cmd)
 delete.add_command(index_cmd)
-delete.add_command(exons)
+delete.add_command(exons_cmd)
 delete.add_command(rna)
 delete.add_command(variants_cmd)
