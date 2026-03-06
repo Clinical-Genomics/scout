@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, TextIO, Tuple
 
 import click
 from flask import current_app, url_for
@@ -27,6 +27,8 @@ DELETE_VARIANTS_HEADER = [
 ]
 VARIANT_CATEGORIES = list(VARIANTS_TARGET_FROM_CATEGORY.keys())
 BATCH_SIZE = 100
+TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+OUTFILE = f"variant_cleanup_report_{TIMESTAMP}.tsv"
 
 
 def handle_delete_variants(
@@ -102,6 +104,7 @@ def _process_cases(
     analysis_type: list | None,
     keep_ctg: Iterable[str],
     dry_run: bool,
+    output_file: TextIO,
 ) -> None:
     """
     First fetches all cases according to user's filters (relatively light query).
@@ -133,7 +136,6 @@ def _process_cases(
 
     cases_cursor = store.case_collection.find(match, projection)
     total_cases = store.case_collection.count_documents(match)
-
     with click.progressbar(cases_cursor, length=total_cases, label="Processing cases") as cases_bar:
         for case in cases_bar:
             _process_single_case(
@@ -143,6 +145,7 @@ def _process_cases(
                 variants_threshold=variants_threshold,
                 keep_ctg=keep_ctg,
                 dry_run=dry_run,
+                output_file=output_file,
             )
 
 
@@ -153,7 +156,8 @@ def _process_single_case(
     variants_threshold: int | None,
     keep_ctg: Iterable[str],
     dry_run: bool,
-):
+    output_file: TextIO,
+) -> None:
     """
     Process a single case
     - Deletes variants (honoring suspects/causatives/evaluated-not-dismissed)
@@ -185,8 +189,24 @@ def _process_single_case(
     )
     delete_stats["deleted_variant_counter"] += removed_variants
     delete_stats["deleted_outlier_counter"] += removed_omics_variants
+
+    DELETE_VARIANTS_HEADER = [
+        "Case n.",
+        "Institute",
+        "Case name",
+        "Case ID",
+        "Case track",
+        "Analysis date",
+        "Status",
+        "Research",
+        "DNA variants",
+        "Removed DNA variants",
+        "Removed Outlier variants",
+    ]
+
     click.echo(
-        f"{delete_stats['case_counter']}\t{case['_id']}\t{case['owner']}\t{case['display_name']}\t{case.get('analysis_date')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}"
+        f"{delete_stats['case_counter']}\t{case['owner']}\t{case['display_name']}\t{case['_id']}\t{case.get('track','')}\t{case.get('analysis_date')}\t{case.get('status', '')}\t{case.get('is_research', '')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}",
+        file=output_file,
     )
     if dry_run:
         return
@@ -275,6 +295,12 @@ def _set_keep_ctg(
     is_flag=True,
     help="Perform a simulation without removing any variant",
 )
+@click.option(
+    "--out-file",
+    type=click.Path(dir_okay=False, writable=True),
+    default=None,
+    help="Optional path to save the variant deletion report (TSV)",
+)
 @with_appcontext
 def variants(
     user: str,
@@ -289,6 +315,7 @@ def variants(
     rm_ctg: Optional[Tuple[str, ...]] = None,
     keep_ctg: Optional[Tuple[str, ...]] = None,
     dry_run: bool = False,
+    out_file: Optional[str] = None,
 ) -> None:
     """Delete variants for one or more cases"""
 
@@ -298,31 +325,35 @@ def variants(
         return
 
     case_ids = get_case_ids(case_file=case_file, case_id=case_id)
+    if out_file is None:
+        out_file = OUTFILE
 
-    if dry_run:
-        click.echo("--------------- DRY RUN COMMAND ---------------")
-        items_name = "estimated deleted variants"
-    else:
-        click.confirm(
-            "Variants are going to be deleted from database. Continue?",
-            abort=True,
+    with open(out_file, "w") as output_file:
+        if dry_run:
+            click.echo("--------------- DRY RUN COMMAND ---------------")
+            items_name = "estimated deleted variants"
+        else:
+            click.confirm(
+                "Variants are going to be deleted from database. Continue?",
+                abort=True,
+            )
+            items_name = "deleted variants"
+
+        keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
+        click.echo("\t".join(DELETE_VARIANTS_HEADER), file=output_file)
+        _process_cases(
+            cases=case_ids,
+            user_obj=user_obj,
+            rank_threshold=rank_threshold,
+            variants_threshold=variants_threshold,
+            institute=institute,
+            status=status,
+            older_than=older_than,
+            analysis_type=analysis_type,
+            keep_ctg=keep_ctg,
+            dry_run=dry_run,
+            output_file=output_file,
         )
-        items_name = "deleted variants"
-
-    keep_ctg = _set_keep_ctg(keep_ctg=keep_ctg, rm_ctg=rm_ctg)
-    click.echo("\t".join(DELETE_VARIANTS_HEADER))
-    _process_cases(
-        cases=case_ids,
-        user_obj=user_obj,
-        rank_threshold=rank_threshold,
-        variants_threshold=variants_threshold,
-        institute=institute,
-        status=status,
-        older_than=older_than,
-        analysis_type=analysis_type,
-        keep_ctg=keep_ctg,
-        dry_run=dry_run,
-    )
-    click.echo(
-        f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}"
-    )
+        click.echo(
+            f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}"
+        )
