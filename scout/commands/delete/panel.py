@@ -18,7 +18,7 @@ def panel(panel_id, version):
     adapter = store
 
     res = adapter.gene_panels(panel_id=panel_id, version=version)
-    panel_objs = [panel_obj for panel_obj in res]
+    panel_objs = list(res)
     if len(panel_objs) == 0:
         LOG.info("No panels found")
 

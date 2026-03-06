@@ -90,7 +90,7 @@ def test_delete_case_no_institute(empty_mock_app, case_obj):
 
     # and the case should have been removed again
     assert result.exit_code == 0
-    assert sum(1 for i in store.case_collection.find()) == 0
+    assert sum(1 for _ in store.case_collection.find()) == 0
 
 
 def test_delete_case_correct_institute(empty_mock_app, case_obj):

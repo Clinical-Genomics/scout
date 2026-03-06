@@ -41,7 +41,7 @@ def user(mail):
     result = adapter.delete_user(mail)
     if result.deleted_count == 0:
         return
-    click.echo(f"User was correctly removed from database.")
+    click.echo("User was correctly removed from database.")
     # remove this user as assignee from any case where it is found
     assigned_cases = adapter.cases(assignee=mail)
     updated_cases = 0

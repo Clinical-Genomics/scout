@@ -100,7 +100,7 @@ def test_delete_exons_37(empty_mock_app):
 
     # and all exons should be removed
     assert result.exit_code == 0
-    assert sum(1 for i in store.exon_collection.find()) == 0
+    assert sum(1 for _ in store.exon_collection.find()) == 0
 
 
 def test_delete_exons(empty_mock_app):
