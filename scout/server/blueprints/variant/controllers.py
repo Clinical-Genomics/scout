@@ -498,6 +498,9 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
     Loop over each rank score category and collect model explanation to display on variant page.
     """
     rank_score_results = []
+    rank_model_version = None
+    rm_link_prefix = None
+    rm_file_extension = None
 
     if variant_obj.get(
         "rank_score_results"
