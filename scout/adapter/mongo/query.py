@@ -74,7 +74,6 @@ class QueryHandler(object):
             query["category"] = {"$in": remove_ctg}
         if variants_to_keep:
             query["_id"] = {"$nin": variants_to_keep}
-        LOG.warning(query)
 
         return query
 

@@ -30,7 +30,6 @@ VARIANT_CTG = sorted(
     + [f"{cat}_research" for cat in VARIANTS_TARGET_FROM_CATEGORY.keys()]
 )
 OUTLIERS_CTG = ["outlier", "outlier_research"]
-BATCH_SIZE = 100
 TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUTFILE = f"variant_cleanup_report_{TIMESTAMP}.tsv"
 
@@ -52,17 +51,7 @@ def handle_delete_variants(
     remove_n_variants = 0
     remove_n_omics_variants = 0
 
-    LOG.warning(remove_ctg)
-    LOG.warning(outlier_remove_ctg)
-    LOG.warning(variants_query)
-
-    if dry_run:
-        if remove_ctg:
-            remove_n_variants = store.variant_collection.count_documents(variants_query)
-        if outlier_remove_ctg:
-            remove_n_omics_variants = store.omics_variant_collection.count_documents(variants_query)
-
-    else:
+    if not dry_run:
         if remove_ctg:
             remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
         if outlier_remove_ctg:
@@ -198,7 +187,6 @@ def _process_single_case(
         min_rank_threshold=rank_threshold,
         remove_ctg=remove_ctg + outlier_remove_ctg,
     )
-
     removed_variants, removed_omics_variants = handle_delete_variants(
         store=store,
         remove_ctg=list(remove_ctg),
@@ -209,12 +197,17 @@ def _process_single_case(
     delete_stats["deleted_variant_counter"] += removed_variants
     delete_stats["deleted_outlier_counter"] += removed_omics_variants
 
+    if dry_run:
+        click.echo(
+            f"{delete_stats['case_counter']}\t{case['owner']}\t{case['display_name']}\t{case['_id']}\t{case.get('track', '')}\t{case.get('analysis_date')}\t{case.get('status', '')}\t{case.get('is_research', '')}\t{variant_count}\tNA\tNA",
+            file=output_file,
+        )
+        return
+
     click.echo(
-        f"{delete_stats['case_counter']}\t{case['owner']}\t{case['display_name']}\t{case['_id']}\t{case.get('track','')}\t{case.get('analysis_date')}\t{case.get('status', '')}\t{case.get('is_research', '')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}",
+        f"{delete_stats['case_counter']}\t{case['owner']}\t{case['display_name']}\t{case['_id']}\t{case.get('track', '')}\t{case.get('analysis_date')}\t{case.get('status', '')}\t{case.get('is_research', '')}\t{variant_count}\t{removed_variants}\t{removed_omics_variants}",
         file=output_file,
     )
-    if dry_run:
-        return
     _create_delete_variants_event(
         user_obj=user_obj,
         case_id=case["_id"],

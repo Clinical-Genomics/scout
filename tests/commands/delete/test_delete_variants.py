@@ -83,7 +83,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
     assert nr_outliers
     assert nr_outliers
 
-    n_initial_vars = nr_snvs + nr_outliers  # 550
+    n_initial_vars = nr_snvs + nr_outliers
 
     # Then the function that delete variants should run without error
     cmd_params = [
@@ -120,7 +120,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
 
     # variants should be deleted
     n_current_vars = sum(1 for _ in store.variant_collection.find())
-    assert n_current_vars < n_initial_vars  # 57
+    assert n_current_vars < n_initial_vars
 
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
@@ -186,4 +186,4 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj, tmp_path):
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
-    assert "Rank-score threshold:" in event["content"]
+    assert f"Rank-score threshold:{RANK_THRESHOLD}" in event["content"]

@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - igv.js version to 3.7.3 (#6096)
 - Rework rank model file loading, allowing full URI (#6090)
 - Refactored scout delete commands and relative tests into separate modules (#6102)
-- Refactor, speedup and add a progress bar to `scout delete variants` cmd (#6094)
+- Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
