@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
+- Remove specifically research variants with the `scout delete variants` command (#6094)
 
 ## [4.108.2]
 ### Fixed
