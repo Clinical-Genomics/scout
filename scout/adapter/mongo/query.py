@@ -74,6 +74,8 @@ class QueryHandler(object):
         if min_rank_threshold is not None:
             query["rank_score"] = {"$lt": min_rank_threshold}
 
+        LOG.warning(query)
+
         return query
 
     def build_variant_query(

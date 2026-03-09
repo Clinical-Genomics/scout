@@ -179,7 +179,7 @@ def _process_single_case(
         {"case_id": case["_id"]}
     ) + store.omics_variant_collection.count_documents({"case_id": case["_id"]})
 
-    if variants_threshold and variant_count < variants_threshold:
+    if variants_threshold is not None and variant_count < variants_threshold:
         return
     delete_stats["case_counter"] += 1
     case_evaluated, _ = store.evaluated_variants(

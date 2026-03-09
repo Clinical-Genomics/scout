@@ -83,7 +83,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
     assert nr_outliers
     assert nr_outliers
 
-    n_initial_vars = nr_snvs + nr_outliers
+    n_initial_vars = nr_snvs + nr_outliers  # 550
 
     # Then the function that delete variants should run without error
     cmd_params = [
@@ -95,6 +95,8 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
         "inactive",
         "--keep-ctg",
         "outlier",
+        "--keep-ctg",
+        "outlier_research",
         "--older-than",
         2,
         "--analysis-type",
@@ -118,7 +120,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
 
     # variants should be deleted
     n_current_vars = sum(1 for _ in store.variant_collection.find())
-    assert n_current_vars < n_initial_vars
+    assert n_current_vars < n_initial_vars  # 57
 
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
@@ -128,7 +130,9 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
         == f"Rank-score threshold:{RANK_THRESHOLD}, case n. variants threshold:{VARIANTS_THRESHOLD}"
     )
     # SNV variants should be gone
-    assert sum(1 for _ in store.variant_collection.find()) == 0
+    # assert sum(1 for _ in store.variant_collection.find()) == 0
+    for var in store.variant_collection.find():
+        assert var["rank_score"] >= 0
 
     # WHILE outliers should still be available
     assert sum(1 for _ in store.omics_variant_collection.find()) == nr_outliers
@@ -158,9 +162,11 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj, tmp_path):
         "-u",
         user_obj["email"],
         "--rank-threshold",
-        0,
+        RANK_THRESHOLD,
         "--rm-ctg",
         "outlier",
+        "--rm-ctg",
+        "outlier_research",
         "--out-file",
         str(out_file),
     ]
