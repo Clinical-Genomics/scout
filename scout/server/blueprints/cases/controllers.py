@@ -215,7 +215,9 @@ def _set_rank_model_links(case_obj: Dict):
     Appropriate configuration file prefix and postfix are concatenated to the version string.
     """
 
-    if case_obj.get("rank_model_version"):
+    if rank_model_link := case_obj.get("rank_model_url"):
+        case_obj["rank_model_link"] = rank_model_link
+    elif case_obj.get("rank_model_version"):
         rank_model_link = "".join(
             [
                 current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
@@ -225,7 +227,9 @@ def _set_rank_model_links(case_obj: Dict):
         )
         case_obj["rank_model_link"] = rank_model_link
 
-    if case_obj.get("sv_rank_model_version"):
+    if sv_rank_model_link := case_obj.get("sv_rank_model_url"):
+        case_obj["sv_rank_model_link"] = sv_rank_model_link
+    elif case_obj.get("sv_rank_model_version"):
         case_obj["sv_rank_model_link"] = "".join(
             [
                 current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
