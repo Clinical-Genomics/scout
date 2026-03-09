@@ -52,6 +52,10 @@ def handle_delete_variants(
     remove_n_variants = 0
     remove_n_omics_variants = 0
 
+    LOG.warning(remove_ctg)
+    LOG.warning(outlier_remove_ctg)
+    LOG.warning(variants_query)
+
     if dry_run:
         if remove_ctg:
             remove_n_variants = store.variant_collection.count_documents(variants_query)
@@ -59,14 +63,12 @@ def handle_delete_variants(
             remove_n_omics_variants = store.omics_variant_collection.count_documents(variants_query)
 
     else:
-
         if remove_ctg:
             remove_n_variants = store.variant_collection.delete_many(variants_query).deleted_count
         if outlier_remove_ctg:
             remove_n_omics_variants = store.omics_variant_collection.delete_many(
                 variants_query
             ).deleted_count
-
     return remove_n_variants, remove_n_omics_variants
 
 
@@ -194,7 +196,7 @@ def _process_single_case(
         case_id=case["_id"],
         variants_to_keep=set(variants_to_keep),
         min_rank_threshold=rank_threshold,
-        remove_ctg=remove_ctg,
+        remove_ctg=remove_ctg + outlier_remove_ctg,
     )
 
     removed_variants, removed_omics_variants = handle_delete_variants(

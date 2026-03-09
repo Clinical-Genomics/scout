@@ -63,17 +63,17 @@ class QueryHandler(object):
         `variants_to_keep` by excluding them from deletion.
         """
 
-        query: dict = {"case_id": case_id}
-
-        if variants_to_keep:
-            query["_id"] = {"$nin": variants_to_keep}
-
+        query: dict = {
+            "case_id": case_id,
+            "$or": [
+                {"rank_score": {"$lt": min_rank_threshold}},
+                {"rank_score": {"$exists": False}},
+            ],
+        }
         if remove_ctg:
             query["category"] = {"$in": remove_ctg}
-
-        if min_rank_threshold is not None:
-            query["rank_score"] = {"$lt": min_rank_threshold}
-
+        if variants_to_keep:
+            query["_id"] = {"$nin": variants_to_keep}
         LOG.warning(query)
 
         return query

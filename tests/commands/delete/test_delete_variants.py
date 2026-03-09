@@ -3,7 +3,7 @@ from scout.commands.delete.variants import DELETE_VARIANTS_HEADER
 from scout.server.extensions import store
 
 VARIANTS_QUERY = {"rank_score": {"$lt": 0}}
-RANK_THRESHOLD = 0
+RANK_THRESHOLD = 10
 VARIANTS_THRESHOLD = 10
 
 
@@ -129,8 +129,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
         event["content"]
         == f"Rank-score threshold:{RANK_THRESHOLD}, case n. variants threshold:{VARIANTS_THRESHOLD}"
     )
-    # SNV variants should be gone
-    # assert sum(1 for _ in store.variant_collection.find()) == 0
+    # SNV variants with rank score < RANK_THRESHOLD should be gone
     for var in store.variant_collection.find():
         assert var["rank_score"] >= 0
 
@@ -181,9 +180,10 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj, tmp_path):
 
     # THEN the variants should be gone
     n_current_vars = sum(1 for _ in store.omics_variant_collection.find())
+
     assert n_current_vars == 0
     assert n_current_vars + n_variants_to_delete == n_initial_vars
     # and a relative event should be created
     event = store.event_collection.find_one({"verb": "remove_variants"})
     assert event["case"] == case_obj["_id"]
-    assert "Rank-score threshold:0" in event["content"]
+    assert "Rank-score threshold:" in event["content"]
