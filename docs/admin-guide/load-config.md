@@ -42,6 +42,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
 - **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.
 - **phenotype_terms** _List of strings_ List of phenotype terms.
+- **rank_model_url** _String_ Full URL for rank model used when scoring variants. If not defined, server config `RANK_MODEL_LINK_PREFIX` and `_POSTFIX` will be added to make the URL.
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
 - **reference_info**: Pipeline detailed reference file versions (YAML)
@@ -114,6 +115,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **synopsis** _String_ Synopsis of case.
 - **sv_rank_model_version** _String_ Rank model that was used when scoring the variants.
 - **track** _String_ Type of track: {"rare", "cancer"}. Default: "rare".
+- **sv_rank_model_url** _String_ Full URL for SV rank model used when scoring SV variants. If not defined, server config `SV_RANK_MODEL_LINK_PREFIX` and `_POSTFIX` will be added to make the URL.
 - **sv_rank_model_version** _String_ SV rank model version used when scoring SV variants.
 - **vcf_cancer** _String_ Path to canver VCF file (tumor case only).
 - **vcf_cancer_research** _String_ Path to VCF file with all variants (tumor case only).
