@@ -1,7 +1,7 @@
 {% macro gens_individual_button(case, ind, gens_info=None) %}
   {% if gens_info and gens_info.display %}
     <a style="font-size: .8rem;" class="btn btn-secondary text-white btn-sm float-end" target="_blank" href={% if gens_info.version > 3 %}
-        "http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{ind.individual_id}}"
+        "https://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{ind.individual_id}}"
     {% else %}
         "http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}"
     {% endif %}>Gens</a>
@@ -10,7 +10,7 @@
 
 {% macro gens_case_button(case, gens_info=None) %}
   {% if gens_info and gens_info.display and gens_info.version > 3 %}
-    <form action=http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">
+    <form action=https://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">
       <button type="submit" data-bs-toggle="tooltip" title="Gens viewer for full case" class="btn btn-secondary text-white btn-xs form-control" target="_blank" href=><span class="fa fa-solid fa-fw fa-mountain me-1"></span>G<span class="menu-collapsed">ens</span></button>
     </form>
   {% endif %}
