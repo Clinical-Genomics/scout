@@ -226,11 +226,6 @@
       </button>
     </form>
   </div>
-  {% if gens_info and gens_info.display %}
-    <div href="#" class="bg-dark list-group-item d-inline-block text-white" data-bs-toggle="tooltip" title="Gens viewer for full case">
-      {{ gens_case_button(case, gens_info) }}
-    </div>
-  {% endif %}
   <div href="#" class="bg-dark list-group-item d-inline-block text-white"
     {% if not case.mt_bams %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom='M', start=1, stop=16569) }}" target="_blank" rel="noopener">
@@ -248,6 +243,11 @@
       <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
         <button type="submit" class="btn btn-xs form-control btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Available in build GRCh{{ case.rna_genome_build or '38' }}"><span class="fa fa-magnifying-glass fa-fw me-1"></span><span class="menu-collapsed">IGV </span>R<span class="menu-collapsed">NA</span></button>
       </form>
+    </div>
+  {% endif %}
+  {% if gens_info and gens_info.display %}
+    <div href="#" class="bg-dark list-group-item d-inline-block text-white" data-bs-toggle="tooltip" title="Gens viewer for full case">
+      {{ gens_case_button(case, gens_info) }}
     </div>
   {% endif %}
 {% endmacro %}
