@@ -1,6 +1,7 @@
 {% from "cases/chanjo2_form.html" import chanjo2_report_form %}
+{% from "cases/gens.html" import gens_case_button %}
 
-{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks) %}
+{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks, gens_info=None) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -221,6 +222,11 @@
       </button>
     </form>
   </div>
+  {% if gens_info and gens_info.display %}
+    <div href="#" class="bg-dark list-group-item d-inline-block text-white" data-bs-toggle="tooltip" title="Gens viewer for full case">
+      {{ gens_case_button(case, gens_info) }}
+    </div>
+  {% endif %}
   <div href="#" class="bg-dark list-group-item d-inline-block text-white"
     {% if not case.mt_bams %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], chrom='M', start=1, stop=16569) }}" target="_blank" rel="noopener">

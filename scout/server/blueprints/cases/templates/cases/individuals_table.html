@@ -1,4 +1,5 @@
 {% from "cases/utils.html" import sex_table_cell_content %}
+{% from "cases/gens.html" import gens_individual_button %}
 
 {% macro cancer_individuals_table(case, institute, tissues, gens_info=None) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
@@ -31,13 +32,7 @@
         <tbody>
           {% for ind in case.individuals %}
             <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
-              <td>{{ ind.display_name }}{% if gens_info.display %}
-                  <a style="font-size: .8rem;" class="btn btn-secondary text-white btn-sm float-end" target="_blank" href={% if gens_info.version > 3 %}
-                  "http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{ind.individual_id}}"
-                  {% else %}
-                    "http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}"
-                  {% endif %}>Gens</a>
-                {% endif %}</td>
+              <td>{{ ind.display_name }}{{ gens_individual_button(case, ind, gens_info) }}</td>
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
               {% else %}
@@ -135,9 +130,7 @@
                     <span data-bs-toggle='tooltip' title="Sample {{ ind.display_name }} internal ID {{ ind.individual_id }}{% if ind.subject_id %}, for individual with subject ID {{ ind.subject_id }}{% endif %}.">{{ ind.display_name }}</span>
                   </div>
                 </label>
-                {% if gens_info.display %}
-                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm text-white float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">Gens</a>
-                {% endif %}
+                {{ gens_individual_button(case, ind, gens_info) }}
                 </td>
               <td>
                 <select class="sex-selector form-control-sm" name="sex-selector" hidden>
