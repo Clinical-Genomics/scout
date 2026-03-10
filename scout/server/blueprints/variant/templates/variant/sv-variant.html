@@ -260,7 +260,7 @@
           <span class="d-inline ms-3">
             {% for sample in variant.samples %}
               <a class="btn btn-secondary" target="_blank"
-                href={% if gens_info.version > 3 %}"http://{{gens_info.host}}/app/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{sample.sample_id}}&region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}"{% else %}
+                href={% if gens_info.version > 3 %}"http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{sample.sample_id}}&region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}"{% else %}
                 "http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}&case_id={{case._id}}&individual_id={{sample.sample_id}}"{% endif %}>Gens {{ sample.display_name }}</a>
             {% endfor %}
           </span>
