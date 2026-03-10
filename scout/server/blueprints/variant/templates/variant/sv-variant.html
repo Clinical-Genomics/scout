@@ -259,7 +259,7 @@
           <span class="d-inline">Copy number profile</span>
           <span class="d-inline ms-3">
             {% if gens_info.version > 3 %}
-              <a class="btn btn-secondary text-white btn-xs" target="_blank" href="http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">Gens {{case._id}}</a>
+              <a class="btn btn-secondary text-white" target="_blank" href="http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">Gens {{case._id}}</a>
             {% endif %}
             {% for sample in variant.samples %}
               <a class="btn btn-secondary" target="_blank"

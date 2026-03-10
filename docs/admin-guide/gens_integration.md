@@ -10,6 +10,7 @@ To avoid dependency conflicts Gens should be installed in an environment separat
 
 * `GENS_HOST`: The IP or hostname of the server where Gens is hosted.
 * `GENS_PORT`: Port number where gens is hosted (optional).
+* `GENS_VERSION`: Gens major version (Optional int). If a host but no version is provided, Scout attempts to find the version via gens API call at first web interface use (after a user has authenticated).
 
 ### Configure Gens integration
 
@@ -18,6 +19,7 @@ In the scout config `config.py` provide the connection settings like:
 ```python
 GENS_HOST = "127.0.0.1"
 GENS_PORT = 5001
+GENS_VERSION = 4
 ```
 
 ## Result

@@ -1,6 +1,10 @@
 """Code for Gens integration
 
 * Requires gens version 1.1.1 or greater
+
+GENS_DEFAULT_VERSION is the current major, and will be used if no other version is found.
+The extension will attempt to find a version first in the scout app config, second by API call.
+API calls will only find a version for gens v4 and onward.
 """
 
 import logging
@@ -24,6 +28,8 @@ class GensViewer:
         LOG.info("Init Gens app")
         self.host = app.config.get("GENS_HOST")
         self.port = app.config.get("GENS_PORT")
+        if version := app.config.get("GENS_VERSION"):
+            self.version = version
 
     def connection_settings(self, genome_build: str = "37") -> dict:
         """Return information on where Gens is hosted.
