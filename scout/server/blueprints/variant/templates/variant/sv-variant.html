@@ -254,10 +254,13 @@
 
         {{ clinsig_table(variant) }}
 
-        {% if gens_info.display %}
+        {% if gens_info and gens_info.display %}
         <li class="list-group-item">
           <span class="d-inline">Copy number profile</span>
           <span class="d-inline ms-3">
+            {% if gens_info.version > 3 %}
+              <a class="btn btn-secondary text-white btn-xs" target="_blank" href="http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">Gens {{case._id}}</a>
+            {% endif %}
             {% for sample in variant.samples %}
               <a class="btn btn-secondary" target="_blank"
                 href={% if gens_info.version > 3 %}"http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}&sample_ids={{sample.sample_id}}&region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}"{% else %}
