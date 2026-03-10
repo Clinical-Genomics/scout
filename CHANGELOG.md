@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Add a `--type` to the export case CLI, to limit the exported case search by analysis type (#6089)
+- Pick phenotype terms (HPO, OMIM, ORPHA) to be assigned to a case from a phenomodel object (#6106)
 ### Changed
 - Export genotype with gene variantS search (#6088)
 - igv.js version to 3.7.3 (#6096)

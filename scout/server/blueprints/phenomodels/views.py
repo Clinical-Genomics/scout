@@ -18,7 +18,7 @@ phenomodels_bp = Blueprint(
 
 
 @phenomodels_bp.route("/<institute_id>/advanced_phenotypes", methods=["GET"])
-@templated("phenomodels.html")
+@templated("phenomodels/phenomodels.html")
 def advanced_phenotypes(institute_id):
     """Show institute-level advanced phenotypes"""
     institute_obj = institute_and_case(store, institute_id)
@@ -101,7 +101,7 @@ def phenomodel_edit(institute_id, model_id):
 
 
 @phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>", methods=["GET"])
-@templated("phenomodel.html")
+@templated("phenomodels/phenomodel.html")
 def phenomodel(institute_id, model_id):
     """View/Edit an advanced phenotype model"""
     institute_obj = institute_and_case(store, institute_id)

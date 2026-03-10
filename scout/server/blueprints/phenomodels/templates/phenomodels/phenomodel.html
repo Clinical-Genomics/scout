@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "phenomodels/utils.html" import model_preview %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Advanced phenotype models
@@ -239,7 +240,7 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
     <div class="col">
-      {{ model_preview() }}
+      {{ model_preview(institute=institute, phenomodel=phenomodel) }}
       {{ phenomodel_page() }}
       <!-- Display all subpanels for this model -->
       {{ subpanels_macro() }}
@@ -247,66 +248,6 @@
   </div><!-- end of body row div -->
 </div><!-- end of container-float-->
 {% endblock %}
-
-{% macro model_preview() %}
-<form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
-<div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-        <h5 class="card-title">{{phenomodel.name}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{phenomodel.description}}</h6>
-        <!--display cards of subpanels-->
-        <!--loop over the subpanels of the model-->
-        {% for subpanel_id, subpanel_obj in phenomodel.subpanels.items() %} <!--|batch(3)-->
-          <div class="card">
-            <div class="card-body">
-              <td class="row">
-                <text style="font-size:20px;"><strong>{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</strong></text>
-              </td>
-              <!-- loop over the checkbox groups of the model-->
-              {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
-              <div>
-                {% if term_obj.term_title %}
-                  <strong>{{term_obj.term_title}}</strong><br>
-                {% endif %}
-                <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
-                {% if term_obj.children %}
-                  <a href="#" onclick="toggleDiv('{{term_obj.name}}#children')"><label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label></a>
-                {% else %}
-                  <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
-                {% endif %}
-              </div>
-              <div style="margin-left: 35px; display: none;" id="{{term_obj.name}}#children">
-                <ul>
-                {% for item in term_obj.children recursive %}
-                  <li class="tree">
-                    <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
-                    {%- if item.children -%}
-                      <ul class="tree">{{ loop(item.children) }}</ul>
-                    {%- endif %}
-                  </li>
-                {%- endfor %}
-                </ul>
-              </div>
-              <br>
-              {% endfor %}
-              <!--  end of loop over the checkbox groups of the model-->
-              </div>
-            <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
-          </div><!--end of card-->
-        {% endfor %}<!-- end of loop over the subpanels of the model-->
-      </div>
-      <div class="modal-footer">
-        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary" {{ "disabled" if disable }}>Save selected terms</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-</form>
-{% endmacro %}
-
 
 {% block scripts %}
 {{ super() }}

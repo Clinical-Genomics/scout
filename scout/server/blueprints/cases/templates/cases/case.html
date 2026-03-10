@@ -5,6 +5,7 @@
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
+{% from "phenomodels/utils.html" import phenomodel_assign %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -191,7 +192,7 @@
         {% if not case.track == 'cancer' %}
         <div class="panel-default">
           <div class="row">
-            <div class="col-sm-12 mb-3">
+            <div class="col-sm-12">
               <div class="card">
                 <div class="card-body">
                   <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank" rel="noopener">OMIM</a>,&nbsp;<a href="https://www.orpha.net/" target="_blank" rel="noopener">ORPHA</a>)
@@ -207,7 +208,25 @@
         {% endif %}
         <!-- end of diagnoses-related code-->
 
-
+        {% if phenomodels %}
+          <div class="panel-default">
+            <div class="card">
+              <div class="card-body">
+                <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Assign phenotype from model</div>
+                <div class="mt-1 mb-3">
+                  {% for model in phenomodels %}
+                    <button class="btn btn-xs btn-secondary">
+                      {{model.name}}
+                    </button>
+                  {% endfor %}
+                  {% for model in phenomodels %}
+                    {{ phenomodel_assign(case=case, model=model) }}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
 
       <div class="panel-default">
         <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Groups & cohorts</div>
