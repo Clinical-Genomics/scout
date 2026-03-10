@@ -1,7 +1,7 @@
 from scout.constants.clnsig import ONC_CLNSIG
 
 CLINVAR_API_URL_DEFAULT = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
-PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
+PRECLINVAR_URL = "https://preclinvar-stage.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
