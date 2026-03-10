@@ -10,6 +10,8 @@
 
 {% macro gens_case_button(case, gens_info=None) %}
   {% if gens_info and gens_info.display and gens_info.version > 3 %}
-    <a class="btn btn-secondary text-white btn-xs form-control" target="_blank" href="http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}"><span class="fa fa-solid fa-fw fa-mountain"></span>G<span class="menu-collapsed">ens</span></a>
+    <form action=http://{{gens_info.host}}/viewer/{{case._id}}?genome_build={{case.genome_build}}">
+      <button type="submit" data-bs-toggle="tooltip" title="Gens viewer for full case" class="btn btn-secondary text-white btn-xs form-control" target="_blank" href=><span class="fa fa-solid fa-fw fa-mountain me-1"></span>G<span class="menu-collapsed">ens</span></button>
+    </form>
   {% endif %}
 {% endmacro %}
