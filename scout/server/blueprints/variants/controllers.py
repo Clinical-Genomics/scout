@@ -304,6 +304,7 @@ def render_variants_page(
         case=case_obj,
         variants_query=variants_query,
         page=page,
+        query_form=form.data,
     )
 
     dismiss_variant_options = (

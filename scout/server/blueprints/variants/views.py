@@ -70,14 +70,14 @@ def variants(institute_id, case_name):
     def data_exporter(store, case, variants_query):
         return controllers.download_variants(store, case, variants_query)
 
-    def decorator(store, institute, case, variants_query, page, query_form=None):
+    def decorator(store, institute, case, variants_query, page, query_form):
         return controllers.variants(
             store=store,
             institute_obj=institute,
             case_obj=case,
             variants_query=variants_query,
             page=page,
-            query_form=form.data,
+            query_form=query_form,
         )
 
     return controllers.render_variants_page(
