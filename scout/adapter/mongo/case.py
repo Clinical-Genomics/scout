@@ -1070,7 +1070,7 @@ class CaseHandler(object):
                 "custom_images"
             ].get(variant_category)
 
-    def update_case(self, case_obj, keep_date=False):
+    def update_case(self, case_obj: dict, keep_date: bool = False) -> dict:
         """Update a case in the database.
         While updating the case, it compares the date of the latest analysis (case_obj["analysis_date"]) against
         the date of the analysis saved in db (old_case["analysis_date"]). If the 2 dates are different, it creates a new analysis
@@ -1098,6 +1098,7 @@ class CaseHandler(object):
             - owner: If the case owner changed
             - panels: The new gene panels are added
             - pipeline_version: path to the pipeline executable version report file
+            - rank_model_url: If there is a new rank model URL
             - rank_model_version: If there is a new rank model
             - reference_info: path to the pipeline reference version report file
             - rerun_requested: Is set to False since that is probably what happened
@@ -1110,6 +1111,7 @@ class CaseHandler(object):
             - rna_delivery_report: path to the RNA delivery report
             - smn_tsv: path to static SMN TSV file
             - status: case status
+            - sv_rank_model_url: If there is a new sv rank model URL
             - sv_rank_model_version: If there is a new sv rank model
             - track: "rare" or "cancer"
             - updated_at: When the case was updated in the database
@@ -1173,6 +1175,7 @@ class CaseHandler(object):
                 "phenotype_groups": case_obj.get("phenotype_groups"),
                 "phenotype_terms": case_obj.get("phenotype_terms"),
                 "pipeline_version": case_obj.get("pipeline_version"),
+                "rank_model_url": case_obj.get("rank_model_url"),
                 "rank_model_version": case_obj.get("rank_model_version"),
                 "rerun_requested": case_obj.get("rerun_requested", False),
                 "research_requested": case_obj.get("research_requested", False),
@@ -1186,6 +1189,7 @@ class CaseHandler(object):
                 "scout_load_version": case_obj.get("scout_load_version"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
+                "sv_rank_model_url": case_obj.get("sv_rank_model_url"),
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
                 "track": case_obj.get("track", "rare"),
                 "updated_at": updated_at,
@@ -1227,6 +1231,7 @@ class CaseHandler(object):
             "phenotype_groups",
             "phenotype_terms",
             "pipeline_version",
+            "rank_model_url",
             "rank_model_version",
             "reference_info",
             "rna_genome_build",
@@ -1236,6 +1241,7 @@ class CaseHandler(object):
             "RNAfusion_report_research",
             "rna_delivery_report",
             "smn_tsv",
+            "sv_rank_model_url",
             "sv_rank_model_version",
         ]:
             if updated_case.get(key):  # Do not remove key if it has a value

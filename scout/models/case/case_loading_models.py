@@ -446,6 +446,7 @@ class CaseLoader(BaseModel):
     somalier_ancestry: Optional[str] = None
     somalier_pairs: Optional[str] = None
     somalier_samples: Optional[str] = None
+    rank_model_url: Optional[str] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     reference_info: Optional[str] = None
@@ -455,6 +456,7 @@ class CaseLoader(BaseModel):
     RNAfusion_report_research: Optional[str] = None
     rna_delivery_report: Optional[str] = None
     smn_tsv: Optional[str] = None
+    sv_rank_model_url: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Optional[Union[List[str], str]] = None
     status: Optional[Literal[tuple(CASE_STATUSES)]] = None

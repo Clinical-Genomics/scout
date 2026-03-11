@@ -9,9 +9,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a `--type` to the export case CLI, to limit the exported case search by analysis type (#6089)
 ### Changed
 - Export genotype with gene variantS search (#6088)
+- igv.js version to 3.7.3 (#6096)
+- Rework rank model file loading, allowing full URI (#6090)
+- Refactored `scout delete` commands and relative tests into separate modules (#6102)
+- The gens extension now generates version appropriate links (#6105)
 - Refactor case building for database storage (#6091)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
+- Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
 
 ## [4.108.2]
 ### Fixed
