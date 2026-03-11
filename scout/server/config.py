@@ -61,6 +61,7 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
+# GENS_VERSION = 4
 
 # Connection details for communicating with a rerunner service
 # RERUNNER_API_ENTRYPOINT = "http://rerunner:5001/v1.0/rerun"
