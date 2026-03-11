@@ -1,6 +1,7 @@
 {% from "cases/chanjo2_form.html" import chanjo2_report_form %}
+{% from "cases/gens.html" import gens_case_button %}
 
-{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks) %}
+{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks, gens_info) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -16,7 +17,8 @@
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ software_version(case) }}
-          {{ genome_build(case, case_groups, has_rna_tracks) }}
+          {{ genome_build(case) }}
+          {{ genome_alignments(case, has_rna_tracks, gens_info) }}
           {{ rank_model(case) }}
           <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
           {{ status(case) }}
@@ -202,13 +204,16 @@
 {% endif %}
 {% endmacro %}
 
-{% macro genome_build(case, case_groups, has_rna_tracks) %}
+{% macro genome_build(case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-wrench fa-fw me-3"></span>
       <span class="menu-collapsed">Genome build {{ case.genome_build }}</span>
   </div>
 </div>
+{% endmacro %}
+
+{% macro genome_alignments(case, has_rna_tracks, gens_info) %}
   <div href="#" class="bg-dark list-group-item d-inline-block text-white"
     {% if not case.bam_files %} data-bs-toggle="tooltip" title="Alignment file(s) missing" {% endif %}>
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
@@ -238,6 +243,11 @@
       <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
         <button type="submit" class="btn btn-xs form-control btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Available in build GRCh{{ case.rna_genome_build or '38' }}"><span class="fa fa-magnifying-glass fa-fw me-1"></span><span class="menu-collapsed">IGV </span>R<span class="menu-collapsed">NA</span></button>
       </form>
+    </div>
+  {% endif %}
+  {% if gens_info and gens_info.display %}
+    <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+      {{ gens_case_button(case, gens_info) }}
     </div>
   {% endif %}
 {% endmacro %}
