@@ -60,59 +60,23 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = controllers.get_variants_page(request.form)
-    category = "snv"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    if variant_type not in ["clinical", "research"]:
-        variant_type = "clinical"
 
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-
-    controllers.set_hpo_clinical_filter(case_obj, request.form)
-
-    user_obj = store.user(current_user.email)
-    if request.method == "POST":
-        if "dismiss_submit" in request.form:  # dismiss a list of variants
-            controllers.dismiss_variant_list(
-                store,
-                institute_obj,
-                case_obj,
-                VARIANT_PAGE,
-                request.form.getlist("dismiss"),
-                request.form.getlist("dismiss_choices"),
-            )
-
-        form = controllers.populate_filters_form(
-            store, institute_obj, case_obj, user_obj, category, request.form
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the SV filters form."""
+        return controllers.populate_sv_mei_str_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
-    else:
-        form = FiltersForm(request.args)
-        # set form variant data type the first time around
 
-        # set chromosome to all chromosomes
-        form.chrom.data = request.args.get("chrom", "")
+    return controllers.render_variants_page(
+        category="snv",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
+        data_exporter=data_exporter,
+        decorator=decorator,
+    )
 
-        if form.gene_panels.data == [] and variant_type == "clinical":
-            form.gene_panels.data = controllers.case_default_panels(case_obj)
-
-    form.variant_type.data = variant_type
-
-    controllers.populate_force_show_unaffected_vars(institute_obj, form)
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    # populate available panel choices
-    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
-
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
+    """
 
     # upload gene panel if symbol file exists
     if request.files:
@@ -180,6 +144,7 @@ def variants(institute_id, case_name):
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
+    """
 
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
