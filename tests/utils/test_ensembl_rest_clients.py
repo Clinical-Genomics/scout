@@ -39,7 +39,7 @@ def test_send_request_fakey_url(mock_app, ensembl_rest_client, mocker):
         assert data is None
 
 
-def test_send_request_unavaailable(mock_app, ensembl_rest_client, mocker):
+def test_send_request_unavailable(mock_app, ensembl_rest_client, mocker):
     """Test the Ensembl REST client with an URL that is not available (500 error)."""
 
     url = f"{RESTAPI_URL}/fakeyurl"

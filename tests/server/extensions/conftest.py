@@ -88,6 +88,16 @@ def gens_app():
 
 
 @pytest.fixture
+def gens_app_v3():
+    """Return an app containing the Gens extension"""
+
+    app = create_app(
+        config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000, GENS_VERSION=3)
+    )
+    return app
+
+
+@pytest.fixture
 def panel():
     """Return a simple panel"""
     panel_info = {
