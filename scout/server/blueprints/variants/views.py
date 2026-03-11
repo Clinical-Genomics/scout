@@ -63,7 +63,7 @@ def variants(institute_id, case_name):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -89,52 +89,6 @@ def variants(institute_id, case_name):
         decorator=decorator,
     )
 
-    """
-
-    # upload gene panel if symbol file exists
-    if request.files:
-        file = request.files[form.symbol_file.name]
-
-    if request.files and file and file.filename != "":
-        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
-        try:
-            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
-        except UnicodeDecodeError as error:
-            flash("Only text files are supported!", "warning")
-            return safe_redirect_back(request)
-
-        hgnc_symbols_set = set(form.hgnc_symbols.data)
-        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
-        hgnc_symbols_set.update(new_hgnc_symbols)
-        form.hgnc_symbols.data = hgnc_symbols_set
-    """
-
-    """
-    return dict(
-        cancer_tier_options=CANCER_TIER_OPTIONS,
-        case=case_obj,
-        cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        scroll_pos=int(float(request.values.get("scroll_pos", 0) or 0)),
-        escat_tier_options=ESCAT_TIER_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        genetic_models_palette=GENETIC_MODELS_PALETTE,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        severe_so_terms=SEVERE_SO_TERMS,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        result_size=result_size,
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        **data,
-    )
-    """
-
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")
@@ -143,7 +97,7 @@ def str_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the STRs filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -170,7 +124,7 @@ def sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -197,7 +151,7 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -224,7 +178,7 @@ def mei_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 

@@ -1830,7 +1830,7 @@ def case_default_panels(case_obj):
     return case_panels
 
 
-def populate_sv_mei_str_filters_form(
+def populate_snv_sv_mei_str_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
     """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
@@ -1854,6 +1854,22 @@ def populate_sv_mei_str_filters_form(
     form.variant_type.data = variant_type
     populate_force_show_unaffected_vars(institute_obj, form)
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
+
+    # upload gene panel if symbol file exists
+    if request_obj.files:
+        file = request_obj.files[form.symbol_file.name]
+
+    if request_obj.files and file and file.filename != "":
+        try:
+            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+        except UnicodeDecodeError as error:
+            flash("Only text files are supported!", "warning")
+            return safe_redirect_back(request)
+
+        hgnc_symbols_set = set(form.hgnc_symbols.data)
+        new_hgnc_symbols = upload_panel(store, institute_id, case_name, stream)
+        hgnc_symbols_set.update(new_hgnc_symbols)
+        form.hgnc_symbols.data = hgnc_symbols_set
 
     return form
 
