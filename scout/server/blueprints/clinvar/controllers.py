@@ -509,7 +509,7 @@ def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
     """
     if clinvar_subm_id == "None":
         flash(
-            "In order to download a submission CSV file you should register a Clinvar submission Name first!",
+            "In order to download a submission CSV file you should register a ClinVar submission Name first!",
             "warning",
         )
         return
@@ -710,6 +710,7 @@ def _parse_variant_set(onc_item: dict, form: ImmutableMultiDict):
 
     variant = {}
     if form.get("tx_hgvs") not in UNDEFINED_HGVS:
+        onc_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
         variant["chromosomeCoordinates"] = {
