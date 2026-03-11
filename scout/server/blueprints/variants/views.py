@@ -67,6 +67,19 @@ def variants(institute_id, case_name):
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
+
+    def decorator(store, institute, case, variants_query, page, query_form=None):
+        return controllers.variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+            query_form=form.data,
+        )
+
     return controllers.render_variants_page(
         category="snv",
         institute_id=institute_id,
@@ -94,33 +107,9 @@ def variants(institute_id, case_name):
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
-        # reset gene panels
-        form.gene_panels.data = ""
+    """
 
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    variants_query = store.variants(
-        case_obj["_id"], query=form.data, category=category, build=genome_build
-    )
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
-
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
-
-    data = controllers.variants(
-        store,
-        institute_obj,
-        case_obj,
-        variants_query,
-        page,
-        query_form=form.data,
-    )
-
+    """
     return dict(
         cancer_tier_options=CANCER_TIER_OPTIONS,
         case=case_obj,
