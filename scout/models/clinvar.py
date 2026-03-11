@@ -170,6 +170,7 @@ class ConditionSet(BaseModel):
 class GenericSubmissionItem(BaseModel):
     # Field necessary for the API submissions:
     recordStatus: str
+    submittedAssembly: Optional[Literal["GRCh37", "GRCh38"]] = None
     variantSet: VariantSet
     conditionSet: ConditionSet
 

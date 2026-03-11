@@ -515,6 +515,7 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
 
     variant = {}
     if form.get("tx_hgvs") not in UNDEFINED_HGVS:
+        subm_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
         variant["chromosomeCoordinates"] = {
