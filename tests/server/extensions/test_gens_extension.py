@@ -12,18 +12,19 @@ def test_gens_app_extension(gens_app):
     assert gens.port == 5000
 
 
+@responses.activate
 def test_get_version(gens_app):
     """Test that the gens extension correctly gets a version from API"""
 
-    gens_api_url = f"{gens.host}:{gens.port}/api/"
+    gens_api_url = f"https://{gens.host}:{gens.port}/api/"
     responses.add(
         responses.GET,
         gens_api_url,
-        json={"message": "Welcome to Gens API", "version": "4.6.1"},
+        json={"message": "Welcome to Gens API", "version": "5.6.7"},
         status=200,
     )
 
-    assert gens.get_version() == 4
+    assert gens.get_version() == 5
 
 
 def test_gens_app_extension_v3(gens_app_v3):
