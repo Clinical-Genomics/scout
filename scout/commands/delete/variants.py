@@ -367,6 +367,7 @@ def variants(
             dry_run=dry_run,
             output_file=output_file,
         )
-        click.echo(
-            f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}",
-        )
+        if not dry_run:
+            click.echo(
+                f"Total {items_name}: {delete_stats['deleted_variant_counter'] + delete_stats['deleted_outlier_counter']}",
+            )
