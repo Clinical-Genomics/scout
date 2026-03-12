@@ -90,6 +90,9 @@ def parse_case_data(**kwargs):
     if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
 
+    if config_dict.get("paraphrase"):
+        add_paraphrase_info(config_dict)
+
     add_mitodel_info(config_dict)
 
     # Ensure case_id is set, this situation arises when case is loaded with ped file

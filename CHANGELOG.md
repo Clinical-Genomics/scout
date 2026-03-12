@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links to gDNA IGV view from variantS page also for WTS outliers (#6151)
 - Pick phenotype terms (HPO, OMIM, ORPHA) to be assigned to a case from a phenomodel object (#6138)
 - Methylation outliers population frequency filter and clinical filter (#6156)
+- Parse and display Paraphrase output from Nallo Paraphase conversion (#6120)
 ### Changed
 - Export genotype with gene variantS search (#6088)
 - igv.js version to 3.8.0 - fixes `e.tags` error popup issue (#6096, #6118)
