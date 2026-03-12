@@ -170,7 +170,6 @@ class ManagedVariantHandler(object):
             {"_id": {"$in": list(all_maintainers)}}, {"_id": 1, "name": 1}
         )
         users_map = {user["_id"]: user["name"] for user in users_cursor}
-        LOG.warning(users_map)
         for var in managed_vars:
             var["maintainers"] = [
                 {"email": email, "name": users_map.get(email)}
