@@ -398,10 +398,6 @@ option {
    transition: all 0.5s;
 }
 
-.dropdown-menu {
-  max-height: 425px !important;
-}
-
 .str-variants-reviewer-container {
 	padding: 20px 5px;
 }
