@@ -154,7 +154,6 @@ class ManagedVariantHandler(object):
 
         pipeline = [{"$match": query_with_options}]
 
-        # Optional pagination
         if skip_count is not None:
             pipeline.append({"$skip": skip_count})
 
