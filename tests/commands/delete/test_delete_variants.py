@@ -96,7 +96,7 @@ def test_delete_variants(mock_app, case_obj, user_obj, tmp_path):
         "--keep-ctg",
         "outlier",
         "--keep-ctg",
-        "outlier_research",
+        "outlier",
         "--older-than",
         2,
         "--analysis-type",
@@ -164,8 +164,6 @@ def test_delete_outlier_variants(mock_app, case_obj, user_obj, tmp_path):
         RANK_THRESHOLD,
         "--rm-ctg",
         "outlier",
-        "--rm-ctg",
-        "outlier_research",
         "--out-file",
         str(out_file),
     ]

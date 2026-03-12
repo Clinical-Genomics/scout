@@ -25,11 +25,8 @@ DELETE_VARIANTS_HEADER = [
     "Removed DNA variants",
     "Removed Outlier variants",
 ]
-VARIANT_CTG = sorted(
-    list(VARIANTS_TARGET_FROM_CATEGORY.keys())
-    + [f"{cat}_research" for cat in VARIANTS_TARGET_FROM_CATEGORY.keys()]
-)
-OUTLIERS_CTG = ["outlier", "outlier_research"]
+VARIANT_CTG = sorted(VARIANTS_TARGET_FROM_CATEGORY)
+OUTLIERS_CTG = ["outlier"]
 TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 OUTFILE = f"variant_cleanup_report_{TIMESTAMP}.tsv"
 

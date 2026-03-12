@@ -20,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
 - Introduced a `submittedAssembly` field on Oncogenicity ClinVar submissions documents containing variants described by HGVS (#6113)
 - Main dropdown menu (#6120)
-- Remove specifically research variants with the `scout delete variants` command (#6094)
 
 ## [4.108.2]
 ### Fixed
