@@ -12,8 +12,6 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     ESCAT_TIER_OPTIONS,
-    GENETIC_MODELS_PALETTE,
-    INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
 )
@@ -30,8 +28,6 @@ from .forms import (
     CancerFiltersForm,
     FiltersForm,
     FusionFiltersForm,
-    MeiFiltersForm,
-    StrFiltersForm,
     SvFiltersForm,
 )
 
@@ -105,7 +101,13 @@ def str_variants(institute_id: str, case_name: str):
         return controllers.download_str_variants(_, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
-        return controllers.str_variants(store, institute, case, variants_query, page)
+        return controllers.str_variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+        )
 
     return controllers.render_variants_page(
         category="str",
@@ -132,7 +134,13 @@ def sv_variants(institute_id: str, case_name: str):
         return controllers.download_variants(store, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
-        return controllers.sv_mei_variants(store, institute, case, variants_query, page)
+        return controllers.sv_mei_variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+        )
 
     return controllers.render_variants_page(
         category="sv",
@@ -402,7 +410,7 @@ def upload_panel(institute_id, case_name):
 
     try:
         stream = io.StringIO(panel_file.stream.read().decode("utf-8"), newline=None)
-    except UnicodeDecodeError as error:
+    except UnicodeDecodeError:
         flash("Only text files are supported!", "warning")
         return safe_redirect_back(request)
 
