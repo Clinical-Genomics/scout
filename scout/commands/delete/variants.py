@@ -176,7 +176,7 @@ def _process_single_case(
     case_evaluated, _ = store.evaluated_variants(
         case_id=case["_id"], institute_id=case["owner"], limit_dismissed=5
     )
-    evaluated_not_dismissed = [v["_id"] for v in case_evaluated if "dismiss_variant" not in v]
+    evaluated_not_dismissed = [variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant]
     variants_to_keep = (
         case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed
     )
