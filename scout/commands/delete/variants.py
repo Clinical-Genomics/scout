@@ -131,9 +131,9 @@ def _process_cases(
         "individuals": 1,
     }
 
-    cases_cursor = store.case_collection.find(match, projection)
+    cases_list = list(store.case_collection.find(match, projection))
     total_cases = store.case_collection.count_documents(match)
-    with click.progressbar(cases_cursor, length=total_cases, label="Processing cases") as cases_bar:
+    with click.progressbar(cases_list, length=total_cases, label="Processing cases") as cases_bar:
         for case in cases_bar:
             _process_single_case(
                 case=case,
