@@ -152,6 +152,7 @@ class ConditionSet(BaseModel):
 class OncogenicitySubmissionItem(BaseModel):
     # Field necessary for the API submissions:
     recordStatus: str
+    submittedAssembly: Optional[Literal["GRCh37", "GRCh38"]] = None
     oncogenicityClassification: OncogenicityClassification
     observedIn: List[ObservedIn]
     variantSet: VariantSet
