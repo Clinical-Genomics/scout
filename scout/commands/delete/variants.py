@@ -44,7 +44,7 @@ def handle_delete_variants(
     """
     Handle variant removal for a case.
 
-    If dry_run is True, counts how many variants *would be removed* without deleting.
+    If dry_run is True, do not delete. Also do not count again, as this needlessly takes a long time and does not do exactly the same thing.
     Returns a tuple: (number_deleted_variants, number_deleted_omics_variants)
     """
 
