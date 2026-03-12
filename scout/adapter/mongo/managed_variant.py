@@ -132,8 +132,10 @@ class ManagedVariantHandler(object):
         query_options: str = None,
         build: str = None,
         institute: str = None,
+        skip_count: int = None,
+        vars_per_page: int = None,
     ) -> Cursor:
-        """Return a cursor to all managed variants of a particular category and build.
+        """Return a cursor to managed variants of a particular category and build.
 
         Returns:
             managed_variants(pymongo.Cursor)
@@ -149,7 +151,32 @@ class ManagedVariantHandler(object):
                 {"institute": None},
             ]
         query_with_options = self.add_options(query, query_options)
-        return self.managed_variant_collection.find(query_with_options)
+
+        pipeline = [{"$match": query_with_options}]
+
+        # Optional pagination
+        if skip_count is not None:
+            pipeline.append({"$skip": skip_count})
+
+        if vars_per_page is not None:
+            pipeline.append({"$limit": vars_per_page})
+
+        managed_vars = list(self.managed_variant_collection.aggregate(pipeline))
+        all_maintainers = set()
+        for var in managed_vars:
+            all_maintainers.update(var.get("maintainer", []))
+
+        users_cursor = self.user_collection.find(
+            {"_id": {"$in": list(all_maintainers)}}, {"_id": 1, "name": 1}
+        )
+        users_map = {user["_id"]: user["name"] for user in users_cursor}
+        LOG.warning(users_map)
+        for var in managed_vars:
+            var["maintainers"] = [
+                {"email": email, "name": users_map.get(email)}
+                for email in var.get("maintainer", [])
+            ]
+        return managed_vars
 
     def count_managed_variants(
         self,
