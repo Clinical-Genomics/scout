@@ -125,18 +125,6 @@
           {{ splice_junctions_button(institute._id, case, variant._id) }}
         </div>
       {% endif %}
-      {% if variant.alamut_link %}
-        <div class="ms-1">
-          <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with genome g. coordinate">Alamut g.</a>
-        </div>
-      {% endif %}
-      {% for gene in variant.genes %}
-        <div class="ms-1">
-        {% if gene.alamut_link %}
-          <a href="{{ gene.alamut_link }}" class="btn btn-sm btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with gene transcript c. coordinate">Alamut {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }} c.</a>
-        {% endif %}
-        </div>
-      {% endfor %}
     </li>
     <li class="list-group-item">
       <div>
@@ -147,6 +135,32 @@
       <li class="list-group-item d-flex justify-content-between">
         {{ gene_coverage(institute, variant, case, config) }}
       </li>
+    {% endif %}
+    {% if variant.alamut_link  %}
+    <li class="list-group-item d-flex justify-content-between">
+      <div>
+      Alamut Visual Plus 
+      </div>
+      <div>
+        Open coordinates
+      {% if variant.alamut_link %}
+          <input type="button" class="btn btn-sm btn-secondary text-white" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with genome g. coordinate" value='genome' onclick='linkOutsideSoftware("{{variant.alamut_link}}");'/>
+      {% endif %}
+      {% for gene in variant.genes %}
+        {% if gene.alamut_link %}
+          <input type="button" class="btn btn-sm btn-secondary text-white" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with gene transcript c. coordinate" value=' {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}' onclick='linkOutsideSoftware("{{gene.alamut_link}}");'/>
+        {% endif %}
+      {% endfor %}
+      </div>
+      <div>
+      {% if case['alamut_file_links'] %}
+        Open align. file:
+      {% for sample, file_link in case['alamut_file_links'].items() %}
+          <input type="button" class="btn btn-sm btn-secondary text-white" value='{{sample}}' data-bs-toggle="tooltip" title="Open alignment file for sample {{sample}}" onclick='linkOutsideSoftware("{{file_link[0] + url_for('alignviewers.remote_static', args=institute._id + ',' + case.display_name + ',' + file_link[1], _external=True)}}");'/>
+      {% endfor %}
+      {% endif %}
+      </div>
+    </li>
     {% endif %}
   </ul>
 {% endmacro %}
@@ -576,6 +590,13 @@
       }
     }
 
+    function linkOutsideSoftware(alamut_coord_link) {
+    // open Alamut browser
+    var http_req = new XMLHttpRequest();
+    http_req.open( "GET", alamut_coord_link, true);
+    http_req.send();
+
+  }
   </script>
 {% endmacro %}
 
