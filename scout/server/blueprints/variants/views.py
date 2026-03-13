@@ -58,7 +58,7 @@ def variants(institute_id, case_name):
     """Display a list of SNV variants."""
 
     def form_builder(store, inst, case, cat, vtype):
-        """Builds the SV filters form."""
+        """Builds the SNVs filters form."""
         return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
