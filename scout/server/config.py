@@ -119,7 +119,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #        "access": "public",
 #        "tracks": [
 #            {
-#                "name": "MANE Transcripts",
+#                "name": "MANE",
 #                "type": "annotation",
 #                "format": "bigbed",
 #                "build": "38",
