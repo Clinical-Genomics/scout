@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored `scout delete` commands and relative tests into separate modules (#6102)
 - The gens extension now generates version appropriate links (#6105)
 - Refactored snv variants code to share same routines as other variant categories (#6116)
+- On managed variants page, print maintainers names instead of emails/ids (#6121)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 ### Fixed
