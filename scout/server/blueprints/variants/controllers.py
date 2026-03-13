@@ -62,6 +62,7 @@ from scout.server.utils import (
 from .forms import (
     FILTERSFORMCLASS,
     CancerSvFiltersForm,
+    FiltersForm,
     FusionFiltersForm,
     MeiFiltersForm,
     StrFiltersForm,
@@ -1828,6 +1829,29 @@ def case_default_panels(case_obj):
     return case_panels
 
 
+def _populate_form_genes_from_file(
+    institute_obj: dict, case_obj: dict, form: FiltersForm, request_obj: LocalProxy
+) -> None:
+    """Populate the list of genes in the form from an uploaded file containing gene symbols, if available."""
+
+    if request_obj.files:
+        file = request_obj.files[form.symbol_file.name]
+
+    if request_obj.files and file and file.filename != "":
+        try:
+            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+        except UnicodeDecodeError:
+            flash("Only text files are supported!", "warning")
+            return safe_redirect_back(request)
+
+        hgnc_symbols_set = set(form.hgnc_symbols.data)
+        new_hgnc_symbols = upload_panel(
+            store, institute_obj["_id"], case_obj["display_name"], stream
+        )
+        hgnc_symbols_set.update(new_hgnc_symbols)
+        form.hgnc_symbols.data = hgnc_symbols_set
+
+
 def populate_snv_sv_mei_str_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
@@ -1853,23 +1877,9 @@ def populate_snv_sv_mei_str_filters_form(
     populate_force_show_unaffected_vars(institute_obj, form)
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
-    # upload gene panel if symbol file exists
-    if request_obj.files:
-        file = request_obj.files[form.symbol_file.name]
-
-    if request_obj.files and file and file.filename != "":
-        try:
-            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
-        except UnicodeDecodeError:
-            flash("Only text files are supported!", "warning")
-            return safe_redirect_back(request)
-
-        hgnc_symbols_set = set(form.hgnc_symbols.data)
-        new_hgnc_symbols = upload_panel(
-            store, institute_obj["_id"], case_obj["display_name"], stream
-        )
-        hgnc_symbols_set.update(new_hgnc_symbols)
-        form.hgnc_symbols.data = hgnc_symbols_set
+    _populate_form_genes_from_file(
+        institute_obj=institute_obj, case_obj=case_obj, form=form, request_obj=request_obj
+    )
 
     return form
 
