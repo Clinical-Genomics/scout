@@ -128,6 +128,15 @@ HUMAN_GENES_38 = {
     "order": 1000000,
 }
 
+MANE_TRANSCRIPTS = {
+    "name": "MANE Transcripts",
+    "type": "annotation",
+    "visibilityWindow": 300000000,
+    "format": "bigbed",
+    "url": "https://ftp.ncbi.nlm.nih.gov/refseq/MANE/trackhub/data/release_1.5/MANE.GRCh38.v1.5.ensembl.bb",
+    "order": 1000000,
+}
+
 CASE_SPECIFIC_TRACKS = {
     "paraphase_alignments": "Paraphase Alignment",
     "phase_blocks": "Phase Blocks",
@@ -147,7 +156,7 @@ USER_DEFAULT_TRACKS = ["Genes", "ClinVar", "ClinVar CNVs"]
 # Export selectable custom tracks into lists
 IGV_TRACKS = {
     "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_SV_37],
-    "38": [HUMAN_GENES_38, CLINVAR_SNV_38, CLINVAR_SV_38],
+    "38": [HUMAN_GENES_38, MANE_TRANSCRIPTS, CLINVAR_SNV_38, CLINVAR_SV_38],
 }
 
 CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP = [
