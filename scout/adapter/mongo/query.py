@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import datetime, timedelta
-from typing import List, Optional, Union
+from typing import List, Optional, Set, Union
 
 from scout.constants import (
     CLINSIG_MAP,
@@ -52,31 +52,30 @@ class QueryHandler(object):
     def delete_variants_query(
         self,
         case_id: str,
-        variants_to_keep: List[str] = [],
+        variants_to_keep: Set[str] | None = None,
         min_rank_threshold: Optional[int] = None,
-        keep_ctg: List[str] = [],
+        remove_ctg: List[str] | None = None,
     ) -> dict:
-        """Build a query to delete variants from a case (variant collection).
+        """Build a query to delete variants from a case.
 
         Removes variants with rank lower than `min_rank_threshold`.
-        Retains variants in categories `keep_ctg` by excluding them from deletion - eg `["cancer", "cancer_sv"]`.
+        Retains variants in categories `keep_ctg` and specific variant IDs in
+        `variants_to_keep` by excluding them from deletion.
         """
-        variants_query = {}
-        case_subquery = {"case_id": case_id}
 
-        # Create query to delete all variants that shouldn't be kept or with rank higher than min_rank_threshold
-        if variants_to_keep or min_rank_threshold or keep_ctg:
-            variants_query["$and"] = [case_subquery]
-            if variants_to_keep:
-                variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
-            if keep_ctg:
-                variants_query["$and"].append({"category": {"$nin": keep_ctg}})
-            if min_rank_threshold:
-                variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
-        else:
-            variants_query = case_subquery
+        query: dict = {
+            "case_id": case_id,
+            "$or": [
+                {"rank_score": {"$lt": min_rank_threshold}},
+                {"rank_score": {"$exists": False}},
+            ],
+        }
+        if remove_ctg:
+            query["category"] = {"$in": remove_ctg}
+        if variants_to_keep:
+            query["_id"] = {"$nin": variants_to_keep}
 
-        return variants_query
+        return query
 
     def build_variant_query(
         self,
