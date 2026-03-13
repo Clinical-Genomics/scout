@@ -457,7 +457,7 @@
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
         </div>
       </div>
     </div>
@@ -558,7 +558,7 @@
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
         </div>
       </div>
     </div>
@@ -649,7 +649,7 @@
 <div class="row">
   <div class="col-2">
     {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+    {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -734,7 +734,7 @@
       </div>
       <div class="col-3">
         {{ form.chrom.label(class="control-label") }}
-        {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+        {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
       </div>
     </div>
   </div>
@@ -874,7 +874,7 @@
         {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
         </div>
         <div class="col">
           {{ wtf.form_field(form.start) }}
@@ -988,7 +988,7 @@
         {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
         </div>
         <div class="col">
           {{ wtf.form_field(form.start) }}
@@ -1067,7 +1067,7 @@
 <div class="row">
   <div class="col-2">
     {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+    {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -1084,7 +1084,7 @@
 <div class="row">
   <div class="col-2">
     {{form.fusion_caller.label(class ="control-label")}}
-    {{form.fusion_caller( class ="selectpicker", data_style="btn-secondary", data_actions_box="true")}}
+    {{form.fusion_caller( class ="selectpicker", data_style="btn-secondary")}}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.fusion_score) }}
