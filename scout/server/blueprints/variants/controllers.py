@@ -303,8 +303,10 @@ def render_variants_page(
         return data_exporter(store, case_obj, variants_query)
 
     args = [store, institute_obj, case_obj, variants_query, page]
-    if category in ["snv", "cancer"]:
+    if category == "snv":
         args.append(request.form)
+    elif category == "cancer":
+        args.append(form)
 
     data = decorator(*args)
 
@@ -1501,14 +1503,13 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
+def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
     in the panel as the second representative gene. If no gene panel is selected don't assign such a gene.
     """
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
@@ -1559,14 +1560,9 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
         variants_list.append(variant_obj)
 
     data = dict(
-        page=page,
-        institute=institute_obj,
-        case=case_obj,
         variants=variants_list,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         escat_tier_options=ESCAT_TIER_OPTIONS,
-        form=form,
     )
     return data
 

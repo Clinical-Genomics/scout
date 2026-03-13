@@ -52,19 +52,22 @@ def reset_dismissed(institute_id, case_name):
     return safe_redirect_back(request)
 
 
+def form_builder(store, inst, case, cat, vtype):
+    """Builds the variants filters form according to variant category."""
+    return controllers.populate_variants_filters_form(
+        store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
+    )
+
+
+def data_exporter(store, case, variants_query):
+    """Calls the variants exporter."""
+    return controllers.download_variants(store, case, variants_query)
+
+
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the SNVs filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(store, case, variants_query):
-        return controllers.download_variants(store, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page, query_form):
         return controllers.variants(
@@ -91,15 +94,6 @@ def variants(institute_id, case_name):
 def str_variants(institute_id: str, case_name: str):
     """Display a list of STR variants (STRs)."""
 
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the STRs filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(_, case, variants_query):
-        return controllers.download_str_variants(_, case, variants_query)
-
     def decorator(store, institute, case, variants_query, page):
         return controllers.str_variants(
             store=store,
@@ -123,15 +117,6 @@ def str_variants(institute_id: str, case_name: str):
 @templated("variants/sv-variants.html")
 def sv_variants(institute_id: str, case_name: str):
     """Display a list of structural variants (SV)."""
-
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the SV filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(store, case, variants_query):
-        return controllers.download_variants(store, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
         return controllers.sv_mei_variants(
@@ -157,15 +142,6 @@ def sv_variants(institute_id: str, case_name: str):
 def cancer_sv_variants(institute_id: str, case_name: str):
     """Display a list of cancer structural variants."""
 
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the cancer SV filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(store, case, variants_query):
-        return controllers.download_variants(store, case, variants_query)
-
     def decorator(store, institute, case, variants_query, page):
         return controllers.sv_mei_variants(store, institute, case, variants_query, page)
 
@@ -183,15 +159,6 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 @templated("variants/mei-variants.html")
 def mei_variants(institute_id: str, case_name: str):
     """Display a list of MEI variants."""
-
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the cancer SV filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(store, case, variants_query):
-        return controllers.download_variants(store, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
         return controllers.sv_mei_variants(store, institute, case, variants_query, page)
@@ -211,23 +178,14 @@ def mei_variants(institute_id: str, case_name: str):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
 
-    def form_builder(store, inst, case, cat, vtype):
-        """Builds the cancer SNVs filters form."""
-        return controllers.populate_variants_filters_form(
-            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
-        )
-
-    def data_exporter(store, case, variants_query):
-        return controllers.download_variants(store, case, variants_query)
-
-    def decorator(store, institute, case, variants_query, page, query_form):
-        return controllers.variants(
+    def decorator(store, institute, case, variants_query, page, form):
+        return controllers.cancer_variants(
             store=store,
             institute_obj=institute,
             case_obj=case,
             variants_query=variants_query,
             page=page,
-            query_form=query_form,
+            form=form,
         )
 
     return controllers.render_variants_page(
