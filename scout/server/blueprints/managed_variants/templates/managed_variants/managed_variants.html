@@ -112,7 +112,10 @@
           <td>
             {{ variant.description }}
           </td>
-          <td>{{variant.maintainer|join(', ')}}
+          <td>
+            {% for maintainer in variant.maintainers %}
+              {{ maintainer.name }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
             {% if variant.institute %}
               <span
                 class="badge bg-secondary ms-2"
