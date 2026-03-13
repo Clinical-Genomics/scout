@@ -1,4 +1,5 @@
 import decimal
+import io
 import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -33,7 +34,7 @@ from scout.constants import (
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS_SV,
+    SEVERE_SO_TERMS,
     SPIDEX_HUMAN,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
@@ -54,12 +55,14 @@ from scout.server.utils import (
     case_has_mt_alignments,
     get_case_genome_build,
     institute_and_case,
+    safe_redirect_back,
     user_institutes,
 )
 
 from .forms import (
     FILTERSFORMCLASS,
     CancerSvFiltersForm,
+    FiltersForm,
     FusionFiltersForm,
     MeiFiltersForm,
     StrFiltersForm,
@@ -74,6 +77,7 @@ DISMISS_VARIANT_LINK = {
     "cancer_sv": SV_VARIANT_PAGE,
     "mei": SV_VARIANT_PAGE,
     "str": VARIANT_PAGE,
+    "snv": VARIANT_PAGE,
 }
 
 LOG = logging.getLogger(__name__)
@@ -276,11 +280,9 @@ def render_variants_page(
 
     activate_case(store, institute_obj, case_obj, current_user)
 
-    # Build form (different per category)
     form = form_builder(store, institute_obj, case_obj, category, variant_type)
     populate_institute_soft_filters(form=form, institute_obj=institute_obj)
 
-    # Populate common filter choices
     populate_chrom_choices(form, case_obj)
 
     genome_build = get_case_genome_build(case_obj)
@@ -298,13 +300,11 @@ def render_variants_page(
     if request.form.get("export"):
         return data_exporter(store, case_obj, variants_query)
 
-    data = decorator(
-        store=store,
-        institute=institute_obj,
-        case=case_obj,
-        variants_query=variants_query,
-        page=page,
-    )
+    args = [store, institute_obj, case_obj, variants_query, page]
+    if category in ["snv", "snv_research"]:
+        args.append(request.form)
+
+    data = decorator(*args)
 
     dismiss_variant_options = (
         {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
@@ -328,7 +328,7 @@ def render_variants_page(
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
         result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS_SV,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
@@ -1829,7 +1829,30 @@ def case_default_panels(case_obj):
     return case_panels
 
 
-def populate_sv_mei_str_filters_form(
+def _populate_form_genes_from_file(
+    institute_obj: dict, case_obj: dict, form: FiltersForm, request_obj: LocalProxy
+) -> None:
+    """Populate the list of genes in the form from an uploaded file containing gene symbols, if available."""
+
+    if request_obj.files:
+        file = request_obj.files[form.symbol_file.name]
+
+    if request_obj.files and file and file.filename != "":
+        try:
+            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+        except UnicodeDecodeError:
+            flash("Only text files are supported!", "warning")
+            return safe_redirect_back(request_obj)
+
+        hgnc_symbols_set = set(form.hgnc_symbols.data)
+        new_hgnc_symbols = upload_panel(
+            store, institute_obj["_id"], case_obj["display_name"], stream
+        )
+        hgnc_symbols_set.update(new_hgnc_symbols)
+        form.hgnc_symbols.data = hgnc_symbols_set
+
+
+def populate_snv_sv_mei_str_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
     """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
@@ -1853,6 +1876,10 @@ def populate_sv_mei_str_filters_form(
     form.variant_type.data = variant_type
     populate_force_show_unaffected_vars(institute_obj, form)
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
+
+    _populate_form_genes_from_file(
+        institute_obj=institute_obj, case_obj=case_obj, form=form, request_obj=request_obj
+    )
 
     return form
 
