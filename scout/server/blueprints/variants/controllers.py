@@ -1842,7 +1842,7 @@ def _populate_form_genes_from_file(
             stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
         except UnicodeDecodeError:
             flash("Only text files are supported!", "warning")
-            return safe_redirect_back(request)
+            return safe_redirect_back(request_obj)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
         new_hgnc_symbols = upload_panel(
