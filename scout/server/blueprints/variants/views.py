@@ -12,8 +12,6 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     ESCAT_TIER_OPTIONS,
-    GENETIC_MODELS_PALETTE,
-    INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
 )
@@ -30,8 +28,6 @@ from .forms import (
     CancerFiltersForm,
     FiltersForm,
     FusionFiltersForm,
-    MeiFiltersForm,
-    StrFiltersForm,
     SvFiltersForm,
 )
 
@@ -60,125 +56,33 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = controllers.get_variants_page(request.form)
-    category = "snv"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    if variant_type not in ["clinical", "research"]:
-        variant_type = "clinical"
 
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-
-    controllers.set_hpo_clinical_filter(case_obj, request.form)
-
-    user_obj = store.user(current_user.email)
-    if request.method == "POST":
-        if "dismiss_submit" in request.form:  # dismiss a list of variants
-            controllers.dismiss_variant_list(
-                store,
-                institute_obj,
-                case_obj,
-                VARIANT_PAGE,
-                request.form.getlist("dismiss"),
-                request.form.getlist("dismiss_choices"),
-            )
-
-        form = controllers.populate_filters_form(
-            store, institute_obj, case_obj, user_obj, category, request.form
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the SNVs filters form."""
+        return controllers.populate_snv_sv_mei_str_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
-    else:
-        form = FiltersForm(request.args)
-        # set form variant data type the first time around
 
-        # set chromosome to all chromosomes
-        form.chrom.data = request.args.get("chrom", "")
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
 
-        if form.gene_panels.data == [] and variant_type == "clinical":
-            form.gene_panels.data = controllers.case_default_panels(case_obj)
+    def decorator(store, institute, case, variants_query, page, query_form):
+        return controllers.variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+            query_form=query_form,
+        )
 
-    form.variant_type.data = variant_type
-
-    controllers.populate_force_show_unaffected_vars(institute_obj, form)
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    # populate available panel choices
-    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
-
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
-
-    # upload gene panel if symbol file exists
-    if request.files:
-        file = request.files[form.symbol_file.name]
-
-    if request.files and file and file.filename != "":
-        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
-        try:
-            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
-        except UnicodeDecodeError as error:
-            flash("Only text files are supported!", "warning")
-            return safe_redirect_back(request)
-
-        hgnc_symbols_set = set(form.hgnc_symbols.data)
-        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
-        hgnc_symbols_set.update(new_hgnc_symbols)
-        form.hgnc_symbols.data = hgnc_symbols_set
-        # reset gene panels
-        form.gene_panels.data = ""
-
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    variants_query = store.variants(
-        case_obj["_id"], query=form.data, category=category, build=genome_build
-    )
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
-
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
-
-    data = controllers.variants(
-        store,
-        institute_obj,
-        case_obj,
-        variants_query,
-        page,
-        query_form=form.data,
-    )
-
-    return dict(
-        cancer_tier_options=CANCER_TIER_OPTIONS,
-        case=case_obj,
-        cytobands=cytobands,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        scroll_pos=int(float(request.values.get("scroll_pos", 0) or 0)),
-        escat_tier_options=ESCAT_TIER_OPTIONS,
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        form=form,
-        genetic_models_palette=GENETIC_MODELS_PALETTE,
-        inherit_palette=INHERITANCE_PALETTE,
-        institute=institute_obj,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        page=page,
-        severe_so_terms=SEVERE_SO_TERMS,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        result_size=result_size,
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        **data,
+    return controllers.render_variants_page(
+        category="snv",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
+        data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 
@@ -189,7 +93,7 @@ def str_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the STRs filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -197,7 +101,13 @@ def str_variants(institute_id: str, case_name: str):
         return controllers.download_str_variants(_, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
-        return controllers.str_variants(store, institute, case, variants_query, page)
+        return controllers.str_variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+        )
 
     return controllers.render_variants_page(
         category="str",
@@ -216,7 +126,7 @@ def sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -224,7 +134,13 @@ def sv_variants(institute_id: str, case_name: str):
         return controllers.download_variants(store, case, variants_query)
 
     def decorator(store, institute, case, variants_query, page):
-        return controllers.sv_mei_variants(store, institute, case, variants_query, page)
+        return controllers.sv_mei_variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+        )
 
     return controllers.render_variants_page(
         category="sv",
@@ -243,7 +159,7 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -270,7 +186,7 @@ def mei_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_sv_mei_str_filters_form(
+        return controllers.populate_snv_sv_mei_str_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -494,7 +410,7 @@ def upload_panel(institute_id, case_name):
 
     try:
         stream = io.StringIO(panel_file.stream.read().decode("utf-8"), newline=None)
-    except UnicodeDecodeError as error:
+    except UnicodeDecodeError:
         flash("Only text files are supported!", "warning")
         return safe_redirect_back(request)
 
