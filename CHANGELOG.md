@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rework rank model file loading, allowing full URI (#6090)
 - Refactored `scout delete` commands and relative tests into separate modules (#6102)
 - The gens extension now generates version appropriate links (#6105)
+- Refactored snv variants code to share same routines as other variant categories (#6116)
 - On managed variants page, print maintainers names instead of emails/ids (#6121)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
