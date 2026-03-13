@@ -34,7 +34,6 @@ from scout.constants import (
     INHERITANCE_PALETTE,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS_SV,
     SPIDEX_HUMAN,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
@@ -327,7 +326,7 @@ def render_variants_page(
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
         result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS_SV,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
