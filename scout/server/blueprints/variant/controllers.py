@@ -159,7 +159,6 @@ def get_igv_tracks(build: str = "37") -> set:
     igv_tracks = set()
     # Collect hardcoded tracks, common for all Scout instances
     for track in IGV_TRACKS.get(build, []):
-        LOG.warning(track)
         igv_tracks.add(track.get("name"))
     # Collect instance-specific public tracks, if available
     if hasattr(config_igv_tracks, "tracks"):
