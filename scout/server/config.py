@@ -119,11 +119,11 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #        "access": "public",
 #        "tracks": [
 #            {
-#                "name": "MANE",
+#                "name": "MANE Transcripts",
 #                "type": "annotation",
 #                "format": "bigbed",
 #                "build": "38",
-#                "url": "scout/resources/custom_igv_tracks/mane.bb",
+#                "url": "https://ftp.ncbi.nlm.nih.gov/refseq/MANE/trackhub/data/release_1.5/MANE.GRCh38.v1.5.ensembl.bb",
 #            },
 #        ],
 #    },
