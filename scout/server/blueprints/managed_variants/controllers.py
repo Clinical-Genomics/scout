@@ -76,12 +76,14 @@ def managed_variants(request: LocalProxy) -> dict:
 
     # Get all variants according to the selected fields in filter form
     managed_variants_query = store.managed_variants(
-        category=categories, query_options=query_options
+        category=categories,
+        query_options=query_options,
+        skip_count=skip_count,
+        vars_per_page=VARS_PER_PAGE,
     )
 
     variant_count = store.count_managed_variants(category=categories, query_options=query_options)
-    managed_variants_res = managed_variants_query.skip(skip_count).limit(VARS_PER_PAGE)
-    managed_variants = [managed_variant for managed_variant in managed_variants_res]
+    managed_variants = list(managed_variants_query)
 
     return {
         "page": page,
