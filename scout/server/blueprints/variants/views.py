@@ -59,7 +59,7 @@ def variants(institute_id, case_name):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SNVs filters form."""
-        return controllers.populate_snv_sv_mei_str_filters_form(
+        return controllers.populate_variants_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -93,7 +93,7 @@ def str_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the STRs filters form."""
-        return controllers.populate_snv_sv_mei_str_filters_form(
+        return controllers.populate_variants_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -126,7 +126,7 @@ def sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the SV filters form."""
-        return controllers.populate_snv_sv_mei_str_filters_form(
+        return controllers.populate_variants_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -159,7 +159,7 @@ def cancer_sv_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_snv_sv_mei_str_filters_form(
+        return controllers.populate_variants_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -186,7 +186,7 @@ def mei_variants(institute_id: str, case_name: str):
 
     def form_builder(store, inst, case, cat, vtype):
         """Builds the cancer SV filters form."""
-        return controllers.populate_snv_sv_mei_str_filters_form(
+        return controllers.populate_variants_filters_form(
             store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
@@ -211,110 +211,32 @@ def mei_variants(institute_id: str, case_name: str):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
 
-    page = controllers.get_variants_page(request.form)
-
-    category = "cancer"
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = Markup.escape(
-        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
-    )
-    if variant_type not in ["clinical", "research"]:
-        variant_type = "clinical"
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-
-    user_obj = store.user(current_user.email)
-    if request.method == "POST":
-        if "dismiss_submit" in request.form:  # dismiss a list of variants
-            controllers.dismiss_variant_list(
-                store,
-                institute_obj,
-                case_obj,
-                VARIANT_PAGE,
-                request.form.getlist("dismiss"),
-                request.form.getlist("dismiss_choices"),
-            )
-
-        form = controllers.populate_filters_form(
-            store, institute_obj, case_obj, user_obj, category, request.form
+    def form_builder(store, inst, case, cat, vtype):
+        """Builds the cancer SNVs filters form."""
+        return controllers.populate_variants_filters_form(
+            store=store, institute_obj=inst, case_obj=case, category=cat, request_obj=request
         )
 
-        # if user is not loading an existing filter, check filter form
-        if (
-            request.form.get("load_filter") is None
-            and request.form.get("audit_filter") is None
-            and form.validate_on_submit() is False
-        ):
-            # Flash a message with errors
-            for field, err_list in form.errors.items():
-                for err in err_list:
-                    flash(
-                        f"Content of field '{field}' does not have a valid format",
-                        "warning",
-                    )
-            # And do not submit the form
-            return redirect(
-                url_for(".cancer_variants", institute_id=institute_id, case_name=case_name)
-            )
-    else:
-        form = CancerFiltersForm(request.args)
-        # set chromosome to all chromosomes
-        form.chrom.data = request.args.get("chrom", "")
-        if form.gene_panels.data == []:
-            form.gene_panels.data = controllers.case_default_panels(case_obj)
+    def data_exporter(store, case, variants_query):
+        return controllers.download_variants(store, case, variants_query)
 
-    controllers.populate_force_show_unaffected_vars(institute_obj, form)
+    def decorator(store, institute, case, variants_query, page, query_form):
+        return controllers.variants(
+            store=store,
+            institute_obj=institute,
+            case_obj=case,
+            variants_query=variants_query,
+            page=page,
+            query_form=query_form,
+        )
 
-    # update status of case if visited for the first time
-    controllers.activate_case(store, institute_obj, case_obj, current_user)
-
-    # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
-
-    # Populate custom soft filters
-    controllers.populate_institute_soft_filters(form=form, institute_obj=institute_obj)
-
-    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
-
-    genome_build = get_case_genome_build(case_obj)
-    cytobands = store.cytoband_by_chrom(genome_build)
-
-    controllers.update_form_hgnc_symbols(store, case_obj, form)
-
-    variants_query = store.variants(
-        case_obj["_id"], category="cancer", query=form.data, build=genome_build
-    )
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
-
-    if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
-
-    data = controllers.cancer_variants(
-        store,
-        institute_id,
-        case_name,
-        variants_query,
-        form,
-        page=page,
-    )
-
-    return dict(
-        cytobands=cytobands,
-        dismiss_variant_options={
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        },
-        scroll_pos=int(float(request.values.get("scroll_pos", 0) or 0)),
-        expand_search=controllers.get_expand_search(request.form),
-        filters=controllers.populate_persistent_filters_choices(
-            institute_id=institute_id, category=category, form=form
-        ),
-        result_size=result_size,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        variant_type=variant_type,
-        **data,
+    return controllers.render_variants_page(
+        category="cancer",
+        institute_id=institute_id,
+        case_name=case_name,
+        form_builder=form_builder,
+        data_exporter=data_exporter,
+        decorator=decorator,
     )
 
 

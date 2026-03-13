@@ -72,12 +72,14 @@ from .utils import update_case_panels
 
 SV_VARIANT_PAGE = "variant.sv_variant"
 VARIANT_PAGE = "variant.variant"
+CANCER_VARIANT_PAGE = "variant.cancer_variant"
 DISMISS_VARIANT_LINK = {
     "sv": SV_VARIANT_PAGE,
     "cancer_sv": SV_VARIANT_PAGE,
     "mei": SV_VARIANT_PAGE,
     "str": VARIANT_PAGE,
     "snv": VARIANT_PAGE,
+    "cancer": CANCER_VARIANT_PAGE,
 }
 
 LOG = logging.getLogger(__name__)
@@ -301,14 +303,14 @@ def render_variants_page(
         return data_exporter(store, case_obj, variants_query)
 
     args = [store, institute_obj, case_obj, variants_query, page]
-    if category in ["snv", "snv_research"]:
+    if category in ["snv", "cancer"]:
         args.append(request.form)
 
     data = decorator(*args)
 
     dismiss_variant_options = (
         {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
-        if category == "cancer_sv"
+        if category in ["cancer_sv", "cancer"]
         else DISMISS_VARIANT_OPTIONS
     )
 
@@ -1852,7 +1854,7 @@ def _populate_form_genes_from_file(
         form.hgnc_symbols.data = hgnc_symbols_set
 
 
-def populate_snv_sv_mei_str_filters_form(
+def populate_variants_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
     """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
