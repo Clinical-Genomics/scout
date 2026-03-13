@@ -15,7 +15,7 @@ from mongomock import MongoClient
 from werkzeug.datastructures import MultiDict
 
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-from scout.build import build_case, build_institute, build_panel
+from scout.build import build_institute, build_panel
 from scout.build.genes.hgnc_gene import build_hgnc_gene
 from scout.build.genes.transcript import build_transcript
 from scout.build.user import build_user
@@ -64,6 +64,7 @@ from scout.load import load_hgnc_genes
 from scout.load.disease import load_disease_terms
 from scout.load.hpo import load_hpo_terms
 from scout.load.transcript import load_transcripts
+from scout.models.case import CaseFactory
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
@@ -956,7 +957,7 @@ def real_panel_database(request, real_gene_database, parsed_panel):
 def case_database(request, panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with institute, user and case"
     adapter = panel_database
-    case_obj = build_case(parsed_case, adapter)
+    case_obj = CaseFactory.build(parsed_case, adapter)
     adapter.add_case(case_obj, institute_obj)
 
     return adapter
@@ -968,7 +969,7 @@ def populated_database(request, panel_database, parsed_case, institute_obj):
     adapter = panel_database
 
     LOG.info("Adding case to adapter")
-    case_obj = build_case(parsed_case, adapter)
+    case_obj = CaseFactory.build(parsed_case, adapter)
     adapter.add_case(case_obj, institute_obj)
     return adapter
 
@@ -979,7 +980,7 @@ def real_populated_database(request, real_panel_database, parsed_case, institute
     adapter = real_panel_database
 
     LOG.info("Adding case to real adapter")
-    case_obj = build_case(parsed_case, adapter)
+    case_obj = CaseFactory.build(parsed_case, adapter)
     adapter.add_case(case_obj, institute_obj)
 
     return adapter

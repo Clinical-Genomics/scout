@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
-from pprint import pprint as pp
-from scout.exceptions import PedigreeError, ConfigError, IntegrityError
 
-from scout.build import build_case
+from scout.exceptions import ConfigError, IntegrityError
+from scout.models.case import CaseFactory
 
 
 def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
@@ -20,7 +19,7 @@ def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
 
     # GIVEN a parsed case
     # WHEN bulding a case model
-    case_obj = build_case(parsed_case, adapter)
+    case_obj = CaseFactory.build(parsed_case, adapter)
 
     # THEN make sure it is built in the proper way
     assert case_obj["_id"] == parsed_case["case_id"]
@@ -73,7 +72,8 @@ def test_build_minimal_case(adapter, institute_obj):
     # GIVEN a case without case id
     case_info = {"case_id": "test-case", "owner": "cust000"}
     # WHEN case is built
-    case_obj = build_case(case_info, adapter)
+    case_obj = CaseFactory.build(case_info, adapter)
+
     # THEN assert that it worked
     assert case_obj["_id"] == case_info["case_id"]
 
@@ -85,7 +85,7 @@ def test_build_case_no_case_id(adapter):
     # WHEN case is built
     # THEN a PedigreeError should be raised
     with pytest.raises(Exception):
-        build_case(case_info, adapter)
+        CaseFactory.build(case_info, adapter)
 
 
 def test_build_case_no_display_name(adapter, institute_obj):
@@ -93,7 +93,8 @@ def test_build_case_no_display_name(adapter, institute_obj):
     # GIVEN a case without case id
     case_info = {"case_id": "test-case", "owner": "cust000"}
     # WHEN case is built
-    case_obj = build_case(case_info, adapter)
+    case_obj = CaseFactory.build(case_info, adapter)
+
     # THEN assert that display_name was set to case_id
     assert case_obj["display_name"] == case_info["case_id"]
 
@@ -105,7 +106,7 @@ def test_build_case_no_owner(adapter, institute_obj):
     # WHEN case is built
     # THEN a IntegrityError should be raised since the owner has to exist in the database
     with pytest.raises(IntegrityError):
-        case_obj = build_case(case_info, adapter)
+        CaseFactory.build(case_info, adapter)
 
 
 def test_build_case_non_existing_owner(adapter, institute_obj):
@@ -114,8 +115,8 @@ def test_build_case_non_existing_owner(adapter, institute_obj):
     case_info = {"case_id": "test-case"}
     # WHEN case is built
     with pytest.raises(ConfigError):
-        # THEN a ConfigError should be raised since a case has to have a owner
-        case_obj = build_case(case_info, adapter)
+        # THEN a ConfigError should be raised since a case has to have an owner
+        CaseFactory.build(case_info, adapter)
 
 
 def test_build_case_no_valid_panel(adapter, institute_obj):
@@ -125,6 +126,6 @@ def test_build_case_no_valid_panel(adapter, institute_obj):
     # GIVEN a case without a valid gene panel
     case_info = {"case_id": "test-case", "owner": "cust000", "panel": ["FOO"]}
     # WHEN case is built
-    case_obj = build_case(case_info, adapter)
+    case_obj = CaseFactory.build(case_info, adapter)
     # THEN assert that case is loaded and panel will not be saved in case document
     assert case_obj["panels"] == []
