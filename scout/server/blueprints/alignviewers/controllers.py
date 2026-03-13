@@ -17,7 +17,7 @@ from scout.server.utils import case_append_alignments, find_index, get_case_geno
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
-DEFAULT_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
+DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]
 
 
 def authorize_common_tracks(resource: str) -> bool:
