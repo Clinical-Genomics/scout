@@ -72,28 +72,3 @@ SEVERE_SO_TERMS = (
     "stop_retained_variant",
     "coding_sequence_variant",
 )
-
-SEVERE_SO_TERMS_SV = (
-    "transcript_ablation",
-    "splice_donor_variant",
-    "splice_acceptor_variant",
-    "stop_gained",
-    "frameshift_variant",
-    "stop_lost",
-    "start_lost",
-    "initiator_codon_variant",
-    "inframe_insertion",
-    "inframe_deletion",
-    "missense_variant",
-    "protein_altering_variant",
-    "transcript_amplification",
-    "splice_region_variant",
-    "splice_donor_5th_base_variant",
-    "splice_donor_region_variant",
-    "splice_polypyrimidine_tract_variant",
-    "incomplete_terminal_codon_variant",
-    "synonymous_variant",
-    "start_retained_variant",
-    "stop_retained_variant",
-    "coding_sequence_variant",
-)
