@@ -1516,9 +1516,10 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
+    gene_panel_lookup = store.gene_to_panels(case_obj)
     variants_list = []
     case_affected_inds: list[str] = store._find_affected(case_obj)
+
     for variant in variant_res:
         variant_obj = parse_variant(
             store,
@@ -1528,22 +1529,24 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
             update=True,
             case_dismissed_vars=case_dismissed_vars,
         )
-        secondary_gene = None
 
-        if (
-            "first_rep_gene" in variant_obj
-            and variant_obj["first_rep_gene"] is not None
-            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
-        ):
+        secondary_gene = None
+        first_gene = variant_obj.get("first_rep_gene")
+
+        if first_gene and first_gene.get("hgnc_id") not in gene_panel_lookup:
             for gene in variant_obj["genes"]:
                 in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
 
                 if len(in_panels & set(form.gene_panels.data)) > 0:
                     secondary_gene = gene
+
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
 
-        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
+        set_overlapping_variants(
+            variant_obj=variant_obj,
+            limit_samples=case_affected_inds,
+        )
 
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
@@ -1552,11 +1555,10 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
                 continue
 
             ccv_classification = evaluation_obj["ccv_classification"]
-
             evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
             evaluations.append(evaluation_obj)
-        variant_obj["ccv_evaluations"] = evaluations
 
+        variant_obj["ccv_evaluations"] = evaluations
         variants_list.append(variant_obj)
 
     data = dict(
