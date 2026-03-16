@@ -24,7 +24,6 @@ from scout.server.utils import (
 
 from . import controllers
 from .forms import (
-    CancerFiltersForm,
     FiltersForm,
     FusionFiltersForm,
     SvFiltersForm,
