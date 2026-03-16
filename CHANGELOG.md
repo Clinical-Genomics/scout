@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - The gens extension now generates version appropriate links (#6105)
 - Refactored snv variants code to share same routines as other variant categories (#6116)
 - On managed variants page, print maintainers names instead of emails/ids (#6121)
+- Enable ClinVar test API URL by default on Scout demo config settings (#6129)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
