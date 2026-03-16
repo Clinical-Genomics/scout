@@ -1,7 +1,7 @@
 import responses
 from flask import url_for
 
-from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT, PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL_TEST, PRECLINVAR_URL
 from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
@@ -296,7 +296,7 @@ def test_clinvar_api_status(app):
 
     responses.add(
         responses.GET,
-        f"{CLINVAR_API_URL_DEFAULT}{DEMO_SUBMISSION_ID}/actions/",
+        f"{CLINVAR_API_URL_TEST}{DEMO_SUBMISSION_ID}/actions/",
         json={"actions": actions},
         status=200,
     )
@@ -348,7 +348,7 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         # GIVEN a mocked ClinVar API service
         responses.add(
             responses.POST,
-            CLINVAR_API_URL_DEFAULT,
+            CLINVAR_API_URL_TEST,
             json={"id": "SUB1234567"},
             status=201,
         )
