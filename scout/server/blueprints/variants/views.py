@@ -8,7 +8,6 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     ESCAT_TIER_OPTIONS,
