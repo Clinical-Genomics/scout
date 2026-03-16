@@ -78,7 +78,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # ClinVar API URL
 # An alternative URL that will be used to send ClinVar submissions to. Just uncomment the line below to use the test API
-# CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
