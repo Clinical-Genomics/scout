@@ -3,12 +3,12 @@ import responses
 from flask import url_for
 
 from scout.constants.clinvar import ASSERTION_CRITERIA_GERM_ID, ASSERTION_GERM_GERM_DB
+from scout.constants.clinvar import CLINVAR_API_URL_TEST, PRECLINVAR_URL
 from scout.server.extensions import store
 
 GERMLINE = "germline"
 ONCOGENICITY = "oncogenicity"
 
-CLINVAR_API_URL_TEST = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 STATUS_ENDPOINT = "clinvar.clinvar_submission_status"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 VAR_SAVE_ENDPOINT = "clinvar.clinvar_variant_save"

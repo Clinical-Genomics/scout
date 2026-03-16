@@ -80,8 +80,9 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 # BEACON_TOKEN = "DEMO"
 
 # ClinVar API URL
-# An alternative URL that will be used to send ClinVar submissions to. Just uncomment the line below to use the test API
-# CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+# Comment the line below to use the official (non-test) ClinVar API
+# Documentation: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
