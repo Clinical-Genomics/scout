@@ -1551,12 +1551,10 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
         for evaluation_obj in store.get_ccv_evaluations(variant_obj):
-            if evaluation_obj["case_id"] == case_obj["_id"]:
-                continue
-
-            ccv_classification = evaluation_obj["ccv_classification"]
-            evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
-            evaluations.append(evaluation_obj)
+            if evaluation_obj["case_id"] != case_obj["_id"]:
+                ccv_classification = evaluation_obj["ccv_classification"]
+                evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
+                evaluations.append(evaluation_obj)
 
         variant_obj["ccv_evaluations"] = evaluations
         variants_list.append(variant_obj)
