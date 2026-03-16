@@ -61,6 +61,7 @@ from scout.server.utils import (
 
 from .forms import (
     FILTERSFORMCLASS,
+    CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
     FusionFiltersForm,
@@ -1503,7 +1504,14 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
+def cancer_variants(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variants_query: dict,
+    page: int,
+    form: CancerFiltersForm,
+):
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
