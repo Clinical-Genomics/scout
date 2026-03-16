@@ -1519,6 +1519,7 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
     gene_panel_lookup = store.gene_to_panels(case_obj)
     variants_list = []
     case_affected_inds: list[str] = store._find_affected(case_obj)
+    selected_panels = set(form.gene_panels.data)
 
     for variant in variant_res:
         variant_obj = parse_variant(
@@ -1534,11 +1535,14 @@ def cancer_variants(store, institute_obj, case_obj, variants_query, page, form):
         first_gene = variant_obj.get("first_rep_gene")
 
         if first_gene and first_gene.get("hgnc_id") not in gene_panel_lookup:
-            for gene in variant_obj["genes"]:
-                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
-
-                if len(in_panels & set(form.gene_panels.data)) > 0:
-                    secondary_gene = gene
+            secondary_gene = next(
+                (
+                    gene
+                    for gene in variant_obj["genes"]
+                    if set(gene_panel_lookup.get(gene["hgnc_id"], [])) & selected_panels
+                ),
+                None,
+            )
 
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
