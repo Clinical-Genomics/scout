@@ -78,6 +78,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # ClinVar API URL
 # Comment the line below to use the official (non-test) ClinVar API
+# Documentation: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
 CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 
 # connection details for LoqusDB MongoDB database
