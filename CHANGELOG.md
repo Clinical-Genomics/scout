@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored snv variants code to share same routines as other variant categories (#6116)
 - On managed variants page, print maintainers names instead of emails/ids (#6121)
 - Enable ClinVar test API URL by default on Scout demo config settings (#6129)
+- ClinVar settings (API and list of users allowed to send API submissions) are no longer shown only to admin users (#6134)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 ### Fixed
