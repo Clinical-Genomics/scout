@@ -23,7 +23,9 @@ def get_cytoband_coordinates(chrom: str, pos: int, build: str) -> str:
     return coordinate
 
 
-def sv_length(pos: int, end: int, chrom: str, end_chrom: str, svlen: int | None = None) -> int:
+def sv_length(
+    pos: int, end: int | None, chrom: str, end_chrom: str, svlen: int | None = None
+) -> int:
     """Return the length of a structural variant
 
     Return inf-like number if on different molecules. Use svlen if available.
