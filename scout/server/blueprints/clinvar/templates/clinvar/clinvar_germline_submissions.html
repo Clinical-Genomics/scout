@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
-{% from "clinvar/components.html" import action_modal, deprecated_submission_table, render_dict_array, submit_modal, variant_submission_table, update_submission_status_form %}
+{% from "clinvar/components.html" import action_modal, deprecated_submission_table, render_dict_array, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -46,7 +46,7 @@
     {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
-          {{ submission_panel(submission) }}
+          {{ submission_panel(submission, institute) }}
         {% endif %}
       {% endfor %}
     {% endfor %}
@@ -54,59 +54,6 @@
   {% else %}
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
-</div>
-{% endmacro %}
-
-{% macro submission_panel(subm_obj) %}
-<div class="accordion accordion-flush" id="accordionFlushSubmissions">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="header-{{subm_obj._id}}">
-      <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
-      </a>
-    </h2>
-    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
-      <div class="accordion-body">
-        <div class="row">
-          {{ update_submission_status_form(institute, subm_obj) }}
-        </div>
-        <div class="row">
-          <table>
-            <caption></caption>
-            <tr><th></th></tr>
-            <tr>
-              <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-              <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
-              <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id or ""}}"></td>
-              <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
-              </form>
-              {% if subm_obj.status == 'open' and show_submit  %}
-                <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.send_api_submission', institute_id=institute._id, submission=subm_obj._id, subm_type='germline') }}" method="POST">
-                {{ submit_modal(institute) }}
-                  <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
-                </form>
-              {% endif %}
-              {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
-                 <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ action_modal("status", institute, subm_obj._id) }}
-                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
-                 </form>
-              {% endif %}
-            </tr>
-          </table>
-        </div>
-        <div>
-          {% if subm_obj.germlineSubmission and subm_obj.germlineSubmission | length > 0 %}
-            {{ variant_submission_table(subm_obj, "germline") }}
-          {% elif not subm_obj.type and subm_obj.variant_data %} <!-- Deprecated submission type -->
-            {{ deprecated_submission_table(subm_obj) }}
-          {% else %}
-            <p>This submission has no variants yet.</p>
-          {% endif %}
-        </div> <!--variant data div end -->
-      </div>
-    </div>
-  </div>
 </div>
 {% endmacro %}
 
