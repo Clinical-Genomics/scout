@@ -98,6 +98,23 @@ def get_end_chrom(alt: str, chrom: str) -> str:
     return end_chrom
 
 
+def get_svtype(variant: cyvcf2.Variant, alt: str, alt_len: int) -> str:
+    """Find SV type for structural variants. The INFO tag has been deprecated in the VCF standard,
+    but not removed. If it is still there we can use it."""
+    svtype = variant.INFO.get("SVTYPE")
+    if svtype:
+        svtype = svtype.lower()
+        if svtype == "sgl":
+            svtype = "bnd"
+    else:
+        alt_type = alt.lstrip("<").rstrip(">").lower()
+        if alt_type in SV_TYPES:
+            svtype = alt_type
+        elif "." in alt and alt_len > 1:
+            svtype = "bnd"
+    return svtype
+
+
 def parse_coordinates(variant: cyvcf2.Variant, category: str, build: str = "37") -> dict:
     """Find out the coordinates for a variant
 
@@ -135,23 +152,6 @@ def parse_coordinates(variant: cyvcf2.Variant, category: str, build: str = "37")
 
     match category:
         case "sv" | "cancer_sv" | "fusion":
-
-            def get_svtype(variant: cyvcf2.Variant, alt: str, alt_len: int) -> str:
-                """Find SV type for structural variants. The INFO tag has been deprecated in the VCF standard,
-                but not removed. If it is still there we can use it."""
-                svtype = variant.INFO.get("SVTYPE")
-                if svtype:
-                    svtype = svtype.lower()
-                    if svtype == "sgl":
-                        svtype = "bnd"
-                else:
-                    alt_type = alt.lstrip("<").rstrip(">").lower()
-                    if alt_type in SV_TYPES:
-                        svtype = alt_type
-                    elif "." in alt and alt_len > 1:
-                        svtype = "bnd"
-                return svtype
-
             svtype = get_svtype(variant, alt, alt_len)
 
             sub_category = svtype
