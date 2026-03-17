@@ -5,17 +5,8 @@ import cyvcf2
 from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38, SV_TYPES
 
 
-def get_cytoband_coordinates(chrom, pos, build):
-    """Get the cytoband coordinate for a position
-
-    Args:
-        chrom(str)
-        pos(int)
-        build(str)
-
-    Returns:
-        coordinate(str)
-    """
+def get_cytoband_coordinates(chrom: str, pos: int, build: str) -> str:
+    """Get the cytoband coordinate for a position"""
     coordinate = ""
 
     if "38" in str(build):
