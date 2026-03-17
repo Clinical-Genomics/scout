@@ -48,6 +48,8 @@
         <div>
           {% if subm_obj.germlineSubmission and subm_obj.germlineSubmission | length > 0 %}
             {{ variant_submission_table(subm_obj, "germline") }}
+          {% elif subm_obj.oncogenicitySubmission and subm_obj.oncogenicitySubmission | length > 0 %}
+            {{ variant_submission_table(subm_obj, "oncogenicity") }}
           {% elif not subm_obj.type and subm_obj.variant_data %} <!-- Deprecated submission type -->
             {{ deprecated_submission_table(subm_obj) }}
           {% else %}
