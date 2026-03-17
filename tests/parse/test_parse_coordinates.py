@@ -123,7 +123,22 @@ def test_parse_coordinates_translocation_2(mock_variant):
     assert coordinates["sub_category"] == "bnd"
 
 
-# parse length #
+def test_parse_coordinates_sgl_bnd(mock_variant):
+    """Test to parse the coordinates for a single end BND (with an aliased svtype)"""
+    mock_variant.INFO = {"SVTYPE": "SGL"}
+    mock_variant.REF = "G"
+    mock_variant.ALT = ".G"
+    mock_variant.POS = 724779
+    mock_variant.end = 724779
+    mock_variant.var_type = "sv"
+    variant = mock_variant
+
+    coordinates = parse_coordinates(variant, "sv")
+
+    assert coordinates["position"] == variant.POS
+    assert coordinates["end"] == variant.POS
+    assert coordinates["length"] == -1
+    assert coordinates["sub_category"] == "bnd"
 
 
 def test_get_sv_length_small_ins():
