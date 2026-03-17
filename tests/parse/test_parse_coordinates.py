@@ -249,3 +249,19 @@ def test_get_end_deletion():
 
     # THEN assert that the end is the same as en coordinate described in alt field
     assert end == svend
+
+
+def test_get_end_sgl_bnd():
+    """
+    Test setting end for a SV single end BND
+    """
+    alt = "GTCA."
+    pos = 123455
+    svend = None
+    svlen = None
+
+    # WHEN parsing the end coordinate
+    end = sv_end(pos, alt, svend, svlen)
+
+    # THEN the end is the same as the start pos
+    assert end == pos

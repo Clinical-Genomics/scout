@@ -47,7 +47,7 @@ def sv_length(pos, end, chrom, end_chrom, svlen=None):
         return int(10e10)
     if svlen:
         return abs(int(svlen))
-    # Some software does not give a length but they give END
+    # Some software does not give a length, but they give END
     if not end:
         return -1
 
@@ -60,16 +60,19 @@ def sv_length(pos, end, chrom, end_chrom, svlen=None):
 def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
     """Return the end coordinate for a structural variant
     The END field from INFO usually works fine, although for some cases like insertions the callers
-     set end to same as pos. In those cases we can hope that there is a svlen...
+     set end to same as pos. In those cases we can hope that there is a svlen..
 
-    Translocations needs their own treatment as usual
+    Translocations need their own treatment, setting end based on the info in the ALT allele pattern.
+
+    Single end BNDs by definition have no real end, and get END set to POS.
     """
     end = svend
 
     if ":" in alt:
-        match = BND_ALT_PATTERN.match(alt)
-        if match:
+        if match := BND_ALT_PATTERN.match(alt):
             end = int(match.group(2))
+    elif "." in alt and len(alt) > 1:
+        end = pos
 
     if end is None and svlen:
         end = pos + svlen
@@ -77,23 +80,16 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
     return end
 
 
-def get_end_chrom(alt, chrom):
-    """Return the end chromosome for a tranlocation
+def get_end_chrom(alt: str, chrom: str) -> str:
+    """Return the end chromosome for a translocation
 
-    Args:
-        alt(str)
-        chrom(str)
-
-    Returns:
-        end_chrom(str)
+    BND will often be translocations between different chromosomes
     """
     end_chrom = chrom
     if ":" not in alt:
         return end_chrom
 
-    match = BND_ALT_PATTERN.match(alt)
-    # BND will often be translocations between different chromosomes
-    if match:
+    if match := BND_ALT_PATTERN.match(alt):
         other_chrom = match.group(1)
         match = CHR_PATTERN.match(other_chrom)
         end_chrom = match.group(2)
