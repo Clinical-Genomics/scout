@@ -2,8 +2,12 @@ import pytest
 import responses
 from flask import url_for
 
-from scout.constants.clinvar import ASSERTION_CRITERIA_GERM_ID, ASSERTION_GERM_GERM_DB
-from scout.constants.clinvar import CLINVAR_API_URL_TEST, PRECLINVAR_URL
+from scout.constants.clinvar import (
+    ASSERTION_CRITERIA_GERM_ID,
+    ASSERTION_GERM_GERM_DB,
+    CLINVAR_API_URL_TEST,
+    PRECLINVAR_URL,
+)
 from scout.server.extensions import store
 
 GERMLINE = "germline"
