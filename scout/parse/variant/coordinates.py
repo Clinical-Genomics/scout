@@ -32,24 +32,20 @@ def get_cytoband_coordinates(chrom, pos, build):
     return coordinate
 
 
-def sv_length(pos, end, chrom, end_chrom, svlen=None):
+def sv_length(pos: int, end: int, chrom: str, end_chrom: str, svlen: int | None = None) -> int:
     """Return the length of a structural variant
 
-    Args:
-        pos(int)
-        end(int)
-        chrom(str)
-        end_chrom(str)
-        svlen(int)
+    Return inf-like number if on different molecules. Use svlen if available.
 
-    Returns:
-        length(int)
+    Some software does not give a length, but they (or cyvcf2) give END
+
+    end identical to POS gives length -1, as does a missing end.
     """
     if chrom != end_chrom:
         return int(10e10)
     if svlen:
         return abs(int(svlen))
-    # Some software does not give a length, but they give END
+
     if not end:
         return -1
 
