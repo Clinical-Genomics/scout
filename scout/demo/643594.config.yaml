@@ -137,7 +137,7 @@ omics_files:
     methbat: scout/demo/methbat/HM24385_methbat_sign.tsv
     methbat_research: scout/demo/methbat/HM24385_methbat_sign.tsv
 
-paraphase: scout/demo/643594.paraphrase.json
+paraphrase: scout/demo/643594.paraphrase.json
 smn_tsv: scout/demo/643594.solo.smn.tsv
 
 madeline: scout/demo/madeline.xml
