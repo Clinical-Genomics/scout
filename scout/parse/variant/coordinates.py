@@ -1,5 +1,7 @@
 """Code to parse variant coordinates"""
 
+import cyvcf2
+
 from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38, SV_TYPES
 
 
@@ -96,13 +98,8 @@ def get_end_chrom(alt: str, chrom: str) -> str:
     return end_chrom
 
 
-def parse_coordinates(variant, category, build="37"):
+def parse_coordinates(variant: cyvcf2.Variant, category: str, build: str = "37") -> dict:
     """Find out the coordinates for a variant
-
-    Args:
-        variant(cyvcf2.Variant)
-        category(str): snv, sv, str, cancer, cancer_sv
-        build(str): "37" or "38"
 
     Returns:
         coordinates(dict): A dictionary on the form:
@@ -136,44 +133,57 @@ def parse_coordinates(variant, category, build="37"):
     ref = variant.REF
     ref_len = len(ref)
 
-    if category in ["sv", "cancer_sv", "fusion"]:
-        svtype = variant.INFO.get("SVTYPE")
-        if svtype:
-            svtype = svtype.lower()
-        else:
-            alt_type = alt.lstrip("<").rstrip(">").lower()
-            if alt_type in SV_TYPES:
-                svtype = alt_type
-        sub_category = svtype
-        if sub_category == "bnd":
-            end_chrom = get_end_chrom(alt, chrom)
-        end = sv_end(
-            pos=position,
-            alt=alt,
-            svend=variant.INFO.get("END"),
-            svlen=variant.INFO.get("SVLEN"),
-        )
-        length = sv_length(
-            pos=position,
-            end=end,
-            chrom=chrom,
-            end_chrom=end_chrom,
-            svlen=variant.INFO.get("SVLEN"),
-        )
-    elif category == "mei":
-        sub_category = "mei"
-        end = int(variant.end)
-        length = alt_len
-        if ref_len != alt_len:
+    match category:
+        case "sv" | "cancer_sv" | "fusion":
+
+            def get_svtype(variant: cyvcf2.Variant, alt: str, alt_len: int) -> str:
+                """Find SV type for structural variants. The INFO tag has been deprecated in the VCF standard,
+                but not removed. If it is still there we can use it."""
+                svtype = variant.INFO.get("SVTYPE")
+                if svtype:
+                    svtype = svtype.lower()
+                    if svtype == "sgl":
+                        svtype = "bnd"
+                else:
+                    alt_type = alt.lstrip("<").rstrip(">").lower()
+                    if alt_type in SV_TYPES:
+                        svtype = alt_type
+                    elif "." in alt and alt_len > 1:
+                        svtype = "bnd"
+                return svtype
+
+            svtype = get_svtype(variant, alt, alt_len)
+
+            sub_category = svtype
+            if sub_category == "bnd":
+                end_chrom = get_end_chrom(alt, chrom)
+            end = sv_end(
+                pos=position,
+                alt=alt,
+                svend=variant.INFO.get("END"),
+                svlen=variant.INFO.get("SVLEN"),
+            )
+            length = sv_length(
+                pos=position,
+                end=end,
+                chrom=chrom,
+                end_chrom=end_chrom,
+                svlen=variant.INFO.get("SVLEN"),
+            )
+        case "mei":
             sub_category = "mei"
-            length = abs(ref_len - alt_len)
-    else:
-        sub_category = "snv"
-        end = int(variant.end)
-        length = alt_len
-        if ref_len != alt_len:
-            sub_category = "indel"
-            length = abs(ref_len - alt_len)
+            end = int(variant.end)
+            length = alt_len
+            if ref_len != alt_len:
+                sub_category = "mei"
+                length = abs(ref_len - alt_len)
+        case _:
+            sub_category = "snv"
+            end = int(variant.end)
+            length = alt_len
+            if ref_len != alt_len:
+                sub_category = "indel"
+                length = abs(ref_len - alt_len)
 
     coordinates = {
         "chrom": chrom,
