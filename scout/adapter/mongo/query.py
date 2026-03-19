@@ -807,7 +807,7 @@ class QueryHandler(object):
                     )
 
                 case "methbat_significance":
-                    sign_values =
+                    sign_values = query.get("methbat_significance")
                     mongo_secondary_query.append(
                         {"compare_label": {"$in": sign_values}},
                     )
