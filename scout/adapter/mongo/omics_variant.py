@@ -194,6 +194,7 @@ class OmicsVariantHandler:
         else:
             nr_of_variants = skip + nr_of_variants
 
+        LOG.warning(query)
         variants_query = self.build_query(case_id, query=query, category=category, build=build)
 
         if query.get("sort_by") and query.get("sort_order"):
