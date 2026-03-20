@@ -328,7 +328,7 @@ class OutlierFiltersForm(FlaskForm):
     padjust = FloatField("P adj Outrider")
     p_adjust_gene = FloatField("P adj Fraser")
 
-    methbat_significance = SelectMultipleField(
+    methbat_compare = SelectMultipleField(
         "Methbat significance", choices=SIGNIFICANT_METHBAT_COMPARE
     )
 
