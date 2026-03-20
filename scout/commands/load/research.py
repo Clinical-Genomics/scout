@@ -72,6 +72,7 @@ def research(case_id, institute, force):
     LOG.info("Running scout load research")
     adapter = store
 
+    # Fetch cases
     if case_id:
         case_id, institute_id = get_case_and_institute(
             adapter=adapter, case_id=case_id, institute=institute
@@ -82,24 +83,31 @@ def research(case_id, institute, force):
             raise click.Abort()
         case_objs = [case_obj]
     else:
-        # Fetch all cases that have requested research
         case_objs = adapter.cases(research_requested=True)
 
-    files = False
     raise_file_not_found = False
+    missing_per_case = {}
+
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
             continue
 
+        files = False  # reset per case
+
         for file_type in ORDERED_FILE_TYPE_MAP:
             if ORDERED_FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
 
-            if case_obj["vcf_files"].get(file_type):
-                if not path.isfile(case_obj["vcf_files"].get(file_type)):
+            file_path = case_obj["vcf_files"].get(file_type)
+
+            # Only track files that are configured but missing on disk
+            if file_path:
+                if not path.isfile(file_path):
                     raise_file_not_found = True
+                    missing_per_case.setdefault(case_obj["_id"], []).append(file_path)
                     continue
+
                 files = True
                 upload_research_variants(
                     adapter=adapter,
@@ -110,22 +118,20 @@ def research(case_id, institute, force):
                 )
 
         if not files:
-            LOG.warning(
-                "Research requested, but no research files found for case %s. Consider ordering a rerun.",
-                case_obj["_id"],
-            )
-            raise_file_not_found = True
             continue
+
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
         adapter.update_case(case_obj, keep_date=True)
 
-        # Update case variants count
         adapter.case_variants_count(
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
         )
 
+    # Print aggregated warning if any files are missing
     if raise_file_not_found:
-        raise FileNotFoundError(
-            "At least one of the remaining cases where research is requested is missing all research files."
+        message = "\n\n".join(
+            f"Case {case_id}: missing {', '.join(files)}"
+            for case_id, files in missing_per_case.items()
         )
+        raise FileNotFoundError(f"Some cases are missing research files:\n{message}")
