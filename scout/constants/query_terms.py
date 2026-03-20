@@ -69,4 +69,5 @@ SECONDARY_CRITERIA = [
     "delta_psi",
     "padjust",
     "p_adjust_gene",
+    "methbat_compare",
 ]
