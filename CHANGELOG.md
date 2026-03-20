@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On managed variants page, print maintainers names instead of emails/ids (#6121)
 - Enable ClinVar test API URL by default on Scout demo config settings (#6129)
 - ClinVar settings (API and list of users allowed to send API submissions) are no longer shown only to admin users (#6134)
+- Make gene panel's display name editable by users, if they are the panel's maintainers or admins ()
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)

@@ -47,35 +47,30 @@
     <div class="panel-heading">Overview</div>
     <ul class="list-group">
       <li class="list-group-item">
-        <label for="display_name">Full name</label>
-        <span class="float-end" id="display_name">
-          {{ panel.display_name }}
-        </span>
-        {% if panel.hidden %}
-          <span class="badge bg-danger">Removed</span>
-        {% endif %}
-      </li>
-      <li class="list-group-item">
         <label for="panel_name">Panel ID</label>
         <span class="float-end" id="panel_name">{{ panel.panel_name }}</span>
       </li>
-
+      <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
       <div class="list-group-item">
-        <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-          <div class="form-group">
-              <label for="panel_description">Description</label>
-              <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
-          </div>
-          <div class="btn-group">
-            <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescription()">
-              Edit
-            </button>
-            <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
-              Save
-            </button>
-          </div>
-        </form>
+        <div class="form-group">
+          <label for="display_name">Full name</label>
+          <input type="text" class="form-control float-end" id="display_name" name="display_name" value="{{ panel.display_name }}" readonly>
+          {% if panel.hidden %}
+            <span class="badge bg-danger">Removed</span>
+          {% endif %}
+          <label for="panel_description">Description</label>
+          <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
+        </div>
+        <div class="btn-group">
+          <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescriptionName()">
+            Edit
+          </button>
+          <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
+            Save
+          </button>
+        </div>
       </div>
+      </form>
       <li class="list-group-item">
         <label for="version">Version</label>
         <span class="float-end" id="version">{{ panel.version }}</span>
@@ -328,8 +323,9 @@
           container: 'body'})
     });
 
-    function editDescription() {
+    function editDescriptionName() {
       document.getElementById("panel_description").readOnly = false
+      document.getElementById("display_name").readOnly = false
     }
 
     $(function () {
