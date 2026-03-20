@@ -51,25 +51,38 @@
         <span class="float-end" id="panel_name">{{ panel.panel_name }}</span>
       </li>
       <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-      <div class="list-group-item">
-        <div class="form-group">
-          <label for="display_name">Full name</label>
-          <input type="text" class="form-control float-end" id="display_name" name="display_name" value="{{ panel.display_name }}" readonly>
-          {% if panel.hidden %}
-            <span class="badge bg-danger">Removed</span>
-          {% endif %}
-          <label for="panel_description">Description</label>
-          <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description if panel.description}}</textarea>
+        <div class="list-group-item">
+          <div class="form-group mb-3">
+            <!-- Full name with badge -->
+            <div class="d-flex align-items-center justify-content-between">
+              <label for="display_name" class="mb-0">Full name</label>
+              {% if panel.hidden %}
+                <span class="badge bg-danger ms-2">Removed</span>
+              {% endif %}
+            </div>
+            <input type="text" class="form-control" id="display_name" name="display_name"
+                   value="{{ panel.display_name }}" readonly>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group mb-3">
+            <label for="panel_description" class="mb-1">Description</label>
+            <textarea class="form-control" id="panel_description" name="panel_description"
+                      rows="3" readonly>{{ panel.description if panel.description }}</textarea>
+          </div>
+
+          <!-- Buttons -->
+          <div class="btn-group">
+            <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary"
+                    onclick="editDescriptionName()">
+              Edit
+            </button>
+            <button type="submit" name="update_description" value="update_description"
+                    class="btn btn-sm btn-primary">
+              Save
+            </button>
+          </div>
         </div>
-        <div class="btn-group">
-          <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescriptionName()">
-            Edit
-          </button>
-          <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
-            Save
-          </button>
-        </div>
-      </div>
       </form>
       <li class="list-group-item">
         <label for="version">Version</label>
