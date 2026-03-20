@@ -72,7 +72,6 @@ def research(case_id, institute, force):
     LOG.info("Running scout load research")
     adapter = store
 
-    # Fetch cases
     if case_id:
         case_id, institute_id = get_case_and_institute(
             adapter=adapter, case_id=case_id, institute=institute
@@ -93,7 +92,7 @@ def research(case_id, institute, force):
             LOG.warning("research not requested, use '--force'")
             continue
 
-        files = False  # reset per case
+        files = False
 
         for file_type in ORDERED_FILE_TYPE_MAP:
             if ORDERED_FILE_TYPE_MAP[file_type]["variant_type"] != "research":
@@ -101,7 +100,6 @@ def research(case_id, institute, force):
 
             file_path = case_obj["vcf_files"].get(file_type)
 
-            # Only track files that are configured but missing on disk
             if file_path:
                 if not path.isfile(file_path):
                     raise_file_not_found = True
@@ -128,7 +126,6 @@ def research(case_id, institute, force):
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
         )
 
-    # Print aggregated warning if any files are missing
     if raise_file_not_found:
         message = "\n\n".join(
             f"Case {case_id}: missing {', '.join(files)}"
