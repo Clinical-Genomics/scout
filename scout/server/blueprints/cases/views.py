@@ -592,7 +592,7 @@ def status(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/assign", methods=["POST"])
 @cases_bp.route("/<institute_id>/<case_name>/<user_id>/<inactivate>/assign", methods=["POST"])
 def assign(institute_id, case_name, user_id=None, inactivate=False):
-    """Assign and unassign a user from a case."""
+    """Assign and un-assign a user from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     if user_id:
