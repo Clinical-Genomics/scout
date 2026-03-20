@@ -186,12 +186,10 @@
     {{ form.p_adjust_gene.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Fraser gene adjusted P-value'}) }}
     {{ form.p_adjust_gene(class="form-control") }}
   </div>
-  {% if is_methylation %}
   <div class="col-2">
     {{ form.methbat_compare.label(class="control-label") }}
-    {{ form.methbat_compare(class="form-control selectpicker", data_style="btn-secondary") }}
+    {{ form.methbat_compare(class="form-control selectpicker", data_style="btn-secondary", disabled=not is_methylation) }}
   </div>
-  {% endif %}
 </div>
 <div class="row">
   <div class="col-2">
