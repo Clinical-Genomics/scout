@@ -806,6 +806,11 @@ class QueryHandler(object):
                         {"p_value": {"$lt": p_value}},
                     )
 
+                case "methbat_compare":
+                    sign_values = query.get("methbat_compare")
+                    mongo_secondary_query.append(
+                        {"compare_label": {"$in": sign_values}},
+                    )
         return mongo_secondary_query
 
 
