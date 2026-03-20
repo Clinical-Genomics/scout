@@ -130,8 +130,8 @@ def panel(panel_id):
 
     if request.method == "POST":
         if request.form.get("update_description") or request.form.get("display_name"):
-            panel_obj["description"] = request.form["panel_description"]
-            panel_obj["display_name"] = request.form["display_name"]
+            panel_obj["description"] = request.form.get("panel_description")
+            panel_obj["display_name"] = request.form.get("display_name")
 
             if controllers.panel_write_granted(panel_obj, current_user):
                 store.update_panel(panel_obj=panel_obj)
