@@ -59,7 +59,7 @@
             <span class="badge bg-danger">Removed</span>
           {% endif %}
           <label for="panel_description">Description</label>
-          <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
+          <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description if panel.description}}</textarea>
         </div>
         <div class="btn-group">
           <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescriptionName()">
