@@ -5,11 +5,13 @@ from pathlib import Path
 
 import click
 
+from scout.constants.case_tags import ANALYSIS_TYPES
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
 UPDATE_DICT = {
+    "analysis_type": ANALYSIS_TYPES,
     "assembly_alignment_path": "path",
     "bam_file": "path",
     "bionano_access.sample": "str",
@@ -119,7 +121,7 @@ def _validate_input(case_obj: dict, ind: str, key: str, value: str, delete: bool
         return True
 
     if value is None:
-        LOG.error(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
+        LOG.error(f"Please specify a value {UPDATE_DICT[key]} for key {key}")
         return False
 
     if UPDATE_DICT[key] == "path":
