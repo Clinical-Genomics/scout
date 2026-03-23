@@ -223,12 +223,14 @@
                     <button class="btn btn-xs btn-secondary" data-bs-toggle="modal" data-bs-target="#preview_{{model._id}}">
                       {{model.name}}
                     </button>
-                    {{ model_preview(institute=institute, phenomodel=model, assign=true, case=case) }}
                   {% endfor %}
                 </div>
               </div>
             </div>
           </div>
+          {% for model in phenomodels %}
+            {{ model_preview(institute=institute, phenomodel=model, assign=true, case=case) }}
+          {% endfor %}
         {% endif %}
 
       <div class="panel-default">
