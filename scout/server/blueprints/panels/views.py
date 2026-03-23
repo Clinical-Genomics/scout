@@ -134,7 +134,7 @@ def panel(panel_id):
             panel_obj["display_name"] = request.form.get("display_name")
 
             if controllers.panel_write_granted(panel_obj, current_user):
-                store.update_panel(panel_obj=panel_obj)
+                store.update_panel(panel_obj=panel_obj, date_obj=panel_obj.get("date"))
             else:
                 flash(
                     "Permission denied: please ask a panel maintainer or admin for help.",
