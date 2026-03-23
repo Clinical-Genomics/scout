@@ -493,10 +493,15 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
 
     First, check if they are already stored on variant. If so, return them.
     Second, differentiate between "sv" and "snv" (fallback) rank models.
+
     If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
+
+    Warn if the version in file differs from the case given.
+
     Once a URL is available, retrieve the rank model, and try to retrieve rank model param ranges to display on variant page.
-    Loop over each rank score category and collect model explanation to display on variant page.
+    Loop over each rank score category (examples: Splicing, Consequence, Deleteriousness) and collect model explanation to display on variant page.
     """
+
     rank_score_results = []
     rank_model_version = None
     rm_link_prefix = None
@@ -527,8 +532,15 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         )
 
     if rank_model := store.rank_model_from_url(rank_model_url):
+        if version_from_model := rank_score_results.get("Version"):
+            if rank_model_version and version_from_model != rank_model_version:
+                flash(
+                    f"Rank model file version {version_from_model} and case rank model version {rank_model_version} disagree.",
+                    "warning",
+                )
+
         for score in rank_score_results:
-            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+            category = score.get("category")
             score["model_ranges"] = store.get_ranges_info(rank_model, category)
             score["min"], score["max"] = store.range_span(score["model_ranges"])
 
