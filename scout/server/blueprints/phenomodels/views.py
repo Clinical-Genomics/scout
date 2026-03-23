@@ -1,3 +1,5 @@
+import logging
+
 from bson import ObjectId
 from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
@@ -15,6 +17,7 @@ phenomodels_bp = Blueprint(
     static_url_path="/phenomodels/static",
     template_folder="templates",
 )
+LOG = logging.getLogger(__name__)
 
 
 @phenomodels_bp.route("/<institute_id>/advanced_phenotypes", methods=["GET"])

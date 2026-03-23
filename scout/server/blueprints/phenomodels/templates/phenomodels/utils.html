@@ -24,7 +24,7 @@
                 {% if term_obj.term_title %}
                   <strong>{{term_obj.term_title}}</strong><br>
                 {% endif %}
-                <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
+                <input type="checkbox" name="checked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
                 {% if term_obj.children %}
                   <a href="#" onclick="toggleDiv('{{term_obj.name}}#children')"><label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label></a>
                 {% else %}
@@ -35,7 +35,7 @@
                 <ul>
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
-                    <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
+                    <input type="checkbox" name="checked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
                     {%- if item.children -%}
                       <ul class="tree">{{ loop(item.children) }}</ul>
                     {%- endif %}
@@ -57,7 +57,7 @@
              <div class="row">
                <div class="col-6 d-flex align-items-center gap-2">
                  <label for="affected_inds">Case individuals/samples</label>
-                 <select name="affected_inds" multiple class="selectpicker" data-style="btn-secondary">
+                 <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary">
                     {% for ind in case.individuals %}
                       <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
                         {{ind.display_name}}
