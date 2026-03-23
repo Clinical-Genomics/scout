@@ -48,7 +48,7 @@ class RankModelHandler(object):
         except Exception as ex:
             LOG.error(ex)
 
-    def add_rank_model(self, rank_model_url: str) -> Dict:
+    def add_rank_model(self, rank_model_url: str) -> dict:
         """Fetch a rank model ini file from remote.
         If the URL does not start with http, assume it is instead a local file.
 
