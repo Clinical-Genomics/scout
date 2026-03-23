@@ -34,14 +34,9 @@ class RankModelHandler(object):
 
         return StringIO(rank_model_lines)
 
-    def parse_rank_model(self, stringio):
-        """Use configobj lib to extract RankModel key/values and return them in a dictionary
-
-        Args:
-            stringio(StringIO): Content of model from a file as a StringIO
-
-        Returns:
-            ConfigObj.dict(dictionary): dictionary with variant rank model key/values
+    def parse_rank_model(self, stringio: StringIO):
+        """Use configobj lib to extract RankModel key/values from content of a model from a file as a StringIO
+        and return them in a dictionary
         """
         try:
             return ConfigObj(stringio).dict()
@@ -51,7 +46,6 @@ class RankModelHandler(object):
     def add_rank_model(self, rank_model_url: str) -> dict:
         """Fetch a rank model ini file from remote.
         If the URL does not start with http, assume it is instead a local file.
-
         """
 
         if rank_model_url.startswith("http"):
@@ -135,7 +129,7 @@ class RankModelHandler(object):
 
         return info
 
-    def range_span(self, info):
+    def range_span(self, info: list) -> tuple:
         """Determine max and min score range for each rank model category.
 
         Args:
