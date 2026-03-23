@@ -218,19 +218,17 @@
             <div class="card">
               <div class="card-body">
                 <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Assign phenotype from model</div>
-                <div class="mt-1 mb-3">
+                <div class="mt-1 mb-3 d-flex gap-2 flex-wrap">
                   {% for model in phenomodels %}
                     <button class="btn btn-xs btn-secondary" data-bs-toggle="modal" data-bs-target="#preview_{{model._id}}">
                       {{model.name}}
                     </button>
+                    {{ model_preview(institute=institute, phenomodel=model, assign=true, case=case) }}
                   {% endfor %}
                 </div>
               </div>
             </div>
           </div>
-          {% for model in phenomodels %}
-            {{ model_preview(institute=institute, phenomodel=model, assign=true, case=case) }}
-          {% endfor %}
         {% endif %}
 
       <div class="panel-default">
