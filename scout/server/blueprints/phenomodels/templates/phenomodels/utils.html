@@ -28,9 +28,9 @@
                 <input type="checkbox" name="checked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}" id="{{term_input_id}}">
                 {% if term_obj.children %}
                   {% set children_div_id = term_obj.name ~ "_" ~ phenomodel._id ~ "_children" %}
-                  <a href="#" onclick="toggleDiv('{{children_div_id}}')">
-                    <label for="{{term_input_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
-                  </a>
+                  <button type="button" class="btn btn-link p-0 align-baseline" onclick="toggleDiv('{{children_div_id}}')">
+                    {{term_obj.custom_name or term_obj.description}} ({{term_id}})
+                  </button>
                 {% else %}
                   <label for="{{term_input_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
                 {% endif %}
