@@ -1,3 +1,6 @@
+from scout.demo import rank_score_path, sv_rank_score_path
+
+
 def test_rank_model_from_url_snv(adapter, case_obj):
     """Test parsing and saving a SNV rank model object from a remote config file"""
 
@@ -46,3 +49,21 @@ def test_rank_model_from_url_sv(adapter, case_obj):
 
     # And should also be saved to database
     assert adapter.rank_model_collection.find_one()
+
+
+def test_rank_model_from_file(adapter):
+    """Test parsing and saving a rank model object from a local config file"""
+
+    # WHEN model is retrieved from
+    rank_model_dict = adapter.rank_model_from_url(rank_score_path)
+
+    assert rank_model_dict["Version"]["name"] == "rank_model_cmms"
+
+
+def test_rank_model_from_file_sv(adapter):
+    """Test parsing and saving a SV rank model object from a local config file"""
+
+    # WHEN model is retrieved from
+    rank_model_dict = adapter.rank_model_from_url(sv_rank_score_path)
+
+    assert rank_model_dict["Version"]["name"] == "svrank_model"
