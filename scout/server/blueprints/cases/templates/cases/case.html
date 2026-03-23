@@ -409,7 +409,7 @@
 
 {% macro modal_add_to_group(group_id, case_group, label) %}
   <form action="{{ url_for('cases.add_case_group', institute_id=institute._id, case_name="unused") }}" method="POST">
-    <div class="modal fade" id="add-case-group-{{group_id}}" role="dialog">
+    <div class="modal fade" id="add-case-group-{{group_id}}">
       <input type="hidden" name="group_id" value="{{ group_id }}">
       <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -495,7 +495,7 @@
 
 <!-- Create a collapsing panel. Used for -->
 {% macro add_modal_panel(id_tag, display_name) %}
-  <div class="modal fade" id="modal_{{id_tag}}" role="dialog">
+  <div class="modal fade" id="modal_{{id_tag}}">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <svg class="mt-3 mb-3 ms-3 me-3" id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1200"></svg>
@@ -510,7 +510,7 @@
 
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="modal fade" id="edit-synopsis" role="dialog">
+    <div class="modal fade" id="edit-synopsis">
       <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

@@ -5,7 +5,7 @@
 {% else %}
   <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
 {% endif %}
-<div class="modal fade" id="preview_{{phenomodel._id}}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="preview_{{phenomodel._id}}" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-body">
