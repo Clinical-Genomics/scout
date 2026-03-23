@@ -491,7 +491,7 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
     """Retrieve rank score values and ranges for the variant
 
-    First, check if they are already stored on variant. If so, return them.
+    First, check if the scores already stored on variant are already with model ranges. If so, return them.
     Second, differentiate between "sv" and "snv" (fallback) rank models.
 
     If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
@@ -502,15 +502,17 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
     Loop over each rank score category (examples: Splicing, Consequence, Deleteriousness) and collect model explanation to display on variant page.
     """
 
-    rank_score_results = []
     rank_model_version = None
     rm_link_prefix = None
     rm_file_extension = None
 
-    if variant_obj.get(
-        "rank_score_results"
-    ):  # Retrieve rank score results saved in variant document
-        rank_score_results = variant_obj.get("rank_score_results")
+    rank_score_results = variant_obj.get(
+        "rank_score_results", []
+    )  # Retrieve rank score results saved in variant document
+
+    for score in rank_score_results:
+        if score.get("model_ranges") and score.get("min") and score.get("max"):
+            return rank_score_results
 
     if variant_obj.get("category") == "sv":
         rank_model_url = case_obj.get("sv_rank_model_url")
@@ -532,7 +534,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         )
 
     if rank_model := store.rank_model_from_url(rank_model_url):
-        if version_from_model := rank_score_results.get("Version"):
+        if version_from_model := rank_model.get("Version"):
             if rank_model_version and version_from_model != rank_model_version:
                 flash(
                     f"Rank model file version {version_from_model} and case rank model version {rank_model_version} disagree.",
