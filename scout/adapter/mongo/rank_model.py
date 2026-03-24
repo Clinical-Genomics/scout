@@ -60,32 +60,6 @@ class RankModelHandler(object):
 
         return {}
 
-    def get_rank_model_url(self, variant_obj, case_obj) -> str | None:
-        rank_model_version = None
-        rm_link_prefix = None
-        rm_file_extension = None
-        rank_model_url = None
-
-        if variant_obj.get("category") == "sv":
-            rank_model_url = case_obj.get("sv_rank_model_url")
-            if not rank_model_url:
-                rank_model_version = case_obj.get("sv_rank_model_version")
-                rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
-                rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
-        else:  # snv, cancer
-            rank_model_url = case_obj.get("rank_model_url")
-            if not rank_model_url:
-                rank_model_version = case_obj.get("rank_model_version")
-                rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
-                rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
-        if all([rank_model_version, rm_link_prefix, rm_file_extension]):
-            rank_model_url = self.rank_model_url_from_version(
-                rank_model_link_prefix=rm_link_prefix,
-                rank_model_version=rank_model_version,
-                rank_model_file_extension=rm_file_extension,
-            )
-        return rank_model_url
-
     def rank_model_url_from_version(
         self, rank_model_link_prefix: str, rank_model_version: str, rank_model_file_extension: str
     ) -> str:
