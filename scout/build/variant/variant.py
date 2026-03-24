@@ -277,6 +277,9 @@ def build_variant(
     variant_obj["revel"] = variant.get("revel")
     variant_obj["spidex"] = variant.get("spidex")
 
+    # load rank score model, from file if available
+
+    # use model to populate ranges from the get-go when adding rank scores
     add_rank_score(variant_obj, variant)
 
     # Cancer specific

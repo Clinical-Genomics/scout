@@ -533,6 +533,9 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
             rank_model_file_extension=rm_file_extension,
         )
 
+    if not rank_model_url:
+        return rank_score_results
+
     if rank_model := store.rank_model_from_url(rank_model_url):
         if version_from_model := rank_model.get("Version"):
             if rank_model_version and version_from_model != rank_model_version:
