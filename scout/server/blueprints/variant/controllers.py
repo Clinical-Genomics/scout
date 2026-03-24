@@ -546,6 +546,9 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         "rank_score_results", []
     )  # Retrieve rank score results saved in variant document
 
+    if not rank_score_results:
+        return []
+
     for score in rank_score_results:
         if score.get("model_ranges") and score.get("min") and score.get("max"):
             return rank_score_results
