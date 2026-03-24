@@ -507,10 +507,13 @@ def get_rank_model_url(store: MongoAdapter, variant_obj: dict, case_obj: dict) -
     Attempt to get rank model url from the case.
     If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
     """
+
     category = variant_obj.get("category")
+    rank_model_url = case_obj.get(_get_category_string(category, "rank_model_url"))
+    if rank_model_url:
+        return rank_model_url
 
     rank_model_version = case_obj.get(_get_category_string(category, "rank_model_version"))
-    rank_model_url = case_obj.get(_get_category_string(category, "rank_model_url"))
 
     rank_model_link_prefix = current_app.config.get(
         _get_category_string(category, "RANK_MODEL_LINK_PREFIX").upper()
