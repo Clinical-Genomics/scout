@@ -488,6 +488,17 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
             variant_obj["end_genes"] = end_genes
 
 
+def _get_rank_model_version(case_obj, category) -> str | None:
+    """Return rank model version from case obj given variant category.
+    This should be a getter on a real case object"""
+
+    version_parameter_name = "rank_model_version"
+    if category == "sv":
+        version_parameter_name = f"sv_{version_parameter_name}"
+
+    return case_obj.get(version_parameter_name)
+
+
 def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
     """Retrieve rank score values and ranges for the variant
 
@@ -502,10 +513,6 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
     Loop over each rank score category (examples: Splicing, Consequence, Deleteriousness) and collect model explanation to display on variant page.
     """
 
-    rank_model_version = None
-    rm_link_prefix = None
-    rm_file_extension = None
-
     rank_score_results = variant_obj.get(
         "rank_score_results", []
     )  # Retrieve rank score results saved in variant document
@@ -514,27 +521,11 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         if score.get("model_ranges") and score.get("min") and score.get("max"):
             return rank_score_results
 
-    if variant_obj.get("category") == "sv":
-        rank_model_url = case_obj.get("sv_rank_model_url")
-        if not rank_model_url:
-            rank_model_version = case_obj.get("sv_rank_model_version")
-            rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
-            rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
-    else:  # snv, cancer
-        rank_model_url = case_obj.get("rank_model_url")
-        if not rank_model_url:
-            rank_model_version = case_obj.get("rank_model_version")
-            rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
-            rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
-    if all([rank_model_version, rm_link_prefix, rm_file_extension]):
-        rank_model_url = store.rank_model_url_from_version(
-            rank_model_link_prefix=rm_link_prefix,
-            rank_model_version=rank_model_version,
-            rank_model_file_extension=rm_file_extension,
-        )
-
+    rank_model_url = store.get_rank_model_url(variant_obj, case_obj)
     if not rank_model_url:
         return rank_score_results
+
+    rank_model_version = _get_rank_model_version(case_obj, variant_obj.get("category"))
 
     if rank_model := store.rank_model_from_url(rank_model_url):
         if version_from_model := rank_model.get("Version"):
