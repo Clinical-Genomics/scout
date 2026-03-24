@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 from scout.adapter.mongo import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
