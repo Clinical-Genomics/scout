@@ -277,9 +277,6 @@ def build_variant(
     variant_obj["revel"] = variant.get("revel")
     variant_obj["spidex"] = variant.get("spidex")
 
-    # load rank score model, from file if available
-
-    # use model to populate ranges from the get-go when adding rank scores
     add_rank_score(variant_obj, variant)
 
     # Cancer specific
@@ -408,6 +405,7 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
 
 def add_rank_score(variant_obj: dict, variant: dict):
     """Add the rank score results."""
+
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}

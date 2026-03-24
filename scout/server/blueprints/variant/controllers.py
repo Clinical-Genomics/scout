@@ -559,8 +559,13 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
     )
 
     if rank_model := store.rank_model_from_url(rank_model_url):
-        if version_from_model := rank_model.get("Version"):
-            if rank_model_version and version_from_model != rank_model_version:
+        if version_entry_from_model := rank_model.get("Version"):
+            version_from_model = version_entry_from_model.get("version")
+            if (
+                rank_model_version
+                and version_from_model
+                and version_from_model != rank_model_version
+            ):
                 flash(
                     f"Rank model file version {version_from_model} and case rank model version {rank_model_version} disagree.",
                     "warning",
