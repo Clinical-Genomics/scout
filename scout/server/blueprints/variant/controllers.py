@@ -531,7 +531,7 @@ def get_rank_model_url(store: MongoAdapter, variant_obj: dict, case_obj: dict) -
     return rank_model_url
 
 
-def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
+def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> List[dict]:
     """Retrieve rank score values and ranges for the variant
 
     First, check if the scores already stored on variant are already with model ranges. If so, return them.
