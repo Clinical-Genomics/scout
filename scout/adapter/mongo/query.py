@@ -11,7 +11,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     TRUSTED_REVSTAT_LEVEL,
 )
-from scout.models.omics_variant import SIGNIFICANT_METHBAT_CPG_LABEL
+from scout.constants.filters import SIGNIFICANT_METHBAT_CPG_LABEL
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}

@@ -36,7 +36,7 @@ from scout.constants import (
     SV_TYPES,
     VARIANT_GENOTYPES,
 )
-from scout.models.omics_variant import (
+from scout.constants.filters import (
     SIGNIFICANT_METHBAT_COMPARE,
     SIGNIFICANT_METHBAT_CPG_LABEL,
     SIGNIFICANT_METHBAT_SUMMARY,
