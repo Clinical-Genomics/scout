@@ -47,35 +47,43 @@
     <div class="panel-heading">Overview</div>
     <ul class="list-group">
       <li class="list-group-item">
-        <label for="display_name">Full name</label>
-        <span class="float-end" id="display_name">
-          {{ panel.display_name }}
-        </span>
-        {% if panel.hidden %}
-          <span class="badge bg-danger">Removed</span>
-        {% endif %}
-      </li>
-      <li class="list-group-item">
         <label for="panel_name">Panel ID</label>
         <span class="float-end" id="panel_name">{{ panel.panel_name }}</span>
       </li>
-
-      <div class="list-group-item">
-        <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-          <div class="form-group">
-              <label for="panel_description">Description</label>
-              <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
+      <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+        <div class="list-group-item">
+          <div class="form-group mb-3">
+            <!-- Full name with badge -->
+            <div class="d-flex align-items-center justify-content-between">
+              <label for="display_name" class="mb-0">Full name</label>
+              {% if panel.hidden %}
+                <span class="badge bg-danger ms-2">Removed</span>
+              {% endif %}
+            </div>
+            <input type="text" class="form-control" id="display_name" name="display_name"
+                   value="{{ panel.display_name }}" readonly>
           </div>
+
+          <!-- Description -->
+          <div class="form-group mb-3">
+            <label for="panel_description" class="mb-1">Description</label>
+            <textarea class="form-control" id="panel_description" name="panel_description"
+                      rows="3" readonly>{{ panel.description if panel.description }}</textarea>
+          </div>
+
+          <!-- Buttons -->
           <div class="btn-group">
-            <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescription()">
+            <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary"
+                    onclick="editDescriptionName()">
               Edit
             </button>
-            <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
+            <button type="submit" name="update_description" value="update_description"
+                    class="btn btn-sm btn-primary">
               Save
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
       <li class="list-group-item">
         <label for="version">Version</label>
         <span class="float-end" id="version">{{ panel.version }}</span>
@@ -328,8 +336,9 @@
           container: 'body'})
     });
 
-    function editDescription() {
+    function editDescriptionName() {
       document.getElementById("panel_description").readOnly = false
+      document.getElementById("display_name").readOnly = false
     }
 
     $(function () {
