@@ -129,11 +129,12 @@ def panel(panel_id):
         return redirect(url_for("panels.panels"))
 
     if request.method == "POST":
-        if request.form.get("update_description"):
-            panel_obj["description"] = request.form["panel_description"]
+        if request.form.get("update_description") or request.form.get("display_name"):
+            panel_obj["description"] = request.form.get("panel_description")
+            panel_obj["display_name"] = request.form.get("display_name")
 
             if controllers.panel_write_granted(panel_obj, current_user):
-                store.update_panel(panel_obj=panel_obj)
+                store.update_panel(panel_obj=panel_obj, date_obj=panel_obj.get("date"))
             else:
                 flash(
                     "Permission denied: please ask a panel maintainer or admin for help.",
