@@ -540,6 +540,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
 
     Once a URL is available, retrieve the rank model, and try to retrieve rank model param ranges to display on variant page.
     Loop over each rank score category (examples: Splicing, Consequence, Deleteriousness) and collect model explanation to display on variant page.
+
     """
 
     rank_score_results = variant_obj.get(

@@ -11,7 +11,7 @@ TIMEOUT = 20
 
 
 class RankModelHandler(object):
-    def fetch_rank_model(self, rank_model_url: str) -> StringIO:
+    def fetch_rank_model_lines_from_url(self, rank_model_url: str) -> StringIO:
         """Send HTTP request to retrieve rank model config file
 
         Args:
@@ -26,7 +26,7 @@ class RankModelHandler(object):
         except Exception as ex:
             LOG.warning(ex)
 
-    def read_rank_model(self, rank_model_url) -> StringIO:
+    def read_rank_model_lines_from_file(self, rank_model_url) -> StringIO:
         """Read rank model file contents into a StringIO to use same parsing as URL"""
 
         with open(rank_model_url, "r") as rank_model_file:
@@ -49,9 +49,9 @@ class RankModelHandler(object):
         """
 
         if rank_model_url.startswith("http"):
-            rank_model_lines = self.fetch_rank_model(rank_model_url)
+            rank_model_lines = self.fetch_rank_model_lines_from_url(rank_model_url)
         elif exists(rank_model_url):
-            rank_model_lines = self.read_rank_model(rank_model_url)
+            rank_model_lines = self.read_rank_model_lines_from_file(rank_model_url)
 
         if config := self.parse_rank_model(rank_model_lines):
             config.update({"_id": rank_model_url})
