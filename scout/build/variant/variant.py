@@ -405,6 +405,7 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
 
 def add_rank_score(variant_obj: dict, variant: dict):
     """Add the rank score results."""
+
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}
