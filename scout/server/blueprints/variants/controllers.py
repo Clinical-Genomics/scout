@@ -1642,6 +1642,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         clinical_filter_panels = default_panels
 
     FiltersFormClass = FILTERSFORMCLASS[category]
+    clinical_filter = MultiDict()
 
     match category:
         case "snv":
@@ -1671,7 +1672,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                     "gene_panels": clinical_filter_panels,
                 }
             )
-    clinical_filter = MultiDict(clinical_filter_dict)
+            clinical_filter = MultiDict(clinical_filter_dict)
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
