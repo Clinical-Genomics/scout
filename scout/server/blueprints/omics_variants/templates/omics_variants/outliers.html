@@ -172,9 +172,13 @@
         gene_panels=['hpo']) }}">HPO gene list</a>
     </div>
   </div>
-  <div class="col-2">
+  <div class="col-1">
     {{ form.svtype.label(class="control-label") }}
     {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-1">
+    {{ form.category_pop_freq.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Methbat category population frequency'}) }}
+    {{ form.category_pop_freq(class="form-control") }}
   </div>
   <div class="col-1">
     {{ form.p_value.label(class="control-label", **{'data-bs-toggle': 'tooltip', 'title':'Un-adjusted P-value'}) }}
