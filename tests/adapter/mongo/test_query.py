@@ -853,14 +853,14 @@ def test_build_wts_query(adapter):
         } in mongo_query["$and"]
 
 
-def test_build_mathbat_compare_query(adapter):
+def test_build_mathbat_significance_query(adapter):
     """Methbat outliers can be filtered by compare_label field.
     Options values are defined in scout.models.omics_variant.SIGNIFICANT_METHBAT_COMPARE.
     """
     case_id = "cust000"
     # GIVEN a query containing mathbat significance
-    METHBAT_SIGN_VALUES = ["HypoMethylated", "HyperMethylated"]
-    query = {"svtype": ["methylation"], "methbat_compare": METHBAT_SIGN_VALUES}
+    METHBAT_SIGN_VALUES = ["HypoMethylated", "HyperMethylated", "imprint"]
+    query = {"svtype": ["methylation"], "methbat_significance": METHBAT_SIGN_VALUES}
 
     # THEN the result query should contain a filter on methylation omics variants and omics_variant.compare_label
     mongo_query = adapter.build_query(case_id, query=query)

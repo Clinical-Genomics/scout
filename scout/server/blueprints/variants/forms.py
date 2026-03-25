@@ -36,7 +36,11 @@ from scout.constants import (
     SV_TYPES,
     VARIANT_GENOTYPES,
 )
-from scout.models.omics_variant import SIGNIFICANT_METHBAT_COMPARE
+from scout.models.omics_variant import (
+    SIGNIFICANT_METHBAT_COMPARE,
+    SIGNIFICANT_METHBAT_CPG_LABEL,
+    SIGNIFICANT_METHBAT_SUMMARY,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -328,8 +332,11 @@ class OutlierFiltersForm(FlaskForm):
     padjust = FloatField("P adj Outrider")
     p_adjust_gene = FloatField("P adj Fraser")
 
-    methbat_compare = SelectMultipleField(
-        "Methbat significance", choices=SIGNIFICANT_METHBAT_COMPARE
+    methbat_significance = SelectMultipleField(
+        "Methbat significance",
+        choices=SIGNIFICANT_METHBAT_COMPARE
+        + SIGNIFICANT_METHBAT_SUMMARY
+        + [SIGNIFICANT_METHBAT_CPG_LABEL],
     )
 
     filter_variants = SubmitField(label="Filter variants")

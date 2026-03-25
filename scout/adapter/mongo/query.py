@@ -11,6 +11,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     TRUSTED_REVSTAT_LEVEL,
 )
+from scout.models.omics_variant import SIGNIFICANT_METHBAT_CPG_LABEL
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
@@ -806,11 +807,18 @@ class QueryHandler(object):
                         {"p_value": {"$lt": p_value}},
                     )
 
-                case "methbat_compare":
-                    sign_values = query.get("methbat_compare")
-                    mongo_secondary_query.append(
+                case "methbat_significance":
+                    sign_values = query.get("methbat_significance")
+                    methbat_query = [
                         {"compare_label": {"$in": sign_values}},
-                    )
+                        {"summary_label": {"$in": sign_values}},
+                    ]
+                    if SIGNIFICANT_METHBAT_CPG_LABEL in sign_values:
+                        methbat_query.append(
+                            {"cpg_label": {"$regex": SIGNIFICANT_METHBAT_CPG_LABEL}}
+                        )
+
+                    mongo_secondary_query.append({"$or": methbat_query})
         return mongo_secondary_query
 
 

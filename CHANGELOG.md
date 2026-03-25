@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enable ClinVar test API URL by default on Scout demo config settings (#6129)
 - ClinVar settings (API and list of users allowed to send API submissions) are no longer shown only to admin users (#6134)
 - Refactor `load research` CLI to raise a FileNotFoundError with aggregated missing configured research files per case (#6148)
+- Methbat outliers significance filtering extended with "AlleleSpecificMethylation" and "imprint" (#6154)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
