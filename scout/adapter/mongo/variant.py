@@ -925,15 +925,14 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("_".join(["vcf", var_type, "research"]))
         return variant_file
 
-    def case_variants_count(self, case_id, institute_id, variant_type=None, force_update_case=True):
+    def case_variants_count(
+        self,
+        case_id: str,
+        institute_id: str,
+        variant_type: Optional[str] = None,
+        force_update_case: Optional[bool] = True,
+    ) -> Dict:
         """Returns the sum of all variants for a case by type
-
-        Args:
-            case_id(str): _id of a case
-            institute_id(str): id of an institute
-            variant_type(str): "clinical" or "research"
-            force_update_case(bool): whether the case document should be updated with these stats
-
         Returns:
             variants_by_type(dict). A dictionary like this:
                 {
@@ -970,17 +969,23 @@ class VariantHandler(VariantLoader):
         results.extend(omics_results)
 
         variants_by_type = {}
+        is_research = False
         for item in results:
             var_type = item["_id"]["type"]
             var_category = item["_id"]["category"]
             # classify by type (clinical or research)
             if var_type in variants_by_type:
-                # classify by category (snv, sv, str, cancer, cancer-sv)
+                # classify by category (snv, sv, str, mei, cancer, cancer-sv, outlier)
                 variants_by_type[var_type][var_category] = item["total"]
             else:
                 variants_by_type[var_type] = {var_category: item["total"]}
 
+            if var_type == "research" and item["total"] > 0:
+                is_research = True
+
         case_obj["variants_stats"] = variants_by_type
+        if is_research:
+            case_obj["is_research"] = is_research
         self.update_case(case_obj=case_obj, keep_date=True)
 
         return variants_by_type
