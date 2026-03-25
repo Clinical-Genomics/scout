@@ -808,17 +808,7 @@ class QueryHandler(object):
                     )
 
                 case "methbat_significance":
-                    sign_values = query.get("methbat_significance")
-                    methbat_query = [
-                        {"compare_label": {"$in": sign_values}},
-                        {"summary_label": {"$in": sign_values}},
-                    ]
-                    if SIGNIFICANT_METHBAT_CPG_LABEL in sign_values:
-                        methbat_query.append(
-                            {"cpg_label": {"$regex": SIGNIFICANT_METHBAT_CPG_LABEL}}
-                        )
-
-                    mongo_secondary_query.append({"$or": methbat_query})
+                    mongo_secondary_query.append({"$or": _get_methbat_significance_query(query)})
 
                 case "category_pop_freq":
                     freq = query.get("category_pop_freq")
@@ -827,6 +817,22 @@ class QueryHandler(object):
                     )
 
         return mongo_secondary_query
+
+
+def _get_methbat_significance_query(query: dict) -> list:
+    """Construct methbat significance query. This involves selecting values of importance from
+    the compare label, summary label, and also checking for currently only one string in the
+    CPG label (imprinting loci, changes in which are not easily caught with the other two categories)
+    """
+
+    sign_values = query.get("methbat_significance")
+    methbat_query = [
+        {"compare_label": {"$in": sign_values}},
+        {"summary_label": {"$in": sign_values}},
+    ]
+    if SIGNIFICANT_METHBAT_CPG_LABEL in sign_values:
+        methbat_query.append({"cpg_label": {"$regex": SIGNIFICANT_METHBAT_CPG_LABEL}})
+    return methbat_query
 
 
 def _get_spidex_query(query: dict) -> list:
