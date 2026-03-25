@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
+from scout.adapter.mongo import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
 
@@ -31,17 +33,16 @@ def check_panels(adapter, panels, default_panels=None):
     return panels_exist
 
 
-def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None):
-    """Load all variants in a region defined by a HGNC id
-
-    Args:
-        adapter (MongoAdapter)
-        case_id (str): Case id
-        hgnc_id (int): If all variants from a gene should be uploaded
-        chrom (str): If variants from coordinates should be uploaded
-        start (int): Start position for region
-        end (int): Stop position for region
-    """
+def load_region(
+    adapter: MongoAdapter,
+    case_id: str,
+    hgnc_id: Optional[int] = None,
+    chrom: Optional[str] = None,
+    start: Optional[int] = None,
+    end: Optional[int] = None,
+    force: Optional[bool] = None,
+) -> None:
+    """Load all variants in a region defined by a HGNC id or chromosomal coordinates."""
     case_obj = adapter.case(case_id=case_id)
     if not case_obj:
         raise ValueError("Case {} does not exist in database".format(case_id))
@@ -59,7 +60,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
             continue
         variant_type = vcf_dict["variant_type"]
         variant_category = vcf_dict["category"]
-        if variant_type == "research" and not case_obj["is_research"]:
+        if variant_type == "research" and not case_obj["is_research"] and not force:
             continue
 
         LOG.info(
