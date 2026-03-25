@@ -559,7 +559,7 @@ def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) 
         return rank_score_results
 
     rank_model_version = case_obj.get(
-        _get_category_string(case_obj.get("category"), "rank_model_version")
+        _get_category_string(variant_obj.get("category"), "rank_model_version")
     )
 
     if rank_model := store.rank_model_from_url(rank_model_url):
