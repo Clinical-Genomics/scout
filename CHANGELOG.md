@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Accept single end BNDs (#6132)
 - Update analysis type for case's individual/sample using `scout update individual` command (#6142)
 - Filter methbat outliers by significance ("HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM") (#6140)
+- `--force` flag to force load research variants hitting a certain gene/region into a clinical case (#6153)
+- `Download as PDF` button on ACMG sandbox page (#6152)
 ### Changed
 - Export genotype with gene variantS search (#6088)
 - igv.js version to 3.8.0 - fixes `e.tags` error popup issue (#6096, #6118)
