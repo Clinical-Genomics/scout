@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enable ClinVar test API URL by default on Scout demo config settings (#6129)
 - ClinVar settings (API and list of users allowed to send API submissions) are no longer shown only to admin users (#6134)
 - Refactor `load research` CLI to raise a FileNotFoundError with aggregated missing configured research files per case (#6148)
+- Make gene panel's display name editable by users, if they are panel maintainers or admins (#6147)
 - Refactor case building for database storage (#6091)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
