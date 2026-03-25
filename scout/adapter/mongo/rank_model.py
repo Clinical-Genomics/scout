@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from io import StringIO
+from os.path import exists
 
 import requests
 from configobj import ConfigObj
@@ -10,7 +11,7 @@ TIMEOUT = 20
 
 
 class RankModelHandler(object):
-    def fetch_rank_model(self, rank_model_url):
+    def fetch_rank_model_lines_from_url(self, rank_model_url: str) -> StringIO:
         """Send HTTP request to retrieve rank model config file
 
         Args:
@@ -25,34 +26,34 @@ class RankModelHandler(object):
         except Exception as ex:
             LOG.warning(ex)
 
-    def parse_rank_model(self, stringio):
-        """Use configobj lib to extract RankModel key/values and return them in a dictionary
+    def read_rank_model_lines_from_file(self, rank_model_url) -> StringIO:
+        """Read rank model file contents into a StringIO to use same parsing as URL"""
 
-        Args:
-            stringio(StringIO): Content of model from a file as a StringIO
+        with open(rank_model_url, "r") as rank_model_file:
+            rank_model_lines = rank_model_file.read()
 
-        Returns:
-            ConfigObj.dict(dictionary): dictionary with variant rank model key/values
+        return StringIO(rank_model_lines)
+
+    def parse_rank_model(self, stringio: StringIO):
+        """Use configobj lib to extract RankModel key/values from content of a model from a file as a StringIO
+        and return them in a dictionary
         """
         try:
             return ConfigObj(stringio).dict()
         except Exception as ex:
             LOG.error(ex)
 
-    def add_rank_model(self, rank_model_url):
-        """Fetch a rank model from remote.
-
-        Args:
-            rank_model_url(string): A string with the url to the rank model ini file to fetch.
-
-        Returns:
-            rank_model(dict): a copy of what was inserted, or None if failed
+    def add_rank_model(self, rank_model_url: str) -> dict:
+        """Fetch a rank model ini file from remote.
+        If the URL does not start with http, assume it is instead a local file.
         """
-        response = self.fetch_rank_model(rank_model_url)
 
-        config = self.parse_rank_model(response)
+        if rank_model_url.startswith("http"):
+            rank_model_lines = self.fetch_rank_model_lines_from_url(rank_model_url)
+        elif exists(rank_model_url):
+            rank_model_lines = self.read_rank_model_lines_from_file(rank_model_url)
 
-        if config:
+        if config := self.parse_rank_model(rank_model_lines):
             config.update({"_id": rank_model_url})
             config_id = self.rank_model_collection.insert_one(config).inserted_id
             return self.rank_model_collection.find_one(config_id)
@@ -128,7 +129,7 @@ class RankModelHandler(object):
 
         return info
 
-    def range_span(self, info):
+    def range_span(self, info: list) -> tuple:
         """Determine max and min score range for each rank model category.
 
         Args:
