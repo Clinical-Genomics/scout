@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-s", "--start", type=int)
 @click.option("-e", "--end", type=int)
 @click.option(
-    "-f", "--force", is_flag=True, help="Force-load gene/region even when research is not requested"
+    "-f", "--force", is_flag=True, help="Force load gene/region even when research is not requested"
 )
 @with_appcontext
 def region(
