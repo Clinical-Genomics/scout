@@ -488,47 +488,95 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
             variant_obj["end_genes"] = end_genes
 
 
-def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
+def _get_category_string(
+    category,
+    version_parameter_name,
+) -> str:
+    """Return rank model parameter name given variant category"""
+
+    if category == "sv":
+        version_parameter_name = f"sv_{version_parameter_name}"
+
+    return version_parameter_name
+
+
+def get_rank_model_url(store: MongoAdapter, variant_obj: dict, case_obj: dict) -> str | None:
+    """Get rank model url.
+
+    Differentiate between "sv" and "snv" (fallback) rank models.
+    Attempt to get rank model url from the case.
+    If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
+    """
+
+    category = variant_obj.get("category")
+    rank_model_url = case_obj.get(_get_category_string(category, "rank_model_url"))
+    if rank_model_url:
+        return rank_model_url
+
+    rank_model_version = case_obj.get(_get_category_string(category, "rank_model_version"))
+
+    rank_model_link_prefix = current_app.config.get(
+        _get_category_string(category, "RANK_MODEL_LINK_PREFIX").upper()
+    )
+    rank_model_file_extension = current_app.config.get(
+        _get_category_string(category, "RANK_MODEL_LINK_POSTFIX").upper()
+    )
+
+    if all([rank_model_version, rank_model_link_prefix, rank_model_file_extension]):
+        rank_model_url = store.rank_model_url_from_version(
+            rank_model_link_prefix=rank_model_link_prefix,
+            rank_model_version=rank_model_version,
+            rank_model_file_extension=rank_model_file_extension,
+        )
+    return rank_model_url
+
+
+def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> List[dict]:
     """Retrieve rank score values and ranges for the variant
 
-    First, check if they are already stored on variant. If so, return them.
-    Second, differentiate between "sv" and "snv" (fallback) rank models.
-    If a rank model URL is not given already, attempt to make it from prefix, version and postfix concatenation.
+    First, check if the scores already stored on variant are already with model ranges. If so, return them.
+
+    Warn if the version in file differs from the case given.
+
     Once a URL is available, retrieve the rank model, and try to retrieve rank model param ranges to display on variant page.
-    Loop over each rank score category and collect model explanation to display on variant page.
+    Loop over each rank score category (examples: Splicing, Consequence, Deleteriousness) and collect model explanation to display on variant page.
+
     """
-    rank_score_results = []
-    rank_model_version = None
-    rm_link_prefix = None
-    rm_file_extension = None
 
-    if variant_obj.get(
-        "rank_score_results"
-    ):  # Retrieve rank score results saved in variant document
-        rank_score_results = variant_obj.get("rank_score_results")
+    rank_score_results = variant_obj.get(
+        "rank_score_results", []
+    )  # Retrieve rank score results saved in variant document
 
-    if variant_obj.get("category") == "sv":
-        rank_model_url = case_obj.get("sv_rank_model_url")
-        if not rank_model_url:
-            rank_model_version = case_obj.get("sv_rank_model_version")
-            rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
-            rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
-    else:  # snv, cancer
-        rank_model_url = case_obj.get("rank_model_url")
-        if not rank_model_url:
-            rank_model_version = case_obj.get("rank_model_version")
-            rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
-            rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
-    if all([rank_model_version, rm_link_prefix, rm_file_extension]):
-        rank_model_url = store.rank_model_url_from_version(
-            rank_model_link_prefix=rm_link_prefix,
-            rank_model_version=rank_model_version,
-            rank_model_file_extension=rm_file_extension,
-        )
+    if not rank_score_results:
+        return []
+
+    for score in rank_score_results:
+        if score.get("model_ranges") and score.get("min") and score.get("max"):
+            return rank_score_results
+
+    rank_model_url = get_rank_model_url(store, variant_obj, case_obj)
+    if not rank_model_url:
+        return rank_score_results
+
+    rank_model_version = case_obj.get(
+        _get_category_string(variant_obj.get("category"), "rank_model_version")
+    )
 
     if rank_model := store.rank_model_from_url(rank_model_url):
+        if version_entry_from_model := rank_model.get("Version"):
+            version_from_model = version_entry_from_model.get("version")
+            if (
+                rank_model_version
+                and version_from_model
+                and version_from_model != rank_model_version
+            ):
+                flash(
+                    f"Rank model file version {version_from_model} and case rank model version {rank_model_version} disagree.",
+                    "warning",
+                )
+
         for score in rank_score_results:
-            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+            category = score.get("category")
             score["model_ranges"] = store.get_ranges_info(rank_model, category)
             score["min"], score["max"] = store.range_span(score["model_ranges"])
 
