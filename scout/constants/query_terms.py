@@ -70,4 +70,5 @@ SECONDARY_CRITERIA = [
     "padjust",
     "p_adjust_gene",
     "methbat_significance",
+    "category_pop_freq",
 ]

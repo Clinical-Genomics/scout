@@ -45,7 +45,9 @@ CLINICAL_FILTER_BASE_OUTLIER = {
 
 CLINICAL_FILTER_BASE_OUTLIER_METHYLATION = {
     "variant_type": "clinical",
+    "svtype": "methylation",
     "methbat_significance": SIGNIFICANT_METHBAT_COMPARE
     + SIGNIFICANT_METHBAT_SUMMARY
     + [SIGNIFICANT_METHBAT_CPG_LABEL],
+    "category_pop_freq": 0.02,
 }

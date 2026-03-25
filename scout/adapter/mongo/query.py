@@ -819,6 +819,13 @@ class QueryHandler(object):
                         )
 
                     mongo_secondary_query.append({"$or": methbat_query})
+
+                case "category_pop_freq":
+                    freq = query.get("category_pop_freq")
+                    mongo_secondary_query.append(
+                        {"category_pop_freq": {"$lt": freq}},
+                    )
+
         return mongo_secondary_query
 
 
