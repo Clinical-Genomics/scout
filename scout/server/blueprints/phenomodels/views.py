@@ -1,3 +1,5 @@
+import logging
+
 from bson import ObjectId
 from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
@@ -15,10 +17,11 @@ phenomodels_bp = Blueprint(
     static_url_path="/phenomodels/static",
     template_folder="templates",
 )
+LOG = logging.getLogger(__name__)
 
 
 @phenomodels_bp.route("/<institute_id>/advanced_phenotypes", methods=["GET"])
-@templated("phenomodels.html")
+@templated("phenomodels/phenomodels.html")
 def advanced_phenotypes(institute_id):
     """Show institute-level advanced phenotypes"""
     institute_obj = institute_and_case(store, institute_id)
@@ -101,7 +104,7 @@ def phenomodel_edit(institute_id, model_id):
 
 
 @phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>", methods=["GET"])
-@templated("phenomodel.html")
+@templated("phenomodels/phenomodel.html")
 def phenomodel(institute_id, model_id):
     """View/Edit an advanced phenotype model"""
     institute_obj = institute_and_case(store, institute_id)
@@ -125,3 +128,40 @@ def phenomodel(institute_id, model_id):
         phenomodel=phenomodel_obj,
         subpanel_form=subpanel_form,
     )
+
+
+@phenomodels_bp.route("/<institute_id>/phenomodel_assign/<case_name>", methods=["POST"])
+def phenomodel_assign(institute_id: str, case_name: str):
+    """Assign multiple phenotypes from an advanced model to one or more individuals/samples of a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_url = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    user_obj = store.user(current_user.email)
+
+    if not case_obj:
+        return safe_redirect_back(request)
+
+    individuals = request.form.getlist("phenotype_inds")
+
+    for pheno in request.form.getlist("checked_terms"):
+        term = pheno.split(".")[-1]
+        if term.startswith("HP:"):
+            case_obj = store.add_phenotype(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                hpo_term=term,
+                phenotype_inds=individuals,
+            )
+        else:  # OMIM, ORPHA
+            case_obj = store.diagnose(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                disease_id=term,
+                affected_inds=individuals,
+                remove=False,
+            )
+
+    return safe_redirect_back(request)
