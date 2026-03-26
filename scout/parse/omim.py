@@ -4,9 +4,8 @@ import logging
 from typing import Any, Dict, Iterable
 
 from scout.constants import (
-    DISEASE_INHERITANCE_TERMS,
+    DISEASE_INHERITANCE_TERMS_MAPPER,
     ENTRY_PATTERN,
-    INHERITANCE_TERMS_MAPPER,
     MIMNR_PATTERN,
     OMIM_STATUS_MAP,
 )
@@ -67,9 +66,9 @@ def parse_genemap2_diseases(phenotype_entry, mim_number=None):
         # Find the inheritance
         inheritance = set()
         inheritance_text = ",".join(splitted_info[i:])
-        for term in DISEASE_INHERITANCE_TERMS:
+        for term in DISEASE_INHERITANCE_TERMS_MAPPER.keys():
             if term in inheritance_text:
-                inheritance.add(INHERITANCE_TERMS_MAPPER[term])
+                inheritance.add(DISEASE_INHERITANCE_TERMS_MAPPER[term])
 
         parsed_disease_entry = {
             "mim_number": disease_mim,
