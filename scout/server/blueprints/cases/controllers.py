@@ -497,6 +497,7 @@ def case(
         "case_group_label": case_group_label,
         "case_tag_options": CASE_TAGS,
         "events": _get_events(store, institute_obj, case_obj),
+        "phenomodels": store.phenomodels(institute_id=institute_obj["_id"]),
         "suspects": suspects,
         "causatives": causatives,
         "evaluated_variants": evaluated_variants,
