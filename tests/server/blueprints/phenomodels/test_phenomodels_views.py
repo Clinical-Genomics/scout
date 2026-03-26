@@ -16,6 +16,7 @@ PHENOMODELS_REDIRECT_URL = "scout.server.blueprints.institutes.views.redirect"
 PHENOMODEL_URL = "phenomodels.phenomodel"
 PHENOMODEL_EDIT_URL = "phenomodels.phenomodel_edit"
 PHENOMODELS_CHECKBOX_EDIT_URL = "phenomodels.checkbox_edit"
+PHENOMODELS_ASSIGN_URL = "phenomodels.phenomodel_assign"
 TEST_MODEL_NAME = "Test model"
 TEST_MODEL_DESC = "Test model description"
 
@@ -369,3 +370,61 @@ def test_phenomodel_post_remove_subpanel_checkbox(app, institute_obj):
     # THEN the checkbox should be removed from the subpanel
     updated_model = store.phenomodel_collection.find_one()
     assert updated_model["subpanels"]["subpanel_x"]["checkboxes"] == {}
+
+
+def test_phenomodel_case_assign(
+    app,
+    user_obj,
+    institute_obj,
+    case_obj,
+    test_omim_database_term,
+    test_orpha_database_term,
+    hpo_term,
+):
+    """Test the endpoint that assigns HPO/OMIM/ORPHA terms from a phenomodel."""
+
+    # GIVEN a case with no phenotypes/diagnoses
+    assert not case_obj.get("diagnosis_phenotypes")
+    assert not case_obj.get("phenotype_terms")
+
+    # GIVEN an OMIM term present in the database
+    store.disease_term_collection.insert_one(test_omim_database_term)
+    # GIVEN an ORPHA term present in the database
+    store.disease_term_collection.insert_one(test_orpha_database_term)
+    # GIVEN an HPO term present in the database
+    store.hpo_term_collection.insert_one(hpo_term)
+
+    # GIVEN a request with diseases/HPO terms to be assigned to a case:
+    data = {
+        "checked_terms": [
+            f"xyz.{hpo_term['_id']}.{hpo_term['_id']}",
+            f"xyz.{test_omim_database_term['_id']}.{test_omim_database_term['_id']}",
+            f"xyz.{test_orpha_database_term['_id']}.{test_orpha_database_term['_id']}",
+        ],
+        "phenotype_inds": ["ADM1059A2|NA12882"],
+    }
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # GIVEN a request to assign the phenotypes above from a phenomodel
+        client.post(
+            url_for(
+                PHENOMODELS_ASSIGN_URL,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+    # THEN the case should be updated with the phenotypes/diagnoses
+    updated_case = store.case(case_id=case_obj["_id"])
+    for dia in updated_case["diagnosis_phenotypes"]:
+        assert dia["disease_id"] in [
+            test_omim_database_term["_id"],
+            test_orpha_database_term["_id"],
+        ]
+
+    assert updated_case["phenotype_terms"][0]["phenotype_id"] == hpo_term["_id"]

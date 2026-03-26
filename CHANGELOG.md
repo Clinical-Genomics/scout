@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `--force` flag to force load research variants hitting a certain gene/region into a clinical case (#6153)
 - `Download as PDF` button on ACMG sandbox page (#6152)
 - Links to gDNA IGV view from variantS page also for WTS outliers (#6151)
+- Pick phenotype terms (HPO, OMIM, ORPHA) to be assigned to a case from a phenomodel object (#6138)
 - Methylation outliers population frequency filter and clinical filter (#6156)
 ### Changed
 - Export genotype with gene variantS search (#6088)

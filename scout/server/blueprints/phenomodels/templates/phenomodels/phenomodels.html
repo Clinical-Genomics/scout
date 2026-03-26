@@ -7,8 +7,8 @@
 
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-dt/1.12.0/css/jquery.dataTables.css" integrity="sha512-m0drUnadA2eh7GzixyE9wcOPgdEHlNEWTgsGbALLpB57LZcq+EsnnpcAKd6D18nsAkj/ZSps4FRiWWtW8FEJhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" integrity="sha384-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
@@ -49,8 +49,8 @@
   {% for model in phenomodels %}
     <form action="{{ url_for('phenomodels.lock_phenomodel') }}" method="POST">
       <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
-      <div class="modal fade" id="lockModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+      <div class="modal fade" id="lockModal-{{model._id}}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
               <p><strong>Phenomodel {{model.name}} is {{ "locked" if model.admins|length > 0 else "unlocked" }}.</strong></p>
@@ -80,8 +80,8 @@
   {% for model in phenomodels %}
     <form action="{{ url_for('phenomodels.remove_phenomodel') }}" method="POST">
       <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
-      <div class="modal fade" id="deleteModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+      <div class="modal fade" id="deleteModal-{{model._id}}" tabindex="-1">
+        <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-body">
               <p>Confirm delete this model?</p>
@@ -146,11 +146,11 @@
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
               <td style="width:30%">{{model.admins|join(", ") or "-"}}</td>
               <td>
-                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><em class="fa fa-trash"></em></button>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><em class="fa fa-trash"></em></button>
               </td>
               {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
                 <td>
-                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#lockModal-{{model._id}}"><em class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></em></button>
+                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" data-bs-toggle="modal" data-bs-target="#lockModal-{{model._id}}"><em class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></em></button>
                 </td>
               {% endif %}
             </tr>
