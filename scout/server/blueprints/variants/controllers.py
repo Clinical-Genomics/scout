@@ -38,6 +38,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
+from scout.constants.filters import CLINICAL_FILTER_BASE_OUTLIER_METHYLATION
 from scout.server.blueprints.variant.utils import (
     clinsig_human,
     get_callers,
@@ -1641,24 +1642,37 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         clinical_filter_panels = default_panels
 
     FiltersFormClass = FILTERSFORMCLASS[category]
+    clinical_filter = MultiDict()
 
-    if category == "snv":
-        clinical_filter_dict = FiltersFormClass.clinical_filter_base
-        clinical_filter_dict.update(
-            {
-                "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
-                "gene_panels": clinical_filter_panels,
-            }
-        )
-        clinical_filter = MultiDict(clinical_filter_dict)
-    elif category in ("sv", "cancer", "cancer_sv", "mei", "outlier"):
-        clinical_filter_dict = FiltersFormClass.clinical_filter_base
-        clinical_filter_dict.update(
-            {
-                "gene_panels": clinical_filter_panels,
-            }
-        )
-        clinical_filter = MultiDict(clinical_filter_dict)
+    match category:
+        case "snv":
+            clinical_filter_dict = FiltersFormClass.clinical_filter_base
+            clinical_filter_dict.update(
+                {
+                    "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
+                    "gene_panels": clinical_filter_panels,
+                }
+            )
+            clinical_filter = MultiDict(clinical_filter_dict)
+        case ("sv", "cancer", "cancer_sv", "mei"):
+            clinical_filter_dict = FiltersFormClass.clinical_filter_base
+            clinical_filter_dict.update(
+                {
+                    "gene_panels": clinical_filter_panels,
+                }
+            )
+            clinical_filter = MultiDict(clinical_filter_dict)
+        case "outlier":
+            if request_form.get("svtype") == "methylation":
+                clinical_filter_dict = CLINICAL_FILTER_BASE_OUTLIER_METHYLATION
+            else:
+                clinical_filter_dict = FiltersFormClass.clinical_filter_base
+            clinical_filter_dict.update(
+                {
+                    "gene_panels": clinical_filter_panels,
+                }
+            )
+            clinical_filter = MultiDict(clinical_filter_dict)
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)

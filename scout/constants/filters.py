@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from .so_terms import SEVERE_SO_TERMS
 
+SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
+SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
+METHBAT_IMPRINT_LABEL = "imprint"
+METHBAT_PROMOTER_LABEL = "promoter"
+SIGNIFICANT_METHBAT_CPG_LABEL = METHBAT_IMPRINT_LABEL
+
 CLINICAL_FILTER_BASE = {
     "variant_type": "clinical",
     "region_annotations": ["exonic", "splicing"],
@@ -37,4 +43,13 @@ CLINICAL_FILTER_BASE_OUTLIER = {
     "delta_psi": 0.1,
     "padjust": 0.05,
     "p_adjust_gene": 0.1,
+}
+
+CLINICAL_FILTER_BASE_OUTLIER_METHYLATION = {
+    "variant_type": "clinical",
+    "svtype": "methylation",
+    "methbat_significance": SIGNIFICANT_METHBAT_COMPARE
+    + SIGNIFICANT_METHBAT_SUMMARY
+    + [SIGNIFICANT_METHBAT_CPG_LABEL],
+    "category_pop_freq": 0.02,
 }

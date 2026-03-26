@@ -11,6 +11,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     TRUSTED_REVSTAT_LEVEL,
 )
+from scout.constants.filters import METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
@@ -806,12 +807,33 @@ class QueryHandler(object):
                         {"p_value": {"$lt": p_value}},
                     )
 
-                case "methbat_compare":
-                    sign_values = query.get("methbat_compare")
+                case "methbat_significance":
+                    mongo_secondary_query.append({"$or": _get_methbat_significance_query(query)})
+
+                case "category_pop_freq":
+                    freq = query.get("category_pop_freq")
                     mongo_secondary_query.append(
-                        {"compare_label": {"$in": sign_values}},
+                        {"category_pop_freq": {"$lt": freq}},
                     )
+
         return mongo_secondary_query
+
+
+def _get_methbat_significance_query(query: dict) -> list:
+    """Construct methbat significance query. This involves selecting values of importance from
+    the compare label, summary label, and also checking for currently only one string in the
+    CPG label (imprinting loci, changes in which are not easily caught with the other two categories)
+    """
+
+    sign_values = query.get("methbat_significance")
+    methbat_query = [
+        {"compare_label": {"$in": sign_values}},
+        {"summary_label": {"$in": sign_values}},
+    ]
+    for methbat_cpg_label in [METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL]:
+        if methbat_cpg_label in sign_values:
+            methbat_query.append({"cpg_label": {"$regex": methbat_cpg_label}})
+    return methbat_query
 
 
 def _get_spidex_query(query: dict) -> list:

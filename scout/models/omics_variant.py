@@ -11,11 +11,13 @@ from typing import List, Optional
 
 from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
-LOG = logging.getLogger(__name__)
+from scout.constants.filters import (
+    SIGNIFICANT_METHBAT_COMPARE,
+    SIGNIFICANT_METHBAT_CPG_LABEL,
+    SIGNIFICANT_METHBAT_SUMMARY,
+)
 
-SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
-SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
-SIGNIFICANT_METHBAT_CPG_LABEL = "imprint"
+LOG = logging.getLogger(__name__)
 
 
 class OmicsVariantLoader(BaseModel):
