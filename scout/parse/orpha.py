@@ -6,7 +6,7 @@ from xml.etree.ElementTree import Element
 
 from defusedxml.ElementTree import fromstring
 
-from scout.constants import DISEASE_INHERITANCE_TERMS, INHERITANCE_TERMS_MAPPER
+from scout.constants import DISEASE_INHERITANCE_TERMS_MAPPER
 
 LOG = logging.getLogger(__name__)
 
@@ -117,9 +117,9 @@ def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
         if nr > 0:
             for inheritance in inheritance_list:
                 inheritance_mode = inheritance.find("Name").text
-                for term in DISEASE_INHERITANCE_TERMS:
+                for term in DISEASE_INHERITANCE_TERMS_MAPPER.keys():
                     if term in inheritance_mode:
-                        disease["inheritance"].add(INHERITANCE_TERMS_MAPPER[term])
+                        disease["inheritance"].add(DISEASE_INHERITANCE_TERMS_MAPPER[term])
 
         orpha_diseases_found[disease_id] = disease
     return orpha_diseases_found
