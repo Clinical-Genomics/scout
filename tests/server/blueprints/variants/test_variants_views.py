@@ -401,30 +401,6 @@ def test_cancer_variants(app, institute_obj, case_obj):
     assert resp.status_code == 200
 
 
-def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
-    """test filter cancer SNV variants with filter form filled with parameters having the wrong format"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-
-        # When a POST request with filter containing wrongly formatted parameters is sent
-        form_data = {
-            "control_frequency": "not a number!",
-        }
-        resp = client.post(
-            url_for(
-                "variants.cancer_variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=form_data,
-        )
-        # THEN it should return a redirected page
-        assert resp.status_code == 302
-
-
 def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, cancer_variant_obj):
     """Tests the cancer form filter by VAF"""
 

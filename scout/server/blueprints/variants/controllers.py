@@ -62,6 +62,7 @@ from scout.server.utils import (
 
 from .forms import (
     FILTERSFORMCLASS,
+    CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
     FusionFiltersForm,
@@ -73,12 +74,14 @@ from .utils import update_case_panels
 
 SV_VARIANT_PAGE = "variant.sv_variant"
 VARIANT_PAGE = "variant.variant"
+CANCER_VARIANT_PAGE = "variant.cancer_variant"
 DISMISS_VARIANT_LINK = {
     "sv": SV_VARIANT_PAGE,
     "cancer_sv": SV_VARIANT_PAGE,
     "mei": SV_VARIANT_PAGE,
     "str": VARIANT_PAGE,
     "snv": VARIANT_PAGE,
+    "cancer": CANCER_VARIANT_PAGE,
 }
 
 LOG = logging.getLogger(__name__)
@@ -302,14 +305,16 @@ def render_variants_page(
         return data_exporter(store, case_obj, variants_query)
 
     args = [store, institute_obj, case_obj, variants_query, page]
-    if category in ["snv", "snv_research"]:
+    if category == "snv":
         args.append(request.form)
+    elif category == "cancer":
+        args.append(form)
 
     data = decorator(*args)
 
     dismiss_variant_options = (
         {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
-        if category == "cancer_sv"
+        if category in ["cancer_sv", "cancer"]
         else DISMISS_VARIANT_OPTIONS
     )
 
@@ -1500,23 +1505,31 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
+def cancer_variants(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variants_query: dict,
+    page: int,
+    form: CancerFiltersForm,
+):
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
     in the panel as the second representative gene. If no gene panel is selected don't assign such a gene.
     """
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
+    gene_panel_lookup = store.gene_to_panels(case_obj)
     variants_list = []
     case_affected_inds: list[str] = store._find_affected(case_obj)
+    selected_panels = set(form.gene_panels.data)
+
     for variant in variant_res:
         variant_obj = parse_variant(
             store,
@@ -1526,46 +1539,43 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
             update=True,
             case_dismissed_vars=case_dismissed_vars,
         )
+
         secondary_gene = None
+        first_gene = variant_obj.get("first_rep_gene")
 
-        if (
-            "first_rep_gene" in variant_obj
-            and variant_obj["first_rep_gene"] is not None
-            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
-        ):
-            for gene in variant_obj["genes"]:
-                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
+        if first_gene and first_gene.get("hgnc_id") not in gene_panel_lookup:
+            secondary_gene = next(
+                (
+                    gene
+                    for gene in variant_obj["genes"]
+                    if set(gene_panel_lookup.get(gene["hgnc_id"], [])) & selected_panels
+                ),
+                None,
+            )
 
-                if len(in_panels & set(form.gene_panels.data)) > 0:
-                    secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
         variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
 
-        set_overlapping_variants(variant_obj=variant_obj, limit_samples=case_affected_inds)
+        set_overlapping_variants(
+            variant_obj=variant_obj,
+            limit_samples=case_affected_inds,
+        )
 
         evaluations = []
         # Get previous ClinGen-CGC-VIGG evaluations of the variant from other cases
         for evaluation_obj in store.get_ccv_evaluations(variant_obj):
-            if evaluation_obj["case_id"] == case_obj["_id"]:
-                continue
+            if evaluation_obj["case_id"] != case_obj["_id"]:
+                ccv_classification = evaluation_obj["ccv_classification"]
+                evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
+                evaluations.append(evaluation_obj)
 
-            ccv_classification = evaluation_obj["ccv_classification"]
-
-            evaluation_obj["ccv_classification"] = CCV_COMPLETE_MAP.get(ccv_classification)
-            evaluations.append(evaluation_obj)
         variant_obj["ccv_evaluations"] = evaluations
-
         variants_list.append(variant_obj)
 
     data = dict(
-        page=page,
-        institute=institute_obj,
-        case=case_obj,
         variants=variants_list,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         escat_tier_options=ESCAT_TIER_OPTIONS,
-        form=form,
     )
     return data
 
@@ -1866,7 +1876,7 @@ def _populate_form_genes_from_file(
         form.hgnc_symbols.data = hgnc_symbols_set
 
 
-def populate_snv_sv_mei_str_filters_form(
+def populate_variants_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
     """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
