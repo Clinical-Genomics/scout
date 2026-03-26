@@ -285,6 +285,25 @@ def transcript_objs(request, parsed_transcripts):
 
 
 @pytest.fixture
+def hpo_term(gene_list):
+    """A test HPO term"""
+    term = {
+        "_id": "HP:0001250",
+        "hpo_id": "HP:0001250",
+        "description": "Seizure",
+        "genes": gene_list,
+    }
+    return term
+
+
+@pytest.fixture
+def gene_list():
+    """A list of HGNC ids"""
+    gene_list = [26113, 9479, 10889, 18040, 10258, 1968]
+    return gene_list
+
+
+@pytest.fixture
 def hpo_genes_handle(request, hpo_genes_file):
     """Get a file handle to a genes_to_phenotypes HPO mapping file"""
     return get_file_handle(hpo_genes_file)

@@ -1,0 +1,101 @@
+{% macro model_preview(institute, phenomodel, assign=false, case=none) %}
+
+{% if assign %}
+  <form action="{{ url_for('phenomodels.phenomodel_assign', institute_id=institute._id, case_name=case.display_name)}}" id="phenomodel_assign_{{phenomodel._id}}" method="POST">
+{% else %}
+  <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+{% endif %}
+<div class="modal fade" id="preview_{{phenomodel._id}}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="card-title">{{phenomodel.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{phenomodel.description}}</h6>
+
+        {% for subpanel_id, subpanel_obj in phenomodel.subpanels.items() %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <span style="font-size:20px;"><strong>{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</strong></span>
+              </div>
+
+              {% for term_id, term_obj in subpanel_obj.get("checkboxes", {}).items() %}
+              <div>
+                {% if term_obj.term_title %}
+                  <strong>{{term_obj.term_title}}</strong><br>
+                {% endif %}
+                {% set term_input_id = "checked_" ~ phenomodel._id ~ "_" ~ subpanel_id ~ "_" ~ term_id %}
+                <input type="checkbox" name="checked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}" id="{{term_input_id}}">
+                {% if term_obj.children %}
+                  {% set children_div_id = term_obj.name ~ "_" ~ phenomodel._id ~ "_children" %}
+                  <button type="button" class="btn btn-link p-0 align-baseline" onclick="toggleDiv('{{children_div_id}}')">
+                    {{term_obj.custom_name or term_obj.description}} ({{term_id}})
+                  </button>
+                {% else %}
+                  <label for="{{term_input_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+                {% endif %}
+              </div>
+
+              {% if term_obj.children %}
+              <div style="margin-left: 35px; display: none;" id="{{children_div_id}}">
+                <ul>
+                  {% for item in term_obj.children recursive %}
+                  {% set child_input_id = "checked_" ~ phenomodel._id ~ "_" ~ subpanel_id ~ "_" ~ term_id ~ "_" ~ item.name %}
+                  <li class="tree">
+                    <input type="checkbox" name="checked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}" id="{{child_input_id}}">
+                    <label for="{{child_input_id}}">{{ item.description }} ({{item.name}})</label>
+                    {% if item.children %}
+                      <ul class="tree">{{ loop(item.children) }}</ul>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+
+              <br>
+              {% endfor %}
+
+            </div>
+            <span class="text-muted mb-1 ms-1" style="font-size:14px;">
+              Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}
+            </span>
+          </div>
+        {% endfor %}
+
+        {% if case %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6 d-flex align-items-center gap-2">
+                <label for="phenotype_inds_{{phenomodel._id}}">Case individuals/samples</label>
+                <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary" id="phenotype_inds_{{phenomodel._id}}">
+                  {% for ind in case.individuals %}
+                    <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
+                      {{ind.display_name}}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </div> <!-- modal-body -->
+
+      <div class="modal-footer">
+        {% if assign %}
+          <button type="submit" name="model_assign" value="{{phenomodel._id}}" class="btn btn-primary">Assign selected terms</button>
+        {% else %}
+          <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary" {{ "disabled" if disable }}>Save selected terms</button>
+        {% endif %}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div> <!-- modal-content -->
+  </div> <!-- modal-dialog -->
+</div> <!-- modal -->
+
+</form>
+{% endmacro %}
