@@ -3,7 +3,9 @@ from .so_terms import SEVERE_SO_TERMS
 
 SIGNIFICANT_METHBAT_COMPARE = ["HypoMethylated", "HyperMethylated", "HypoASM", "HyperASM"]
 SIGNIFICANT_METHBAT_SUMMARY = ["AlleleSpecificMethylation"]
-SIGNIFICANT_METHBAT_CPG_LABEL = "imprint"
+METHBAT_IMPRINT_LABEL = "imprint"
+METHBAT_PROMOTER_LABEL = "promoter"
+SIGNIFICANT_METHBAT_CPG_LABEL = METHBAT_IMPRINT_LABEL
 
 CLINICAL_FILTER_BASE = {
     "variant_type": "clinical",

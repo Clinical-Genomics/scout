@@ -4,6 +4,7 @@ from pymongo import ReturnDocument
 
 from scout.adapter.mongo.query import NOT_EXISTS
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
+from scout.constants.filters import METHBAT_IMPRINT_LABEL
 
 
 def test_build_gene_variant_query(adapter, case_obj, test_hpo_terms, institute_obj):
@@ -859,7 +860,7 @@ def test_build_mathbat_significance_query(adapter):
     """
     case_id = "cust000"
     # GIVEN a query containing mathbat significance
-    METHBAT_SIGN_VALUES = ["HypoMethylated", "HyperMethylated", "imprint"]
+    METHBAT_SIGN_VALUES = ["HypoMethylated", "HyperMethylated", METHBAT_IMPRINT_LABEL]
     query = {
         "svtype": ["methylation"],
         "methbat_significance": METHBAT_SIGN_VALUES,
@@ -872,7 +873,7 @@ def test_build_mathbat_significance_query(adapter):
     assert str({"compare_label": {"$in": METHBAT_SIGN_VALUES}}) in str(mongo_query["$and"])
     assert str({"summary_label": {"$in": METHBAT_SIGN_VALUES}}) in str(mongo_query["$and"])
 
-    assert str({"cpg_label": {"$regex": "imprint"}}) in str(mongo_query["$and"])
+    assert str({"cpg_label": {"$regex": METHBAT_IMPRINT_LABEL}}) in str(mongo_query["$and"])
 
 
 def test_query_snvs_by_coordinates(real_populated_database, variant_objs, case_obj):

@@ -37,8 +37,9 @@ from scout.constants import (
     VARIANT_GENOTYPES,
 )
 from scout.constants.filters import (
+    METHBAT_IMPRINT_LABEL,
+    METHBAT_PROMOTER_LABEL,
     SIGNIFICANT_METHBAT_COMPARE,
-    SIGNIFICANT_METHBAT_CPG_LABEL,
     SIGNIFICANT_METHBAT_SUMMARY,
 )
 
@@ -338,7 +339,7 @@ class OutlierFiltersForm(FlaskForm):
         "Methbat significance",
         choices=SIGNIFICANT_METHBAT_COMPARE
         + SIGNIFICANT_METHBAT_SUMMARY
-        + [SIGNIFICANT_METHBAT_CPG_LABEL],
+        + [METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL],
     )
 
     filter_variants = SubmitField(label="Filter variants")

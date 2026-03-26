@@ -11,7 +11,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     TRUSTED_REVSTAT_LEVEL,
 )
-from scout.constants.filters import SIGNIFICANT_METHBAT_CPG_LABEL
+from scout.constants.filters import METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
@@ -830,8 +830,9 @@ def _get_methbat_significance_query(query: dict) -> list:
         {"compare_label": {"$in": sign_values}},
         {"summary_label": {"$in": sign_values}},
     ]
-    if SIGNIFICANT_METHBAT_CPG_LABEL in sign_values:
-        methbat_query.append({"cpg_label": {"$regex": SIGNIFICANT_METHBAT_CPG_LABEL}})
+    for methbat_cpg_label in [METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL]:
+        if methbat_cpg_label in sign_values:
+            methbat_query.append({"cpg_label": {"$regex": methbat_cpg_label}})
     return methbat_query
 
 
