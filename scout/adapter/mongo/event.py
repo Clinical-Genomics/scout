@@ -322,7 +322,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         for term in hpo_results:
             hpo_obj = self.hpo_term(term)
             if hpo_obj is None:
-                raise ValueError("Hpo term: %s does not exist in database" % term)
+                raise ValueError("HPO term: %s does not exist in database" % term)
 
             phenotype_id = hpo_obj["_id"]
             description = hpo_obj["description"]
