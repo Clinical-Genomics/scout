@@ -37,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Main dropdown menu (#6120)
 - MT chromosome is hard to reach in Firefox dropdown selectpicker (#6124)
 - Parse also OMIM Digenic dominant (#6157)
+- Visibility of footer buttons on ACMG classifications documents exported to PDF (#6166)
 
 ## [4.108.2]
 ### Fixed
