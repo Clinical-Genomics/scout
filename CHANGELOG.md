@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MT chromosome is hard to reach in Firefox dropdown selectpicker (#6123)
 - Parse also OMIM Digenic dominant (#6157)
 - Visibility of footer buttons on ACMG classifications documents exported to PDF (#6166)
+- Typo in compounds check when applying saved custom filters (#6170)
 - Use liftOver with omics variant build coordinate also for gDNA variants (#6168)
 
 ## [4.108.2]
