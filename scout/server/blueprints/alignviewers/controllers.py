@@ -183,12 +183,6 @@ def make_igv_tracks(
     """
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
 
-    # Set genome build for displaying alignments:
-    if get_case_genome_build(case_obj) == "38" or chromosome == "M":
-        build = "38"
-    else:
-        build = "37"
-
     chromosome = "All"
 
     variant_obj = None
@@ -212,6 +206,12 @@ def make_igv_tracks(
                 ]
             else:
                 loci = [f"chr{chromosome}:{start}-{stop}"]
+
+    # Set genome build for displaying alignments:
+    if get_case_genome_build(case_obj) == "38" or chromosome == "M":
+        build = "38"
+    else:
+        build = "37"
 
     if omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
