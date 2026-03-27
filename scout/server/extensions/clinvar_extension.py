@@ -6,7 +6,7 @@ from typing import Any, Optional, Tuple
 import requests
 from flask import flash
 
-from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT, PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL_DEFAULT
 
 LOG = logging.getLogger(__name__)
 
@@ -18,8 +18,6 @@ class ClinVarApi:
     """
 
     def init_app(self, app):
-        self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.delete_service = "/".join([PRECLINVAR_URL, "delete"])
         self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
 
     def set_header(self, api_key) -> dict:
@@ -35,29 +33,7 @@ class ClinVarApi:
         }
         return header
 
-    def convert_to_json(self, variant_file, casedata_file, extra_params={}):
-        """Sends a POST request to the API (tsv_2_json endpoint) and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
-
-        Args:
-            variant_file(tempfile._TemporaryFileWrapper): a tempfile containing Variant data
-            casedata_file(tempfile._TemporaryFileWrapper): a tempfile containing CaseData data
-            extra_params(dict): a dictionary containing key/values to be sent as extra params to the csv_2_json endpoint (assertion criteria, genome assembly etc)
-
-        Returns:
-            tuple: example -> 400, "Created json file contains validation errors"
-                           -> 200, {dict representation of the submission}
-        """
-        files = [
-            ("files", (variant_file, open(variant_file, "r"))),
-            ("files", (casedata_file, open(casedata_file, "r"))),
-        ]
-        try:
-            resp = requests.post(self.convert_service, params=extra_params, files=files)
-            return resp.status_code, resp.json()
-        except Exception as ex:
-            return None, ex
-
-    def submit_json(self, json_data, api_key=None):
+    def submit_json(self, json_data: dict, api_key: Optional[str] = None) -> tuple:
         """Submit a ClinVar submission object using the official ClinVar API
 
         Args:
@@ -69,6 +45,7 @@ class ClinVarApi:
             tuple: example -> 400, "{Validation errors}"
                            -> [201, 200, 204], Response object
         """
+
         header = self.set_header(api_key)
         data = {
             "actions": [{"type": "AddData", "targetDb": "clinvar", "data": {"content": json_data}}]
@@ -108,33 +85,3 @@ class ClinVarApi:
                 )
                 return
             return submission_data["identifiers"]["clinvarAccession"]
-
-    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> Tuple[int, dict]:
-        """Remove a successfully processed submission from ClinVar."""
-
-        try:
-            submission_status_doc: dict = self.json_submission_status(
-                submission_id=submission_id, api_key=api_key
-            )
-
-            subm_response: dict = submission_status_doc["actions"][0]["responses"][0]
-            submission_status = subm_response["status"]
-
-            if submission_status != "processed":
-                return (
-                    500,
-                    f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
-                )
-
-            # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
-            subm_summary_url: str = subm_response["files"][0]["url"]
-            scv_accession: Optional(str) = self.get_clinvar_scv_accession(url=subm_summary_url)
-
-            # Remove ClinVar submission using preClinVar's 'delete' endpoint
-            resp = requests.post(
-                self.delete_service, data={"api_key": api_key, "clinvar_accession": scv_accession}
-            )
-            return resp.status_code, resp.json()
-
-        except Exception as ex:
-            return 500, str(ex)
