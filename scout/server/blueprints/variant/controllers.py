@@ -147,23 +147,20 @@ def tx_overview(variant_obj: dict, genome_build: str):
     variant_obj["mane_transcripts"] = ensembl_txid_mane_transcripts
 
 
-def get_igv_tracks(build: str = "37") -> set:
-    """Return all available IGV tracks for the given genome build, as a set
-
-    Args:
-        build(str): "37" or "38"
-
-    Returns:
-        igv_tracks(set): A set of track names for a given genome build
-    """
+def get_igv_tracks() -> set:
+    """Return all available IGV tracks."""
     igv_tracks = set()
+
     # Collect hardcoded tracks, common for all Scout instances
-    for track in IGV_TRACKS.get(build, []):
-        igv_tracks.add(track.get("name"))
-    # Collect instance-specific public tracks, if available
-    if hasattr(config_igv_tracks, "tracks"):
-        for track in config_igv_tracks.tracks.get(build, []):
+    for build in ["37", "38"]:
+        for track in IGV_TRACKS.get(build, []):
             igv_tracks.add(track.get("name"))
+
+        # Collect instance-specific public tracks, if available
+        if hasattr(config_igv_tracks, "tracks"):
+            for track in config_igv_tracks.tracks.get(build, []):
+                igv_tracks.add(track.get("name"))
+
     return igv_tracks
 
 
@@ -423,7 +420,7 @@ def variant(
         "CCV_OPTIONS": CCV_OPTIONS,
         "case_tag_options": CASE_TAGS,
         "inherit_palette": INHERITANCE_PALETTE,
-        "igv_tracks": get_igv_tracks("38" if variant_obj["is_mitochondrial"] else genome_build),
+        "igv_tracks": get_igv_tracks(),
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
