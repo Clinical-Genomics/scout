@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make gene panel's display name editable by users, if they are panel maintainers or admins (#6147)
 - Rank model URLs can now be filenames, if not starting with "http" (#6150)
 - Methbat outliers significance filtering extended with "AlleleSpecificMethylation" and "imprint" (#6156)
+- Custom IGV tracks settings shown on variant don't depend on the specific variant genome build (#6165)
 ### Fixed
 - Comments' text wrapping in ACMG classifications exported as PDF (#6086)
 - Individual breakpoint gDNA IGV links should not trigger split locus view (#6103)
