@@ -155,6 +155,20 @@ def authorize_case_tracks(resource: str, case: dict):
     return False
 
 
+def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -> str | None:
+    """Return display chromosome. If chrom is givin in locus input, use it,
+    otherwise use the variant chrmosome. Always fix any MT in chromosome to M."""
+
+    display_chrom = "All"
+    if chrom:
+        display_chrom = chrom
+    if variant_obj:
+        display_chrom = variant_obj.get("chromosome")
+    if display_chrom:
+        display_chrom = display_chrom.replace("MT", "M")
+    return display_chrom
+
+
 def make_igv_tracks(
     case_obj: dict,
     variant_id: Optional[str] = None,
@@ -183,21 +197,15 @@ def make_igv_tracks(
     """
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
 
-    chromosome = "All"
-
-    variant_obj = None
     if variant_id:
-        variant_obj = store.variant(document_id=variant_id)
-
-        if variant_obj:
+        if variant_obj := store.variant(document_id=variant_id):
             # Set display locus
             start = start or variant_obj["position"]
             stop = stop or variant_obj["end"]
-            chrom = chrom or variant_obj.get("chromosome")
+            chromosome = get_display_chromosome(chrom, variant_obj)
+            display_build = get_display_build(case_obj, chromosome)
 
-        if all([start, stop, chrom]):
-            chromosome = chrom.replace("MT", "M")
-
+        if all([start, stop, chromosome]):
             if end_chrom:
                 end_chromosome = end_chrom.replace("MT", "M")
                 loci = [
@@ -206,20 +214,24 @@ def make_igv_tracks(
                 ]
             else:
                 loci = [f"chr{chromosome}:{start}-{stop}"]
-
-    # Set genome build for displaying alignments:
-    if get_case_genome_build(case_obj) == "38" or chromosome == "M":
-        build = "38"
-    else:
-        build = "37"
-
-    if omics_variant_id:
+    elif omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
-        loci = [make_locus_from_variant(variant_obj, case_obj, build)]
-        chrom = chrom or variant_obj.get("chromosome")
+        display_build = get_display_build(case_obj, chromosome)
+        loci = [make_locus_from_variant(variant_obj, case_obj, display_build)]
+        chromosome = get_display_chromosome(chrom, variant_obj)
+    else:
+        chromosome = get_display_chromosome(chrom)
+        display_build = get_display_build(case_obj, chromosome)
+
+    if not loci:
+        loci = "All"
 
     display_obj["loci"] = loci
-    set_common_tracks(display_obj, build)
+
+    if not display_build:
+        case_obj.get("build")
+
+    set_common_tracks(display_obj, display_build)
 
     # Add track data to connected case dictionary
     grouped_cases = store.get_case_group(case_obj)
@@ -230,15 +242,24 @@ def make_igv_tracks(
     set_sample_tracks(display_obj, grouped_cases, chromosome)
 
     # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
-    if chrom != "M":
+    if chromosome != "M":
         set_case_specific_tracks(display_obj, case_obj)
 
     # Set up custom cloud public tracks, if available
-    set_config_custom_tracks(display_obj, build)
+    set_config_custom_tracks(display_obj, display_build)
 
     display_obj["display_center_guide"] = True
 
     return display_obj
+
+
+def get_display_build(case_obj: dict, chromosome: str) -> str:
+    """Set build for displaying alignments according to case genome build. Set to 38 if chromosome is M. Default to 37."""
+
+    if get_case_genome_build(case_obj) == "38" or chromosome in ["M", "MT"]:
+        build = "38"
+    else:
+        build = "37"
 
 
 def make_sashimi_tracks(
