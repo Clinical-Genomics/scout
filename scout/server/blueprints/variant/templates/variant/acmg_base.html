@@ -244,18 +244,25 @@
       container.appendChild(footer);
     }
 
-    // Force light mode on all child elements
+    // Force light mode on all child elements EXCEPT footer
     const allElements = container.querySelectorAll('*');
     allElements.forEach(el => {
+      if (el.closest('.fixed-bottom')) return;
       const computed = globalThis.getComputedStyle(el);
-      if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
+      if (
+        computed.backgroundColor &&
+        computed.backgroundColor !== 'rgba(0, 0, 0, 0)' &&
+        computed.backgroundColor !== 'transparent'
+      ) {
         el.dataset.originalBg = el.style.backgroundColor;
         el.style.backgroundColor = 'white';
       }
+
       if (computed.color) {
         el.dataset.originalColor = el.style.color;
         el.style.color = 'black';
       }
+
       if (computed.borderColor) {
         el.dataset.originalBorder = el.style.borderColor;
         el.style.borderColor = '#ccc';
