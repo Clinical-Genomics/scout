@@ -169,6 +169,25 @@ def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -
     return display_chrom
 
 
+def get_loci_from_coords(
+    chromosome: str | None, start: int | None, stop: int | None, end_chrom: str | None
+) -> list | None:
+    """Return list of loci strings for DNA variants. If end_chrom is set, return two loci
+    for a split view."""
+    loci = None
+    if all([start, stop, chromosome]):
+        if end_chrom:
+            end_chromosome = end_chrom.replace("MT", "M")
+            loci = [
+                f"chr{chromosome}:{start}",
+                f"chr{end_chromosome}:{stop}",
+            ]
+        else:
+            loci = [f"chr{chromosome}:{start}-{stop}"]
+
+    return loci
+
+
 def make_igv_tracks(
     case_obj: dict,
     variant_id: Optional[str] = None,
@@ -196,25 +215,16 @@ def make_igv_tracks(
         display_obj: A display object containing case name, list of genes, locus and tracks
     """
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
+    loci = ["All"]
 
     if variant_id:
         if variant_obj := store.variant(document_id=variant_id):
-            # Set display locus
             start = start or variant_obj["position"]
             stop = stop or variant_obj["end"]
 
         chromosome = get_display_chromosome(chrom, variant_obj)
         display_build = get_display_build(case_obj, chromosome)
-
-        if all([start, stop, chromosome]):
-            if end_chrom:
-                end_chromosome = end_chrom.replace("MT", "M")
-                loci = [
-                    f"chr{chromosome}:{start}",
-                    f"chr{end_chromosome}:{stop}",
-                ]
-            else:
-                loci = [f"chr{chromosome}:{start}-{stop}"]
+        loci = get_loci_from_coords(chromosome, start, stop, end_chrom)
     elif omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
         chromosome = get_display_chromosome(chrom, variant_obj)
@@ -224,13 +234,10 @@ def make_igv_tracks(
         chromosome = get_display_chromosome(chrom)
         display_build = get_display_build(case_obj, chromosome)
 
-    if not loci:
-        loci = "All"
-
     display_obj["loci"] = loci
 
     if not display_build:
-        case_obj.get("build")
+        display_build = case_obj.get("build")
 
     set_common_tracks(display_obj, display_build)
 
