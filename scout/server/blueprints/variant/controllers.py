@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 import requests
 from flask import abort, current_app, flash, url_for
@@ -147,7 +147,7 @@ def tx_overview(variant_obj: dict, genome_build: str):
     variant_obj["mane_transcripts"] = ensembl_txid_mane_transcripts
 
 
-def get_igv_tracks() -> set:
+def get_igv_tracks() -> Set[str]:
     """Return all available IGV tracks."""
     igv_tracks = set()
 
