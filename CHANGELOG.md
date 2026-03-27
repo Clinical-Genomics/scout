@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make gene panel's display name editable by users, if they are panel maintainers or admins (#6147)
 - Rank model URLs can now be filenames, if not starting with "http" (#6150)
 - Methbat outliers significance filtering extended with "AlleleSpecificMethylation" and "imprint" (#6156)
+- Custom IGV tracks settings shown on variant don't depend on the specific variant genome build (#6165)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 ### Fixed
