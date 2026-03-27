@@ -162,7 +162,7 @@ def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -
     display_chrom = "All"
     if chrom:
         display_chrom = chrom
-    if variant_obj:
+    elif variant_obj:
         display_chrom = variant_obj.get("chromosome")
     if display_chrom:
         display_chrom = display_chrom.replace("MT", "M")
@@ -202,8 +202,9 @@ def make_igv_tracks(
             # Set display locus
             start = start or variant_obj["position"]
             stop = stop or variant_obj["end"]
-            chromosome = get_display_chromosome(chrom, variant_obj)
-            display_build = get_display_build(case_obj, chromosome)
+
+        chromosome = get_display_chromosome(chrom, variant_obj)
+        display_build = get_display_build(case_obj, chromosome)
 
         if all([start, stop, chromosome]):
             if end_chrom:
@@ -216,9 +217,9 @@ def make_igv_tracks(
                 loci = [f"chr{chromosome}:{start}-{stop}"]
     elif omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
+        chromosome = get_display_chromosome(chrom, variant_obj)
         display_build = get_display_build(case_obj, chromosome)
         loci = [make_locus_from_variant(variant_obj, case_obj, display_build)]
-        chromosome = get_display_chromosome(chrom, variant_obj)
     else:
         chromosome = get_display_chromosome(chrom)
         display_build = get_display_build(case_obj, chromosome)
@@ -260,6 +261,8 @@ def get_display_build(case_obj: dict, chromosome: str) -> str:
         build = "38"
     else:
         build = "37"
+
+    return build
 
 
 def make_sashimi_tracks(

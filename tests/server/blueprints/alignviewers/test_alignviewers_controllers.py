@@ -113,7 +113,9 @@ def test_make_igv_tracks(app, case_obj, variant_obj):
     with app.test_client() as client:
         client.get(url_for("auto_login"))
 
-        display_obj = controllers.make_igv_tracks(case_obj, variant_obj["_id"], "MT", 100, 101)
+        display_obj = controllers.make_igv_tracks(
+            case_obj=case_obj, variant_id=variant_obj["_id"], chrom="MT", start=100, stop=101
+        )
 
         # The function should return a track list with the expected tracks
         assert display_obj["loci"] == ["chrM:100-101"]
