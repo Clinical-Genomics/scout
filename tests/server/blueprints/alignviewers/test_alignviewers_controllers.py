@@ -3,6 +3,7 @@ import responses
 from flask import url_for
 from flask_login import current_user
 
+from scout.constants import HUMAN_REFERENCE
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import config_igv_tracks, store
 from scout.utils.ensembl_rest_clients import RESTAPI_URL
@@ -113,6 +114,13 @@ def test_make_igv_tracks(app, case_obj, variant_obj):
     with app.test_client() as client:
         client.get(url_for("auto_login"))
 
+        ## MT but case build is 37
+
+        # GIVEN that the case build is 37
+        case_build = "37"
+        case_obj["genome_build"] = case_build
+
+        # WHEN making igv tracks
         display_obj = controllers.make_igv_tracks(
             case_obj=case_obj, variant_id=variant_obj["_id"], chrom="MT", start=100, stop=101
         )
@@ -120,27 +128,125 @@ def test_make_igv_tracks(app, case_obj, variant_obj):
         # The function should return a track list with the expected tracks
         assert display_obj["loci"] == ["chrM:100-101"]
         assert display_obj["display_center_guide"] == True
-        assert display_obj["reference_track"]
+        assert display_obj["reference_track"] == HUMAN_REFERENCE["38"]  # MT variant
         assert display_obj["custom_tracks"]
         assert len(display_obj["sample_tracks"]) == 3  # 3 individuals in demo case
 
+        ## hg19 nuclear
 
-def set_case_specific_tracks():
+        # GIVEN that the case build is 37
+        case_build = "37"
+        case_obj["genome_build"] = case_build
+
+        # WHEN making igv tracks
+        display_obj = controllers.make_igv_tracks(
+            case_obj=case_obj, variant_id=variant_obj["_id"], chrom="1", start=100, stop=101
+        )
+
+        # THEN the function should return a track list with the expected tracks
+        assert display_obj["reference_track"] == HUMAN_REFERENCE[case_build]
+        assert display_obj["loci"] == ["chr1:100-101"]
+
+        ## 38 nuclear
+
+        # GIVEN that the case build is 38
+        case_build = "38"
+        case_obj["genome_build"] = case_build
+
+        # WHEN making igv tracks
+        display_obj = controllers.make_igv_tracks(
+            case_obj=case_obj, variant_id=variant_obj["_id"], chrom="1", start=100, stop=101
+        )
+
+        # The function should return a track list with the expected tracks
+        assert display_obj["reference_track"] == HUMAN_REFERENCE[case_build]
+        assert display_obj["loci"] == ["chr1:100-101"]
+
+
+def test_get_locus_from_omics_variant(app, case_obj):
+    """Test getting locus string components for an omics variant zoom in given a case"""
+
+    # GIVEN a case and variant with build 38
+    case_obj["genome_build"] = "38"
+
+    # GIVEN an omics variant
+    omics_variant = store.omics_variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
+    # GIVEN that the variant build is the same as the case (38)
+    omics_variant["build"] = "38"
+
+    display_chr, locus_start_coord, locus_end_coord = controllers.get_locus_from_variant(
+        omics_variant, case_obj
+    )
+
+    assert display_chr == omics_variant["chromosome"]
+    assert locus_end_coord
+    assert locus_start_coord
+
+
+def test_get_locus_from_omics_variant_liftover(app, case_obj, ensembl_liftover_response):
+    """Test getting locus string components for an omics variant zoom in given a case,
+    with liftover"""
+
+    # GIVEN an omics variant
+    omics_variant = store.omics_variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
+    # GIVEN a case and variant with build 37
+    assert case_obj["genome_build"] == "37"
+    # GIVEN an omics variant with build 38
+    omics_variant["build"] = "38"
+
+    # GIVEN a patched response from Ensembl liftover API
+    url = f'{RESTAPI_URL}/map/human/GRCh37/{omics_variant["chromosome"]}:{omics_variant["position"]}..{omics_variant["end"]}/GRCh38?content-type=application/json'
+    responses.add(
+        responses.GET,
+        url,
+        json=ensembl_liftover_response,
+        status=200,
+    )
+
+    display_chr, locus_start_coord, locus_end_coord = controllers.get_locus_from_variant(
+        omics_variant, case_obj
+    )
+
+    assert display_chr == omics_variant["chromosome"]
+    assert locus_end_coord
+    assert locus_start_coord
+
+
+def test_set_case_specific_tracks(case_obj):
     """Test function that creates tracks based on case-specific files:
     (rhocall files, tiddit coverage files, upd regions and sites files)
     """
+
     # GIVEN a case with a rhocall bed file and a TIDDIT wig file
-    form_data = {
-        "rhocall_bed": "rhocall.bed",
-        "tiddit_coverage_wig": "tiddit_coverage.wig",
-        "minor_allele_frequency_wig": "minor_allele_frequency.wig",
+
+    case_data = {
+        "rhocall_beds": "rhocall.bed",
+        "tiddit_coverage_wigs": "tiddit_coverage.wig",
+        "minor_allele_frequency_wigs": "minor_allele_frequency.wig",
     }
-    # THE case_specific_tracks function should return the expected tracks
+
+    for individual in case_obj["individuals"]:
+        # Add sample name - display name tuple
+        sample_name = f"{case_obj.get('display_name', '')} - {individual.get('display_name', '')}"
+        case_obj.setdefault("sample_names", []).append(sample_name)
+
+    print(f"Sample names: {case_obj.get('sample_names')}")
+
+    for track, content in case_data.items():
+        case_obj.setdefault(track, []).append(content)
+
+    # THEN case_specific_tracks function should return the expected tracks
     display_obj = {}
-    controllers.set_case_specific_tracks(display_obj, form_data)
-    assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
-    assert display_obj["tiddit_coverage_wig"] == form_data["tiddit_coverage_wig"]
-    assert display_obj["minor_allele_frequency_wig"] == form_data["minor_allele_frequency_wig"]
+    controllers.set_case_specific_tracks(display_obj, case_obj)
+    print(display_obj)
+    assert display_obj["rhocall_beds"][0]["url"] == case_data["rhocall_beds"]
+    assert display_obj["tiddit_coverage_wigs"][0]["url"] == case_data["tiddit_coverage_wigs"]
+    assert (
+        display_obj["minor_allele_frequency_wigs"][0]["url"]
+        == case_data["minor_allele_frequency_wigs"]
+    )
 
 
 def test_make_omics_locus(app, case_obj):

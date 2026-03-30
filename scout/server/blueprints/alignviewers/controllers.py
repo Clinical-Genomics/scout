@@ -348,7 +348,9 @@ def make_merged_splice_track(ind: dict) -> dict:
     return track
 
 
-def get_locus_from_variant(variant_obj: Dict, case_obj: Dict, display_build: str) -> tuple:
+def get_locus_from_variant(
+    variant_obj: Dict, case_obj: Dict, display_build: str | None = None
+) -> tuple:
     """
     Check if variant coordinates are in display genome build (typically 38), otherwise do variant coords liftover.
     Use original coordinates only if genome build was already 38 or liftover didn't work. If no display build is given,
@@ -512,7 +514,7 @@ def set_sample_tracks(display_obj: dict, case_groups: list, chromosome: str):
         display_obj["sample_tracks"] = sample_tracks
 
 
-def set_case_specific_tracks(display_obj, case_obj):
+def set_case_specific_tracks(display_obj: dict, case_obj: dict):
     """Set up tracks from files that might be present for the focus case samples,
         not fetched for all samples in the case group.
         (rhocall files, tiddit coverage files, upd regions and sites files)
