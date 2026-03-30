@@ -10,7 +10,7 @@ def test_chanjo_mt_coverage_stats(app, monkeypatch):
     bp = Blueprint("report", __name__)
 
     @bp.route("/chanjo_endpoint", methods=["POST"])
-    def mock_json_chrom_coverage():
+    def json_chrom_coverage():
         """Mock endpoint"""
         return ""
 
