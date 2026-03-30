@@ -174,7 +174,7 @@ def get_loci_from_coords(
 ) -> list | None:
     """Return list of loci strings for DNA variants. If end_chrom is set, return two loci
     for a split view."""
-    loci = None
+    loci = ["All"]
     if all([start, stop, chromosome]):
         if end_chrom:
             end_chromosome = end_chrom.replace("MT", "M")
@@ -202,20 +202,17 @@ def make_igv_tracks(
     If an omics_variant_id is given, produce DNA view as given, but note that the call could be for an RNA variant
     and check build accordingly.
 
-    Args:
-        institute_id: institute _id
-        case_obj(scout.models.Case)
-        variant_id: _id of a variant
-        chrom: requested chromosome [1-22], X, Y, [M-MT]
-        start: start of the genomic interval to be displayed
-        stop: stop of the genomic interval to be displayed
-        end_chrom: chromosome of end coordinate if different from start chromosome - generate locus list for such loci
+    Requested chromosome can be 1-22, X, Y, M or MT. The latter two are mapped back to M for igv loci by subsequent call
+    to get_display_chromosome.
 
-    Returns:
-        display_obj: A display object containing case name, list of genes, locus and tracks
+    Given chrom, start, stop coords are used for locus construction, rather than the variant coords.
+    This is used from the SV variant page, where you have to pass breakpoints coordinates for single breakpoint zoom in
+
+    end_chrom: chromosome of end coordinate if different from start chromosome - generate locus list for such loci
+    This is used for split view of different breakpoints for translocations/fusions.
     """
+
     display_obj = {"case_display_name": case_obj["display_name"], "institute_id": case_obj["owner"]}
-    loci = ["All"]
 
     if variant_id:
         if variant_obj := store.variant(document_id=variant_id):
@@ -233,6 +230,7 @@ def make_igv_tracks(
     else:
         chromosome = get_display_chromosome(chrom)
         display_build = get_display_build(case_obj, chromosome)
+        loci = get_loci_from_coords(chromosome, start, stop, end_chrom)
 
     display_obj["loci"] = loci
 
