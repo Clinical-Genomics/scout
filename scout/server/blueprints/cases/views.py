@@ -781,8 +781,6 @@ def custom_report(institute_id, case_name, report_type):
     out_dir = os.path.abspath(os.path.dirname(report_path))
     filename = os.path.basename(report_path)
 
-    print(f"DEBUG out_dir {out_dir}, file {filename}")
-
     if request.args.get("report_format") == "pdf":
         try:
             with open(os.path.abspath(report_path), "r") as html_file:
