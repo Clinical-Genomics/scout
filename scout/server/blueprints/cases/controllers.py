@@ -235,8 +235,6 @@ def _set_rank_model_links(case_obj: Dict):
             case_obj["sv_rank_model_link"] = sv_rank_model_link
         else:
             case_obj["sv_rank_model_link"] = "custom_report"
-
-        case_obj["sv_rank_model_link"] = sv_rank_model_link
     elif case_obj.get("sv_rank_model_version"):
         case_obj["sv_rank_model_link"] = "".join(
             [
