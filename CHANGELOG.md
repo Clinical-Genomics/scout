@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.109]
 ### Added
 - Add a `--type` to the export case CLI, to limit the exported case search by analysis type (#6089)
 - `MANE Transcripts` as a default IGV track for alignments in genome build 38 (#6127)
