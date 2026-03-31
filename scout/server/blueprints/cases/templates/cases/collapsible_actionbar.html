@@ -255,15 +255,21 @@
 {% macro rank_model(case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-barcode fa-fw me-3"></span>
-      <span class="menu-collapsed">Rank model v.<a href="{{ case.rank_model_link }}">{{ case.rank_model_version }}</a></span>
+    <span class="fa fa-barcode fa-fw me-3"></span>
+    <span class="menu-collapsed">Rank model v.{% if case.rank_model_link == "custom_report" %}
+        <a href="{{ url_for('cases.custom_report', institute_id=case['owner'],
+                            case_name=case.display_name, report_type='rank_model_url') }}" target="_blank" rel="noopener">{{ case.rank_model_version }}</a>
+        {% else %}<a href="{{ case.rank_model_link }}">{{ case.rank_model_version }}</a></span>{% endif %}
   </div>
 </div>
 {% if case.sv_rank_model_version %}
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-barcode fa-fw me-3"></span>
-        <span class="menu-collapsed">SV rank model v.<a href="{{ case.sv_rank_model_link }}">{{ case.sv_rank_model_version }}</a></span>
+        <span class="menu-collapsed">SV rank model v.{% if case.sv_rank_model_link == "custom_report" %}
+        <a href="{{ url_for('cases.custom_report', institute_id=case['owner'],
+                            case_name=case.display_name, report_type='sv_rank_model_url') }}" target="_blank" rel="noopener">{{ case.sv_rank_model_version }}</a>
+        {% else %}<a href="{{ case.sv_rank_model_link }}">{{ case.sv_rank_model_version }}</a></span>{% endif %}
     </div>
   </div>
 {% endif %}
