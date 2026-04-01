@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Any, Dict, Tuple
 
@@ -99,9 +100,6 @@ def parse_case_data(**kwargs):
     if config_dict.get("case_id") is None:
         config_dict["case_id"] = config_dict["family"]
 
-    if config_dict.get("smn_tsv"):
-        add_smn_info_case(config_dict)
-
     return remove_none_recursive(config_dict)
 
 
@@ -133,12 +131,8 @@ def add_mitodel_info(config_data):
         individual["mitodel"] = parse_mitodel_file(file_handle)
 
 
-def add_smn_info(config_data):
-    """Add SMN CN / SMA prediction from TSV files to individuals
-
-    Args:
-        config_data(dict)
-    """
+def add_smn_info(config_data: dict):
+    """Add SMN CN / SMA prediction from TSV files to individuals"""
     LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
     if not config_data.get("smn_tsv"):
         LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
@@ -162,39 +156,24 @@ def add_smn_info(config_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
-
-
-def add_smn_info_case(case_data):
-    """Add SMN CN / SMA prediction from TSV files to individuals in a yaml load case context
-
-    Args:
-        case_data(dict)
-    """
-
-    if not case_data.get("smn_tsv"):
-        LOG.warning("No smn_tsv though add_smn_info_case called. This is odd.")
-        return
-
-    file_handle = open(case_data["smn_tsv"], "r")
-    smn_info = {}
-    for smn_ind_info in parse_smn_file(file_handle):
-        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
-
-    for ind in case_data["individuals"]:
-        ind_id = ind["individual_id"]
-        try:
-            for key in [
-                "is_sma",
-                "is_sma_carrier",
-                "smn1_cn",
-                "smn2_cn",
-                "smn2delta78_cn",
-                "smn_27134_cn",
-            ]:
-                ind[key] = smn_info[ind_id][key]
-        except KeyError as err:
             LOG.warning(f"Individual {ind_id} has no SMN info to update: {err}.")
+
+
+def add_paraphrase_info(config_data: dict):
+    """Add Paraphrase (Paraphase, Parabellum) JSON.
+    Get file from case config, read json and add to matching individuals"""
+
+    LOG.info("Adding Paraphrase info from {}.".format(config_data["paraphrase"]))
+
+    paraphrase_entry = {}
+    with open(config_data["paraphrase"], "r") as paraphrase_file:
+        paraphrase_entry = json.load(paraphrase_file)
+
+    for ind in config_data["individuals"]:
+        ind_id = ind["individual_id"]
+        if ind_id not in paraphrase_entry:
+            continue
+        ind["paraphrase"] = paraphrase_entry[ind_id]
 
 
 def set_somalier_sex_check_ind(ind: Dict[str, str], sex_check: Dict[str, Dict[str, str]]):
