@@ -100,6 +100,8 @@ def parse_case_data(**kwargs):
     if config_dict.get("case_id") is None:
         config_dict["case_id"] = config_dict["family"]
 
+    print(f"DEBUG case is now {config_dict}")
+
     return remove_none_recursive(config_dict)
 
 
@@ -371,19 +373,6 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def remove_none_values(dictionary):
-    """If value = None in key/value pair, the pair is removed.
-        Python >3
-    Args:
-        dictionary: dict
-
-    Returns:
-        dict
-    """
-
-    return {k: v for k, v in dictionary.items() if v is not None}
-
-
 def remove_none_recursive(dictionary):
     """Recursively remove None from dictionary"""
     return remove_none_recursive_aux(dictionary, {})
@@ -405,24 +394,99 @@ def remove_none_recursive_aux(dictionary, new_dict):
         elif (
             isinstance(value, list)
             and len(value) > 0
-            and key
-            not in [
-                "capture_kits",
-                "collaborators",
-                "cohorts",
-                "default_panels",
-                "default_gene_panels",
-                "gene_panels",
-                "synopsis",
-                "phenotype_groups",
-                "phenotype_terms",
-                "panel",
-            ]
+            and (
+                key
+                not in [
+                    "capture_kits",
+                    "collaborators",
+                    "cohorts",
+                    "default_panels",
+                    "default_gene_panels",
+                    "gene_panels",
+                    "synopsis",
+                    "phenotype_groups",
+                    "phenotype_terms",
+                    "panel",
+                ]
+            )
         ):
+
+            print(f"DEBUG: key {key} - {value}")
+
+            new_list = []
+            for item in value:
+                if isinstance(value, dict):
+                    remove_none_recursive_aux(item, {})
             new_list = [remove_none_recursive_aux(item, {}) for item in value]
+            print(f"DEBUG: key {key} new_list {new_list}")
             new_dict.update({key: new_list})
+
         elif value is not None:
             new_dict.update({key: value})
         else:
             continue
     return new_dict
+
+
+PRESERVE_EMPTY_KEYS = [
+    "capture_kits",
+    "collaborators",
+    "cohorts",
+    "default_panels",
+    "default_gene_panels",
+    "gene_panels",
+    "synopsis",
+    "phenotype_groups",
+    "phenotype_terms",
+    "panel",
+]
+
+
+def clean_json(obj, preserve_keys=None):
+    """
+    Recursively remove None and empty values from a JSON-like structure.
+
+    Args:
+        obj: dict, list, or primitive
+        preserve_keys: optional set of keys for which empty lists should be preserved
+
+    Returns:
+        Cleaned object
+    """
+    if preserve_keys is None:
+        preserve_keys = set()
+
+    if isinstance(obj, dict):
+        cleaned = {}
+        for k, v in obj.items():
+            cleaned_v = clean_json(v, preserve_keys)
+
+            if cleaned_v is None:
+                continue
+            if cleaned_v == {}:
+                continue
+            if cleaned_v == [] and k not in preserve_keys:
+                continue
+
+            cleaned[k] = cleaned_v
+
+        return cleaned
+
+    elif isinstance(obj, list):
+        cleaned_list = []
+        for item in obj:
+            cleaned_item = clean_json(item, preserve_keys)
+
+            if cleaned_item is None:
+                continue
+            if cleaned_item == {}:
+                continue
+            if cleaned_item == []:
+                continue
+
+            cleaned_list.append(cleaned_item)
+
+        return cleaned_list
+
+    else:
+        return obj
