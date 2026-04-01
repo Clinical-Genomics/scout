@@ -40,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse also OMIM Digenic dominant (#6157)
 - Visibility of footer buttons on ACMG classifications documents exported to PDF (#6166)
 - Typo in compounds check when applying saved custom filters (#6170)
+- Gens case button on structural variant page with region and variant (#6176)
 
 ## [4.108.2]
 ### Fixed
