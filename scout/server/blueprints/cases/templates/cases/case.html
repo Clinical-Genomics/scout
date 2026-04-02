@@ -273,8 +273,8 @@
         {% if case.vcf_files.vcf_str %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
         {% endif %}
-        {% if case.smn_tsv %}
-          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
+        {% if case.smn_tsv or case.paraphrase %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN - Dark regions</a>
         {% endif %}
         {% if case.individuals|rejectattr('bionano_access', 'undefined')|rejectattr('bionano_access', 'none')|list|length > 0 %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.bionano', institute_id=institute._id, case_name=case.display_name) }}">BioNano FSHD</a>

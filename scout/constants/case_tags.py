@@ -266,3 +266,5 @@ SOURCES = [
 ]
 
 SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
+
+PARAPHRASE_STATUS = {"normal": 0, "intermediate": 1, "pathological": 2}
