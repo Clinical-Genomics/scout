@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from scout.build.individual import BUILD_INDIVIDUAL_FILES
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.parse.case import parse_case_config, parse_case_data, parse_ped
+from scout.parse.case import clean_recursive, parse_case_config, parse_case_data, parse_ped
 
 LOG = logging.getLogger(__name__)
 
@@ -374,6 +374,23 @@ def test_wrong_relations(scout_config):
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_case_config(scout_config)
+
+
+def test_remove_none_values():
+    # WHEN a dict *not* containing a None value
+    d = {"a": "1", "b": 2, "c": 3}
+
+    # THEN calling removeNoneValues(dict) will not change dict
+    assert d == clean_recursive(d)
+
+
+def test_remove_none_values():
+    # WHEN a dict containing a value which is None
+    d = {"a": "1", "b": 2, "c": None}
+
+    # THEN calling removeNoneValues(dict) will remove key-value pair
+    # where value=None
+    assert {"a": "1", "b": 2} == clean_recursive(d)
 
 
 def test_parse_individual_files(scout_config, custom_temp_file):
