@@ -38,13 +38,13 @@
 {% endblock %}
 
 {% macro paraphrase_case_page() %}
-<div class="container_spaced">å
+<div class="container_spaced">
   <div class="card col-12">
     <div class="card-body">
       {% for region_name, region in paraphrase_regions.items() %}
         <div class="row {% if region.get("status", "normal") == "pathological" %}
                   bg-danger
-                {% elif if region.get("status", "normal") == "intermediate" %}
+                {% elif region.get("status", "normal") == "intermediate" %}
                   bg-warning
                 {% endif %}">
           <div class="col">{{ region_name }} - {{ region.get("genes_in_region") }}</div>

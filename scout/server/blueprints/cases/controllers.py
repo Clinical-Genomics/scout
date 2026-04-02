@@ -16,7 +16,6 @@ from xlsxwriter import Workbook
 from scout import __version__
 from scout.adapter import MongoAdapter
 from scout.constants import (
-    AFFECTED_STATUS,
     CANCER_PHENOTYPE_MAP,
     CASE_REPORT_VARIANT_TYPES,
     CASE_TAGS,
@@ -316,14 +315,14 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "events": _get_events(store, institute_obj, case_obj),
         "region": GENOME_REGION[get_case_genome_build(case_obj)],
-        "paraphrase_regions": _get_paraprhase_regions(case_obj),
+        "paraphrase_regions": _get_paraphrase_regions(case_obj),
     }
     return data
 
 
 def _get_paraphrase_regions(case_obj: dict) -> dict:
     """Check all case individuals for regions.
-    Move fixed globals for display up from the individual level.
+    Move fixed globals for display up from the individual level to region.
     Set the status of the region to the highest status on any affected individual.
     """
 
