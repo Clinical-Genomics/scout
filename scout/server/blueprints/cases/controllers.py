@@ -316,6 +316,7 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
         "events": _get_events(store, institute_obj, case_obj),
         "region": GENOME_REGION[get_case_genome_build(case_obj)],
         "paraphrase_regions": _get_paraphrase_regions(case_obj),
+        "inherit_palette": INHERITANCE_PALETTE,
     }
     return data
 
@@ -333,21 +334,36 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
         if not paraphrase:
             continue
         for region_name, region in paraphrase.items():
-            for region_global_key in [
-                "phase_region",
-                "genes_in_region",
-            ]:
-                regions.setdefault(region_name, {})[region_global_key] = region[region_global_key]
-
-            if PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected" and (
-                "status" in region
-                and (
-                    "status" not in regions[region_name]
-                    or PARAPHRASE_STATUS[region["status"]]
-                    > PARAPHRASE_STATUS[regions[region_name]["status"]]
-                )
-            ):
-                regions.setdefault(region_name, {})["status"] = region["status"]
+            regions.setdefault(region_name, {})
+            for region_key, region_value in region.items():
+                match region_key:
+                    case "genes_in_region":
+                        if "genes_in_region" in regions[region_name]:
+                            continue
+                        gene_symbols = region_value.split(",")
+                        for gene_symbol in gene_symbols:
+                            gene = store.hgnc_gene(gene_symbol)
+                            regions[region_name].setdefault("genes_in_region", []).append(gene)
+                    case "phase_region":
+                        if "phase_region" in regions[region_name]:
+                            continue
+                        phase_region = region_value[0].split(":")
+                        chrom = phase_region[0]
+                        coords = phase_region[1].split("-")
+                        start = int(coords[0])
+                        end = int(coords[1])
+                        regions[region_name]["phase_region"] = {
+                            "chrom": chrom,
+                            "start": start,
+                            "end": end,
+                        }
+                    case "status":
+                        if PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected" and (
+                            "status" not in regions[region_name]
+                            or PARAPHRASE_STATUS[region_value]
+                            > PARAPHRASE_STATUS[regions[region_name]["status"]]
+                        ):
+                            regions[region_name]["status"] = region["status"]
 
     print(f"DEBUG: {regions}")
     return regions
