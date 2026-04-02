@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from scout.build.individual import BUILD_INDIVIDUAL_FILES
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
+from scout.parse.case import clean_recursive, parse_case_config, parse_case_data, parse_ped
 
 LOG = logging.getLogger(__name__)
 
@@ -62,10 +62,12 @@ def test_parse_case_date(scout_config):
         "gene_fusion_report",
         "lims_id",
         "owner",
+        "paraphrase",
         "peddy_ped",
         "phenotype_terms",
         "rank_model_version",
         "rank_score_threshold",
+        "paraphrase",
         "smn_tsv",
         "somalier_samples",
         "sv_rank_model_version",
@@ -379,7 +381,7 @@ def test_remove_none_values():
     d = {"a": "1", "b": 2, "c": 3}
 
     # THEN calling removeNoneValues(dict) will not change dict
-    assert d == remove_none_values(d)
+    assert d == clean_recursive(d)
 
 
 def test_remove_none_values():
@@ -388,7 +390,7 @@ def test_remove_none_values():
 
     # THEN calling removeNoneValues(dict) will remove key-value pair
     # where value=None
-    assert {"a": "1", "b": 2} == remove_none_values(d)
+    assert {"a": "1", "b": 2} == clean_recursive(d)
 
 
 def test_parse_individual_files(scout_config, custom_temp_file):

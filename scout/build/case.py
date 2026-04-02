@@ -131,6 +131,8 @@ def build_case(case_data: dict, adapter) -> dict:
     if case_data.get("assignee"):
         case_obj["assignees"] = [case_data["assignee"]]
 
+    case_obj["paraphrase"] = case_data.get("paraphrase")
+
     case_obj["smn_tsv"] = case_data.get("smn_tsv")
 
     # Individuals

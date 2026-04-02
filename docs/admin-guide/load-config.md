@@ -38,6 +38,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
     - **methbat** _String_ Path to TSV file to parse LRS [MethBat][methbat] methylation outlier omics variants as produced by e.g. [Nallo][nallo]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
+- **paraphrase** _String_ Path to a Paraphrase json file.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
 - **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.

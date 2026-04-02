@@ -325,10 +325,10 @@ def panel_data(store, panel_obj):
 
 def panel_export_case_hits(panel_id, institute_obj, case_obj):
     """Fetch information required to populate the PDF report containing
-    info on actual panel coverage. Currently this is approximated with three parts:
+    info on actual panel coverage. Currently, this is approximated with three parts:
         1) the genes on the panel for SNV and SV
         2) the genes on the panel with any calls reported for STRs
-        3) the availability of an SMN Copy Number report if SMN1 or SMN2 is on the gene panel.
+        3) the availability of an SMN Copy Number or Paraphrase report if SMN1 or SMN2 is on the gene panel.
 
     Args:
         panel_id(str): _id of a gene panel
@@ -369,7 +369,11 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
             if res:
                 variant_categories[cat].add(gene["symbol"])
 
-        if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
+        if (
+            gene["symbol"] in ["SMN1", "SMN2"]
+            and case_obj.get("smn_tsv")
+            or case_obj.get("paraphrase")
+        ):
             variant_categories["smn"].add(gene["symbol"])
 
     data["variant_hits"] = variant_categories

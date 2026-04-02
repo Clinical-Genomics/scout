@@ -1,6 +1,8 @@
 {% extends "cases/case_tabular_view.html" %}
 {% from "utils.html" import comments_panel, activity_panel %}
 {% from "cases/utils.html" import individuals_table, sex_table_cell_content %}
+{% from "variants/components.html" import gene_link %}
+{% from "variant/gene_disease_relations.html" import incomplete_penetrance_badge, inheritance_badge %}
 
 {% block title %}
   {{ super() }}
@@ -13,40 +15,164 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">SMN CN</span>
+    <span class="navbar-text">SMN - Dark regions</span>
   </li>
 {% endblock %}
 
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ smn_case_page() }}
-  </div> <!-- end of div id body-row -->
-</div>
-{% endblock %}
+    {% if case.smn_tsv %}
+      {{ smn_case_page() }}
+    {% endif %}
 
-{% macro smn_case_page() %}
-<div class="container_spaced">
-  <div class="card col-md-12">
-    <h4 class="mt-3">Case: {{case.display_name}}</h4>
-    <div class="card-body">
+    {% if case.paraphrase %}
+      {{ paraphrase_case_page() }}
+    {% endif %}
+
+    <div class="container_spaced">
       <div class="row">
-        <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
-      </div> <!-- end of div class row -->
-      <div class="row">
-        <div class="col-md-4">
+        <div class="col-4">
           {% if case.madeline_info and case.individuals|length > 1 %}
             {{ pedigree_panel() }}
           {% else %}
             <p>No pedigree picture available.</p>
           {% endif %}
         </div>
-        <div class="col-md-8">
+        <div class="col-8">
           {{ synopsis_panel() }}
           <div class="panel-default">
           {{ comments_panel(institute, case, current_user, comments) }}
           </div>
         </div>
+      </div> <!-- end of div class row -->
+
+      <div class="row">
+        <div class="col-12">{{activity_panel(events)}}</div>
+      </div>
+    </div>
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% macro paraphrase_case_page() %}
+<div class="container_spaced">
+  <div class="card col-12">
+    <div class="card-body">
+      <h3>Dark regions - Paraphrase of Paraphase</h3>
+      <div class="accordion accordion-flush" id="paraphrase">
+      {% for region_name, region in paraphrase_regions.items() %}
+        <div class="accordion-item">
+        <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
+           <button class="row panel-title accordion-button {% if region.get("status", "normal") == "pathological" %}
+                  bg-danger
+                {% elif region.get("status", "normal") == "intermediate" %}
+                  bg-warning
+                {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}" aria-expanded="false" aria-controls="collapse_{{ region_name }}">
+             <span class="col">{{ region_name }}</span>
+            <span class="col">{% for gene in region.get("genes_in_region",[]) %}
+              {% if gene %}
+                {{ gene_link(gene) }}
+                {% for model in gene.inheritance %}
+                  {{ inheritance_badge(model, inherit_palette) }}
+                {% endfor %}
+                {{ incomplete_penetrance_badge(gene, inherit_palette) }}
+              {% endif %}
+            {% endfor %}
+            </span>
+           </button>
+          </div>
+        </div>
+        <div id="collapse_{{ region_name }}" class="accordion-collapse collapse" data-bs-parent="#paraphrase">
+
+          {% for ind in case.individuals %}
+            <div class="row mt-1 bg-secondary">
+              <div class="col-2">
+                {{ ind.display_name }}
+              </div>
+              <div class="col-1">
+                {{ ind.phenotype_human }}
+              </div>
+            </div>
+            <div class="row mt-3">
+              {{ show_paraphrase_value(ind.paraphrase[region_name]) }}
+            </div>
+          {% endfor %}
+
+          <div class="btn-group" role="group" aria-label="Alignment- and variant buttons for {{ region_name }}">
+              {% if "phase_region" in region %}
+                <span {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
+                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
+                    class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
+                    IGV DNA
+                  </a>
+                </span>
+              {% endif %}
+              {% if case.vcf_files.vcf_snv %}
+                <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
+                </form>
+              {% endif %}
+              {% if case.vcf_files.vcf_sv %}
+                <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
+                </form>
+              {% endif %}
+            </div>
+
+        </div>
+
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro show_paraphrase_value(paraphrase_value) %}
+
+  {% if paraphrase_value is mapping %}
+     {% for paraphrase_sub_key, paraphrase_sub_value in paraphrase_value.items() %}
+        {% if paraphrase_sub_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
+        {% else %}
+          <div class="row mt-1 mb-1">
+              {% if paraphrase_sub_value is mapping %}
+                <div class="col-2"><b><i>{{ paraphrase_sub_key }}</i></b></div>{{ show_paraphrase_value(paraphrase_sub_value) }}
+              {% else %}
+                <div class="col-2"><b>{{ paraphrase_sub_key }}</b>:</div>{{ show_paraphrase_value(paraphrase_sub_value) }}
+              {% endif %}
+          </div>
+        {% endif %}
+    {% endfor %}
+  {% elif paraphrase_value is string or paraphrase_value is integer or paraphrase_value is float %}
+      <div class="col-1">{{ paraphrase_value }}</div>
+  {% elif paraphrase_value is sequence %}
+
+    {% if paraphrase_value|length < 4 %}
+        {% for paraphrase_sub_value in paraphrase_value %}
+          <div class="col-3">{{ paraphrase_sub_value }}</div>
+        {% endfor %}
+    {% else %}
+      {% for paraphrase_sub_value in paraphrase_value %}
+        <div class="row mt-1 mb-1"><div class="col-2"></div><div class="col-3">{{ paraphrase_sub_value }}</div></div>
+      {% endfor %}
+    {% endif %}
+
+  {% endif %}
+
+{% endmacro %}
+
+
+{% macro smn_case_page() %}
+<div class="container_spaced">
+  <div class="card col-md-12">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
       </div> <!-- end of div class row -->
 
       <span class="d-flex">
@@ -84,10 +210,6 @@
           </a>
         </span>
       </span>
-
-      <div class="row">
-        <div class="col-sm-12">{{activity_panel(events)}}</div>
-      </div>
 
       {{ modal_synopsis() }}
     </div> <!-- end of card body -->

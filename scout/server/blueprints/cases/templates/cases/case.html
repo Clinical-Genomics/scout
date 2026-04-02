@@ -273,8 +273,8 @@
         {% if case.vcf_files.vcf_str %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
         {% endif %}
-        {% if case.smn_tsv %}
-          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
+        {% if case.smn_tsv or case.paraphrase %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN - Dark regions</a>
         {% endif %}
         {% if case.individuals|rejectattr('bionano_access', 'undefined')|rejectattr('bionano_access', 'none')|list|length > 0 %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.bionano', institute_id=institute._id, case_name=case.display_name) }}">BioNano FSHD</a>
@@ -447,7 +447,7 @@
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
       {% set chromograph.available = true %}
       <div class="panel-heading">
-          <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
+          <a class="accordion-button" type="button" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
             <em class="fa"></em>
             Chromograph images {{i.display_name}}
           </a>
@@ -472,7 +472,7 @@
       <div id="{{section_name}}-accordion" class="accordion">
         <div class="panel-heading">
           <div class="panel-title">
-            <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
+            <a class="accordion-button" type="button" data-bs-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
               <em class="fa"></em>
               {{ section_name }} images
             </a>

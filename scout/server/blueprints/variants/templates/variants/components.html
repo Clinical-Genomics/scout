@@ -158,42 +158,43 @@
 {% endmacro %}
 
 
+
+{% macro gene_tooltip(gene) %}
+  <div>
+    <div>
+      <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+    </div>
+    {% if gene.inheritance %}
+      <div>
+        <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+      </div>
+    {% endif %}
+    {% if gene.incomplete_penetrance %}
+      <strong>Incomplete penetrance (HPO)</strong>
+    {% endif %}
+    {% if gene.phenotypes %}
+      <div><strong>OMIM disease</strong>
+      {% for disease in gene.phenotypes %}
+        <div>{{ disease.description }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro gene_link(gene) %}
+  <a
+    data-bs-toggle="tooltip"
+    data-bs-html="true"
+    title="{{ gene_tooltip(gene) }}"
+    href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"
+  >
+    {{ gene.hgnc_symbol or gene.hgnc_id }}
+  </a>
+  {% endmacro %}
+
 {% macro gene_cell(variant, inherit_palette) %}
   <div class="align-items-center">
-
-    {% macro gene_tooltip(gene) %}
-      <div>
-        <div>
-          <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
-        </div>
-        {% if gene.inheritance %}
-          <div>
-            <strong>Models</strong>: {{ gene.inheritance|join(',') }}
-          </div>
-        {% endif %}
-        {% if gene.incomplete_penetrance %}
-          <strong>Incomplete penetrance (HPO)</strong>
-        {% endif %}
-        {% if gene.phenotypes %}
-          <div><strong>OMIM disease</strong>
-          {% for disease in gene.phenotypes %}
-            <div>{{ disease.description }}</div>
-          {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-    {% endmacro %}
-
-    {% macro gene_link(gene) %}
-      <a
-        data-bs-toggle="tooltip"
-        data-bs-html="true"
-        title="{{ gene_tooltip(gene) }}"
-        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"
-      >
-        {{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>
-    {% endmacro %}
 
     {% macro panel_badge(variant, gene_id=0) %}
 
