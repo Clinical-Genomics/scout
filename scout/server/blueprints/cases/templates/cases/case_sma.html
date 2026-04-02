@@ -59,11 +59,11 @@
 <div class="container_spaced">
   <div class="card col-12">
     <div class="card-body">
-      <h3>Paraphrase of Paraphase</h3>
-      <div class="panel-group" id="paraphrase">
+      <h3>Dark regions - Paraphrase of Paraphase</h3>
+      <div class="accordion accordion-flush" id="paraphrase">
       {% for region_name, region in paraphrase_regions.items() %}
-        <div class="panel-heading">
-        <div class="panel-title" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
+        <div class="accordion-item">
+        <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
            <button class="row panel-title accordion-button {% if region.get("status", "normal") == "pathological" %}
                   bg-danger
                 {% elif region.get("status", "normal") == "intermediate" %}
@@ -83,65 +83,47 @@
            </button>
           </div>
         </div>
-        <div id="collapse_{{ region_name }}" class="panel-collapse collapse" data-bs-parent="#paraphrase">
-          <div class="btn-group" role="group" aria-label="Alignment- and variant buttons for {{ region_name }}">
-            {% if "phase_region" in region %}
-              <span {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
-                <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
-                  class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
-                  IGV DNA
-                </a>
-              </span>
-            {% endif %}
-            {% if case.vcf_files.vcf_snv %}
-              <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
-              </form>
-            {% endif %}
-            {% if case.vcf_files.vcf_sv %}
-              <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
-              </form>
-            {% endif %}
+        <div id="collapse_{{ region_name }}" class="accordion-collapse collapse" data-bs-parent="#paraphrase">
 
-          </div>
           {% for ind in case.individuals %}
-            <div class="row mt-2">
-              <div class="col">
+            <div class="row mt-1 bg-secondary">
+              <div class="col-2">
                 {{ ind.display_name }}
               </div>
-              <div class="col">
+              <div class="col-1">
                 {{ ind.phenotype_human }}
               </div>
-              {% for paraphrase_key, paraphrase_value in ind.paraphrase[region_name].items() %}
-                {% if paraphrase_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
-                {% else %}
-                  {% if paraphrase_value is mapping %}
-                    <div class="row mt-1 mb-1">
-                      <div class="col-2"></div>
-                      <div class="col-2"><b>{{ paraphrase_key }}</b>:</div>
-                      <div class="col-8">{{ paraphrase_value }}</div>
-                    </div>
-                  {% elif paraphrase_value is iterable %}
-                    <div class="row mt-1 mb-1">
-                      <div class="col-2"><b>{{ paraphrase_key }}</b>:</div>
-                      <div class="col-10">{{ paraphrase_value }}</div>
-                    </div>
-                    {% for val in paraphrase_value %}
-                        {{ val }},
-                      {% endfor %}
-                  {% else %}
-                    <div class="col"><b>{{ paraphrase_key }}</b>: {{ paraphrase_value }}</div>
-                  {% endif %}
-
-                {% endif %}
-              {% endfor %}
+            </div>
+            <div class="row mt-3">
+              {{ show_paraphrase_value(ind.paraphrase[region_name]) }}
             </div>
           {% endfor %}
+
+          <div class="btn-group" role="group" aria-label="Alignment- and variant buttons for {{ region_name }}">
+              {% if "phase_region" in region %}
+                <span {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
+                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
+                    class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
+                    IGV DNA
+                  </a>
+                </span>
+              {% endif %}
+              {% if case.vcf_files.vcf_snv %}
+                <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
+                </form>
+              {% endif %}
+              {% if case.vcf_files.vcf_sv %}
+                <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
+                </form>
+              {% endif %}
+            </div>
+
         </div>
 
       {% endfor %}
@@ -149,6 +131,27 @@
     </div>
   </div>
 </div>
+{% endmacro %}
+
+{% macro show_paraphrase_value(paraphrase_value) %}
+
+  {% if paraphrase_value is mapping %}
+     {% for paraphrase_sub_key, paraphrase_sub_value in paraphrase_value.items() %}
+        {% if paraphrase_sub_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
+        {% else %}
+          {% if paraphrase_sub_value is mapping %}<div class="row mt-1 mb-1"><div class="col-1"></div>{% endif %}
+              <div class="col-2"><b>{{ paraphrase_sub_key }}</b>:</div>{{ show_paraphrase_value(paraphrase_sub_value) }}
+          {% if paraphrase_sub_value is mapping %}</div>{% endif %}
+        {% endif %}
+    {% endfor %}
+  {% elif paraphrase_value is string or paraphrase_value is integer or paraphrase_value is float %}
+      <div class="col-1">{{ paraphrase_value }}</div>
+  {% elif paraphrase_value is sequence %}
+     {% for paraphrase_sub_value in paraphrase_value %}
+        <div class="col-2">{{ paraphrase_sub_value }}</div>
+    {% endfor %}
+  {% endif %}
+
 {% endmacro %}
 
 
