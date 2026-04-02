@@ -139,17 +139,29 @@
      {% for paraphrase_sub_key, paraphrase_sub_value in paraphrase_value.items() %}
         {% if paraphrase_sub_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
         {% else %}
-          {% if paraphrase_sub_value is mapping %}<div class="row mt-1 mb-1"><div class="col-1"></div>{% endif %}
-              <div class="col-2"><b>{{ paraphrase_sub_key }}</b>:</div>{{ show_paraphrase_value(paraphrase_sub_value) }}
-          {% if paraphrase_sub_value is mapping %}</div>{% endif %}
+          <div class="row mt-1 mb-1">
+              {% if paraphrase_sub_value is mapping %}
+                <div class="col-2"><b><i>{{ paraphrase_sub_key }}</i></b></div>{{ show_paraphrase_value(paraphrase_sub_value) }}
+              {% else %}
+                <div class="col-2"><b>{{ paraphrase_sub_key }}</b>:</div>{{ show_paraphrase_value(paraphrase_sub_value) }}
+              {% endif %}
+          </div>
         {% endif %}
     {% endfor %}
   {% elif paraphrase_value is string or paraphrase_value is integer or paraphrase_value is float %}
       <div class="col-1">{{ paraphrase_value }}</div>
   {% elif paraphrase_value is sequence %}
-     {% for paraphrase_sub_value in paraphrase_value %}
-        <div class="col-2">{{ paraphrase_sub_value }}</div>
-    {% endfor %}
+
+    {% if paraphrase_value|length < 4 %}
+        {% for paraphrase_sub_value in paraphrase_value %}
+          <div class="col-3">{{ paraphrase_sub_value }}</div>
+        {% endfor %}
+    {% else %}
+      {% for paraphrase_sub_value in paraphrase_value %}
+        <div class="row mt-1 mb-1"><div class="col-2"></div><div class="col-3">{{ paraphrase_sub_value }}</div></div>
+      {% endfor %}
+    {% endif %}
+
   {% endif %}
 
 {% endmacro %}
