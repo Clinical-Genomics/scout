@@ -20,6 +20,19 @@ from scout.parse.smn import parse_smn_file
 
 LOG = logging.getLogger(__name__)
 
+PRESERVE_EMPTY_DICT_KEYS = [
+    "capture_kits",
+    "collaborators",
+    "cohorts",
+    "default_panels",
+    "default_gene_panels",
+    "gene_panels",
+    "synopsis",
+    "phenotype_groups",
+    "phenotype_terms",
+    "panel",
+]
+
 
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
@@ -36,6 +49,7 @@ def parse_case_data(**kwargs):
         gene_fusion_report_research: Path to the gene fusions research report
         multiqc(str): Path to dir with multiqc information
         owner(str): The institute that owns a case
+        paraphrase(str): Path to a Paraphrase (parsed Paraphase) JSON file
         ped(iterable(str)): A ped formatted family file
         peddy_ped(str): Path to a peddy ped
         RNAfusion_inspector: Path to the RNA fusion inspector report
@@ -100,9 +114,7 @@ def parse_case_data(**kwargs):
     if config_dict.get("case_id") is None:
         config_dict["case_id"] = config_dict["family"]
 
-    print(f"DEBUG case is now {config_dict}")
-
-    return remove_none_recursive(config_dict)
+    return clean_recursive(config_dict, PRESERVE_EMPTY_DICT_KEYS)
 
 
 def parse_case_config(config: dict) -> dict:
@@ -373,115 +385,35 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def remove_none_recursive(dictionary):
-    """Recursively remove None from dictionary"""
-    return remove_none_recursive_aux(dictionary, {})
-
-
-def remove_none_recursive_aux(dictionary, new_dict):
-    """Auxilary Function to remove_none_recursive. Recursively removes
-    None from dictionary by adding non-None key/value pairs to new_dict.
-    Args:
-        dictionary: dict with configuration values
-        new_dict: assembly dict
-    Return:
-        dictionary with no None values"""
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            clean_value = remove_none_recursive(value)
-            if len(clean_value) > 0:
-                new_dict.update({key: clean_value})
-        elif (
-            isinstance(value, list)
-            and len(value) > 0
-            and (
-                key
-                not in [
-                    "capture_kits",
-                    "collaborators",
-                    "cohorts",
-                    "default_panels",
-                    "default_gene_panels",
-                    "gene_panels",
-                    "synopsis",
-                    "phenotype_groups",
-                    "phenotype_terms",
-                    "panel",
-                ]
-            )
-        ):
-
-            print(f"DEBUG: key {key} - {value}")
-
-            new_list = []
-            for item in value:
-                if isinstance(value, dict):
-                    remove_none_recursive_aux(item, {})
-            new_list = [remove_none_recursive_aux(item, {}) for item in value]
-            print(f"DEBUG: key {key} new_list {new_list}")
-            new_dict.update({key: new_list})
-
-        elif value is not None:
-            new_dict.update({key: value})
-        else:
-            continue
-    return new_dict
-
-
-PRESERVE_EMPTY_KEYS = [
-    "capture_kits",
-    "collaborators",
-    "cohorts",
-    "default_panels",
-    "default_gene_panels",
-    "gene_panels",
-    "synopsis",
-    "phenotype_groups",
-    "phenotype_terms",
-    "panel",
-]
-
-
-def clean_json(obj, preserve_keys=None):
+def clean_recursive(obj, preserve_keys=None):
     """
-    Recursively remove None and empty values from a JSON-like structure.
+    Recursively remove None and empty values from a JSON-like dict structure.
 
-    Args:
-        obj: dict, list, or primitive
-        preserve_keys: optional set of keys for which empty lists should be preserved
-
-    Returns:
-        Cleaned object
+    Given a dict, list, or primitive and an optional set of keys for which empty lists should be preserved,
+    return an otherwise cleaned object, free from empty values. Calls itself recursively for dict and list
+    aggregate types, and returns primitives as the recursion termination criteria.
     """
     if preserve_keys is None:
         preserve_keys = set()
 
     if isinstance(obj, dict):
         cleaned = {}
-        for k, v in obj.items():
-            cleaned_v = clean_json(v, preserve_keys)
+        for dict_key, value in obj.items():
+            cleaned_value = clean_recursive(value, preserve_keys)
 
-            if cleaned_v is None:
-                continue
-            if cleaned_v == {}:
-                continue
-            if cleaned_v == [] and k not in preserve_keys:
+            if cleaned_value in [None, {}, []] and dict_key not in preserve_keys:
                 continue
 
-            cleaned[k] = cleaned_v
+            cleaned[dict_key] = cleaned_value
 
         return cleaned
 
     elif isinstance(obj, list):
         cleaned_list = []
         for item in obj:
-            cleaned_item = clean_json(item, preserve_keys)
+            cleaned_item = clean_recursive(item, preserve_keys)
 
-            if cleaned_item is None:
-                continue
-            if cleaned_item == {}:
-                continue
-            if cleaned_item == []:
+            if cleaned_item in [None, {}, []]:
                 continue
 
             cleaned_list.append(cleaned_item)
