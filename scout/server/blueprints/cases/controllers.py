@@ -347,8 +347,9 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
                     > PARAPHRASE_STATUS[regions[region_name]["status"]]
                 )
             ):
-                regions.setdefault(region_name, {})["status"] = region
+                regions.setdefault(region_name, {})["status"] = region["status"]
 
+    print(f"DEBUG: {regions}")
     return regions
 
 
