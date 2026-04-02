@@ -63,12 +63,12 @@
       <div class="panel-group" id="paraphrase">
       {% for region_name, region in paraphrase_regions.items() %}
         <div class="panel-heading">
-        <div class="panel-title">
+        <div class="panel-title" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
            <button class="row panel-title accordion-button {% if region.get("status", "normal") == "pathological" %}
                   bg-danger
                 {% elif region.get("status", "normal") == "intermediate" %}
                   bg-warning
-                {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}"  aria-expanded="false" aria-controls="collapse_{{ region_name }}">
+                {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}" aria-expanded="false" aria-controls="collapse_{{ region_name }}">
              <span class="col">{{ region_name }}</span>
             <span class="col">{% for gene in region.get("genes_in_region",[]) %}
               {% if gene %}
@@ -112,8 +112,30 @@
           {% for ind in case.individuals %}
             <div class="row">
               <div class="col">
-
+                {{ ind.display_name }}
               </div>
+              <div class="col">
+                {{ ind.phenotype_human }}
+              </div>
+
+              {% for paraphrase_key, paraphrase_value in ind.paraphrase[region_name].items() %}
+                {% if paraphrase_key in "status", "status_matches", "genes_in_region", "phase_region" %}
+                {% else %}
+                  <b>{{ paraphrase_key }}</b>:
+                  {% if paraphrase_value is mapping %}
+                    <div class="col"><b>{{ paraphrase_key }}</b>:
+                      {{ paraphrase_value }}
+                    </div>
+                  {% elif paraphrase_value is iterable %}
+                    <div class="col">
+                      {% for val in paraphrase_value %}
+                        {{ val }},
+                      {% endfor %}
+                    </div>
+                  {% else %}<div class="col">{{ paraphrase_value }}</div>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
             </div>
           {% endfor %}
         </div>

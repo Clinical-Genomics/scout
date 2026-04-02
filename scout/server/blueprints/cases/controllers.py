@@ -361,11 +361,12 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
                         if PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected" and (
                             "status" not in regions[region_name]
                             or PARAPHRASE_STATUS[region_value]
-                            > PARAPHRASE_STATUS[regions[region_name]["status"]]
+                            > PARAPHRASE_STATUS[regions[region_name][region_key]]
                         ):
-                            regions[region_name]["status"] = region["status"]
+                            regions[region_name][region_key] = region_value
+                            if "status_matches" in region:
+                                regions[region_name]["status_matches"] = region["status_matches"]
 
-    print(f"DEBUG: {regions}")
     return regions
 
 
