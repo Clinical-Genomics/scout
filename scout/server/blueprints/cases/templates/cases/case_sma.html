@@ -110,30 +110,34 @@
 
           </div>
           {% for ind in case.individuals %}
-            <div class="row">
+            <div class="row mt-2">
               <div class="col">
                 {{ ind.display_name }}
               </div>
               <div class="col">
                 {{ ind.phenotype_human }}
               </div>
-
               {% for paraphrase_key, paraphrase_value in ind.paraphrase[region_name].items() %}
-                {% if paraphrase_key in "status", "status_matches", "genes_in_region", "phase_region" %}
+                {% if paraphrase_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
                 {% else %}
-                  <b>{{ paraphrase_key }}</b>:
                   {% if paraphrase_value is mapping %}
-                    <div class="col"><b>{{ paraphrase_key }}</b>:
-                      {{ paraphrase_value }}
+                    <div class="row mt-1 mb-1">
+                      <div class="col-2"></div>
+                      <div class="col-2"><b>{{ paraphrase_key }}</b>:</div>
+                      <div class="col-8">{{ paraphrase_value }}</div>
                     </div>
                   {% elif paraphrase_value is iterable %}
-                    <div class="col">
-                      {% for val in paraphrase_value %}
+                    <div class="row mt-1 mb-1">
+                      <div class="col-2"><b>{{ paraphrase_key }}</b>:</div>
+                      <div class="col-10">{{ paraphrase_value }}</div>
+                    </div>
+                    {% for val in paraphrase_value %}
                         {{ val }},
                       {% endfor %}
-                    </div>
-                  {% else %}<div class="col">{{ paraphrase_value }}</div>
+                  {% else %}
+                    <div class="col"><b>{{ paraphrase_key }}</b>: {{ paraphrase_value }}</div>
                   {% endif %}
+
                 {% endif %}
               {% endfor %}
             </div>
