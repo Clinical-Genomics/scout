@@ -1,15 +1,7 @@
-import unittest
-
 import mongomock
-import pytest
-from pymongo.errors import ConnectionFailure
 
 import scout
 from scout.adapter.client import get_connection
-
-
-def get_mock_client():
-    return MongoClient()
 
 
 def test_pymongo_adapter(adapter, database_name):
@@ -21,9 +13,9 @@ def test_pymongo_adapter(adapter, database_name):
 
 
 def test_connection(monkeypatch):
-    def simple_mongo():
+    def mock_mongo():
         return mongomock.MongoClient()
 
-    monkeypatch.setattr(scout.adapter.client, "get_connection", simple_mongo)
+    monkeypatch.setattr(scout.adapter.client, "get_connection", mock_mongo)
     client = scout.adapter.client.get_connection()
     assert isinstance(client, mongomock.MongoClient)
