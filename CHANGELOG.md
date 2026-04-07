@@ -44,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in compounds check when applying saved custom filters (#6170)
 - Use liftOver with omics variant build coordinate also for gDNA variants (#6168)
 - Gens case button on structural variant page with region and variant (#6176)
+- Allow download of local rank model files as custom reports (#6174)
 
 ## [4.108.2]
 ### Fixed
