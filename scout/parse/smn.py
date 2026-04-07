@@ -1,10 +1,6 @@
 from scout.utils.convert import convert_number, make_bool_pass_none
 
 
-def parse_paraphrase(lines):
-    """Parse a Paraphrase (Paraphase converter) json file."""
-
-
 def parse_smn_file(lines):
     """Parse a SMNCopyNumberCaller TSV file.
 

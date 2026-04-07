@@ -27,20 +27,3 @@ def test_connection(monkeypatch):
     monkeypatch.setattr(scout.adapter.client, "get_connection", simple_mongo)
     client = scout.adapter.client.get_connection()
     assert isinstance(client, mongomock.MongoClient)
-
-
-# ##GIVEN a connection to a mongodatabase
-# print('du')
-# ##WHEN getting a mongo client
-# ##THEN assert that the port is default
-# print(client)
-# assert False
-# assert client.PORT == 27017
-
-# def test_get_connection_uri(pymongo_client):
-#     ##GIVEN a connection to a mongodatabase
-#     uri = 'mongomock://'
-#     client = get_connection(uri=uri)
-#     ##WHEN getting a mongo client
-#     ##THEN assert that the port is default
-#     assert client.PORT == 27017

@@ -55,8 +55,6 @@ def test_compounds_region(real_populated_database, case_obj, variant_clinical_fi
     # Load all variants
     adapter.variant_collection.insert_many(variants)
 
-    print("Nr variants: {0}".format(len(variants)))
-
     ## THEN assert that the variants does not have updated compound information
     nr_compounds = 0
     for var in adapter.variant_collection.find():

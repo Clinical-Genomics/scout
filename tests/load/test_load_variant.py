@@ -221,7 +221,6 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
         },
         category="snv",
     )
-    print("Query: {}".format(query))
     assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
@@ -420,7 +419,6 @@ def test_updated_panel(real_variant_database, case_obj):
     # Collect all present hgnc ids from the variants
     variant_hgnc_ids = set()
     for variant in variants:
-        # print(variant['hgnc_ids'])
         if variant.get("hgnc_ids"):
             for hgnc_id in variant["hgnc_ids"]:
                 if hgnc_id in panel_hgnc_ids:

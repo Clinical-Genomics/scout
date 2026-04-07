@@ -147,16 +147,16 @@ def add_mitodel_info(config_data):
 
 def add_smn_info(config_data: dict):
     """Add SMN CN / SMA prediction from TSV files to individuals"""
-    LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
+
     if not config_data.get("smn_tsv"):
-        LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
         return
 
-    file_handle = open(config_data["smn_tsv"], "r")
-    smn_info = {}
-    for smn_ind_info in parse_smn_file(file_handle):
-        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+    LOG.info(f'Adding SMN info from {config_data["smn_tsv"]}.')
 
+    file_handle = open(config_data["smn_tsv"], "r")
+    smn_info = {
+        smn_ind_info["sample_id"]: smn_ind_info for smn_ind_info in parse_smn_file(file_handle)
+    }
     for ind in config_data["individuals"]:
         ind_id = ind["individual_id"]
         try:
@@ -177,7 +177,7 @@ def add_paraphrase_info(config_data: dict):
     """Add Paraphrase (Paraphase, Parabellum) JSON.
     Get file from case config, read json and add to matching individuals"""
 
-    LOG.info("Adding Paraphrase info from {}.".format(config_data["paraphrase"]))
+    LOG.info(f'Adding Paraphrase info from {config_data["paraphrase"]}.')
 
     paraphrase_entry = {}
     with open(config_data["paraphrase"], "r") as paraphrase_file:

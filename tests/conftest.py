@@ -65,7 +65,7 @@ from scout.load.disease import load_disease_terms
 from scout.load.hpo import load_hpo_terms
 from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
-from scout.parse.case import parse_case_config
+from scout.parse.case import add_paraphrase_info, add_smn_info, parse_case_config
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_constraint_genes
 from scout.parse.hgnc import parse_hgnc_genes
@@ -786,15 +786,6 @@ def user_obj(request, parsed_user):
 ##################### Adapter fixtures #####################
 #############################################################
 
-# We need to monkeypatch 'connect' function so the tests use a mongomock database
-# @pytest.fixture(autouse=True)
-# def no_connect(monkeypatch):
-#     # from scout.adapter.client import get_connection
-#     mongo = Mock(return_value=MongoClient())
-#     print('hej')
-#
-#     monkeypatch.setattr('scout.adapter.client.get_connection', mongo)
-
 
 @pytest.fixture(scope="function")
 def database_name(request):
@@ -972,22 +963,17 @@ def real_panel_database(request, real_gene_database, parsed_panel):
 
 
 @pytest.fixture(scope="function")
-def case_database(request, panel_database, parsed_case, institute_obj):
-    "Returns an adapter to a database populated with institute, user and case"
-    adapter = panel_database
-    case_obj = build_case(parsed_case, adapter)
-    adapter.add_case(case_obj, institute_obj)
-
-    return adapter
-
-
-@pytest.fixture(scope="function")
 def populated_database(request, panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
     LOG.info("Adding case to adapter")
+
     case_obj = build_case(parsed_case, adapter)
+
+    add_paraphrase_info(case_obj)
+    add_smn_info(case_obj)
+
     adapter.add_case(case_obj, institute_obj)
     return adapter
 
@@ -999,6 +985,10 @@ def real_populated_database(request, real_panel_database, parsed_case, institute
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
+
+    add_paraphrase_info(case_obj)
+    add_smn_info(case_obj)
+
     adapter.add_case(case_obj, institute_obj)
 
     return adapter

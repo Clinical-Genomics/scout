@@ -2,8 +2,10 @@
 
 import responses
 from flask import Flask, url_for
+from sqlalchemy import false
 
 from scout.server.blueprints.cases.controllers import (
+    _get_paraphrase_regions,
     case,
     coverage_report_contents,
     phenotypes_genes,
@@ -222,5 +224,21 @@ def test_case_controller_non_existing_panel(adapter, app, institute_obj, test_ca
 
         # WHEN fetching a case with the controller
         data = case(adapter, institute_obj, fetched_case)
-    # THEN assert that it succeded to fetch another panel version
+    # THEN assert that it succeeded to fetch another panel version
     assert len(fetched_case["panel_names"]) == 0
+
+
+def test_get_paraphrase(real_populated_database, app):
+
+    case_obj = real_populated_database.case_collection.find_one({"_id": "internal_id"})
+
+    assert "paraphrase" in case_obj
+    assert case_obj["paraphrase"]
+
+    assert "paraphrase" in case_obj["individuals"][0]
+    assert case_obj["individuals"][0]["paraphrase"]
+
+    regions = _get_paraphrase_regions(case_obj=case_obj)
+
+    assert "rccx" in regions
+    assert "6" in regions["rccx"]["phase_region"]["chrom"]
