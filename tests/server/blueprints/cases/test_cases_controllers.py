@@ -2,7 +2,6 @@
 
 import responses
 from flask import Flask, url_for
-from sqlalchemy import false
 
 from scout.server.blueprints.cases.controllers import (
     _get_paraphrase_regions,
