@@ -59,16 +59,18 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
-    "somalier_ancestry",
-    "somalier_pairs",
-    "somalier_samples",
-    "smn_tsv",
+    "rank_model_url",
     "reference_info",
     "RNAfusion_inspector",
     "RNAfusion_inspector_research",
     "RNAfusion_report",
     "RNAfusion_report_research",
     "rna_delivery_report",
+    "smn_tsv",
+    "somalier_ancestry",
+    "somalier_pairs",
+    "somalier_samples",
+    "sv_rank_model_url",
 ]
 
 VCF_FILE_PATH_CHECKS = ORDERED_FILE_TYPE_MAP.keys()
@@ -569,7 +571,7 @@ class CaseLoader(BaseModel):
         """Make sure the files associated to the case (mostly reports) exist on disk."""
         for item in CASE_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
-            if item_path:
+            if item_path and not item_path.startswith("http"):
                 values[item] = _resource_abs_path(item_path)
 
         return values
