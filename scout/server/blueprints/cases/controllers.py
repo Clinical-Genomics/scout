@@ -216,10 +216,7 @@ def _set_rank_model_links(case_obj: Dict):
     """
 
     if rank_model_link := case_obj.get("rank_model_url"):
-        if rank_model_link.startswith("http"):
-            case_obj["rank_model_link"] = rank_model_link
-        else:
-            case_obj["rank_model_link"] = "custom_report"
+        case_obj["rank_model_link"] = rank_model_link
     elif case_obj.get("rank_model_version"):
         rank_model_link = "".join(
             [
@@ -231,10 +228,7 @@ def _set_rank_model_links(case_obj: Dict):
         case_obj["rank_model_link"] = rank_model_link
 
     if sv_rank_model_link := case_obj.get("sv_rank_model_url"):
-        if sv_rank_model_link.startswith("http"):
-            case_obj["sv_rank_model_link"] = sv_rank_model_link
-        else:
-            case_obj["sv_rank_model_link"] = "custom_report"
+        case_obj["sv_rank_model_link"] = sv_rank_model_link
     elif case_obj.get("sv_rank_model_version"):
         case_obj["sv_rank_model_link"] = "".join(
             [
