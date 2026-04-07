@@ -427,7 +427,9 @@ def case_append_alignments(case_obj: dict):
     """
 
     def process_file(case_obj, individual, setting):
-        """Process a single file and its optional index."""
+        """Process a single file and its optional index. Append_to is unset for non-track files, ie rank_model"""
+        if not setting["append_to"]:
+            return
         file_path = individual.get(setting["path"])
         append_safe(
             case_obj,
@@ -465,17 +467,11 @@ def append_safe(obj, obj_index, elem):
         obj[obj_index] = [elem]
 
 
-def find_index(align_file):
-    """Find out BAI file by extension given the BAM file.
+def find_index(align_file: str) -> str:
+    """Find and return index file path by extension given the BAM/CRAM alignment file.
 
-    Index files wither ends with filename.bam.bai or filename.bai /
+    Index files either ends with filename.bam.bai or filename.bai /
     In case of cram alignments the index is named filename.cram.crai or filename.crai
-
-    Args:
-        align_file(str): The path to a bam/cram file
-
-    Returns:
-        index_file(str): Path to index file
     """
     index_file = None
     if align_file.endswith("cram"):
