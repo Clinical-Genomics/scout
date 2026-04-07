@@ -371,7 +371,7 @@ def get_locus_from_variant(
     if variant_build not in display_build:
         client = EnsemblRestApiClient()
         if mapped_coords := client.liftover(
-            case_obj.get("genome_build"),
+            variant_build,
             variant_obj.get("chromosome"),
             variant_obj.get("position"),
             variant_obj.get("end"),
