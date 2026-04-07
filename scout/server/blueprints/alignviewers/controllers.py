@@ -171,7 +171,7 @@ def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -
 
 def get_loci_from_coords(
     chromosome: str | None, start: int | None, stop: int | None, end_chrom: str | None
-) -> list | None:
+) -> List[str]:
     """Return list of loci strings for DNA variants. If end_chrom is set, return two loci
     for a split view."""
     loci = ["All"]
