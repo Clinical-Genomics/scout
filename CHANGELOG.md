@@ -42,6 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of footer buttons on ACMG classifications documents exported to PDF (#6166)
 - Typo in compounds check when applying saved custom filters (#6170)
 - Use liftOver with omics variant build coordinate also for gDNA variants (#6168)
+- Gens case button on structural variant page with region and variant (#6176)
 
 ## [4.108.2]
 ### Fixed
