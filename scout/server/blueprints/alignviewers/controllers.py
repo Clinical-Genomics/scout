@@ -155,7 +155,7 @@ def authorize_case_tracks(resource: str, case: dict):
     return False
 
 
-def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -> str | None:
+def get_display_chromosome(chrom: str | None, variant_obj: dict | None = None) -> str:
     """Return display chromosome. If chrom is givin in locus input, use it,
     otherwise use the variant chrmosome. Always fix any MT in chromosome to M."""
 
