@@ -199,8 +199,9 @@ def make_igv_tracks(
 ) -> dict:
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
-    If an omics_variant_id is given, produce DNA view as given, but note that the call could be for an RNA variant
-    and check build accordingly.
+    If an omics_variant_id is given, produce a DNA track view with display in the case build coordinates.
+    An omics variant can be either DNA (e.g. lrs methylation) or RNA (e.g. Tomte DROP expression outliers, and has
+    its own build given on the variant, which we can compare to the display build and liftover if necessary.
 
     Requested chromosome can be 1-22, X, Y, M or MT. The latter two are mapped back to M for igv loci by subsequent call
     to get_display_chromosome.
