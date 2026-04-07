@@ -969,7 +969,7 @@ def hide_compounds_query(store, variant_obj, query_form):
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
 
-        if query_form.get("compound_rank_score") is not None and (
+        if query_form.get("compound_rank_score") and (
             rank_score is None or rank_score <= query_form.get("compound_rank_score")
         ):
             compound["is_dismissed"] = True
