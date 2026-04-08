@@ -746,7 +746,7 @@ def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
 
     for item in compound_follow_gt_items:
         query_form_item = query_form.get(item)
-        if query_form_item is not None:
+        if query_form_item:
             compound_item = compound_var_obj.get(item)
             if compound_item is None or compound_item > query_form_item:
                 compound["is_dismissed"] = True
