@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from bson import ObjectId
-from pymongo.cursor import Cursor
 from pymongo.errors import DuplicateKeyError
 
 from scout.constants.managed_variant import MANAGED_CATEGORIES
