@@ -966,18 +966,18 @@ def hide_compounds_query(store, variant_obj, query_form):
     if not query_form:
         return
 
-    threshold_raw = query_form.get("compound_rank_score")
+    rank_score_threshold_raw = query_form.get("compound_rank_score")
     try:
-        threshold = float(threshold_raw) if threshold_raw not in (None, "") else None
+        rank_score_threshold = float(rank_score_threshold_raw) if rank_score_threshold_raw not in (None, "") else None
     except ValueError:
-        threshold = None  # or raise/log depending on your needs
+        rank_score_threshold = None  # or raise/log depending on your needs
 
     use_follow_filter = bool(query_form.get("compound_follow_filter"))
 
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
 
-        if threshold is not None and (rank_score is None or rank_score <= threshold):
+        if rank_score_threshold is not None and (rank_score is None or rank_score <= rank_score_threshold):
             compound["is_dismissed"] = True
             continue
 
