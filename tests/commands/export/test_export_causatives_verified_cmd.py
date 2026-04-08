@@ -132,5 +132,5 @@ def test_export_managed(mock_app):
     result = runner.invoke(cli, ["export", "managed", "--build", "37"])
     assert result.exit_code == 0
 
-    # Variant should be found again
+    # THEN a VCF is output
     assert "#CHROM" in result.output
