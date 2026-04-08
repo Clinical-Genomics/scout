@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-
-from pymongo import ASCENDING
+from typing import List
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -55,6 +54,18 @@ def export_causative_variants(
         yield variant_obj
 
 
+def _sort_managed_variants(managed_variants: List[dict]) -> List[dict]:
+    """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
+
+    def sort_key(var: dict):
+        chrom = var.get("chromosome")
+        chrom_int = CHROMOSOME_INTEGERS.get(chrom, float("inf"))
+        pos = var.get("position", 0)
+        return (chrom_int, pos)
+
+    return sorted(managed_variants, key=sort_key)
+
+
 def export_managed_variants(
     adapter: MongoAdapter,
     institute: str = None,
@@ -63,14 +74,28 @@ def export_managed_variants(
 ) -> ManagedVariant:
     """Export managed variants, optionally for a given institute or variant category (["snv", "cancer_sv", ...])"""
 
-    managed_variants = (
-        adapter.managed_variants(category=category, build=build, institute=institute)
-        .sort([("chromosome", ASCENDING), ("position", ASCENDING)])
-        .collation({"locale": "en_US", "numericOrdering": True})
-    )
+    raw_managed = adapter.managed_variants(category=category, build=build, institute=institute)
 
-    for variant in managed_variants:
-        yield variant
+    managed_variants = []
+    for managed in raw_managed:
+        managed_variants.append(
+            ManagedVariant(
+                chromosome=managed["chromosome"],
+                position=managed["position"],
+                end=managed["end"],
+                reference=managed["reference"],
+                alternative=managed["alternative"],
+                institute=managed.get("institute"),
+                maintainer=managed.get("maintainer", []),
+                build=managed.get("build", "37"),
+                date=managed.get("date"),
+                category=managed.get("category", "snv"),
+                sub_category=managed.get("sub_category", "snv"),
+                description=managed.get("description"),
+            )
+        )
+
+    yield from _sort_managed_variants(managed_variants)
 
 
 def export_verified_variants(aggregate_variants, unique_callers):
