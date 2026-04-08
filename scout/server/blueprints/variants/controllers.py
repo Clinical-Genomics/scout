@@ -966,21 +966,31 @@ def hide_compounds_query(store, variant_obj, query_form):
     if not query_form:
         return
 
+    threshold_raw = query_form.get("compound_rank_score")
+    try:
+        threshold = float(threshold_raw) if threshold_raw not in (None, "") else None
+    except ValueError:
+        threshold = None  # or raise/log depending on your needs
+
+    use_follow_filter = bool(query_form.get("compound_follow_filter"))
+
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
 
-        if query_form.get("compound_rank_score") and (
-            rank_score is None or rank_score <= query_form.get("compound_rank_score")
+        if threshold is not None and (
+            rank_score is None or rank_score <= threshold
         ):
             compound["is_dismissed"] = True
             continue
 
-        if query_form.get("compound_follow_filter"):
-            compound_var_obj = store.variant(compound.get("variant"))
-            if not compound_var_obj:
+        if use_follow_filter:
+            compound_variant = store.variant(compound.get("variant"))
+
+            if not compound_variant:
                 compound["is_dismissed"] = True
                 continue
-            compound_follow_filter(compound, compound_var_obj, query_form)
+
+            compound_follow_filter(compound, compound_variant, query_form)
 
 
 def parse_variant(
