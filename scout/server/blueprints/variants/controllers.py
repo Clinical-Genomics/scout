@@ -690,7 +690,7 @@ def _compound_follow_filter_freq(
 
     for item, compound_item_name in compound_follow_freq_items.items():
         raw_form_value = query_form.get(item)
-        if raw_form_value is None or raw_form_value == "":
+        if not raw_form_value:
             continue
 
         compound_item = compound_var_obj.get(compound_item_name)
