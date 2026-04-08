@@ -972,7 +972,7 @@ def hide_compounds_query(store, variant_obj, query_form):
             float(rank_score_threshold_raw) if rank_score_threshold_raw not in (None, "") else None
         )
     except ValueError:
-        rank_score_threshold = None  # or raise/log depending on your needs
+        rank_score_threshold = None
 
     use_follow_filter = bool(query_form.get("compound_follow_filter"))
 
