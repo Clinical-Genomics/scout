@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Clinical filter application for SV, MEI etc. (#6181)
 - Better fix for compound check when applying saved custom filters (#6182)
 
 ## [4.109]

@@ -1676,7 +1676,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                 }
             )
             clinical_filter = MultiDict(clinical_filter_dict)
-        case ("sv", "cancer", "cancer_sv", "mei"):
+        case "sv" | "cancer" | "cancer_sv" | "mei":
             clinical_filter_dict = FiltersFormClass.clinical_filter_base
             clinical_filter_dict.update(
                 {
