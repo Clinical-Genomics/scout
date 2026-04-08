@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
+from typing import List
 
 from bson import ObjectId
-from pymongo.cursor import Cursor
 from pymongo.errors import DuplicateKeyError
 
 from scout.constants.managed_variant import MANAGED_CATEGORIES
@@ -134,13 +134,9 @@ class ManagedVariantHandler(object):
         institute: str = None,
         skip_count: int = None,
         vars_per_page: int = None,
-    ) -> Cursor:
-        """Return a cursor to managed variants of a particular category and build.
+    ) -> List[dict]:
+        """Return list of managed variants of a particular category and build."""
 
-        Returns:
-            managed_variants(pymongo.Cursor)
-
-        """
         query = {"category": {"$in": category}}
         if build:
             query["build"] = build

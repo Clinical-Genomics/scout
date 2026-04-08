@@ -119,3 +119,18 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     assert result.exit_code == 0
     # Variant should be found again
     assert "Success. Verified variants file contains" in result.output
+
+
+def test_export_managed(mock_app):
+    """Test the CLI command for exporting managed variants"""
+
+    # GIVEN a mock app runner
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # WHEN invoking the CLI command
+    result = runner.invoke(cli, ["export", "managed", "--build", "37"])
+    assert result.exit_code == 0
+
+    # THEN a VCF is output
+    assert "#CHROM" in result.output
