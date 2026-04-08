@@ -692,16 +692,14 @@ def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
 
     for item, compound_item_name in compound_follow_freq_items.items():
         query_form_item = query_form.get(item)
-        if query_form_item is None:
-            continue
+        if query_form_item:
+            compound_item = compound_var_obj.get(compound_item_name)
+            if compound_item is None:
+                continue
 
-        compound_item = compound_var_obj.get(compound_item_name)
-        if compound_item is None:
-            continue
-
-        if compound_item >= query_form_item:
-            compound["is_dismissed"] = True
-            return True
+            if compound_item >= query_form_item:
+                compound["is_dismissed"] = True
+                return True
 
     return False
 
