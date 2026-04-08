@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Fix clinical filter for SV, MEI etc.
+- Clinical filter application for SV, MEI etc. (#6181)
 
 ## [4.109]
 ### Added
