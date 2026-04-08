@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Clinical filter application for SV, MEI etc. (#6181)
 - Fix variants page crashing when selecting `compounds follow filter` checkbox (#6184 and #6187)
+- Fix scout export managed variants (#6186)
 
 ## [4.109]
 ### Added
