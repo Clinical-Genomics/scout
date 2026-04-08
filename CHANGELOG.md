@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.109.1]
 ### Fixed
 - Clinical filter application for SV, MEI etc. (#6181)
 - Fix variants page crashing when selecting `compounds follow filter` checkbox (#6184 and #6187)
