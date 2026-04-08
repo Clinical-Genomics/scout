@@ -48,7 +48,7 @@ from scout.server.blueprints.variant.utils import (
     update_representative_gene,
     update_variant_case_panels,
 )
-from scout.server.blueprints.variants.forms import BetterDecimalField
+from scout.server.blueprints.variants.forms import BetterDecimalField, VariantFiltersForm
 from scout.server.extensions import store
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
@@ -671,15 +671,13 @@ def update_variant_genes(store, variant_obj, genome_build):
     return has_changed
 
 
-def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
+def _compound_follow_filter_freq(
+    compound, compound_var_obj, query_form: VariantFiltersForm
+) -> bool:
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
     are filtered the same way.
-    Args:
-        compound(dict)
-        compound_variant_obj(scout.models.Variant)
-        query_form(VariantFiltersForm)
     """
 
     # keys as in form, values as on variant_obj
@@ -691,64 +689,89 @@ def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
     }
 
     for item, compound_item_name in compound_follow_freq_items.items():
-        query_form_item = query_form.get(item)
-        if query_form_item:
-            compound_item = compound_var_obj.get(compound_item_name)
-            if compound_item is None:
-                continue
+        raw_form_value = query_form.get(item)
+        if not raw_form_value:
+            continue
 
-            if compound_item >= query_form_item:
-                compound["is_dismissed"] = True
-                return True
+        compound_item = compound_var_obj.get(compound_item_name)
+        if compound_item is None:
+            continue
+
+        try:
+            query_form_item = float(raw_form_value)
+        except (TypeError, ValueError):
+            continue
+
+        if float(compound_item) >= query_form_item:
+            compound["is_dismissed"] = True
+            return True
 
     return False
 
 
-def _compound_follow_filter_lt(compound, compound_var_obj, query_form):
+def _compound_follow_filter_lt(
+    compound: dict, compound_var_obj: dict, query_form: VariantFiltersForm
+) -> bool:
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
 
-    Args:
-        compound(dict)
-        compound_variant_obj(scout.models.Variant)
-        query_form(VariantFiltersForm)
-    Returns boolean, true if the compound was hidden.
+    Returns true if the compound was hidden.
     """
     compound_follow_lt_items = ["cadd_score", "end"]
 
     for item in compound_follow_lt_items:
-        query_form_item = query_form.get(item)
-        if query_form_item:
-            compound_item = compound_var_obj.get(item)
-            if compound_item is None or compound_item < query_form_item:
-                compound["is_dismissed"] = True
-                return True
+        raw_form_value = query_form.get(item)
+        if not raw_form_value:
+            continue
+
+        compound_item = compound_var_obj.get(item)
+        if compound_item is None:
+            compound["is_dismissed"] = True
+            return True
+
+        try:
+            query_form_item = float(raw_form_value)
+        except (TypeError, ValueError):
+            continue
+
+        if float(compound_item) < query_form_item:
+            compound["is_dismissed"] = True
+            return True
 
     return False
 
 
-def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
+def _compound_follow_filter_gt(
+    compound: dict, compound_var_obj: dict, query_form: VariantFiltersForm
+) -> bool:
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
 
-    Args:
-        compound(dict)
-        compound_variant_obj(scout.models.Variant)
-        query_form(VariantFiltersForm)
-    Returns boolean, true if the compound was hidden.
+    Returns true if the compound was hidden.
     """
 
     compound_follow_gt_items = ["position"]
 
     for item in compound_follow_gt_items:
-        query_form_item = query_form.get(item)
-        if query_form_item:
-            compound_item = compound_var_obj.get(item)
-            if compound_item is None or compound_item > query_form_item:
-                compound["is_dismissed"] = True
-                return True
+        raw_form_value = query_form.get(item)
+        if not raw_form_value:
+            continue
+
+        compound_item = compound_var_obj.get(item)
+        if compound_item is None:
+            compound["is_dismissed"] = True
+            return True
+
+        try:
+            query_form_item = float(raw_form_value)
+        except (TypeError, ValueError):
+            continue
+
+        if float(compound_item) > query_form_item:
+            compound["is_dismissed"] = True
+            return True
 
     return False
 
