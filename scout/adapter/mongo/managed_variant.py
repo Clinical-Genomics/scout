@@ -134,13 +134,9 @@ class ManagedVariantHandler(object):
         institute: str = None,
         skip_count: int = None,
         vars_per_page: int = None,
-    ) -> list:
-        """Return list of managed variants of a particular category and build.
+    ) -> List[dict]:
+        """Return list of managed variants of a particular category and build."""
 
-        Returns:
-            managed_variants(pymongo.Cursor)
-
-        """
         query = {"category": {"$in": category}}
         if build:
             query["build"] = build

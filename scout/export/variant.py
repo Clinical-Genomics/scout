@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-
-from pymongo import ASCENDING
+from typing import List
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -55,7 +54,7 @@ def export_causative_variants(
         yield variant_obj
 
 
-def _sort_managed_variants(managed_variants: list[dict]) -> list[dict]:
+def _sort_managed_variants(managed_variants: List[dict]) -> List[dict]:
     """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
 
     def sort_key(var: dict):
