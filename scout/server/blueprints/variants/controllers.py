@@ -977,9 +977,7 @@ def hide_compounds_query(store, variant_obj, query_form):
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
 
-        if threshold is not None and (
-            rank_score is None or rank_score <= threshold
-        ):
+        if threshold is not None and (rank_score is None or rank_score <= threshold):
             compound["is_dismissed"] = True
             continue
 
