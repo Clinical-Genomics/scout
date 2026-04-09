@@ -104,8 +104,9 @@ def variant_verification(
     tx_changes = []
     external_primer_link = ""
 
-    if "build in variant_obj:
-        genome_build = variant_obj["genome_build"]
+    if "build" in variant_obj:
+        # Some variants, eg omics outliers, have build set
+        genome_build = variant_obj["build"]
     else:
         genome_build = case_obj["genome_build"]
 
