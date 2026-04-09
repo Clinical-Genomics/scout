@@ -954,8 +954,6 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
         query_form(VariantFiltersForm)
     """
 
-    print(f"DEBUG: {query_form}")
-
     if _compound_follow_filter_lt(compound, compound_var_obj, query_form):
         return
 
