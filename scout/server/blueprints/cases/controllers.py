@@ -321,53 +321,66 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
     return data
 
 
+def _parse_phase_region(region: List[str]) -> dict:
+    """Parse a list like ['chr6:32013300-32046200'] into chrom/start/end."""
+    region_str = region[0]
+    chrom_str, coords_str = region_str.split(":")
+    start_str, end_str = coords_str.split("-")
+    return {
+        "chrom": chrom_str,
+        "start": int(start_str),
+        "end": int(end_str),
+    }
+
+
+def _populate_hgnc_genes_in_region(ind_region: str) -> List[dict]:
+    """Turn region genes_in_region string ("CYP21A2,C4A,C4B,TNXB") into a list of HGNC gene objects."""
+    genes = []
+    for symbol in ind_region.split(","):
+        symbol = symbol.strip()
+        if not symbol:
+            continue
+        if gene := store.hgnc_gene(symbol):
+            genes.append(gene)
+    return genes
+
+
 def _get_paraphrase_regions(case_obj: dict) -> dict:
-    """Check all case individuals for regions.
-    Move fixed globals for display up from the individual level to region.
+    """Check all case individuals for paraphrase region information.
+    Move fixed global attributes (genes_in_region, phase_region) for display up from the individual level to case region
+    level, which is returned.
     Set the status of the region to the highest status on any affected individual.
     """
 
-    regions = {}
+    case_regions = {}
 
     for individual in case_obj["individuals"]:
         paraphrase = individual.get("paraphrase")
         if not paraphrase:
             continue
         for region_name, region in paraphrase.items():
-            regions.setdefault(region_name, {})
-            for region_key, region_value in region.items():
+            case_region = case_regions.setdefault(region_name, {})
+            for region_key, ind_region in region.items():
                 match region_key:
                     case "genes_in_region":
-                        if "genes_in_region" in regions[region_name]:
+                        if "genes_in_region" in case_regions[region_name]:
                             continue
-                        gene_symbols = region_value.split(",")
-                        for gene_symbol in gene_symbols:
-                            gene = store.hgnc_gene(gene_symbol)
-                            regions[region_name].setdefault("genes_in_region", []).append(gene)
+                        case_region["genes_in_region"] = _populate_hgnc_genes_in_region(ind_region)
                     case "phase_region":
-                        if "phase_region" in regions[region_name]:
+                        if "phase_region" in case_regions[region_name]:
                             continue
-                        phase_region = region_value[0].split(":")
-                        chrom = phase_region[0]
-                        coords = phase_region[1].split("-")
-                        start = int(coords[0])
-                        end = int(coords[1])
-                        regions[region_name]["phase_region"] = {
-                            "chrom": chrom,
-                            "start": start,
-                            "end": end,
-                        }
+                        case_region["phase_region"] = _parse_phase_region(ind_region)
                     case "status":
                         if PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected" and (
-                            "status" not in regions[region_name]
-                            or PARAPHRASE_STATUS[region_value]
-                            > PARAPHRASE_STATUS[regions[region_name][region_key]]
+                            "status" not in case_regions[region_name]
+                            or PARAPHRASE_STATUS[ind_region]
+                            > PARAPHRASE_STATUS[case_regions[region_name][region_key]]
                         ):
-                            regions[region_name][region_key] = region_value
+                            case_region["status"] = ind_region
                             if "status_matches" in region:
-                                regions[region_name]["status_matches"] = region["status_matches"]
+                                case_region["status_matches"] = region["status_matches"]
 
-    return regions
+    return case_regions
 
 
 def _get_suspects_or_causatives(
