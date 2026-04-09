@@ -105,7 +105,7 @@ def variant_verification(
     external_primer_link = ""
 
     # Some variants, e.g. omics outliers, have genome build set. Otherwise, use case build.
-    genome_build = variant_obj.get("build", case_obj.get("build"))
+    genome_build = variant_obj.get("build", case_obj.get("genome_build"))
 
     if category == "snv":  # SNV
         view_type = "variant.variant"
