@@ -369,10 +369,8 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
             if res:
                 variant_categories[cat].add(gene["symbol"])
 
-        if (
-            gene["symbol"] in ["SMN1", "SMN2"]
-            and case_obj.get("smn_tsv")
-            or case_obj.get("paraphrase")
+        if gene["symbol"] in ["SMN1", "SMN2"] and (
+            case_obj.get("smn_tsv") or case_obj.get("paraphrase")
         ):
             variant_categories["smn"].add(gene["symbol"])
 
