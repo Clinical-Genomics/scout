@@ -104,6 +104,11 @@ def variant_verification(
     tx_changes = []
     external_primer_link = ""
 
+    if build in variant_obj:
+        genome_build = variant_obj["genome_build"]
+    else:
+        genome_build = case_obj["genome_build"]
+
     if category == "snv":  # SNV
         view_type = "variant.variant"
         tx_changes = []
@@ -159,6 +164,7 @@ def variant_verification(
         display_name=display_name,
         category=category.upper(),
         subcategory=variant_obj.get("sub_category").upper(),
+        build=genome_build,
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,
         chr_position=chr_position,
@@ -222,22 +228,23 @@ def variant_verification(
 
 
 def verification_email_body(
-    case_name,
-    url,
-    display_name,
-    category,
-    subcategory,
-    chr_position,
-    breakpoint_1,
-    breakpoint_2,
-    hgnc_symbol,
-    panels,
-    gtcalls,
-    tx_changes,
-    name,
-    comment,
-    external_primer_link,
-):
+    case_name: str,
+    url: str,
+    display_name: str,
+    category: str,
+    subcategory: str,
+    chr_position: str,
+    build: str,
+    breakpoint_1: str,
+    breakpoint_2: str,
+    hgnc_symbol: str,
+    panels: str,
+    gtcalls: str,
+    tx_changes: str,
+    name: str,
+    comment: str,
+    external_primer_link: str,
+) -> str:
     """
     Builds the html code for the variant verification emails (order verification and cancel verification)
 
@@ -272,6 +279,7 @@ def verification_email_body(
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
          </li>
          <li><strong>Variant type</strong>: {category} ({subcategory})
+         <li><strong>Genome build</strong>: {build}</li>
          <li><strong>Chromosomal position</strong>: {chr_position}</li>
          <li><strong>Breakpoint 1</strong>: {breakpoint_1}</li>
          <li><strong>Breakpoint 2</strong>: {breakpoint_2}</li>
@@ -291,6 +299,7 @@ def verification_email_body(
         display_name=display_name,
         category=category,
         subcategory=subcategory,
+        build=build,
         chr_position=chr_position,
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,

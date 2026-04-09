@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Genome build is now shown on variant verification "Sanger" emails (#6193)
+
 ## [4.109.3]
 ### Fixed
 - Revert form data passing for SNVs (#6191)
