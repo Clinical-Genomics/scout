@@ -345,6 +345,27 @@ def _populate_hgnc_genes_in_region(ind_region: str) -> List[dict]:
     return genes
 
 
+def _individual_is_affected(individual: dict) -> bool:
+
+    return PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected"
+
+
+def _update_region_status(
+    case_region: dict, individual_is_affected: bool, ind_status: str, status_matches: list | None
+):
+    """Update aggregate region status based on an affected individual's region status."""
+    if not individual_is_affected:
+        return
+
+    if (
+        "status" not in case_region
+        or PARAPHRASE_STATUS[ind_status] > PARAPHRASE_STATUS[case_region["status"]]
+    ):
+        case_region["status"] = ind_status
+        if status_matches:
+            case_region["status_matches"] = status_matches
+
+
 def _get_paraphrase_regions(case_obj: dict) -> dict:
     """Check all case individuals for paraphrase region information.
     Move fixed global attributes (genes_in_region, phase_region) for display up from the individual level to case region
@@ -356,6 +377,8 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
 
     for individual in case_obj["individuals"]:
         paraphrase = individual.get("paraphrase")
+        individual_is_affected = _individual_is_affected(individual)
+
         if not paraphrase:
             continue
         for region_name, region in paraphrase.items():
@@ -371,15 +394,12 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
                             continue
                         case_region["phase_region"] = _parse_phase_region(ind_region)
                     case "status":
-                        if PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected" and (
-                            "status" not in case_regions[region_name]
-                            or PARAPHRASE_STATUS[ind_region]
-                            > PARAPHRASE_STATUS[case_regions[region_name][region_key]]
-                        ):
-                            case_region["status"] = ind_region
-                            if "status_matches" in region:
-                                case_region["status_matches"] = region["status_matches"]
-
+                        _update_region_status(
+                            case_region,
+                            individual_is_affected,
+                            ind_status=ind_region,
+                            status_matches=region.get("status_matches"),
+                        )
     return case_regions
 
 
