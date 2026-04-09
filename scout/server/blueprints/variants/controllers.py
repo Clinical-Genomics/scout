@@ -674,6 +674,8 @@ def update_variant_genes(store, variant_obj, genome_build):
 def _compound_follow_filter_freq(compound: dict, compound_var_obj: dict, query_form: dict) -> bool:
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
+    compound_variant_obj follows scout.models.Variant, query_form is form data from a VariantFiltersForm.
+
     There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
     are filtered the same way.
     """
@@ -713,6 +715,8 @@ def _compound_follow_filter_lt(compound: dict, compound_var_obj: dict, query_for
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
 
+    compound_variant_obj follows scout.models.Variant, query_form is form data from a VariantFiltersForm.
+
     Returns true if the compound was hidden.
     """
     compound_follow_lt_items = ["cadd_score", "end"]
@@ -744,6 +748,8 @@ def _compound_follow_filter_gt(compound: dict, compound_var_obj: dict, query_for
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
+
+    compound_variant_obj follows scout.models.Variant, query_form is form data from a VariantFiltersForm.
 
     Returns true if the compound was hidden.
     """
@@ -794,13 +800,6 @@ def _compound_follow_filter_in(compound: dict, compound_var_obj: dict, query_for
             compound_items = []
             compound_items.append(compound_var_obj.get(compound_item_name))
 
-            LOG.info(
-                "item %s compound item %s compound items %s query_form items %s",
-                item,
-                compound_item_name,
-                compound_items,
-                query_form_items,
-            )
             if not compound_items:
                 compound["is_dismissed"] = True
                 LOG.info("dismissing it!")
