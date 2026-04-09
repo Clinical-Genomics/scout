@@ -104,7 +104,7 @@ def variant_verification(
     tx_changes = []
     external_primer_link = ""
 
-    if build in variant_obj:
+    if "build in variant_obj:
         genome_build = variant_obj["genome_build"]
     else:
         genome_build = case_obj["genome_build"]
