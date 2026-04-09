@@ -893,7 +893,9 @@ def _compound_follow_filter_clnsig(
     return False
 
 
-def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
+def _compound_follow_filter_spidex(
+    compound: dict, compound_var_obj: dict, query_form: dict
+) -> bool:
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
     There are some filter options that are rather unique, like the leveled spidex one. SPIDEX score levels are symmetric
@@ -901,10 +903,6 @@ def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
     The spidex score on the variant object is a scalar. The user selects one or more levels such as "medium" to filter in
     the query.
 
-    Args:
-        compound(dict)
-        compound_variant_obj(scout.models.Variant)
-        query_form(VariantFiltersForm)
     Returns boolean, true if the compound was hidden.
     """
     spidex_human = query_form.get("spidex_human")
@@ -937,6 +935,8 @@ def compound_follow_filter(compound: dict, compound_var_obj: dict, query_form: d
 
     There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
     are filtered the same way.
+
+    compound_variant_obj follows scout.models.Variant, query_form is form data from a VariantFiltersForm.
     """
 
     if _compound_follow_filter_lt(compound, compound_var_obj, query_form):
@@ -967,8 +967,8 @@ def hide_compounds_query(store: MongoAdapter, variant_obj: dict, query_form: dic
     If compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
     If a hiding compounds was engaged, non_loaded variants are considered of small interest to the users and also shaded.
 
-        variant_obj follows scout.models.Variant.
-        query_form is data derived from a VariantFiltersForm.
+    variant_obj follows scout.models.Variant.
+    query_form is data derived from a VariantFiltersForm.
     """
 
     if not query_form:
@@ -992,31 +992,25 @@ def hide_compounds_query(store: MongoAdapter, variant_obj: dict, query_form: dic
 
 
 def parse_variant(
-    store,
-    institute_obj,
-    case_obj,
-    variant_obj,
-    update=False,
-    genome_build="37",
-    get_compounds=True,
-    case_dismissed_vars=[],
-    query_form=None,
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    variant_obj: dict,
+    update: bool = False,
+    genome_build: str = "37",
+    get_compounds: bool = True,
+    case_dismissed_vars: list = [],
+    query_form: dict = None,
 ):
     """Parse information about variants.
     - Adds information about compounds and genes
     - Updates some information about compounds if necessary and 'update=True'
     - Hide compound variants if query form filter indicates so.
 
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_obj(scout.models.Institute)
-        case_obj(scout.models.Case)
-        variant_obj(scout.models.Variant)
-        update(bool): If variant should be updated in database
-        get_compounds(bool): if compounds should be added to added to the returned variant object
-        genome_build(str)
-        case_dismissed_vars(list): list of dismissed variants for this case
-        query_form(dict): query form for additional compounds filtering
+    Args details:
+        get_compounds - flags if compounds should be added to the returned variant object
+        case_dismissed_vars - list of dismissed variants for this case
+        query_form - query form data for additional compounds filtering
     """
 
     compounds_have_changed = False
