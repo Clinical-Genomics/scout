@@ -306,7 +306,7 @@ def render_variants_page(
 
     args = [store, institute_obj, case_obj, variants_query, page]
     if category == "snv":
-        args.append(request.form)
+        args.append(form.data)
     elif category == "cancer":
         args.append(form)
 
@@ -700,6 +700,7 @@ def _compound_follow_filter_freq(
         try:
             query_form_item = float(raw_form_value)
         except (TypeError, ValueError):
+            flash(f"error converting {query_form_item}", category="error")
             continue
 
         if float(compound_item) >= query_form_item:
@@ -733,6 +734,7 @@ def _compound_follow_filter_lt(
         try:
             query_form_item = float(raw_form_value)
         except (TypeError, ValueError):
+            flash(f"error converting {query_form_item}", category="error")
             continue
 
         if float(compound_item) < query_form_item:
@@ -767,6 +769,7 @@ def _compound_follow_filter_gt(
         try:
             query_form_item = float(raw_form_value)
         except (TypeError, ValueError):
+            flash(f"error converting {query_form_item}", category="error")
             continue
 
         if float(compound_item) > query_form_item:
@@ -950,6 +953,8 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
         compound_variant_obj(scout.models.Variant)
         query_form(VariantFiltersForm)
     """
+
+    print(f"DEBUG: {query_form}")
 
     if _compound_follow_filter_lt(compound, compound_var_obj, query_form):
         return

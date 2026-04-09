@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Revert form data passing for SNVs (#6190)
+
 ## [4.109.2]
 ### Fixed
 - Fix more variant page `compounds follow filter` issues (#6188)
