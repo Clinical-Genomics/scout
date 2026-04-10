@@ -169,7 +169,7 @@ def clinvar_update_submission(institute_id, submission):
 
 
 @clinvar_bp.route("/<submission>/<subm_type>/download", methods=["GET"])
-def get_submission_as_json(submission, subm_type) -> dict:
+def download_submission_json(submission, subm_type) -> dict:
     """Returns a json file for a ClinVar submission."""
 
     data = store.get_json_submission(submission, subm_type)
