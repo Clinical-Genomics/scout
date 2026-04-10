@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
+
 ## [4.109.3]
 ### Fixed
 - Revert form data passing for SNVs (#6191)
@@ -83,7 +87,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allowing filtering cases by type of analysis (advanced options) (#6045)
 - Methylation outliers from LRS MethBat from Nallo as omics variants (#5993)
 - An `ACMG sandbox` link included in the main dropdown, pointing to a blank classification page to be used to test the algorithm (#5983)
-- ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Institutes are now ordered alphabetically by display name on gene panels search (#5965)
 - Display all available individual/sample IDs for a case (display_name, individual_id and subject_id) directly on cases page (#5966)
