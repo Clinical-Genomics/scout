@@ -1,313 +1,104 @@
+"""Build module for creating case objects ready for database insertion.
+
+This module provides factory methods and helper functions for building case and
+phenotype objects. It uses Pydantic models for validation and the CaseFactory
+pattern for orchestrating complex object construction.
+"""
+
 import logging
-from datetime import datetime
 from typing import Dict
 
-from scout import __version__
-from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
-from scout.exceptions import ConfigError, IntegrityError
-
-from . import build_individual
+from scout.build.factory import CaseFactory
 
 LOG = logging.getLogger(__name__)
 
 
 def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
-    """Build a small phenotype object
+    """Build a small phenotype object with ID and description.
 
-        Build a dictionary with phenotype_id and description
+    This is a convenience function that uses the CaseFactory's method.
+    It builds a dictionary with phenotype_id and description from the HPO term.
+
     Args:
-        adapter: MongoAdapter (importing it for typing is a bit tricky here)
+        phenotype_id: HPO term ID (e.g., "HP:0001250")
+        adapter: MongoAdapter instance for database queries
 
     Returns:
-        dict(
-            phenotype_id = str,
-            feature = str, # description of phenotype
-            )
+        dict with phenotype_id and feature (description), or empty dict if not found
+
+    Example:
+        >>> pheno = build_phenotype("HP:0001250", adapter)
+        >>> print(pheno)
+        {'phenotype_id': 'HP:0001250', 'feature': 'Seizures'}
     """
-    phenotype_obj = {}
-    if phenotype := adapter.hpo_term(phenotype_id):
-        phenotype_obj["phenotype_id"] = phenotype["hpo_id"]
-        phenotype_obj["feature"] = phenotype["description"]
-    return phenotype_obj
-
-
-def _populate_pipeline_info(case_obj, case_data):
-    """Populates the field named pipeline_version
-
-    Args:
-        case_obj(dict): scout.models.Case
-        case_data (dict): A dictionary with the relevant case information
-    """
-    if case_data.get("exe_ver"):
-        case_obj["pipeline_version"] = case_data["exe_ver"]
+    factory = CaseFactory(adapter)
+    return factory.build_phenotype(phenotype_id)
 
 
 def build_case(case_data: dict, adapter) -> dict:
-    """Build a case object that is to be inserted to the database
+    """Build a case object that is to be inserted to the database.
 
-    dict(
-        case_id = str, # required=True, unique
-        display_name = str, # If not display name use case_id
-        owner = str, # required
+    This function uses the CaseFactory to build a validated case dictionary
+    ready for database insertion. It orchestrates the building of individuals,
+    panels, phenotypes, and all case metadata while ensuring all necessary
+    fields are populated and relationships are validated.
 
-        # These are the names of all the collaborators that are allowed to view the
-        # case, including the owner
-        collaborators = list, # List of institute_ids
-        assignee = str, # _id of a user
-        individuals = list, # list of dictionaries with individuals
-        created_at = datetime,
-        updated_at = datetime,
-        suspects = list, # List of variants referred by there _id
-        causatives = list, # List of variants referred by there _id
+    The function performs the following operations:
+    1. Validates required fields (case_id, owner)
+    2. Validates institute exists in database
+    3. Builds and validates all individuals
+    4. Processes gene panels
+    5. Processes phenotype terms and groups
+    6. Handles cohorts and may update institute with new cohorts
+    7. Collects and validates all files/reports
+    8. Determines which variant types are present
 
-        synopsis = str, # The synopsis is a text blob
-        status = str, # default='inactive', choices=STATUS
-        is_research = bool, # default=False
-        research_requested = bool, # default=False
-        rerun_requested = bool, # default=False
-        cohorts = list, # list of strings
-        analysis_date = datetime,
-        analyses = list, # list of dict
+    All fields that exist in the original code are preserved in the output.
 
-        # default_panels specifies which panels that should be shown when
-        # the case is opened
-        panels = list, # list of dictionaries with panel information
+    Args:
+        case_data: Dictionary with case information including:
+            - case_id: Unique case identifier (required)
+            - owner: Institute ID that owns the case (required)
+            - display_name: Human-readable case name (optional, defaults to case_id)
+            - individuals: List of individual dictionaries
+            - gene_panels: List of gene panel names
+            - default_panels: List of gene panel names to display by default
+            - And many optional fields for reports, analysis info, etc.
+        adapter: MongoAdapter instance for database queries
 
-        dynamic_gene_list = list, # List of genes
+    Returns:
+        dict: Validated case data ready for database insertion with fields:
+            - _id: Case identifier (from case_id)
+            - display_name: Display name of the case
+            - owner: Institute that owns the case
+            - collaborators: List of institutes that can view the case
+            - individuals: List of validated individual dictionaries
+            - created_at, updated_at: Timestamps
+            - scout_load_version: Version of Scout used to load the case
+            - panels: List of validated gene panel information
+            - phenotype_terms: Phenotype terms if provided
+            - phenotype_groups: Phenotype groups if provided
+            - vcf_files: VCF file paths
+            - omics_files: Omics analysis files
+            - Various flags: has_svvariants, has_strvariants, etc.
+            - And many other fields (see scout/models/case_db.py for complete list)
 
-        genome_build = str, # This should be 37 or 38
+    Raises:
+        ConfigError: If case is missing required fields (case_id, owner)
+        IntegrityError: If referenced institute doesn't exist in database
+        PedigreeError: If individual data is invalid or relationships inconsistent
 
-        rank_model_version = str,
-        rank_score_threshold = int, # default=8
-
-        phenotype_terms = list, # List of dictionaries with phenotype information
-        phenotype_groups = list, # List of dictionaries with phenotype information
-
-        madeline_info = str, # madeline info is a full xml file
-
-        multiqc = str, # path to dir with multiqc information
-
-        cnv_report = str, # path to file with cnv report
-        coverage_qc_report = str, # path to file with coverage and qc report
-        gene_fusion_report = str, # path to the gene fusions report
-        gene_fusion_report_research = str, # path to the research gene fusions report
-        RNAfusion_inspector = str, # path to the RNA fusion inspector report
-        RNAfusion_inspector_research = str, # path to the research RNA fusion inspector report
-        RNAfusion_report = str, # path to the RNA fusion report
-        RNAfusion_report_research = str, # path to the research RNA fusion report
-
-        vcf_files = dict, # A dictionary with vcf files
-
-        diagnosis_phenotypes = list, # List of references to diseases
-        diagnosis_genes = list, # List of references to genes
-
-        has_svvariants = bool, # default=False
-
-        is_migrated = bool # default=False
-
-    )
+    Example:
+        >>> case_data = {
+        ...     'case_id': 'family_001',
+        ...     'owner': 'cust000',
+        ...     'display_name': 'Family 001',
+        ...     'individuals': [...],
+        ...     'gene_panels': ['panel_1', 'panel_2'],
+        ...     'genome_build': '38',
+        ... }
+        >>> case_dict = build_case(case_data, adapter)
+        >>> adapter.case_collection.insert_one(case_dict)
     """
-    LOG.info("build case with id: {0}".format(case_data["case_id"]))
-    case_obj = {
-        "_id": case_data["case_id"],
-        "display_name": case_data.get("display_name", case_data["case_id"]),
-    }
-
-    # Check if institute exists in database
-    try:
-        institute_id = case_data["owner"]
-    except KeyError as err:
-        raise ConfigError("Case has to have a institute")
-    institute_obj = adapter.institute(institute_id)
-    if not institute_obj:
-        raise IntegrityError("Institute %s not found in database" % institute_id)
-    case_obj["owner"] = case_data["owner"]
-
-    # Owner allways has to be part of collaborators
-    collaborators = set(case_data.get("collaborators", []))
-    collaborators.add(case_data["owner"])
-    case_obj["collaborators"] = list(collaborators)
-
-    if case_data.get("assignee"):
-        case_obj["assignees"] = [case_data["assignee"]]
-
-    case_obj["smn_tsv"] = case_data.get("smn_tsv")
-
-    # Individuals
-    ind_objs = []
-    try:
-        for individual in case_data.get("individuals", []):
-            ind_objs.append(build_individual(individual))
-    except Exception as error:
-        raise error
-    # sort the samples to put the affected individual first
-    sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
-    case_obj["individuals"] = sorted_inds
-
-    now = datetime.now()
-    case_obj["created_at"] = now
-    case_obj["updated_at"] = now
-    case_obj["scout_load_version"] = __version__
-
-    if case_data.get("suspects"):
-        case_obj["suspects"] = case_data["suspects"]
-    if case_data.get("causatives"):
-        case_obj["causatives"] = case_data["causatives"]
-
-    case_obj["synopsis"] = case_data.get("synopsis", "")
-
-    case_obj["status"] = case_data.get("status") or "inactive"
-    case_obj["is_research"] = False
-    case_obj["research_requested"] = False
-    case_obj["rerun_requested"] = False
-
-    case_obj["lims_id"] = case_data.get("lims_id", "")
-
-    case_obj["analysis_date"] = case_data.get("analysis_date", now)
-
-    # We store some metadata and references about gene panels in 'panels'
-    case_panels = case_data.get("gene_panels", [])
-    default_panels = case_data.get("default_panels", [])
-    panels = []
-
-    for panel_name in case_panels:
-        panel_obj = adapter.gene_panel(panel_name)
-        if not panel_obj:
-            LOG.warning(
-                "Panel %s does not exist in database and will not be saved in case document."
-                % panel_name
-            )
-            continue
-        panel = {
-            "panel_id": panel_obj["_id"],
-            "panel_name": panel_obj["panel_name"],
-            "display_name": panel_obj["display_name"],
-            "version": panel_obj["version"],
-            "updated_at": panel_obj["date"],
-            "nr_genes": len(panel_obj["genes"]),
-        }
-        if panel_name in default_panels:
-            panel["is_default"] = True
-        else:
-            panel["is_default"] = False
-        panels.append(panel)
-
-    case_obj["panels"] = panels
-
-    case_obj["dynamic_gene_list"] = []
-
-    # Meta data
-    genome_build = case_data.get("genome_build", "37")
-    if not genome_build in ["37", "38"]:
-        pass
-
-    case_obj["genome_build"] = genome_build
-
-    case_obj["rna_genome_build"] = case_data.get("rna_genome_build", "38")
-
-    # Rank model versions, URLs and score threshold - optional keys
-    for conditional_key, conditional_type in [
-        ("rank_model_url", str),
-        ("rank_model_version", str),
-        ("sv_rank_model_url", str),
-        ("sv_rank_model_version", str),
-        ("rank_score_threshold", float),
-    ]:
-        if conditional_value := case_data.get(conditional_key):
-            case_obj[conditional_key] = conditional_type(conditional_value)
-
-    # Cohort information
-    if case_data.get("cohorts"):
-        case_obj["cohorts"] = case_data["cohorts"]
-        # Check if all case cohorts are registered under the institute
-        institute_cohorts = set(institute_obj.get("cohorts", []))
-        all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
-        if len(all_cohorts) > len(institute_cohorts):
-            # if not, update institute with new cohorts
-            LOG.warning("Updating institute object with new cohort terms")
-            adapter.institute_collection.find_one_and_update(
-                {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
-            )
-
-    # phenotype information
-    if case_data.get("phenotype_terms"):
-        phenotypes = []
-        for phenotype in case_data["phenotype_terms"]:
-            phenotype_obj = adapter.hpo_term(phenotype)
-            if phenotype_obj is None:
-                LOG.warning(
-                    f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
-                )
-                continue
-
-            phenotypes.append(
-                {"phenotype_id": phenotype, "feature": phenotype_obj.get("description")}
-            )
-        if phenotypes:
-            case_obj["phenotype_terms"] = phenotypes
-
-    # phenotype groups
-    if case_data.get("phenotype_groups"):
-        phenotype_groups = []
-
-        institute_phenotype_groups = set(PHENOTYPE_GROUPS.keys())
-        if institute_obj.get("phenotype_groups"):
-            institute_phenotype_groups.update(institute_obj.get("phenotype_groups").keys())
-
-        for phenotype in case_data["phenotype_groups"]:
-            if phenotype not in institute_phenotype_groups:
-                LOG.warning(
-                    f"Could not find phenotype group term '{phenotype}' for institute '{institute_id}'. It is not added to case."
-                )
-                continue
-
-            phenotype_obj = build_phenotype(phenotype, adapter)
-            if phenotype_obj:
-                phenotype_groups.append(phenotype_obj)
-            else:
-                LOG.warning(
-                    f"Could not find phenotype group term '{phenotype}' in term collection. It is not added to case."
-                )
-        if phenotype_groups:
-            case_obj["phenotype_groups"] = phenotype_groups
-
-    # Files
-    case_obj["madeline_info"] = case_data.get("madeline_info")
-
-    case_obj["custom_images"] = case_data.get("custom_images")
-
-    for report_key in [report.get("key_name") for report in CUSTOM_CASE_REPORTS.values()]:
-        if report_key in case_data:
-            case_obj[report_key] = case_data.get(report_key)
-
-    case_obj["vcf_files"] = case_data.get("vcf_files", {})
-    case_obj["omics_files"] = case_data.get("omics_files", {})
-    case_obj["delivery_report"] = case_data.get("delivery_report")
-    case_obj["rna_delivery_report"] = case_data.get("rna_delivery_report")
-
-    _populate_pipeline_info(case_obj, case_data)
-
-    case_obj["has_svvariants"] = bool(
-        case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research")
-    )
-
-    case_obj["has_strvariants"] = bool(case_obj["vcf_files"].get("vcf_str"))
-
-    case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
-
-    case_obj["has_outliers"] = bool(
-        case_obj["omics_files"].get("fraser")
-        or case_obj["omics_files"].get("outrider")
-        or case_obj["omics_files"].get("methbat")
-    )
-
-    case_obj["has_methylation"] = bool(case_obj["omics_files"].get("methbat"))
-
-    case_obj["is_migrated"] = False
-
-    # What experiment is used, alternatives are rare (rare disease) or cancer
-    case_obj["track"] = case_data.get("track", "rare")
-
-    case_obj["group"] = case_data.get("group", [])
-
-    return case_obj
+    factory = CaseFactory(adapter)
+    return factory.build_case(case_data)
