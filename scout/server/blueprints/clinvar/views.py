@@ -102,7 +102,7 @@ def clinvar_germline_submissions(institute_id):
         if request.args.get("clinvar_id_filter")
         else None
     )
-    submissions = list(store.get_clinvar_submissions(institute_id=institute_id, type="germline"))
+    submissions = list(store.get_clinvar_submissions(institute_id=institute_id, type="germline", subm_id=clinvar_id_filter))
     deprecated_submissions = store.get_deprecated_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter
     )

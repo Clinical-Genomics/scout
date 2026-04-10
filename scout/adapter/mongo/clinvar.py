@@ -113,12 +113,12 @@ class ClinVarHandler(object):
             submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
         return submission
 
-    def update_clinvar_id(self, clinvar_id, submission_id):
+    def update_clinvar_id(self, clinvar_id: str, submission_id: str) -> dict:
         """saves an official ClinVar submission ID in a ClinVar submission object
 
         Args:
             clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from ClinVar portal when starting a new submission
-            submission_id(str): submission_id(str) : id of the submission to be updated
+            submission_id(str): submission_id(str) : id of the submission in scout to be updated
 
         Returns:
             updated_submission(obj): a ClinVar submission object, updated
@@ -204,9 +204,11 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_submissions(self, institute_id: str, type: str) -> pymongo.cursor.Cursor:
+    def get_clinvar_submissions(self, institute_id: str, type: str, subm_id:Optional[str]=None) -> pymongo.cursor.Cursor:
         """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
         query = {"institute_id": institute_id, "type": type}
+        if subm_id:
+            query["clinvar_subm_id"] = {"$regex": re.escape(subm_id.strip())}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
     def get_deprecated_clinvar_germline_submissions(
