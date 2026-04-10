@@ -181,11 +181,11 @@ class SubmissionItem(BaseModel):
     variant_id: str
 
 
-class OncogenicitySubmissionItem(GenericSubmissionItem):
+class OncogenicitySubmissionItem(SubmissionItem):
     # Field necessary for the API submissions:
     oncogenicityClassification: OncogenicityClassification
     observedIn: List[OncoObservedIn]
 
 
-class GermlineSubmissionItem(GenericSubmissionItem):
+class GermlineSubmissionItem(SubmissionItem):
     observedIn: List[ObservedIn]
