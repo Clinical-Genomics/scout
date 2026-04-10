@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
+### Changed
+- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 
 ## [4.109.3]
 ### Fixed
@@ -96,7 +98,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - External links at the bottom of variant page are now ordered alphabetically (#6024)
 - Mivmir score explanations sorted by descending value, from the biggest contributor to the smallest (#6058)
 - The ACMG classification documentation now more clearly explains about modifications not in Richards et al (#6065)
-- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 - Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
