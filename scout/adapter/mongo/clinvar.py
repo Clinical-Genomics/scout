@@ -16,6 +16,7 @@ from scout.constants.clinvar import (
 )
 
 LOG = logging.getLogger(__name__)
+REGEX = "$regex"
 
 
 class ClinVarHandler(object):
@@ -210,7 +211,7 @@ class ClinVarHandler(object):
         """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
         query = {"institute_id": institute_id, "type": type}
         if subm_id:
-            query["clinvar_subm_id"] = {"$regex": re.escape(subm_id.strip())}
+            query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
         return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
     def get_deprecated_clinvar_germline_submissions(
@@ -240,7 +241,7 @@ class ClinVarHandler(object):
 
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         if clinvar_id_filter:
-            query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
+            query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
 
         results = list(
             self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
@@ -365,7 +366,7 @@ class ClinVarHandler(object):
             {"_id": ObjectId(submission_id)},
             {
                 "$set": {"updated_at": datetime.now()},
-                "$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}},
+                "$pull": {"case_data": {REGEX: f"^{re.escape(object_id)}"}},
             },
             return_document=ReturnDocument.AFTER,
         )
