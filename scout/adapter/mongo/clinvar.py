@@ -204,7 +204,9 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_submissions(self, institute_id: str, type: str, subm_id:Optional[str]=None) -> pymongo.cursor.Cursor:
+    def get_clinvar_submissions(
+        self, institute_id: str, type: str, subm_id: Optional[str] = None
+    ) -> pymongo.cursor.Cursor:
         """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
         query = {"institute_id": institute_id, "type": type}
         if subm_id:
