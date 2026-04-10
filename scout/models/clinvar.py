@@ -117,7 +117,7 @@ class OncogenicityClassification(Classification):
 
 
 class GermlineClassification(Classification):
-    GermlineClassificationDescription: GermlineClassificationDescription
+    germlineClassificationDescription: GermlineClassificationDescription
 
 
 class ObservedIn(BaseModel):
