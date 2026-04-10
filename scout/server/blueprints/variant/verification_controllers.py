@@ -8,6 +8,7 @@ from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
 from scout.server.links import external_primer_order_link
+from scout.server.utils import get_case_genome_build, get_variant_genome_build
 
 from .controllers import variant as variant_controller
 
@@ -104,14 +105,15 @@ def variant_verification(
     tx_changes = []
     external_primer_link = ""
 
-    # Some variants, e.g. omics outliers, have genome build set. Otherwise, use case build.
-    genome_build = variant_obj.get("build", case_obj.get("genome_build"))
+    genome_build = get_variant_genome_build(variant_obj, case_obj)
 
     if category == "snv":  # SNV
         view_type = "variant.variant"
         tx_changes = []
 
-        external_primer_link = external_primer_order_link(variant_obj, case_obj["genome_build"])
+        external_primer_link = external_primer_order_link(
+            variant_obj, get_case_genome_build(case_obj)
+        )
 
         for gene_obj in variant_obj.get("genes", []):
             for tx_obj in gene_obj["transcripts"]:

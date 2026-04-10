@@ -12,6 +12,7 @@ from scout.constants import (
     VARIANT_FILTERS,
 )
 from scout.server.links import add_gene_links, add_tx_links
+from scout.server.utils import get_case_genome_build
 
 LOG = logging.getLogger(__name__)
 
@@ -694,3 +695,11 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
     if alt_num:
         alt_mc = int(alt_num.group())
         return alt_mc
+
+
+def get_variant_genome_build(variant_obj: dict, case_obj: dict) -> str:
+    """Return variant genome build from variant object or case object.
+    Some variants, e.g. omics outliers, have genome build set. Otherwise, use case build.
+    """
+
+    return variant_obj.get("build", get_case_genome_build(case_obj))

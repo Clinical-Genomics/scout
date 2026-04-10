@@ -60,6 +60,7 @@ from .utils import (
     frequency,
     get_callers,
     get_filters,
+    get_variant_genome_build,
     is_affected,
     predictions,
 )
@@ -235,7 +236,7 @@ def variant(
 
     variant_id = variant_obj["variant_id"]
 
-    genome_build = get_case_genome_build(case_obj)
+    genome_build = get_variant_genome_build(variant_obj, case_obj)
 
     # is variant located on the mitochondria
     variant_obj["is_mitochondrial"] = any(
@@ -458,7 +459,7 @@ def set_edge_genes(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     if variant_obj["category"] not in ["sv", "cancer_sv"]:
         return
 
-    genome_build = get_case_genome_build(case_obj)
+    genome_build = get_variant_genome_build(variant_obj, case_obj)
 
     start_genes = store.genes_by_coordinate(
         chromosome=variant_obj["chromosome"],
@@ -759,7 +760,7 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
         store, variant_obj, institute_id, case_name
     )
 
-    genome_build = get_case_genome_build(case_obj)
+    genome_build = get_variant_genome_build(variant_obj, case_obj)
 
     add_gene_info(store, variant_obj, genome_build=genome_build)
 
