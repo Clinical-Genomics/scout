@@ -8,9 +8,10 @@ from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
 from scout.server.links import external_primer_order_link
-from scout.server.utils import get_case_genome_build, get_variant_genome_build
+from scout.server.utils import get_case_genome_build
 
 from .controllers import variant as variant_controller
+from .utils import get_variant_genome_build
 
 LOG = logging.getLogger(__name__)
 
