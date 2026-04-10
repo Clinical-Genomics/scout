@@ -223,7 +223,7 @@ def test_clinvar_update_submission_delete(app, institute_obj, user_obj, submissi
         ONCOGENICITY,
     ],
 )
-def test_get_submission_as_json(institute_obj, user_obj, app, submission_type):
+def test_download_submission_as_json(institute_obj, user_obj, app, submission_type):
     """Test the endpoint that returns the submission object as a json file."""
 
     # GIVEN a database with a submission
@@ -239,7 +239,7 @@ def test_get_submission_as_json(institute_obj, user_obj, app, submission_type):
         # THEN the submission should be viewable as json
         resp = client.get(
             url_for(
-                "clinvar.get_submission_as_json",
+                "clinvar.download_submission_json",
                 submission=subm_obj["_id"],
                 subm_type=submission_type,
             )
