@@ -88,32 +88,5 @@
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
 
-  $(function () {
-      $('.casedata  div').hide();
-      $('.vardata  div').hide();
-      $('.cd_btn').on('click', function(){
-          var bid = $(this)[0].id;
-          var sel = '#cddiv' + bid;
-          if($(sel).is(':visible')){
-            $(sel).hide();
-          }
-          else{
-            $('.casedata  div').hide();
-            $(sel).fadeToggle();
-          }
-      });
-      $('.var_btn').on('click', function(){
-          var bid = $(this)[0].id;
-          var sel = '#vardiv' + bid;
-          if($(sel).is(':visible')){
-            $(sel).hide();
-          }
-          else{
-            $('.vardata div').hide();
-            $(sel).fadeToggle();
-          }
-      });
-  });
-
 </script>
 {% endblock %}

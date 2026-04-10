@@ -70,7 +70,7 @@
         <a
           id="download_clinvar_json"
           {% if subm_obj.type %}
-            href="{{ url_for('clinvar.get_submission_as_json', submission=subm_obj._id, subm_type=subm_obj.type) }}"
+            href="{{ url_for('clinvar.download_submission_json', submission=subm_obj._id, subm_type=subm_obj.type) }}"
             class="btn btn-primary btn-xs text-white"
             target="_blank"
             rel="noopener"
