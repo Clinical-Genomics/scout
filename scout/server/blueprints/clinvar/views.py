@@ -188,6 +188,7 @@ def send_api_submission(institute_id, submission, subm_type):
     _ = institute_and_case(store, institute_id)
 
     json_subm_obj = store.get_json_submission(submission=submission, subm_type=subm_type)
+
     if not json_subm_obj:
         return safe_redirect_back(request)
 

@@ -7,7 +7,7 @@
   {% if list_of_dicts|length > 1%}<br>{% endif %}
 {% endmacro %}
 
-{% macro submission_panel(subm_obj, institute) %}
+{% macro submission_panel(subm_obj, institute, show_submit) %}
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">

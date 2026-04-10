@@ -46,7 +46,7 @@
     {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
-          {{ submission_panel(submission, institute) }}
+          {{ submission_panel(submission, institute, show_submit) }}
         {% endif %}
       {% endfor %}
     {% endfor %}
