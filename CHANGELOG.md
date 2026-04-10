@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Genome build is now shown on variant verification "Sanger" emails (#6193)
+- Genome build is now shown on variant verification "Sanger" emails (#6194)
 
 ## [4.109.3]
 ### Fixed
