@@ -8,7 +8,7 @@ pattern for orchestrating complex object construction.
 import logging
 from typing import Dict
 
-from scout.build.factory import CaseFactory
+from scout.build.case.factory import CaseFactory
 
 LOG = logging.getLogger(__name__)
 

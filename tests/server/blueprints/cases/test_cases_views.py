@@ -80,7 +80,7 @@ def test_add_individual_phenotype(app, institute_obj):
 
     # GIVEN a case with no phenotypes
     case_obj = store.case_collection.find_one()
-    assert case_obj.get("phenotype_terms") is None
+    assert case_obj.get("phenotype_terms") == []
 
     # GIVEN an individual of a case
     ind = case_obj["individuals"][0]

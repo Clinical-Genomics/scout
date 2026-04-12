@@ -271,122 +271,54 @@ class CaseFactory:
         if not institute_obj:
             raise IntegrityError(f"Institute {owner} not found in database")
 
-        # Start building case object
+        # Prepare data for Case model
         now = datetime.now()
-        case_obj = {
-            "_id": case_id,
-            "display_name": case_data.get("display_name", case_id),
-            "owner": owner,
-            "created_at": now,
-            "updated_at": now,
-            "scout_load_version": __version__,
-        }
+        filtered_data = case_data.copy()
 
-        # Collaborators (always include owner)
-        collaborators = set(case_data.get("collaborators", []))
-        collaborators.add(owner)
-        case_obj["collaborators"] = list(collaborators)
-
-        # Optional: assignees
-        if case_data.get("assignee"):
-            case_obj["assignees"] = [case_data["assignee"]]
-
-        # Optional: paraphrase
-        if case_data.get("paraphrase"):
-            case_obj["paraphrase"] = case_data["paraphrase"]
-
-        # Optional: SMA TSV
-        if case_data.get("smn_tsv"):
-            case_obj["smn_tsv"] = case_data["smn_tsv"]
-
-        # Process individuals
-        case_obj["individuals"] = self._process_individuals(case_data)
-
-        # Suspects and causatives
-        if case_data.get("suspects"):
-            case_obj["suspects"] = case_data["suspects"]
-        if case_data.get("causatives"):
-            case_obj["causatives"] = case_data["causatives"]
-
-        # Case metadata
-        case_obj["synopsis"] = case_data.get("synopsis", "")
-        case_obj["status"] = case_data.get("status") or "inactive"
-        case_obj["is_research"] = False
-        case_obj["research_requested"] = False
-        case_obj["rerun_requested"] = False
-        case_obj["lims_id"] = case_data.get("lims_id", "")
-        case_obj["analysis_date"] = case_data.get("analysis_date", now)
-
-        # Gene panels
-        case_obj["panels"] = self._process_panels(case_data)
-        case_obj["dynamic_gene_list"] = []
-
-        # Genome builds
-        case_obj["genome_build"] = case_data.get("genome_build", "37")
-        case_obj["rna_genome_build"] = case_data.get("rna_genome_build", "38")
-
-        # Rank model info
-        for conditional_key in [
-            "rank_model_url",
-            "rank_model_version",
-            "sv_rank_model_url",
-            "sv_rank_model_version",
+        # Remove fields that need special processing
+        for field in [
+            "individuals",
+            "gene_panels",
+            "phenotype_terms",
+            "phenotype_groups",
+            "cohorts",
         ]:
-            value = case_data.get(conditional_key)
-            if value:
-                case_obj[conditional_key] = str(value)
+            filtered_data.pop(field, None)
 
-        # Rank score threshold
-        rank_score = case_data.get("rank_score_threshold")
-        if rank_score:
-            case_obj["rank_score_threshold"] = float(rank_score)
+        # Add required fields
+        filtered_data["created_at"] = now
+        filtered_data["updated_at"] = now
+        filtered_data["scout_load_version"] = __version__
 
-        # Cohorts (may update institute)
-        self._process_cohorts(case_obj, case_data, institute_obj)
+        # Set collaborators (always include owner)
+        collaborators = set(filtered_data.get("collaborators", []))
+        collaborators.add(owner)
+        filtered_data["collaborators"] = list(collaborators)
 
-        # Phenotypes
-        phenotypes = self._process_phenotypes(case_data)
-        if phenotypes:
-            case_obj["phenotype_terms"] = phenotypes
+        # Create validated Case object
+        case = Case(**filtered_data)
 
-        # Phenotype groups
-        phenotype_groups = self._process_phenotype_groups(case_data, institute_obj, owner)
-        if phenotype_groups:
-            case_obj["phenotype_groups"] = phenotype_groups
+        # Populate complex fields that require database lookups
+        if case_data.get("individuals"):
+            case.build_individuals(self.adapter, case_data["individuals"])
 
-        # Files and reports
-        case_obj["madeline_info"] = case_data.get("madeline_info")
-        case_obj["custom_images"] = case_data.get("custom_images")
+        if case_data.get("gene_panels"):
+            case.populate_panels(
+                self.adapter, case_data["gene_panels"], case_data.get("default_panels")
+            )
 
-        # VCF and omics files
-        case_obj["vcf_files"] = case_data.get("vcf_files", {})
-        case_obj["omics_files"] = case_data.get("omics_files", {})
-        case_obj["delivery_report"] = case_data.get("delivery_report")
-        case_obj["rna_delivery_report"] = case_data.get("rna_delivery_report")
+        if case_data.get("phenotype_terms"):
+            case.populate_phenotypes(self.adapter, case_data["phenotype_terms"])
 
-        # Pipeline info
-        self._populate_pipeline_info(case_obj, case_data)
+        if case_data.get("phenotype_groups"):
+            case.set_phenotype_groups(
+                self.adapter, case_data["phenotype_groups"], institute_obj, owner
+            )
 
-        # Determine variant types present
-        case_obj["has_svvariants"] = bool(
-            case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research")
-        )
-        case_obj["has_strvariants"] = bool(case_obj["vcf_files"].get("vcf_str"))
-        case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
-        case_obj["has_outliers"] = bool(
-            case_obj["omics_files"].get("fraser")
-            or case_obj["omics_files"].get("outrider")
-            or case_obj["omics_files"].get("methbat")
-        )
-        case_obj["has_methylation"] = bool(case_obj["omics_files"].get("methbat"))
+        if case_data.get("cohorts"):
+            case.set_cohorts(self.adapter, case_data["cohorts"], institute_obj)
 
-        # Migration status
-        case_obj["is_migrated"] = False
+        # Populate variant type flags
+        case.populate_variant_flags()
 
-        # Track (rare or cancer)
-        case_obj["track"] = case_data.get("track", "rare")
-
-        # Group
-        case_obj["group"] = case_data.get("group", [])
-
-        return case_obj
+        return case.to_dict()

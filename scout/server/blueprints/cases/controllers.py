@@ -325,7 +325,7 @@ def _get_suspects_or_causatives(
     If no longer available, append variant_id instead."""
 
     marked_vars = []
-    for variant_id in case_obj.get(kind, []):
+    for variant_id in case_obj.get(kind) or []:
         variant_obj = store.variant(variant_id)
         if variant_obj:
             marked_vars.append(
@@ -361,9 +361,8 @@ def case(
     # Convert individual information to more readable format
     _populate_case_individuals(case_obj)
 
-    case_obj["assignees"] = [
-        store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
-    ]
+    assignees = case_obj.get("assignees") or []
+    case_obj["assignees"] = [store.user(user_id=user_id) for user_id in assignees]
 
     # Provide basic info on alignment files & coverage data availability for this case
     case_has_alignments(case_obj)
