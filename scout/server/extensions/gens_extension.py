@@ -22,6 +22,7 @@ class GensViewer:
         self.host = None
         self.port = None
         self.version: int | None = None
+        self.auth_failure: bool = False
 
     def init_app(self, app):
         """Setup Gens config."""
@@ -34,8 +35,12 @@ class GensViewer:
     def connection_settings(self, genome_build: str = "37") -> dict:
         """Return information on where Gens is hosted.
         Check version if no version is set already. This needs to be done
-        after authentication, so delaying until called from a Scout view.
+        after authentication, so delaying until called from a Scout view .
         """
+
+        if self.auth_failure:
+            self.version = self.get_version()
+
         settings = {}
         if self.host:
             base_url = f"{self.host}:{self.port}" if self.port else self.host
@@ -72,9 +77,18 @@ class GensViewer:
         return GENS_DEFAULT_VERSION
 
     def _check_version(self, base_url: str) -> int | None:
+        """Check the version of Gens by making a request to the base API URL.
+        This will only work for Gens v4 and onward, as earlier versions do not have this endpoint.
+        Keep track if we received an authentication failure on the last try. Then it would be useful
+        to make individual checks once the user is logged in."""
+
         json_resp = get_request_json(f"{base_url}/api/")
         content = json_resp.get("content", {})
         if json_resp.get("status_code") == 200 and "version" in content:
             version = int(content.get("version")[0])
+            self.auth_failure = False
             return version
+        if json_resp.get("status_code") == 401:
+            self.auth_failure = True
+            return None
         return None
