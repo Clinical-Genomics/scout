@@ -51,7 +51,6 @@ class GensViewer:
         """Return gens version.
 
         The base API URL for Gens v4 has the version returned. Server could be https or http.
-        The same page for v3 will return a Gens error page, though with status 200.
         """
 
         for protocol in ["http", "https"]:
@@ -67,8 +66,11 @@ class GensViewer:
     def get_version_from_api(self, base_url: str) -> int | None:
         """Check the version of Gens by making a request to the base API URL.
         This will only work for Gens v4 and onward, as earlier versions do not have this endpoint.
-        Keep track if we received an authentication failure on the last try. Then it would be useful
-        to make individual checks once the user is logged in."""
+
+        The same page for v3 will return a Gens error page, though with status 200.
+
+        If the call fails with status 401, then we have found a >v4 gens server.
+        """
 
         json_resp = get_request_json(f"{base_url}/api/")
         content = json_resp.get("content", {})
