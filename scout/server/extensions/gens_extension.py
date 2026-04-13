@@ -12,7 +12,7 @@ import logging
 from scout.utils.scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
-GENS_DEFAULT_VERSION = 4
+GENS_DEFAULT_VERSION = 3
 
 
 class GensViewer:
@@ -36,28 +36,50 @@ class GensViewer:
         Check version if no version is set already. This needs to be done
         after authentication, so delaying until called from a Scout view.
         """
+
         settings = {}
         if self.host:
             base_url = f"{self.host}:{self.port}" if self.port else self.host
             settings = {
                 "host": base_url,
                 "genome_build": genome_build,
-                "version": self.version if self.version else self.get_version(),
+                "version": self.version or self.get_version(),
             }
         return {"display": bool(settings), **settings}
 
     def get_version(self) -> int:
         """Return gens version.
 
-        The base API URL for Gens v4 has the version returned.
-        The same page for v3 will return a Gens error page, though with status 200.
+        The base API URL for Gens v4 has the version returned. Server could be https or http.
         """
-        base_url = f"https://{self.host}:{self.port}" if self.port else self.host
+
+        for protocol in ["http", "https"]:
+            if version := self.get_version_from_api(self.get_base_url(protocol)):
+                return version
+
+        return GENS_DEFAULT_VERSION
+
+    def get_base_url(self, protocol: str = "https") -> str:
+        """Return the base URL for Gens, with the specified protocol."""
+        return f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
+
+    def get_version_from_api(self, base_url: str) -> int | None:
+        """Check the version of Gens by making a request to the base API URL.
+        This will only work for Gens v4 and onward, as earlier versions do not have this endpoint.
+
+        The same page for v3 will return a Gens error page, though with status 200.
+
+        If the call fails with status 401, then we have found a >v4 gens server.
+        """
+
         json_resp = get_request_json(f"{base_url}/api/")
-        version = GENS_DEFAULT_VERSION
         content = json_resp.get("content", {})
         if json_resp.get("status_code") == 200 and "version" in content:
-            version = int(content.get("version", "3")[0])
-            self.version = version
-
-        return version
+            version = int(content.get("version")[0])
+            return version
+        if json_resp.get("status_code") == 401:
+            LOG.warning(
+                "Authentication failure when trying to get Gens version. Gens is at least v4."
+            )
+            return 4
+        return None
