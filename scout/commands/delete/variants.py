@@ -125,6 +125,8 @@ def _process_cases(
         "causatives": 1,
         "status": 1,
         "owner": 1,
+        "track": 1,
+        "is_research": 1,
         "analysis_date": 1,
         "individuals": 1,
     }
@@ -180,7 +182,7 @@ def _process_single_case(
 
     variants_query: dict = store.delete_variants_query(
         case_id=case["_id"],
-        variants_to_keep=set(variants_to_keep),
+        variants_to_keep=list(set(variants_to_keep)),
         min_rank_threshold=rank_threshold,
         remove_ctg=remove_ctg + outlier_remove_ctg,
     )

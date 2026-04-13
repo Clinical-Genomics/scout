@@ -53,7 +53,7 @@ class QueryHandler(object):
     def delete_variants_query(
         self,
         case_id: str,
-        variants_to_keep: Set[str] | None = None,
+        variants_to_keep: List[str] | None = None,
         min_rank_threshold: Optional[int] = None,
         remove_ctg: List[str] | None = None,
     ) -> dict:
