@@ -58,21 +58,19 @@ class GensViewer:
         base_url = (
             f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
         )
-        if version := self._check_version(base_url):
+        if version := self.get_version_from_api(base_url):
             return version
-        else:
-            protocol = "http"
-            base_url = (
-                f"{protocol}://{self.host}:{self.port}"
-                if self.port
-                else f"{protocol}://{self.host}"
-            )
-            if version := self._check_version(base_url):
-                return version
+
+        protocol = "http"
+        base_url = (
+            f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
+        )
+        if version := self.get_version_from_api(base_url):
+            return version
 
         return GENS_DEFAULT_VERSION
 
-    def _check_version(self, base_url: str) -> int | None:
+    def get_version_from_api(self, base_url: str) -> int | None:
         """Check the version of Gens by making a request to the base API URL.
         This will only work for Gens v4 and onward, as earlier versions do not have this endpoint.
         Keep track if we received an authentication failure on the last try. Then it would be useful
