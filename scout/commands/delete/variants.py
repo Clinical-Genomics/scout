@@ -10,7 +10,6 @@ from scout.adapter import MongoAdapter
 from scout.constants import ANALYSIS_TYPES, CASE_STATUSES, VARIANTS_TARGET_FROM_CATEGORY
 from scout.server.extensions import store
 
-delete_stats = {"case_counter": 0, "deleted_variant_counter": 0, "deleted_outlier_counter": 0}
 LOG = logging.getLogger(__name__)
 DELETE_VARIANTS_HEADER = [
     "Case n.",
@@ -100,6 +99,7 @@ def _process_cases(
     outlier_remove_ctg: List[str],
     dry_run: bool,
     output_file: TextIO,
+    delete_stats: dict
 ) -> None:
     """
     First fetches all cases according to user's filters (relatively light query).
@@ -133,6 +133,7 @@ def _process_cases(
 
     cases_list = list(store.case_collection.find(match, projection))
     total_cases = store.case_collection.count_documents(match)
+
     with click.progressbar(cases_list, length=total_cases, label="Processing cases") as cases_bar:
         for case in cases_bar:
             _process_single_case(
@@ -144,6 +145,7 @@ def _process_cases(
                 outlier_remove_ctg=outlier_remove_ctg,
                 dry_run=dry_run,
                 output_file=output_file,
+                delete_stats=delete_stats
             )
 
 
@@ -156,6 +158,7 @@ def _process_single_case(
     outlier_remove_ctg: List[str],
     dry_run: bool,
     output_file: TextIO,
+    delete_stats=dict
 ) -> None:
     """
     Process a single case
@@ -341,6 +344,8 @@ def variants(
         TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         out_file = f"variant_cleanup_report_{TIMESTAMP}.tsv"
 
+    delete_stats = {"case_counter": 0, "deleted_variant_counter": 0, "deleted_outlier_counter": 0}
+
     with open(out_file, "w") as output_file:
         if dry_run:
             click.echo("--------------- DRY RUN COMMAND ---------------")
@@ -367,6 +372,7 @@ def variants(
             outlier_remove_ctg=outlier_remove_ctg,
             dry_run=dry_run,
             output_file=output_file,
+            delete_stats=delete_stats
         )
         if not dry_run:
             click.echo(
