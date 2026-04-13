@@ -77,7 +77,6 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **mother** _String/Int_ Sample ID for mother or 0.
     - **msi** _Int_ Microsatellite instability [0-60].
     - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
-    -
     - **paraphase_alignment_path** _String_ Path to BAM/CRAM file to view Paraphase alignments [Reference][paraphase].
     - **phase_blocks** _String_ Path to GTF file to view phase blocks.
     - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
