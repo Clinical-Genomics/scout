@@ -99,7 +99,7 @@ def _process_cases(
     outlier_remove_ctg: List[str],
     dry_run: bool,
     output_file: TextIO,
-    delete_stats: dict
+    delete_stats: dict,
 ) -> None:
     """
     First fetches all cases according to user's filters (relatively light query).
@@ -145,7 +145,7 @@ def _process_cases(
                 outlier_remove_ctg=outlier_remove_ctg,
                 dry_run=dry_run,
                 output_file=output_file,
-                delete_stats=delete_stats
+                delete_stats=delete_stats,
             )
 
 
@@ -158,7 +158,7 @@ def _process_single_case(
     outlier_remove_ctg: List[str],
     dry_run: bool,
     output_file: TextIO,
-    delete_stats=dict
+    delete_stats=dict,
 ) -> None:
     """
     Process a single case
@@ -372,7 +372,7 @@ def variants(
             outlier_remove_ctg=outlier_remove_ctg,
             dry_run=dry_run,
             output_file=output_file,
-            delete_stats=delete_stats
+            delete_stats=delete_stats,
         )
         if not dry_run:
             click.echo(
