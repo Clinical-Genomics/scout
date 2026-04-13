@@ -27,9 +27,6 @@ DELETE_VARIANTS_HEADER = [
 ]
 VARIANT_CTG = sorted(VARIANTS_TARGET_FROM_CATEGORY)
 OUTLIERS_CTG = ["outlier"]
-TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-OUTFILE = f"variant_cleanup_report_{TIMESTAMP}.tsv"
-
 
 def handle_delete_variants(
     store: MongoAdapter,
@@ -338,7 +335,8 @@ def variants(
 
     case_ids = get_case_ids(case_file=case_file, case_id=case_id)
     if out_file is None:
-        out_file = OUTFILE
+        TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        out_file = f"variant_cleanup_report_{TIMESTAMP}.tsv"
 
     with open(out_file, "w") as output_file:
         if dry_run:
