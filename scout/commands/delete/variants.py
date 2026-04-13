@@ -28,6 +28,7 @@ DELETE_VARIANTS_HEADER = [
 VARIANT_CTG = sorted(VARIANTS_TARGET_FROM_CATEGORY)
 OUTLIERS_CTG = ["outlier"]
 
+
 def handle_delete_variants(
     store: MongoAdapter,
     remove_ctg: List[str],
