@@ -10,6 +10,29 @@
 
 {% block css %}
 {{ super() }}
+<style>
+  /* Paraphrase nested table styling for consistent alignment */
+  .paraphrase-nested-table {
+    width: 100%;
+    margin: 0;
+  }
+  .paraphrase-nested-table thead tr th {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    word-break: break-word;
+    white-space: normal;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .paraphrase-nested-table tbody tr td {
+    padding: 0.25rem 0.5rem;
+    word-break: break-word;
+    white-space: normal;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    vertical-align: top;
+  }
+</style>
 {% endblock %}
 
 {% block top_nav %}
@@ -85,19 +108,33 @@
         </div>
         <div id="collapse_{{ region_name }}" class="accordion-collapse collapse" data-bs-parent="#paraphrase">
 
+          {% set ns = namespace(paraphrase_keys=[]) %}
           {% for ind in case.individuals %}
-            <div class="row mt-1 bg-secondary">
-              <div class="col-2">
-                {{ ind.display_name }}
-              </div>
-              <div class="col-1">
-                {{ ind.phenotype_human }}
-              </div>
-            </div>
-            <div class="row mt-3">
-              {{ show_paraphrase_value(ind.paraphrase[region_name]) }}
-            </div>
+            {% for subtable_key in ind.paraphrase[region_name].keys() %}
+              {% if subtable_key not in ["status", "status_matches", "genes_in_region", "phase_region"] and subtable_key not in ns.paraphrase_keys %}
+                {% set ns.paraphrase_keys = ns.paraphrase_keys + [subtable_key] %}
+              {% endif %}
+            {% endfor %}
           {% endfor %}
+
+          <table class="table">
+            <thead>
+              <tr class="bg-secondary">
+                <th>Sample</th>
+                <th>Phenotype</th>
+                <th>Paraphrase {{ region_name }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ind in case.individuals %}
+                <tr>
+                  <td>{{ ind.display_name }}</td>
+                  <td>{{ ind.phenotype_human }}</td>
+                  <td>{{ show_paraphrase_value(ind.paraphrase[region_name], ns.paraphrase_keys) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
 
           <div class="btn-group" role="group" aria-label="Alignment- and variant buttons for {{ region_name }}">
               {% if "phase_region" in region %}
@@ -133,37 +170,42 @@
 </div>
 {% endmacro %}
 
-{% macro show_paraphrase_value(paraphrase_value) %}
+{% macro show_paraphrase_value(paraphrase_value, paraphrase_keys=None) %}
 
   {% if paraphrase_value is mapping %}
-     {% for paraphrase_sub_key, paraphrase_sub_value in paraphrase_value.items() %}
-        {% if paraphrase_sub_key in ["status", "status_matches", "genes_in_region", "phase_region"] %}
-        {% else %}
-          <div class="row mt-1 mb-1">
-              {% if paraphrase_sub_value is mapping %}
-                <div class="col-2"><b><i>{{ paraphrase_sub_key }}</i></b></div>{{ show_paraphrase_value(paraphrase_sub_value) }}
-              {% else %}
-                <div class="col-2"><b>{{ paraphrase_sub_key }}</b>:</div>{{ show_paraphrase_value(paraphrase_sub_value) }}
-              {% endif %}
-          </div>
-        {% endif %}
-    {% endfor %}
-  {% elif paraphrase_value is string or paraphrase_value is integer or paraphrase_value is float %}
-      <div class="col-1">{{ paraphrase_value }}</div>
-  {% elif paraphrase_value is sequence %}
-
-    {% if paraphrase_value|length < 4 %}
-        {% for paraphrase_sub_value in paraphrase_value %}
-          <div class="col-3">{{ paraphrase_sub_value }}</div>
-        {% endfor %}
+    {% if paraphrase_keys %}
+      {% set subtable_keys = paraphrase_keys %}
     {% else %}
-      {% for paraphrase_sub_value in paraphrase_value %}
-        <div class="row mt-1 mb-1"><div class="col-2"></div><div class="col-3">{{ paraphrase_sub_value }}</div></div>
+      {% set ns = namespace(subtable_keys=[]) %}
+      {% for subtable_key in paraphrase_value.keys() %}
+        {% if subtable_key not in ["status", "status_matches", "genes_in_region", "phase_region"] %}
+          {% set ns.subtable_keys = ns.subtable_keys + [subtable_key] %}
+        {% endif %}
       {% endfor %}
+      {% set subtable_keys = ns.subtable_keys %}
     {% endif %}
 
+    <table class="table table-sm table-borderless paraphrase-nested-table">
+      <thead>
+        <tr>
+        {% for subtable_key in subtable_keys %}
+          <th>{{ subtable_key }}</th>
+        {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for subtable_key in subtable_keys %}
+            <td>{% if subtable_key in paraphrase_value %}{{ show_paraphrase_value(paraphrase_value[subtable_key]) }}{% else %}-{% endif %}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  {% elif paraphrase_value is string or paraphrase_value is integer or paraphrase_value is float %}
+    {{ paraphrase_value }}
+  {% elif paraphrase_value is sequence %}
+    {{ paraphrase_value | join(', ') }}
   {% endif %}
-
 {% endmacro %}
 
 
@@ -281,4 +323,3 @@
 {% block scripts %}
 {{ super() }}
 {% endblock %}
-
