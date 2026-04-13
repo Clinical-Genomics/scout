@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
+- Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
+- `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 
 ## [4.109.3]
 ### Fixed
