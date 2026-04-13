@@ -121,6 +121,7 @@
             <thead>
               <tr class="bg-secondary">
                 <th>Sample</th>
+                <th>Sex</th>
                 <th>Phenotype</th>
                 <th>Paraphrase {{ region_name }}</th>
               </tr>
@@ -129,6 +130,7 @@
               {% for ind in case.individuals %}
                 <tr>
                   <td>{{ ind.display_name }}</td>
+                  <td style="font-weight: bold; white-space: nowrap;">{{ sex_table_cell_content(ind) }}</td>
                   <td>{{ ind.phenotype_human }}</td>
                   <td>{{ show_paraphrase_value(ind.paraphrase[region_name], ns.paraphrase_keys) }}</td>
                 </tr>
