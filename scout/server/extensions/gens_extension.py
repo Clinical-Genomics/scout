@@ -22,7 +22,6 @@ class GensViewer:
         self.host = None
         self.port = None
         self.version: int | None = None
-        self.auth_failure: bool = False
 
     def init_app(self, app):
         """Setup Gens config."""
@@ -35,11 +34,8 @@ class GensViewer:
     def connection_settings(self, genome_build: str = "37") -> dict:
         """Return information on where Gens is hosted.
         Check version if no version is set already. This needs to be done
-        after authentication, so delaying until called from a Scout view .
+        after authentication, so delaying until called from a Scout view.
         """
-
-        if self.auth_failure:
-            self.version = self.get_version()
 
         settings = {}
         if self.host:
@@ -47,7 +43,7 @@ class GensViewer:
             settings = {
                 "host": base_url,
                 "genome_build": genome_build,
-                "version": self.version if self.version else self.get_version(),
+                "version": self.version or self.get_version(),
             }
         return {"display": bool(settings), **settings}
 
@@ -86,9 +82,10 @@ class GensViewer:
         content = json_resp.get("content", {})
         if json_resp.get("status_code") == 200 and "version" in content:
             version = int(content.get("version")[0])
-            self.auth_failure = False
             return version
         if json_resp.get("status_code") == 401:
-            self.auth_failure = True
-            return None
+            LOG.warning(
+                "Authentication failure when trying to get Gens version. Gens is at least v4."
+            )
+            return 4
         return None
