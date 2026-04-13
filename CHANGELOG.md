@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
+- Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 
 ## [4.109.3]
 ### Fixed

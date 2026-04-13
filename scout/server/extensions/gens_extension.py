@@ -12,7 +12,7 @@ import logging
 from scout.utils.scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
-GENS_DEFAULT_VERSION = 4
+GENS_DEFAULT_VERSION = 3
 
 
 class GensViewer:
