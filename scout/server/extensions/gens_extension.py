@@ -54,21 +54,15 @@ class GensViewer:
         The same page for v3 will return a Gens error page, though with status 200.
         """
 
-        protocol = "https"
-        base_url = (
-            f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
-        )
-        if version := self.get_version_from_api(base_url):
-            return version
-
-        protocol = "http"
-        base_url = (
-            f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
-        )
-        if version := self.get_version_from_api(base_url):
-            return version
+        for protocol in ["http", "https"]:
+            if version := self.get_version_from_api(self.get_base_url(protocol)):
+                return version
 
         return GENS_DEFAULT_VERSION
+
+    def get_base_url(self, protocol: str = "https") -> str:
+        """Return the base URL for Gens, with the specified protocol."""
+        return f"{protocol}://{self.host}:{self.port}" if self.port else f"{protocol}://{self.host}"
 
     def get_version_from_api(self, base_url: str) -> int | None:
         """Check the version of Gens by making a request to the base API URL.
