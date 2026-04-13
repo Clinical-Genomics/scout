@@ -52,7 +52,7 @@ class GensViewer:
         The base API URL for Gens v4 has the version returned.
         The same page for v3 will return a Gens error page, though with status 200.
         """
-        base_url = f"https://{self.host}:{self.port}" if self.port else self.host
+        base_url = f"https://{self.host}:{self.port}" if self.port else f"https://{self.host}"
         json_resp = get_request_json(f"{base_url}/api/")
         version = GENS_DEFAULT_VERSION
         content = json_resp.get("content", {})
