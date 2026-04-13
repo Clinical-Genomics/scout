@@ -38,7 +38,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
     - **methbat** _String_ Path to TSV file to parse LRS [MethBat][methbat] methylation outlier omics variants as produced by e.g. [Nallo][nallo]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
-- **paraphrase** _String_ Path to a Paraphrase json file.
+- **paraphrase** _String_ Path to a [Paraphrase][paraphrase] json file.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
 - **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.
@@ -77,6 +77,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **mother** _String/Int_ Sample ID for mother or 0.
     - **msi** _Int_ Microsatellite instability [0-60].
     - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
+    -
     - **paraphase_alignment_path** _String_ Path to BAM/CRAM file to view Paraphase alignments [Reference][paraphase].
     - **phase_blocks** _String_ Path to GTF file to view phase blocks.
     - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
@@ -108,7 +109,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **upd_regions_bed** _String_ Path to BED file to view alignments [Reference][upd].
     - **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
     - **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
-- **smn_tsv** _String_ Path to an SMN TSV file.
+- **smn_tsv** _String_ Path to an [SMNCopyNumberCaller][smncopynumbercaller] TSV file
 - **somalier_ancestry** _String_ Path to a [Somalier][somalier] ancestry tsv file.
 - **somalier_pairs** _String_ Path to a [Somalier][somalier] pairs tsv file.
 - **somalier_samples** _String_ Path to a [Somalier][somalier] samples tsv file.
@@ -160,11 +161,13 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [multiqc]: https://github.com/ewels/multiqc
 [nallo]: https://github.com/genomic-medicine-sweden/nallo
 [paraphase]: https://github.com/PacificBiosciences/paraphase
+[paraphrase]: https://github.com/Clinical-Genomics/paraphrase
 [peddy]: https://github.com/brentp/peddy
 [rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
 [rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
 [rnafusion-report]: https://nf-co.re/rnafusion/output#fusion-report
 [rhocall]: https://github.com/dnil/rhocall
+[smncopynumbercaller]: https://github.com/Illumina/SMNCopyNumberCaller
 [somalier]: https://github.com/brentp/somalier
 [srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service
 [tiddit]: https://github.com/SciLifeLab/TIDDIT

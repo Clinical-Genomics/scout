@@ -59,7 +59,7 @@
 <div class="container_spaced">
   <div class="card col-12">
     <div class="card-body">
-      <h3>Dark regions - Paraphrase of Paraphase</h3>
+      <h3>Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a></h3>
       <div class="accordion accordion-flush" id="paraphrase">
       {% for region_name, region in paraphrase_regions.items() %}
         <div class="accordion-item">
@@ -220,7 +220,7 @@
 {% macro smn_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">SMN Copy Number status - Individuals</div>
+    <div class="panel-heading"><a href="https://github.com/Illumina/SMNCopyNumberCaller" target="_blank" rel="noopener">SMN Copy Number</a> status - Individuals</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
