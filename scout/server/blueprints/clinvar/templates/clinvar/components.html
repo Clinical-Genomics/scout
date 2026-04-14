@@ -51,7 +51,7 @@
           {% elif subm_obj.oncogenicitySubmission and subm_obj.oncogenicitySubmission | length > 0 %}
             {{ variant_submission_table(subm_obj, "oncogenicity") }}
           {% elif not subm_obj.type and subm_obj.variant_data %} <!-- Deprecated submission type -->
-            {{ deprecated_submission_table(subm_obj) }}
+            {{ deprecated_submission_table(institute, subm_obj) }}
           {% else %}
             <p>This submission has no variants yet.</p>
           {% endif %}
