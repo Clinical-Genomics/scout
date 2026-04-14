@@ -44,7 +44,7 @@
 
 {% block content_main %}
 <div class="container-float">
-  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+  <div class="row" id="body-row">
     {% if case.smn_tsv %}
       {{ smn_case_page() }}
     {% endif %}
@@ -79,10 +79,10 @@
 {% endblock %}
 
 {% macro paraphrase_case_page() %}
-<div class="container_spaced">
-  <div class="card col-12">
+<div class="container_spaced col-12">
+  <div class="card">
     <div class="card-body">
-      <h3>Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a></h3>
+      <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a></div>
       <div class="accordion accordion-flush" id="paraphrase">
       {% for region_name, region in paraphrase_regions.items() %}
         <div class="accordion-item">
@@ -138,33 +138,35 @@
             </tbody>
           </table>
 
-          <div class="btn-group" role="group" aria-label="Alignment- and variant buttons for {{ region_name }}">
-              {% if "phase_region" in region %}
-                <span {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
-                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
-                    class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
-                    IGV DNA
-                  </a>
-                </span>
-              {% endif %}
-              {% if case.vcf_files.vcf_snv %}
+         <span class="d-flex mt-2">
+            {% if case.vcf_files.vcf_snv %}
+              <span class="me-3">
                 <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
                   <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
                   <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
                   <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
                 </form>
-              {% endif %}
-              {% if case.vcf_files.vcf_sv %}
+              </span>
+            {% endif %}
+            {% if case.vcf_files.vcf_sv %}
+              <span class="me-3">
                 <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
                   <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
                   <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
                   <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
                 </form>
-              {% endif %}
-            </div>
-
+              </span>
+            {% endif %}
+            {% if "phase_region" in region %}
+              <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
+                <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
+                  class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
+                  IGV DNA
+                </a>
+              </span>
+            {% endif %}
+         </span>
         </div>
-
       {% endfor %}
       </div>
     </div>
@@ -212,14 +214,15 @@
 
 
 {% macro smn_case_page() %}
-<div class="container_spaced">
-  <div class="card col-md-12">
+<div class="container_spaced col-12">
+  <div class="card">
     <div class="card-body">
+      <div class="card-title"><a href="https://github.com/Illumina/SMNCopyNumberCaller" target="_blank" rel="noopener">SMN Copy Number</a> status - Individuals</div>
       <div class="row">
         <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
       </div> <!-- end of div class row -->
 
-      <span class="d-flex">
+      <span class="d-flex mt-2">
         {% if case.vcf_files.vcf_snv %}
         <span class="me-3">
           <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
@@ -264,7 +267,6 @@
 {% macro smn_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading"><a href="https://github.com/Illumina/SMNCopyNumberCaller" target="_blank" rel="noopener">SMN Copy Number</a> status - Individuals</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
