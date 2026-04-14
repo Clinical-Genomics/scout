@@ -264,35 +264,17 @@ def test_sv_variants_post_data(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_str_variants(app, institute_obj, case_obj):
+def test_str_variants_show_unaffected_default(app, institute_obj, case_obj):
+    """Test that show_unaffected checkbox is checked by default for STR variants.
+    Also generally tests that the STR view works."""
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN accessing the str-variants page
-        resp = client.get(
-            url_for(
-                "variants.str_variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-
-def test_str_variants_show_unaffected_default(app, institute_obj, case_obj):
-    """Test that show_unaffected checkbox is checked by default for STR variants."""
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
 
-        # WHEN accessing the STR-variants page without specifying show_unaffected
+        # WHEN accessing the STR-variants page - without specifying show_unaffected
         resp = client.get(
             url_for(
                 "variants.str_variants",
