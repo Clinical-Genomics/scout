@@ -17,7 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 - Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 
-
 ## [4.109.3]
 ### Fixed
 - Revert form data passing for SNVs (#6191)
