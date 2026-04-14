@@ -1881,7 +1881,10 @@ def _populate_form_genes_from_file(
 def populate_variants_filters_form(
     store: MongoAdapter, institute_obj: dict, case_obj: dict, category: str, request_obj: LocalProxy
 ) -> Union[StrFiltersForm, SvFiltersForm, CancerSvFiltersForm, MeiFiltersForm]:
-    """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages."""
+    """Populate a filters form for SVs, cancer SVs, MEIs and STRs pages.
+
+    For STR variants, ensure show_unaffected defaults to True if not explicitly set
+    """
 
     user_obj = store.user(current_user.email)
     variant_type = request_obj.values.get("variant_type", "clinical")
@@ -1893,7 +1896,8 @@ def populate_variants_filters_form(
         form.chrom.data = request_obj.args.get("chrom", "")  # set chromosome to all chromosomes
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
-
+        if category == "str" and "show_unaffected" not in request_obj.args:
+            form.show_unaffected.data = True
     else:  # POST
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request_obj.form
