@@ -7,7 +7,7 @@
   {% if list_of_dicts|length > 1%}<br>{% endif %}
 {% endmacro %}
 
-{% macro submission_panel(subm_obj, institute, show_submit) %}
+{% macro submission_panel(subm_obj, institute, show_submit, variant_header_fields, casedata_header_fields) %}
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
@@ -51,7 +51,7 @@
           {% elif subm_obj.oncogenicitySubmission and subm_obj.oncogenicitySubmission | length > 0 %}
             {{ variant_submission_table(subm_obj, "oncogenicity") }}
           {% elif not subm_obj.type and subm_obj.variant_data %} <!-- Deprecated submission type -->
-            {{ deprecated_submission_table(institute, subm_obj) }}
+            {{ deprecated_submission_table(institute, subm_obj, variant_header_fields, casedata_header_fields) }}
           {% else %}
             <p>This submission has no variants yet.</p>
           {% endif %}
@@ -276,7 +276,6 @@
 </ul>
 {% endmacro %}
 
-
 {% macro variant_submission_table(subm_obj, subm_type) %}
 <table class="table table-striped">
   <caption></caption>
@@ -336,7 +335,15 @@
 </table>
 {% endmacro %}
 
-{% macro deprecated_submission_table(institute, subm_obj) %}
+{% macro case_link(institute_id, case_name) %}
+{% if "N/A" in case_name %}
+  {{ case_name }}
+{% else %}
+  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank">{{case_name}}</a>
+{% endif %}
+{% endmacro %}
+
+{% macro deprecated_submission_table(institute, subm_obj, variant_header_fields, casedata_header_fields) %}
 <table class="table table-striped">
   <caption></caption>
   <thead>

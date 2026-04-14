@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
-{% from "clinvar/components.html" import action_modal, deprecated_submission_table, render_dict_array, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
+{% from "clinvar/components.html" import action_modal, render_dict_array, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -46,7 +46,7 @@
     {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
-          {{ submission_panel(submission, institute, show_submit) }}
+          {{ submission_panel(submission, institute, show_submit, variant_header_fields, casedata_header_fields) }}
         {% endif %}
       {% endfor %}
     {% endfor %}
@@ -55,14 +55,6 @@
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
 </div>
-{% endmacro %}
-
-{% macro case_link(institute_id, case_name) %}
-{% if "N/A" in case_name %}
-  {{ case_name }}
-{% else %}
-  <a href="{{ url_for('cases.case', institute_id=institute_id, case_name=case_name) }}" target="_blank">{{case_name}}</a>
-{% endif %}
 {% endmacro %}
 
 {% block content_main %}
