@@ -366,6 +366,30 @@ def _update_region_status(
             case_region["status_matches"] = status_matches
 
 
+def _update_case_region(case_region: dict, region: dict, individual_is_affected: bool):
+    """Update the case region with individual region info.
+    For each region key, check if the case region already has this information. If not, add it.
+    """
+
+    for region_key, ind_region in region.items():
+        match region_key:
+            case "genes_in_region":
+                if "genes_in_region" in case_region:
+                    continue
+                case_region["genes_in_region"] = _populate_hgnc_genes_in_region(ind_region)
+            case "phase_region":
+                if "phase_region" in case_region:
+                    continue
+                case_region["phase_region"] = _parse_phase_region(ind_region)
+            case "status":
+                _update_region_status(
+                    case_region,
+                    individual_is_affected,
+                    ind_status=ind_region,
+                    status_matches=region.get("status_matches"),
+                )
+
+
 def _get_paraphrase_regions(case_obj: dict) -> dict:
     """Check all case individuals for paraphrase region information.
     Move fixed global attributes (genes_in_region, phase_region) for display up from the individual level to case region
@@ -383,23 +407,8 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
             continue
         for region_name, region in paraphrase.items():
             case_region = case_regions.setdefault(region_name, {})
-            for region_key, ind_region in region.items():
-                match region_key:
-                    case "genes_in_region":
-                        if "genes_in_region" in case_regions[region_name]:
-                            continue
-                        case_region["genes_in_region"] = _populate_hgnc_genes_in_region(ind_region)
-                    case "phase_region":
-                        if "phase_region" in case_regions[region_name]:
-                            continue
-                        case_region["phase_region"] = _parse_phase_region(ind_region)
-                    case "status":
-                        _update_region_status(
-                            case_region,
-                            individual_is_affected,
-                            ind_status=ind_region,
-                            status_matches=region.get("status_matches"),
-                        )
+            _update_case_region(case_region, region, individual_is_affected)
+
     return case_regions
 
 
