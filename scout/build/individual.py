@@ -129,7 +129,8 @@ def build_individual(ind: dict) -> dict:
     ind_obj["tissue_type"] = ind.get("tissue_type", "unknown")
 
     # Paraphrase
-    ind_obj["paraphrase"] = ind.get("paraphrase")
+    if paraphrase := ind.get("paraphrase"):
+        ind_obj["paraphrase"] = paraphrase
 
     # SMA
     ind_obj["is_sma"] = ind.get("is_sma")
