@@ -285,6 +285,34 @@ def test_str_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
+def test_str_variants_show_unaffected_default(app, institute_obj, case_obj):
+    """Test that show_unaffected checkbox is checked by default for STR variants."""
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN accessing the STR-variants page without specifying show_unaffected
+        resp = client.get(
+            url_for(
+                "variants.str_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # AND the show_unaffected checkbox should be checked
+        assert b'id="show_unaffected"' in resp.data
+        # AND The checked attribute should be present on the checkbox - WTForms renders checked inputs
+        assert (
+            b"checked" in resp.data.split(b'id="show_unaffected"')[1].split(b">")[0]
+            or b"checked" in resp.data.split(b'name="show_unaffected"')[0].split(b"<input")[-1]
+        )
+
+
 def test_fusion_variants(app, institute_obj, fusion_case_obj, fusion_variant_objs):
     """Test the page that displays a list of RNA fusion variants."""
 
