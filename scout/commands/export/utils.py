@@ -28,5 +28,3 @@ build_option = click.option(
     show_default=True,
     help="Genome build version",
 )
-
-

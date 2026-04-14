@@ -158,7 +158,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
 @with_appcontext
-def causatives(build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool):
+def causatives(
+    build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
+):
     """Export causatives for a collaborator in .vcf format"""
     pass
     """
