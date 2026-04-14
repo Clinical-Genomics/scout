@@ -421,7 +421,7 @@ def test_case_outdated_panel(app, institute_obj, case_obj):
         assert "Panel version used in the analysis (1.0) is outdated." in str(resp.data)
 
 
-def test_case_sma(app, case_obj, institute_obj):
+def test_case_sma_dark(app, case_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user, case and institute
 
