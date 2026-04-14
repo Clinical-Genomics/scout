@@ -967,7 +967,6 @@ def populated_database(request, panel_database, parsed_case, institute_obj):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = panel_database
 
-
     case_obj = build_case(parsed_case, adapter)
 
     add_paraphrase_info(case_obj)
