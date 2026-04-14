@@ -12,6 +12,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
+- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)  
+- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
+- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 
 ## [4.109.3]
