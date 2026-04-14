@@ -264,16 +264,17 @@ def test_sv_variants_post_data(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_str_variants(app, institute_obj, case_obj):
+def test_str_variants_show_unaffected_default(app, institute_obj, case_obj):
+    """Test that show_unaffected checkbox is checked by default for STR variants.
+    Also generally tests that the STR view works."""
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
+        client.get(url_for("auto_login"))
 
-        # WHEN accessing the str-variants page
+        # WHEN accessing the STR-variants page - without specifying show_unaffected
         resp = client.get(
             url_for(
                 "variants.str_variants",
@@ -281,8 +282,17 @@ def test_str_variants(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             )
         )
+
         # THEN it should return a page
         assert resp.status_code == 200
+
+        # AND the show_unaffected checkbox should be checked
+        assert b'id="show_unaffected"' in resp.data
+        # AND The checked attribute should be present on the checkbox - WTForms renders checked inputs
+        assert (
+            b"checked" in resp.data.split(b'id="show_unaffected"')[1].split(b">")[0]
+            or b"checked" in resp.data.split(b'name="show_unaffected"')[0].split(b"<input")[-1]
+        )
 
 
 def test_fusion_variants(app, institute_obj, fusion_case_obj, fusion_variant_objs):
