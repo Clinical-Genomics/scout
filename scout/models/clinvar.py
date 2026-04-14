@@ -189,3 +189,4 @@ class OncogenicitySubmissionItem(SubmissionItem):
 
 class GermlineSubmissionItem(SubmissionItem):
     observedIn: List[ObservedIn]
+    germlineClassification: GermlineClassification
