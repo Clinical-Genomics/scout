@@ -26,7 +26,11 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command("verified", short_help="Export validated variants")
-@collaborator_option
+@click.option(
+    "-c",
+    "--collaborator",
+    help="Specify what collaborator to export variants from. Defaults to cust000",
+)
 @click.option("--outpath", help="Path to output file")
 @click.option("--test", help="Use this flag to test the function", is_flag=True)
 @with_appcontext
