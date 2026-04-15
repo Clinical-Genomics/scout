@@ -40,7 +40,9 @@ def test_export_causatives(mock_app, case_obj):
     assert str(variant_obj["position"]) not in result.output
 
     # Test the cli by providing the right collaborator, build and variant type
-    result = runner.invoke(cli, ["export", "variants", "-c", case_obj["owner"], "--build", "37", "--category", "snv"])
+    result = runner.invoke(
+        cli, ["export", "variants", "-c", case_obj["owner"], "--build", "37", "--category", "snv"]
+    )
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
