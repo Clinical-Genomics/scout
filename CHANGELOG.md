@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 - By default, display STR loci from VCF also when no call is made (#6197)
 ### Fixed
-- Formatting of a list on managed variant export documentation (#6202)
+- Formatting of a list on managed variant export documentation (#6203)
 
 ## [4.109.3]
 ### Fixed
