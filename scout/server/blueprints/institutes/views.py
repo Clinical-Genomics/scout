@@ -104,12 +104,15 @@ def causatives(institute_id):
         inherit_palette=INHERITANCE_PALETTE,
     )
 
+
 @blueprint.route("/<institute_id>/<type>/get_managed_infile")
 def get_managed_infile(institute_id: str, type: str):
     """Downloads a list of variants (causatives or verified) in the right format to be imported into the managed variants list."""
     institute_obj = institute_and_case(store, institute_id)
     variants: List[dict] = controllers.causatives(institute_obj, request)
-    managed_lines: List[str] = controllers.variants_to_managed(variants=variants,type=type,institute_id=institute_id)
+    managed_lines: List[str] = controllers.variants_to_managed(
+        variants=variants, type=type, institute_id=institute_id
+    )
     file_name = "_".join(
         [
             institute_id,
@@ -127,7 +130,6 @@ def get_managed_infile(institute_id: str, type: str):
         as_attachment=True,
         download_name=file_name,
     )
-
 
 
 @blueprint.route("/<institute_id>/filters", methods=["GET"])
