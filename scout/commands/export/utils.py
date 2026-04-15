@@ -17,7 +17,7 @@ category_option = click.option(
 collaborator_option = click.option(
     "-c",
     "--collaborator",
-    help="Specify what collaborator to export variants from. Defaults to cust000",
+    help="Specify which collaborator to export variants from. Defaults to cust000",
 )
 
 build_option = click.option(
