@@ -41,6 +41,8 @@ def export_causative_variants(
         variant_obj = adapter.variant(doc_id)
         if variant_obj is None:
             continue
+        if category and variant_obj.get("category") not in category:
+            continue
         variants.append(variant_obj)
 
     sorted_variants = _sort_variants_by_chromosome(variants)
