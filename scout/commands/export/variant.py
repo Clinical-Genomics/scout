@@ -117,6 +117,7 @@ def verified(collaborator, test, outpath=None):
     show_default=True,
     help="One or more categories to include.",
 )
+@collaborator_option
 @build_option
 @json_option
 @with_appcontext
@@ -162,8 +163,7 @@ def causatives(
     build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
 ):
     """Export causatives for a collaborator in .vcf format"""
-    pass
-    """
+
     LOG.info("Running scout export variants")
     adapter = store
     collaborator = collaborator or "cust000"
@@ -175,7 +175,7 @@ def causatives(
             raise click.Abort
 
     variants = export_causative_variants(
-        adapter, collaborator, document_id=document_id, case_id=case_id
+        adapter, collaborator, document_id=document_id, case_id=case_id, build=build, category=category
     )
 
     if json:
@@ -198,7 +198,6 @@ def causatives(
     for variant_obj in variants:
         variant_string = get_vcf_entry(variant_obj, case_id=case_id)
         click.echo(variant_string)
-    """
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
