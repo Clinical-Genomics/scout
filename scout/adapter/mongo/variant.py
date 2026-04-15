@@ -400,19 +400,19 @@ class VariantHandler(VariantLoader):
     ) -> List[str]:
         """Return all causative variants for an institute."""
 
-        causatives = []
-
         if case_id:
             case_obj = self.case_collection.find_one({"_id": case_id}, CASE_CAUSATIVES_PROJECTION)
             causatives = [causative for causative in case_obj.get("causatives", [])]
 
-        elif institute_id:
+        else:
             match_stage = {
-                "collaborators": institute_id,
                 "causatives": {"$exists": True},
             }
 
-            if build is not None:
+            if institute_id:
+                match_stage["collaborators"] = institute_id
+
+            if build:
                 match_stage["genome_build"] = build
 
             query = self.case_collection.aggregate(

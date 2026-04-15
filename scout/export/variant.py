@@ -13,8 +13,8 @@ LOG = logging.getLogger(__name__)
 
 def export_causative_variants(
     adapter: MongoAdapter,
-    collaborator: str,
-    document_id: str = None,
+    collaborator: Optional[str] = None,
+    document_id: Optional[str] = None,
     case_id: str = None,
     build: Optional[str] = None,
     category: Optional[str] = None,

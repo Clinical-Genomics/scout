@@ -166,7 +166,6 @@ def causatives(
 
     LOG.info("Running scout export variants")
     adapter = store
-    collaborator = collaborator or "cust000"
     LOG.info("Use collaborator %s", collaborator)
     if case_id:
         case_obj = adapter.case(case_id)
