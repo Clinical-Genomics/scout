@@ -20,6 +20,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
+from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
 from scout.server.blueprints.variant.utils import (
     predictions,
@@ -160,6 +161,34 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
         "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
     }
     return variant_obj
+
+
+def variants_to_managed(variants: list[dict], type: str, institute_id: str) -> list[str]:
+    """Converts variants to managed input."""
+
+    valid_categories = {"snv", "cancer", "sv", "cancer_sv"}
+    managed_lines = []
+
+    for variant in variants:
+        category = variant.get("category")
+        if category not in valid_categories:
+            continue
+
+        chromosome = variant.get("chromosome")
+        position = variant.get("position")
+        end = variant.get("end", position)
+        ref = variant.get("reference")
+        alt = variant.get("alternative")
+        sub_category = variant.get("sub_category")
+        build = variant.get("case_obj", {}).get("genome_build", "37")
+        description = f"{type} {build} {institute_id}"
+
+        managed_lines.append(
+            f"{chromosome};{position};{end};{ref};{alt};"
+            f"{category};{sub_category};{description};{build};{institute_id}"
+        )
+
+    return managed_lines
 
 
 def causatives(institute_obj, request):
