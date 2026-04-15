@@ -395,7 +395,9 @@ class VariantHandler(VariantLoader):
 
         return res
 
-    def get_causatives(self, institute_id: str, case_id: Optional[str] = None, build: Optional[str] = None) -> List[str]:
+    def get_causatives(
+        self, institute_id: str, case_id: Optional[str] = None, build: Optional[str] = None
+    ) -> List[str]:
         """Return all causative variants for an institute."""
 
         causatives = []
@@ -415,9 +417,7 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {
-                        MATCHQ: match_stage
-                    },
+                    {MATCHQ: match_stage},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]

@@ -175,7 +175,12 @@ def causatives(
             raise click.Abort
 
     variants = export_causative_variants(
-        adapter, collaborator, document_id=document_id, case_id=case_id, build=build, category=category
+        adapter,
+        collaborator,
+        document_id=document_id,
+        case_id=case_id,
+        build=build,
+        category=category,
     )
 
     if json:
