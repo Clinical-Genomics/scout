@@ -86,86 +86,88 @@
       <div class="accordion accordion-flush" id="paraphrase">
       {% for region_name, region in paraphrase_regions.items() %}
         <div class="accordion-item">
-        <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
-           <button class="row panel-title accordion-button {% if region.get("status", "normal") == "pathological" %}
+          <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
+           <button class="accordion-button {% if region.get("status", "normal") == "pathological" %}
                   bg-danger
                 {% elif region.get("status", "normal") == "intermediate" %}
                   bg-warning
                 {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}" aria-expanded="false" aria-controls="collapse_{{ region_name }}">
-             <span class="col">{{ region_name }}</span>
-            <span class="col">{% for gene in region.get("genes_in_region",[]) %}
-              {% if gene %}
-                {{ gene_link(gene) }}
-                {% for model in gene.inheritance %}
-                  {{ inheritance_badge(model, inherit_palette) }}
+              <span class="col-1" data-bs-toggle="tooltip" title="Region name from Paraphase configuration">{{ region_name|upper }}</span>
+              <span class="col-10">
+                {% for gene in region.get("genes_in_region",[]) %}
+                  {% if gene %}
+                    {{ gene_link(gene) }}
+                    {% for model in gene.inheritance %}
+                      {{ inheritance_badge(model, inherit_palette) }}
+                    {% endfor %}
+                    {{ incomplete_penetrance_badge(gene, inherit_palette) }}
+                  {% endif %}
                 {% endfor %}
-                {{ incomplete_penetrance_badge(gene, inherit_palette) }}
-              {% endif %}
-            {% endfor %}
-            </span>
+              </span>
            </button>
           </div>
         </div>
         <div id="collapse_{{ region_name }}" class="accordion-collapse collapse" data-bs-parent="#paraphrase">
-
-          {% set ns = namespace(paraphrase_keys=[]) %}
-          {% for ind in case.individuals %}
-            {% for subtable_key in ind.paraphrase[region_name].keys() %}
-              {% if subtable_key not in ["status", "status_matches", "genes_in_region", "phase_region"] and subtable_key not in ns.paraphrase_keys %}
-                {% set ns.paraphrase_keys = ns.paraphrase_keys + [subtable_key] %}
-              {% endif %}
-            {% endfor %}
-          {% endfor %}
-
-          <table class="table paraphrase-nested-table">
-            <thead>
-              <tr class="bg-secondary">
-                <th>Sample</th>
-                <th>Sex</th>
-                <th>Phenotype</th>
-                <th>Paraphrase {{ region_name }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ind in case.individuals %}
-                <tr>
-                  <td>{{ ind.display_name }}</td>
-                  <td style="font-weight: bold; white-space: nowrap;">{{ sex_table_cell_content(ind) }}</td>
-                  <td>{{ ind.phenotype_human }}</td>
-                  <td>{{ show_paraphrase_value(ind.paraphrase[region_name], ns.paraphrase_keys) }}</td>
-                </tr>
+          <div class="accordion-body">
+            {% set ns = namespace(paraphrase_keys=[]) %}
+            {% for ind in case.individuals %}
+              {% for subtable_key in ind.paraphrase[region_name].keys() %}
+                {% if subtable_key not in ["status", "status_matches", "genes_in_region", "phase_region"] and subtable_key not in ns.paraphrase_keys %}
+                  {% set ns.paraphrase_keys = ns.paraphrase_keys + [subtable_key] %}
+                {% endif %}
               {% endfor %}
-            </tbody>
-          </table>
+            {% endfor %}
 
-         <span class="d-flex mt-2">
-            {% if case.vcf_files.vcf_snv %}
-              <span class="me-3">
-                <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
-                </form>
-              </span>
-            {% endif %}
-            {% if case.vcf_files.vcf_sv %}
-              <span class="me-3">
-                <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                  <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                  <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                  <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
-                </form>
-              </span>
-            {% endif %}
-            {% if "phase_region" in region %}
-              <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
-                <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
-                  class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
-                  IGV DNA
-                </a>
-              </span>
-            {% endif %}
-         </span>
+            <table class="table paraphrase-nested-table">
+              <thead>
+                <tr class="bg-secondary">
+                  <th>Sample</th>
+                  <th>Sex</th>
+                  <th>Phenotype</th>
+                  <th>Paraphrase {{ region_name }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ind in case.individuals %}
+                  <tr>
+                    <td>{{ ind.display_name }}</td>
+                    <td style="font-weight: bold; white-space: nowrap;">{{ sex_table_cell_content(ind) }}</td>
+                    <td>{{ ind.phenotype_human }}</td>
+                    <td>{{ show_paraphrase_value(ind.paraphrase[region_name], ns.paraphrase_keys) }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <span class="d-flex mt-2">
+              {% if case.vcf_files.vcf_snv %}
+                <span class="me-3">
+                  <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
+                  </form>
+                </span>
+              {% endif %}
+              {% if case.vcf_files.vcf_sv %}
+                <span class="me-3">
+                  <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
+                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
+                  </form>
+                </span>
+              {% endif %}
+              {% if "phase_region" in region %}
+                <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
+                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
+                    class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
+                    IGV DNA
+                  </a>
+                </span>
+              {% endif %}
+            </span>
+          </div>
         </div>
       {% endfor %}
       </div>
