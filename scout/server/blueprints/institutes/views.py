@@ -109,9 +109,9 @@ def causatives(institute_id):
 def get_managed_infile(institute_id: str, type: str):
     """Downloads a list of variants (causatives or verified) in the right format to be imported into the managed variants list."""
     institute_obj = institute_and_case(store, institute_id)
-    if type=="causatives":
+    if type == "causatives":
         variants = controllers.causatives(institute_obj, request)
-    elif type=="verified":
+    elif type == "verified":
         variants = controllers.verified_vars(institute_obj)
 
     LOG.warning(variants)
