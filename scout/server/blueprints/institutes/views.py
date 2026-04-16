@@ -114,7 +114,6 @@ def get_managed_infile(institute_id: str, type: str):
     elif type == "verified":
         variants = controllers.verified_vars(institute_obj)
 
-    LOG.warning(variants)
     managed_lines = controllers.variants_to_managed_variants(
         variants=variants, type=type, institute_id=institute_id
     )
