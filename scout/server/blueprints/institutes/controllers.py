@@ -163,7 +163,7 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
     return variant_obj
 
 
-def variants_to_managed(variants: list[dict], type: str, institute_id: str) -> list[str]:
+def variants_to_managed_variants(variants: list[dict], type: str, institute_id: str) -> list[str]:
     """Converts variants to managed input."""
 
     valid_categories = {"snv", "cancer", "sv", "cancer_sv"}
