@@ -689,7 +689,7 @@ def case_obj(request, parsed_case):
 
 @pytest.fixture(scope="function")
 def singleton_case(case_obj):
-    """A fixture that returns a singleton object. Useful for testing that the same object is returned across multiple calls."""
+    """A fixture that returns a singleton case object."""
 
     case_obj["individuals"] = [case_obj["individuals"][0]]
 
