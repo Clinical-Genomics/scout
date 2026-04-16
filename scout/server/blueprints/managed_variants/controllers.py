@@ -138,6 +138,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
 
     try:
         for managed_variant_info in parse_managed_variant_lines(lines):
+            
             total_variant_lines += 1
 
             status, message = validate_managed_variant(managed_variant_info)
@@ -148,7 +149,10 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
                 )
                 continue
 
-            managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
+            managed_variant_info.update({"maintainer": [current_user_id]})
+            if not managed_variant_info.get("institutes"):
+                managed_variant_info["institutes"] = institutes
+
             managed_variant_obj = build_managed_variant(managed_variant_info)
 
             if store.upsert_managed_variant(managed_variant_obj):

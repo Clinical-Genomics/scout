@@ -57,7 +57,7 @@ def parse_managed_variant_lines(csv_lines):
                 alternative,
                 build,
                 maintainer,
-                institute,
+                institutes,
                 category,
                 sub_category,
                 description,
@@ -84,6 +84,9 @@ def parse_managed_variant_lines(csv_lines):
             continue
 
         managed_variant_info = dict(zip(header, line.split(delimiter)))
+
+        if managed_variant_info.get("institutes"):
+            managed_variant_info["institutes"] = managed_variant_info["institutes"].strip().split(",")
 
         # There are cases when excel exports empty lines
         if not any(managed_variant_info.values()):
