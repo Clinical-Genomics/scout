@@ -20,6 +20,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
+from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
 from scout.server.blueprints.variant.utils import (
     predictions,
@@ -166,7 +167,7 @@ def variants_to_managed(variants: list[dict], type: str, institute_id: str) -> l
     """Converts variants to managed input."""
 
     valid_categories = {"snv", "cancer", "sv", "cancer_sv"}
-    managed_lines = []
+    managed_lines = [MANAGED_VARIANTS_INFILE_HEADER]
 
     for variant in variants:
         category = variant.get("category")
