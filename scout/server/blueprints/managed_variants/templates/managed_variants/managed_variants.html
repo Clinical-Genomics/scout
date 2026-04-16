@@ -105,8 +105,8 @@
           <td>{{ variant.chromosome }}</td>
           <td>{{ variant.position }}</td>
           <td>{{ variant.end }}</td>
-          <td>{{ variant.reference }}</td>
-          <td>{{ variant.alternative }}</td>
+          <td>{{ variant.reference | truncate(20, True, '...') }}</td>
+          <td>{{ variant.alternative | truncate(20, True, '...') }}</td>
           <td>{{ variant.category|upper }}</td>
           <td>{{ variant.sub_category|upper }}</td>
           <td>
