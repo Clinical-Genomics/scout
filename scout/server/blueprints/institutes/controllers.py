@@ -174,6 +174,9 @@ def variants_to_managed(variants: list[dict], type: str, institute_id: str) -> l
         if category not in valid_categories:
             continue
 
+        if category == "cancer":
+            category = "cancer_snv"
+
         chromosome = variant.get("chromosome")
         position = variant.get("position")
         end = variant.get("end", position)
@@ -185,7 +188,7 @@ def variants_to_managed(variants: list[dict], type: str, institute_id: str) -> l
 
         managed_lines.append(
             f"{chromosome};{position};{end};{ref};{alt};"
-            f"{category};{sub_category};{description};{build};{institute_id}"
+            f"{category};{sub_category};{build};{description};;{institute_id}"
         )
 
     return managed_lines

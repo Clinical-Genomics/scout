@@ -151,7 +151,7 @@ The columns that will be used by Scout are the following.
 - **end(int)** End position. *Optional*
 - **reference(str)** Reference sequence *Mandatory* Use for SVs is only exact.
 - **alternative(str)** Alternative sequence *Mandatory* Use for SVs is only exact.
-- **category(str)** One of "snv", "sv", "cancer" or "cancer_sv" *Mandatory*
+- **category(str)** One of "snv", "sv", "cancer_snv" or "cancer_sv" *Mandatory*
 - **sub_category(str)** Sub category of variant. For "snv" and "cancer" this is either "snv" or "indel". For "sv" and "cancer_sv" this is one of "ins", "del", "dup", "cnv", "inv" or "bnd". *Mandatory*
 - **build(str)** Defaults to "37". *Optional*
 - **description(str)** Free text description of the variant. Classification status, evidence and references are appropriate, and if applicable affected gene(s), protein consequences and alternative variant names. *Optional*
