@@ -138,7 +138,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
 
     try:
         for managed_variant_info in parse_managed_variant_lines(lines):
-            
+
             total_variant_lines += 1
 
             status, message = validate_managed_variant(managed_variant_info)
