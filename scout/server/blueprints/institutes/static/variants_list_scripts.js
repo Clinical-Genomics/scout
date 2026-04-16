@@ -17,8 +17,8 @@ $(document).ready(function() {
               text: 'Managed Variants infile',
               className: 'btn btn-primary',
               action: function () {
-              		$(window).off('beforeunload');
-                  window.location.href = exportAsManagedUrl;
+              		$(globalThis).off('beforeunload');
+									globalThis.location.href = exportAsManagedUrl;
               }
           }
       ]
