@@ -105,7 +105,7 @@ def causatives(institute_id):
     )
 
 
-@blueprint.route("/<institute_id>/<type>/get_managed_infile")
+@blueprint.route("/<institute_id>/<type>/get_managed_infile", methods=["GET"])
 def get_managed_infile(institute_id: str, type: str):
     """Downloads a list of variants (causatives or verified) in the right format to be imported into the managed variants list."""
     institute_obj = institute_and_case(store, institute_id)
