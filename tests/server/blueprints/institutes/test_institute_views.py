@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-from flask_login import current_user
 
+from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.server.extensions import store
 
 OVERVIEW_GENE_VARIANTS_ENDPOINT = "overview.gene_variants"
@@ -500,6 +500,47 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         # but NOT variant 2
         assert var2_id not in str(resp.data)
 
+
+def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
+    """Test the endpoint that download causative variants into a managed variants infile."""
+
+    # GIVEN a causative variant
+    VAR_ID = "4c7d5c70d955875504db72ef8e1abe77"
+    variant_obj = store.variant(document_id=VAR_ID)
+    store.mark_causative(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="causative_var_link/{}".format(variant_obj["_id"]),
+        variant=variant_obj,
+    )
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN causative variants are downloaded to a file
+        resp = client.get(
+            url_for('overview.get_managed_infile', institute_id=institute_obj["internal_id"], type="causatives")
+        )
+        # THEN response should be successful
+        assert resp.status_code == 200
+        content = resp.data.decode("utf-8").splitlines()
+
+        # THEN header should first line of downloaded file
+        assert content[0] == MANAGED_VARIANTS_INFILE_HEADER
+
+        # THEN variant line should contain the expected values
+        chrom = variant_obj["chromosome"]
+        start = variant_obj["position"]
+        end = variant_obj["end"]
+        ref = variant_obj["reference"]
+        alt = variant_obj["alternative"]
+        category = variant_obj["category"]
+        sub_category = variant_obj["sub_category"]
+        build = case_obj["genome_build"]
+        inst = institute_obj["_id"]
+
+        assert content[1] == f'{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst};;{inst}'
 
 def test_gene_variants_filter(app, institute_obj, case_obj):
     """Test the function that allows searching SNVs and INDELS using filters"""
