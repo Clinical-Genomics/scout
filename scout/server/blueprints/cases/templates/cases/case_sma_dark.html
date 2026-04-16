@@ -93,7 +93,8 @@
                   bg-warning
                 {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}" aria-expanded="false" aria-controls="collapse_{{ region_name }}">
               <span class="col-1" data-bs-toggle="tooltip" title="Region name from Paraphase configuration">{{ region_name|upper }}</span>
-              <span class="col-10">
+              <span class="col-1" data-bs-toggle="tooltip" title="Region status from Paraphrase annotation">{{ region.status |capitalize }}</span>
+              <span class="col-9">
                 {% for gene in region.get("genes_in_region",[]) %}
                   {% if gene %}
                     {{ gene_link(gene) }}
