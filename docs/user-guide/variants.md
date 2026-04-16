@@ -145,6 +145,7 @@ Initial lines starting with `##` are considered comments and are ignored.
 The first other line starting with `#`, or the first line in the file is treated as the header line.
 
 The columns that will be used by Scout are the following.
+
 - **chromosome(str)** Chromosome name. *Mandatory*
 - **position(int)** Start position. *Mandatory*
 - **end(int)** End position. *Optional*
