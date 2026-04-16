@@ -520,7 +520,11 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
 
         # WHEN causative variants are downloaded to a file
         resp = client.get(
-            url_for('overview.get_managed_infile', institute_id=institute_obj["internal_id"], type="causatives")
+            url_for(
+                "overview.get_managed_infile",
+                institute_id=institute_obj["internal_id"],
+                type="causatives",
+            )
         )
         # THEN response should be successful
         assert resp.status_code == 200
@@ -540,7 +544,11 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
         build = case_obj["genome_build"]
         inst = institute_obj["_id"]
 
-        assert content[1] == f'{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst};;{inst}'
+        assert (
+            content[1]
+            == f"{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst};;{inst}"
+        )
+
 
 def test_gene_variants_filter(app, institute_obj, case_obj):
     """Test the function that allows searching SNVs and INDELS using filters"""
