@@ -97,7 +97,7 @@
                 {% for gene in region.get("genes_in_region",[]) %}
                   {% if gene %}
                     {{ gene_link(gene) }}
-                    {% for model in gene.inheritance %}
+                    {% for model in gene.inheritance_models %}
                       {{ inheritance_badge(model, inherit_palette) }}
                     {% endfor %}
                     {{ incomplete_penetrance_badge(gene, inherit_palette) }}
