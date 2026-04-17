@@ -79,7 +79,7 @@ Optional settings to support germline and oncogenic submissions to ClinVar.
 | Setting                | Description                                                                 |
 |------------------------|-----------------------------------------------------------------------------|
 | **API key**            | ClinVar API key obtained from the ClinVar portal. See [ClinVar API docs](https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/). |
-| **ClinVar submitters** | Email addresses of users allowed to submit variants to ClinVar from Scout. |
+| **ClinVar submitters** | Users allowed to submit variants to ClinVar from Scout. |
 
 ---
 
