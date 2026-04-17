@@ -67,7 +67,6 @@ def test_parse_case_date(scout_config):
         "phenotype_terms",
         "rank_model_version",
         "rank_score_threshold",
-        "paraphrase",
         "smn_tsv",
         "somalier_samples",
         "sv_rank_model_version",
