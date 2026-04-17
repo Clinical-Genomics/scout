@@ -60,6 +60,7 @@ def build_individual(ind: dict) -> dict:
         smn_27134_cn = int,
         predicted_ancestry = str,
         analysis_type = str, # choices=ANALYSIS_TYPES
+        paraphrase = dict # paraphrase dict from parsed paraphase JSON, keys at the ind level are loci
     )
     """
     try:
@@ -117,7 +118,7 @@ def build_individual(ind: dict) -> dict:
 
     # Check if the analysis type is ok
     analysis_type = ind.get("analysis_type", "unknown")
-    if not analysis_type in ANALYSIS_TYPES:
+    if analysis_type not in ANALYSIS_TYPES:
         raise PedigreeError("Analysis type %s not allowed", analysis_type)
     ind_obj["analysis_type"] = analysis_type
 
@@ -127,17 +128,21 @@ def build_individual(ind: dict) -> dict:
 
     ind_obj["tissue_type"] = ind.get("tissue_type", "unknown")
 
+    # Paraphrase
+    if paraphrase := ind.get("paraphrase"):
+        ind_obj["paraphrase"] = paraphrase
+
     # SMA
-    ind_obj["is_sma"] = ind.get("is_sma", None)
-    ind_obj["is_sma_carrier"] = ind.get("is_sma_carrier", None)
-    ind_obj["smn1_cn"] = ind.get("smn1_cn", None)
-    ind_obj["smn2_cn"] = ind.get("smn2_cn", None)
-    ind_obj["smn2delta78_cn"] = ind.get("smn2delta78_cn", None)
-    ind_obj["smn_27134_cn"] = ind.get("smn_27134_cn", None)
+    ind_obj["is_sma"] = ind.get("is_sma")
+    ind_obj["is_sma_carrier"] = ind.get("is_sma_carrier")
+    ind_obj["smn1_cn"] = ind.get("smn1_cn")
+    ind_obj["smn2_cn"] = ind.get("smn2_cn")
+    ind_obj["smn2delta78_cn"] = ind.get("smn2delta78_cn")
+    ind_obj["smn_27134_cn"] = ind.get("smn_27134_cn")
 
     # BioNano FSHD
-    ind_obj["bionano_access"] = ind.get("bionano_access", None)
-    ind_obj["fshd_loci"] = ind.get("fshd_loci", None)
+    ind_obj["bionano_access"] = ind.get("bionano_access")
+    ind_obj["fshd_loci"] = ind.get("fshd_loci")
 
     # omics variants
     if "omics_sample_id" in ind:

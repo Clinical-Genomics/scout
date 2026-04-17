@@ -55,6 +55,7 @@ CASE_FILE_PATH_CHECKS = [
     "multiqc",
     "multiqc_rna",
     "outrider_tsv",
+    "paraphrase",
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
@@ -440,6 +441,7 @@ class CaseLoader(BaseModel):
     multiqc_rna: Optional[str] = None
     omics_files: Optional[OmicsFiles] = None
     owner: Optional[str] = None
+    paraphrase: Optional[str] = None
     peddy_ped: Optional[str] = None  # Soon to be deprecated
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated

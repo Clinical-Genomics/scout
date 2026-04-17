@@ -33,6 +33,7 @@ from scout.constants import (
     SEX_MAP,
     VERBS_MAP,
 )
+from scout.constants.case_tags import PARAPHRASE_STATUS
 from scout.constants.variant_tags import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
@@ -314,8 +315,101 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "events": _get_events(store, institute_obj, case_obj),
         "region": GENOME_REGION[get_case_genome_build(case_obj)],
+        "paraphrase_regions": _get_paraphrase_regions(case_obj),
+        "inherit_palette": INHERITANCE_PALETTE,
     }
     return data
+
+
+def _parse_phase_region(region: List[str]) -> dict:
+    """Parse a list like ['chr6:32013300-32046200'] into chrom/start/end."""
+    region_str = region[0]
+    chrom_str, coords_str = region_str.split(":")
+    start_str, end_str = coords_str.split("-")
+    return {
+        "chrom": chrom_str,
+        "start": int(start_str),
+        "end": int(end_str),
+    }
+
+
+def _populate_hgnc_genes_in_region(ind_region: str) -> List[dict]:
+    """Turn region genes_in_region string ("CYP21A2,C4A,C4B,TNXB") into a list of HGNC gene objects."""
+    genes = []
+    for symbol in ind_region.split(","):
+        symbol = symbol.strip()
+        if not symbol:
+            continue
+        if gene := store.hgnc_gene(symbol):
+            genes.append(gene)
+    return genes
+
+
+def _individual_is_affected(individual: dict) -> bool:
+
+    return PHENOTYPE_MAP[individual.get("phenotype", 0)] == "affected"
+
+
+def _update_region_status(
+    case_region: dict, individual_is_affected: bool, ind_status: str, status_matches: list | None
+):
+    """Update aggregate region status based on an affected individual's region status."""
+    if not individual_is_affected:
+        return
+
+    if (
+        "status" not in case_region
+        or PARAPHRASE_STATUS[ind_status] > PARAPHRASE_STATUS[case_region["status"]]
+    ):
+        case_region["status"] = ind_status
+        if status_matches:
+            case_region["status_matches"] = status_matches
+
+
+def _update_case_region(case_region: dict, region: dict, individual_is_affected: bool):
+    """Update the case region with individual region info.
+    For each region key, check if the case region already has this information. If not, add it.
+    """
+
+    for region_key, ind_region in region.items():
+        match region_key:
+            case "genes_in_region":
+                if "genes_in_region" in case_region:
+                    continue
+                case_region["genes_in_region"] = _populate_hgnc_genes_in_region(ind_region)
+            case "phase_region":
+                if "phase_region" in case_region:
+                    continue
+                case_region["phase_region"] = _parse_phase_region(ind_region)
+            case "status":
+                _update_region_status(
+                    case_region,
+                    individual_is_affected,
+                    ind_status=ind_region,
+                    status_matches=region.get("status_matches"),
+                )
+
+
+def _get_paraphrase_regions(case_obj: dict) -> dict:
+    """Check all case individuals for paraphrase region information.
+    Move fixed global attributes (genes_in_region, phase_region) for display up from the individual level to case region
+    level, which is returned.
+    Set the status of the region to the highest status on any affected individual.
+    """
+
+    case_regions = {}
+
+    for individual in case_obj["individuals"]:
+        paraphrase = individual.get("paraphrase")
+        individual_is_affected = _individual_is_affected(individual)
+
+        if not paraphrase:
+            continue
+        for region_name, region in paraphrase.items():
+            case_region = case_regions.setdefault(region_name, {})
+            _update_case_region(case_region, region, individual_is_affected)
+
+    return case_regions
 
 
 def _get_suspects_or_causatives(
