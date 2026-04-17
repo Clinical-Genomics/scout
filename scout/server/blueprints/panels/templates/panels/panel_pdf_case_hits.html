@@ -75,7 +75,7 @@
 </table>
 <br>
 {% endif %}
-{% if variant_hits.smn and case.smn_tsv %}
+{% if variant_hits.smn and (case.smn_tsv or case.paraphrase) %}
 <table>
   <tr><th scope="col">SMN Copy Number</th></tr>
   <tr>

@@ -78,6 +78,7 @@ case = dict(
     multiqc_rna=str,  # path to multiqc RNA report
     owner=str,  # required. Internal_id for the owner of the case. E.g. 'cust000'
     panels=list,  # list of dictionaries with panel information.
+    paraphrase=str,
     phenotype_groups=list,  # List of dictionaries with phenotype information
     phenotype_terms=list,  # List of dictionaries with phenotype information
     pipeline_version=str,  # Path to the pipeline executable versions report file

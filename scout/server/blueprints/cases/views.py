@@ -118,9 +118,9 @@ def case(
 
 
 @cases_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
-@templated("cases/case_sma.html")
+@templated("cases/case_sma_dark.html")
 def sma(institute_id, case_name):
-    """Visualize case SMA data - SMN CN calls"""
+    """Visualize case SMA and other dark region data - SMN CN calls, Paraphrase/Paraphase calls"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.sma_case(store, institute_obj, case_obj)
 

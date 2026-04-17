@@ -1,0 +1,863 @@
+{
+  "ADM1059A2": {
+    "CFH": {
+      "total_cn": 3,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 41.0,
+      "phase_region": [
+        "chr1:196740000-196772000"
+      ],
+      "genes_in_region": "CFH,CFHR1",
+      "fusions_called": {
+        "CFH_fusionhap1": {
+          "type": "deletion",
+          "breakpoint": [
+            [
+              196757557,
+              196760029
+            ],
+            [
+              196842234,
+              196844710
+            ]
+          ]
+        }
+      },
+      "status": "intermediate",
+      "status_matches": [
+        {
+          "status": "intermediate",
+          "rule_index": 0,
+          "reason": "Fusions called",
+          "rule": {
+            "when": {
+              "fusions_called": {
+                "not_empty": true
+              }
+            },
+            "status": "intermediate",
+            "reason": "Fusions called"
+          }
+        }
+      ]
+    },
+    "CFHR3": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [
+        "CFHR3_gene1hap1"
+      ],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 31.0,
+      "phase_region": [
+        "chr1:196786000-196830000"
+      ],
+      "genes_in_region": "CFHR3,CFHR4,CFHR1,CFHR2",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "GBA": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 41.0,
+      "phase_region": [
+        "chr1:155230000-155242500"
+      ],
+      "genes_in_region": "GBA1",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "f8": {
+      "total_cn": 3,
+      "two_copy_haplotypes": [],
+      "exon1_to_exon22_depth": 13.0,
+      "sv_called": {},
+      "genome_depth": 24.0,
+      "region_depth": 37.0,
+      "phase_region": [
+        "chrX:155376507-155386059"
+      ],
+      "genes_in_region": "F8A1,F8A2,F8A3,H2AB1,H2AB2,H2AB3",
+      "status": "normal"
+    },
+    "hba": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [
+        "hba_hba1hap1"
+      ],
+      "genotype": "aa/aa",
+      "sv_called": {},
+      "surrounding_region_depth": 12.0,
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 38.0,
+      "phase_region": [
+        "chr16:171800-175500"
+      ],
+      "genes_in_region": "HBA1,HBA2"
+    },
+    "ikbkg": {
+      "genome_depth": 24.0,
+      "region_depth": 8.0,
+      "phase_region": [
+        "chrX:154547610-154569900"
+      ],
+      "genes_in_region": "IKBKG",
+      "status": "normal"
+    },
+    "ncf1": {
+      "total_cn": 6,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 54.0,
+      "phase_region": [
+        "chr7:74769011-74792315"
+      ],
+      "genes_in_region": "NCF1",
+      "status": "normal"
+    },
+    "neb": {
+      "total_cn": 6,
+      "two_copy_haplotypes": [],
+      "alleles_final": [
+        [
+          "neb_hap1",
+          "neb_hap3",
+          "neb_hap5"
+        ],
+        [
+          "neb_hap6",
+          "neb_hap2",
+          "neb_hap4"
+        ]
+      ],
+      "repeat_name": {
+        "tri1": [
+          "neb_hap1",
+          "neb_hap2"
+        ],
+        "tri2": [
+          "neb_hap3",
+          "neb_hap6"
+        ],
+        "tri3": [
+          "neb_hap4",
+          "neb_hap5"
+        ]
+      },
+      "genome_depth": 24.0,
+      "region_depth": 73.0,
+      "phase_region": [
+        "chr2:151578800-151588500"
+      ],
+      "genes_in_region": "NEB"
+    },
+    "opn1lw": {
+      "total_cn": 2,
+      "opn1lw_cn": 1,
+      "opn1mw_cn": 1,
+      "two_copy_haplotypes": [],
+      "annotated_haplotypes": {
+        "opn1lw_opn1lwhap1": "opn1lw_MVAIS",
+        "opn1lw_opn1mwhap1": "opn1mw_MVVIS"
+      },
+      "annotated_alleles": [
+        [
+          "opn1lw_MVAIS",
+          "opn1mw_MVVIS"
+        ]
+      ],
+      "alleles_final": [
+        [
+          "opn1lw_opn1lwhap1",
+          "opn1lw_opn1mwhap1"
+        ]
+      ],
+      "genome_depth": 24.0,
+      "region_depth": 18.0,
+      "phase_region": [
+        "chrX:154144050-154182200"
+      ],
+      "genes_in_region": "OPN1LW,OPN1MW,OPN1MW2,OPN1MW3,TEX28"
+    },
+    "pms2": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 39.0,
+      "phase_region": [
+        "chr7:5965000-6009500"
+      ],
+      "genes_in_region": "PMS2"
+    },
+    "rccx": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "starting_hap": [
+        "rccx_hap3",
+        "rccx_hap4"
+      ],
+      "ending_hap": [
+        "rccx_hap1",
+        "rccx_hap2"
+      ],
+      "deletion_hap": [],
+      "alleles_final": [
+        [
+          "rccx_hap1",
+          "rccx_hap3"
+        ],
+        [
+          "rccx_hap2",
+          "rccx_hap4"
+        ]
+      ],
+      "annotated_alleles": [
+        "WT",
+        "WT"
+      ],
+      "hap_variants": {
+        "rccx_hap1": [],
+        "rccx_hap2": [],
+        "rccx_hap3": [
+          "P31L",
+          "IVS2-13A/C>G",
+          "G111Vfs",
+          "I173N",
+          "I237N",
+          "M240K",
+          "V282L",
+          "Q319X",
+          "R357W"
+        ],
+        "rccx_hap4": [
+          "P31L",
+          "IVS2-13A/C>G",
+          "G111Vfs",
+          "I173N",
+          "I237N",
+          "M240K",
+          "V282L",
+          "Q319X",
+          "R357W"
+        ]
+      },
+      "genome_depth": 24.0,
+      "region_depth": 35.0,
+      "phase_region": [
+        "chr6:32013300-32046200"
+      ],
+      "genes_in_region": "CYP21A2,C4A,C4B,TNXB"
+    },
+    "smn1": {
+      "smn1_cn": 2,
+      "smn2_cn": 2,
+      "smn_del78_cn": 0,
+      "smn1_haplotypes": [
+        "smn1_smn1hap1",
+        "smn1_smn1hap2"
+      ],
+      "smn2_haplotypes": [
+        "smn1_smn2hap1",
+        "smn1_smn2hap2"
+      ],
+      "smn_del78_haplotypes": [],
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 45.0,
+      "phase_region": [
+        "chr5:70917100-70961220"
+      ],
+      "genes_in_region": "SMN1,SMN2",
+      "status": "normal"
+    },
+    "strc": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 28.0,
+      "phase_region": [
+        "chr15:43599500-43619600"
+      ],
+      "genes_in_region": "STRC"
+    }
+  },
+  "ADM1059A1": {
+    "CFH": {
+      "total_cn": 2,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 22.0,
+      "phase_region": [
+        "chr1:196740000-196772000"
+      ],
+      "genes_in_region": "CFH,CFHR1",
+      "fusions_called": {
+        "CFH_fusionhap1": {
+          "type": "deletion",
+          "breakpoint": [
+            [
+              196757557,
+              196760029
+            ],
+            [
+              196842234,
+              196844710
+            ]
+          ]
+        },
+        "CFH_fusionhap2": {
+          "type": "deletion",
+          "breakpoint": [
+            [
+              196757557,
+              196760029
+            ],
+            [
+              196842234,
+              196844710
+            ]
+          ]
+        }
+      },
+      "status": "intermediate",
+      "status_matches": [
+        {
+          "status": "intermediate",
+          "rule_index": 0,
+          "reason": "Fusions called",
+          "rule": {
+            "when": {
+              "fusions_called": {
+                "not_empty": true
+              }
+            },
+            "status": "intermediate",
+            "reason": "Fusions called"
+          }
+        }
+      ]
+    },
+    "CFHR3": {
+      "total_cn": 2,
+      "two_copy_haplotypes": [
+        "CFHR3_gene2hap1"
+      ],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 24.0,
+      "phase_region": [
+        "chr1:196786000-196830000"
+      ],
+      "genes_in_region": "CFHR3,CFHR4,CFHR1,CFHR2",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "GBA": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 46.0,
+      "phase_region": [
+        "chr1:155230000-155242500"
+      ],
+      "genes_in_region": "GBA1",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "f8": {
+      "total_cn": 3,
+      "two_copy_haplotypes": [],
+      "exon1_to_exon22_depth": 13.0,
+      "sv_called": {},
+      "genome_depth": 24.0,
+      "region_depth": 32.0,
+      "phase_region": [
+        "chrX:155376507-155386059"
+      ],
+      "genes_in_region": "F8A1,F8A2,F8A3,H2AB1,H2AB2,H2AB3",
+      "status": "normal"
+    },
+    "hba": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [
+        "hba_hba1hap1"
+      ],
+      "genotype": "aa/aa",
+      "sv_called": {},
+      "surrounding_region_depth": 13.0,
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 34.0,
+      "phase_region": [
+        "chr16:171800-175500"
+      ],
+      "genes_in_region": "HBA1,HBA2"
+    },
+    "ikbkg": {
+      "total_cn": 2,
+      "gene_cn": 1,
+      "deletion_haplotypes": [],
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 24.0,
+      "region_depth": 16.0,
+      "phase_region": [
+        "chrX:154547610-154569900"
+      ],
+      "genes_in_region": "IKBKG",
+      "status": "normal"
+    },
+    "ncf1": {
+      "total_cn": 5,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 52.0,
+      "phase_region": [
+        "chr7:74769011-74792315"
+      ],
+      "genes_in_region": "NCF1",
+      "status": "normal"
+    },
+    "neb": {
+      "total_cn": 6,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "repeat_name": {
+        "tri1": [
+          "neb_hap1",
+          "neb_hap2"
+        ],
+        "tri2": [
+          "neb_hap3",
+          "neb_hap6"
+        ],
+        "tri3": [
+          "neb_hap4",
+          "neb_hap5"
+        ]
+      },
+      "genome_depth": 24.0,
+      "region_depth": 76.0,
+      "phase_region": [
+        "chr2:151578800-151588500"
+      ],
+      "genes_in_region": "NEB"
+    },
+    "opn1lw": {
+      "total_cn": 2,
+      "opn1lw_cn": 2,
+      "opn1mw_cn": 0,
+      "two_copy_haplotypes": [],
+      "annotated_haplotypes": {
+        "opn1lw_opn1lwhap1": "opn1lw_LVAIS",
+        "opn1lw_opn1lwhap2": "opn1lw_MVVVA"
+      },
+      "annotated_alleles": [
+        [
+          "opn1lw_LVAIS",
+          "opn1lw_MVVVA"
+        ]
+      ],
+      "alleles_final": [
+        [
+          "opn1lw_opn1lwhap1",
+          "opn1lw_opn1lwhap2"
+        ]
+      ],
+      "genome_depth": 24.0,
+      "region_depth": 15.0,
+      "phase_region": [
+        "chrX:154144050-154182200"
+      ],
+      "genes_in_region": "OPN1LW,OPN1MW,OPN1MW2,OPN1MW3,TEX28"
+    },
+    "pms2": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 43.0,
+      "phase_region": [
+        "chr7:5965000-6009500"
+      ],
+      "genes_in_region": "PMS2"
+    },
+    "rccx": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "starting_hap": [
+        "rccx_hap3",
+        "rccx_hap4"
+      ],
+      "ending_hap": [
+        "rccx_hap1",
+        "rccx_hap2"
+      ],
+      "deletion_hap": [],
+      "alleles_final": [
+        [
+          "rccx_hap1",
+          "rccx_hap4"
+        ],
+        [
+          "rccx_hap2",
+          "rccx_hap3"
+        ]
+      ],
+      "annotated_alleles": [
+        "WT",
+        "WT"
+      ],
+      "hap_variants": {
+        "rccx_hap1": [],
+        "rccx_hap2": [],
+        "rccx_hap3": [
+          "P31L",
+          "IVS2-13A/C>G",
+          "G111Vfs",
+          "I173N",
+          "I237N",
+          "M240K",
+          "Q319X"
+        ],
+        "rccx_hap4": [
+          "P31L",
+          "IVS2-13A/C>G",
+          "G111Vfs",
+          "I173N",
+          "I237N",
+          "M240K",
+          "V282L",
+          "Q319X",
+          "R357W"
+        ]
+      },
+      "genome_depth": 24.0,
+      "region_depth": 31.0,
+      "phase_region": [
+        "chr6:32013300-32046200"
+      ],
+      "genes_in_region": "CYP21A2,C4A,C4B,TNXB"
+    },
+    "smn1": {
+      "smn1_cn": 2,
+      "smn2_cn": 2,
+      "smn_del78_cn": 0,
+      "smn1_haplotypes": [
+        "smn1_smn1hap1",
+        "smn1_smn1hap2"
+      ],
+      "smn2_haplotypes": [
+        "smn1_smn2hap1",
+        "smn1_smn2hap2"
+      ],
+      "smn_del78_haplotypes": [],
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 48.0,
+      "phase_region": [
+        "chr5:70917100-70961220"
+      ],
+      "genes_in_region": "SMN1,SMN2",
+      "status": "normal"
+    },
+    "strc": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 24.0,
+      "region_depth": 39.0,
+      "phase_region": [
+        "chr15:43599500-43619600"
+      ],
+      "genes_in_region": "STRC"
+    }
+  },
+  "ADM1059A3": {
+    "CFH": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 23.0,
+      "region_depth": 50.0,
+      "phase_region": [
+        "chr1:196740000-196772000"
+      ],
+      "genes_in_region": "CFH,CFHR1",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "CFHR3": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 23.0,
+      "region_depth": 50.0,
+      "phase_region": [
+        "chr1:196786000-196830000"
+      ],
+      "genes_in_region": "CFHR3,CFHR4,CFHR1,CFHR2",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "GBA": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [
+        "GBA_gene1hap1"
+      ],
+      "alleles_final": [],
+      "genome_depth": 23.0,
+      "region_depth": 36.0,
+      "phase_region": [
+        "chr1:155230000-155242500"
+      ],
+      "genes_in_region": "GBA1",
+      "fusions_called": {},
+      "status": "normal"
+    },
+    "f8": {
+      "two_copy_haplotypes": [],
+      "exon1_to_exon22_depth": 24.0,
+      "sv_called": {},
+      "genome_depth": 23.0,
+      "region_depth": 60.0,
+      "phase_region": [
+        "chrX:155376507-155386059"
+      ],
+      "genes_in_region": "F8A1,F8A2,F8A3,H2AB1,H2AB2,H2AB3",
+      "status": "normal"
+    },
+    "hba": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [
+        "hba_hba1hap1"
+      ],
+      "genotype": "aa/aa",
+      "sv_called": {},
+      "surrounding_region_depth": 20.0,
+      "alleles_final": [],
+      "genome_depth": 23.0,
+      "region_depth": 60.0,
+      "phase_region": [
+        "chr16:171800-175500"
+      ],
+      "genes_in_region": "HBA1,HBA2"
+    },
+    "ikbkg": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "deletion_haplotypes": [
+        "ikbkg_pseudohap2"
+      ],
+      "two_copy_haplotypes": [],
+      "alleles_final": [],
+      "genome_depth": 23.0,
+      "region_depth": 27.0,
+      "phase_region": [
+        "chrX:154547610-154569900"
+      ],
+      "genes_in_region": "IKBKG",
+      "status": "pathological",
+      "status_matches": [
+        {
+          "status": "pathological",
+          "rule_index": 0,
+          "reason": "Deletion haplotypes called",
+          "rule": {
+            "when": {
+              "deletion_haplotypes": {
+                "not_empty": true
+              }
+            },
+            "status": "pathological",
+            "reason": "Deletion haplotypes called"
+          }
+        }
+      ]
+    },
+    "ncf1": {
+      "total_cn": 6,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 23.0,
+      "region_depth": 41.0,
+      "phase_region": [
+        "chr7:74769011-74792315"
+      ],
+      "genes_in_region": "NCF1",
+      "status": "normal"
+    },
+    "neb": {
+      "total_cn": 6,
+      "two_copy_haplotypes": [
+        "neb_hap4"
+      ],
+      "alleles_final": [],
+      "repeat_name": {
+        "tri1": [
+          "neb_hap1",
+          "neb_hap2"
+        ],
+        "tri2": [
+          "neb_hap3",
+          "neb_hap5"
+        ],
+        "tri3": [
+          "neb_hap4",
+          "neb_hap4"
+        ]
+      },
+      "genome_depth": 23.0,
+      "region_depth": 68.0,
+      "phase_region": [
+        "chr2:151578800-151588500"
+      ],
+      "genes_in_region": "NEB"
+    },
+    "opn1lw": {
+      "total_cn": 5,
+      "opn1lw_cn": 2,
+      "opn1mw_cn": 3,
+      "two_copy_haplotypes": [],
+      "annotated_haplotypes": {
+        "opn1lw_opn1lwhap1": "opn1lw_MVAIS",
+        "opn1lw_opn1lwhap2": "opn1lw_LVAIA",
+        "opn1lw_opn1mwhap1": "opn1mw_LVAIA",
+        "opn1lw_opn1mwhap2": "opn1mw_LVAIA",
+        "opn1lw_opn1mwhap3": "opn1mw_MVVIS"
+      },
+      "annotated_alleles": [
+        [
+          "opn1lw_MVAIS",
+          "opn1mw_MVVIS"
+        ],
+        [
+          "opn1lw_LVAIA",
+          "opn1mw_LVAIA"
+        ]
+      ],
+      "alleles_final": [
+        [
+          "opn1lw_opn1lwhap1",
+          "opn1lw_opn1mwhap3"
+        ],
+        [
+          "opn1lw_opn1lwhap2",
+          "opn1lw_opn1mwhap2"
+        ]
+      ],
+      "genome_depth": 23.0,
+      "region_depth": 48.0,
+      "phase_region": [
+        "chrX:154144050-154182200"
+      ],
+      "genes_in_region": "OPN1LW,OPN1MW,OPN1MW2,OPN1MW3,TEX28"
+    },
+    "pms2": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [
+        "pms2_pms2hap1"
+      ],
+      "genome_depth": 23.0,
+      "region_depth": 39.0,
+      "phase_region": [
+        "chr7:5965000-6009500"
+      ],
+      "genes_in_region": "PMS2"
+    },
+    "rccx": {
+      "total_cn": 4,
+      "two_copy_haplotypes": [],
+      "starting_hap": [
+        "rccx_hap3",
+        "rccx_hap4"
+      ],
+      "ending_hap": [
+        "rccx_hap1",
+        "rccx_hap2"
+      ],
+      "deletion_hap": [],
+      "alleles_final": [
+        [
+          "rccx_hap1",
+          "rccx_hap4"
+        ],
+        [
+          "rccx_hap2",
+          "rccx_hap3"
+        ]
+      ],
+      "annotated_alleles": [
+        "WT",
+        "WT"
+      ],
+      "hap_variants": {
+        "rccx_hap1": [],
+        "rccx_hap2": [],
+        "rccx_hap3": [
+          "IVS2-13A/C>G",
+          "G111Vfs",
+          "I173N",
+          "I237N",
+          "V238E",
+          "M240K",
+          "V282L",
+          "Q319X",
+          "R357W"
+        ],
+        "rccx_hap4": []
+      },
+      "genome_depth": 23.0,
+      "region_depth": 38.0,
+      "phase_region": [
+        "chr6:32013300-32046200"
+      ],
+      "genes_in_region": "CYP21A2,C4A,C4B,TNXB"
+    },
+    "smn1": {
+      "smn1_cn": 2,
+      "smn2_cn": 2,
+      "smn_del78_cn": 0,
+      "smn1_haplotypes": [
+        "smn1_smn1hap1",
+        "smn1_smn1hap2"
+      ],
+      "smn2_haplotypes": [
+        "smn1_smn2hap1",
+        "smn1_smn2hap2"
+      ],
+      "smn_del78_haplotypes": [],
+      "two_copy_haplotypes": [],
+      "genome_depth": 23.0,
+      "region_depth": 42.0,
+      "phase_region": [
+        "chr5:70917100-70961220"
+      ],
+      "genes_in_region": "SMN1,SMN2",
+      "status": "normal"
+    },
+    "strc": {
+      "total_cn": 4,
+      "gene_cn": 2,
+      "two_copy_haplotypes": [],
+      "genome_depth": 23.0,
+      "region_depth": 45.5,
+      "phase_region": [
+        "chr15:43599500-43619600"
+      ],
+      "genes_in_region": "STRC"
+    }
+  }
+}
