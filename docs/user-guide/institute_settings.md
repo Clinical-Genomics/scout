@@ -28,7 +28,7 @@ Available to all users.
 
 Available to admin users only.
 
-Controls which case categories are always shown on the case page.
+Controls which case categories are always shown on the case page. Nothing selected defaults to `prioritized`.
 
 - Default: **prioritized**
 - Other options: `inactive`, `ignored`, `active`, `solved`, `archived`
