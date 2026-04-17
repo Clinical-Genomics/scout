@@ -97,7 +97,8 @@ The selected instances are used on variant pages to display local observations o
 Available to admin users only.
 
 Custom soft filters to be used for filtering variants can be defined here.
-It could be filters from variant callers or custom defined ones. The important thing is that these filters should already be available in the VCF file when a case is loaded in order to work
+The soft filters act on variant filters, as parsed from VCF FILTER column at variant load time, typically when the case is loaded. These could be directly from variant callers or custom defined filters from a pipeline. 
+
 
 For instance the following soft filters defined in settings:
 
