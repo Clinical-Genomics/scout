@@ -230,7 +230,6 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
     # GIVEN a variant with the other variant as an only compound
     variant_obj["compounds"] = [compound_variant_dict]
 
-    print("variant obj", variant_obj)
     # WHEN asking for hiding compounds that do match a region annotation
     query_form = {"region_annotations": ["exonic"], "compound_follow_filter": True}
 
@@ -284,8 +283,6 @@ def test_hide_compounds_follow_filter_in(app, variant_obj):
     # GIVEN a variant with the other variant as an only compound
     variant_obj["compounds"] = [compound_variant_dict]
 
-    print("variant obj", variant_obj)
-
     # WHEN asking for hiding compounds that do match a subtype annotation
     query_form = {"svtype": ["dup", "del"], "compound_follow_filter": True}
 
@@ -334,8 +331,6 @@ def test_hide_compounds_follow_filter_clnsig(app, variant_obj):
 
     # GIVEN a variant with the other variant as an only compound
     variant_obj["compounds"] = [compound_variant_dict]
-
-    print("variant obj", variant_obj)
 
     # WHEN asking for hiding compounds that do match a ClinVar annotation
     query_form = {"clinsig": [4, 5], "compound_follow_filter": True}
