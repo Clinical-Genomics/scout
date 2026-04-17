@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- A documentation page for institute settings (#6212)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)

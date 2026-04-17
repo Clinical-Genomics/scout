@@ -59,6 +59,7 @@ nav:
       - General: 'user-guide/using-scout.md'
       - Pages: 'user-guide/pages.md'
       - Institutes: 'user-guide/institutes.md'
+      - Institute settings: 'user-guide/institute_settings.md'
       - Users: 'user-guide/users.md'
       - Cases: 'user-guide/cases.md'
       - Variants: 'user-guide/variants.md'
