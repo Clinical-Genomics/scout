@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Any, Dict, Tuple
 
@@ -19,6 +20,19 @@ from scout.parse.smn import parse_smn_file
 
 LOG = logging.getLogger(__name__)
 
+PRESERVE_EMPTY_DICT_KEYS = [
+    "capture_kits",
+    "collaborators",
+    "cohorts",
+    "default_panels",
+    "default_gene_panels",
+    "gene_panels",
+    "synopsis",
+    "phenotype_groups",
+    "phenotype_terms",
+    "panel",
+]
+
 
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
@@ -35,6 +49,7 @@ def parse_case_data(**kwargs):
         gene_fusion_report_research: Path to the gene fusions research report
         multiqc(str): Path to dir with multiqc information
         owner(str): The institute that owns a case
+        paraphrase(str): Path to a Paraphrase (parsed Paraphase) JSON file
         ped(iterable(str)): A ped formatted family file
         peddy_ped(str): Path to a peddy ped
         RNAfusion_inspector: Path to the RNA fusion inspector report
@@ -90,16 +105,16 @@ def parse_case_data(**kwargs):
     if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
 
+    if config_dict.get("paraphrase"):
+        add_paraphrase_info(config_dict)
+
     add_mitodel_info(config_dict)
 
     # Ensure case_id is set, this situation arises when case is loaded with ped file
     if config_dict.get("case_id") is None:
         config_dict["case_id"] = config_dict["family"]
 
-    if config_dict.get("smn_tsv"):
-        add_smn_info_case(config_dict)
-
-    return remove_none_recursive(config_dict)
+    return clean_recursive(config_dict, PRESERVE_EMPTY_DICT_KEYS)
 
 
 def parse_case_config(config: dict) -> dict:
@@ -130,22 +145,18 @@ def add_mitodel_info(config_data):
         individual["mitodel"] = parse_mitodel_file(file_handle)
 
 
-def add_smn_info(config_data):
-    """Add SMN CN / SMA prediction from TSV files to individuals
+def add_smn_info(config_data: dict):
+    """Add SMN CN / SMA prediction from TSV files to individuals"""
 
-    Args:
-        config_data(dict)
-    """
-    LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
     if not config_data.get("smn_tsv"):
-        LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
         return
 
-    file_handle = open(config_data["smn_tsv"], "r")
-    smn_info = {}
-    for smn_ind_info in parse_smn_file(file_handle):
-        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+    LOG.info(f'Adding SMN info from {config_data["smn_tsv"]}.')
 
+    file_handle = open(config_data["smn_tsv"], "r")
+    smn_info = {
+        smn_ind_info["sample_id"]: smn_ind_info for smn_ind_info in parse_smn_file(file_handle)
+    }
     for ind in config_data["individuals"]:
         ind_id = ind["individual_id"]
         try:
@@ -159,39 +170,24 @@ def add_smn_info(config_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as err:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
-
-
-def add_smn_info_case(case_data):
-    """Add SMN CN / SMA prediction from TSV files to individuals in a yaml load case context
-
-    Args:
-        case_data(dict)
-    """
-
-    if not case_data.get("smn_tsv"):
-        LOG.warning("No smn_tsv though add_smn_info_case called. This is odd.")
-        return
-
-    file_handle = open(case_data["smn_tsv"], "r")
-    smn_info = {}
-    for smn_ind_info in parse_smn_file(file_handle):
-        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
-
-    for ind in case_data["individuals"]:
-        ind_id = ind["individual_id"]
-        try:
-            for key in [
-                "is_sma",
-                "is_sma_carrier",
-                "smn1_cn",
-                "smn2_cn",
-                "smn2delta78_cn",
-                "smn_27134_cn",
-            ]:
-                ind[key] = smn_info[ind_id][key]
-        except KeyError as err:
             LOG.warning(f"Individual {ind_id} has no SMN info to update: {err}.")
+
+
+def add_paraphrase_info(config_data: dict):
+    """Add Paraphrase (Paraphase, Parabellum) JSON.
+    Get file from case config, read json and add to matching individuals"""
+
+    LOG.info(f'Adding Paraphrase info from {config_data["paraphrase"]}.')
+
+    paraphrase_entry = {}
+    with open(config_data["paraphrase"], "r") as paraphrase_file:
+        paraphrase_entry = json.load(paraphrase_file)
+
+    for ind in config_data["individuals"]:
+        ind_id = ind["individual_id"]
+        if ind_id not in paraphrase_entry:
+            continue
+        ind["paraphrase"] = paraphrase_entry[ind_id]
 
 
 def set_somalier_sex_check_ind(ind: Dict[str, str], sex_check: Dict[str, Dict[str, str]]):
@@ -389,58 +385,40 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def remove_none_values(dictionary):
-    """If value = None in key/value pair, the pair is removed.
-        Python >3
-    Args:
-        dictionary: dict
-
-    Returns:
-        dict
+def clean_recursive(obj, preserve_keys=None):
     """
+    Recursively remove None and empty values from a JSON-like dict structure.
 
-    return {k: v for k, v in dictionary.items() if v is not None}
+    Given a dict, list, or primitive and an optional set of keys for which empty lists should be preserved,
+    return an otherwise cleaned object, free from empty values. Calls itself recursively for dict and list
+    aggregate types, and returns primitives as the recursion termination criteria.
+    """
+    if preserve_keys is None:
+        preserve_keys = set()
 
+    if isinstance(obj, dict):
+        cleaned = {}
+        for dict_key, value in obj.items():
+            cleaned_value = clean_recursive(value, preserve_keys)
 
-def remove_none_recursive(dictionary):
-    """Recursively remove None from dictionary"""
-    return remove_none_recursive_aux(dictionary, {})
+            if cleaned_value in [None, {}, []] and dict_key not in preserve_keys:
+                continue
 
+            cleaned[dict_key] = cleaned_value
 
-def remove_none_recursive_aux(dictionary, new_dict):
-    """Auxilary Function to remove_none_recursive. Recursively removes
-    None from dictionary by adding non-None key/value pairs to new_dict.
-    Args:
-        dictionary: dict with configuration values
-        new_dict: assembly dict
-    Return:
-        dictionary with no None values"""
-    for key, value in dictionary.items():
-        if isinstance(value, dict):
-            clean_value = remove_none_recursive(value)
-            if len(clean_value) > 0:
-                new_dict.update({key: clean_value})
-        elif (
-            isinstance(value, list)
-            and len(value) > 0
-            and key
-            not in [
-                "capture_kits",
-                "collaborators",
-                "cohorts",
-                "default_panels",
-                "default_gene_panels",
-                "gene_panels",
-                "synopsis",
-                "phenotype_groups",
-                "phenotype_terms",
-                "panel",
-            ]
-        ):
-            new_list = [remove_none_recursive_aux(item, {}) for item in value]
-            new_dict.update({key: new_list})
-        elif value is not None:
-            new_dict.update({key: value})
-        else:
-            continue
-    return new_dict
+        return cleaned
+
+    elif isinstance(obj, list):
+        cleaned_list = []
+        for item in obj:
+            cleaned_item = clean_recursive(item, preserve_keys)
+
+            if cleaned_item in [None, {}, []]:
+                continue
+
+            cleaned_list.append(cleaned_item)
+
+        return cleaned_list
+
+    else:
+        return obj

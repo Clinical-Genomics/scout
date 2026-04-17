@@ -109,6 +109,10 @@ CASE_TAGS = {
         "description": "UniParental Disomy determined causative eg by Chromograph or Gens",
     },
     "smn": {"label": "SMN", "description": "SMN assay found causative eg by SMNCopyNumberCaller"},
+    "dark": {
+        "label": "DARK",
+        "description": "Other dark locus found causative eg by Paraphase and Paraphrase",
+    },
     "fshd": {"label": "FSHD", "description": "FSHD assay (OGM) found causative"},
     "rna": {"label": "RNA", "description": "RNA assay with no markable variant found causative"},
     "structural": {
@@ -262,3 +266,5 @@ SOURCES = [
 ]
 
 SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
+
+PARAPHRASE_STATUS = {"normal": 0, "intermediate": 1, "pathological": 2}
