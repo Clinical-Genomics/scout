@@ -65,7 +65,7 @@ Defines collaborators, available gene panels, and search configuration.
 
 | Setting                                | Description                                                      |
 |----------------------------------------|------------------------------------------------------------------|
-| **Institutes to share cases with**     | Selected institutes that can access this institute’s cases.      |
+| **Institutes to share cases with**     | Selected institutes that users can share this institute’s cases with.      |
 | **Gene panels for variant filtering**  | Gene panels available when filtering variants on variant pages. Note that all cases may not have been processed bioinformatically to return variants from all genes in the clinical setting. If so the search will still return a message saying the gene was not among the clinical genes for the case. Consider opening the case for research or ordering a rerun. |
 
 ---
