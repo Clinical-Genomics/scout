@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- A documentation page for institute settings (#6212)
 - Command line option to export causative variants by category and/or genome build (#6202)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
