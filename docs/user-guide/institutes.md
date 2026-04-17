@@ -8,7 +8,9 @@ So one instance of scout can have one or many institutes. Each institute could b
 multiple users attached. Each institute has to have a unique identifier, `institute_id`.
 
 ## Settings
-Detailed info on institute settings is available at the [institute settings documentation page](institute_settings.md).
+From the Settings page, users and admins can adapt a range of settings for the institute, allowing analysis to flow with slight differences for different institutes in the same Scout instance. 
+
+Detailed information on institute settings is available on the [institute settings documentation page](institute_settings.md).
 
 ## Causatives
 
