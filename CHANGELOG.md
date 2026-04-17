@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- A documentation page for institute settings (#6212)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
