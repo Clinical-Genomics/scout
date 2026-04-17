@@ -360,10 +360,10 @@ class QueryHandler(object):
         case_obj = self.case(case_id=case_id, projection=CASE_AFFECTED_INDS_PROJECTION)
         case_inds = case_obj.get("individuals", [])
 
-        gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}
-
         if len(case_inds) == 1 and not gt_query:
             return
+
+        gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}
 
         affected_query = {
             "$elemMatch": {
