@@ -688,6 +688,15 @@ def case_obj(request, parsed_case):
 
 
 @pytest.fixture(scope="function")
+def singleton_case(case_obj):
+    """A fixture that returns a singleton case object."""
+
+    case_obj["individuals"] = [case_obj["individuals"][0]]
+
+    return case_obj
+
+
+@pytest.fixture(scope="function")
 def one_individual(case_obj):
     return case_obj["individuals"][0]
 

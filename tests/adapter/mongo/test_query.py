@@ -72,6 +72,20 @@ def test_build_query_hide_not_in_affected(adapter, case_obj):
     }
 
 
+def test_build_query_show_unaffected_singleton(adapter, singleton_case):
+    """Test variants query build with show_unaffected parameter for singletons"""
+
+    # GIVEN a singleton case (only one sample)
+    adapter.case_collection.insert_one(singleton_case)
+
+    # WHEN show_unaffected = True param is provided to the query builder
+    query = {"show_unaffected": False}
+    mongo_query = adapter.build_query(singleton_case["_id"], query=query)
+
+    # Then the variant query should not restrain sample id or genotype
+    assert "samples" not in mongo_query
+
+
 def test_build_query_hide_dismissed(adapter, case_obj):
     """Test variants query with hide_dismissed parameter"""
 
