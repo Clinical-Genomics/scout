@@ -8,21 +8,7 @@ So one instance of scout can have one or many institutes. Each institute could b
 multiple users attached. Each institute has to have a unique identifier, `institute_id`.
 
 ## Settings
-From the Settings page, users and admins can set the institute display name, Sanger order email recipients, default
-coverage cutoff for reports, default frequency cutoff for the institutes clinical variants filter.
-
-In the menu "Gene panels available for filtering", users can check zero or more of the institutes panels to always be
-available as panel options on the variantS filter. Note that all cases may not have been processed bioinformatically to
-return variants from all genes in the clinical setting. If so the search will still return a message saying the gene
-was not among the clinical genes for the case. Consider opening the case for research or ordering a rerun.
-
-New phenotype groups can be added from this page. Such custom phenotype groups can then be selected from the case page.
-
-Available patient cohorts can be edited. Select or deselect existing ones, or type new free text labels to create new
-cohorts.
-
-Users with admin privileges can also select the LoqusDB instance to use for local observations from a menu of those
-configured on Scout startup - see [admin guide - loqusdb](../admin-guide/loqusdb_integration.md).
+Detailed info on institute settings is available at the [institute settings documentation page](institute_settings.md).
 
 ## Causatives
 
