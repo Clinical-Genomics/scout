@@ -60,7 +60,7 @@ def _sort_variants_by_chromosome(managed_variants: List[dict]) -> List[dict]:
         pos = var.get("position", 0)
         return (chrom_int, pos)
 
-    return sorted(managed_variants, key=sort_key)
+    return sorted(variants, key=sort_key)
 
 
 def export_managed_variants(
