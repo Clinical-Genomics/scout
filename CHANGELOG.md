@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.109.3]
 ### Changed
-- Changelog enforcement specific to the unreleased section (#6216)
+- Changelog enforcement specific to our unreleased section (#6216)
 ### Fixed
 - Revert form data passing for SNVs (#6191)
 
