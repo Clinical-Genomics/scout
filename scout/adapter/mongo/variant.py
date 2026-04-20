@@ -395,32 +395,29 @@ class VariantHandler(VariantLoader):
 
         return res
 
-    def get_causatives(self, institute_id, case_id=None):
-        """Return all causative variants for an institute
-
-        Args:
-            institute_id(str)
-            case_id(str)
-
-        Yields:
-            str: variant document id
-        """
-
-        causatives = []
+    def get_causatives(
+        self, institute_id: str, case_id: Optional[str] = None, build: Optional[str] = None
+    ) -> List[str]:
+        """Return all causative variants for an institute."""
 
         if case_id:
             case_obj = self.case_collection.find_one({"_id": case_id}, CASE_CAUSATIVES_PROJECTION)
             causatives = [causative for causative in case_obj.get("causatives", [])]
 
-        elif institute_id:
+        else:
+            match_stage = {
+                "causatives": {"$exists": True},
+            }
+
+            if institute_id:
+                match_stage["collaborators"] = institute_id
+
+            if build:
+                match_stage["genome_build"] = build
+
             query = self.case_collection.aggregate(
                 [
-                    {
-                        MATCHQ: {
-                            "collaborators": institute_id,
-                            "causatives": {"$exists": True},
-                        }
-                    },
+                    {MATCHQ: match_stage},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]

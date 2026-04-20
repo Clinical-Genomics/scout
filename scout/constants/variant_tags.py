@@ -606,6 +606,8 @@ MOSAICISM_OPTIONS = {
     },
 }
 
+DNA_VARIANT_CATEGORIES = ["cancer", "cancer_sv", "mei", "snv", "str", "sv"]
+
 VARIANTS_TARGET_FROM_CATEGORY = {
     "cancer": "variants.cancer_variants",
     "cancer_sv": "variants.cancer_sv_variants",

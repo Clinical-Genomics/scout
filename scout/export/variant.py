@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import List
+from typing import List, Optional
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -12,7 +12,12 @@ LOG = logging.getLogger(__name__)
 
 
 def export_causative_variants(
-    adapter: MongoAdapter, collaborator: str, document_id: str = None, case_id: str = None
+    adapter: MongoAdapter,
+    collaborator: Optional[str] = None,
+    document_id: Optional[str] = None,
+    case_id: str = None,
+    build: Optional[str] = None,
+    category: Optional[str] = None,
 ) -> dict:
     """Export causative variants for a collaborator.
 
@@ -30,31 +35,23 @@ def export_causative_variants(
         yield adapter.variant(document_id)
         return
 
-    variant_ids = adapter.get_causatives(institute_id=collaborator, case_id=case_id)
+    variant_ids = adapter.get_causatives(institute_id=collaborator, case_id=case_id, build=build)
 
     for doc_id in variant_ids:
         variant_obj = adapter.variant(doc_id)
         if variant_obj is None:
             continue
-        chrom = variant_obj["chromosome"]
-        # Convert chromosome to integer for sorting
-        chrom_int = CHROMOSOME_INTEGERS.get(chrom)
-        if not chrom_int:
-            LOG.info("Unknown chromosome %s", chrom)
+        if category and variant_obj.get("category") not in category:
             continue
+        variants.append(variant_obj)
 
-        # Add chromosome and position to prepare for sorting
-        variants.append((chrom_int, variant_obj["position"], variant_obj))
+    sorted_variants = _sort_variants_by_chromosome(variants)
 
-    # Sort variants based on position
-    variants.sort(key=lambda x: (x[0], x[1]))
-
-    for variant in variants:
-        variant_obj = variant[2]
-        yield variant_obj
+    for variant in sorted_variants:
+        yield variant
 
 
-def _sort_managed_variants(managed_variants: List[dict]) -> List[dict]:
+def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
 
     def sort_key(var: dict):
@@ -63,7 +60,7 @@ def _sort_managed_variants(managed_variants: List[dict]) -> List[dict]:
         pos = var.get("position", 0)
         return (chrom_int, pos)
 
-    return sorted(managed_variants, key=sort_key)
+    return sorted(variants, key=sort_key)
 
 
 def export_managed_variants(
@@ -95,7 +92,7 @@ def export_managed_variants(
             )
         )
 
-    yield from _sort_managed_variants(managed_variants)
+    yield from _sort_variants_by_chromosome(managed_variants)
 
 
 def export_verified_variants(aggregate_variants, unique_callers):
