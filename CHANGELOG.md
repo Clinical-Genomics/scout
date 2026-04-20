@@ -15,14 +15,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 - By default, display STR loci from VCF also when no call is made (#6197)
+- Changelog enforcement specific to the `unreleased` changelog section (#6216)
 ### Fixed
 - Formatting of a list on managed variant export documentation (#6203)
 - Exception for singletons from the "Include variants present only in unaffected" filter (#6209)
 - Link to Alamut Plus software on Institute Settings page (#6213)
 
 ## [4.109.3]
-### Changed
-- Changelog enforcement specific to our unreleased section (#6216)
 ### Fixed
 - Revert form data passing for SNVs (#6191)
 
