@@ -156,7 +156,7 @@ The columns that will be used by Scout are the following.
 - **build(str)** Defaults to "37". *Optional*
 - **description(str)** Free text description of the variant. Classification status, evidence and references are appropriate, and if applicable affected gene(s), protein consequences and alternative variant names. *Optional*
 - **maintainer(str)** Placeholder, replaced by the current uploading user. *Optional placeholder*
-- **institutes(str)** Comma-separated list of institutes. Replaced with the current uploading user's institute if empty. *Optional*
+- **institutes(str)** Comma-separated list of institutes. *Optional*
 
 Example:
 

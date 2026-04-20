@@ -130,7 +130,7 @@ def add_managed_variant(request: LocalProxy):
     return store.upsert_managed_variant(managed_variant_obj)
 
 
-def upload_managed_variants(store, lines, institutes, current_user_id):
+def upload_managed_variants(store, lines, current_user_id):
     """Add managed variants from a CSV file"""
 
     total_variant_lines = 0
@@ -150,9 +150,6 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
                 continue
 
             managed_variant_info.update({"maintainer": [current_user_id]})
-            if not managed_variant_info.get("institutes"):
-                managed_variant_info["institutes"] = institutes
-
             managed_variant_obj = build_managed_variant(managed_variant_info)
 
             if store.upsert_managed_variant(managed_variant_obj):
