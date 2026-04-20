@@ -20,7 +20,7 @@ from scout.server.extensions import store
 from scout.utils.vcf import validate_vcf_line
 
 from .export_handler import bson_handler
-from .utils import build_option, json_option
+from .utils import build_option, category_option, collaborator_option, json_option
 
 LOG = logging.getLogger(__name__)
 
@@ -114,11 +114,6 @@ def verified(collaborator, test, outpath=None):
 
 @click.command("managed", short_help="Export managed variants")
 @click.option(
-    "-c",
-    "--collaborator",
-    help="Specify what collaborator to export variants from. Defaults to all variants.",
-)
-@click.option(
     "--category",
     type=click.Choice(MANAGED_CATEGORIES, case_sensitive=False),
     multiple=True,
@@ -126,6 +121,7 @@ def verified(collaborator, test, outpath=None):
     show_default=True,
     help="One or more categories to include.",
 )
+@collaborator_option
 @build_option
 @json_option
 @with_appcontext
@@ -160,20 +156,20 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 
 
 @click.command("causatives", short_help="Export causative variants")
-@click.option(
-    "-c",
-    "--collaborator",
-    help="Specify what collaborator to export variants from. Defaults to cust000",
-)
+@build_option
+@category_option
+@collaborator_option
 @click.option("-d", "--document-id", help="Search for a specific variant")
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
 @with_appcontext
-def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
+def causatives(
+    build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
+):
     """Export causatives for a collaborator in .vcf format"""
+
     LOG.info("Running scout export variants")
     adapter = store
-    collaborator = collaborator or "cust000"
     LOG.info("Use collaborator %s", collaborator)
     if case_id:
         case_obj = adapter.case(case_id)
@@ -182,7 +178,12 @@ def causatives(collaborator: str, document_id: str, case_id: str, json: bool):
             raise click.Abort
 
     variants = export_causative_variants(
-        adapter, collaborator, document_id=document_id, case_id=case_id
+        adapter,
+        collaborator,
+        document_id=document_id,
+        case_id=case_id,
+        build=build,
+        category=category,
     )
 
     if json:
