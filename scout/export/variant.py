@@ -51,7 +51,7 @@ def export_causative_variants(
         yield variant
 
 
-def _sort_variants_by_chromosome(managed_variants: List[dict]) -> List[dict]:
+def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
 
     def sort_key(var: dict):
