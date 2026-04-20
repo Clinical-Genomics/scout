@@ -166,7 +166,7 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
 def variants_to_managed_variants(variants: list[dict], type: str, institute_id: str) -> list[str]:
     """Converts variants to managed input."""
 
-    valid_categories = {"snv", "cancer", "sv", "cancer_sv"}
+    valid_categories = {"snv": "variant.variant", "cancer": "variant.cancer_variant", "sv": "variant.sv_variant", "cancer_sv": "variant.sv_variant"}
     managed_lines = [MANAGED_VARIANTS_INFILE_HEADER]
 
     for variant in variants:
@@ -184,7 +184,10 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
         alt = variant.get("alternative")
         sub_category = variant.get("sub_category")
         build = variant.get("case_obj", {}).get("genome_build", "37")
-        description = f"{type} {build} {institute_id}"
+
+        variant_href = url_for(valid_categories[category], institute_id=institute_id, case_name=variant["case_obj"]["display_name"], variant_id=variant["_id"])
+        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{variant["display_name"][0:15]}</a>'
+        description = f"{type} {build} {institute_id} {link}"
 
         managed_lines.append(
             f"{chromosome};{position};{end};{ref};{alt};"

@@ -110,7 +110,7 @@
           <td>{{ variant.category|upper }}</td>
           <td>{{ variant.sub_category|upper }}</td>
           <td>
-            {{ variant.description }}
+            {{ variant.description|safe  }}
           </td>
           <td>
             {% for maintainer in variant.maintainers %}
