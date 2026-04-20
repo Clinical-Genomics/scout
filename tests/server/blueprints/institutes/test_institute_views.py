@@ -543,10 +543,17 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
         sub_category = variant_obj["sub_category"]
         build = case_obj["genome_build"]
         inst = institute_obj["_id"]
+        variant_href = url_for(
+            "variant.variant",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+            variant_id=variant_obj["_id"],
+        )
+        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{variant_obj["display_name"][0:15]}</a>'
 
         assert (
             content[1]
-            == f"{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst};;{inst}"
+            == f"{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst} {link};;{inst}"
         )
 
 
