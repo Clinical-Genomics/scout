@@ -40,7 +40,9 @@ def upload_managed_variants():
         )
         return safe_redirect_back(request)
 
-    result = controllers.upload_managed_variants(store=store, lines=lines, current_user_id=current_user._id)
+    result = controllers.upload_managed_variants(
+        store=store, lines=lines, current_user_id=current_user._id
+    )
     flash(
         "In total {} new variants out of {} in file added".format(result[0], result[1]),
         "success",
