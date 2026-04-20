@@ -21,6 +21,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to Alamut Plus software on Institute Settings page (#6213)
 
 ## [4.109.3]
+### Changed
+- Changelog enforcement specific to unreleased section (#6216)
 ### Fixed
 - Revert form data passing for SNVs (#6191)
 
