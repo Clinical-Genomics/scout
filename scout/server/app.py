@@ -343,7 +343,7 @@ def register_filters(app):
                     else truncate(variant.get("alternative", ""), 20)
                 )
 
-                return " ".join(filter(None, [main, tail]))
+                return " ".join(part for part in (main, tail) if part)
 
             # --- SNV / cancer ---
             case "snv" | "cancer":
