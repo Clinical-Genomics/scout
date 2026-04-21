@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A documentation page for institute settings (#6212)
 - Parse and display Paraphrase output from Nallo Paraphase conversion (#6178)
 - Command line option to export causative variants by category and/or genome build (#6202)
+- An additional button on causatives and verified pages to download SNVs and SVs as input for the managed variants list (#6205)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
