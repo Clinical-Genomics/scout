@@ -112,7 +112,7 @@ def get_managed_infile(institute_id: str, type: str):
     if type == "causatives":
         variants = controllers.causatives(institute_obj, request)
     elif type == "verified":
-        variants = controllers.verified_vars(institute_obj)
+        variants = controllers.verified_vars(institute_obj["_id"])
 
     managed_lines = controllers.variants_to_managed_variants(
         variants=variants, type=type, institute_id=institute_id
