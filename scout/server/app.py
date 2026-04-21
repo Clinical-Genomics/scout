@@ -324,7 +324,7 @@ def register_filters(app):
             if not value:
                 return ""
             value = str(value)
-            return value if len(value) <= length else value[:length]
+            return value[:length]
 
         category = variant.get("category")
 
