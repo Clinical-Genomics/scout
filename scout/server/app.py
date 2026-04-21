@@ -349,10 +349,10 @@ def register_filters(app):
             case "snv" | "cancer":
                 display_genes = []
 
-                for g in variant.get("genes", []):
-                    symbol = g.get("hgnc_symbol")
-                    hgvs = g.get("hgvs_identifier")
-                    hgnc_id = g.get("hgnc_id")
+                for gene in variant.get("genes", []):
+                    symbol = gene.get("hgnc_symbol")
+                    hgvs = gene.get("hgvs_identifier")
+                    hgnc_id = gene.get("hgnc_id")
 
                     if symbol and hgvs:
                         display_genes.append(f"{symbol} {truncate(hgvs, 20)}")
