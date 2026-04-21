@@ -28,6 +28,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.controllers import gt_cell
 from scout.server.extensions import beacon, store
+from scout.server.filters import pretty_variant
 from scout.server.utils import (
     get_case_genome_build,
     institute_and_case,
@@ -194,8 +195,8 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
             variant_id=variant["_id"],
             _external=True,
         )
-        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{variant["display_name"][0:15]}</a>'
-        description = f"{type} {build} {institute_id} {link}"
+        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant(variant)}</a>'
+        description = f"{link} ({type},inst:{institute_id},build:{build})"
 
         if category == "cancer":
             category = "cancer_snv"
