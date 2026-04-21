@@ -548,12 +548,14 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
             variant_id=variant_obj["_id"],
+            _external=True,
         )
-        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{variant_obj["display_name"][0:15]}</a>'
+        pretty_variant_name = app.jinja_env.filters['pretty_variant'](variant_obj)
+        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
 
         assert (
             content[1]
-            == f"{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};causatives {build} {inst} {link};;{inst}"
+            == f"{chrom};{start};{end};{ref};{alt};{category};{sub_category};{build};{link} (causatives,{inst},build{build});;{inst}"
         )
 
 

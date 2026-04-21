@@ -196,7 +196,7 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
         )
         pretty_variant_name = current_app.jinja_env.filters["pretty_variant"](variant)
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
-        description = f"{link} ({type},inst:{institute_id},build:{build})"
+        description = f"{link} ({type},{institute_id},build{build})"
 
         if category == "cancer":
             category = "cancer_snv"
