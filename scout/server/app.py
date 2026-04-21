@@ -336,7 +336,7 @@ def register_filters(app):
                 main = (
                     variant.get("str_repid")
                     or variant.get("str_trid")
-                    or " ".join(g.get("symbol", "") for g in genes)
+                    or " ".join(gene.get("symbol", "") for gene in variant.get("genes", []))
                 )
 
                 tail = (
