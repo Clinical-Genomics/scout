@@ -304,3 +304,4 @@ def register_template_filters(app):
 
     app.custom_filters = type("CustomFilters", (), {})()
     app.custom_filters.format_variant_canonical_transcripts = format_variant_canonical_transcripts
+    app.custom_filters.pretty_variant = pretty_variant
