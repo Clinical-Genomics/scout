@@ -388,7 +388,12 @@ def register_filters(app):
                         )
                     case "expression":
                         l2fc = variant.get("l2fc", 0)
-                        arrow = "↑" if l2fc > 0 else "↓" if l2fc < 0 else ""
+                        if l2fc > 0:
+                            arrow = "↑"
+                        elif l2fc < 0:
+                            arrow = "↓"
+                        else:
+                            arrow = ""
                         detail = f"{l2fc}{arrow}"
                     case "methylation":
                         cpg = variant.get("cpg_label", "")
