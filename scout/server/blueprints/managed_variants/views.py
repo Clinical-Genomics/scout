@@ -24,8 +24,7 @@ def managed_variants():
 
 @managed_variants_bp.route("/upload_csv", methods=["POST"])
 def upload_managed_variants():
-    institutes = list(user_institutes(store, current_user))
-
+    """Load a list of managed variants from file."""
     csv_file = request.files["csv_file"]
     content = csv_file.stream.read()
     try:
@@ -41,7 +40,9 @@ def upload_managed_variants():
         )
         return safe_redirect_back(request)
 
-    result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
+    result = controllers.upload_managed_variants(
+        store=store, lines=lines, current_user_id=current_user._id
+    )
     flash(
         "In total {} new variants out of {} in file added".format(result[0], result[1]),
         "success",

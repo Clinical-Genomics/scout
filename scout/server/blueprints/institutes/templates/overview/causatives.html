@@ -43,6 +43,7 @@
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+    const exportAsManagedUrl = "{{ url_for('overview.get_managed_infile', institute_id=institute._id, type='causatives') }}";
   </script>
   <script src="{{ url_for('overview.static', filename='variants_list_scripts.js') }}"></script>
 {% endblock %}

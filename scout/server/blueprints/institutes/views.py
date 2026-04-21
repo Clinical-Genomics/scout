@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import datetime
+import io
 import json
 import logging
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file
 from flask_login import current_user
 from pymongo import DESCENDING
 
@@ -12,6 +14,7 @@ from scout.constants import (
     CALLERS,
     CCV_COMPLETE_MAP,
     CCV_MAP,
+    DATE_DAY_FORMATTER,
     INHERITANCE_PALETTE,
     VERBS_ICONS_MAP,
     VERBS_MAP,
@@ -99,6 +102,37 @@ def causatives(institute_id):
         ccv_map={key: CCV_COMPLETE_MAP[value] for key, value in CCV_MAP.items()},
         institute=institute_obj,
         inherit_palette=INHERITANCE_PALETTE,
+    )
+
+
+@blueprint.route("/<institute_id>/<type>/get_managed_infile", methods=["GET"])
+def get_managed_infile(institute_id: str, type: str):
+    """Downloads a list of variants (causatives or verified) in the right format to be imported into the managed variants list."""
+    institute_obj = institute_and_case(store, institute_id)
+    if type == "causatives":
+        variants = controllers.causatives(institute_obj, request)
+    elif type == "verified":
+        variants = controllers.verified_vars(institute_obj["_id"])
+
+    managed_lines = controllers.variants_to_managed_variants(
+        variants=variants, type=type, institute_id=institute_id
+    )
+    file_name = "_".join(
+        [
+            institute_id,
+            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
+            f"{type}.txt",
+        ]
+    )
+    txt_file = io.StringIO()
+    txt_file.write("\n".join(managed_lines))
+    txt_file.seek(0)
+
+    return send_file(
+        io.BytesIO(txt_file.getvalue().encode("utf-8")),
+        mimetype="text/plain",
+        as_attachment=True,
+        download_name=file_name,
     )
 
 
