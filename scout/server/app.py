@@ -331,8 +331,6 @@ def register_filters(app):
         match category:
             # --- STR ---
             case "str":
-                genes = variant.get("genes", [])
-
                 main = (
                     variant.get("str_repid")
                     or variant.get("str_trid")
