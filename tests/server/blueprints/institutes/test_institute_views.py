@@ -506,8 +506,7 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
     """Test the endpoint that download causative variants into a managed variants infile."""
 
     # GIVEN a causative variant
-    VAR_ID = VARIANT_ID
-    variant_obj = store.variant(document_id=VAR_ID)
+    variant_obj = store.variant(document_id=VARIANT_ID)
     store.mark_causative(
         institute=institute_obj,
         case=case_obj,
