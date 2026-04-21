@@ -319,6 +319,7 @@ def register_filters(app):
     @app.template_filter()
     def pretty_variant(variant: dict) -> str:
         """Recaps variant info to string which is both visually appealing and informative."""
+
         def truncate(value, length):
             if not value:
                 return ""
@@ -347,7 +348,7 @@ def register_filters(app):
                 return " ".join(filter(None, [main, tail]))
 
             # --- SNV / cancer ---
-            case"snv" | "cancer":
+            case "snv" | "cancer":
                 display_genes = []
 
                 for g in variant.get("genes", []):
@@ -367,16 +368,13 @@ def register_filters(app):
 
                 return ", ".join(display_genes)
 
-             # --- OUTLIER ---
+            # --- OUTLIER ---
             case "outlier":
                 subcat = variant.get("sub_category", "")
                 genes = variant.get("genes", [])
 
                 gene_part = (
-                    " ".join(
-                        g.get("hgnc_symbol") or str(g.get("hgnc_id", ""))
-                        for g in genes
-                    )
+                    " ".join(g.get("hgnc_symbol") or str(g.get("hgnc_id", "")) for g in genes)
                     if genes
                     else variant.get("gene_name_orig", "")
                 )
