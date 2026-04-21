@@ -5,6 +5,7 @@ from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.server.extensions import store
 
 OVERVIEW_GENE_VARIANTS_ENDPOINT = "overview.gene_variants"
+VARIANT_ID = "4c7d5c70d955875504db72ef8e1abe77"
 
 
 def test_gene_variants(app, user_obj, institute_obj):
@@ -450,7 +451,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
     # GIVEN a valid user and institute
     # There should be no causative variants for test case:
     assert "causatives" not in case_obj
-    var1_id = "4c7d5c70d955875504db72ef8e1abe77"  # in POT1 gene
+    var1_id = VARIANT_ID  # in POT1 gene
     var2_id = "e24b65bf27feacec6a81c8e9e19bd5f1"  # in TBX1 gene
     var_ids = [var1_id, var2_id]
 
@@ -505,7 +506,7 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
     """Test the endpoint that download causative variants into a managed variants infile."""
 
     # GIVEN a causative variant
-    VAR_ID = "4c7d5c70d955875504db72ef8e1abe77"
+    VAR_ID = VARIANT_ID
     variant_obj = store.variant(document_id=VAR_ID)
     store.mark_causative(
         institute=institute_obj,
