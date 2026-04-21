@@ -1,5 +1,5 @@
 from flask import Response
-from pymongo.cursor import CursorType
+from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers
 
 from scout.adapter import MongoAdapter
@@ -17,7 +17,7 @@ def outliers(
     store: MongoAdapter,
     institute_obj: dict,
     case_obj: dict,
-    omics_variants_query: CursorType,
+    omics_variants_query: Cursor,
     page: int = 1,
     per_page: int = 50,
 ):
@@ -62,7 +62,7 @@ def decorate_omics_variant(
     return omics_variant_obj
 
 
-def download_omics_variants(case_obj: dict, variant_objs: CursorType):
+def download_omics_variants(case_obj: dict, variant_objs: Cursor):
     """Download omics variants in a csv file."""
 
     def generate(header, lines):
