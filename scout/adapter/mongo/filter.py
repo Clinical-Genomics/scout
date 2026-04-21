@@ -4,7 +4,7 @@ from typing import Optional
 
 from bson.objectid import ObjectId
 from flask import flash, url_for
-from pymongo.cursor import CursorType
+from pymongo.cursor import Cursor
 from werkzeug.datastructures import MultiDict
 
 from scout.constants import VARIANTS_TARGET_FROM_CATEGORY
@@ -250,7 +250,7 @@ class FilterHandler(object):
 
         return result
 
-    def filters(self, institute_id: str, category: str = "snv") -> CursorType:
+    def filters(self, institute_id: str, category: str = "snv") -> Cursor:
         """Obtain a cursor for all filters available to an institute in a category.
 
         Arguments:
