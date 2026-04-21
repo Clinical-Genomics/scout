@@ -320,7 +320,7 @@ def register_filters(app):
     def pretty_variant(variant: dict) -> str:
         """Recaps variant info to string which is both visually appealing and informative."""
 
-        def truncate(value: str | None, length: int = 20)  -> str:
+        def truncate(value: str | None, length: int = 20) -> str:
             if not value:
                 return ""
             value = str(value)
