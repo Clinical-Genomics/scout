@@ -20,6 +20,7 @@ from scout.constants import (
     SEX_MAP,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
+from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.server.blueprints.cases.controllers import set_case_clinvar_submission_variants
 from scout.server.blueprints.variant.utils import (
     predictions,
@@ -160,6 +161,52 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
         "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
     }
     return variant_obj
+
+
+def variants_to_managed_variants(variants: list[dict], type: str, institute_id: str) -> list[str]:
+    """Converts variants to managed input."""
+
+    valid_categories = {
+        "snv": "variant.variant",
+        "cancer": "variant.cancer_variant",
+        "sv": "variant.sv_variant",
+        "cancer_sv": "variant.sv_variant",
+    }
+    managed_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+
+    for variant in variants:
+        category = variant.get("category")
+        if category not in valid_categories:
+            continue
+
+        chromosome = variant.get("chromosome")
+        position = variant.get("position")
+        end = variant.get("end", position)
+        ref = variant.get("reference")
+        alt = variant.get("alternative")
+        sub_category = variant.get("sub_category")
+        build = variant.get("case_obj", {}).get("genome_build", "37")
+
+        variant_href = url_for(
+            valid_categories[category],
+            institute_id=institute_id,
+            case_name=variant["case_obj"]["display_name"],
+            variant_id=variant["_id"],
+            _external=True,
+        )
+        pretty_variant_name = current_app.jinja_env.filters["pretty_variant"](variant)
+        link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
+        description = f"{link} ({type},{institute_id},build{build})"
+
+        if category == "cancer":
+            category = "cancer_snv"
+
+        managed_lines.append(
+            f"{chromosome};{position};{end};{ref};{alt};"
+            f"{category};{sub_category};{build};{description};;{institute_id}"
+        )
+
+    return managed_lines
 
 
 def causatives(institute_obj, request):
