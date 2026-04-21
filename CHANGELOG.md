@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Formatting of a list on managed variant export documentation (#6203)
 - Exception for singletons from the "Include variants present only in unaffected" filter (#6209)
 - Link to Alamut Plus software on Institute Settings page (#6213)
+- Give custom Jinja2 filters a separate app module (#6220)
 
 ## [4.109.3]
 ### Fixed
