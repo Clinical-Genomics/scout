@@ -294,6 +294,7 @@ def register_template_filters(app):
     app.template_filter()(url_decode)
     app.template_filter()(url_args)
     app.template_filter()(cosmic_prefix)
+    app.template_filter()(pretty_variant)
     app.template_filter()(format_variant_canonical_transcripts)
     app.template_filter()(upper_na)
     app.template_filter()(count_cursor)
