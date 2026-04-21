@@ -79,7 +79,7 @@
                         {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
 
                           <!-- Share variant it is, could be a multi-gene variant, resulting into multiple gene submission-->
-                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}"> ~ Variant {{count.value}} {% if var.genes|length > 1 %} ({{var.genes|length}} genes) {%endif%} ~ {{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
+                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}"> ~ Variant {{count.value}} {% if var.genes|length > 1 %} ({{var.genes|length}} genes) {%endif%} ~ {{ var | pretty_variant }}<span class="badge bg-success">SNV</span><br>
 
                           {% if var.genes|length > 1 %} <!-- Share single gene variants from a multi-gene variant -->
                             {% for gene in var.genes %}
@@ -91,7 +91,7 @@
 
                         {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
                           {% for gene in var.genes %}
-                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> ~ Variant {{count.value}} ~  {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
+                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> ~ Variant {{count.value}} ~  {{gene.hgnc_symbol or gene.hgnc_id}} - {{ var | pretty_variant }} <span class="badge bg-warning">SV</span><br>
                           {% endfor %}
                         {% endif %}
                       {% endfor %}
@@ -255,63 +255,6 @@
 </form>
 {% endmacro %}
 
-{% macro pretty_variant(variant) %}
-
-  {% if variant.category %}
-    {% if variant.category in "str" %}
-      {% if variant.str_repid %}
-        {{ variant.str_repid }}
-      {% elif variant.str_trid %}
-        {{ variant.str_trid  }}
-      {% else %}
-        {% for gene in variant.genes %} {{ gene.symbol }} {% endfor %}
-      {% endif %}
-      {% if variant.str_mc %}
-        STR{{ variant.str_mc }}
-      {% else %}
-        {{ variant.alternative|truncate(20,True) }}
-      {% endif %}
-    {% elif variant.category in ("snv", "cancer") %}
-      {% set display_genes = [] %}
-      {% for gene in variant.genes %}
-        {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
-          {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
-        {% elif gene.hgnc_symbol %}
-          {{ "" if display_genes.append(gene.hgnc_symbol) }}
-        {% elif gene.hgvs_identifier and gene.hgnc_id %}
-          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier|truncate(20,True)) }}
-        {% endif %}
-      {% endfor %}
-
-      {% if not display_genes %}
-          {{ "" if display_genes.append( variant.simple_id|truncate(40,True) ) }}
-      {% endif %}
-
-      {{ display_genes|join(", ") }}
-
-    {% elif variant.category == "outlier" %}
-      {{ variant.sub_category|upper }} - {% if variant.genes %}
-        {% for gene in variant.genes %}
-           {% if gene.hgnc_symbol %}
-             {{ gene.hgnc_symbol }}
-           {% else %}
-             {{gene.hgnc_id}}
-           {% endif %}
-        {% endfor %} {% else %}
-          {{ variant.gene_name_orig }}{% endif %} - {% if variant.sub_category == "splicing" %}
-          {{ variant.delta_psi }}&Delta;&psi;  {{ variant.potential_impact }} - fs {{ variant.causes_frameshift }}
-        {% elif variant.sub_category == "expression" %}
-          {{ variant.l2fc }}{% if variant.l2fc > 0 %}&uarr;{% elif variant.l2fc < 0 %}&darr;{% endif %}
-        {% elif variant.sub_category == "methylation" %}
-          {{ variant.compare_label }} {{ variant.cpg_label.split("_")[0] }}
-        {% endif %}
-    {% else %} <!-- structural variants -->
-      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
-    {% endif %}
-  {% endif %}
-
-{% endmacro %}
-
 {% macro pretty_link_variant(variant, case) %}
 {# Returns human readable links to the corresponding variant page #}
 
@@ -342,7 +285,7 @@
                               case_name=case.display_name,
                               variant_id=variant._id) }}' target='_blank'>
   {% endif %}
-  {{ pretty_variant(variant) }}
+  {{ variant | pretty_variant }}
   </a>
 {% endmacro %}
 
