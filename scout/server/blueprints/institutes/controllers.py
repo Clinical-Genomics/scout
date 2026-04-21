@@ -192,7 +192,7 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
             institute_id=institute_id,
             case_name=variant["case_obj"]["display_name"],
             variant_id=variant["_id"],
-            _external=True
+            _external=True,
         )
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{variant["display_name"][0:15]}</a>'
         description = f"{type} {build} {institute_id} {link}"
