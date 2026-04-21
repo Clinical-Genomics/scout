@@ -106,6 +106,102 @@ def cosmic_prefix(cosmicId: int | str) -> str:
     return cosmicId
 
 
+def pretty_variant(variant: dict) -> str:
+    """Recaps variant info to string which is both visually appealing and informative."""
+
+    def truncate(value: str | None, length: int = 20) -> str:
+        if not value:
+            return ""
+        value = str(value)
+        return value[:length]
+
+    category = variant.get("category")
+
+    match category:
+        # --- STR ---
+        case "str":
+            main = (
+                variant.get("str_repid")
+                or variant.get("str_trid")
+                or " ".join(gene.get("symbol", "") for gene in variant.get("genes", []))
+            )
+
+            tail = (
+                f"STR{variant.get('str_mc')}"
+                if variant.get("str_mc")
+                else truncate(variant.get("alternative", ""), 20)
+            )
+
+            return " ".join(part for part in (main, tail) if part)
+
+        # --- SNV / cancer ---
+        case "snv" | "cancer":
+            display_genes = []
+
+            for gene in variant.get("genes", []):
+                symbol = gene.get("hgnc_symbol")
+                hgvs = gene.get("hgvs_identifier")
+                hgnc_id = gene.get("hgnc_id")
+
+                if symbol and hgvs:
+                    display_genes.append(f"{symbol} {truncate(hgvs, 20)}")
+                elif symbol:
+                    display_genes.append(symbol)
+                elif hgvs and hgnc_id:
+                    display_genes.append(f"{hgnc_id} {truncate(hgvs, 20)}")
+
+            if not display_genes:
+                display_genes.append(truncate(variant.get("simple_id", ""), 40))
+
+            return ", ".join(display_genes)
+
+        # --- OUTLIER ---
+        case "outlier":
+            subcat = variant.get("sub_category", "")
+            genes = variant.get("genes", [])
+
+            gene_part = (
+                " ".join(g.get("hgnc_symbol") or str(g.get("hgnc_id", "")) for g in genes)
+                if genes
+                else variant.get("gene_name_orig", "")
+            )
+
+            match subcat:
+                case "splicing":
+                    detail = (
+                        f"{variant.get('delta_psi', '')}Δψ "
+                        f"{variant.get('potential_impact', '')} - fs "
+                        f"{variant.get('causes_frameshift', '')}"
+                    )
+                case "expression":
+                    l2fc = variant.get("l2fc", 0)
+                    if l2fc > 0:
+                        arrow = "↑"
+                    elif l2fc < 0:
+                        arrow = "↓"
+                    else:
+                        arrow = ""
+                    detail = f"{l2fc}{arrow}"
+                case "methylation":
+                    cpg = variant.get("cpg_label", "")
+                    cpg = cpg.split("_")[0] if cpg else ""
+                    detail = f"{variant.get('compare_label', '')} {cpg}"
+                case _:
+                    detail = ""
+
+            return " - ".join(filter(None, [subcat.upper(), gene_part, detail]))
+
+        # --- SVs, MEIs ---
+        case _:
+            return "{}({}{}-{}{})".format(
+                variant.get("sub_category", "").upper(),
+                variant.get("chromosome", ""),
+                variant.get("cytoband_start", ""),
+                variant.get("end_chrom", ""),
+                variant.get("cytoband_end", ""),
+            )
+
+
 def format_variant_canonical_transcripts(variant: dict) -> List[str]:
     """Format canonical transcripts for a variant."""
     lines = set()
@@ -181,7 +277,7 @@ def spliceai_max(values: list) -> Optional[float]:
         return max(float_values)
 
 
-def register_filters(app):
+def register_template_filters(app):
     """Register all template filters with the Flask app.
 
     We want to make some filters available also for view/controller function calls.

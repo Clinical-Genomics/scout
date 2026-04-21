@@ -33,7 +33,7 @@ from .blueprints import (
     variant,
     variants,
 )
-from .filters import register_filters as register_template_filters
+from .filters import register_template_filters
 
 LOG = logging.getLogger(__name__)
 
@@ -209,6 +209,8 @@ def register_blueprints(app):
 
 
 def register_tests(app):
+    """Register custom Jinja template tests"""
+
     @app.template_test("existing")
     def path_exists(path):
         """Check if file exists. Helper for jinja template."""
