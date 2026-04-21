@@ -550,7 +550,7 @@ def test_get_managed_infile(app, user_obj, institute_obj, case_obj):
             variant_id=variant_obj["_id"],
             _external=True,
         )
-        pretty_variant_name = app.jinja_env.filters['pretty_variant'](variant_obj)
+        pretty_variant_name = app.jinja_env.filters["pretty_variant"](variant_obj)
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
 
         assert (
