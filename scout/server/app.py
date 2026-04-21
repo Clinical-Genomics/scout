@@ -404,7 +404,7 @@ def register_filters(app):
 
                 return " - ".join(filter(None, [subcat.upper(), gene_part, detail]))
 
-            # --- SVs ---
+            # --- SVs, MEIs ---
             case _:
                 return "{}({}{}-{}{})".format(
                     variant.get("sub_category", "").upper(),
