@@ -15,9 +15,9 @@ from scout.export.variant import (
     export_causative_variants,
     export_managed_variants,
     export_verified_variants,
+    liftover_managed_variants,
 )
 from scout.server.extensions import store
-from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 from scout.utils.vcf import validate_vcf_line
 
 from .export_handler import bson_handler
@@ -131,9 +131,7 @@ def verified(collaborator, test, outpath=None):
     help="Perform liftover on coordinates and export as managed variants infile.",
 )
 @with_appcontext
-def managed(
-    collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]
-):
+def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -147,35 +145,7 @@ def managed(
         return
 
     elif liftover_from:
-        valid_lines = [MANAGED_VARIANTS_INFILE_HEADER]
-        ensembl_client = EnsemblRestApiClient()
-        for variant_obj in variants:
-            if variant_obj["category"] not in ["snv", "cancer_snv"]:
-                continue
-            liftover_result = ensembl_client.liftover(
-                build=liftover_from,
-                chrom=variant_obj["chromosome"],
-                start=variant_obj["position"],
-                end=variant_obj.get("end", ""),
-            )
-            if not liftover_result:
-                continue
-            chrom = liftover_result[0]["mapped"]["seq_region_name"]
-            pos = liftover_result[0]["mapped"]["start"]
-            end = liftover_result[0]["mapped"]["end"]
-            ref = variant_obj.get("reference", "")
-            alt = variant_obj.get("alternative", "")
-            category = variant_obj.get("category", "snv")
-            sub_category = variant_obj.get("sub_category", "snv")
-            build = "38" if liftover_from == "37" else "37"
-            description = variant_obj.get("description")
-            institutes = ",".join(variant_obj.get("institute"))
-
-            valid_lines.append(
-                f"{chrom};{pos};{end};{ref};{alt};"
-                f"{category};{sub_category};{build};{description};;{institutes}"
-            )
-
+        valid_lines = liftover_managed_variants(managed_variants = variants, liftover_from=liftover_from)
     else:
         vcf_header = VCF_HEADER
         vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))

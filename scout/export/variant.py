@@ -5,8 +5,9 @@ from typing import List, Optional
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
-from scout.constants.managed_variant import MANAGED_CATEGORIES
+from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.models.managed_variant import ManagedVariant
+from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 
@@ -61,6 +62,35 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
         return (chrom_int, pos)
 
     return sorted(variants, key=sort_key)
+
+def liftover_managed_variants(managed_variants, liftover_from) -> List[str]:
+    """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
+
+    valid_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+    ensembl_client = EnsemblRestApiClient()
+    for variant_obj in managed_variants:
+        if variant_obj["category"] not in ["snv", "cancer_snv"]:
+            continue
+        liftover_result = ensembl_client.liftover(build=liftover_from, chrom=variant_obj["chromosome"],
+                                                  start=variant_obj["position"], end=variant_obj.get("end", ""))
+        if not liftover_result:
+            continue
+        chrom = liftover_result[0]["mapped"]["seq_region_name"]
+        pos = liftover_result[0]["mapped"]["start"]
+        end = liftover_result[0]["mapped"]["end"]
+        ref = variant_obj.get("reference", "")
+        alt = variant_obj.get("alternative", "")
+        category = variant_obj.get("category", "snv")
+        sub_category = variant_obj.get("sub_category", "snv")
+        build = "38" if liftover_from == "37" else "37"
+        description = variant_obj.get("description")
+        institutes = ",".join(variant_obj.get("institute"))
+
+        valid_lines.append(
+            f"{chrom};{pos};{end};{ref};{alt};"
+            f"{category};{sub_category};{build};{description};;{institutes}"
+        )
+        return valid_lines
 
 
 def export_managed_variants(
