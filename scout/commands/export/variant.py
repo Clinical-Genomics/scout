@@ -9,7 +9,7 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import BUILDS, CALLERS, DATE_DAY_FORMATTER
-from scout.constants.managed_variant import MANAGED_CATEGORIES
+from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_causative_variants,
@@ -17,6 +17,7 @@ from scout.export.variant import (
     export_verified_variants,
 )
 from scout.server.extensions import store
+from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 from scout.utils.vcf import validate_vcf_line
 
 from .export_handler import bson_handler
@@ -125,12 +126,12 @@ def verified(collaborator, test, outpath=None):
 @build_option
 @json_option
 @click.option(
-    "--liftover",
+    "--liftover-from",
     type=click.Choice(BUILDS),
     help="Perform liftover on coordinates and export as managed variants infile.",
 )
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover: Optional[str]):
+def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -139,25 +140,48 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool, lif
         adapter=adapter, institute=collaborator, build=build, category=list(category)
     )
 
-    if liftover:
-        
-
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+    elif liftover_from:
+        valid_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+        ensembl_client = EnsemblRestApiClient()
+        for variant_obj in variants:
+            if variant_obj["category"] not in ["snv", "cancer_snv"]:
+                continue
+            liftover_result = ensembl_client.liftover(build=liftover_from, chrom=variant_obj["chromosome"], start=variant_obj["position"], end=variant_obj.get("end",""))
+            if not liftover_result:
+                continue
+            chrom = liftover_result[0]["mapped"]["seq_region_name"]
+            pos = liftover_result[0]["mapped"]["start"]
+            end = liftover_result[0]["mapped"]["end"]
+            ref = variant_obj.get("reference","")
+            alt = variant_obj.get("alternative","")
+            category = variant_obj.get("category", "snv")
+            sub_category = variant_obj.get("sub_category", "snv")
+            build = "38" if liftover_from == "37" else "37"
+            description = variant_obj.get("description")
+            institutes = ",".join(variant_obj.get("institute"))
 
-    valid_lines = []
+            valid_lines.append(
+                f"{chrom};{pos};{end};{ref};{alt};"
+                f"{category};{sub_category};{build};{description};;{institutes}"
+            )
 
-    for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj)
-        if variant_string:
-            valid_lines.append(variant_string)
+    else:
+        vcf_header = VCF_HEADER
+        vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
 
-    for line in vcf_header:
-        click.echo(line)
+        valid_lines = []
+
+        for variant_obj in variants:
+            variant_string = get_vcf_entry(variant_obj)
+            if variant_string:
+                valid_lines.append(variant_string)
+
+        for line in vcf_header:
+            click.echo(line)
 
     for valid_line in valid_lines:
         click.echo(valid_line)

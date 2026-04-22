@@ -62,7 +62,6 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
 
     return sorted(variants, key=sort_key)
 
-
 def export_managed_variants(
     adapter: MongoAdapter,
     institute: str = None,
