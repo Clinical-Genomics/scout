@@ -72,6 +72,10 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
     for variant_obj in managed_variants:
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
+        build = "38" if liftover_from == "37" else "37"
+        if variant_obj.get("build", "37") == build:
+            continue
+
         liftover_result = ensembl_client.liftover(
             build=liftover_from,
             chrom=variant_obj["chromosome"],
@@ -87,7 +91,6 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         alt = variant_obj.get("alternative", "")
         category = variant_obj.get("category", "snv")
         sub_category = variant_obj.get("sub_category", "snv")
-        build = "38" if liftover_from == "37" else "37"
         description = variant_obj.get("description")
         institutes = ",".join(variant_obj.get("institute", ""))
 
