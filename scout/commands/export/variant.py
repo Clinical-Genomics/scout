@@ -131,7 +131,9 @@ def verified(collaborator, test, outpath=None):
     help="Perform liftover on coordinates and export as managed variants infile.",
 )
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]):
+def managed(
+    collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]
+):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -150,14 +152,19 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool, lif
         for variant_obj in variants:
             if variant_obj["category"] not in ["snv", "cancer_snv"]:
                 continue
-            liftover_result = ensembl_client.liftover(build=liftover_from, chrom=variant_obj["chromosome"], start=variant_obj["position"], end=variant_obj.get("end",""))
+            liftover_result = ensembl_client.liftover(
+                build=liftover_from,
+                chrom=variant_obj["chromosome"],
+                start=variant_obj["position"],
+                end=variant_obj.get("end", ""),
+            )
             if not liftover_result:
                 continue
             chrom = liftover_result[0]["mapped"]["seq_region_name"]
             pos = liftover_result[0]["mapped"]["start"]
             end = liftover_result[0]["mapped"]["end"]
-            ref = variant_obj.get("reference","")
-            alt = variant_obj.get("alternative","")
+            ref = variant_obj.get("reference", "")
+            alt = variant_obj.get("alternative", "")
             category = variant_obj.get("category", "snv")
             sub_category = variant_obj.get("sub_category", "snv")
             build = "38" if liftover_from == "37" else "37"
