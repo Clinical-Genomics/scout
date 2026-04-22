@@ -73,20 +73,25 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
         build = "38" if liftover_from == "37" else "37"
-        if variant_obj.get("build", "37") == build:
-            continue
+        if (
+            variant_obj.get("build", "37") == build
+        ):  # Use coordinates from variant instead of liftover
+            chrom = variant_obj["chromosome"]
+            pos = variant_obj["position"]
+            end = variant_obj.get("end", variant_obj["position"])
+        else:
+            liftover_result = ensembl_client.liftover(
+                build=liftover_from,
+                chrom=variant_obj["chromosome"],
+                start=variant_obj["position"],
+                end=variant_obj.get("end", variant_obj["position"]),
+            )
+            if not liftover_result:
+                continue
+            chrom = liftover_result[0]["mapped"]["seq_region_name"]
+            pos = liftover_result[0]["mapped"]["start"]
+            end = liftover_result[0]["mapped"]["end"]
 
-        liftover_result = ensembl_client.liftover(
-            build=liftover_from,
-            chrom=variant_obj["chromosome"],
-            start=variant_obj["position"],
-            end=variant_obj.get("end", variant_obj["position"]),
-        )
-        if not liftover_result:
-            continue
-        chrom = liftover_result[0]["mapped"]["seq_region_name"]
-        pos = liftover_result[0]["mapped"]["start"]
-        end = liftover_result[0]["mapped"]["end"]
         ref = variant_obj.get("reference", "")
         alt = variant_obj.get("alternative", "")
         category = variant_obj.get("category", "snv")
