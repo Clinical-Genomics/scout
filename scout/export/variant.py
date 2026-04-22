@@ -89,7 +89,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         sub_category = variant_obj.get("sub_category", "snv")
         build = "38" if liftover_from == "37" else "37"
         description = variant_obj.get("description")
-        institutes = ",".join(variant_obj.get("institute", []))
+        institutes = ",".join(variant_obj.get("institute", ""))
 
         export_lines.append(
             f"{chrom};{pos};{end};{ref};{alt};"
