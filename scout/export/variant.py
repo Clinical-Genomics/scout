@@ -74,9 +74,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
         build = "38" if liftover_from == "37" else "37"
-        if (
-            variant_obj.get("build") == build
-        ):  # Use coordinates from variant instead of liftover
+        if variant_obj.get("build") == build:  # Use coordinates from variant instead of liftover
             chrom = variant_obj["chromosome"]
             pos = variant_obj["position"]
             end = variant_obj.get("end", variant_obj["position"])
