@@ -70,6 +70,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     ensembl_client = EnsemblRestApiClient()
     for variant_obj in managed_variants:
+        LOG.warning(variant_obj)
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
         build = "38" if liftover_from == "37" else "37"
@@ -103,7 +104,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
             f"{chrom};{pos};{end};{ref};{alt};"
             f"{category};{sub_category};{build};{description};;{institutes}"
         )
-        return export_lines
+    return export_lines
 
 
 def export_managed_variants(
