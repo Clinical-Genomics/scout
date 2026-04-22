@@ -75,7 +75,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
             continue
         build = "38" if liftover_from == "37" else "37"
         if (
-            variant_obj.get("build", "37") == build
+            variant_obj.get("build") == build
         ):  # Use coordinates from variant instead of liftover
             chrom = variant_obj["chromosome"]
             pos = variant_obj["position"]
