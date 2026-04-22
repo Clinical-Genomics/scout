@@ -68,12 +68,15 @@
     {{ pagination_hidden_div(page, result_size) }}
     <div id="accordion" >
        <div class="card mt-3">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
           <h5>
             <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
                 Filters
             </a>
           </h5>
+          <div class="text-muted">
+            Filter returns {{ result_size }} / {{ total_variants }} variants.
+          </div>
         </div>
         <div id="collapseFilters" class="panel-collapse collapse">
           <div class="card-body">{{ filter_variants_form() }}</div>
