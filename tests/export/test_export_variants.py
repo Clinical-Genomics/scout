@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import responses
+
+from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.variants_export import MT_EXPORT_HEADER
-from scout.export.variant import export_mt_variants
+from scout.export.variant import export_mt_variants, liftover_managed_variants
+from scout.utils.ensembl_rest_clients import RESTAPI_URL
 
 
 def test_export_mt_variants(case_obj, real_populated_database):
@@ -26,7 +30,43 @@ def test_export_mt_variants(case_obj, real_populated_database):
     for sample in samples:
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample["individual_id"])
 
-        # check that rows to write to excel corespond to number of variants
+        # check that rows to write to excel correspond to number of variants
         assert len(sample_lines) == len(mt_variants)
-        # check that cols to write to excel corespond to fields of excel header
+        # check that cols to write to excel correspond to fields of Excel header
         assert len(sample_lines[0]) == len(MT_EXPORT_HEADER)
+
+
+@responses.activate
+def test_liftover_managed_variants(ensembl_liftover_response):
+    """Test the function that performs liftover over a list of managed variants and formats them into a list of strings."""
+
+    # GIVEN a patched response from Ensembl
+    url = f"{RESTAPI_URL}/map/human/GRCh37/X:1000000..1000000/GRCh38?content-type=application/json"
+    responses.add(
+        responses.GET,
+        url,
+        json=ensembl_liftover_response,
+        status=200,
+    )
+    managed_variant_info = {
+        "chromosome": "X",
+        "position": "1000000",
+        "reference": "C",
+        "alternative": "T",
+        "build": "37",
+    }
+
+    # GIVEN a list of managed variants
+    managed_variants = [managed_variant_info]
+
+    # THEN the liftover function should export them correctly:
+    export_lines = liftover_managed_variants(managed_variants=managed_variants, liftover_from="37")
+
+    # WITH the first line being the header
+    assert export_lines[0] == MANAGED_VARIANTS_INFILE_HEADER
+
+    # AND second line being the lifted-over variant
+    lifted_chrom = ensembl_liftover_response["mappings"][0]["mapped"]["seq_region_name"]
+    lifted_position = ensembl_liftover_response["mappings"][0]["mapped"]["start"]
+    lifted_end = ensembl_liftover_response["mappings"][0]["mapped"]["end"]
+    assert f"{lifted_chrom};{lifted_position};{lifted_end}" in export_lines[1]

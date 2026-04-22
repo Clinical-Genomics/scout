@@ -70,13 +70,13 @@ def liftover_managed_variants(managed_variants: Generator, liftover_from: str) -
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     ensembl_client = EnsemblRestApiClient()
     for variant_obj in managed_variants:
-        if variant_obj["category"] not in ["snv", "cancer_snv"]:
+        if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
         liftover_result = ensembl_client.liftover(
             build=liftover_from,
             chrom=variant_obj["chromosome"],
             start=variant_obj["position"],
-            end=variant_obj.get("end", ""),
+            end=variant_obj.get("end", variant_obj["position"]),
         )
         if not liftover_result:
             continue
@@ -89,7 +89,7 @@ def liftover_managed_variants(managed_variants: Generator, liftover_from: str) -
         sub_category = variant_obj.get("sub_category", "snv")
         build = "38" if liftover_from == "37" else "37"
         description = variant_obj.get("description")
-        institutes = ",".join(variant_obj.get("institute"))
+        institutes = ",".join(variant_obj.get("institute", []))
 
         export_lines.append(
             f"{chrom};{pos};{end};{ref};{alt};"
