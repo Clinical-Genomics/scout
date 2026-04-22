@@ -60,7 +60,7 @@ def test_liftover_managed_variants(ensembl_liftover_response):
     managed_variants = [managed_variant_info]
 
     # THEN the liftover function should export them correctly:
-    export_lines = liftover_managed_variants(managed_variants=managed_variants, liftover_from="37")
+    export_lines = liftover_managed_variants([var for var in managed_variants], liftover_from="37")
 
     # WITH the first line being the header
     assert export_lines[0] == MANAGED_VARIANTS_INFILE_HEADER
