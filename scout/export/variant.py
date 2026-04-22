@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import List, Optional
+from typing import Generator, List, Optional
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -64,10 +64,10 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     return sorted(variants, key=sort_key)
 
 
-def liftover_managed_variants(managed_variants, liftover_from) -> List[str]:
+def liftover_managed_variants(managed_variants: Generator, liftover_from: str) -> List[str]:
     """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
 
-    valid_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+    export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     ensembl_client = EnsemblRestApiClient()
     for variant_obj in managed_variants:
         if variant_obj["category"] not in ["snv", "cancer_snv"]:
@@ -91,11 +91,11 @@ def liftover_managed_variants(managed_variants, liftover_from) -> List[str]:
         description = variant_obj.get("description")
         institutes = ",".join(variant_obj.get("institute"))
 
-        valid_lines.append(
+        export_lines.append(
             f"{chrom};{pos};{end};{ref};{alt};"
             f"{category};{sub_category};{build};{description};;{institutes}"
         )
-        return valid_lines
+        return export_lines
 
 
 def export_managed_variants(
