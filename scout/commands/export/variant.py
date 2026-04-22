@@ -2,13 +2,13 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.constants import CALLERS, DATE_DAY_FORMATTER
+from scout.constants import BUILDS, CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
@@ -124,8 +124,13 @@ def verified(collaborator, test, outpath=None):
 @collaborator_option
 @build_option
 @json_option
+@click.option(
+    "--liftover",
+    type=click.Choice(BUILDS),
+    help="Perform liftover on coordinates and export as managed variants infile.",
+)
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
+def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover: Optional[str]):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -133,6 +138,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     variants = export_managed_variants(
         adapter=adapter, institute=collaborator, build=build, category=list(category)
     )
+
+    if liftover:
+        
 
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
