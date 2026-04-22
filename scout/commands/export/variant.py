@@ -131,7 +131,9 @@ def verified(collaborator, test, outpath=None):
     help="Perform liftover on coordinates and export as managed variants infile.",
 )
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]):
+def managed(
+    collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]
+):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -145,7 +147,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool, lif
         return
 
     elif liftover_from:
-        valid_lines = liftover_managed_variants(managed_variants = variants, liftover_from=liftover_from)
+        valid_lines = liftover_managed_variants(
+            managed_variants=variants, liftover_from=liftover_from
+        )
     else:
         vcf_header = VCF_HEADER
         vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))

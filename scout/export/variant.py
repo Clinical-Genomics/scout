@@ -63,6 +63,7 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
 
     return sorted(variants, key=sort_key)
 
+
 def liftover_managed_variants(managed_variants, liftover_from) -> List[str]:
     """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
 
@@ -71,8 +72,12 @@ def liftover_managed_variants(managed_variants, liftover_from) -> List[str]:
     for variant_obj in managed_variants:
         if variant_obj["category"] not in ["snv", "cancer_snv"]:
             continue
-        liftover_result = ensembl_client.liftover(build=liftover_from, chrom=variant_obj["chromosome"],
-                                                  start=variant_obj["position"], end=variant_obj.get("end", ""))
+        liftover_result = ensembl_client.liftover(
+            build=liftover_from,
+            chrom=variant_obj["chromosome"],
+            start=variant_obj["position"],
+            end=variant_obj.get("end", ""),
+        )
         if not liftover_result:
             continue
         chrom = liftover_result[0]["mapped"]["seq_region_name"]
