@@ -83,6 +83,7 @@ def managed_variants(request: LocalProxy) -> dict:
     )
 
     variant_count = store.count_managed_variants(category=categories, query_options=query_options)
+    total_count = store.count_managed_variants()
     managed_variants = list(managed_variants_query)
 
     return {
@@ -92,6 +93,7 @@ def managed_variants(request: LocalProxy) -> dict:
         "modify_form": modify_form,
         "managed_variants": managed_variants,
         "result_size": variant_count,
+        "total_variants": total_count,
         "cytobands_37": store.cytoband_by_chrom("37"),
         "cytobands_38": store.cytoband_by_chrom("38"),
         "chromosomes_37": CHROMOSOMES,
