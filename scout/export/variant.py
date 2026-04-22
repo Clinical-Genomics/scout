@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import Generator, List, Optional
+from typing import Iterable, List, Optional
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -64,7 +64,7 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     return sorted(variants, key=sort_key)
 
 
-def liftover_managed_variants(managed_variants: Generator, liftover_from: str) -> List[str]:
+def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) -> List[str]:
     """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
 
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
