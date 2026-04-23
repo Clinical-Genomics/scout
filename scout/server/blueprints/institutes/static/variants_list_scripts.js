@@ -1,4 +1,20 @@
 $(document).ready(function() {
+  const buttons = [
+      'copyHtml5',
+      'excelHtml5'
+  ];
+
+  if (isAdmin) {
+      buttons.push({
+          text: 'Managed Variants infile',
+          className: 'btn btn-primary',
+          action: function () {
+              $(globalThis).off('beforeunload');
+              globalThis.location.href = exportAsManagedUrl;
+          }
+      });
+  }
+
   $('#variants_table').DataTable({
       paging: false,
       searching: true,
@@ -10,18 +26,7 @@ $(document).ready(function() {
               }
           }
       },
-      buttons: [
-          'copyHtml5',
-          'excelHtml5',
-          {
-              text: 'Managed Variants infile',
-              className: 'btn btn-primary',
-              action: function () {
-              		$(globalThis).off('beforeunload');
-									globalThis.location.href = exportAsManagedUrl;
-              }
-          }
-      ]
+      buttons: buttons
   });
 
   $('[data-toggle="tooltip"]').tooltip();
