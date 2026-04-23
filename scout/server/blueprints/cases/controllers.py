@@ -325,10 +325,9 @@ def _parse_phase_region(region: List[str]) -> dict:
     """Parse a list like ['chr6:32013300-32046200'] into chrom/start/end."""
     region_str = region[0]
     chrom_str, coords_str = region_str.split(":")
-    chrom_str.lstrip("chr")
     start_str, end_str = coords_str.split("-")
     return {
-        "chrom": chrom_str,
+        "chrom": chrom_str.lstrip("chr"),
         "start": int(start_str),
         "end": int(end_str),
     }
