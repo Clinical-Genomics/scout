@@ -24,6 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Exception for singletons from the "Include variants present only in unaffected" filter (#6209)
 - Link to Alamut Plus software on Institute Settings page (#6213)
 - Give custom Jinja2 filters a separate app module (#6220)
+- Case page image accordion style (#6230)
+- Width of comment field on order Sanger form (#6229)
 
 ## [4.109.3]
 ### Fixed
