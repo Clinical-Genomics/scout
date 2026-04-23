@@ -442,21 +442,23 @@
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% set chromograph = namespace(available=false) %}
 {% macro insert_multi_image_panel() %}
-<div class="panel-group no-animation" id="accordion">
+<div class="accordion no-animation" id="chromograph-accordion">
   {% for i in case.individuals %}
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
       {% set chromograph.available = true %}
-      <div class="panel-heading">
-          <a class="accordion-button" type="button" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-parent="#chromograph-accordion" href="#collapse_{{i.individual_id}}">
             <em class="fa"></em>
             Chromograph images {{i.display_name}}
-          </a>
-        (<a href = "https://clinical-genomics.github.io/scout/user-guide/cases#Cytogenomics" rel="noopener" target="_blank">legend</a>)
-      </div>
-      <div id="collapse_{{i.individual_id}}" style="width:100%" class="panel-collapse collapse in">
-        <div class="panel-body">
-          <div class="card-body bg-white" style="max-height: 80vh; overflow-y: scroll;">
-            <svg id={{"svg_"+i.individual_id}} class="img-fluid" width="1200" height="1700"></svg>
+          </button>
+        </div>
+        <div id="collapse_{{i.individual_id}}" style="width:100%" class="accordion-collapse collapse in">
+          <div class="accordion-body">
+            <div class="card-body bg-white" style="max-height: 80vh; overflow-y: scroll;">
+              <svg id={{"svg_"+i.individual_id}} class="img-fluid" width="1200" height="1700"></svg>
+            </div>
+            <div><a href = "https://clinical-genomics.github.io/scout/user-guide/cases#Cytogenomics" rel="noopener" target="_blank" class="btn btn-link p-0">Chromograph legend</a></div>
           </div>
         </div>
       </div>
@@ -470,22 +472,22 @@
   {% if case.custom_images %}
     {% for section_name in case.custom_images %}
       <div id="{{section_name}}-accordion" class="accordion">
-        <div class="panel-heading">
-          <div class="panel-title">
+        <div class="accordion-item">
+          <div class="accordion-header">
             <a class="accordion-button" type="button" data-bs-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
               <em class="fa"></em>
               {{ section_name }} images
             </a>
           </div>
-        </div>
-        <div id="collapse_{{ section_name }}" class="panel-collapse collapse ps-3">
-          <div class="panel-body">
-            {% for image in case.custom_images[section_name] %}
-              <div class="pt-3" >
-                <h6 class="fw-bold">{{ image.title }}</h6>
-                <div id="{{image.path|safe}}"></div>
-              </div>
-            {% endfor %}
+          <div id="collapse_{{ section_name }}" class="accordion-collapse collapse ps-3">
+            <div class="accordion-body">
+              {% for image in case.custom_images[section_name] %}
+                <div class="pt-3" >
+                  <h6 class="fw-bold">{{ image.title }}</h6>
+                  <div id="{{image.path|safe}}"></div>
+                </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>
