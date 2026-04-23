@@ -167,3 +167,7 @@ SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
 # Uncomment and customise to log users' activity to file
 # USERS_ACTIVITY_LOG_PATH = "users_activity.log"
+
+MAIL_USERNAME = "WHATEVS"
+ADMINS = ["clark.kent@mail.com"]
+MAIL_PASSWORD = "ldkla"
