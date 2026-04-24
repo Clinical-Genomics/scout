@@ -24,7 +24,7 @@ def panelapp_all(out_dir: str):
     out_file = os.path.join(out_dir, PANELAPP_OUTFILE_NAME)
 
     with open(out_file, "w") as f:
-        with click.progressbar(panel_ids[:10], label="Downloading panels") as bar:
+        with click.progressbar(panel_ids, label="Downloading panels") as bar:
             for panel_id in bar:
                 panel_obj = panelapp_extension.get_panel(panel_id)
                 f.write(json.dumps(panel_obj) + "\n")
