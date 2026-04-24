@@ -4,10 +4,10 @@ import os
 
 import click
 
+from scout.constants.panels import PANELAPP_OUTFILE_NAME
 from scout.server.extensions import panelapp as panelapp_extension
 
 LOG = logging.getLogger(__name__)
-OUTFILE_NAME = "panelapp_panels.jsonl"
 
 
 @click.command("panelapp-all", help="Download all panels from PanelApp to a file")
@@ -21,7 +21,7 @@ def panelapp_all(out_dir: str):
     )  # Collect al Panel IDs, page by page
 
     os.makedirs(out_dir, exist_ok=True)
-    out_file = os.path.join(out_dir, "panelapp_panels.jsonl")
+    out_file = os.path.join(out_dir, PANELAPP_OUTFILE_NAME)
 
     with open(out_file, "w") as f:
         with click.progressbar(panel_ids[:10], label="Downloading panels") as bar:
