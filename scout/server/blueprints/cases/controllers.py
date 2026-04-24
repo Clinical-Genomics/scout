@@ -327,7 +327,7 @@ def _parse_phase_region(region: List[str]) -> dict:
     chrom_str, coords_str = region_str.split(":")
     start_str, end_str = coords_str.split("-")
     return {
-        "chrom": chrom_str,
+        "chrom": chrom_str.lstrip("chr"),
         "start": int(start_str),
         "end": int(end_str),
     }
