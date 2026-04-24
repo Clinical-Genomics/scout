@@ -161,7 +161,7 @@
               {% endif %}
               {% if "phase_region" in region %}
                 <span class="me-3" {% if not case.bam_files %}title="Alignment file(s) missing" data-bs-toggle="tooltip"{% endif %}>
-                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['start'] )}}" target="_blank"
+                  <a href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'],chrom=region['phase_region']['chrom'], start=region['phase_region']['start'], stop=region['phase_region']['end'] )}}" target="_blank"
                     class="btn btn-secondary btn-sm text-white{% if not case.bam_files %} disabled{% endif %}">
                     IGV DNA
                   </a>
