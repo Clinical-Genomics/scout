@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Command to download all PanelApp panels to file ()
+- Command to download all PanelApp panels to file (#6239)
 
 ## [4.110.0]
 ### Added
