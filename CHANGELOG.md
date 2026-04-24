@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Give custom Jinja2 filters a separate app module (#6220)
 - Case page image accordion style (#6230)
 - Width of comment field on order Sanger form (#6229)
+- Links from Paraphrase page to IGV (#6235)
 
 ## [4.109.3]
 ### Fixed
