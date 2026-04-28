@@ -1,16 +1,12 @@
 import json
 
-from pytest import MonkeyPatch
-
 from scout.commands.download.panelapp import panelapp_all
 from scout.constants.panels import PANELAPP_OUTFILE_NAME
 
 DEMO_PANELS = [1207, 1141, 399]
 
 
-def test_download_panelapp_all(
-    empty_mock_app: app.Flask, monkeypatch: MonkeyPatch, tmp_path: Any, panelapp_panel_lookup: dict
-):
+def test_download_panelapp_all(empty_mock_app, monkeypatch, tmp_path, panelapp_panel_lookup):
     """Test the CLI that downloads all gene panels from PanelApp."""
 
     runner = empty_mock_app.test_cli_runner()
