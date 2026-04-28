@@ -3,7 +3,7 @@ import json
 from scout.commands.download.panelapp import panelapp_all
 from scout.constants.panels import PANELAPP_OUTFILE_NAME
 
-DEMO_PANELS = [1207, 1141, 399]
+DEMO_PANELS = [522, 1141, 399]
 
 
 def test_download_panelapp_all(empty_mock_app, monkeypatch, tmp_path, panelapp_panel_lookup):

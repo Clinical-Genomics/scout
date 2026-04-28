@@ -25,6 +25,7 @@ def fixture_demo_files():
 
 @pytest.fixture
 def panelapp_panel_lookup() -> Callable[[int], Dict[str, Any]]:
+    """Return a panel given its ID."""
     path = panelapp_all_reduced_path
 
     with open(path, "r", encoding="utf-8") as f:
@@ -36,6 +37,12 @@ def panelapp_panel_lookup() -> Callable[[int], Dict[str, Any]]:
         return panel_map[panel_id]
 
     return _lookup
+
+
+@pytest.fixture
+def panelapp_api_panel(panelapp_panel_lookup) -> dict:
+    """Return one panel as it would be returned by the PanelApp API."""
+    return panelapp_panel_lookup(522)
 
 
 @pytest.fixture(scope="function")
