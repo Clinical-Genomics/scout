@@ -35,6 +35,9 @@ genes_to_phenotype_reduced_path = str(files(BASE_PATH).joinpath("genes_to_phenot
 phenotype_to_genes_reduced_path = str(files(BASE_PATH).joinpath("phenotype_to_genes_reduced.txt"))
 hpo_terms_def_path = str(files(BASE_PATH).joinpath("hpo_terms.csv"))
 
+# PanelApp path
+panelapp_all_reduced_path = str(files(BASE_PATH).joinpath("panelapp_panels_reduced.jsonl"))
+
 demo_files = {
     "constraint_path": constraint_reduced_path,
     "genemap2_path": genemap2_reduced_path,
@@ -53,4 +56,5 @@ demo_files = {
     "orpha_to_genes_path": orpha_to_genes_reduced_path,
     "orpha_to_hpo_path": orpha_to_hpo_reduced_path,
     "orpha_inheritance_path": orpha_inheritance_reduced_path,
+    "panelapp_all_path": panelapp_all_reduced_path,
 }
