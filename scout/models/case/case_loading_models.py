@@ -66,6 +66,7 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report",
     "RNAfusion_report_research",
     "rna_delivery_report",
+    "saltshaker_report",
     "smn_tsv",
     "somalier_ancestry",
     "somalier_pairs",
@@ -459,6 +460,7 @@ class CaseLoader(BaseModel):
     RNAfusion_report: Optional[str] = None
     RNAfusion_report_research: Optional[str] = None
     rna_delivery_report: Optional[str] = None
+    saltshaker_report: Optional[str] = None
     smn_tsv: Optional[str] = None
     sv_rank_model_url: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
