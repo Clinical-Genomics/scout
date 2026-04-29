@@ -33,7 +33,7 @@ LOG = logging.getLogger(__name__)
     "--revoke-maintainer",
     "-r",
     # There will be more roles in the future
-    help="Revoke maintainter status for user_id for a panel",
+    help="Revoke maintainer status for user_id for a panel",
 )
 @click.option("--update-version", type=float, help="Change the version of a panel")
 @with_appcontext

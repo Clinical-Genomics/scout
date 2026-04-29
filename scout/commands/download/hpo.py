@@ -5,6 +5,7 @@ import pathlib
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.utils.scout_requests import fetch_hpo_files
 
 LOG = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def print_hpo(out_dir, hpo_info):
 
 
 @click.command("hpo", help="Download hpo files")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 @click.option("--terms", is_flag=True, help="If only terms should be fetched and printed")
 @click.option("--genes", is_flag=True, help="If only genes should be fetched and printed")
 @click.option("--disease", is_flag=True, help="If only disease should be fetched and printed")
