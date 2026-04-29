@@ -1,8 +1,6 @@
 """Fixtures for CLI tests"""
 
-import json
 import pathlib
-from pathlib import Path
 from typing import Any, Callable, Dict
 
 import pytest
