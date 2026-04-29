@@ -3,7 +3,7 @@
 import logging
 
 import click
-from flask.cli import current_app, with_appcontext
+from flask.cli import with_appcontext
 
 from scout.constants.panels import PANELAPPGREEN_DISPLAY_NAME, PANELAPPGREEN_NAME
 from scout.load.panelapp import load_panelapp_green_panel
