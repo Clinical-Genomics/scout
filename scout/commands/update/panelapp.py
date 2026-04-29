@@ -3,7 +3,6 @@
 import logging
 
 import click
-from flask.cli import with_appcontext
 
 from scout.constants.panels import PANELAPPGREEN_DISPLAY_NAME, PANELAPPGREEN_NAME
 from scout.load.panelapp import load_panelapp_green_panel
@@ -44,7 +43,6 @@ LOG = logging.getLogger(__name__)
     default=PANELAPPGREEN_DISPLAY_NAME,
     show_default=True,
 )
-@with_appcontext
 def panelapp_green(institute, force, signed_off, panel_id, panel_display_name, downloads_folder):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
