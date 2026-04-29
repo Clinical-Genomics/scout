@@ -6,6 +6,7 @@ from typing import Dict
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.utils.scout_requests import fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ def print_orpha(out_dir: Path) -> None:
 
 
 @click.command("orpha", help="Download files from Orphadata")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 def orpha(out_dir: str) -> None:
     """Download the ORPHA codes with gene and HPO annotations"""
     out_dir: Path = Path(out_dir)

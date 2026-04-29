@@ -6,6 +6,7 @@ from typing import Dict
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.utils.scout_requests import fetch_mim_files
 
 LOG = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ def print_omim(out_dir: Path, api_key: str) -> None:
 
 @click.command("omim", help="Download a files with OMIM info")
 @click.option("--api-key", help="Specify the api key", required=True)
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 def omim(out_dir: str, api_key: str) -> None:
     """Download the OMIM genes"""
     out_dir: Path = Path(out_dir)

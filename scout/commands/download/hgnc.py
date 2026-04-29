@@ -5,6 +5,7 @@ import pathlib
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.utils.scout_requests import fetch_hgnc
 
 LOG = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def print_hgnc(out_dir):
 
 
 @click.command("hgnc", help="Download a file with HGNC genes")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 def hgnc(out_dir):
     """Download the HGNC genes"""
     out_dir = pathlib.Path(out_dir)

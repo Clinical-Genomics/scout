@@ -18,3 +18,5 @@ def abort_if_false(ctx, param, value):
 builds_option = click.option(
     "-b", "--build", default="37", show_default=True, type=click.Choice(BUILDS)
 )
+
+outdir_option = click.option("-o", "--out-dir", default="./", show_default=True)
