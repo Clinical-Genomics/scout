@@ -5,7 +5,7 @@ import json
 import responses
 
 from scout.commands import cli
-from scout.demo import panel_path, panelapp_panel_path
+from scout.demo import panel_path
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
@@ -43,19 +43,17 @@ def test_load_panel(mock_app):
 
 
 @responses.activate
-def test_load_panel_panelapp(mock_app):
+def test_load_panel_panelapp(mock_app, panelapp_api_panel):
     """Test loading a PanelApp gene panel"""
 
     # GIVEN a gene panel collection with one panel
     assert sum(1 for _ in store.panel_collection.find()) == 1
 
     # GIVEN a mocked response from PanelApp get_panel endpoint (mock response returns test PanelApp panel from scout/demo folder)
-    with open(panelapp_panel_path) as f:
-        panel_data = json.load(f)
     responses.add(
         responses.GET,
         PANELAPP_GET_PANEL_URL,
-        json=panel_data,
+        json=panelapp_api_panel,
         match=[responses.matchers.header_matcher({"Content-Type": "application/json"})],
         status=200,
     )
