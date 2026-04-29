@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Command to download all PanelApp panels to file (#6239)
 - Alternatively load and update PANELAPP-GREEN panel from a pre-downloaded file (#6244)
 ### Fixed
-- Saltshaker report build (#6246)
+- Saltshaker report update command (#6246)
 
 ## [4.110.0]
 ### Added
