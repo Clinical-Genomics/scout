@@ -32,6 +32,11 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Force update even if updated panel contains less genes",
 )
+@click.option(
+    "--downloads_folder",
+    type=click.Path(exists=True, dir_okay=True, readable=True),
+    help="Specify the path to a folder where the the file containing all PanelApp panels was downloaded",
+)
 @click.option("--panel-id", help="Panel ID", default=PANELAPPGREEN_NAME, show_default=True)
 @click.option(
     "--panel-display-name",
@@ -40,7 +45,7 @@ LOG = logging.getLogger(__name__)
     show_default=True,
 )
 @with_appcontext
-def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
+def panelapp_green(institute, force, signed_off, panel_id, panel_display_name, downloads_folder):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
     """
@@ -61,6 +66,7 @@ def panelapp_green(institute, force, signed_off, panel_id, panel_display_name):
             signed_off=signed_off,
             panel_id=panel_id,
             panel_display_name=panel_display_name,
+            downloads_folder=downloads_folder,
         )
     except Exception as err:
         LOG.error(err)

@@ -1,12 +1,14 @@
+import json
 import logging
 import math
 from datetime import datetime
-from typing import List, Set
+from pathlib import Path
+from typing import List, Optional, Set
 
 from click import progressbar
 
 from scout.adapter import MongoAdapter
-from scout.constants.panels import PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
+from scout.constants.panels import PANELAPP_OUTFILE_NAME, PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
 from scout.parse.panelapp import parse_panelapp_panel
 from scout.server.extensions import panelapp
 
@@ -43,16 +45,37 @@ def load_panelapp_panel(
         adapter.load_panel(parsed_panel=parsed_panel, replace=True)
 
 
+def get_panels_map(downloads_folder: Optional[str]) -> Dict[int, dict]:
+    """Retrieves all downloaded PanelApp panels from a jsonl files and returns them as a dictionary with their IDs as keys."""
+
+    infile_path = Path(downloads_folder) / PANELAPP_OUTFILE_NAME
+    with open(infile_path, "r", encoding="utf-8") as f:
+        panels = [json.loads(line) for line in f if line.strip()]
+
+    panel_map = {panel["id"]: panel for panel in panels}
+    return panel_map
+
+
 def get_panelapp_genes(
-    adapter: MongoAdapter, institute: str, panel_ids: List[str], types_filter: List[str]
+    adapter: MongoAdapter,
+    institute: str,
+    panel_ids: List[str],
+    types_filter: List[str],
+    downloads_folder: Optional[str] = None,
 ) -> Set[tuple]:
     """Parse and collect genes from one or more panelApp panels."""
 
     genes = set()
 
+    if downloads_folder:
+        panels_map = get_panels_map(downloads_folder=downloads_folder)
+
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
-            panel_dict: dict = panelapp.get_panel(panel_id)
+            if downloads_folder:
+                panel_dict: dict = panels_map[panel_id]
+            else:
+                panel_dict: dict = panelapp.get_panel(panel_id)
             panel_type_slugs = [type["slug"] for type in panel_dict.get("types")]
             # Parse panel only if it's of the expect type(s)
             if not set(types_filter).intersection(panel_type_slugs):
@@ -78,6 +101,7 @@ def load_panelapp_green_panel(
     signed_off: bool,
     panel_id: str,
     panel_display_name: str,
+    downloads_folder: Optional[str] = None,
 ):
     """Load/Update the panel containing all Panelapp Green genes."""
 
@@ -125,7 +149,11 @@ def load_panelapp_green_panel(
         f"This panel contains green genes from {'signed off ' if signed_off else ''}panels of the following types: {', '.join(types_filter)}"
     )
     genes: Set[tuple] = get_panelapp_genes(
-        adapter=adapter, institute=institute, panel_ids=panel_ids, types_filter=types_filter
+        adapter=adapter,
+        institute=institute,
+        panel_ids=panel_ids,
+        types_filter=types_filter,
+        downloads_folder=downloads_folder,
     )
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
 
