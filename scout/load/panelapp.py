@@ -45,10 +45,8 @@ def load_panelapp_panel(
         adapter.load_panel(parsed_panel=parsed_panel, replace=True)
 
 
-def get_panels_map(downloads_folder: Optional[str]) -> Dict[int, dict]:
+def get_panels_map(infile_path: str) -> Dict[int, dict]:
     """Retrieves all downloaded PanelApp panels from a jsonl files and returns them as a dictionary with their IDs as keys."""
-
-    infile_path = Path(downloads_folder) / PANELAPP_OUTFILE_NAME
     with open(infile_path, "r", encoding="utf-8") as f:
         panels = [json.loads(line) for line in f if line.strip()]
 
@@ -68,7 +66,7 @@ def get_panelapp_genes(
     genes = set()
 
     if downloads_folder:
-        panels_map = get_panels_map(downloads_folder=downloads_folder)
+        panels_map = get_panels_map(infile_path=Path(downloads_folder) / PANELAPP_OUTFILE_NAME)
 
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
