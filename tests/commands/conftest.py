@@ -1,12 +1,12 @@
 """Fixtures for CLI tests"""
 
-import json
 import pathlib
 from typing import Any, Callable, Dict
 
 import pytest
 
 from scout.demo.resources import demo_files, panelapp_all_reduced_path
+from scout.load.panelapp import get_panels_map
 
 #############################################################
 ###################### App fixtures #########################
@@ -26,12 +26,8 @@ def fixture_demo_files():
 @pytest.fixture
 def panelapp_panel_lookup() -> Callable[[int], Dict[str, Any]]:
     """Return a panel given its ID."""
-    path = panelapp_all_reduced_path
 
-    with open(path, "r", encoding="utf-8") as f:
-        panels = [json.loads(line) for line in f if line.strip()]
-
-    panel_map = {panel["id"]: panel for panel in panels}
+    panel_map = get_panels_map(infile_path=panelapp_all_reduced_path)
 
     def _lookup(panel_id: int) -> Dict[str, Any]:
         return panel_map[panel_id]

@@ -5,6 +5,7 @@ import pathlib
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.constants import GNOMAD_CONSTRAINT_FILENAME
 from scout.utils.scout_requests import fetch_constraint
 
@@ -25,7 +26,7 @@ def print_constraint(out_dir):
 
 
 @click.command("exac", help="Download a file with ExAC/GnomAD constraint info")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 def exac(out_dir):
     """Download a file with ExAC / GnomAD constraint info"""
     out_dir = pathlib.Path(out_dir)

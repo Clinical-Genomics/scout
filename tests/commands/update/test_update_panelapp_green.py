@@ -6,7 +6,7 @@ import responses
 
 from scout.commands import cli
 from scout.constants.panels import PANELAPPGREEN_NAME
-from scout.demo.resources import panelapp_all_ids_reduced_path
+from scout.demo.resources import panelapp_all_ids_reduced_path, reduced_resources_path
 from scout.server.extensions import store
 from scout.server.extensions.panelapp_extension import API_PANELS_URL
 
@@ -29,6 +29,40 @@ def test_update_panelapp_green_non_existing_institute(empty_mock_app):
     assert "Please specify an existing institute" in result.output
     # AND command raises error
     assert result.exit_code != 0
+
+
+@responses.activate
+def test_update_green_panel_from_file(mock_app):
+    """Tests the CLI that creates/updates PANELAPP-GREEN panel in database using a pre-downloaded file with panels."""
+
+    # GIVEN that no PANELAPP-GREEN panel exists in database:
+    assert store.gene_panel(panel_id=PANELAPPGREEN_NAME) is None
+
+    # GIVEN a mocked response from PanelApp list_panels endpoint
+    with open(panelapp_all_ids_reduced_path) as f:
+        panels_data = json.load(f)
+
+    responses.add(
+        responses.GET,
+        API_PANELS_URL,
+        json=panels_data,
+        match=[responses.matchers.header_matcher({"Content-Type": "application/json"})],
+        status=200,
+    )
+
+    # GIVEN a cli runner
+    runner = mock_app.test_cli_runner()
+
+    # THEN command to create the PANELAPP-GREEN panel based on a pre-downloaded file should be successful
+    result = runner.invoke(
+        cli,
+        ["update", "panelapp-green", "-i", "cust000", "--downloads_folder", reduced_resources_path],
+        input="1",
+    )
+    assert result.exit_code == 0
+
+    # AND the panel should have been saved in database
+    assert store.gene_panel(panel_id=PANELAPPGREEN_NAME)
 
 
 @responses.activate

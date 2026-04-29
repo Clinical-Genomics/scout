@@ -6,6 +6,7 @@ from typing import List, Optional
 
 import click
 
+from scout.commands.utils import outdir_option
 from scout.utils.ensembl_biomart_clients import CHROM_SEPARATOR, EnsemblBiomartHandler
 
 NR_EXPECTED_CHROMS = 24
@@ -57,7 +58,7 @@ def print_ensembl(
 
 
 @click.command("ensembl", help="Download files with ensembl info")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 @click.option("--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts")
 @click.option("--exons", is_flag=True, help="If ensembl exons should be downloaded")
 @click.option("--build", type=click.Choice(["37", "38"]), help="If only one build should be used")

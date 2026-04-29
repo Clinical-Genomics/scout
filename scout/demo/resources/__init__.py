@@ -36,7 +36,7 @@ phenotype_to_genes_reduced_path = str(files(BASE_PATH).joinpath("phenotype_to_ge
 hpo_terms_def_path = str(files(BASE_PATH).joinpath("hpo_terms.csv"))
 
 # PanelApp path
-panelapp_all_reduced_path = str(files(BASE_PATH).joinpath("panelapp_panels_reduced.jsonl"))
+panelapp_all_reduced_path = str(files(BASE_PATH).joinpath("panelapp_panels.jsonl"))
 panelapp_all_ids_reduced_path = str(files(BASE_PATH).joinpath("panelapp_panel_ids_reduced.json"))
 
 demo_files = {
