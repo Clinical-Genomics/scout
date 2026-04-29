@@ -48,6 +48,7 @@ CUSTOM_CASE_REPORTS = {
         "format": "HTML",
         "pdf_export": False,
     },
+    "saltshaker_report": {"key_name": "saltshaker_report", "format": "HTML", "pdf_export": False},
 }
 
 CASE_REPORT_VARIANT_TYPES = {

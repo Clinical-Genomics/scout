@@ -100,7 +100,7 @@ Usage: scout load report [OPTIONS] CASE_ID REPORT_PATH
   Load a report document for a case.
 
 Options:
-  -t, --report-type [delivery|cnv|cov_qc|exe_ver|multiqc|multiqc_rna|gene_fusion|gene_fusion_research|reference_info|RNAfusion_inspector|RNAfusion_inspector_research|RNAfusion_report|RNAfusion_report_research]
+  -t, --report-type [delivery|cnv|cov_qc|exe_ver|multiqc|multiqc_rna|gene_fusion|gene_fusion_research|reference_info|RNAfusion_inspector|RNAfusion_inspector_research|RNAfusion_report|RNAfusion_report_research|saltshaker_report]
                                   Type of report  [required]
 ```
 
