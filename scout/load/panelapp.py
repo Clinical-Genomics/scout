@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Set
 from click import progressbar
 
 from scout.adapter import MongoAdapter
-from scout.constants.panels import PANELAPP_OUTFILE_NAME, PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
+from scout.constants.panels import PANELAPP_DOWNLOAD_NAME, PRESELECTED_PANELAPP_PANEL_TYPE_SLUGS
 from scout.parse.panelapp import parse_panelapp_panel
 from scout.server.extensions import panelapp
 
@@ -66,7 +66,7 @@ def get_panelapp_genes(
     genes = set()
 
     if downloads_folder:
-        panels_map = get_panels_map(infile_path=Path(downloads_folder) / PANELAPP_OUTFILE_NAME)
+        panels_map = get_panels_map(infile_path=Path(downloads_folder) / PANELAPP_DOWNLOAD_NAME)
 
     with progressbar(panel_ids, label="Parsing panels", length=len(panel_ids)) as panel_ids:
         for panel_id in panel_ids:
