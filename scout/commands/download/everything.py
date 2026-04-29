@@ -7,6 +7,8 @@ import pathlib
 
 import click
 
+from scout.commands.utils import outdir_option
+
 from .ensembl import ensembl
 from .exac import exac
 from .hgnc import hgnc
@@ -20,7 +22,7 @@ LOG = logging.getLogger(__name__)
 
 @click.command("everything", help="Download all necessary resources for scout")
 @click.option("--api-key", help="Specify the OMIM api key")
-@click.option("-o", "--out-dir", default="./", show_default=True)
+@outdir_option
 @click.option("--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts")
 @click.option("--exons", is_flag=True, help="If ensembl exons should be downloaded")
 @click.option("--build", type=click.Choice(["37", "38"]), help="If only one build should be used")

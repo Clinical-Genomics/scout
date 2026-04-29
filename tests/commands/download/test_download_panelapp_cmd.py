@@ -1,7 +1,7 @@
 import json
 
 from scout.commands.download.panelapp import panelapp_all
-from scout.constants.panels import PANELAPP_OUTFILE_NAME
+from scout.constants.panels import PANELAPP_DOWNLOAD_NAME
 
 DEMO_PANELS = [522, 1141, 399]
 
@@ -32,7 +32,7 @@ def test_download_panelapp_all(empty_mock_app, monkeypatch, tmp_path, panelapp_p
     result = runner.invoke(panelapp_all, ["--out-dir", str(tmp_path)])
     assert result.exit_code == 0
 
-    output_file = tmp_path / PANELAPP_OUTFILE_NAME
+    output_file = tmp_path / PANELAPP_DOWNLOAD_NAME
     assert output_file.exists()
 
     with open(output_file, "r", encoding="utf-8") as f:
