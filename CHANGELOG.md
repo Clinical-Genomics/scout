@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Saltshaker report update command (#6246)
 - Managed variants counter, wrongly defaulting to build 37 (#6252)
+- Managed variants matching follows build on case page (#6254)
 
 ## [4.110.0]
 ### Added

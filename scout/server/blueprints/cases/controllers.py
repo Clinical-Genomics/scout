@@ -556,6 +556,7 @@ def case(
     default_managed_variants = []
     managed_variants = []
 
+    genome_build = get_case_genome_build(case_obj)
     if hide_matching is False:
         # Limit secondary findings according to institute settings
         limit_genes = store.safe_genes_filter(institute_obj["_id"])
@@ -569,12 +570,15 @@ def case(
         )
 
         managed_variants = [
-            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+            var
+            for var in store.check_managed(
+                case_obj=case_obj, limit_genes=limit_genes, build=genome_build
+            )
         ]
         default_managed_variants = [
             var
             for var in store.check_managed(
-                case_obj=case_obj, limit_genes=limit_genes_default_panels
+                case_obj=case_obj, limit_genes=limit_genes_default_panels, build=genome_build
             )
         ]
 
@@ -606,7 +610,7 @@ def case(
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
-        "gens_info": gens.connection_settings(get_case_genome_build(case_obj)),
+        "gens_info": gens.connection_settings(genome_build),
         "display_rerunner": rerunner.connection_settings.get("display", False),
         "hide_matching": hide_matching,
         "audits": store.case_events_by_verb(
