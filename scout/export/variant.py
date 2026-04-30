@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 import urllib.parse
 from typing import Iterable, List, Optional
+
+import requests
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
@@ -69,24 +72,41 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
 
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     ensembl_client = EnsemblRestApiClient()
-    for variant_obj in managed_variants:
-        LOG.warning(variant_obj)
+
+    def liftover_with_retry(variant_obj, retries=3):
+        for attempt in range(retries):
+            try:
+                return ensembl_client.liftover(
+                    build=liftover_from,
+                    chrom=variant_obj["chromosome"],
+                    start=variant_obj["position"],
+                    end=variant_obj.get("end", variant_obj["position"]),
+                )
+            except requests.exceptions.RequestException:
+                wait = 1 * (attempt + 1)
+                LOG.warning(f"Retry {attempt + 1}/{retries} after error. Waiting {wait}s")
+                time.sleep(wait)
+        return None
+
+    for i, variant_obj in enumerate(managed_variants, 1):
+        if i % 50 == 0:
+            LOG.info(f"Processed {i} variants")
+
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
+
         build = "38" if liftover_from == "37" else "37"
-        if variant_obj.get("build") == build:  # Use coordinates from variant instead of liftover
+
+        if variant_obj.get("build") == build:
             chrom = variant_obj["chromosome"]
             pos = variant_obj["position"]
             end = variant_obj.get("end", variant_obj["position"])
         else:
-            liftover_result = ensembl_client.liftover(
-                build=liftover_from,
-                chrom=variant_obj["chromosome"],
-                start=variant_obj["position"],
-                end=variant_obj.get("end", variant_obj["position"]),
-            )
+            liftover_result = liftover_with_retry(variant_obj)
+
             if not liftover_result:
                 continue
+
             chrom = liftover_result[0]["mapped"]["seq_region_name"]
             pos = liftover_result[0]["mapped"]["start"]
             end = liftover_result[0]["mapped"]["end"]
@@ -102,6 +122,10 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
             f"{chrom};{pos};{end};{ref};{alt};"
             f"{category};{sub_category};{build};{description};;{institutes}"
         )
+
+        time.sleep(0.2)  # gentle rate limiting
+
+    LOG.info(f"Done. Total processed: {i}")
     return export_lines
 
 
