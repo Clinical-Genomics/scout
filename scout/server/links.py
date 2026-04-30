@@ -621,8 +621,12 @@ def gnomad_link(variant_obj, build=37):
         url_template += "?dataset=gnomad_r2_1"
         return url_template
 
-    if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
+    if variant_obj["chromosome"] in ["M", "MT"]:
         url_template += "?dataset=gnomad_r4"
+        return url_template
+
+    if build == 38:
+        url_template += "?dataset=gnomad_r4_non_ukb"
 
     return url_template
 
