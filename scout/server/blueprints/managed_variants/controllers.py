@@ -78,11 +78,14 @@ def managed_variants(request: LocalProxy) -> dict:
     managed_variants_query = store.managed_variants(
         category=categories,
         query_options=query_options,
+        build=request.form.get("build"),
         skip_count=skip_count,
         vars_per_page=VARS_PER_PAGE,
     )
 
-    variant_count = store.count_managed_variants(category=categories, query_options=query_options)
+    variant_count = store.count_managed_variants(
+        category=categories, build=request.form.get("build"), query_options=query_options
+    )
     total_count = store.count_managed_variants()
     managed_variants = list(managed_variants_query)
 
