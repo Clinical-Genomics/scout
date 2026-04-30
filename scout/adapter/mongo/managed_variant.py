@@ -157,6 +157,7 @@ class ManagedVariantHandler(object):
             pipeline.append({"$limit": vars_per_page})
 
         managed_vars = list(self.managed_variant_collection.aggregate(pipeline))
+
         all_maintainers = set()
         for var in managed_vars:
             all_maintainers.update(var.get("maintainer", []))
@@ -175,7 +176,7 @@ class ManagedVariantHandler(object):
     def count_managed_variants(
         self,
         category=["snv", "sv", "cancer_snv", "cancer_sv"],
-        build="37",
+        build: str = None,
         query_options=None,
     ):
         """Return count of documents to all managed variants of a particular category and build.
@@ -189,7 +190,9 @@ class ManagedVariantHandler(object):
             integer
 
         """
-        query = {"category": {"$in": category}, "build": build}
+        query = {"category": {"$in": category}}
+        if build:
+            query["build"] = build
         query_with_options = self.add_options(query, query_options)
 
         return self.managed_variant_collection.count_documents(query_with_options)
