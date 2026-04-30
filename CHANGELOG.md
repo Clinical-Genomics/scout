@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Custom MT Saltshaker HTML report loading (#6242)
 - Command to download all PanelApp panels to file (#6239)
 - Alternatively load and update PANELAPP-GREEN panel from a pre-downloaded file (#6244)
+### Fixed
+- Managed variants counter, wrongly defaulting to build 37 (#)
 
 ## [4.110.0]
 ### Added
