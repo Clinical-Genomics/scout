@@ -173,10 +173,12 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
         "cancer_sv": "variant.sv_variant",
     }
     managed_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+    excluded_counter = 0
 
     for variant in variants:
         category = variant.get("category")
         if category not in valid_categories:
+            excluded_counter += 1
             continue
 
         chromosome = variant.get("chromosome")
@@ -206,6 +208,7 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
             f"{category};{sub_category};{build};{description};;{institute_id}"
         )
 
+    LOG.warning(f"Causatives excluded because of wrong category:{excluded_counter}")
     return managed_lines
 
 
