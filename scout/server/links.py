@@ -218,7 +218,7 @@ def gnomad(ensembl_id, build=37):
     if build == 37:
         link += "gnomad_r2_1"
     if build == 38:
-        link += "gnomad_r4"
+        link += "gnomad_r4_non_ukb"
 
     return link.format(ensembl_id)
 
