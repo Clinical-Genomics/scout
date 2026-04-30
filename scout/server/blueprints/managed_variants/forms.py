@@ -48,7 +48,9 @@ class ManagedVariantForm(FlaskForm):
     )
     description = StringField(label="Description")
     build = SelectField(
-        "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
+        "Genome build",
+        choices=[("", "Select a build"), ("37", "37"), ("38", "38")],
+        validators=[validators.Optional()],
     )
 
 
