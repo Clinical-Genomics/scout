@@ -426,14 +426,16 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
-    def check_managed(self, case_obj: dict = None, limit_genes: list[int] = None):
+    def check_managed(
+        self, case_obj: dict = None, limit_genes: list[int] = None, build: Optional[str] = None
+    ):
         """Check if there are any variants in case that match a managed variant.
 
             Given a case, limit search to affected individuals.
         Returns:
             managed_variants(iterable(Variant))
         """
-        positional_variant_ids = self.get_managed_variants()
+        positional_variant_ids = self.get_managed_variants(build=build)
 
         if len(positional_variant_ids) == 0:
             return []
