@@ -427,7 +427,7 @@ class VariantHandler(VariantLoader):
         return causatives
 
     def check_managed(
-        self, case_obj: dict = None, limit_genes: list[int] = None, build: Optional[str] = None
+        self, case_obj: dict = None, limit_genes: list[int] = None, build: Optional[str] = "37"
     ):
         """Check if there are any variants in case that match a managed variant.
 
