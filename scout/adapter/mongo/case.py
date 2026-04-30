@@ -14,7 +14,6 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
 from scout.constants import (
-    ANALYSIS_TYPES,
     ID_PROJECTION,
     ORDERED_FILE_TYPE_MAP,
     ORDERED_OMICS_FILE_TYPE_MAP,
@@ -1187,7 +1186,7 @@ class CaseHandler(object):
                 "RNAfusion_report": case_obj.get("RNAfusion_report"),
                 "RNAfusion_report_research": case_obj.get("RNAfusion_report_research"),
                 "rna_delivery_report": case_obj.get("rna_delivery_report"),
-                "saltshaker": case_obj.get("saltshaker"),
+                "saltshaker_report": case_obj.get("saltshaker_report"),
                 "scout_load_version": case_obj.get("scout_load_version"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
