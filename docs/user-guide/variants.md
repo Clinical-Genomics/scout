@@ -168,6 +168,7 @@ Example:
 7;124491972;124491972;C;A;snv;snv;POT1 test snv
 ```
 
+> **Note:** Adding the same variant more than once (same chromosome, position, reference, alternative, and category) will result in a single managed variant entry. The `institutes` and `description` fields will be merged.
 [clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/
 [expansion-hunter]: https://github.com/Illumina/ExpansionHunter
