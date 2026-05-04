@@ -57,8 +57,10 @@ class ManagedVariantHandler(object):
                 )
                 return True
             if _non_id_values_updated(managed_variant_obj, collision):
-                LOG.warning("HERE BITCHES")
-                result = self.managed_variant_collection.find_one_and_update(
+                if "causatives" in collision.get("description"):
+                    managed_variant_obj["institute"] = list(set(managed_variant_obj.get("institute", []) + collision.get("institute", [])))
+                    managed_variant_obj["description"] = collision.get("description") + "<br>" + managed_variant_obj["description"]
+                self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
                 )
