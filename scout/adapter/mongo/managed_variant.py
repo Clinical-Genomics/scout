@@ -50,7 +50,6 @@ class ManagedVariantHandler(object):
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
         if collision:
-            # edit from gui, may update key contruction values
             if original_obj_id:
                 result = self.managed_variant_collection.find_one_and_update(
                     {"_id": ObjectId(original_obj_id)},
@@ -58,6 +57,7 @@ class ManagedVariantHandler(object):
                 )
                 return True
             if _non_id_values_updated(managed_variant_obj, collision):
+                LOG.warning("HERE BITCHES")
                 result = self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
