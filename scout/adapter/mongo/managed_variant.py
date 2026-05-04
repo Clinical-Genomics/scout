@@ -52,7 +52,10 @@ class ManagedVariantHandler(object):
                 return True
             if _non_id_values_updated(managed_variant_obj, collision):
                 managed_variant_obj["institute"] = list(
-                    set(managed_variant_obj.get("institute", []) + collision.get("institute", []))
+                    set(
+                        (managed_variant_obj.get("institute") or [])
+                        + (collision.get("institute") or [])
+                    )
                 )
                 managed_variant_obj["description"] = (
                     collision.get("description") + "<br>" + managed_variant_obj["description"]
