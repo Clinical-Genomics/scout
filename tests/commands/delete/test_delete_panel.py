@@ -3,7 +3,7 @@ from scout.server.extensions import store
 
 
 def test_delete_panel_non_existing(empty_mock_app, testpanel_obj):
-    "Test the CLI command that deletes a gene panel"
+    """Test the CLI command that deletes a gene panel"""
     mock_app = empty_mock_app
     runner = mock_app.test_cli_runner()
     assert runner
@@ -29,7 +29,7 @@ def test_delete_panel_non_existing(empty_mock_app, testpanel_obj):
 
 
 def test_delete_panel(empty_mock_app, testpanel_obj):
-    "Test the CLI command that deletes a gene panel"
+    """Test the CLI command that deletes a gene panel"""
     mock_app = empty_mock_app
 
     runner = mock_app.test_cli_runner()
