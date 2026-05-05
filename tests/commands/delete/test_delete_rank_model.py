@@ -7,9 +7,6 @@ def test_delete_rank_model(empty_mock_app):
     """Test the delete_rank_model command"""
 
     runner = empty_mock_app.test_cli_runner()
-    assert runner
-
-    ## GIVEN an empty db
 
     ## WHEN a rank model is retrieved from file
     rank_model_dict = store.rank_model_from_url(rank_score_path)
