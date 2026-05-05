@@ -5,6 +5,7 @@ from os.path import exists
 
 import requests
 from configobj import ConfigObj
+from pymongo.results import DeleteResult
 
 LOG = logging.getLogger(__name__)
 TIMEOUT = 20
@@ -59,6 +60,11 @@ class RankModelHandler(object):
             return self.rank_model_collection.find_one(config_id)
 
         return {}
+
+    def delete_rank_model(self, rank_model_url: str) -> DeleteResult:
+        """Delete a rank model from database with URL as identifier"""
+
+        return self.rank_model_collection.delete_one({"_id": rank_model_url})
 
     def rank_model_url_from_version(
         self, rank_model_link_prefix: str, rank_model_version: str, rank_model_file_extension: str
