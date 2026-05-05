@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.111.0]
 ### Added
 - Custom MT Saltshaker HTML report loading (#6242)
 - Command to download all PanelApp panels to file (#6239)
