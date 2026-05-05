@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Custom MT Saltshaker HTML report loading (#6242)
 - Command to download all PanelApp panels to file (#6239)
 - Alternatively load and update PANELAPP-GREEN panel from a pre-downloaded file (#6244)
+- Command to remove loaded rank models (#6261)
 ### Changed
 - Default gnomAD linkout for hg38 to non_uk_biobank subset (#6247)
 ### Fixed
