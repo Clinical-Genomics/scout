@@ -27,6 +27,8 @@ def test_delete_rank_model(empty_mock_app):
             rank_score_path,
         ],
     )
+    assert result.exit_code == 0
 
+    ## THEN the model is deleted
     assert "Rank model delete successful" in result.output
     assert not store.rank_model_collection.find_one({"_id": rank_model_dict["_id"]})
