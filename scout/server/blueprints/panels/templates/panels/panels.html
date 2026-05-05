@@ -129,11 +129,11 @@
       <form action="{{ url_for('panels.panels') }}" method="POST">
         <div class="row">
           <div class="col-5">
-            <input type="text" name="searchGene" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
-                   pattern="^[0-9]+\s*\|\s*.*" title="Search for gene symbol. Type name or number and the field autocompletes a full description. Allowed patterns have a numerical hgnc id and a pipe character.">
+            {{ search_gene_form.csrf_token }}
+            {{ search_gene_form.searchGene() }}
           </div>
           <div class="col">
-            <button type="submit" name="action" value="searchGeneSubmit" class="btn btn-secondary">Search</button>
+            {{ search_gene_form.submit() }}
           </div>
         </div>
       </form>
