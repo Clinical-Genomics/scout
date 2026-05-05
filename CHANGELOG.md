@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alternatively load and update PANELAPP-GREEN panel from a pre-downloaded file (#6244)
 - Command to remove loaded rank models (#6262)
 ### Changed
-- Default gnomAD linkout for hg38 to non_uk_biobank subset (#6247)
+- Default gnomAD linkout for hg38 to non_uk_biobank subset (#6250)
 - Handle conflicts and duplicates when uploading managed variants (#6256, #6258, #6259)
 - On caseS page, dynamically hide empty categories of cases (#6260)
 ### Fixed
