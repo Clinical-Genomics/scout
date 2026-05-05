@@ -67,12 +67,6 @@ class ManagedVariantHandler(object):
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
                 )
-
-                return True
-                self.managed_variant_collection.find_one_and_update(
-                    {"_id": collision["_id"]},
-                    {"$set": managed_variant_obj},
-                )
                 return True
             else:
                 LOG.debug("Collision -variant in database identical to new variant. Won't update")
