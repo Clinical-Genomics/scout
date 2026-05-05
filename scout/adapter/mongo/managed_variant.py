@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import List
+from typing import Any, List, Optional
 
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
@@ -33,16 +33,10 @@ class ManagedVariantHandler(object):
 
         return result.inserted_id
 
-    def upsert_managed_variant(self, managed_variant_obj, original_obj_id=None):
-        """Load or updated a managed variant object
-
-        Args:
-            managed_variant_obj(ManagedVariant)
-            original_obj_id(str):   String representation of original obj id to update
-
-        Returns:
-            updated_managed_variant
-        """
+    def upsert_managed_variant(
+        self, managed_variant_obj: dict, original_obj_id: Optional[str] = None
+    ) -> Any:
+        """Load or updated a managed variant object."""
 
         LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
@@ -50,15 +44,26 @@ class ManagedVariantHandler(object):
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
         if collision:
-            # edit from gui, may update key contruction values
             if original_obj_id:
-                result = self.managed_variant_collection.find_one_and_update(
+                self.managed_variant_collection.find_one_and_update(
                     {"_id": ObjectId(original_obj_id)},
                     {"$set": managed_variant_obj},
                 )
                 return True
             if _non_id_values_updated(managed_variant_obj, collision):
-                result = self.managed_variant_collection.find_one_and_update(
+                managed_variant_obj["institute"] = list(
+                    set(
+                        (managed_variant_obj.get("institute") or [])
+                        + (collision.get("institute") or [])
+                    )
+                )
+                new_desc = managed_variant_obj.get("description")
+                old_desc = collision.get("description")
+
+                if new_desc and old_desc and new_desc != old_desc:
+                    managed_variant_obj["description"] = f"{old_desc}<br>{new_desc}"
+
+                self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
                 )

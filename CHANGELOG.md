@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Command to remove loaded rank models (#6262)
 ### Changed
 - Default gnomAD linkout for hg38 to non_uk_biobank subset (#6247)
+- Handle conflicts and duplicates when uploading managed variants (#6256, #6258, #6259)
 ### Fixed
 - Saltshaker report update command (#6246)
 - Managed variants counter, wrongly defaulting to build 37 (#6252)
