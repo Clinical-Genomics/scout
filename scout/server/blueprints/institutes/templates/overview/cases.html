@@ -227,7 +227,7 @@
         {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', 'ignored'] -%}
         {% for status in ordered_statuses %}
           {% for group_name, case_group in cases %}
-            {% if status == group_name and case_group%}
+            {% if status == group_name and case_group %}
               <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
             {% endif %}
           {% endfor %}
