@@ -60,7 +60,7 @@ class RankModelHandler(object):
 
         return {}
 
-    def delete_rank_model(self, rank_model_url: str) -> dict:
+    def delete_rank_model(self, rank_model_url: str) -> DeleteResult:
         """Delete a rank model from database with URL as identifier"""
 
         return self.rank_model_collection.delete_one({"_id": rank_model_url})
