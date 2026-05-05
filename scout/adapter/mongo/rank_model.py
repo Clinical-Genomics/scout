@@ -5,6 +5,7 @@ from os.path import exists
 
 import requests
 from configobj import ConfigObj
+from pymongo.results import DeleteResult
 
 LOG = logging.getLogger(__name__)
 TIMEOUT = 20
