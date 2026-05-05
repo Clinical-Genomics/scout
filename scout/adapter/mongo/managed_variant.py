@@ -57,9 +57,18 @@ class ManagedVariantHandler(object):
                         + (collision.get("institute") or [])
                     )
                 )
-                managed_variant_obj["description"] = (
-                    collision.get("description") + "<br>" + managed_variant_obj["description"]
+                new_desc = managed_variant_obj.get("description")
+                old_desc = collision.get("description")
+
+                if new_desc and old_desc and new_desc != old_desc:
+                    managed_variant_obj["description"] = f"{old_desc}<br>{new_desc}"
+
+                collection.find_one_and_update(
+                    {"_id": collision["_id"]},
+                    {"$set": managed_variant_obj},
                 )
+
+                return True
                 self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
