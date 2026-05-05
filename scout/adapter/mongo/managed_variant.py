@@ -63,7 +63,7 @@ class ManagedVariantHandler(object):
                 if new_desc and old_desc and new_desc != old_desc:
                     managed_variant_obj["description"] = f"{old_desc}<br>{new_desc}"
 
-                collection.find_one_and_update(
+                self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
                 )
