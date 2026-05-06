@@ -103,7 +103,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
             response = requests.get(LIFTOVER_API_URL, params=params)
             result = response.json()
 
-            if "error" not in result or response.status_code == 200:
+            if "error" not in result:
                 chrom = result["output_chrom"].replace("chr", "")
                 pos = result["output_pos"]
                 end = result.get("output_end") or result.get("output_pos")
