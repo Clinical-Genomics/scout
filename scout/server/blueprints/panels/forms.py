@@ -1,8 +1,8 @@
 """Code for panel gene form"""
 
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, SelectMultipleField, StringField, SubmitField
-from wtforms.validators import DataRequired, Regexp
+from wtforms import BooleanField, SelectField, SelectMultipleField, StringField, SubmitField
+from wtforms.validators import DataRequired, Optional, Regexp
 
 from scout.constants import GENE_PANELS_INHERITANCE_MODELS
 
@@ -44,4 +44,22 @@ class GeneSearchForm(FlaskForm):
 
     submit = SubmitField(
         "Search", render_kw={"value": "searchGeneSubmit", "class": "btn btn-secondary"}
+    )
+
+
+class PanelFilterForm(FlaskForm):
+    """Contains form items used to filter panels by institute and panel name."""
+
+    searchName = StringField(
+        "Search panels..",
+        validators=[Optional()],
+        render_kw={"class": "search form-control w-auto"},
+    )
+
+    instituteFilter = SelectField(
+        "Institute",
+        choices=[],
+        validate_choice=False,
+        validators=[Optional()],
+        render_kw={"class": "form-select w-auto"},
     )
