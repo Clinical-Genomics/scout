@@ -76,7 +76,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
     build_from = "hg19" if build_to == "hg38" else "hg38"
 
     nfailed = 0
-    for i, variant_obj in enumerate(list(managed_variants)[:500], 1):
+    for i, variant_obj in enumerate(managed_variants, 1):
         if i % 50 == 0:
             LOG.info(f"Processed {i} variants")
 
