@@ -34,7 +34,7 @@ from scout.server.utils import (
 from scout.utils.gene import parse_raw_gene_ids
 
 from . import controllers
-from .forms import GeneSearchForm, PanelGeneForm
+from .forms import GeneSearchForm, PanelFilterForm, PanelGeneForm
 
 LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
@@ -116,6 +116,7 @@ def panels():
         search_string=search_string,
         search_result=institute_panels_with_gene,
         search_gene_form=GeneSearchForm(),
+        panel_filter_form=PanelFilterForm(),
     )
 
 

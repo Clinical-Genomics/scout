@@ -30,10 +30,9 @@
         <input type="checkbox" name="hideLine" checked onclick="toggleRow(this)"> Hide removed panels</input>
       </span>
       <div id="panel-list">
-
         <!-- Filters -->
         <div class="d-flex gap-3 mt-3">
-          <input class="search form-control w-auto" placeholder="Search panels..." />
+          {{ panel_filter_form.searchName() }}
           <select id="instituteFilter" class="form-select w-auto">
             <option value="">All institutes</option>
             {% for institute, panels in panel_groups %}
