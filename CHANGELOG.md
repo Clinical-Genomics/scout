@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Saltshaker report update command (#6246)
 - Managed variants counter, wrongly defaulting to build 37 (#6252)
 - Managed variants matching follows build on case page (#6254)
+- Updated docs on load case images (#6267)
 
 ## [4.110.0]
 ### Added
@@ -33,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 - Refactor variant formatting logic (pretty_variant) out of Jinja2 template (#6218)
+- `scout download everything` command downloads Ensembl data last, so that if the Ensembl download fails, it does not prevent the other files from being downloaded (#6269)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)

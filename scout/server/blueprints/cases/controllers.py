@@ -548,7 +548,6 @@ def case(
         }
     add_link_for_disease(case_obj)
     if case_obj.get("custom_images"):
-        # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
             "case_images", case_obj["custom_images"].get("case", {})
         )
