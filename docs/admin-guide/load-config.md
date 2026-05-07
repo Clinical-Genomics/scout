@@ -4,7 +4,7 @@ A case and its individuals (or samples, in cancer track) can be uploaded into Sc
 
 The format is [Yaml][yaml].
 
-Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml` or on [Github](https://github.com/Clinical-Genomics/scout/blob/update_config_docs-210428/scout/demo/643594.config.yaml).
+Example configuration files are found here: `scout/demo/643594.config.yaml` or on [Github](https://raw.githubusercontent.com/Clinical-Genomics/scout/refs/heads/main/scout/demo/643594.config.yaml).
 
 ### Deprecation Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
@@ -82,7 +82,6 @@ Below are available configuration parameters for a Scout case. Names marked with
         - **upd_sites** _String_ Path to file.
     - **confirmed_parent** _Bool_ True if parent confirmed.
     - **d4_path** _String_ Path to [.d4 file][d4_file]. Required for Chanjo2 integration
-    - **expected_coverage** _Int_ The level of expected coverage.
     - **father** _String/Int_ Sample ID for father or 0.
     - **hrd** _Int_ Homologous recombination deficiency.
     - **is_sma** _Bool/None_ if SMA status determined - None if not done.
@@ -163,7 +162,6 @@ samples:
     sample_name: NA12878
     phenotype: affected
     sex: male
-    expected_coverage: 30
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 ```

@@ -1,6 +1,6 @@
 # FAQ
 
-## My email is white listed but I can't log into Scout
+## My email has been added as a Scout user but I can't log into Scout
 
 You can be logged into multiple Google accounts at the same time. If you are only logged into
 one account, it will automatically be used when you click "Login with Google".
