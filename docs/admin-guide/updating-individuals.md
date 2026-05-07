@@ -22,31 +22,33 @@ Options:
   --help              Show this message and exit.
 ```
 And the tracks that can be updated are the following:
-- assembly_alignment_path
-- bam_file
-- d4_file
-- rna_alignment_path
-- mt_bam
-- vcf2cytosure
-- paraphase_alignment_path
-- phase_blocks
-- rhocall_bed
-- rhocall_wig
-- tiddit_coverage_wig
-- minor_allele_frequency_wig
-- upd_regions_bed
-- upd_sites_bed
-- rna_coverage_bigwig
-- splice_junctions_bed
+
+- `assembly_alignment_path`
+- `bam_file`
+- `d4_file`
+- `rna_alignment_path`
+- `mt_bam`
+- `vcf2cytosure`
+- `paraphase_alignment_path`
+- `phase_blocks`
+- `rhocall_bed`
+- `rhocall_wig`
+- `tiddit_coverage_wig`
+- `minor_allele_frequency_wig`
+- `upd_regions_bed`
+- `upd_sites_bed`
+- `rna_coverage_bigwig`
+- `splice_junctions_bed`
 
 Additional sample descriptors:
-- subject_id
-- omics_sample_id
+
+- `subject_id`
+- `omics_sample_id`
 
 Additional non-track individual data
-- bionano_access
-- chromograph_images
-- reviewer
+- `bionano_access`
+- `chromograph_images`
+- `reviewer`
 
 
 ## Description of custom individual tracks
@@ -54,16 +56,16 @@ Additional non-track individual data
 ### DNA-sequencing alignment files
 The following files are used by the [igv.js](https://github.com/igvteam/igv.js/wiki/Alignment-Track) integrated browser to display sequence variation alignments. The igv.js browser can be opened by clicking on the relative link (button) present on variants page. The link is displayed only if at least one individual of the case contains one bam_file or mt_bam track saved.
 
-| key name            | key value                                                   |
-| --------------------|:------------------------------------------------------------|
-| bam_file            | path to a bam/cram alignment file                           |
-| mt_bam              | path to a downsampled mitochondrial bam/cram alignment file |
-| minor_allele_frequency_wig | path to hificnv maf wig file                         |
-| rhocall_bed         | path to rhocall output bed file                             |
-| rhocall_wig         | path to rhocall output wig file                             |
-| tiddit_coverage_wig | path to tiddit wig coverage file                            |
-| upd_regions_bed     | path to upd_regions_bed                                     |
-| upd_sites_bed       | path to vcf2cytosure file                                   |
+| key name                          | key value                                                   |
+|-----------------------------------|:------------------------------------------------------------|
+| `alignment_path` alias `bam_file` | path to a `bam`/`cram` alignment file                           |
+| `mt_bam`                            | path to a downsampled mitochondrial `bam`/`cram` alignment file |
+| `minor_allele_frequency_wig`        | path to hificnv maf `wig` file                                |
+| `rhocall_bed`                       | path to rhocall output `bed` file                             |
+| `rhocall_wig`                       | path to rhocall output `wig` file                             |
+| `tiddit_coverage_wig`               | path to tiddit `wig` coverage file                            |
+| `upd_regions_bed`                   | path to upd_regions_bed                                     |
+| `upd_sites_bed`                     | path to vcf2cytosure file                                   |
 
 `rhocall_bed` and `rhocall_wig` files are both obtained from [rhocall](https://github.com/dnil/rhocall),
 a software that calls and annotates autozygosity from VCF files.
@@ -90,7 +92,7 @@ A link to the splice junction view is present on variants pages of cases with at
 
 | key name      | key value                 |
 |:--------------|:--------------------------|
-| vcf2cytosure  | path to vcf2cytosure file |
+| `vcf2cytosure`  | path to vcf2cytosure file |
 
 [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure) is a tool that converts a VCF with structural variations to the “.CGH” format used by the commercial [CytoSure Interpret Software](https://www.ogt.com/products/product-search/cytosure-interpret-software/) by OGT (Oxford Gene Technology). Once the individual is updated with this track, vcf2cytosure files will be available for download from the individuals table present on Scout's case page.
 
@@ -116,30 +118,30 @@ value is assumed: e.g. `"reviewer.alignment"` -> `ind["reviewer"]["alignment"]`.
 ### BioNano Access
 | key name               | key value         |
 |:-----------------------|:------------------|
-| bionano_access.sample  | BioNano Sample ID |
-| bionano_access.project | BioNano Project   |
+| `bionano_access.sample`  | BioNano Sample ID |
+| `bionano_access.project` | BioNano Project   |
 
 See [BioNano Access Integration](../admin-guide/bionano_access_integration.md).
 
 ### Chromograph
 | key name                       | key value                                           |
 |:-------------------------------|:----------------------------------------------------|
-| chromograph_images.autozygous  | Path wildcard to files - exclude chromosome name    |
-| chromograph_images.coverage    | Path wildcard to files - exclude chromosome name    |
-| chromograph_images.upd_regions | Path wildcard to files - exclude chromosome name    |
-| chromograph_images.upd_sites   | Path wildcard to files - exclude chromosome name    |
+| `chromograph_images.autozygous`  | Path wildcard to files - exclude chromosome name    |
+| `chromograph_images.coverage`    | Path wildcard to files - exclude chromosome name    |
+| `chromograph_images.upd_regions` | Path wildcard to files - exclude chromosome name    |
+| `chromograph_images.upd_sites`   | Path wildcard to files - exclude chromosome name    |
 See e.g. [User guide - Cases - Cytogenomics](../user-guide/cases.md#Cytogenomics) for a description of Chromograph.
 
 ### Scout REViewer Service
 
 | key name                 | key value |
 |:-------------------------|:----------|
-| reviewer.alignment       | Path      |
-| reviewer.alignment_index | Path      |
-| reviewer.vcf             | Path      |
-| reviewer.catalog         | Path      |
-| reviewer.reference       | Path      |
-| reviewer.trgt            | Bool      |
+| `reviewer.alignment`       | Path      |
+| `reviewer.alignment_index` | Path      |
+| `reviewer.vcf`             | Path      |
+| `reviewer.catalog`         | Path      |
+| `reviewer.reference`       | Path      |
+| `reviewer.trgt`            | Bool      |
 
 See [Admin guide - Scout REViewer Service](reviewer_service.md) for details on SRS.
 

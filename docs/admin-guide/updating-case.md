@@ -49,4 +49,4 @@ Options:
   --rankscore-treshold TEXT      Set a new rank score treshold if desired
   --sv-rankmodel-version TEXT    Update the SV rank model version
   --help                         Show this message and exit.
- ```
+```
