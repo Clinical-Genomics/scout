@@ -12,7 +12,7 @@ support `alignment_path`.
 
 
 ### Configuration Parameters
-Below are available configuration parameters for a Scout case. Names marked with asterix (*) are mandatory.
+Below are available configuration parameters for a Scout case. Names marked with an asterisk (*) are mandatory.
 
 - **analysis_date(*)** _Datetime_ Time for analysis in datetime format. Defaults to time of uploading. Example `2016-10-12 14:00:46`.
 - **cnv_report** _String_ Path to the CNV report file.
@@ -20,6 +20,20 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **cohorts** _List of strings_ Meta organising study participants or cases.
 - **collaborators** _List of strings_ List of collaborators.
 - **coverage_qc_report** _String_ Path to HTML file with coverage and QC report.
+- **custom_images** _Object_ Custom images displayed on case pages or STR variant pages. Supported formats are `gif`, `svg`, `png`, `jpg`, `jpeg`.
+    - **case_images** _Dictionary of lists_ Images grouped by section name for case view. Each section will be displayed as a separate panel on the case view. (Alias: `case`)
+        - **title** _String_ Image title (mandatory).
+        - **description** _String_ Image description (mandatory).
+        - **path** _String_ Path to image file (mandatory).
+        - **width** _Int_ Optional image width.
+        - **height** _Int_ Optional image height.
+    - **str_variants_images** _List_ Images connected to STR variants. (Alias: `str`)
+        - **title** _String_ Image title (mandatory).
+        - **description** _String_ Image description (mandatory).
+        - **path** _String_ Path to image file (mandatory).
+        - **str_repid** _String_ REPID for the STR variant (mandatory, for example `AFF2`).
+        - **width** _Int_ Optional image width.
+        - **height** _Int_ Optional image height.
 - **default_gene_panels** _List of strings_ List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout.
 - **delivery_report** _String_: Path to HTML delivery report.
 - **exe_ver**: Pipeline detailed software versions (YAML)
@@ -34,8 +48,8 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
 - **multiqc_rna** _String_ Path to a [nf-core/rnafusion multiqc][rna-multiqc] report with arbitrary information.
 - **omics_files** _List_ List of multiomics results files for the case:
-    - **fraser** _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produded by e.g. [Tomte][tomte]
-    - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produded by e.g. [Tomte][tomte]
+    - **fraser** _String_ Path to TSV file to parse WTS [DROP][drop] FRASER splice outlier omics variants as produced by e.g. [Tomte][tomte]
+    - **outrider** _String_ Path to TSV file to parse WTS [DROP][drop] OUTRIDER expression outlier omics variants as produced by e.g. [Tomte][tomte]
     - **methbat** _String_ Path to TSV file to parse LRS [MethBat][methbat] methylation outlier omics variants as produced by e.g. [Nallo][nallo]
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
 - **paraphrase** _String_ Path to a [Paraphrase][paraphrase] json file.
@@ -93,12 +107,12 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **omics_sample_id** _String_ Sample ID for RNA, as in outliers files
     - **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
     - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
-    - **samlple_id(*)** _String_ Identifyer for a sample.
+    - **sample_id(*)** _String_ Identifier for a sample.
     - **sample_name**: _String_ Name of sample.
     - **sex (*)** _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
-    - **smn1_cn** _Int_ Copynumber.
-    - **smn2_cn** _Int_ Copynumber.
-    - **smn2delta78_cn** _Int_ Copynumber.
+    - **smn1_cn** _Int_ Copy number.
+    - **smn2_cn** _Int_ Copy number.
+    - **smn2delta78_cn** _Int_ Copy number.
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
     - **subject_id** _String_ Individual identifier - multiple samples could belong to the same individual
     - **tiddit_coverage_wig** or **coverage_wig** _String_ Path to WIG file to view alignment coverage overview from e.g. [Reference][tiddit] or [Reference][hificnv].
@@ -119,7 +133,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **track** _String_ Type of track: {"rare", "cancer"}. Default: "rare".
 - **sv_rank_model_url** _String_ Full URL for SV rank model used when scoring SV variants. If not defined, server config `SV_RANK_MODEL_LINK_PREFIX` and `_POSTFIX` will be added to make the URL.
 - **sv_rank_model_version** _String_ SV rank model version used when scoring SV variants.
-- **vcf_cancer** _String_ Path to canver VCF file (tumor case only).
+- **vcf_cancer** _String_ Path to cancer VCF file (tumor case only).
 - **vcf_cancer_research** _String_ Path to VCF file with all variants (tumor case only).
 - **vcf_snv** _String_ Path to SNV VCF file  containing only clinical variants (a subset of all variants).
 - **vcf_snv_research** _String_ Path to VCF file with all variants.
@@ -127,6 +141,8 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **vcf_sv_research** _String_ Path to VCF file with all SV variants.
 
 
+See [loading case](loading-case.md) for more information on how to load a case using the config file, as well as details on
+custom images and custom reports.
 
 ### Example Minimal config
 

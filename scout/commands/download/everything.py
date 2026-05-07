@@ -40,5 +40,5 @@ def everything(ctx, out_dir, api_key, skip_tx, exons, build):
     ctx.invoke(hpo, out_dir=out_dir)
     ctx.invoke(exac, out_dir=out_dir)
     ctx.invoke(hgnc, out_dir=out_dir)
-    ctx.invoke(ensembl, out_dir=out_dir, skip_tx=skip_tx, exons=exons, build=build)
     ctx.invoke(panelapp, out_dir=out_dir)
+    ctx.invoke(ensembl, out_dir=out_dir, skip_tx=skip_tx, exons=exons, build=build)
