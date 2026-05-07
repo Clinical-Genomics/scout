@@ -1,8 +1,8 @@
 # Install Scout
 This guide will walk you through how to setup a working instance of Scout by cloning the repository from GitHub and installing it with a Python package manager.
 Our best recommendation is to use `uv` as the package manager, but you can also use `pip` if you prefer.
-It is also possible to install Scout using containers
-For instructions on how to deploy Scout command line and server using containers check the [Deploy Scout in containers][containers] page.
+It is also possible to install Scout in containers and launch it from there.
+For instructions on how to deploy Scout command line and server using containers, see the [Deploy Scout in containers][containers] page.
 Containers are a great option for testing and development. We use containers also for production, but for performance it is recommended to install the database engine (mongodb) outside containers.
 The instructions are divided into multiple sections.
 One section describes how to set up a demo version with some cases just to see how it could look like.
