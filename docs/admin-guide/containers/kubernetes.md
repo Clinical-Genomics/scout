@@ -7,16 +7,16 @@ Kubernetes is an open-source platform for managing containerized applications. T
 brew install hyperkit
 brew install minikube
 ```
-The second command, brew install minikube, will install also the Kubernetes cli (kubectl). Minikube can be alternatively installed using another container manager, such as Podman or VMWare. More documentation is available [here](https://minikube.sigs.k8s.io/docs/start/).
+The second command, `brew install minikube`, will install also the Kubernetes cli (`kubectl`). Minikube can be alternatively installed using another container manager, such as Podman or VMWare. More documentation is available [here](https://minikube.sigs.k8s.io/docs/start/).
 
 ### Installation and Setup of the database and config files
 1. Start minikube kubernetes cluster inside hypervisor (hyperkit):
 ```
 minikube start --vm-driver=hyperkit
 ```
-1. Note that all files described in this tutorial are available in the folder "containers", in the scout root directory.
+1. Note that all files described in this tutorial are available in the folder `containers`, in the Scout root directory.
 
-1. The file named "secrets.yaml" contains 2 files: one storing the secrets for the mongodb service (mongodb-secret) and one for the secrets of the Scout app (scout-secret). Secrets can also be stored in different files. In the example they're on the same file, separated by "---".
+1. The file named `secrets.yaml` contains 2 files: one storing the secrets for the mongodb service (mongodb-secret) and one for the secrets of the Scout app (scout-secret). Secrets can also be stored in different files. In the example they're on the same file, separated by "---".
 ```
 # mongodb secrets
 apiVersion: v1
@@ -65,12 +65,12 @@ The config parameters should be modified according to the MongoDB connection set
 1. **Create the configmap** with the command:
 `kubectl apply -f scout/containers/kubernetes/scout-configmap.yaml`
 
-1. Create a Deployment for mongo and a relative service that will run on port 27017. Note that the example file (mongo.yaml) is running a lightweight version image of Mongo (vepo/mongo) and not the official Mongo image. This container can be replaced with any other application that serves a MongoDB using authentication.
+1. Create a Deployment for mongo and a relative service that will run on port 27017. Note that the example file (`mongo.yaml`) is running a lightweight version image of Mongo (vepo/mongo) and not the official Mongo image. This container can be replaced with any other application that serves a MongoDB using authentication.
 Run the Deployment and the service:
 `kubectl apply -f scout/containers/kubernetes/mongo.yaml`
 
 ### Deploying the Scout command line
-To create a running container with the Scout command line can be used a Docker image stored either locally (in that case the Scout Dockerfile should be built first) or on the Docker Hub. This example pulls the latest from Docker Hub to build an interactive pod. Define a scout-cli.yaml file with the following content:
+To create a running container with the Scout command line can be used a Docker image stored either locally (in that case the Scout Dockerfile should be built first) or on the Docker Hub. This example pulls the latest from Docker Hub to build an interactive pod. Define a `scout-cli.yaml` file with the following content:
 ```
 # Scout pod for running cli commands
 apiVersion: v1
@@ -159,7 +159,7 @@ spec:
 `kubectl apply -f scout/containers/kubernetes/scout-web.yaml`
 
 ### Overview of the running containers and starting the minikube service
-1. After the steps above a number of container should be running on the virtual machine. An overview of all containers together with accessory services and itams will be available using the command:
+1. After the steps above a number of container should be running on the virtual machine. An overview of all containers together with accessory services and items will be available using the command:
 ```
 kubectl get all
 ```

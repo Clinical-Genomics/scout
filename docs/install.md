@@ -1,8 +1,11 @@
 # Install Scout
-This guide will walk you through how to setup a working instance of scout by cloning the repository from GitHub and installing it with the `pip install command`. For instructions on how to deploy Scout command line and server using containers check the [Deploy Scout in containers][containers] page
+This guide will walk you through how to setup a working instance of Scout by cloning the repository from GitHub and installing it with a Python package manager.
+Our best recommendation is to use `uv` as the package manager, but you can also use `pip` if you prefer.
+It is also possible to install Scout using containers
+For instructions on how to deploy Scout command line and server using containers check the [Deploy Scout in containers][containers] page.
+Containers are a great option for testing and development. We use containers also for production, but for performance it is recommended to install the database engine (mongodb) outside containers.
 The instructions are divided into multiple sections.
 One section describes how to set up a demo version with some cases just to see how it could look like.
-
 
 ## 0. Intro
 Make sure you have a `mongod` process running. First install [mongodb][mongodb] and follow the instructions.
@@ -49,7 +52,7 @@ the Flask instance config. To learn more about possible settings, take a
 look in the ``scout/settings.py`` module.
 
 
-### Autentication
+### Authentication
 If you intend to use authentication, which you should, there are several options!
 
 OAuth2 via an ODIC provider (we have good experience with Google) or a KeyCloak server of you own. Scout also supports LDAP.
@@ -63,13 +66,13 @@ find your "CLIENT ID" and "CLIENT SECRET". You also need to add some
 
 **REDIRECT URLS**:
 
-  - http://localhost:5023/authorized
-  - https://localhost:5023/authorized
+  - `http://localhost:5023/authorized`
+  - `https://localhost:5023/authorized`
 
 **JAVASCRIPT ORIGINS**:
 
-  - http://localhost:5023
-  - https://localhost:5023
+  - `http://localhost:5023`
+  - `https://localhost:5023`
 
 Remember that it might take a while for the tokens to start working.
 
@@ -108,14 +111,14 @@ scout setup database
 ```
 You will want to make sure you have a full complement of these genes, diseases etc before you start working on cases.
 
-```
+```bash
 scout download everything --api-key YOUR_OMIM_API_KEY
 scout update hpo --hpoterms hpo.obo --hpo-to-genes phenotype_to_genes.txt
 scout update diseases -f .
 scout update genes -f .
 ```
 
-A common task is to have a couple of broad screening panels for rare disease genomics set up. We provide automation for two such in silico panels
+A common task is to have a couple of broad screening panels for rare disease genomics set up. We provide automation for two such _in silico_ panels
 out of the box, one with OMIM morbid genes, and one with all PanelApp ``Green`` genes. Here you provide the name of an institute you created that
 will serve as responsible for these panels (`cust002` below):
 ```

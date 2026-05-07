@@ -1,6 +1,9 @@
 # Loading Scout cases
 
 When loading a case into scout it is possible to use either a config file or to specify parameters on the command line.
+The most common way to load a case is to use a config file, which is a `.yaml` file that contains all information describing the case and its samples. The command to load a case with a config file is:
+`scout load case my_config.yaml`
+
 
 ### Scout Load Config
 
@@ -24,7 +27,6 @@ samples:
     phenotype: affected
     sex: male
     bam_path: path/to/bam
-    expected_coverage: 30
   - analysis_type: wes
     sample_id: ADM1059A1
     capture_kit: Agilent_SureSelectCRE.V1
@@ -34,7 +36,6 @@ samples:
     phenotype: unaffected
     sex: male
     bam_path: path/to/bam
-    expected_coverage: 30
   - analysis_type: wes
     sample_id: ADM1059A3
     capture_kit: Agilent_SureSelectCRE.V1
@@ -44,7 +45,6 @@ samples:
     phenotype: unaffected
     sex: female
     bam_path: path/to/bam
-    expected_coverage: 30
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
