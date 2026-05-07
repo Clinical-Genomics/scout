@@ -21,7 +21,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated docs on load case images (#6267)
 - Blog posts for 4.111 and 4.110 releases, removed obsolete `expected_coverage` key from documentation (#6270)
 
-
 ## [4.110.0]
 ### Added
 - A documentation page for institute settings (#6212)
