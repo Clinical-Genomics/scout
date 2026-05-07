@@ -106,11 +106,16 @@ Options:
 
 #### Adding custom images to a case
 
-Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a separate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
+Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a separate pipeline.
+The custom images are defined in the case config file. Scout stores image metadata (for example title, description, dimensions and path) in the database, while image files are read from disk when rendered. Scout currently supports `gif`, `jpeg`, `png` and `svg` images.
 
-The syntax for loading an image differed depending on where they are going to be displayed. Images on the caes view can be grouped into different groups that are displayed as accordion-type UI elemment named after the group. Images can be associated with stru    ctural variants with a given hgnc symbol.
+The syntax for loading an image differs depending on where it is going to be displayed.
+Images on the case view can be grouped into different groups that are displayed as accordion-type UI elements named after the group.
+Images can be associated with structural variants with a given HGNC symbol.
 
-The fields `title`, `description` and `path` are mandatory regarless of location. The image size can be defined with the optional parameters `width` and `height`. If you dont specify a unit its going to default to use pixels as unit. *Note*: adding images lar    ger than 16mb are not reccomended as it might degrade the performance.
+The fields `title`, `description` and `path` are mandatory regardless of location.
+The image size can be defined with the optional parameters `width` and `height`.
+The image height and width unit is pixels.
 
 ``` yaml
 
@@ -119,12 +124,12 @@ custom_images:
     group_one:
       - title: <string> title of image [mandatory]
         description: <string> replacement description of image [mandatory]
-        width: <string> 500px
-        height: <string> 100px
+        width: <int> 500
+        height: <int> 100
         path: <string> scout/demo/images/custom_images/640x480_one.png [mandatory]
       - title: <string> A jpg image [mandatory]
         description: <string> A very good description [mandatory]
-        width: <string> 500px
+        width: <string> 500
         path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
     group_two:
       - title: <string> An SVG image [mandatory]
@@ -134,24 +139,28 @@ custom_images:
     - title: <string> title of image [mandatory]
       str_repid: AFF2 [mandatory]
       description: <string> replacement description of image [mandatory]
-      width: <string> 500px
-      height: <string> 100px
+      width: <string> 500
+      height: <string> 100
       path: <string> scout/demo/images/custom_images/640x480_one.png [mandatory]
     - title: <string> A jpg image [mandatory]
       str_repid: AFF2 [mandatory]
       description: <string> A very good description [mandatory]
-      width: <string> 500px
+      width: <string> 500
       path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
 
 ```
 
 ##### Loading multiple images with wildcards
 
-If you have multiple images you would like to associate with a different variants you can use wildcards to reduce the number of lines in the load config file. For example, you have two images `640x480_AR.svg` and `640x480_ATN1.svg` that should be attaced to variants in replicions AR and ATN1. Instead of writing a long list with one entry per image you could use wildcards to flag which parts of the path name that corresponds to the repid. Wildcards are a variable name surrounded by curly brackets, `{VARIALBE_NAME}`. The varible name can contain letters, numbers and underscore and score.
+If you have multiple images you would like to associate with different variants, you can use wildcards to reduce the number of lines in the load config file.
+For example, you have two images `640x480_AR.svg` and `640x480_ATN1.svg` that should be attached to variants in _AR_ and _ATN1_.
+Instead of writing a long list with one entry per image, you can use wildcards to flag which part of the path name corresponds to the REPID.
+Wildcards are a variable name surrounded by curly brackets, `{VARIABLE_NAME}`. The variable name can contain letters, numbers and underscores.
 
-When the images are loaded into the database the algorithm finds files matching the pattern and substitutes the wildcard with the sting. In other words will this enable the user to extract information encoded in the path and populate the configuration with it.
+When custom image metadata is loaded the algorithm finds files matching the pattern and substitutes the wildcard with the string.
+In other words this expands the path using the configuration pattern and populates the case object accordingly.
 
-Given the two files above will this configuration
+Given the two files above, this configuration
 
 ``` yaml
 custom_images:
@@ -161,7 +170,7 @@ custom_images:
       path: <string> scout/demo/images/custom_images/640x480_{REPID}.jpg [mandatory]
 ```
 
-be equivalent to
+is equivalent to
 
 ``` yaml
 custom_images:
