@@ -26,7 +26,6 @@ samples:
     subject_id: subj_ADM1059A2
     phenotype: affected
     sex: male
-    expected_coverage: 30
     tissue_type: blood
     mitodel_file: scout/demo/mitodel_test_files/hugelymodelbat_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
@@ -58,7 +57,6 @@ samples:
     sample_name: NA12877
     phenotype: unaffected
     sex: male
-    expected_coverage: 30
     tissue_type: blood
     mitodel_file: scout/demo/mitodel_test_files/slowlycivilbuck_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
@@ -77,7 +75,6 @@ samples:
     sample_name: NA12878
     phenotype: unaffected
     sex: female
-    expected_coverage: 30
     tissue_type: blood
     mitodel_file: scout/demo/mitodel_test_files/earlycasualcaiman_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
