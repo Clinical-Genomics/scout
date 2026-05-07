@@ -13,7 +13,6 @@ samples:
     sample_name: NA12882
     phenotype: affected
     sex: male
-    expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     tissue_type: blood
@@ -28,7 +27,6 @@ samples:
     sample_name: NA12877
     phenotype: unaffected
     sex: male
-    expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A1.test.cgh
     tissue_type: blood
@@ -41,7 +39,6 @@ samples:
     sample_name: NA12878
     phenotype: unaffected
     sex: female
-    expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A3.test.cgh
     tissue_type: blood

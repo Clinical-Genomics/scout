@@ -12,7 +12,6 @@ samples:
     sample_name: 999-99
     phenotype: affected
     sex: male
-    expected_coverage: 90
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/999-99.test.cgh
     tmb: 7
@@ -26,7 +25,6 @@ samples:
     sample_name: 998-99
     phenotype: unaffected
     sex: male
-    expected_coverage: 90
     mt_bam: scout/demo/reduced_mt.bam
 
 vcf_cancer: scout/demo/cancer_test.vcf.gz
