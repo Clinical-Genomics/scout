@@ -226,7 +226,7 @@ wheels = [
 
 [[package]]
 name = "chanjo-report"
-version = "4.12.1"
+version = "4.12.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "chanjo" },
@@ -246,9 +246,9 @@ dependencies = [
     { name = "toml" },
     { name = "toolz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b5/8d/c590609fb6c1cbccf66f1013e11e491ae7074f021a67965028754cf41151/chanjo_report-4.12.1.tar.gz", hash = "sha256:ba9359f41e7d813660d7dc8366513b0bdfc4416a20f57e2fa7f89439054f98e6", size = 36544, upload-time = "2026-05-08T08:45:57.796Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/82/4b/c3a3a43d3705abf37fd58548d1643fe4624a0d89b553e56707370cb4796e/chanjo_report-4.12.2.tar.gz", hash = "sha256:88433d3f93d7b16c644a688ff8083fdc244d0415c79bf654d4ebf594ee715953", size = 36580, upload-time = "2026-05-08T12:53:36.31Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/78/fbeed542b813c97f79addf6b34ac271cc2a40d6aaf45701ecf189bed31c6/chanjo_report-4.12.1-py2.py3-none-any.whl", hash = "sha256:a916aa08ecec541da9cc63d27418f26b9ce5556e3a47552877aea0e4d2725b0d", size = 26856, upload-time = "2026-05-08T08:45:56.788Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/c8/f095343b5a8659f68308ca1b374222ab4d3a4ef6e9d798d892c8a03ee093/chanjo_report-4.12.2-py2.py3-none-any.whl", hash = "sha256:498374272c84a1ea6bacf2a6c0b939225639f5f83b3079285c729fdb61a51eba", size = 26852, upload-time = "2026-05-08T12:53:35.208Z" },
 ]
 
 [[package]]
