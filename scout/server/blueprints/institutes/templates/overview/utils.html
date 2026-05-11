@@ -174,7 +174,7 @@
 {% endmacro %}
 
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
-<div clas="card w-100">
+<div class="card w-100">
   <form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
     accept-charset="utf-8" id="institute_form">
   {{ form.csrf_token }}
@@ -377,6 +377,7 @@
                       </select>
                     </div>
                   </div>
+                </fieldset>
               </div>
               <!-- End of loqusdb settings -->
 
@@ -396,6 +397,7 @@
                       </select>
                     </div>
                   </div>
+                </fieldset>
               </div>
               <!-- End of custom soft filters for variants -->
 
@@ -422,12 +424,14 @@
                   {{ form.submit_btn(class="btn-primary btn") }}
               </div>
             </div>
+
         </div>
       </div>
+    </div>
   </form>
 </div>
 
-<!-- Display form to add a Beacon dataset if user is an andmin and if institute lacks one or more Beaocn datasets -->
+<!-- Display form to add a Beacon dataset if user is an admin and if institute lacks one or more Beacon datasets -->
 {% if current_user.is_admin and config.BEACON_URL and config.BEACON_TOKEN %}
 <form action="{{ url_for('overview.add_beacon_dataset', institute_id=institute._id) }}" method="post">
   <div class="card w-100">
