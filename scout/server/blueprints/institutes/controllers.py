@@ -442,6 +442,44 @@ def get_loqusdb_ids(form: MultiDict) -> Optional[List[str]]:
     return form.getlist("loqusdb_id")
 
 
+def get_alamut_key(form: MultiDict) -> Optional[str]:
+    """
+    Return Alamut key from the form input.
+    This is not available on the form for unprivileged users, only admin.
+    """
+    if current_user.is_admin is False:
+        return None
+
+    return form.get("alamut_key")
+
+
+def get_alamut_institution(form: MultiDict) -> Optional[str]:
+    """
+    Return Alamut institution settting from the form input.
+    This is not available on the form for unprivileged users, only admin.
+    """
+    if current_user.is_admin is False:
+        return None
+
+    return form.get("alamut_institution")
+
+
+def get_show_all_cases_status(form: MultiDict) -> Optional[List[str]]:
+    """Return case statuses to always display for admins, otherwise don't update this setting."""
+    if current_user.is_admin is False:
+        return None
+
+    return form.getlist("show_all_cases_status")
+
+
+def get_check_show_all_vars(form: MultiDict) -> Optional[bool]:
+    """Return explicit setting for show-all-vars checkbox for admins, otherwise don't update."""
+    if current_user.is_admin is False:
+        return None
+
+    return form.get("check_show_all_vars") is not None
+
+
 def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
     """
     Return gene panel objects checked in the corresponding form multiselect.
@@ -486,7 +524,7 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
             if form.get("frequency_cutoff")
             else form.get("frequency_cutoff")
         ),
-        show_all_cases_status=form.getlist("show_all_cases_status"),
+        show_all_cases_status=get_show_all_cases_status(form),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
         gene_panels=get_gene_panels(store, form, "gene_panels"),
@@ -496,9 +534,9 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
         loqusdb_ids=get_loqusdb_ids(form),
-        alamut_key=form.get("alamut_key"),
-        alamut_institution=form.get("alamut_institution"),
-        check_show_all_vars=form.get("check_show_all_vars"),
+        alamut_key=get_alamut_key(form),
+        alamut_institution=get_alamut_institution(form),
+        check_show_all_vars=get_check_show_all_vars(form),
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
         soft_filters=get_soft_filters(form),

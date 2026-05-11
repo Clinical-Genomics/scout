@@ -124,6 +124,23 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     assert res["updated_at"] > institute_obj["created_at"]
 
 
+def test_update_institute_preserves_loqusdb_when_not_provided(adapter, institute_obj):
+    """Ensure omitted admin-only loqusdb setting is not removed by unrelated updates."""
+
+    adapter.add_institute(institute_obj)
+
+    loqusdb_ids = ["loqusdb_rd"]
+    adapter.update_institute(internal_id=institute_obj["internal_id"], loqusdb_ids=loqusdb_ids)
+
+    adapter.update_institute(
+        internal_id=institute_obj["internal_id"],
+        display_name="updated institute name",
+    )
+
+    res = adapter.institute(institute_id=institute_obj["internal_id"])
+    assert res["loqusdb_id"] == loqusdb_ids
+
+
 def test_update_display_name(adapter, institute_obj):
     ## GIVEN an adapter without any institutes
     assert sum(1 for _ in adapter.institutes()) == 0

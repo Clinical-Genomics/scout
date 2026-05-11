@@ -193,6 +193,36 @@ def test_institute_settings(app, user_obj, institute_obj):
         assert updated_institute["soft_filters"] == ["in_normal"]
 
 
+def test_institute_settings_non_admin_preserves_loqusdb_id(app, user_obj, institute_obj):
+    """Ensure non-admin updates do not clear admin-only loqusdb settings."""
+
+    # GIVEN an existing loqusdb setting
+    loqusdb_ids = ["loqusdb_rd"]
+    store.institute_collection.find_one_and_update(
+        {"_id": institute_obj["internal_id"]},
+        {"$set": {"loqusdb_id": loqusdb_ids}},
+    )
+
+    # AND a user without admin role
+    user_obj["roles"] = ["mme_submitter"]
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        form_data = {
+            "display_name": "non-admin update",
+            "sanger_emails": ["bruce@banner.com"],
+        }
+        resp = client.post(
+            url_for("overview.institute_settings", institute_id=institute_obj["internal_id"]),
+            data=form_data,
+        )
+        assert resp.status_code == 200
+
+    updated_institute = store.institute_collection.find_one({"_id": institute_obj["internal_id"]})
+    assert updated_institute["loqusdb_id"] == loqusdb_ids
+
+
 def test_cases_export_samples(app, institute_obj):
     """Test the cases endpoint, providing a request to download cases samples to file."""
 
