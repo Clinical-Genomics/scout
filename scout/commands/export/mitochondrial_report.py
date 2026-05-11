@@ -34,7 +34,7 @@ def mt_report(case_id, test, outpath=None):
     LOG.info('exporting mitochondrial variants for case "{}"'.format(case_id))
 
     adapter = store
-    query = {"chrom": {"$in": ["MT", "M"]}}
+    query = {"chrom": ["MT", "M"]}
 
     case_obj = adapter.case(case_id=case_id)
 
