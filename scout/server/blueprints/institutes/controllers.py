@@ -465,17 +465,13 @@ def get_alamut_institution(form: MultiDict) -> Optional[str]:
 
 
 def get_show_all_cases_status(form: MultiDict) -> Optional[List[str]]:
-    """Return case statuses to always display for admins, otherwise don't update this setting."""
-    if current_user.is_admin is False:
-        return None
+    """Return case statuses to always display.."""
 
     return form.getlist("show_all_cases_status")
 
 
 def get_check_show_all_vars(form: MultiDict) -> Optional[bool]:
-    """Return explicit setting for show-all-vars checkbox for admins, otherwise don't update."""
-    if current_user.is_admin is False:
-        return None
+    """Return explicit setting for show-all-vars checkbox."""
 
     return form.get("check_show_all_vars") is not None
 
