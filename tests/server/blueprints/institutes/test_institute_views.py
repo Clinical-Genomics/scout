@@ -206,6 +206,7 @@ def test_institute_settings_non_admin_preserves_loqusdb_id(app, user_obj, instit
     # AND a user without admin role
     user_obj["roles"] = ["mme_submitter"]
 
+    # WHEN changing a non admin setting
     with app.test_client() as client:
         client.get(url_for("auto_login"))
 
@@ -219,6 +220,7 @@ def test_institute_settings_non_admin_preserves_loqusdb_id(app, user_obj, instit
         )
         assert resp.status_code == 200
 
+    # THEN admin level settings shall not be unset
     updated_institute = store.institute_collection.find_one({"_id": institute_obj["internal_id"]})
     assert updated_institute["loqusdb_id"] == loqusdb_ids
 

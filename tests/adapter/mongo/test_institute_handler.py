@@ -127,16 +127,20 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
 def test_update_institute_preserves_loqusdb_when_not_provided(adapter, institute_obj):
     """Ensure omitted admin-only loqusdb setting is not removed by unrelated updates."""
 
+    # GIVEN an institute
     adapter.add_institute(institute_obj)
 
+    # WHEN first setting loqusdb on the institute
     loqusdb_ids = ["loqusdb_rd"]
     adapter.update_institute(internal_id=institute_obj["internal_id"], loqusdb_ids=loqusdb_ids)
 
+    # WHEN updating the institute without providing loqusdb
     adapter.update_institute(
         internal_id=institute_obj["internal_id"],
         display_name="updated institute name",
     )
 
+    # THEN the institute should still have loqusdb set
     res = adapter.institute(institute_id=institute_obj["internal_id"])
     assert res["loqusdb_id"] == loqusdb_ids
 
