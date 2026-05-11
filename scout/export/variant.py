@@ -116,7 +116,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
 
         category = variant_obj.get("category", "snv")
         sub_category = variant_obj.get("sub_category", "snv")
-        description = variant_obj.get("description")
+        description = "Lift over variant (37->38). " + variant_obj.get("description")
         institutes = ",".join(variant_obj.get("institute") or [])
 
         export_lines.append(
