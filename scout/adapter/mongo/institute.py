@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 from typing import List, Optional, Union
 
-import pymongo
+from pymongo import ReturnDocument
+from pymongo.results import InsertOneResult
 
 from scout.constants import PHENOTYPE_GROUPS
 from scout.exceptions import IntegrityError
@@ -11,8 +12,8 @@ LOG = logging.getLogger(__name__)
 
 
 class InstituteHandler(object):
-    def add_institute(self, institute_obj):
-        """Add a institute to the database
+    def add_institute(self, institute_obj: dict) -> InsertOneResult:
+        """Add an institute to the database
 
         Args:
             institute_obj(Institute)
@@ -30,8 +31,9 @@ class InstituteHandler(object):
         )
 
         insert_info = self.institute_collection.insert_one(institute_obj)
-
-        LOG.info("Institute saved")
+        if insert_info.acknowledged:
+            LOG.info("Institute saved")
+        return insert_info
 
     def update_institute(
         self,
@@ -50,7 +52,7 @@ class InstituteHandler(object):
         add_groups: Optional[bool] = None,
         sharing_institutes: Optional[List[str]] = None,
         cohorts: Optional[List[str]] = None,
-        loqusdb_ids: Optional[List[str]] = [],
+        loqusdb_ids: Optional[List[str]] = None,
         alamut_key: Optional[str] = None,
         alamut_institution: Optional[str] = None,
         check_show_all_vars: Optional[str] = None,
@@ -102,8 +104,8 @@ class InstituteHandler(object):
         UPDATE_SETTINGS = {
             "alamut_institution": alamut_institution,  # Admin setting
             "alamut_key": alamut_key,  # Admin setting
-            "check_show_all_vars": check_show_all_vars is not None,
-            "clinvar_key": clinvar_key,  # Admin setting
+            "check_show_all_vars": check_show_all_vars,
+            "clinvar_key": clinvar_key,
             "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
             "collaborators": sharing_institutes,
@@ -112,13 +114,20 @@ class InstituteHandler(object):
             "frequency_cutoff": frequency_cutoff,
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
-            "loqusdb_id": loqusdb_ids,
+            "loqusdb_id": loqusdb_ids,  # Admin setting
             "phenotype_groups": get_phenotype_groups(),
             "sanger_recipients": sanger_recipients,
-            "show_all_cases_status": show_all_cases_status,  # Admin setting
+            "show_all_cases_status": show_all_cases_status,
             "soft_filters": soft_filters,  # Admin setting
         }
         for key, value in UPDATE_SETTINGS.items():
+            if value is None:
+                continue
+
+            if isinstance(value, bool):
+                updates["$set"][key] = value
+                continue
+
             if bool(value) is True:
                 updates["$set"][key] = value
             else:
@@ -129,7 +138,7 @@ class InstituteHandler(object):
             updated_institute = self.institute_collection.find_one_and_update(
                 {"_id": internal_id},
                 updates,
-                return_document=pymongo.ReturnDocument.AFTER,
+                return_document=ReturnDocument.AFTER,
             )
             LOG.info("Institute updated")
 
