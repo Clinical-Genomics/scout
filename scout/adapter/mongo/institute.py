@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 from typing import List, Optional, Union
 
-import pymongo
+from pymongo import ReturnDocument
+from pymongo.results import InsertOneResult
 
 from scout.constants import PHENOTYPE_GROUPS
 from scout.exceptions import IntegrityError
@@ -11,8 +12,8 @@ LOG = logging.getLogger(__name__)
 
 
 class InstituteHandler(object):
-    def add_institute(self, institute_obj):
-        """Add a institute to the database
+    def add_institute(self, institute_obj: dict) -> InsertOneResult:
+        """Add an institute to the database
 
         Args:
             institute_obj(Institute)
@@ -30,8 +31,9 @@ class InstituteHandler(object):
         )
 
         insert_info = self.institute_collection.insert_one(institute_obj)
-
-        LOG.info("Institute saved")
+        if insert_info.acknowledged:
+            LOG.info("Institute saved")
+        return insert_info
 
     def update_institute(
         self,
@@ -121,9 +123,11 @@ class InstituteHandler(object):
         for key, value in UPDATE_SETTINGS.items():
             if value is None:
                 continue
+
             if isinstance(value, bool):
                 updates["$set"][key] = value
                 continue
+
             if bool(value) is True:
                 updates["$set"][key] = value
             else:
@@ -134,7 +138,7 @@ class InstituteHandler(object):
             updated_institute = self.institute_collection.find_one_and_update(
                 {"_id": internal_id},
                 updates,
-                return_document=pymongo.ReturnDocument.AFTER,
+                return_document=ReturnDocument.AFTER,
             )
             LOG.info("Institute updated")
 
