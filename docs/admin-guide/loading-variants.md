@@ -12,6 +12,8 @@ beyond genomics nucleotide change. See [Annotations](./annotations.md).
 
 In Scout rank score is a central theme. Rank Scores is a estimation on how potentially dangerous a variant is, similar to the CADD score with the intention of work with all types of variation.
 The uploading of variants is based on a rank score threshold, this is to avoid to clog the database with millions of variants that we at the moment have a hard time to say anything about.
+All variants with rank score above `rank_threshold` are loaded. All mitochondrial variants (found on MT or M), all variants annotated pathogenic/likely pathogenic or with conflicting interpretations in ClinVar,
+and all variants matching the collection of managed variants or marked causative in other cases are also loaded. All STR variants are loaded regardless of rank score.
 
 The rank score is a summary of the annotations of a variant. Rank scores are calculated and annotated by [GENMOD][genmod]
 

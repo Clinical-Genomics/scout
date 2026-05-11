@@ -74,7 +74,7 @@ dependencies = [
 	# Required by scripts
 	"tabulate",
 	"flask-ldap3-login>=1.0.2",
-	"chanjo-report>=4.12.0",
+	"chanjo-report>=4.12.2",
 ]
 
 [project.optional-dependencies]
