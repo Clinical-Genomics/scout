@@ -50,7 +50,7 @@ class InstituteHandler(object):
         add_groups: Optional[bool] = None,
         sharing_institutes: Optional[List[str]] = None,
         cohorts: Optional[List[str]] = None,
-        loqusdb_ids: Optional[List[str]] = [],
+        loqusdb_ids: Optional[List[str]] = None,
         alamut_key: Optional[str] = None,
         alamut_institution: Optional[str] = None,
         check_show_all_vars: Optional[str] = None,
@@ -102,7 +102,7 @@ class InstituteHandler(object):
         UPDATE_SETTINGS = {
             "alamut_institution": alamut_institution,  # Admin setting
             "alamut_key": alamut_key,  # Admin setting
-            "check_show_all_vars": check_show_all_vars is not None,
+            "check_show_all_vars": check_show_all_vars,
             "clinvar_key": clinvar_key,  # Admin setting
             "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
@@ -119,6 +119,11 @@ class InstituteHandler(object):
             "soft_filters": soft_filters,  # Admin setting
         }
         for key, value in UPDATE_SETTINGS.items():
+            if value is None:
+                continue
+            if isinstance(value, bool):
+                updates["$set"][key] = value
+                continue
             if bool(value) is True:
                 updates["$set"][key] = value
             else:
