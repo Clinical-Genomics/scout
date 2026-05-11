@@ -490,7 +490,12 @@ def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
 
 
 def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
-    """Update institute settings with data collected from institute form."""
+    """Update institute settings with data collected from institute form.
+
+    Some form settings are only available to admins. These should not be set or cleared when an ordinary
+    user visits the page and edits something else. Do not call update_institute with admin-only settings
+    set to something other than None if the intention is not to update those settings.
+    """
 
     sharing_institutes = []
     for inst in form.getlist("institutes"):
