@@ -105,7 +105,7 @@ class InstituteHandler(object):
             "alamut_institution": alamut_institution,  # Admin setting
             "alamut_key": alamut_key,  # Admin setting
             "check_show_all_vars": check_show_all_vars,
-            "clinvar_key": clinvar_key,  # Admin setting
+            "clinvar_key": clinvar_key,
             "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
             "collaborators": sharing_institutes,
@@ -114,10 +114,10 @@ class InstituteHandler(object):
             "frequency_cutoff": frequency_cutoff,
             "gene_panels": gene_panels,
             "gene_panels_matching": gene_panels_matching,
-            "loqusdb_id": loqusdb_ids,
+            "loqusdb_id": loqusdb_ids,  # Admin setting
             "phenotype_groups": get_phenotype_groups(),
             "sanger_recipients": sanger_recipients,
-            "show_all_cases_status": show_all_cases_status,  # Admin setting
+            "show_all_cases_status": show_all_cases_status,
             "soft_filters": soft_filters,  # Admin setting
         }
         for key, value in UPDATE_SETTINGS.items():
