@@ -5,15 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
+- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
+- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
+- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
+
+## [4.111.0]
 ### Added
 - Custom MT Saltshaker HTML report loading (#6242)
 - Command to download all PanelApp panels to file (#6239)
 - Alternatively load and update PANELAPP-GREEN panel from a pre-downloaded file (#6244)
 - Command to remove loaded rank models (#6262)
 ### Changed
-- Default gnomAD linkout for hg38 to non_uk_biobank subset (#6247)
+- Default gnomAD linkout for hg38 to non_uk_biobank subset (#6250)
 - Handle conflicts and duplicates when uploading managed variants (#6256, #6258, #6259)
 - On caseS page, dynamically hide empty categories of cases (#6260)
+- `scout download everything` command downloads Ensembl data last, so that if the Ensembl download fails, it does not prevent the other files from being downloaded (#6269)
 ### Fixed
 - Saltshaker report update command (#6246)
 - Managed variants counter, wrongly defaulting to build 37 (#6252)
@@ -21,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated docs on load case images (#6267)
 - Blog posts for 4.111 and 4.110 releases, removed obsolete `expected_coverage` key from documentation (#6270)
 - LoqusDB setting reset by non-admin changes to institute page (#6275)
+- CLI mt report command to use both M and MT chr names. Update documentation on MT var loading. (#6277)
 
 ## [4.110.0]
 ### Added
@@ -37,10 +46,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 - Refactor variant formatting logic (pretty_variant) out of Jinja2 template (#6218)
 - `scout download everything` command downloads Ensembl data last, so that if the Ensembl download fails, it does not prevent the other files from being downloaded (#6269)
-- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
-- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
-- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
-- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 ### Fixed
 - Formatting of a list on managed variant export documentation (#6203)
 - Exception for singletons from the "Include variants present only in unaffected" filter (#6209)
