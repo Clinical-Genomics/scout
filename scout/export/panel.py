@@ -58,7 +58,10 @@ def export_panels(adapter, panels, versions=None, build="37"):
         for gene_obj in panel_obj["genes"]:
             panel_geneids.add(gene_obj["hgnc_id"])
 
-    gene_objs = adapter.hgncid_to_gene(build=build)
+    if build == "GRCh38":
+        genome_build = "38"
+
+    gene_objs = adapter.hgncid_to_gene(build=genome_build)
 
     for hgnc_id in panel_geneids:
         hgnc_geneobj = gene_objs.get(hgnc_id)
