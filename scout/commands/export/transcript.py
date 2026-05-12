@@ -31,5 +31,5 @@ def transcripts(build):
 
     for tx_obj in export_transcripts(adapter, genome_build):
         click.echo(
-            f"{chr_prefix}{tx_obj["chrom"]}\t{tx_obj["start"]}\t{tx_obj["end"]}\t{tx_obj['ensembl_transcript_id']}\t{tx_obj.get('refseq_id', '')}\t{tx_obj['hgnc_id']}"
+            f"{chr_prefix}{tx_obj['chrom']}\t{tx_obj['start']}\t{tx_obj['end']}\t{tx_obj['ensembl_transcript_id']}\t{tx_obj.get('refseq_id', '')}\t{tx_obj['hgnc_id']}"
         )
