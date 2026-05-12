@@ -26,5 +26,5 @@ build_option = click.option(
     default="37",
     type=click.Choice(BUILDS),
     show_default=True,
-    help="Genome build version",
+    help="Genome build version - GRCh38 will add chr prefix to output",
 )

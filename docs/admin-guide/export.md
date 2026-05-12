@@ -96,6 +96,7 @@ A tab-delimited list with the following header:
 ## Exporting Genes (`genes`)
 
 Export all genes from the database. Default format is a .bed file, but they can be exported as a json file by using the `--json` option.
+`--build GRCh38` will add `chr` prefix to output.
 
 ```
 Options:
@@ -138,6 +139,7 @@ Result:
 ## Exporting Managed Variants (`managed`)
 
 Export managed variants in VCF format.
+`--build GRCh38` will add `chr` prefix to output.
 
 **Example Output (VCF):**
 
@@ -168,6 +170,7 @@ Options:
 ## Exporting Gene Panels (`panel`)
 
 Export gene panels with clinical annotation in BED format.
+`--build GRCh38` will add `chr` prefix to output.
 
 ```
 Options:
@@ -187,6 +190,7 @@ Options:
 ## Exporting Transcripts (`transcripts`)
 
 Export a list of transcripts in BED format. Use the following command: `scout export transcripts`
+`--build GRCh38` will add `chr` prefix to output.
 
 ```
 Options:
