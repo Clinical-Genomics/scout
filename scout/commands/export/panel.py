@@ -33,9 +33,6 @@ def panel_cmd(panel: str, build: str, bed: bool, version: float):
         LOG.warning("Please provide at least one gene panel")
         raise click.Abort()
 
-    if build == "GRCh38":
-        build = "38"
-
     LOG.info("Exporting panels: {}".format(", ".join(panel)))
     if bed:
         if version:
