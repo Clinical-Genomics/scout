@@ -130,9 +130,6 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     LOG.info("Running scout export managed variants")
     adapter = store
 
-    if build == "GRCh38":
-        build = "38"
-
     genome_build = build
     if build == "GRCh38":
         genome_build = "38"
