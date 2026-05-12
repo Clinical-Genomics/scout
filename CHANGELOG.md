@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Partly revert alias change, and instead use GRCh38 to mean write chr prefix in export commands (#6288)
+
 ## [4.111.1]
 ### Fixed
 - Build version alias GRCh38 to 38 for consistency in export commands (#6283)
