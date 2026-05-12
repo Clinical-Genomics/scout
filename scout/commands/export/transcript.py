@@ -28,7 +28,6 @@ def transcripts(build):
     chr_prefix = ""
     if build == "GRCh38":
         chr_prefix = "chr"
-    transcript_string = "{0}{1}\t{2}\t{3}\t{3}\t{4}\t{5}"
 
     for tx_obj in export_transcripts(adapter, genome_build):
         click.echo(
