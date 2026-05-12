@@ -28,7 +28,7 @@ def genes(build, json):
     result = adapter.all_genes(build=build)
     gene_list = list(result)
 
-    if build == "GRCh38":
+    if build == "38":
         for gene_obj in gene_list:
             if gene_obj["chromosome"] == "MT":
                 gene_obj["chromosome"] = "M"
