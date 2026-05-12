@@ -9,13 +9,14 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
-from scout.constants.managed_variant import MANAGED_CATEGORIES
+from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_causative_variants,
     export_managed_variants,
     export_verified_variants,
 )
+from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
 from scout.utils.vcf import validate_vcf_line
 
@@ -206,26 +207,26 @@ def causatives(
         return
 
     elif as_managed:
+        header = MANAGED_VARIANTS_INFILE_HEADER
+        lines = variants_to_managed_variants(variants=variants, type="causatives")
+    else:
+        header = VCF_HEADER
+        # If case_id is given, print more complete vcf entries, with INFO,
+        # and genotypes
+        if case_id:
+            header[-1] = header[-1] + "\tFORMAT"
+            case_obj = adapter.case(case_id=case_id)
+            for individual in case_obj["individuals"]:
+                header[-1] = header[-1] + "\t" + individual["individual_id"]
 
-        return
+        for variant_obj in variants:
+            lines.append(get_vcf_entry(variant_obj, case_id=case_id))
 
-
-    vcf_header = VCF_HEADER
-
-    # If case_id is given, print more complete vcf entries, with INFO,
-    # and genotypes
-    if case_id:
-        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
-        case_obj = adapter.case(case_id=case_id)
-        for individual in case_obj["individuals"]:
-            vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
-
-    for line in vcf_header:
+    for line in header:
         click.echo(line)
 
-    for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id)
-        click.echo(variant_string)
+    for line in lines:
+        click.echo(line)
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:

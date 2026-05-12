@@ -163,7 +163,9 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
     return variant_obj
 
 
-def variants_to_managed_variants(variants: list[dict], type: str, institute_id: str) -> list[str]:
+def variants_to_managed_variants(
+    variants: list[dict], type: str, institute_id: Optional[str] = None
+) -> list[str]:
     """Converts variants to managed input."""
 
     valid_categories = {
@@ -189,7 +191,7 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
 
         variant_href = url_for(
             valid_categories[category],
-            institute_id=institute_id,
+            institute_id=institute_id or variant.get("institute"),
             case_name=variant["case_obj"]["display_name"],
             variant_id=variant["_id"],
             _external=True,
