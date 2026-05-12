@@ -165,11 +165,20 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("-d", "--document-id", help="Search for a specific variant")
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
+@click.option("--as-managed", is_flag=True, help="Export to managed variants infile")
+@click.option("--within-days", type=int, help="Days since event event occurred")
 @with_appcontext
 def causatives(
-    build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
+    build: str,
+    collaborator: str,
+    category: str,
+    document_id: str | None,
+    case_id: str | None,
+    json: bool,
+    as_managed: bool,
+    within_days: int | None,
 ):
-    """Export causatives for a collaborator in .vcf format"""
+    """Export causatives for one or more collaborators in json, csv or VCF format."""
 
     LOG.info("Running scout export variants")
     adapter = store
@@ -195,6 +204,11 @@ def causatives(
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
+
+    elif as_managed:
+
+        return
+
 
     vcf_header = VCF_HEADER
 
