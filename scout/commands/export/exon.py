@@ -4,7 +4,6 @@ import click
 from bson.json_util import dumps
 from flask.cli import with_appcontext
 
-from scout.commands.utils import builds_option
 from scout.export.exon import export_exons, export_gene_exons
 from scout.server.extensions import store
 

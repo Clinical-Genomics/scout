@@ -18,6 +18,9 @@ def transcripts(build):
     LOG.info("Running scout export transcripts")
     adapter = store
 
+    if build == "GRCh38":
+        build = "38"
+
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncID"]
 
     for line in header:

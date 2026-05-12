@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Build version alias GRCh38 to 38 for consistency in export commands (#6283)
+
 ## [4.111.0]
 ### Added
 - Custom MT Saltshaker HTML report loading (#6242)

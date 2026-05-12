@@ -4,8 +4,6 @@ import click
 from bson.json_util import dumps
 from flask.cli import with_appcontext
 
-from scout.commands.utils import builds_option
-from scout.export.gene import export_genes
 from scout.server.extensions import store
 
 from .utils import build_option, json_option
@@ -19,11 +17,16 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def genes(build, json):
     """Export all genes from a build"""
+
+    if build == "GRCh38":
+        build = "38"
+
     LOG.info("Running scout export genes")
     adapter = store
     result = adapter.all_genes(build=build)
     gene_list = list(result)
-    if build == "GRCh38":
+
+    if build == "38":
         for gene_obj in gene_list:
             if gene_obj["chromosome"] == "MT":
                 gene_obj["chromosome"] = "M"
