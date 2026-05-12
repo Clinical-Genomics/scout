@@ -117,7 +117,7 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         category = variant_obj.get("category", "snv")
         sub_category = variant_obj.get("sub_category", "snv")
         if "(causatives" not in variant_obj.get("description"):
-            description = variant_obj.get("description") + " (managed, build37)"
+            description = variant_obj.get("description") + f" (managed, build{liftover_from})"
         else:
             description = variant_obj.get("description")
         institutes = ",".join(variant_obj.get("institute") or [])
