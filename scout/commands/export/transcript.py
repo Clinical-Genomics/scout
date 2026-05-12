@@ -19,16 +19,19 @@ def transcripts(build):
     adapter = store
 
     if build == "GRCh38":
-        build = "38"
+        genome_build = "38"
 
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncID"]
 
     for line in header:
         click.echo(line)
 
-    transcript_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}"
+    chr_prefix = ""
+    if build == "GRCh38":
+        chr_prefix = "chr"
+    transcript_string = "{chr_prefix}{0}\t{1}\t{2}\t{3}\t{4}\t{5}"
 
-    for tx_obj in export_transcripts(adapter, build):
+    for tx_obj in export_transcripts(adapter, genome_build):
         click.echo(
             transcript_string.format(
                 tx_obj["chrom"],
