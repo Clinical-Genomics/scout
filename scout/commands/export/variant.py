@@ -130,6 +130,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     LOG.info("Running scout export managed variants")
     adapter = store
 
+    if build == "GRCh38":
+        build = "38"
+
     variants = export_managed_variants(
         adapter=adapter, institute=collaborator, build=build, category=list(category)
     )
@@ -176,6 +179,9 @@ def causatives(
         if not case_obj:
             LOG.info("Case %s does not exist", case_id)
             raise click.Abort
+
+    if build == "GRCh38":
+        build = "38"
 
     variants = export_causative_variants(
         adapter,

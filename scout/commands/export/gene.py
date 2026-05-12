@@ -19,10 +19,15 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def genes(build, json):
     """Export all genes from a build"""
+
+    if build == "GRCh38":
+        build = "38"
+
     LOG.info("Running scout export genes")
     adapter = store
     result = adapter.all_genes(build=build)
     gene_list = list(result)
+
     if build == "GRCh38":
         for gene_obj in gene_list:
             if gene_obj["chromosome"] == "MT":
