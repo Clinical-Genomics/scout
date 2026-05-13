@@ -52,7 +52,6 @@ def test_liftover_bcftools(broad_liftover_client):
     # WHEN sending the liftover request the function should return a lift over locus
     result = client.liftover(
         build_from=BUILD_FROM,
-        build_to=BUILD_TO,
         chrom=CHROM,
         start=START,
         end=END,
@@ -94,7 +93,5 @@ def test_liftover_ucsc(broad_liftover_client):
     )
     client = broad_liftover_client
     # WHEN sending the liftover request the function should return a lift over locus
-    result = client.liftover(
-        build_from=BUILD_FROM, build_to=BUILD_TO, chrom=CHROM, start=START, end=END
-    )
+    result = client.liftover(build_from=BUILD_FROM, chrom=CHROM, start=START, end=END)
     assert result == LIFTOVER_RESPONSE

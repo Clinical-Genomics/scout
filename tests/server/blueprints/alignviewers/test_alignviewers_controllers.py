@@ -6,22 +6,22 @@ from flask_login import current_user
 from scout.constants import HUMAN_REFERENCE
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import config_igv_tracks, store
-from scout.utils.broad_liftover_client import RESTAPI_URL
+from scout.utils.broad_liftover_client import LIFTOVER_URL
 
 
 @responses.activate
-def test_make_sashimi_tracks_variant_38(app, case_obj, ensembl_liftover_response):
+def test_make_sashimi_tracks_variant_38(app, case_obj, broad_ucsc_liftover_response):
     """Test function that creates splice junction tracks for a variant with genome build 38"""
 
     # WHEN the gene splice junction track is created for any variant in a gene
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
-    # GIVEN a patched response from Ensembl liftover API
-    url = f'{RESTAPI_URL}/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    # GIVEN a patched response from the liftover tool
+    url = f"{LIFTOVER_URL}/?hg=hg19-to-hg38&format=interval&chrom={test_variant['chromosome']}&start={test_variant['position']}&end={test_variant['end']}"
     responses.add(
         responses.GET,
         url,
-        json=ensembl_liftover_response,
+        json=broad_ucsc_liftover_response,
         status=200,
     )
 
@@ -51,18 +51,18 @@ def test_make_sashimi_tracks_variant_38(app, case_obj, ensembl_liftover_response
 
 
 @responses.activate
-def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response):
+def test_make_sashimi_tracks_variant_37(app, case_obj, broad_ucsc_liftover_response):
     """Test function that creates splice junction tracks for a variant with genome build 37"""
 
     # WHEN the gene splice junction track is created for any variant in a gene
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
-    # GIVEN a patched response from Ensembl liftover API
-    url = f'{RESTAPI_URL}/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    # GIVEN a patched response from the liftover tool
+    url = f"{LIFTOVER_URL}/?hg=hg19-to-hg38&format=interval&chrom={test_variant['chromosome']}&start={test_variant['position']}&end={test_variant['end']}"
     responses.add(
         responses.GET,
         url,
-        json=ensembl_liftover_response,
+        json=broad_ucsc_liftover_response,
         status=200,
     )
 
@@ -184,7 +184,7 @@ def test_get_locus_from_omics_variant(app, case_obj):
     assert locus_start_coord
 
 
-def test_get_locus_from_omics_variant_liftover(app, case_obj, ensembl_liftover_response):
+def test_get_locus_from_omics_variant_liftover(app, case_obj, broad_ucsc_liftover_response):
     """Test getting locus string components for an omics variant zoom in given a case,
     with liftover"""
 
@@ -196,12 +196,12 @@ def test_get_locus_from_omics_variant_liftover(app, case_obj, ensembl_liftover_r
     # GIVEN an omics variant with build 38
     omics_variant["build"] = "38"
 
-    # GIVEN a patched response from Ensembl liftover API
-    url = f'{RESTAPI_URL}/map/human/GRCh37/{omics_variant["chromosome"]}:{omics_variant["position"]}..{omics_variant["end"]}/GRCh38?content-type=application/json'
+    # GIVEN a patched response from the liftover tool
+    url = f"{LIFTOVER_URL}/?hg=hg19-to-hg38&format=interval&chrom={omics_variant['chromosome']}&start={omics_variant['position']}&end={omics_variant['end']}"
     responses.add(
         responses.GET,
         url,
-        json=ensembl_liftover_response,
+        json=broad_ucsc_liftover_response,
         status=200,
     )
 

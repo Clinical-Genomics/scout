@@ -18,8 +18,7 @@ from scout.server.utils import (
     find_index,
     get_case_genome_build,
 )
-
-# from scout.utils.broad_liftover_client import EnsemblRestApiClient
+from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
 LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]
@@ -370,15 +369,15 @@ def get_locus_from_variant(
     variant_build = variant_obj["build"] if "build" in variant_obj else case_build
 
     if variant_build not in display_build:
-        client = EnsemblRestApiClient()
+        client = BroadLiftoverApiClient()
         if mapped_coords := client.liftover(
-            variant_build,
-            variant_obj.get("chromosome"),
-            variant_obj.get("position"),
-            variant_obj.get("end"),
+            build_from=variant_build,
+            chrom=variant_obj.get("chromosome"),
+            start=variant_obj.get("position"),
+            end=variant_obj.get("end"),
         ):
-            mapped_start = mapped_coords[0]["mapped"].get("start")
-            mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
+            mapped_start = mapped_coords["output_start"]
+            mapped_end = mapped_coords.get("output_end") or mapped_start
             locus_start_coord = mapped_start
             locus_end_coord = mapped_end
 

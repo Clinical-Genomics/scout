@@ -210,6 +210,26 @@ def ensembl_genes(request, gene_bulk):
     return _ensembl_genes
 
 
+@pytest.fixture
+def broad_ucsc_liftover_response():
+    """Returns a  response from the Broad Institute's liftover API - UCSC tool."""
+    _response = {
+        "hg": "hg19-to-hg38",
+        "chrom": "chr7",
+        "start": "124475295",
+        "format": "interval",
+        "end": "124475300",
+        "pos": 124475296,
+        "output_chrom": "chr7",
+        "output_pos": 124835242,
+        "output_start": 124835241,
+        "output_end": 124835246,
+        "output_strand": "+",
+        "liftover_tool": "UCSC liftover tool",
+    }
+    return _response
+
+
 @pytest.fixture(scope="function")
 def gene_bulk(genes):
     """Return a list with HgncGene objects"""

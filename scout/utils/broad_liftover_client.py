@@ -39,10 +39,21 @@ class BroadLiftoverApiClient:
             flash(error)
         return data
 
+    def set_request_build_params(self, build_from_raw: str) -> Tuple[str, str]:
+        """Set build_from and build_to given the params passed to the function."""
+
+        if "38" in build_from_raw:
+            build_from = "hg38"
+            build_to = "hg19"
+        else:
+            build_from = "hg19"
+            build_to = "hg38"
+
+        return build_from, build_to
+
     def liftover(
         self,
         build_from: str,
-        build_to: str,
         chrom: str,
         start: int,
         end: Optional[int] = None,
@@ -52,6 +63,8 @@ class BroadLiftoverApiClient:
         """Perform variant liftover using the API with BCFtools plugin or the UCSC liftover tool, if alt and ref are missing.
         example:  https://liftover-xwkwwwxdwq-uc.a.run.app/liftover/?hg=hg19-to-hg38&format=variant&chrom=11&pos=47353394&end=47353394&ref=T&alt=C
         """
+
+        build_from, build_to = self.set_request_build_params(build_from)
 
         if alt and ref:  # use BCFtools plugin
             format = "variant"
