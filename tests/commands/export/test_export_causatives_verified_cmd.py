@@ -4,7 +4,7 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
-def test_export_causatives(mock_app, case_obj):
+def test_export_causatives(mock_app, institute_obj, case_obj, user_obj):
     """Test the CLI command that exports causatives into vcf format"""
 
     runner = mock_app.test_cli_runner()
@@ -17,13 +17,23 @@ def test_export_causatives(mock_app, case_obj):
     runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv"])
     assert sum(1 for _ in store.variant_collection.find()) > 0
 
-    # update case registering a causative variant
+    ## WHEN marking a variant as causative
     variant_obj = store.variant_collection.find_one()
-    store.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]}, {"$set": {"causatives": [variant_obj["_id"]]}}
+    link = "markCausativelink"
+    store.mark_causative(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant_obj,
     )
-    res = store.case_collection.find({"causatives": {"$exists": True}})
-    assert sum(1 for _ in res) == 1
+    assert store.event_collection.find(
+        {
+            "institute": "cust000",
+            "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+            "category": "case",
+        }
+    )
 
     # Test the cli by not providing any options or arguments
     result = runner.invoke(cli, ["export", "variants"])
