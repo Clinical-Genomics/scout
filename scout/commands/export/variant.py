@@ -185,7 +185,7 @@ def causatives(
     within_days: int | None,
 ):
     """Export causatives for one or more collaborators in json, csv or VCF format.
-       If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix."""
+    If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix."""
 
     LOG.info("Running scout export variants")
     adapter = store
