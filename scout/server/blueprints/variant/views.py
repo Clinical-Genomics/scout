@@ -571,7 +571,7 @@ def marrvel_link(build, variant_id):
             start=variant_obj.get("position"),
             end=variant_obj.get("end"),
         ):
-            chrom = mapped_coords["output_chrom"].replace("chr")
+            chrom = mapped_coords["output_chrom"].replace("chr", "")
             start = mapped_coords["output_start"]
         else:
             flash(
