@@ -10,6 +10,7 @@ from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
 
+
 def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
 

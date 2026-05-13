@@ -166,6 +166,10 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
 @click.option("--as-managed", is_flag=True, help="Export to managed variants infile")
+@click.option(
+    "--managed-link-base-url",
+    help="Export to managed variants infile, with full link to the variant",
+)
 @click.option("--within-days", type=int, help="Days since event event occurred")
 @with_appcontext
 def causatives(
@@ -176,6 +180,7 @@ def causatives(
     case_id: str | None,
     json: bool,
     as_managed: bool,
+    managed_link_base_url: str | None,
     within_days: int | None,
 ):
     """Export causatives for one or more collaborators in json, csv or VCF format."""
@@ -193,16 +198,28 @@ def causatives(
     if build == "GRCh38":
         build = "38"
 
-    causatives = adapter.get_causatives(document_id=document_id, institute_id=collaborator, case_id=case_id, build=build, category=category, within_days=within_days)
+    causatives = adapter.get_causatives(
+        document_id=document_id,
+        institute_id=collaborator,
+        case_id=case_id,
+        build=build,
+        category=category,
+        within_days=within_days,
+    )
 
     if json:
         click.echo(json_lib.dumps([var for var in causatives], default=bson_handler))
         return
 
     elif as_managed:
+        if not managed_link_base_url:
+            LOG.info("Please provide a value for --managed-link-base-url")
+            raise click.Abort
+
         header = [MANAGED_VARIANTS_INFILE_HEADER]
-        with current_app.test_request_context():
-            lines = variants_to_managed_variants(variants=causatives, type="causatives")
+        lines = variants_to_managed_variants(
+            variants=causatives, type="causatives", base_url=managed_link_base_url
+        )
     else:
         header = VCF_HEADER
         # If case_id is given, print more complete vcf entries, with INFO,
@@ -216,8 +233,8 @@ def causatives(
         for variant_obj in causatives:
             lines.append(get_vcf_entry(variant_obj, case_id=case_id))
 
-    for line in header:
-        click.echo(line)
+        for line in header:
+            click.echo(line)
 
     for line in lines:
         click.echo(line)

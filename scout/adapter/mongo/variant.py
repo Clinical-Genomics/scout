@@ -23,6 +23,7 @@ ELEM_MATCH = "$elemMatch"
 CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
 CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1, "genome_build": 1}
 
+
 class VariantHandler(VariantLoader):
     """Methods to handle variants in the mongo adapter"""
 
@@ -396,31 +397,33 @@ class VariantHandler(VariantLoader):
         return res
 
     def get_causatives(
-        self, document_id: Optional[str] = None, institute_id: Optional[str] = None, case_id: Optional[str] = None, build: Optional[str] = None, category: Optional[list] = None, within_days: Optional[int] = None
+        self,
+        document_id: Optional[str] = None,
+        institute_id: Optional[str] = None,
+        case_id: Optional[str] = None,
+        build: Optional[str] = None,
+        category: Optional[list] = None,
+        within_days: Optional[int] = None,
     ) -> List[str]:
         """Fetch causative variants."""
 
         def decorate_causative(var: dict):
             case_obj = self.case(var["case_id"])
             var["case_obj"] = case_obj
-            var[]
+            return var
 
         if document_id:
             return [self.variant(document_id)]
 
-        institutes = (
-            [{"_id": institute_id}]
-            if institute_id
-            else self.institutes()
-        )
+        institutes = [{"_id": institute_id}] if institute_id else self.institutes()
 
         causatives = [
             decorate_causative(causative)
             for inst in institutes
-            for causative in self.institute_causatives(institute_obj=inst, case_id=case_id, build=build, within_days=within_days)
+            for causative in self.institute_causatives(
+                institute_obj=inst, case_id=case_id, build=build, within_days=within_days
+            )
         ]
-
-        LOG.warning(causatives)
         return causatives
 
     def check_managed(
@@ -498,26 +501,25 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(filters)
 
-    def institute_causatives(self, institute_obj: str, limit_genes: Optional[list]=None, case_id: Optional[str]= None, build: Optional[str] = None, within_days: Optional[int] = None):
-        """Return all causative variants for an institute - conditionally within the provided list of genes
-
-        Args:
-            institute_obj (dict): an Institute object
-            limit_genes (list): list of gene hgnc_ids to limit the search to
-
-        Returns:
-            iterable(Variant)
-        """
+    def institute_causatives(
+        self,
+        institute_obj: str,
+        limit_genes: Optional[list] = None,
+        case_id: Optional[str] = None,
+        build: Optional[str] = None,
+        within_days: Optional[int] = None,
+    ) -> pymongo.cursor.Cursor:
+        """Return all causative variants for an institute - conditionally within the provided list of genes"""
         query = {
-                "institute": institute_obj["_id"],
-                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "case",
+            "institute": institute_obj["_id"],
+            "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+            "category": "case",
         }
         if case_id:
             query["case"] = case_id
         if within_days:
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
-            query["created_at"] = {"$gte": days_datetime},
+            query["created_at"] = ({"$gte": days_datetime},)
 
         causative_events = self.event_collection.find(query)
 
