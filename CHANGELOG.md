@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.111.3]
+### Fixed
+- Reintroduce GRCh38 alias conversion for export panels (#6289)
+
+## [4.111.2]
+### Fixed
+- Partly revert alias change, and instead use GRCh38 to mean write chr prefix in export commands (#6288)
+
+## [4.111.1]
+### Fixed
+- Build version alias GRCh38 to 38 for consistency in export commands (#6283)
+
 ## [4.111.0]
 ### Added
 - Custom MT Saltshaker HTML report loading (#6242)
