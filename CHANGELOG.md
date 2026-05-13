@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Export causatives to managed variants infile via CLI, filtering variants by date (#6290)
+
 ## [4.111.3]
 ### Fixed
 - Reintroduce GRCh38 alias conversion for export panels (#6289)
