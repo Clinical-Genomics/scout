@@ -2,7 +2,6 @@
 
 import logging
 from typing import Optional
-from urllib.parse import urlencode
 
 import requests
 from flask import flash
@@ -54,19 +53,21 @@ class BroadLiftoverApiClient:
         example:  https://liftover-xwkwwwxdwq-uc.a.run.app/liftover/?hg=hg19-to-hg38&format=variant&chrom=11&pos=47353394&end=47353394&ref=T&alt=C
         """
 
-        if alt and ref:
+        if alt and ref:  # use BCFtools plugin
             format = "variant"
-        else:
+            start_param = "pos"
+        else:  # use UCSC tool
             format = "interval"
+            start_param = "start"
 
-        url = f"{LIFTOVER_URL}/?hg={build_from}-to-{build_to}&format={format}&chrom={chrom}&start={start}"
+        url = f"{LIFTOVER_URL}/?hg={build_from}-to-{build_to}&format={format}&chrom={chrom}&{start_param}={start}"
 
         if end:
             url += f"&end={end}"
         if ref:
             url += f"&ref={ref}"
         if alt:
-            url += f"&ref={alt}"
+            url += f"&alt={alt}"
 
         result = self.send_request(url)
         if isinstance(result, dict):

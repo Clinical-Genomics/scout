@@ -2,11 +2,11 @@
 
 import responses
 
-from scout.utils.broad_liftover_client import RESTAPI_URL
+from scout.utils.broad_liftover_client import LIFTOVER_URL
 
 CHROM = "8"
-START = 140300615
-END = 140300620
+START = 141310715
+END = 141310720
 REF = "T"
 ALT = "G"
 BUILD_FROM = "hg19"
@@ -14,7 +14,7 @@ BUILD_TO = "hg38"
 
 
 @responses.activate
-def test_liftover_bcftools():
+def test_liftover_bcftools(broad_liftover_client):
     """Test send request for coordinates liftover - case when variant  ref and alt are available."""
 
     # GIVEN a mocked response from the Broad liftover service for a requested URL
@@ -23,21 +23,21 @@ def test_liftover_bcftools():
     LIFTOVER_RESPONSE = {
         "hg": "hg19-to-hg38",
         "chrom": "chr8",
-        "pos": "140300615",
+        "pos": "141310715",
         "alt": "G",
         "ref": "T",
         "format": "variant",
-        "end": "140300615",
-        "start": 140300614,
+        "end": "141310715",
+        "start": 141310714,
         "output_chrom": "chr8",
-        "output_pos": 139288372,
+        "output_pos": 140300616,
         "output_ref": "T",
         "output_alt": "G",
-        "output_reverse_complemented": false,
-        "output_ref_alt_swap": null,
+        "output_reverse_complemented": "false",
+        "output_ref_alt_swap": "null",
         "liftover_tool": "bcftools liftover plugin",
         "normalized_chrom": "chr8",
-        "normalized_pos": "140300615",
+        "normalized_pos": "141310715",
         "normalized_ref": "T",
         "normalized_alt": "G",
     }
@@ -48,17 +48,22 @@ def test_liftover_bcftools():
         json=LIFTOVER_RESPONSE,
         status=200,
     )
-    """
-    client = ensembl_rest_client
-    # WHEN sending the liftover request the function should return a mapped locus
-    mapped_coords = client.liftover("37", "X", 1000000, 1000100)
-    assert mapped_coords[0]["mapped"]
-    """
-    pass
+    client = broad_liftover_client
+    # WHEN sending the liftover request the function should return a lift over locus
+    result = client.liftover(
+        build_from=BUILD_FROM,
+        build_to=BUILD_TO,
+        chrom=CHROM,
+        start=START,
+        end=END,
+        ref=REF,
+        alt=ALT,
+    )
+    assert result == LIFTOVER_RESPONSE
 
 
 @responses.activate
-def test_liftover_ucsc():
+def test_liftover_ucsc(broad_liftover_client):
     """Test send request for coordinates liftover. Only coordinates liftover."""
 
     # GIVEN a mocked response from the Broad liftover service for a requested URL
@@ -68,15 +73,28 @@ def test_liftover_ucsc():
         "hg": "hg19-to-hg38",
         "chrom": "chr8",
         "alt": "G",
-        "start": "140300615",
+        "start": "141310715",
         "format": "interval",
         "ref": "T",
-        "end": "140300620",
-        "pos": 140300616,
+        "end": "141310720",
+        "pos": 141310716,
         "output_chrom": "chr8",
-        "output_pos": 139288373,
-        "output_start": 139288372,
-        "output_end": 139288377,
+        "output_pos": 140300617,
+        "output_start": 140300616,
+        "output_end": 140300621,
         "output_strand": "+",
         "liftover_tool": "UCSC liftover tool",
     }
+
+    responses.add(
+        responses.GET,
+        URL,
+        json=LIFTOVER_RESPONSE,
+        status=200,
+    )
+    client = broad_liftover_client
+    # WHEN sending the liftover request the function should return a lift over locus
+    result = client.liftover(
+        build_from=BUILD_FROM, build_to=BUILD_TO, chrom=CHROM, start=START, end=END
+    )
+    assert result == LIFTOVER_RESPONSE
