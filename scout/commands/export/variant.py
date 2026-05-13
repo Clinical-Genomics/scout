@@ -12,7 +12,6 @@ from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
-    export_causative_variants,
     export_managed_variants,
     export_verified_variants,
 )
@@ -186,6 +185,7 @@ def causatives(
     LOG.info("Use collaborator %s", collaborator)
     if case_id:
         case_obj = adapter.case(case_id)
+        collaborator = case_obj["owner"]
         if not case_obj:
             LOG.info("Case %s does not exist", case_id)
             raise click.Abort
@@ -193,22 +193,16 @@ def causatives(
     if build == "GRCh38":
         build = "38"
 
-    variants = export_causative_variants(
-        adapter,
-        collaborator,
-        document_id=document_id,
-        case_id=case_id,
-        build=build,
-        category=category,
-    )
+    causatives = adapter.get_causatives(document_id=document_id, institute_id=collaborator, case_id=case_id, build=build, category=category, within_days=within_days)
 
     if json:
-        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
+        click.echo(json_lib.dumps([var for var in causatives], default=bson_handler))
         return
 
     elif as_managed:
-        header = MANAGED_VARIANTS_INFILE_HEADER
-        lines = variants_to_managed_variants(variants=variants, type="causatives")
+        header = [MANAGED_VARIANTS_INFILE_HEADER]
+        with current_app.test_request_context():
+            lines = variants_to_managed_variants(variants=causatives, type="causatives")
     else:
         header = VCF_HEADER
         # If case_id is given, print more complete vcf entries, with INFO,
@@ -219,7 +213,7 @@ def causatives(
             for individual in case_obj["individuals"]:
                 header[-1] = header[-1] + "\t" + individual["individual_id"]
 
-        for variant_obj in variants:
+        for variant_obj in causatives:
             lines.append(get_vcf_entry(variant_obj, case_id=case_id))
 
     for line in header:
