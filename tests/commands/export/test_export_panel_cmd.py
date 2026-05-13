@@ -74,4 +74,4 @@ def test_export_panel(mock_app):
 
     # The CLI command should return gene panel formatted in the expected way
     assert result.exit_code == 0
-    assert "##genome_build=38" in result.output
+    assert "##genome_build=GRCh38" in result.output

@@ -130,11 +130,12 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     LOG.info("Running scout export managed variants")
     adapter = store
 
+    genome_build = build
     if build == "GRCh38":
-        build = "38"
+        genome_build = "38"
 
     variants = export_managed_variants(
-        adapter=adapter, institute=collaborator, build=build, category=list(category)
+        adapter=adapter, institute=collaborator, build=genome_build, category=list(category)
     )
 
     if json:
@@ -147,7 +148,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     valid_lines = []
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj)
+        variant_string = get_vcf_entry(variant_obj, build=build)
         if variant_string:
             valid_lines.append(variant_string)
 
@@ -183,7 +184,8 @@ def causatives(
     managed_link_base_url: str | None,
     within_days: int | None,
 ):
-    """Export causatives for one or more collaborators in json, csv or VCF format."""
+    """Export causatives for one or more collaborators in json, csv or VCF format.
+       If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix."""
 
     LOG.info("Running scout export variants")
     adapter = store
@@ -195,14 +197,15 @@ def causatives(
             LOG.info("Case %s does not exist", case_id)
             raise click.Abort
 
+    genome_build = build
     if build == "GRCh38":
-        build = "38"
+        genome_build = "38"
 
     causatives = adapter.get_causatives(
         document_id=document_id,
         institute_id=collaborator,
         case_id=case_id,
-        build=build,
+        build=genome_build,
         category=category,
         within_days=within_days,
     )
@@ -238,8 +241,12 @@ def causatives(
     for line in lines:
         click.echo(line)
 
+    for variant_obj in variants:
+        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
+        click.echo(variant_string)
 
-def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
+
+def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:
     """
     Get vcf entry from variant object
     """
@@ -264,9 +271,16 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None) -> str:
     if alt in [".", "-", variant_obj["sub_category"]]:
         alt = f"<{subcat}>" if category == "sv" else "N"
 
+    chrom = variant_obj["chromosome"]
+    if build == "GRCh38":
+        chrom = variant_obj["chromosome"]
+        if chrom == "MT":
+            chrom = "M"
+        chrom = "".join(["chr", chrom])
+
     filters = ";".join(variant_obj.get("filters", [])) or "."
     vcf_fields = [
-        variant_obj["chromosome"],
+        chrom,
         str(pos),
         variant_obj.get("dbsnp_id", ".") or ".",
         ref,

@@ -18,24 +18,18 @@ def transcripts(build):
     LOG.info("Running scout export transcripts")
     adapter = store
 
-    if build == "GRCh38":
-        build = "38"
+    genome_build = "38" if (build == "GRCh38") else build
 
     header = ["#Chrom\tStart\tEnd\tTranscript\tRefSeq\tHgncID"]
 
     for line in header:
         click.echo(line)
 
-    transcript_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}"
+    chr_prefix = ""
+    if build == "GRCh38":
+        chr_prefix = "chr"
 
-    for tx_obj in export_transcripts(adapter, build):
+    for tx_obj in export_transcripts(adapter, genome_build):
         click.echo(
-            transcript_string.format(
-                tx_obj["chrom"],
-                tx_obj["start"],
-                tx_obj["end"],
-                tx_obj["ensembl_transcript_id"],
-                tx_obj.get("refseq_id", ""),
-                tx_obj["hgnc_id"],
-            )
+            f"{chr_prefix}{tx_obj['chrom']}\t{tx_obj['start']}\t{tx_obj['end']}\t{tx_obj['ensembl_transcript_id']}\t{tx_obj.get('refseq_id', '')}\t{tx_obj['hgnc_id']}"
         )
