@@ -566,7 +566,7 @@ def marrvel_link(build, variant_id):
     if build == "38":  # liftover is necessary before returning link
         client = BroadLiftoverApiClient()
         if mapped_coords := client.liftover(
-            build_from=variant_build,
+            build_from=build,
             chrom=variant_obj.get("chromosome"),
             start=variant_obj.get("position"),
             end=variant_obj.get("end"),

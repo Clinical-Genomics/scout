@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#)
+- Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 
 ## [4.111.3]
 ### Fixed
