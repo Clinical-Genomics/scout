@@ -81,9 +81,18 @@ def test_export_causatives(mock_app, institute_obj, case_obj, user_obj):
     assert str(variant_obj["position"]) in result.output
     assert '"position": {}'.format(variant_obj["position"]) in result.output
 
-    # Test the CLI option to export causatives to a managed variants infile
+    # Test the CLI option to export causatives to a managed variants infile with time frame
     result = runner.invoke(
-        cli, ["export", "causatives", "--as-managed", "--managed-link-base-url", "fakeurl"]
+        cli,
+        [
+            "export",
+            "causatives",
+            "--as-managed",
+            "--managed-link-base-url",
+            "fakeurl",
+            "--within-days",
+            5,
+        ],
     )
     assert result.exit_code == 0
     # variant should be returned

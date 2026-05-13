@@ -525,7 +525,7 @@ class VariantHandler(VariantLoader):
             query["case"] = case_id
         if within_days:
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
-            query["created_at"] = ({"$gte": days_datetime},)
+            query["created_at"] = {"$gte": days_datetime}
 
         causative_events = self.event_collection.find(query)
 
