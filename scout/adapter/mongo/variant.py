@@ -546,8 +546,6 @@ class VariantHandler(VariantLoader):
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
-        LOG.warning(filters)
-
         return self.variant_collection.find(filters)
 
     def case_matching_causatives(self, case_obj, limit_genes=None):

@@ -2,7 +2,7 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import click
 from flask.cli import with_appcontext
