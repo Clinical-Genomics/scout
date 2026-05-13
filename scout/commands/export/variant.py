@@ -210,8 +210,6 @@ def causatives(
         within_days=within_days,
     )
 
-    LOG.warning(causatives)
-
     if json:
         click.echo(json_lib.dumps([var for var in causatives], default=bson_handler))
         return
