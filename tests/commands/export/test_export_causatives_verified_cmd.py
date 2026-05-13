@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
+from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.server.extensions import store
 
 
@@ -35,50 +36,59 @@ def test_export_causatives(mock_app, institute_obj, case_obj, user_obj):
         }
     )
 
-    # Test the cli by not providing any options or arguments
-    result = runner.invoke(cli, ["export", "variants"])
+    # Test the CLI by not providing any options or arguments
+    result = runner.invoke(cli, ["export", "causatives"])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
 
-    # Test the cli by providing wrong collaborator
-    result = runner.invoke(cli, ["export", "variants", "-c", "cust666"])
+    # Test the CLI by providing wrong collaborator
+    result = runner.invoke(cli, ["export", "causatives", "-c", "cust666"])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should NOT be returned
     assert str(variant_obj["position"]) not in result.output
 
-    # Test the cli by providing the right collaborator, build and variant type
+    # Test the CLI by providing the right collaborator, build and variant type
     result = runner.invoke(
-        cli, ["export", "variants", "-c", case_obj["owner"], "--build", "37", "--category", "snv"]
+        cli, ["export", "causatives", "-c", case_obj["owner"], "--build", "37", "--category", "snv"]
     )
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
 
-    # Test the cli by providing the document_id of the variant
-    result = runner.invoke(cli, ["export", "variants", "-d", variant_obj["document_id"]])
+    # Test the CLI by providing the document_id of the variant
+    result = runner.invoke(cli, ["export", "causatives", "-d", variant_obj["document_id"]])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
 
-    # Test the cli by providing the case_id of the variant
-    result = runner.invoke(cli, ["export", "variants", "--case-id", case_obj["_id"]])
+    # Test the CLI by providing the case_id of the variant
+    result = runner.invoke(cli, ["export", "causatives", "--case-id", case_obj["_id"]])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
 
-    # Test the cli by providing the case_id of the variant and and json option
-    result = runner.invoke(cli, ["export", "variants", "--case-id", case_obj["_id"], "--json"])
+    # Test the CLI by providing the case_id of the variant and and json option
+    result = runner.invoke(cli, ["export", "causatives", "--case-id", case_obj["_id"], "--json"])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" not in result.output
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
     assert '"position": {}'.format(variant_obj["position"]) in result.output
+
+    # Test the CLI option to export causatives to a managed variants infile
+    result = runner.invoke(
+        cli, ["export", "causatives", "--as-managed", "--managed-link-base-url", "fakeurl"]
+    )
+    assert result.exit_code == 0
+    # variant should be returned
+    assert MANAGED_VARIANTS_INFILE_HEADER in result.output
+    assert str(variant_obj["position"]) in result.output
 
 
 def test_export_verified(mock_app, case_obj, user_obj, institute_obj):

@@ -9,7 +9,7 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
-from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
+from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_managed_variants,
@@ -280,7 +280,9 @@ def causatives(
             LOG.info("Please provide a value for --managed-link-base-url")
             raise click.Abort
 
-        for line in variants_to_managed_variants(causatives, "causatives", managed_link_base_url):
+        for line in variants_to_managed_variants(
+            variants=causatives, type="causatives", base_url=managed_link_base_url
+        ):
             click.echo(line)
         return
 
