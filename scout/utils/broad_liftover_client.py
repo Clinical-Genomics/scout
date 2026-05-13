@@ -65,13 +65,13 @@ class BroadLiftoverApiClient:
         build_from, build_to = self.set_request_build_params(build_from)
 
         if alt and ref:  # use BCFtools plugin
-            format = "variant"
+            req_format = "variant"
             start_param = "pos"
         else:  # use UCSC tool
-            format = "interval"
+            req_format = "interval"
             start_param = "start"
 
-        url = f"{LIFTOVER_URL}/?hg={build_from}-to-{build_to}&format={format}&chrom={chrom}&{start_param}={start}"
+        url = f"{LIFTOVER_URL}/?hg={build_from}-to-{build_to}&format={req_format}&chrom={chrom}&{start_param}={start}"
 
         if end:
             url += f"&end={end}"
