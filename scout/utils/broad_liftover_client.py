@@ -1,5 +1,3 @@
-"""Code for talking to ensembl rest API"""
-
 import logging
 from typing import Optional
 
