@@ -210,6 +210,8 @@ def causatives(
         within_days=within_days,
     )
 
+    LOG.warning(causatives)
+
     if json:
         click.echo(json_lib.dumps([var for var in causatives], default=bson_handler))
         return
@@ -222,6 +224,9 @@ def causatives(
         lines = variants_to_managed_variants(
             variants=causatives, type="causatives", base_url=managed_link_base_url
         )
+
+        for line in lines:
+            click.echo(line)
     else:
         header = VCF_HEADER
         # If case_id is given, print more complete vcf entries, with INFO,
@@ -232,18 +237,12 @@ def causatives(
             for individual in case_obj["individuals"]:
                 header[-1] = header[-1] + "\t" + individual["individual_id"]
 
-        for variant_obj in causatives:
-            lines.append(get_vcf_entry(variant_obj, case_id=case_id))
-
         for line in header:
             click.echo(line)
 
-    for line in lines:
-        click.echo(line)
-
-    for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
-        click.echo(variant_string)
+        for variant_obj in causatives:
+            variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
+            click.echo(variant_string)
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:

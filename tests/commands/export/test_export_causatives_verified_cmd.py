@@ -72,7 +72,7 @@ def test_export_causatives(mock_app, institute_obj, case_obj, user_obj):
     # variant should be returned
     assert str(variant_obj["position"]) in result.output
 
-    # Test the cli by providing the case_id of the variantand and json option
+    # Test the cli by providing the case_id of the variant and and json option
     result = runner.invoke(cli, ["export", "variants", "--case-id", case_obj["_id"], "--json"])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" not in result.output
