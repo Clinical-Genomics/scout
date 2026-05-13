@@ -6,7 +6,7 @@ import responses
 from flask import url_for
 
 from scout.server.extensions import store
-from scout.utils.broad_liftover_client import RESTAPI_URL
+from scout.utils.broad_liftover_client import LIFTOVER_URL
 
 
 @responses.activate
@@ -24,31 +24,27 @@ def test_marrvel_link_38(app, case_obj):
     }
     store.variant_collection.insert_one(test_variant)
 
-    # GIVEN that the variant can be lifted over to build 37
-    url = f"{RESTAPI_URL}/map/human/GRCh38/{test_variant['chromosome']}:{test_variant['position']}..{test_variant['position']}/GRCh37?content-type=application/json"
-
-    liftover_mappings = {
-        "mappings": [
-            {
-                "original": {
-                    "assembly": "GRCh38",
-                    "seq_region_name": test_variant["chromosome"],
-                    "start": test_variant["position"],
-                    "end": test_variant["position"] + 100,
-                },
-                "mapped": {
-                    "assembly": "GRCh37",
-                    "seq_region_name": test_variant["chromosome"],
-                    "start": 1000000,
-                    "end": 1000100,
-                },
-            }
-        ]
+    # GIVEN a patched response from the liftover tool
+    LIFTOVER_RESPONSE = {
+        "hg": "hg38-to-hg19",
+        "chrom": "chrX",
+        "start": "1039265",
+        "format": "interval",
+        "end": "1039265",
+        "pos": 1039266,
+        "output_chrom": "chrX",
+        "output_pos": 1000001,
+        "output_start": 1000000,
+        "output_end": 1000000,
+        "output_strand": "+",
+        "liftover_tool": "UCSC liftover tool",
     }
+    url = f"{LIFTOVER_URL}/?hg=hg38-to-hg19&format=interval&chrom={test_variant['chromosome']}&start={test_variant['position']}"
+
     responses.add(
         responses.GET,
         url,
-        json=liftover_mappings,
+        json=LIFTOVER_RESPONSE,
         status=200,
     )
 
