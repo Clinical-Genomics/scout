@@ -16,6 +16,7 @@ from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
 
+EXISTS = {"$exists": True}
 MATCHQ = "$match"
 CARRIER = r"[12]"  # same as re.compile()"1|2")
 ELEM_MATCH = "$elemMatch"
@@ -869,12 +870,12 @@ class VariantHandler(VariantLoader):
                 {"case_id": case_id},
                 {
                     "$or": [
-                        {"acmg_classification": {"$exists": True}},
-                        {"ccv_classification": {"$exists": True}},
-                        {"manual_rank": {"$exists": True}},
-                        {"cancer_tier": {"$exists": True}},
-                        {"dismiss_variant": {"$exists": True}},
-                        {"escat_tier": {"$exists": True}},
+                        {"acmg_classification": EXISTS},
+                        {"ccv_classification": EXISTS},
+                        {"manual_rank": EXISTS},
+                        {"cancer_tier": EXISTS},
+                        {"dismiss_variant": EXISTS},
+                        {"escat_tier": EXISTS},
                     ]
                 },
             ]
