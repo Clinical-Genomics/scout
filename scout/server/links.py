@@ -529,6 +529,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
+        litvar_snp_link=litvar_snp_links(variant_obj),
         alamut_link=alamut_variant_link(institute_obj, variant_obj, build),
     )
     return links
@@ -727,6 +728,22 @@ def beacon_link(variant_obj: dict, build: int):
     build = "GRCh38" if build == 38 else "GRCh37"
 
     return url_template.format(this=variant_obj, build=build)
+
+
+def litvar_snp_links(variant_obj):
+    """LitVar SNP links from dbSNP rsIDs"""
+
+    if variant_obj.get("dbsnp_id") is None:
+        return
+    litvar_snp_links = {}
+    snp_ids = variant_obj["dbsnp_id"].split(";")
+    for snp in snp_ids:
+        if "rs" in snp:
+            litvar_snp_links[snp] = (
+                f"https://www.ncbi.nlm.nih.gov/research/litvar2/docsum?variant=litvar%40{snp}%23%23&query={snp}"  # litvar direct link, if present
+            )
+
+    return litvar_snp_links
 
 
 def snp_links(variant_obj):
