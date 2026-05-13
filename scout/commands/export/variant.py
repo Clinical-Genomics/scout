@@ -216,7 +216,6 @@ def causatives(
             LOG.info("Please provide a value for --managed-link-base-url")
             raise click.Abort
 
-        header = [MANAGED_VARIANTS_INFILE_HEADER]
         lines = variants_to_managed_variants(
             variants=causatives, type="causatives", base_url=managed_link_base_url
         )
