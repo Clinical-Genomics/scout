@@ -421,7 +421,11 @@ class VariantHandler(VariantLoader):
             decorate_causative(causative)
             for inst in institutes
             for causative in self.institute_causatives(
-                institute_obj=inst, case_id=case_id, build=build, within_days=within_days
+                institute_obj=inst,
+                case_id=case_id,
+                build=build,
+                category=category,
+                within_days=within_days,
             )
         ]
         return causatives
@@ -507,6 +511,7 @@ class VariantHandler(VariantLoader):
         limit_genes: Optional[list] = None,
         case_id: Optional[str] = None,
         build: Optional[str] = None,
+        category: Optional[str] = None,
         within_days: Optional[int] = None,
     ) -> pymongo.cursor.Cursor:
         """Return all causative variants for an institute - conditionally within the provided list of genes"""
@@ -536,8 +541,12 @@ class VariantHandler(VariantLoader):
                 causative_ids.add(var_id)
 
         filters = {"_id": {"$in": list(causative_ids)}}
+        if category:
+            filters["category"] = {"$in": category}
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
+
+        LOG.warning(filters)
 
         return self.variant_collection.find(filters)
 
