@@ -2,7 +2,7 @@
 
 import pytest
 
-from scout.utils import ensembl_rest_clients
+from scout.utils import broad_liftover_client
 
 
 @pytest.fixture

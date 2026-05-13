@@ -6,7 +6,7 @@ import responses
 from flask import url_for
 
 from scout.server.extensions import store
-from scout.utils.ensembl_rest_clients import RESTAPI_URL
+from scout.utils.broad_liftover_client import RESTAPI_URL
 
 
 @responses.activate

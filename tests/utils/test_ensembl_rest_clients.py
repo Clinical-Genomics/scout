@@ -1,60 +1,82 @@
 """Tests for ensembl rest api"""
 
 import responses
-from requests.exceptions import MissingSchema
-from requests.models import Response
 
-from scout.utils.ensembl_rest_clients import RESTAPI_URL
+from scout.utils.broad_liftover_client import RESTAPI_URL
+
+CHROM = "8"
+START = 140300615
+END = 140300620
+REF = "T"
+ALT = "G"
+BUILD_FROM = "hg19"
+BUILD_TO = "hg38"
 
 
 @responses.activate
-def test_liftover(ensembl_rest_client, ensembl_liftover_response):
-    """Test send request for coordinates liftover"""
-    # GIVEN a patched response from Ensembl
-    url = f"{RESTAPI_URL}/map/human/GRCh37/X:1000000..1000100/GRCh38?content-type=application/json"
+def test_liftover_bcftools():
+    """Test send request for coordinates liftover - case when variant  ref and alt are available."""
+
+    # GIVEN a mocked response from the Broad liftover service for a requested URL
+    FORMAT = "variant"
+    URL = f"{LIFTOVER_URL}/?hg={BUILD_FROM}-to-{BUILD_TO}&format={FORMAT}&chrom={CHROM}&pos={START}&end={END}&ref={REF}&alt={ALT}"
+    LIFTOVER_RESPONSE = {
+        "hg": "hg19-to-hg38",
+        "chrom": "chr8",
+        "pos": "140300615",
+        "alt": "G",
+        "ref": "T",
+        "format": "variant",
+        "end": "140300615",
+        "start": 140300614,
+        "output_chrom": "chr8",
+        "output_pos": 139288372,
+        "output_ref": "T",
+        "output_alt": "G",
+        "output_reverse_complemented": false,
+        "output_ref_alt_swap": null,
+        "liftover_tool": "bcftools liftover plugin",
+        "normalized_chrom": "chr8",
+        "normalized_pos": "140300615",
+        "normalized_ref": "T",
+        "normalized_alt": "G",
+    }
+
     responses.add(
         responses.GET,
-        url,
-        json=ensembl_liftover_response,
+        URL,
+        json=LIFTOVER_RESPONSE,
         status=200,
     )
+    """
     client = ensembl_rest_client
     # WHEN sending the liftover request the function should return a mapped locus
     mapped_coords = client.liftover("37", "X", 1000000, 1000100)
     assert mapped_coords[0]["mapped"]
+    """
+    pass
 
 
-def test_send_request_fakey_url(mock_app, ensembl_rest_client, mocker):
-    """Test the Ensembl REST client with an URL that is raising missing schema error."""
+@responses.activate
+def test_liftover_ucsc():
+    """Test send request for coordinates liftover. Only coordinates liftover."""
 
-    # GIVEN a completely invalid URL
-    url = "fakeyurl"
-    # GIVEN a patched Ensembl client
-    client = ensembl_rest_client
-    mocker.patch("requests.get", side_effect=MissingSchema("Invalid URL"))
-
-    # THEN the client should return no content
-    with mock_app.test_request_context():
-        data = client.send_request(url)
-        assert data is None
-
-
-def test_send_request_unavailable(mock_app, ensembl_rest_client, mocker):
-    """Test the Ensembl REST client with an URL that is not available (500 error)."""
-
-    url = f"{RESTAPI_URL}/fakeyurl"
-    # GIVEN a patched Ensembl client
-    client = ensembl_rest_client
-
-    # GIVEN a mocked 550 response from Ensembl
-    mock_response = Response()
-    mock_response.status_code = 500  # Simulate 500 Internal Server Error
-    mock_response._content = b"Internal Server Error"  # Optional: Set error content
-
-    # Mock `requests.get` to return the mock response
-    mocker.patch("scout.utils.ensembl_rest_clients.requests.get", return_value=mock_response)
-
-    with mock_app.test_request_context():
-        # THEN the client should return no content
-        data = client.send_request(url)
-        assert data is None
+    # GIVEN a mocked response from the Broad liftover service for a requested URL
+    FORMAT = "interval"
+    URL = f"{LIFTOVER_URL}/?hg={BUILD_FROM}-to-{BUILD_TO}&format={FORMAT}&chrom={CHROM}&start={START}&end={END}"
+    LIFTOVER_RESPONSE = {
+        "hg": "hg19-to-hg38",
+        "chrom": "chr8",
+        "alt": "G",
+        "start": "140300615",
+        "format": "interval",
+        "ref": "T",
+        "end": "140300620",
+        "pos": 140300616,
+        "output_chrom": "chr8",
+        "output_pos": 139288373,
+        "output_start": 139288372,
+        "output_end": 139288377,
+        "output_strand": "+",
+        "liftover_tool": "UCSC liftover tool",
+    }

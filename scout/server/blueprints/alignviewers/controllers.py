@@ -18,7 +18,7 @@ from scout.server.utils import (
     find_index,
     get_case_genome_build,
 )
-from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
+from scout.utils.broad_liftover_client import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]

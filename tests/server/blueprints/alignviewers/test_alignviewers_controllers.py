@@ -6,7 +6,7 @@ from flask_login import current_user
 from scout.constants import HUMAN_REFERENCE
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import config_igv_tracks, store
-from scout.utils.ensembl_rest_clients import RESTAPI_URL
+from scout.utils.broad_liftover_client import RESTAPI_URL
 
 
 @responses.activate

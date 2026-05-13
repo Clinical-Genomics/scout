@@ -6,7 +6,7 @@ from flask_login import login_user
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
 from scout.server.extensions import config_igv_tracks, store
-from scout.utils.ensembl_rest_clients import RESTAPI_URL
+from scout.utils.broad_liftover_client import RESTAPI_URL
 
 
 def test_remote_static_no_auth(app, case_obj, institute_obj):

@@ -53,8 +53,8 @@ from scout.server.utils import (
     templated,
 )
 from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
+from scout.utils.broad_liftover_client import EnsemblRestApiClient
 from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
-from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 
