@@ -161,9 +161,9 @@ def managed(
         valid_lines = []
 
         for variant_obj in variants:
-          variant_string = get_vcf_entry(variant_obj, build=build)
-          if variant_string:
-              valid_lines.append(variant_string)
+            variant_string = get_vcf_entry(variant_obj, build=build)
+            if variant_string:
+                valid_lines.append(variant_string)
 
         for line in vcf_header:
             click.echo(line)
