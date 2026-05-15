@@ -2,7 +2,7 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import click
 from flask.cli import with_appcontext
@@ -12,10 +12,10 @@ from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
-    export_causative_variants,
     export_managed_variants,
     export_verified_variants,
 )
+from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
 from scout.utils.vcf import validate_vcf_line
 
@@ -159,6 +159,58 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(valid_line)
 
 
+def resolve_case(
+    adapter: Any,
+    case_id: Optional[str],
+    collaborator: str,
+) -> Tuple[str, Optional[Dict[str, Any]]]:
+    """
+    Resolve the effective collaborator and optional case object.
+
+    If case_id is provided, the case is fetched and its owner is used
+    as the collaborator. If the case does not exist, the command aborts.
+
+    Returns:
+        Tuple of (collaborator, case object or None)
+    """
+    if not case_id:
+        LOG.info("Use collaborator %s", collaborator)
+        return collaborator, None
+
+    case_obj = adapter.case(case_id)
+    if not case_obj:
+        LOG.info("Case %s does not exist", case_id)
+        raise click.Abort
+
+    return case_obj["owner"], case_obj
+
+
+def print_vcf(
+    causatives: Iterable[Dict[str, Any]],
+    case_id: Optional[str],
+    build: str,
+    case_obj: Optional[Dict[str, Any]],
+) -> None:
+    """
+    Print causative variants in VCF format.
+
+    If a case_id is provided, the VCF header is extended with FORMAT
+    and per-individual genotype columns.
+    """
+    header = VCF_HEADER.copy()
+
+    if case_id:
+        header[-1] += "\tFORMAT"
+        for ind in case_obj["individuals"]:
+            header[-1] += "\t" + ind["individual_id"]
+
+    for line in header:
+        click.echo(line)
+
+    for v in causatives:
+        click.echo(get_vcf_entry(v, case_id=case_id, build=build))
+
+
 @click.command("causatives", short_help="Export causative variants")
 @build_option
 @category_option
@@ -166,57 +218,75 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("-d", "--document-id", help="Search for a specific variant")
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
+@click.option("--as-managed", is_flag=True, help="Export to managed variants infile")
+@click.option(
+    "--managed-link-base-url",
+    help="Export to managed variants infile, with full link to the variant",
+)
+@click.option("--within-days", type=int, help="Days since event event occurred")
 @with_appcontext
 def causatives(
-    build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
+    build: str,
+    collaborator: str,
+    category: str,
+    document_id: str | None,
+    case_id: str | None,
+    json: bool,
+    as_managed: bool,
+    managed_link_base_url: str | None,
+    within_days: int | None,
 ):
-    """Export causatives for a collaborator in .vcf format
+    """
+    Export causative variants for one or more collaborators and/or cases.
 
-    If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix
+    Supports multiple output formats:
+    - JSON (--json)
+    - Managed variants infile (--as-managed with --managed-link-base-url)
+    - VCF (default)
+
+    Data can be filtered by:
+    - collaborator (institute)
+    - case ID (optional; overrides collaborator owner if provided)
+    - document ID
+    - category
+    - variant age (--within-days)
+
+    If a case ID is provided, its owner is used as the collaborator.
+    For GRCh38 builds, variants are queried using build "38".
     """
 
     LOG.info("Running scout export variants")
     adapter = store
-    LOG.info("Use collaborator %s", collaborator)
-    if case_id:
-        case_obj = adapter.case(case_id)
-        if not case_obj:
-            LOG.info("Case %s does not exist", case_id)
-            raise click.Abort
 
-    genome_build = build
-    if build == "GRCh38":
-        genome_build = "38"
+    collaborator, case_obj = resolve_case(adapter, case_id, collaborator)
 
-    variants = export_causative_variants(
-        adapter,
-        collaborator,
+    build = "38" if build == "GRCh38" else build
+
+    causatives = adapter.get_causatives(
         document_id=document_id,
+        institute_id=collaborator,
         case_id=case_id,
-        build=genome_build,
+        build=build,
         category=category,
+        within_days=within_days,
     )
 
     if json:
-        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
+        click.echo(json_lib.dumps(list(causatives), default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
+    if as_managed:
+        if not managed_link_base_url:
+            LOG.info("Please provide a value for --managed-link-base-url")
+            raise click.Abort
 
-    # If case_id is given, print more complete vcf entries, with INFO,
-    # and genotypes
-    if case_id:
-        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
-        case_obj = adapter.case(case_id=case_id)
-        for individual in case_obj["individuals"]:
-            vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
+        for line in variants_to_managed_variants(
+            variants=causatives, type="causatives", base_url=managed_link_base_url
+        ):
+            click.echo(line)
+        return
 
-    for line in vcf_header:
-        click.echo(line)
-
-    for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
-        click.echo(variant_string)
+    print_vcf(causatives, case_id, build, case_obj)
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
+import datetime
 import logging
 import re
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
@@ -15,12 +16,13 @@ from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
 
+EXISTS = {"$exists": True}
 MATCHQ = "$match"
 CARRIER = r"[12]"  # same as re.compile()"1|2")
 ELEM_MATCH = "$elemMatch"
 
 CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
-CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
+CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1, "genome_build": 1}
 
 
 class VariantHandler(VariantLoader):
@@ -396,34 +398,37 @@ class VariantHandler(VariantLoader):
         return res
 
     def get_causatives(
-        self, institute_id: str, case_id: Optional[str] = None, build: Optional[str] = None
+        self,
+        document_id: Optional[str] = None,
+        institute_id: Optional[str] = None,
+        case_id: Optional[str] = None,
+        build: Optional[str] = None,
+        category: Optional[list] = None,
+        within_days: Optional[int] = None,
     ) -> List[str]:
-        """Return all causative variants for an institute."""
+        """Fetch causative variants."""
 
-        if case_id:
-            case_obj = self.case_collection.find_one({"_id": case_id}, CASE_CAUSATIVES_PROJECTION)
-            causatives = [causative for causative in case_obj.get("causatives", [])]
+        def decorate_causative(var: dict):
+            case_obj = self.case(var["case_id"])
+            var["case_obj"] = case_obj
+            return var
 
-        else:
-            match_stage = {
-                "causatives": {"$exists": True},
-            }
+        if document_id:
+            return [self.variant(document_id)]
 
-            if institute_id:
-                match_stage["collaborators"] = institute_id
+        institutes = [{"_id": institute_id}] if institute_id else self.institutes()
 
-            if build:
-                match_stage["genome_build"] = build
-
-            query = self.case_collection.aggregate(
-                [
-                    {MATCHQ: match_stage},
-                    {"$unwind": "$causatives"},
-                    {"$group": {"_id": "$causatives"}},
-                ]
+        causatives = [
+            decorate_causative(causative)
+            for inst in institutes
+            for causative in self.institute_causatives(
+                institute_obj=inst,
+                case_id=case_id,
+                build=build,
+                category=category,
+                within_days=within_days,
             )
-            causatives = [item["_id"] for item in query]
-
+        ]
         return causatives
 
     def check_managed(
@@ -501,27 +506,33 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(filters)
 
-    def institute_causatives(self, institute_obj, limit_genes=None):
-        """Return all causative variants for an institute - conditionally within the provided list of genes
+    def institute_causatives(
+        self,
+        institute_obj: str,
+        limit_genes: Optional[list] = None,
+        case_id: Optional[str] = None,
+        build: Optional[str] = None,
+        category: Optional[str] = None,
+        within_days: Optional[int] = None,
+    ) -> pymongo.cursor.Cursor:
+        """Return all causative variants for an institute - conditionally within the provided list of genes"""
+        query = {
+            "institute": institute_obj["_id"],
+            "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+            "category": "case",
+        }
+        if case_id:
+            query["case"] = case_id
+        if within_days:
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
+            query["created_at"] = {"$gte": days_datetime}
 
-        Args:
-            institute_obj (dict): an Institute object
-            limit_genes (list): list of gene hgnc_ids to limit the search to
+        causative_events = self.event_collection.find(query)
 
-        Returns:
-            iterable(Variant)
-        """
-        causative_events = self.event_collection.find(
-            {
-                "institute": institute_obj["_id"],
-                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "case",
-            }
-        )
         causative_ids = set()
         for case_event in causative_events:
             case_obj = self.case(case_event.get("case"), projection=CASE_CAUSATIVES_PROJECTION)
-            if case_obj is None:
+            if case_obj is None or build and case_obj["genome_build"] != build:
                 continue
 
             for var_id in case_obj.get("causatives", []):
@@ -531,6 +542,8 @@ class VariantHandler(VariantLoader):
                 causative_ids.add(var_id)
 
         filters = {"_id": {"$in": list(causative_ids)}}
+        if category:
+            filters["category"] = {"$in": category}
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
@@ -857,12 +870,12 @@ class VariantHandler(VariantLoader):
                 {"case_id": case_id},
                 {
                     "$or": [
-                        {"acmg_classification": {"$exists": True}},
-                        {"ccv_classification": {"$exists": True}},
-                        {"manual_rank": {"$exists": True}},
-                        {"cancer_tier": {"$exists": True}},
-                        {"dismiss_variant": {"$exists": True}},
-                        {"escat_tier": {"$exists": True}},
+                        {"acmg_classification": EXISTS},
+                        {"ccv_classification": EXISTS},
+                        {"manual_rank": EXISTS},
+                        {"cancer_tier": EXISTS},
+                        {"dismiss_variant": EXISTS},
+                        {"escat_tier": EXISTS},
                     ]
                 },
             ]
