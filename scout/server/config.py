@@ -55,6 +55,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # URL to an instance of Chanjo2, for generating coverage report
 # CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
 
+# Comment out the following line or set it to "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/" if you want to enable variant submission via the official ClinVar API
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000

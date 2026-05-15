@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
+- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
+- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
+- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 
@@ -47,12 +52,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Command line option to export causative variants by category and/or genome build (#6202)
 - An additional button on causatives and verified pages to download SNVs and SVs as input for the managed variants list (admins only) (#6205 and #6231)
 - Display total number of variants and number of variants returned by a filter on Managed Variants page (#6223)
+- ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
 - `scout delete variants` command now accepts an optional `--out-file` where to print a detailed report of the deletion process (#6094)
 - Gens fallback to v3 if no GENS_VERSION given, and no version detected from Gens API (#6195)
 - Refactor variant formatting logic (pretty_variant) out of Jinja2 template (#6218)
+- `scout download everything` command downloads Ensembl data last, so that if the Ensembl download fails, it does not prevent the other files from being downloaded (#6269)
 ### Fixed
 - Formatting of a list on managed variant export documentation (#6203)
 - Exception for singletons from the "Include variants present only in unaffected" filter (#6209)
