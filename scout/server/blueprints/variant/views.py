@@ -53,8 +53,8 @@ from scout.server.utils import (
     templated,
 )
 from scout.utils.acmg import get_acmg, get_acmg_conflicts, get_acmg_temperature
+from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
-from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 
@@ -564,15 +564,15 @@ def marrvel_link(build, variant_id):
     alt = variant_obj["alternative"]
 
     if build == "38":  # liftover is necessary before returning link
-        client = EnsemblRestApiClient()
-        mapped_coords = client.liftover(
-            build,
-            chrom,
-            start,
-        )
-        if mapped_coords:
-            chrom = mapped_coords[0]["mapped"].get("seq_region_name")
-            start = mapped_coords[0]["mapped"].get("start")
+        client = BroadLiftoverApiClient()
+        if mapped_coords := client.liftover(
+            build_from=build,
+            chrom=variant_obj.get("chromosome"),
+            start=variant_obj.get("position"),
+            end=variant_obj.get("end"),
+        ):
+            chrom = mapped_coords["output_chrom"].replace("chr", "")
+            start = mapped_coords["output_start"]
         else:
             flash(
                 "MARRVEL requires variant coordinates in genome build 37, but variant liftover failed",

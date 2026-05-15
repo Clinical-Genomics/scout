@@ -211,29 +211,21 @@ def ensembl_genes(request, gene_bulk):
 
 
 @pytest.fixture
-def ensembl_liftover_response():
-    """Returns a  response from ensembl liftover api"""
+def broad_ucsc_liftover_response():
+    """Returns a  response from the Broad Institute's liftover API - UCSC tool."""
     _response = {
-        "mappings": [
-            {
-                "mapped": {
-                    "assembly": "GRCh38",
-                    "seq_region_name": "X",
-                    "end": 1039365,
-                    "start": 1039265,
-                    "coord_system": "chromosome",
-                    "strand": 1,
-                },
-                "original": {
-                    "strand": 1,
-                    "coord_system": "chromosome",
-                    "start": 1000000,
-                    "seq_region_name": "X",
-                    "end": 1000100,
-                    "assembly": "GRCh37",
-                },
-            }
-        ]
+        "hg": "hg19-to-hg38",
+        "chrom": "chr7",
+        "start": "124475295",
+        "format": "interval",
+        "end": "124475300",
+        "pos": 124475296,
+        "output_chrom": "chr7",
+        "output_pos": 124835242,
+        "output_start": 124835241,
+        "output_end": 124835246,
+        "output_strand": "+",
+        "liftover_tool": "UCSC liftover tool",
     }
     return _response
 

@@ -2,7 +2,7 @@
 
 import pytest
 
-from scout.utils import ensembl_rest_clients
+from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
 
 @pytest.fixture
@@ -55,9 +55,9 @@ def ensembl_biomart_client():
 
 
 @pytest.fixture
-def ensembl_rest_client():
+def broad_liftover_client():
     """Return a client to the Ensembl REST API."""
-    return ensembl_rest_clients.EnsemblRestApiClient()
+    return BroadLiftoverApiClient()
 
 
 @pytest.fixture

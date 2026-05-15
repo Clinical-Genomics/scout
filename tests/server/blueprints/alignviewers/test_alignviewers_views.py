@@ -6,7 +6,7 @@ from flask_login import login_user
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
 from scout.server.extensions import config_igv_tracks, store
-from scout.utils.ensembl_rest_clients import RESTAPI_URL
+from scout.utils.broad_liftover_client import LIFTOVER_URL
 
 
 def test_remote_static_no_auth(app, case_obj, institute_obj):
@@ -188,17 +188,18 @@ def test_igv_authorized(app, user_obj, case_obj, variant_obj):
 
 
 @responses.activate
-def test_sashimi_igv(app, user_obj, case_obj, variant_obj, ensembl_liftover_response):
+def test_sashimi_igv(app, user_obj, case_obj, variant_obj, broad_ucsc_liftover_response):
     """Test view requests and produces igv alignments, when the user has access to the case"""
 
     # GIVEN a mocked response from the Ensembl liftover service
     chromosome = variant_obj["chromosome"]
     position = variant_obj["position"]
-    mocked_liftover_url = f"{RESTAPI_URL}/map/human/GRCh37/{chromosome}:{position}..{position}/GRCh38?content-type=application/json"
+    # GIVEN a patched response from the liftover tool
+    url = f"{LIFTOVER_URL}/?hg=hg19-to-hg38&format=interval&chrom={chromosome}&start={position}&end={position}"
     responses.add(
         responses.GET,
-        mocked_liftover_url,
-        json=ensembl_liftover_response,
+        url,
+        json=broad_ucsc_liftover_response,
         status=200,
     )
 
