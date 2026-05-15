@@ -66,7 +66,7 @@ def test_add_and_remove_managed_variants(app, mocker, mock_redirect):
         resp = client.post(url_for("managed_variants.add_managed_variant"), data=add_form_data)
         # THEN the status code should still be redirect
         assert resp.status_code == 302
-        # THEN the database should still contatain only one variant
+        # THEN the database should still contain only one variant
         assert sum(1 for i in store.managed_variant_collection.find()) == 1
 
         # WHEN requesting to remove the selected variant

@@ -2,19 +2,20 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.constants import CALLERS, DATE_DAY_FORMATTER
+from scout.constants import BUILDS, CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_causative_variants,
     export_managed_variants,
     export_verified_variants,
+    liftover_managed_variants,
 )
 from scout.server.extensions import store
 from scout.utils.vcf import validate_vcf_line
@@ -124,8 +125,15 @@ def verified(collaborator, test, outpath=None):
 @collaborator_option
 @build_option
 @json_option
+@click.option(
+    "--liftover-from",
+    type=click.Choice(BUILDS),
+    help="Perform liftover on coordinates and export as managed variants infile.",
+)
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
+def managed(
+    collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]
+):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -142,18 +150,23 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+    elif liftover_from:
+        valid_lines = liftover_managed_variants(
+            managed_variants=variants, liftover_from=liftover_from
+        )
+    else:
+        vcf_header = VCF_HEADER
+        vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
 
-    valid_lines = []
+        valid_lines = []
 
-    for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, build=build)
-        if variant_string:
-            valid_lines.append(variant_string)
+        for variant_obj in variants:
+            variant_string = get_vcf_entry(variant_obj, build=build)
+            if variant_string:
+                valid_lines.append(variant_string)
 
-    for line in vcf_header:
-        click.echo(line)
+        for line in vcf_header:
+            click.echo(line)
 
     for valid_line in valid_lines:
         click.echo(valid_line)

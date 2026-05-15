@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import List, Optional
+from typing import Iterable, List, Optional
+
+import requests
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
-from scout.constants.managed_variant import MANAGED_CATEGORIES
+from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
@@ -61,6 +63,72 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
         return (chrom_int, pos)
 
     return sorted(variants, key=sort_key)
+
+
+def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) -> List[str]:
+    """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
+
+    export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
+    LIFTOVER_API_URL = "https://liftover-xwkwwwxdwq-uc.a.run.app/liftover/"
+
+    lifted_build = "38" if liftover_from == "37" else "37"
+    build_to = "hg38" if lifted_build == "38" else "hg19"
+    build_from = "hg19" if build_to == "hg38" else "hg38"
+
+    nfailed = 0
+    for i, variant_obj in enumerate(managed_variants, 1):
+        if i % 50 == 0:
+            LOG.info(f"Processed {i} variants")
+
+        if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
+            continue
+
+        if variant_obj.get("build") == lifted_build:
+            chrom = variant_obj["chromosome"]
+            pos = variant_obj["position"]
+            end = variant_obj.get("end", variant_obj["position"])
+            ref = variant_obj.get("reference")
+            alt = variant_obj.get("alternative")
+
+        else:  # Do liftover
+            params = {
+                "hg": f"{build_from}-to-{build_to}",
+                "format": "variant",
+                "chrom": f"{variant_obj.get('chromosome')}",
+                "pos": variant_obj.get("position"),
+                "end": variant_obj.get("end"),
+                "ref": variant_obj.get("reference", ""),
+                "alt": variant_obj.get("alternative", ""),
+            }
+            response = requests.get(LIFTOVER_API_URL, params=params)
+            result = response.json()
+
+            if "error" not in result:
+                chrom = result["output_chrom"].replace("chr", "")
+                pos = result["output_pos"]
+                end = result.get("output_end") or result.get("output_pos")
+                ref = result["output_ref"]
+                alt = result["output_alt"]
+            else:
+                nfailed += 1
+                LOG.error(response.json())
+                continue
+
+        category = variant_obj.get("category", "snv")
+        sub_category = variant_obj.get("sub_category", "snv")
+        if "(causatives" not in variant_obj.get("description"):
+            description = variant_obj.get("description") + f" (managed, build{liftover_from})"
+        else:
+            description = variant_obj.get("description")
+        institutes = ",".join(variant_obj.get("institute") or [])
+
+        export_lines.append(
+            f"{chrom};{pos};{end};{ref};{alt};"
+            f"{category};{sub_category};{lifted_build};{description};;{institutes}"
+        )
+
+    LOG.info(f"Done. Total processed: {i} - total failed: {nfailed}")
+    return export_lines
 
 
 def export_managed_variants(
