@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
+### Fixed
+- Compress demo case rnafusion VCF and add an index (#6292)
 
 ## [4.111.3]
 ### Fixed
