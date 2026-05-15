@@ -10,6 +10,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 - Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
+### Fixed
+- Compress demo case rnafusion VCF and add an index (#6292)
+
+## [4.111.3]
+### Fixed
+- Reintroduce GRCh38 alias conversion for export panels (#6289)
+
+## [4.111.2]
+### Fixed
+- Partly revert alias change, and instead use GRCh38 to mean write chr prefix in export commands (#6288)
+
+## [4.111.1]
+### Fixed
+- Build version alias GRCh38 to 38 for consistency in export commands (#6283)
 
 ## [4.111.0]
 ### Added
