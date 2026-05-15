@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Compress fusion vcf file and add an index (#6292)
+- Compress demo case rnafusion VCF and add an index (#6292)
 
 ## [4.111.3]
 ### Fixed
