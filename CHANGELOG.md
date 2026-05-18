@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
+- Paraphase region names not capitalized on SNN/Dark regions page (#6301)
 
 ## [4.111.3]
 ### Fixed
