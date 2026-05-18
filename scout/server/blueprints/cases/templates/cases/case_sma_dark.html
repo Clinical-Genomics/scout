@@ -84,7 +84,7 @@
     <div class="card-body">
       <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> annotation of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a> - Individuals</div>
       <div class="accordion accordion-flush" id="paraphrase">
-      {% for region_name, region in paraphrase_regions.items() %}
+      {% for region_name, region in paraphrase_regions|dictsort(case_sensitive=False, by='key') %}
         <div class="accordion-item">
           <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
            <button class="accordion-button {% if region.get("status", "normal") == "pathological" %}
@@ -93,7 +93,7 @@
                   bg-warning
                 {% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{ region_name }}" aria-expanded="false" aria-controls="collapse_{{ region_name }}">
               <span class="col-1" data-bs-toggle="tooltip" title="Region name from Paraphase configuration">{{ region_name }}</span>
-              <span class="col-1" data-bs-toggle="tooltip" title="Region status from Paraphrase annotation">{{ region.status|capitalize }}</span>
+              <span class="col-1" data-bs-toggle="tooltip" title="Region status from Paraphrase annotation">{{ region.status }}</span>
               <span class="col-9">
                 {% for gene in region.get("genes_in_region",[]) %}
                   {% if gene %}
