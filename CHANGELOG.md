@@ -4,9 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [unreleased]"
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
+- Adding single managed variants with build 38 (#6300)
 
 ## [4.111.3]
 ### Fixed
