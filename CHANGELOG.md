@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
+- Adding single managed variants with build 38 (#6300)
 
 ## [4.111.3]
 ### Fixed
