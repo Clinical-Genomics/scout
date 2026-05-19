@@ -39,6 +39,8 @@ from .forms import GeneSearchForm, PanelFilterForm, PanelGeneForm
 LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
+PANEL_VIEW = "panels.panel"
+
 
 @panels_bp.route("/api/v1/panels/<panel_name>", methods=["GET", "POST"])
 @public_endpoint
@@ -87,7 +89,7 @@ def panels():
     elif request.method == "POST":  # Edit and create a new version of a panel
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
-            return redirect(url_for("panels.panel", panel_id=redirect_panel_id, **request.args))
+            return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
 
     panel_names = [
         name
@@ -164,7 +166,7 @@ def panel(panel_id):
                     "Permission denied: please ask a panel maintainer or admin for help.",
                     "danger",
                 )
-            return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+            return redirect(url_for(PANEL_VIEW, panel_id=panel_obj["_id"]))
 
         raw_hgnc_id = request.form["hgnc_id"]
         if "|" in raw_hgnc_id:
@@ -236,7 +238,7 @@ def panel_update(panel_id):
 
     update_version = request.form.get("version")
     if not update_version:
-        return redirect(url_for("panels.panel", panel_id=panel_id))
+        return redirect(url_for(PANEL_VIEW, panel_id=panel_id))
 
     duplicate = store.gene_panel(panel_id=panel_obj["panel_name"], version=float(update_version))
     if duplicate:
@@ -244,11 +246,11 @@ def panel_update(panel_id):
             f"A panel named '{panel_obj['panel_name']}' with version {update_version} already exists.",
             "warning",
         )
-        return redirect(url_for("panels.panel", panel_id=duplicate["_id"]))
+        return redirect(url_for(PANEL_VIEW, panel_id=duplicate["_id"]))
 
     if not controllers.panel_write_granted(panel_obj, current_user):
         flash("Permission denied: please ask a panel maintainer or admin for help.", "danger")
-        return redirect(url_for("panels.panel", panel_id=panel_id))
+        return redirect(url_for(PANEL_VIEW, panel_id=panel_id))
 
     new_panel_id = store.apply_pending(panel_obj, update_version)
 
@@ -261,7 +263,7 @@ def panel_update(panel_id):
         )
         return redirect(url_for("panels.panels", **request.args))
 
-    return redirect(url_for("panels.panel", panel_id=new_panel_id))
+    return redirect(url_for(PANEL_VIEW, panel_id=new_panel_id))
 
 
 @panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])

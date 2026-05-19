@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Filter selections remain visible in the UI after panel editing actions ()
+- Filter selections remain visible in the UI after panel editing actions (#6305)
 ### Changed
 - Display genome build on managed variants page (#6297)
 ### Fixed
