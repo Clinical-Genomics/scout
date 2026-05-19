@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Export causatives to managed variants infile via CLI, filtering variants by date (#6290)
+### Changed
+- Display genome build on managed variants page (#6297)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 
