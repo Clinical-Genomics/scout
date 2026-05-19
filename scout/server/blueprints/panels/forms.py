@@ -63,3 +63,5 @@ class PanelFilterForm(FlaskForm):
         validators=[Optional()],
         render_kw={"class": "form-select w-auto", "name": "institute"},
     )
+
+    submit = SubmitField("Search", render_kw={"class": "btn btn-primary"})

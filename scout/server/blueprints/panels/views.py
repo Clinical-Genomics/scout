@@ -85,8 +85,9 @@ def panels():
             institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
     elif request.method == "POST":  # Edit and create a new version of a panel
-        controllers.panel_create_or_update(store, request)
-        return redirect(url_for("panels.panels", **request.args))
+        redirect_panel_id = controllers.panel_create_or_update(store, request)
+        if redirect_panel_id:
+            return redirect(url_for("panels.panel", panel_id=redirect_panel_id, **request.args))
 
     panel_names = [
         name
@@ -250,6 +251,16 @@ def panel_update(panel_id):
         return redirect(url_for("panels.panel", panel_id=panel_id))
 
     new_panel_id = store.apply_pending(panel_obj, update_version)
+
+    if request.args.get("searchName") or request.args.get(
+        "institute"
+    ):  # Filters applied on panels page
+        flash(
+            f"Panel {panel_obj['panel_name']} updated successfully to version {update_version}",
+            "success",
+        )
+        return redirect(url_for("panels.panels", **request.args))
+
     return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
 
