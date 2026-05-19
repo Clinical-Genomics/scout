@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Display genome build on managed variants page (#6297)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 
