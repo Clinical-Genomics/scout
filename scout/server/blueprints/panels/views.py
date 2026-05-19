@@ -56,16 +56,21 @@ def api_panels(panel_name):
 def panels():
     """Show all panels for a user"""
 
+    search_name = request.args.get("searchName", "").lower().strip()
+    selected_institute = request.args.get("institute", "").strip()
+
     institutes = list(user_institutes(store, current_user))
     user_institute_ids = {inst["_id"] for inst in institutes}
 
-    # Add search box and add results if applicable
+    if selected_institute:
+        user_institute_ids = {selected_institute}
+
     institute_panels_with_gene = []
     search_string = ""
+
     if request.method == "POST" and request.form.get("searchGene"):
-        # Query db for panels containing the search string. This is done with autocompletion
-        # therefor only one(1) hgnc_id will be received from the form.
         search_string = escape(request.form.get("searchGene"))
+
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
             hgnc_id = hgnc_symbols.pop()
@@ -74,16 +79,14 @@ def panels():
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
+            hgnc_id = None
 
-    # Add new panel
-    elif request.method == "POST":
-        # Edit/create a new panel and redirect to its page
-        redirect_panel_id = controllers.panel_create_or_update(store, request)
-        if redirect_panel_id:
-            return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+        if hgnc_id:
+            institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
-        return redirect(url_for("panels.panels"))
+    elif request.method == "POST":  # Edit and create a new version of a panel
+        controllers.panel_create_or_update(store, request)
+        return redirect(url_for("panels.panels", **request.args))
 
     panel_names = [
         name
@@ -99,15 +102,33 @@ def panels():
         panel_versions[name] = [panel_obj for panel_obj in panels]
 
     panel_groups = []
+
     for institute_obj in institutes:
+
+        if institute_obj["_id"] not in user_institute_ids:
+            continue
+
         institute_panels = []
-        for panel in store.latest_panels(institute_obj["_id"], include_hidden=True):
+
+        panels = store.latest_panels(institute_obj["_id"], include_hidden=True)
+
+        for panel in panels:
+            panel_name = panel["panel_name"].lower()
+            display_name = panel.get("display_name", "").lower()
+
+            if search_name and search_name not in panel_name and search_name not in display_name:
+                continue
+
             panel["writable"] = (
                 "" if controllers.panel_write_granted(panel, current_user) else "disabled"
             )
+
             institute_panels.append(panel)
 
         panel_groups.append((institute_obj, institute_panels))
+
+    form = PanelFilterForm(request.args)
+
     return dict(
         panel_groups=sorted(panel_groups, key=lambda x: x[0]["display_name"].lower()),
         panel_names=panel_names,
@@ -116,7 +137,7 @@ def panels():
         search_string=search_string,
         search_result=institute_panels_with_gene,
         search_gene_form=GeneSearchForm(),
-        panel_filter_form=PanelFilterForm(),
+        panel_filter_form=form,
     )
 
 
@@ -253,7 +274,7 @@ def panel_delete(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+    return redirect(url_for("panels.panels", **request.args))
 
 
 @panels_bp.route("/panels/<panel_id>/restore", methods=["POST"])
@@ -270,7 +291,7 @@ def panel_restore(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+    return redirect(url_for("panels.panels", **request.args))
 
 
 @panels_bp.route("/panels/export-panel-txt/<panel_id>", methods=["GET"])

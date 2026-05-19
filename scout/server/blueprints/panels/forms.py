@@ -61,5 +61,5 @@ class PanelFilterForm(FlaskForm):
         choices=[],
         validate_choice=False,
         validators=[Optional()],
-        render_kw={"class": "form-select w-auto"},
+        render_kw={"class": "form-select w-auto", "name": "institute"},
     )
