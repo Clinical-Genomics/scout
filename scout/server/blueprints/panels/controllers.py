@@ -133,7 +133,7 @@ def filter_panels(panels: Iterable[Dict[str, Any]], search_name: str) -> List[Di
     if not search_name:
         return list(panels)
 
-    filtered: List[Dict[str, Any]] = []
+    filtered = []
 
     for panel in panels:
         panel_name: str = panel["panel_name"].lower()

@@ -71,7 +71,6 @@ def panels():
     institute_panels_with_gene = []
     search_string = ""
 
-    # ---------------- POST: gene search ----------------
     if request.method == "POST" and request.form.get("searchGene"):
         search_string = escape(request.form.get("searchGene"))
 
@@ -87,7 +86,6 @@ def panels():
         if hgnc_id:
             institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
-    # ---------------- POST: create/update ----------------
     elif request.method == "POST":
         redirect_panel_id = controllers.panel_create_or_update(store, request)
 
