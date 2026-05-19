@@ -62,10 +62,10 @@ def panels():
     selected_institute = request.args.get("institute", "").strip()
 
     institutes = list(user_institutes(store, current_user))
-    user_institute_ids = {inst["_id"] for inst in institutes}
 
-    if selected_institute:
-        user_institute_ids = {selected_institute}
+    user_institute_ids = (
+        {selected_institute} if selected_institute else {inst["_id"] for inst in institutes}
+    )
 
     institute_panels_with_gene = []
     search_string = ""
@@ -74,8 +74,7 @@ def panels():
         search_string = escape(request.form.get("searchGene"))
 
         try:
-            hgnc_symbols = parse_raw_gene_ids([search_string])
-            hgnc_id = hgnc_symbols.pop()
+            hgnc_id = parse_raw_gene_ids([search_string]).pop()
         except ValueError:
             flash(
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
@@ -86,10 +85,13 @@ def panels():
         if hgnc_id:
             institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
-    elif request.method == "POST":  # Edit and create a new version of a panel
+    elif request.method == "POST":
         redirect_panel_id = controllers.panel_create_or_update(store, request)
+
         if redirect_panel_id:
             return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
+
+        return redirect(url_for("panels.panels", **request.args))
 
     panel_names = [
         name
@@ -99,10 +101,9 @@ def panels():
         )
     ]
 
-    panel_versions = {}
-    for name in panel_names:
-        panels = store.gene_panels(panel_id=name, include_hidden=True)
-        panel_versions[name] = [panel_obj for panel_obj in panels]
+    panel_versions = {
+        name: list(store.gene_panels(panel_id=name, include_hidden=True)) for name in panel_names
+    }
 
     panel_groups = []
 
@@ -111,24 +112,26 @@ def panels():
         if institute_obj["_id"] not in user_institute_ids:
             continue
 
-        institute_panels = []
-
         panels = store.latest_panels(institute_obj["_id"], include_hidden=True)
 
-        for panel in panels:
-            panel_name = panel["panel_name"].lower()
-            display_name = panel.get("display_name", "").lower()
+        filtered_panels = []
 
-            if search_name and search_name not in panel_name and search_name not in display_name:
-                continue
+        for panel in panels:
+
+            if search_name:
+                panel_name = panel["panel_name"].lower()
+                display_name = panel.get("display_name", "").lower()
+
+                if search_name not in panel_name and search_name not in display_name:
+                    continue
 
             panel["writable"] = (
                 "" if controllers.panel_write_granted(panel, current_user) else "disabled"
             )
 
-            institute_panels.append(panel)
+            filtered_panels.append(panel)
 
-        panel_groups.append((institute_obj, institute_panels))
+        panel_groups.append((institute_obj, filtered_panels))
 
     form = PanelFilterForm(request.args)
 
