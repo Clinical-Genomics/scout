@@ -78,7 +78,7 @@ def managed_variants(request: LocalProxy) -> dict:
     managed_variants_query = store.managed_variants(
         category=categories,
         query_options=query_options,
-        build=request.form.get("build"),
+        build=filters_form.build.data,
         skip_count=skip_count,
         vars_per_page=VARS_PER_PAGE,
     )
@@ -119,6 +119,7 @@ def add_managed_variant(request: LocalProxy):
 
     managed_variant_obj = build_managed_variant(
         dict(
+            build=add_form["build"].data,
             chromosome=add_form["chromosome"].data,
             position=add_form["position"].data,
             end=add_form["end"].data,
