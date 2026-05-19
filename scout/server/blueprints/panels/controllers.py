@@ -126,7 +126,7 @@ def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[st
     return redirect_id
 
 
-def filter_institute_ids(req: LocalProxy, institutes: List[dic]) -> set:
+def filter_institute_ids(req: LocalProxy, institutes: List[dict]) -> set:
     """
     Panels view helper: return institute IDs available and selected by the user.
     """
