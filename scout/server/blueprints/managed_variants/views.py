@@ -103,9 +103,6 @@ def add_managed_variant():
     controllers.add_managed_variant(request)
 
     return redirect(
-        url_for(
-            ".managed_variants",
-            **request.form,
-        ),
+        url_for(".managed_variants"),
         code=307,
     )
