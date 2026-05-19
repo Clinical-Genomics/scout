@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 - Adding single managed variants with build 38 (#6300)
+- Paraphase region names alphabetically sorted on SMN/Dark regions page (#6301)
 
 ## [4.111.3]
 ### Fixed
