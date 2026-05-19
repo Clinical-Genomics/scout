@@ -71,28 +71,30 @@ def panels():
     institute_panels_with_gene = []
     search_string = ""
 
-    if request.method == "POST" and request.form.get("searchGene"):
-        search_string = escape(request.form.get("searchGene"))
+    if request.method == "POST":
+        if request.form.get("searchGene"):
+            search_string = escape(request.form.get("searchGene"))
 
-        try:
-            hgnc_id = parse_raw_gene_ids([search_string]).pop()
-        except ValueError:
-            flash(
-                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
-                "warning",
-            )
-            hgnc_id = None
+            try:
+                hgnc_id = parse_raw_gene_ids([search_string]).pop()
+            except ValueError:
+                flash(
+                    "Provided gene info could not be parsed! "
+                    "Please allow autocompletion to finish.",
+                    "warning",
+                )
+                hgnc_id = None
 
-        if hgnc_id:
-            institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
+            if hgnc_id:
+                institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
-    elif request.method == "POST":
-        redirect_panel_id = controllers.panel_create_or_update(store, request)
+        else:
+            redirect_panel_id = controllers.panel_create_or_update(store, request)
 
-        if redirect_panel_id:
-            return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
+            if redirect_panel_id:
+                return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
 
-        return redirect(url_for(PANELS_VIEW, **request.args))
+            return redirect(url_for(PANELS_VIEW, **request.args))
 
     panel_names = [
         name
@@ -109,7 +111,6 @@ def panels():
     panel_groups = []
 
     for institute_obj in institutes:
-
         if institute_obj["_id"] not in user_institute_ids:
             continue
 
