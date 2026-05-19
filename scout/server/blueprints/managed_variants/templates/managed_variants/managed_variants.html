@@ -93,12 +93,13 @@
         <th style="width:5%">Chr</th>
         <th style="width:10%">Start</th>
         <th style="width:10%">End</th>
+        <th style="width:5%">Build</th>
         <th style="width:10%">Ref</th>
         <th style="width:10%">Alt</th>
         <th style="width:5%">Category</th>
         <th style="width:5%">Kind</th>
         <th style="width:25%">Description</th>
-        <th style="width:15%">Last edited by</th>
+        <th style="width:10%">Last edited by</th>
         <th style="width:5%"></th>
       </tr>
     </thead>
@@ -108,6 +109,7 @@
           <td>{{ variant.chromosome }}</td>
           <td>{{ variant.position }}</td>
           <td>{{ variant.end }}</td>
+          <td>{{ variant.build }}</td>
           <td>{{ variant.reference | truncate(20, True, '...') }}</td>
           <td>{{ variant.alternative | truncate(20, True, '...') }}</td>
           <td>{{ variant.category|upper }}</td>
