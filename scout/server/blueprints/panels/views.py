@@ -60,13 +60,9 @@ def panels():
     """Show all panels for a user"""
 
     search_name = request.args.get("searchName", "").lower().strip()
-    selected_institute = request.args.get("institute", "").strip()
-
     institutes = list(user_institutes(store, current_user))
 
-    user_institute_ids = (
-        {selected_institute} if selected_institute else {inst["_id"] for inst in institutes}
-    )
+    user_institute_ids = controllers.filter_institute_ids(req=request, institutes=institutes)
 
     institute_panels_with_gene = []
     search_string = ""
@@ -116,7 +112,7 @@ def panels():
 
         panels = store.latest_panels(institute_obj["_id"], include_hidden=True)
 
-        filtered_panels = controllers.filter_panels(panels=panels, search_name=search_name)
+        filtered_panels = controllers.filter_panels_by_name(panels=panels, search_name=search_name)
 
         for panel in filtered_panels:
             panel["writable"] = (

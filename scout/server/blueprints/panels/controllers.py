@@ -126,7 +126,21 @@ def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[st
     return redirect_id
 
 
-def filter_panels(panels: Iterable[Dict[str, Any]], search_name: str) -> List[Dict[str, Any]]:
+def filter_institute_ids(req: LocalProxy, institutes: List[dic]) -> set:
+    """
+    Panels view helper: return institute IDs available and selected by the user.
+    """
+    selected_institute = req.args.get("institute", "").strip()
+    if selected_institute:
+        user_institute_ids = {selected_institute}
+    else:
+        user_institute_ids = {inst["_id"] for inst in institutes}
+    return user_institute_ids
+
+
+def filter_panels_by_name(
+    panels: Iterable[Dict[str, Any]], search_name: str
+) -> List[Dict[str, Any]]:
     """
     Panels view helper: filter panels by panel name or display name.
     """
