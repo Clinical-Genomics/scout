@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
+- Display genome build on managed variants page (#6297)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
