@@ -40,6 +40,7 @@ LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 PANEL_VIEW = "panels.panel"
+PANELS_VIEW = "panels.panels"
 
 
 @panels_bp.route("/api/v1/panels/<panel_name>", methods=["GET", "POST"])
@@ -70,6 +71,7 @@ def panels():
     institute_panels_with_gene = []
     search_string = ""
 
+    # ---------------- POST: gene search ----------------
     if request.method == "POST" and request.form.get("searchGene"):
         search_string = escape(request.form.get("searchGene"))
 
@@ -85,13 +87,14 @@ def panels():
         if hgnc_id:
             institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
+    # ---------------- POST: create/update ----------------
     elif request.method == "POST":
         redirect_panel_id = controllers.panel_create_or_update(store, request)
 
         if redirect_panel_id:
             return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
 
-        return redirect(url_for("panels.panels", **request.args))
+        return redirect(url_for(PANELS_VIEW, **request.args))
 
     panel_names = [
         name
@@ -114,22 +117,12 @@ def panels():
 
         panels = store.latest_panels(institute_obj["_id"], include_hidden=True)
 
-        filtered_panels = []
+        filtered_panels = controllers.filter_panels(panels=panels, search_name=search_name)
 
-        for panel in panels:
-
-            if search_name:
-                panel_name = panel["panel_name"].lower()
-                display_name = panel.get("display_name", "").lower()
-
-                if search_name not in panel_name and search_name not in display_name:
-                    continue
-
+        for panel in filtered_panels:
             panel["writable"] = (
                 "" if controllers.panel_write_granted(panel, current_user) else "disabled"
             )
-
-            filtered_panels.append(panel)
 
         panel_groups.append((institute_obj, filtered_panels))
 
@@ -155,7 +148,7 @@ def panel(panel_id):
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
     if not panel_obj:
         flash("Panel with id {} not found.".format(panel_id), "warning")
-        return redirect(url_for("panels.panels"))
+        return redirect(url_for(PANELS_VIEW))
 
     if request.method == "POST":
         if request.form.get("update_description") or request.form.get("display_name"):
@@ -264,7 +257,7 @@ def panel_update(panel_id):
             f"Panel {panel_obj['panel_name']} updated successfully to version {update_version}",
             "success",
         )
-        return redirect(url_for("panels.panels", **request.args))
+        return redirect(url_for(PANELS_VIEW, **request.args))
 
     return redirect(url_for(PANEL_VIEW, panel_id=new_panel_id))
 
@@ -290,7 +283,7 @@ def panel_delete(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", **request.args))
+    return redirect(url_for(PANELS_VIEW, **request.args))
 
 
 @panels_bp.route("/panels/<panel_id>/restore", methods=["POST"])
@@ -307,7 +300,7 @@ def panel_restore(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", **request.args))
+    return redirect(url_for(PANELS_VIEW, **request.args))
 
 
 @panels_bp.route("/panels/export-panel-txt/<panel_id>", methods=["GET"])

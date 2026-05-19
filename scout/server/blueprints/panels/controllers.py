@@ -2,7 +2,7 @@
 import datetime as dt
 import logging
 import re
-from typing import List, Optional, Union
+from typing import Iterable, List, Optional, Union
 
 from flask import Response, flash
 from flask_login import current_user
@@ -124,6 +124,27 @@ def panel_create_or_update(store: MongoAdapter, request: LocalProxy) -> Union[st
         redirect_id = update_existing_panel(store, request, lines)
 
     return redirect_id
+
+
+def filter_panels(panels: Iterable[Dict[str, Any]], search_name: str) -> List[Dict[str, Any]]:
+    """
+    Panels view helper: filter panels by panel name or display name.
+    """
+    if not search_name:
+        return list(panels)
+
+    filtered: List[Dict[str, Any]] = []
+
+    for panel in panels:
+        panel_name: str = panel["panel_name"].lower()
+        display_name: str = panel.get("display_name", "").lower()
+
+        if search_name not in panel_name and search_name not in display_name:
+            continue
+
+        filtered.append(panel)
+
+    return filtered
 
 
 def panel(store, panel_obj):
