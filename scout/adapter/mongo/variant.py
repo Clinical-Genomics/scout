@@ -540,7 +540,11 @@ class VariantHandler(VariantLoader):
                 causative_ids.add(vid)
                 variant_to_case[vid] = case
 
-        variants = self.variant_collection.find({"_id": {"$in": list(causative_ids)}})
+        filters = {"_id": {"$in": list(causative_ids)}}
+        if limit_genes:
+            filters["genes.hgnc_id"] = {"$in": limit_genes}
+
+        variants = self.variant_collection.find(filters)
 
         def attach_case():
             for var in variants:
