@@ -56,7 +56,6 @@ VCF_HEADER = [
     '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">',
     '##INFO=<ID=TYPE,Number=1,Type=String,Description="Type of variant">',
     '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">',
-    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO",
 ]
 
 CONTIG_LENGTHS = {
