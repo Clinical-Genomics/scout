@@ -1,5 +1,9 @@
 import logging
 import re
+from datetime import datetime
+from typing import List
+
+from scout.constants.variants_export import CONTIG_LENGTHS, VCF_HEADER
 
 nucleotide_re = re.compile(r"[ACGTN,]+")
 
@@ -188,3 +192,51 @@ def validate_vcf_line(var_type: str, line: str) -> tuple[bool, str | None]:
             return False, msg
 
     return True, None
+
+
+def normalize_chrom(chrom: str, build: str) -> str:
+    """
+    Normalize chromosome names depending on genome build.
+
+    Rules:
+      - build "37":
+            no 'chr' prefix
+            mitochondrial chromosome = MT
+
+      - build "38":
+            no 'chr' prefix
+            mitochondrial chromosome = M
+
+      - build "GRCh38":
+            'chr' prefix
+            mitochondrial chromosome = chrM
+    """
+    if chrom in {"M", "MT"}:
+        if build == "37":
+            return "MT"
+        elif build == "38":
+            return "M"
+        elif build == "GRCh38":
+            return "chrM"
+
+    if build == "GRCh38":
+        return f"chr{chrom}"
+
+    return chrom
+
+
+def build_vcf_header(build: str, contains_date: bool = False) -> List[str]:
+    """Create the VCF header used when exporting variants from the CLI."""
+
+    vcf_header = VCF_HEADER
+
+    if contains_date:
+        vcf_header.insert(2, "##fileDate={}".format(datetime.now()))
+
+    for chrom, length in CONTIG_LENGTHS.items():
+        chrom_name = normalize_chrom(chrom=chrom, build=build)
+
+        vcf_header.append(f"##contig=<ID={chrom_name},length={length}>")
+
+    vcf_header.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO")
+    return vcf_header

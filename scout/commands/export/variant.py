@@ -17,7 +17,7 @@ from scout.export.variant import (
     export_verified_variants,
 )
 from scout.server.extensions import store
-from scout.utils.vcf import validate_vcf_line
+from scout.utils.vcf import build_vcf_header, validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -142,8 +142,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+    vcf_header = build_vcf_header(build=build, contains_date=True)
 
     valid_lines = []
 
@@ -201,7 +200,7 @@ def causatives(
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
+    vcf_header = build_vcf_header(build=build, contains_date=True)
 
     # If case_id is given, print more complete vcf entries, with INFO,
     # and genotypes
