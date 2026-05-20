@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Display genome build on managed variants page (#6297)
+- Improve causatives page performance by removing duplicate case queries ()
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 - Adding single managed variants with build 38 (#6300)
