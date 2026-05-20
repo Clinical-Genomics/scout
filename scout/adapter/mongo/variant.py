@@ -29,6 +29,7 @@ CASE_CAUSATIVES_PROJECTION = {
     "analysis_types": 1,
     "rank_model_version": 1,
     "sv_rank_model_version": 1,
+    "tags": 1,
 }
 
 
