@@ -4,9 +4,10 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -191,8 +192,8 @@ def resolve_case(
 
 def print_vcf(
     causatives: Iterable[Dict[str, Any]],
+    case_id: Optional[str],
     build: str,
-    argv: List[str],
     case_obj: Optional[Dict[str, Any]],
 ) -> None:
     """
@@ -201,16 +202,14 @@ def print_vcf(
     If a case_id is provided, the VCF header is extended with FORMAT
     and per-individual genotype columns.
     """
-    vcf_header = build_vcf_header(
-        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
-    )
+    header = VCF_HEADER.copy()
 
-    if case_obj:
-        vcf_header[-1] += "\tFORMAT"
+    if case_id:
+        header[-1] += "\tFORMAT"
         for ind in case_obj["individuals"]:
-            vcf_header[-1] += "\t" + ind["individual_id"]
+            header[-1] += "\t" + ind["individual_id"]
 
-    for line in vcf_header:
+    for line in header:
         click.echo(line)
 
     for v in causatives:
@@ -260,7 +259,6 @@ def causatives(
     If a case ID is provided, its owner is used as the collaborator.
     For GRCh38 builds, variants are queried using build "38".
     """
-
     LOG.info("Running scout export variants")
     adapter = store
 
@@ -285,7 +283,6 @@ def causatives(
         if not managed_link_base_url:
             LOG.info("Please provide a value for --managed-link-base-url")
             raise click.Abort
-
         for line in variants_to_managed_variants(
             variants=causatives, type="causatives", base_url=managed_link_base_url
         ):
@@ -293,7 +290,19 @@ def causatives(
         return
 
     argv = [Path(sys.argv[0]).name] + sys.argv[1:]
-    print_vcf(causatives=causatives, build=build, argv=argv, case_obj=case_obj)
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
+
+    # If case_id is given, print more complete vcf entries, with INFO,
+    # and genotypes
+    if case_id:
+        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
+        case_obj = adapter.case(case_id=case_id)
+        for individual in case_obj["individuals"]:
+            vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
+
+    print_vcf(causatives, case_id, build, case_obj)
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:

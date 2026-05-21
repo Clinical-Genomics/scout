@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Contigs on exported variants VCF files (managed and causative variants) (#6310)
 - Export causatives to managed variants infile via CLI, filtering variants by date (#6290)
 ### Changed
 - Display genome build on managed variants page (#6297)

@@ -1,5 +1,9 @@
 import logging
 import re
+from datetime import datetime
+from typing import List, Optional
+
+from scout.constants.variants_export import CONTIG_LENGTHS, VCF_HEADER
 
 nucleotide_re = re.compile(r"[ACGTN,]+")
 
@@ -188,3 +192,67 @@ def validate_vcf_line(var_type: str, line: str) -> tuple[bool, str | None]:
             return False, msg
 
     return True, None
+
+
+def normalize_chrom(chrom: str, build: str) -> str:
+    """
+    Normalize chromosome names depending on genome build.
+
+    Rules:
+      - build "37":
+            no 'chr' prefix
+            mitochondrial chromosome = MT
+
+      - build "38":
+            no 'chr' prefix
+            mitochondrial chromosome = M
+
+      - build "GRCh38":
+            'chr' prefix
+            mitochondrial chromosome = chrM
+    """
+    if chrom in {"M", "MT"}:
+        if build == "37":
+            return "MT"
+        elif build == "38":
+            return "M"
+        elif build == "GRCh38":
+            return "chrM"
+
+    if build == "GRCh38":
+        return f"chr{chrom}"
+
+    return chrom
+
+
+def build_vcf_header(
+    build: str,
+    contains_date: bool = False,
+    argv: Optional[List[str]] = None,
+    source: Optional[str] = None,
+) -> List[str]:
+    """Create the VCF header used when exporting variants from the CLI."""
+
+    lengths_build = "37" if build == "37" else "38"
+    vcf_header = VCF_HEADER
+
+    add_line = 2
+    if contains_date:
+        vcf_header.insert(add_line, "##fileDate={}".format(datetime.now()))
+        add_line += 1
+
+    if argv:
+        vcf_header.insert(add_line, "##commandline={}".format(" ".join(argv)))
+        add_line += 1
+
+    if source:
+        vcf_header.insert(add_line, "##source={}".format(source))
+
+    for chrom, length in CONTIG_LENGTHS[lengths_build].items():
+        chrom_name = normalize_chrom(chrom, build)
+
+        vcf_header.append(f"##contig=<ID={chrom_name},length={length}>")
+
+    vcf_header.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO")
+
+    return vcf_header
