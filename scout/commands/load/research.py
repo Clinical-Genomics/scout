@@ -29,6 +29,7 @@ def upload_research_variants(
         variant_type=variant_type,
         category=category,
         rank_threshold=rank_treshold,
+        build=case_obj["genome_build"],
     )
 
 
