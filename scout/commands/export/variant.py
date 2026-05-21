@@ -224,7 +224,7 @@ def causatives(
 
     for variant_obj in variants:
         if variant_string := get_vcf_entry(
-            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVES"}
+            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVE"}
         ):
             click.echo(variant_string)
 
