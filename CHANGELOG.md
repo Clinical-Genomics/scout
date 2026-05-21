@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Contigs on exported variants VCF files (managed and causative variants) (#6310)
 - On variant page, matching causatives expandable div, display status and status tags from matching causatives' case (#6315)
 ### Changed
 - Display genome build on managed variants page (#6297)
