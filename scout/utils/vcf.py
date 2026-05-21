@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from scout.constants.variants_export import CONTIG_LENGTHS, VCF_HEADER
 
