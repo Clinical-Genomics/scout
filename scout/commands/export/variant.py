@@ -2,9 +2,9 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Optional, Tuple
 import sys
 from pathlib import Path
+from typing import Optional, Tuple
 
 import click
 from flask import current_app
