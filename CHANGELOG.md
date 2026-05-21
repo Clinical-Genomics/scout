@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Contigs on exported variants VCF files (managed and causative variants) (#6310)
+- INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 ### Changed
 - Display genome build on managed variants page (#6297)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
