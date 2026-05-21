@@ -3,8 +3,11 @@ import json as json_lib
 import logging
 import os
 from typing import Optional, Tuple
+import sys
+from pathlib import Path
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -18,7 +21,7 @@ from scout.export.variant import (
     liftover_managed_variants,
 )
 from scout.server.extensions import store
-from scout.utils.vcf import validate_vcf_line
+from scout.utils.vcf import build_vcf_header, validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -149,14 +152,15 @@ def managed(
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
-
     elif liftover_from:
         valid_lines = liftover_managed_variants(
             managed_variants=variants, liftover_from=liftover_from
         )
     else:
-        vcf_header = VCF_HEADER
-        vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+        argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+        vcf_header = build_vcf_header(
+            build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+        )
 
         valid_lines = []
 
@@ -187,7 +191,6 @@ def causatives(
 
     If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix
     """
-
     LOG.info("Running scout export variants")
     adapter = store
     LOG.info("Use collaborator %s", collaborator)
@@ -214,7 +217,10 @@ def causatives(
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     # If case_id is given, print more complete vcf entries, with INFO,
     # and genotypes
