@@ -7,8 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Contigs on exported variants VCF files (managed and causative variants) (#6310)
-### Changed
 - Display genome build on managed variants page (#6297)
+- INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 - Adding single managed variants with build 38 (#6300)

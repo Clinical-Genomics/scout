@@ -153,7 +153,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     valid_lines = []
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, build=build)
+        variant_string = get_vcf_entry(variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"})
         if variant_string:
             valid_lines.append(variant_string)
 
@@ -222,13 +222,15 @@ def causatives(
         click.echo(line)
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
+        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVES"})
         click.echo(variant_string)
 
 
-def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:
+def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37", info_tags: dict) -> str:
     """
     Get vcf entry from variant object
+
+    Add any additional INFO tags in a dict info_tags.
     """
 
     pos = variant_obj["position"]
@@ -242,6 +244,9 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> 
         info_field = f"{var_type}={subcat}"
     else:
         info_field = f"END={end};{var_type}={subcat}"
+
+    for key, value in info_tags.items():
+        info_field += f";{key}={value}"
 
     ref = variant_obj.get("reference") or "N"
     if ref == ".":
