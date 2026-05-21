@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Set
+from typing import Dict, List, Optional, Set
 
 import intervaltree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
@@ -250,19 +250,7 @@ class GeneHandler(object):
             self.hgnc_collection.drop()
 
     def hgncid_to_gene(self, build: str, genes: Optional[List[dict]] = None) -> Dict[int, dict]:
-        """Return a dictionary with hgnc_id as key and gene_obj as value
-
-        The result will have ONE entry for each gene in the database.
-        (For a specific build)
-
-        Args:
-            build(str):
-            genes(iterable(scout.models.HgncGene)):
-
-        Returns:
-            hgnc_dict(dict): {<hgnc_id(int)>: <gene(dict)>}
-
-        """
+        """Return a dictionary with hgnc_id as key and gene_obj as value."""
         hgnc_dict = {}
         LOG.info("Building hgncid_to_gene")
         if not genes:
