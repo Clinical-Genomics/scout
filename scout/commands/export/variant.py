@@ -2,6 +2,8 @@ import datetime
 import json as json_lib
 import logging
 import os
+import sys
+from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Tuple
 
 import click
@@ -17,7 +19,7 @@ from scout.export.variant import (
 )
 from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
-from scout.utils.vcf import validate_vcf_line
+from scout.utils.vcf import build_vcf_header, validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -142,8 +144,10 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     valid_lines = []
 
@@ -187,8 +191,8 @@ def resolve_case(
 
 def print_vcf(
     causatives: Iterable[Dict[str, Any]],
-    case_id: Optional[str],
     build: str,
+    argv: List[str],
     case_obj: Optional[Dict[str, Any]],
 ) -> None:
     """
@@ -197,14 +201,16 @@ def print_vcf(
     If a case_id is provided, the VCF header is extended with FORMAT
     and per-individual genotype columns.
     """
-    header = VCF_HEADER.copy()
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
-    if case_id:
-        header[-1] += "\tFORMAT"
+    if case_obj:
+        vcf_header[-1] += "\tFORMAT"
         for ind in case_obj["individuals"]:
-            header[-1] += "\t" + ind["individual_id"]
+            vcf_header[-1] += "\t" + ind["individual_id"]
 
-    for line in header:
+    for line in vcf_header:
         click.echo(line)
 
     for v in causatives:
@@ -286,7 +292,8 @@ def causatives(
             click.echo(line)
         return
 
-    print_vcf(causatives, case_id, build, case_obj)
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    print_vcf(causatives=causatives, build=build, argv=argv, case_obj=case_obj)
 
 
 def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:
