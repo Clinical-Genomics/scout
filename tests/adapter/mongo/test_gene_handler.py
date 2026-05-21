@@ -380,7 +380,7 @@ def test_hgncid_to_gene(adapter):
     assert sum(1 for _ in res) == 2
 
     ##THEN assert that the correct number of genes where fetched
-    res = adapter.hgncid_to_gene()
+    res = adapter.hgncid_to_gene(build="37")
     assert gene_obj["hgnc_id"] in res
     assert gene_obj2["hgnc_id"] in res
 
