@@ -249,7 +249,7 @@ class GeneHandler(object):
             LOG.info("Dropping the hgnc_gene collection")
             self.hgnc_collection.drop()
 
-    def hgncid_to_gene(self, build="37", genes=None):
+    def hgncid_to_gene(self, build: str, genes: Optional[List[dict]] = None) -> Dict[int, dict]:
         """Return a dictionary with hgnc_id as key and gene_obj as value
 
         The result will have ONE entry for each gene in the database.
