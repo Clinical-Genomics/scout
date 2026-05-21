@@ -13,7 +13,7 @@ from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
-from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_causative_variants,
     export_managed_variants,
