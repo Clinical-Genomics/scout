@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- On variant page, matching causatives expandable div, display status and status tags from matching causatives' case ()
 ### Changed
 - Display genome build on managed variants page (#6297)
 ### Fixed
