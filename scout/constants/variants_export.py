@@ -55,6 +55,7 @@ VCF_HEADER = [
     '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">',
     '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">',
     '##INFO=<ID=TYPE,Number=1,Type=String,Description="Type of variant">',
+    '##INFO=<ID=EXPORT_CATEGORY,Number=1,Type=String,Description="Type of Scout variant export - MANAGED, CAUSATIVE">',
     '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">',
 ]
 
