@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 from flask import current_app
@@ -153,8 +153,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     valid_lines = []
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"})
-        if variant_string:
+        if variant_string := get_vcf_entry(
+            variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"}
+        ):
             valid_lines.append(variant_string)
 
     for line in vcf_header:
@@ -222,11 +223,15 @@ def causatives(
         click.echo(line)
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVES"})
-        click.echo(variant_string)
+        if variant_string := get_vcf_entry(
+            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVES"}
+        ):
+            click.echo(variant_string)
 
 
-def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37", info_tags: dict) -> str:
+def get_vcf_entry(
+    variant_obj: dict, case_id: str = None, build: str = "37", info_tags: Optional[dict] = None
+) -> str | None:
     """
     Get vcf entry from variant object
 
@@ -245,7 +250,7 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37", inf
     else:
         info_field = f"END={end};{var_type}={subcat}"
 
-    for key, value in info_tags.items():
+    for key, value in info_tags.items() if info_tags else {}:
         info_field += f";{key}={value}"
 
     ref = variant_obj.get("reference") or "N"
