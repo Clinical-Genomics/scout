@@ -2,9 +2,12 @@ import datetime
 import json as json_lib
 import logging
 import os
+import sys
+from pathlib import Path
 from typing import Tuple
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -142,7 +145,10 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = build_vcf_header(build=build, contains_date=True)
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     valid_lines = []
 
@@ -173,7 +179,6 @@ def causatives(
 
     If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix
     """
-
     LOG.info("Running scout export variants")
     adapter = store
     LOG.info("Use collaborator %s", collaborator)
@@ -200,7 +205,10 @@ def causatives(
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = build_vcf_header(build=build, contains_date=True)
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     # If case_id is given, print more complete vcf entries, with INFO,
     # and genotypes

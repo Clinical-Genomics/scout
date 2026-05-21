@@ -225,14 +225,28 @@ def normalize_chrom(chrom: str, build: str) -> str:
     return chrom
 
 
-def build_vcf_header(build: str, contains_date: bool = False) -> List[str]:
+def build_vcf_header(
+    build: str,
+    contains_date: bool = False,
+    argv: Optional[List[str]] = None,
+    source: Optional[str] = None,
+) -> List[str]:
     """Create the VCF header used when exporting variants from the CLI."""
 
     lengths_build = "37" if build == "37" else "38"
     vcf_header = VCF_HEADER
 
+    add_line = 2
     if contains_date:
-        vcf_header.insert(2, "##fileDate={}".format(datetime.now()))
+        vcf_header.insert(add_line, "##fileDate={}".format(datetime.now()))
+        add_line += 1
+
+    if argv:
+        vcf_header.insert(add_line, "##commandline={}".format(" ".join(argv)))
+        add_line += 1
+
+    if source:
+        vcf_header.insert(add_line, "##source={}".format(source))
 
     for chrom, length in CONTIG_LENGTHS[lengths_build].items():
         chrom_name = normalize_chrom(chrom, build)
