@@ -632,6 +632,8 @@ class VariantHandler(VariantLoader):
             "display_name": 1,
             "owner": 1,
             "partial_causatives": 1,
+            "status": 1,
+            "tags": 1,
         }
         yielded_other_causative_ids = []
         for var_event in var_causative_events:
@@ -661,6 +663,8 @@ class VariantHandler(VariantLoader):
                     "institute_id": other_case["owner"],
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
+                    "case_tags": other_case.get("tags", []),
+                    "case_status": other_case.get("status"),
                 }
                 yielded_other_causative_ids.append(other_causative_id)
                 yield other_causative
