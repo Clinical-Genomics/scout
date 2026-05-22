@@ -130,7 +130,9 @@ def verified(collaborator, test, outpath=None):
     help="Perform liftover on coordinates and export as managed variants infile.",
 )
 @with_appcontext
-def managed(collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]):
+def managed(
+    collaborator: str, category: Tuple[str], build: str, json: bool, liftover_from: Optional[str]
+):
     """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -147,7 +149,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool, lif
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    print_vcf(variants=variants, build=build, export_category="MANAGED", liftover_from=liftover_from)
+    print_vcf(
+        variants=variants, build=build, export_category="MANAGED", liftover_from=liftover_from
+    )
 
 
 def resolve_case(
