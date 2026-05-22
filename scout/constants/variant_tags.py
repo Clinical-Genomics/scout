@@ -661,6 +661,7 @@ CALLERS = {
         {"id": "gcnvcaller", "name": "GATK GermlineCNV"},
         {"id": "hificnv", "name": "HiFiCNV"},
         _MANTA,
+        {"id": "mitosalt", "name": "MitoSAlt/SAltShaker"},
         {"id": "severus", "name": "Severus"},
         {"id": "sniffles", "name": "Sniffles"},
         _TIDDIT,
