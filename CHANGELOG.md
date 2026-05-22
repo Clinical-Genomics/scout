@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 - On variant page, matching causatives expandable div, display status and status tags from matching causatives' case (#6315)
 - Clearer logs reporting case ID when variant loading fails (#6329)
+- Export causatives to managed variants infile via CLI, filtering variants by date (#6290)
 - MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
 ### Changed
 - Display genome build on managed variants page (#6297)
@@ -20,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
 - "likely benign" classification overwrites "benign" for ACMG (#6325)
 - Show pending comments for gene panels (#6327)
+- Loading of variants defaulting to build 37 whenever genomic build is not passed to the loader function (#6331)
 
 ## [4.111.3]
 ### Fixed
