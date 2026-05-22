@@ -553,8 +553,8 @@ class VariantHandler(VariantLoader):
 
         variant_to_case = {}
         causative_ids = set()
-        for case_event in causative_events:
-            case_obj = self.case(case_event.get("case"), projection=CASE_CAUSATIVES_PROJECTION)
+        for case_obj in cases:
+
             if case_obj is None or build and get_case_genome_build(case_obj) != build:
                 continue
 
