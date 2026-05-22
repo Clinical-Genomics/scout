@@ -257,7 +257,7 @@ def causatives(
     - Managed variants infile (--as-managed with --managed-link-base-url)
     - VCF (default)
 
-    Data can be filtered by:
+    Data can be queried by:
     - collaborator (institute)
     - case ID (optional; overrides collaborator owner if provided)
     - document ID
