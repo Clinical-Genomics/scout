@@ -1,7 +1,12 @@
 import logging
 import re
+import sys
 from datetime import datetime
-from typing import List, Optional
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional
+
+import click
+from flask import current_app
 
 from scout.constants.variants_export import CONTIG_LENGTHS, VCF_HEADER
 
@@ -256,3 +261,100 @@ def build_vcf_header(
     vcf_header.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO")
 
     return vcf_header
+
+
+def print_vcf(
+    variants: Iterable[Dict[str, Any]],
+    build: str,
+    export_category: str,
+    case_obj: Optional[Dict[str, Any]],
+) -> None:
+    """
+    Print causative variants in VCF format.
+
+    If a case_id is provided, the VCF header is extended with FORMAT
+    and per-individual genotype columns.
+    """
+
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
+
+    if case_obj:
+        header[-1] += "\tFORMAT"
+        for ind in case_obj["individuals"]:
+            header[-1] += "\t" + ind["individual_id"]
+
+    for line in header:
+        click.echo(line)
+
+    for variant_obj in variants:
+        if variant_string := get_vcf_entry(
+            variant_obj,
+            case_id=case_obj["_id"] if case_obj else None,
+            build=build,
+            info_tags={"EXPORT_CATEGORY": export_category},
+        ):
+            click.echo(variant_string)
+
+
+def get_vcf_entry(
+    variant_obj: dict, case_id: str = None, build: str = "37", info_tags: Optional[dict] = None
+) -> str | None:
+    """
+    Get vcf entry from variant object
+
+    Add any additional INFO tags in a dict info_tags.
+    """
+
+    pos = variant_obj["position"]
+    end = variant_obj.get("end") or pos
+    category = variant_obj["category"]
+    subcat = variant_obj["sub_category"].upper()
+    var_type = "TYPE" if category in ["snv", "cancer"] else "SVTYPE"
+
+    # Build INFO field
+    if category in ["snv", "cancer"] and not variant_obj.get("end"):
+        info_field = f"{var_type}={subcat}"
+    else:
+        info_field = f"END={end};{var_type}={subcat}"
+
+    for key, value in info_tags.items() if info_tags else {}:
+        info_field += f";{key}={value}"
+
+    ref = variant_obj.get("reference") or "N"
+    if ref == ".":
+        ref = "N"
+
+    alt = variant_obj.get("alternative") or "N"
+    if alt in [".", "-", variant_obj["sub_category"]]:
+        alt = f"<{subcat}>" if category == "sv" else "N"
+
+    chrom = variant_obj["chromosome"]
+    if build == "GRCh38":
+        chrom = variant_obj["chromosome"]
+        if chrom == "MT":
+            chrom = "M"
+        chrom = "".join(["chr", chrom])
+
+    filters = ";".join(variant_obj.get("filters", [])) or "."
+    vcf_fields = [
+        chrom,
+        str(pos),
+        variant_obj.get("dbsnp_id", ".") or ".",
+        ref,
+        alt,
+        str(variant_obj.get("quality", ".") or "."),
+        filters,
+        info_field,
+    ]
+
+    if case_id and variant_obj.get("samples"):
+        vcf_fields.append("GT")
+        vcf_fields.extend(sample["genotype_call"] for sample in variant_obj["samples"])
+
+    variant_string = "\t".join(vcf_fields)
+
+    if validate_vcf_line(var_type=var_type, line=variant_string)[0]:
+        return variant_string
