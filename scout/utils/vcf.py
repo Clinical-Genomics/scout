@@ -267,7 +267,7 @@ def print_vcf(
     variants: Iterable[Dict[str, Any]],
     build: str,
     export_category: str,
-    case_obj: Optional[Dict[str, Any]],
+    case_obj: Optional[Dict[str, Any]] = None,
 ) -> None:
     """
     Print variants in VCF format.

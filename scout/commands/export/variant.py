@@ -145,24 +145,7 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
-    vcf_header = build_vcf_header(
-        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
-    )
-
-    valid_lines = []
-
-    for variant_obj in variants:
-        if variant_string := get_vcf_entry(
-            variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"}
-        ):
-            valid_lines.append(variant_string)
-
-    for line in vcf_header:
-        click.echo(line)
-
-    for valid_line in valid_lines:
-        click.echo(valid_line)
+    print_vcf(variants=variants, build=build, export_category="MANAGED")
 
 
 def resolve_case(
