@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# stdlib modules
 import logging
 import sys
 from datetime import datetime
@@ -29,6 +28,7 @@ from scout.parse.variant.headers import (
 )
 from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.server.utils import get_case_genome_build
 from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
@@ -376,7 +376,7 @@ class VariantLoader(object):
         individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
         local_archive_info contains info about the local archive used for annotation.
         """
-        build = build or "37"
+        build = build or get_case_genome_build(case_obj)
 
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()

@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Paraphase region names alphabetically sorted on SMN/Dark regions page (#6301)
 - Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
 - "likely benign" classification overwrites "benign" for ACMG (#6325)
+- Loading of variants within genomic regions or genes always attempted using genome build 37, even if case is analysed using build 38 ()
 
 ## [4.111.3]
 ### Fixed
