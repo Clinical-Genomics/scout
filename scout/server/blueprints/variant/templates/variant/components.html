@@ -325,10 +325,17 @@
                               case_name=other_variant.case_display_name,
                               variant_id=other_variant._id) }}" target="_blank">
             {{ other_variant.case_display_name }}
-          </a>&nbsp;
+          </a>
           {% if other_variant.partial %}
             <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
           {% endif %}
+          <span class="badge bg-{{ 'success' if other_variant.case_status == 'solved' else 'secondary' }}">
+            {{ other_variant.case_status }}
+          </span>
+          {% for tag in other_variant.case_tags or [] %}
+            <span class="badge bg-secondary">{{ tag }}</span>
+          {% endfor %}
+          &nbsp;-&nbsp;
         {% endfor %}
       </div> <!--end of card body-->
     </div><!--end of card-->
