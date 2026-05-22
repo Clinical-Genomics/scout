@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
 - "likely benign" classification overwrites "benign" for ACMG (#6325)
 - Show pending comments for gene panels (#6327)
+- Loading of variants defaulting to build 37 whenever genomic build is not passed to the loader function (#6331)
 
 ## [4.111.3]
 ### Fixed
