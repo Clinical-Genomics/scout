@@ -8,16 +8,17 @@ import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.constants import CALLERS, DATE_DAY_FORMATTER
+from scout.constants import BUILDS, CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
+    export_lift_over_managed_variants,
     export_managed_variants,
     export_verified_variants,
 )
 from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
-from scout.utils.vcf import build_vcf_header, print_vcf, validate_vcf_line
+from scout.utils.vcf import print_vcf
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -148,10 +149,13 @@ def managed(
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
+    if liftover_from:
+        lines = export_lift_over_managed_variants(
+            managed_variants=variants, liftover_from=liftover_from
+        )
+        return
 
-    print_vcf(
-        variants=variants, build=build, export_category="MANAGED", liftover_from=liftover_from
-    )
+    print_vcf(variants=variants, build=build, export_category="MANAGED")
 
 
 def resolve_case(

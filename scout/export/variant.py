@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import Iterable, List, Optional
+from typing import Iterable, List
 
+import click
 import requests
 
 from scout.adapter.mongo.base import MongoAdapter
@@ -25,8 +26,8 @@ def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     return sorted(variants, key=sort_key)
 
 
-def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) -> List[str]:
-    """Perform liftover over a list of managed variants and return a list of lines formatted as a managed variants upload infile."""
+def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from: str):
+    """Perform liftover over a list of managed variants and print a list of lines formatted as a managed variants upload infile."""
 
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     LIFTOVER_API_URL = "https://liftover-xwkwwwxdwq-uc.a.run.app/liftover/"
@@ -88,6 +89,8 @@ def liftover_managed_variants(managed_variants: Iterable, liftover_from: str) ->
         )
 
     LOG.info(f"Done. Total processed: {i} - total failed: {nfailed}")
+    for line in export_lines:
+        click.echo(line)
     return export_lines
 
 
