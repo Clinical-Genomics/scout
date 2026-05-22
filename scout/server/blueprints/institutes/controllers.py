@@ -163,7 +163,12 @@ def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
     return variant_obj
 
 
-def variants_to_managed_variants(variants: list[dict], type: str, institute_id: str) -> list[str]:
+def variants_to_managed_variants(
+    variants: list[dict],
+    type: str,
+    institute_id: Optional[str] = None,
+    base_url: Optional[str] = None,
+) -> list[str]:
     """Converts variants to managed input."""
 
     valid_categories = {
@@ -186,14 +191,20 @@ def variants_to_managed_variants(variants: list[dict], type: str, institute_id: 
         alt = variant.get("alternative")
         sub_category = variant.get("sub_category")
         build = variant.get("case_obj", {}).get("genome_build", "37")
+        institute_id = institute_id or variant.get("institute")
 
-        variant_href = url_for(
-            valid_categories[category],
-            institute_id=institute_id,
-            case_name=variant["case_obj"]["display_name"],
-            variant_id=variant["_id"],
-            _external=True,
-        )
+        if base_url:
+            variant_href = (
+                f"{base_url}/{institute_id}/{variant['case_obj']['display_name']}/{variant['_id']}"
+            )
+        else:
+            variant_href = url_for(
+                valid_categories[category],
+                institute_id=institute_id,
+                case_name=variant["case_obj"]["display_name"],
+                variant_id=variant["_id"],
+                _external=True,
+            )
         pretty_variant_name = current_app.custom_filters.pretty_variant(variant)
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
         description = f"{link} ({type},{institute_id},build{build})"
