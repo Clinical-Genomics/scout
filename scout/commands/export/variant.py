@@ -203,7 +203,11 @@ def print_vcf(
     If a case_id is provided, the VCF header is extended with FORMAT
     and per-individual genotype columns.
     """
-    header = VCF_HEADER.copy()
+
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     if case_id:
         header[-1] += "\tFORMAT"
