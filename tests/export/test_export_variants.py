@@ -4,7 +4,7 @@ import responses
 
 from scout.constants.managed_variant import MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.variants_export import MT_EXPORT_HEADER
-from scout.export.variant import export_mt_variants, liftover_managed_variants
+from scout.export.variant import export_mt_variants
 from scout.utils.ensembl_rest_clients import RESTAPI_URL
 
 
