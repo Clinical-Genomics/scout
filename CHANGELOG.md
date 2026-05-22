@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Contigs on exported variants VCF files (managed and causative variants) (#6310)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
+- On variant page, matching causatives expandable div, display status and status tags from matching causatives' case (#6315)
 ### Changed
 - Display genome build on managed variants page (#6297)
 - Improve causatives page performance by removing duplicate case query (#6312)
