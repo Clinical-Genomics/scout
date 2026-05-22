@@ -215,7 +215,7 @@ def causatives(
     - variant age (--within-days)
 
     If a case ID is provided, its owner is used as the collaborator.
-    For GRCh38 builds, variants are queried using build "38".
+    For GRCh38 builds, variants are queried using build "38" and then printed with prefix "chr".
     """
     LOG.info("Running scout export variants")
     adapter = store
