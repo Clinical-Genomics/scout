@@ -539,23 +539,33 @@ class VariantHandler(VariantLoader):
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             query["created_at"] = {"$gte": days_datetime}
 
-        causative_events = self.event_collection.find(query)
+        case_ids = self.event_collection.distinct(
+            "case",
+            {
+                "institute": institute_obj["_id"],
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "case",
+            },
+        )
+        cases = self.case_collection.find(
+            {"_id": {"$in": case_ids}}, projection=CASE_CAUSATIVES_PROJECTION
+        )
 
+        variant_to_case = {}
         causative_ids = set()
         for case_event in causative_events:
             case_obj = self.case(case_event.get("case"), projection=CASE_CAUSATIVES_PROJECTION)
             if case_obj is None or build and get_case_genome_build(case_obj) != build:
                 continue
 
-        for case in cases:
-            causatives = case.get("causatives", [])
-            partials = case.get("partial_causatives", {})
+            causatives = case_obj.get("causatives", [])
+            partials = case_obj.get("partial_causatives", {})
 
-            all_vars = list(causatives) + list(partials.keys())
+            all_causatives = list(causatives) + list(partials.keys())
 
-            for vid in all_vars:
-                causative_ids.add(vid)
-                variant_to_case[vid] = case
+            for var_id in all_causatives:
+                causative_ids.add(var_id)
+                variant_to_case[var_id] = case_obj
 
         filters = {"_id": {"$in": list(causative_ids)}}
         if category:
