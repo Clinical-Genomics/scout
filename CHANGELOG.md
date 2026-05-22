@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 - On variant page, matching causatives expandable div, display status and status tags from matching causatives' case (#6315)
 - Clearer logs reporting case ID when variant loading fails (#6329)
+- MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
 ### Changed
 - Display genome build on managed variants page (#6297)
 ### Fixed
