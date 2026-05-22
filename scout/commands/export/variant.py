@@ -264,12 +264,4 @@ def causatives(
             click.echo(line)
         return
 
-    # If case_id is given, print more complete vcf entries, with INFO,
-    # and genotypes
-    if case_id:
-        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
-        case_obj = adapter.case(case_id=case_id)
-        for individual in case_obj["individuals"]:
-            vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
-
     print_vcf(variants=causatives, build=build, export_category="CAUSATIVE", case_obj=case_obj)

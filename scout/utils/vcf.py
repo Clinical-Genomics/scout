@@ -270,7 +270,7 @@ def print_vcf(
     case_obj: Optional[Dict[str, Any]],
 ) -> None:
     """
-    Print causative variants in VCF format.
+    Print variants in VCF format.
 
     If a case_id is provided, the VCF header is extended with FORMAT
     and per-individual genotype columns.
