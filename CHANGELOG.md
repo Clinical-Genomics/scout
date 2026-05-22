@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 - On variant page, matching causatives expandable div, display status and status tags from matching causatives' case (#6315)
 - Clearer logs reporting case ID when variant loading fails (#6329)
+- Export causatives to managed variants infile via CLI, filtering variants by date (#6290)
 ### Changed
 - Display genome build on managed variants page (#6297)
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
