@@ -64,9 +64,11 @@ def parse_variant(
     chrom_match = CHR_PATTERN.match(variant.CHROM)
     chrom = chrom_match.group(2)
 
-    ### We always assume split and normalized vcfs!!!
+    ### We always assume split and normalized VCFs!!!
     if len(variant.ALT) > 1:
-        raise VcfError("Variants are only allowed to have one alternative")
+        raise VcfError(
+            f"Error parsing variants from case {case_id}: variants are only allowed to have one alternative."
+        )
 
     # Builds a dictionary with the different ids that are used
     parsed_variant = {

@@ -100,7 +100,7 @@ class VariantLoader(object):
             try:
                 self.variant_collection.bulk_write(requests, ordered=False)
             except BulkWriteError as err:
-                LOG.warning("Updating variant rank failed")
+                LOG.warning(f"Updating variants rank from {case_obj['_id']} failed")
                 raise err
 
         LOG.info("Updating variant_rank done")
@@ -785,7 +785,9 @@ class VariantLoader(object):
                     genomic_intervals=genomic_intervals,
                 )
             except Exception as error:
-                LOG.exception("unexpected error")
+                LOG.exception(
+                    f"Unexpected error while loading variants from case {case_obj['_id']}"
+                )
                 LOG.warning("Deleting inserted variants")
                 self.delete_variants(case_obj["_id"], variant_type)
                 raise error
