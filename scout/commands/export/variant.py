@@ -2,22 +2,25 @@ import datetime
 import json as json_lib
 import logging
 import os
-from typing import Tuple
+import sys
+from pathlib import Path
+from typing import Optional, Tuple
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
-from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_causative_variants,
     export_managed_variants,
     export_verified_variants,
 )
 from scout.server.extensions import store
-from scout.utils.vcf import validate_vcf_line
+from scout.utils.vcf import build_vcf_header, validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -142,14 +145,17 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     valid_lines = []
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, build=build)
-        if variant_string:
+        if variant_string := get_vcf_entry(
+            variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"}
+        ):
             valid_lines.append(variant_string)
 
     for line in vcf_header:
@@ -174,7 +180,6 @@ def causatives(
 
     If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix
     """
-
     LOG.info("Running scout export variants")
     adapter = store
     LOG.info("Use collaborator %s", collaborator)
@@ -201,7 +206,10 @@ def causatives(
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    vcf_header = VCF_HEADER
+    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
+    vcf_header = build_vcf_header(
+        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
+    )
 
     # If case_id is given, print more complete vcf entries, with INFO,
     # and genotypes
@@ -215,13 +223,19 @@ def causatives(
         click.echo(line)
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, case_id=case_id, build=build)
-        click.echo(variant_string)
+        if variant_string := get_vcf_entry(
+            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVE"}
+        ):
+            click.echo(variant_string)
 
 
-def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:
+def get_vcf_entry(
+    variant_obj: dict, case_id: str = None, build: str = "37", info_tags: Optional[dict] = None
+) -> str | None:
     """
     Get vcf entry from variant object
+
+    Add any additional INFO tags in a dict info_tags.
     """
 
     pos = variant_obj["position"]
@@ -235,6 +249,9 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> 
         info_field = f"{var_type}={subcat}"
     else:
         info_field = f"END={end};{var_type}={subcat}"
+
+    for key, value in info_tags.items() if info_tags else {}:
+        info_field += f";{key}={value}"
 
     ref = variant_obj.get("reference") or "N"
     if ref == ".":

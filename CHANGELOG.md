@@ -6,7 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Contigs on exported variants VCF files (managed and causative variants) (#6326)
+- INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
 - Plain snp rsID link to LitVar (#6291)
+### Changed
+- Display genome build on managed variants page (#6297)
+### Fixed
+- Compress demo case rnafusion VCF and add an index (#6292)
+- Adding single managed variants with build 38 (#6300)
+- Paraphase region names alphabetically sorted on SMN/Dark regions page (#6301)
+- Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
+- "likely benign" classification overwrites "benign" for ACMG (#6325)
 
 ## [4.111.3]
 ### Fixed

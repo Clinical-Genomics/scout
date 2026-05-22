@@ -395,6 +395,12 @@ def test_get_acmg_pathogenic():
     assert res == "pathogenic"
 
 
+def test_get_acmg_benign():
+    acmg_terms = {"BS1", "BS2", "BP4"}
+    res = get_acmg(acmg_terms)
+    assert res == "benign"
+
+
 def test_get_acmg_modifier():
     acmg_terms = {"PVS1", "PS1"}
     res = get_acmg(acmg_terms)
