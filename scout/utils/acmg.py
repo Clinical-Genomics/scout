@@ -271,7 +271,7 @@ def get_acmg(acmg_terms: set) -> Optional[str]:
     else:
         if benign:
             prediction = "benign"
-        if likely_benign:
+        elif likely_benign:
             prediction = "likely_benign"
 
     return prediction
