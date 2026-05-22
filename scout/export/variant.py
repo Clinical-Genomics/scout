@@ -11,46 +11,6 @@ from scout.models.managed_variant import ManagedVariant
 LOG = logging.getLogger(__name__)
 
 
-def export_causative_variants(
-    adapter: MongoAdapter,
-    collaborator: Optional[str] = None,
-    document_id: Optional[str] = None,
-    case_id: str = None,
-    build: Optional[str] = None,
-    category: Optional[str] = None,
-) -> dict:
-    """Export causative variants for a collaborator.
-
-    A collaborator institute is required to narrow the export.
-    Given a document_id, yields that particular document.
-
-    Given a case id, narrows causatives search to that collaborator and case.
-
-    Yields dict variant objects (scout.Models.Variant) sorted by chromosome and position.
-    """
-
-    # Store the variants in a list for sorting
-    variants = []
-    if document_id:
-        yield adapter.variant(document_id)
-        return
-
-    variant_ids = adapter.get_causatives(institute_id=collaborator, case_id=case_id, build=build)
-
-    for doc_id in variant_ids:
-        variant_obj = adapter.variant(doc_id)
-        if variant_obj is None:
-            continue
-        if category and variant_obj.get("category") not in category:
-            continue
-        variants.append(variant_obj)
-
-    sorted_variants = _sort_variants_by_chromosome(variants)
-
-    for variant in sorted_variants:
-        yield variant
-
-
 def _sort_variants_by_chromosome(variants: List[dict]) -> List[dict]:
     """Return a new list of managed variants sorted like Mongo sort(chromosome, position)."""
 
