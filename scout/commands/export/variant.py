@@ -250,7 +250,7 @@ def causatives(
     within_days: int | None,
 ):
     """
-    Export causative variants for one or more collaborators and/or cases.
+    Export causative variants. You can select causatives on variant document id or case id or search by collaborator, category or variant age.
 
     Supports multiple output formats:
     - JSON (--json)
