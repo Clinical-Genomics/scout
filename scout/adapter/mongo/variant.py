@@ -517,7 +517,7 @@ class VariantHandler(VariantLoader):
         category: Optional[str] = None,
         within_days: Optional[int] = None,
     ) -> pymongo.cursor.Cursor:
-        """Return all causative variants for an institute - conditionally within the provided list of genes"""
+        """Return all causative variants for an institute - conditionally within the provided list of genes, case_id, genome build, category, and withing a time range."""
         query = {
             "institute": institute_obj["_id"],
             "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
