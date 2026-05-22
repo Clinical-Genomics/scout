@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import click
 from flask import current_app
@@ -13,7 +13,7 @@ from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
-from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
     export_managed_variants,
     export_verified_variants,
@@ -153,8 +153,9 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
     valid_lines = []
 
     for variant_obj in variants:
-        variant_string = get_vcf_entry(variant_obj, build=build)
-        if variant_string:
+        if variant_string := get_vcf_entry(
+            variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"}
+        ):
             valid_lines.append(variant_string)
 
     for line in vcf_header:
@@ -212,8 +213,11 @@ def print_vcf(
     for line in header:
         click.echo(line)
 
-    for v in causatives:
-        click.echo(get_vcf_entry(v, case_id=case_id, build=build))
+    for variant_obj in causatives:
+        if variant_string := get_vcf_entry(
+            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVE"}
+        ):
+            click.echo(variant_string)
 
 
 @click.command("causatives", short_help="Export causative variants")
@@ -305,9 +309,13 @@ def causatives(
     print_vcf(causatives, case_id, build, case_obj)
 
 
-def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> str:
+def get_vcf_entry(
+    variant_obj: dict, case_id: str = None, build: str = "37", info_tags: Optional[dict] = None
+) -> str | None:
     """
     Get vcf entry from variant object
+
+    Add any additional INFO tags in a dict info_tags.
     """
 
     pos = variant_obj["position"]
@@ -321,6 +329,9 @@ def get_vcf_entry(variant_obj: dict, case_id: str = None, build: str = "37") -> 
         info_field = f"{var_type}={subcat}"
     else:
         info_field = f"END={end};{var_type}={subcat}"
+
+    for key, value in info_tags.items() if info_tags else {}:
+        info_field += f";{key}={value}"
 
     ref = variant_obj.get("reference") or "N"
     if ref == ".":
