@@ -236,7 +236,7 @@ def print_vcf(
     "--managed-link-base-url",
     help="Export to managed variants infile, with full link to the variant",
 )
-@click.option("--within-days", type=int, help="Days since event event occurred")
+@click.option("--within-days", type=int, help="Days since mark causative event occurred")
 @with_appcontext
 def causatives(
     build: str,
