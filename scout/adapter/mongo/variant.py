@@ -8,6 +8,8 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 # Third party modules
 import pymongo
 
+from scout.server.utils import get_case_genome_build
+
 # Local modules
 from scout.utils.coordinates import is_par
 from scout.utils.md5 import generate_md5_key
