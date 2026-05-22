@@ -6,9 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Contigs on exported variants VCF files (managed and causative variants) (#6326)
+- Contigs on exported variants VCF files (managed and causative variants) (#6310)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
-- Plain snp rsID link to LitVar (#6291)
+- Plain snp rsID link to LitVar (#6326)
 ### Changed
 - Display genome build on managed variants page (#6297)
 ### Fixed
