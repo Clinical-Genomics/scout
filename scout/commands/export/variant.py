@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import click
 from flask import current_app
@@ -15,12 +15,12 @@ from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.managed_variant import MANAGED_CATEGORIES
 from scout.constants.variants_export import VERIFIED_VARIANTS_HEADER
 from scout.export.variant import (
-    export_causative_variants,
     export_managed_variants,
     export_verified_variants,
 )
+from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
-from scout.utils.vcf import build_vcf_header, validate_vcf_line
+from scout.utils.vcf import build_vcf_header, print_vcf, validate_vcf_line
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
@@ -145,24 +145,33 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
-    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
-    vcf_header = build_vcf_header(
-        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
-    )
+    print_vcf(variants=variants, build=build, export_category="MANAGED")
 
-    valid_lines = []
 
-    for variant_obj in variants:
-        if variant_string := get_vcf_entry(
-            variant_obj, build=build, info_tags={"EXPORT_CATEGORY": "MANAGED"}
-        ):
-            valid_lines.append(variant_string)
+def resolve_case(
+    adapter: Any,
+    case_id: Optional[str],
+    collaborator: str,
+) -> Tuple[str, Optional[Dict[str, Any]]]:
+    """
+    Resolve the effective collaborator and optional case object.
 
-    for line in vcf_header:
-        click.echo(line)
+    If case_id is provided, the case is fetched and its owner is used
+    as the collaborator. If the case does not exist, the command aborts.
 
-    for valid_line in valid_lines:
-        click.echo(valid_line)
+    Returns:
+        Tuple of (collaborator, case object or None)
+    """
+    if not case_id:
+        LOG.info("Use collaborator %s", collaborator)
+        return collaborator, None
+
+    case_obj = adapter.case(case_id)
+    if not case_obj:
+        LOG.info("Case %s does not exist", case_id)
+        raise click.Abort
+
+    return case_obj["owner"], case_obj
 
 
 @click.command("causatives", short_help="Export causative variants")
@@ -172,119 +181,70 @@ def managed(collaborator: str, category: Tuple[str], build: str, json: bool):
 @click.option("-d", "--document-id", help="Search for a specific variant")
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
+@click.option("--as-managed", is_flag=True, help="Export to managed variants infile")
+@click.option(
+    "--managed-link-base-url",
+    help="Export to managed variants infile, with full link to the variant",
+)
+@click.option("--within-days", type=int, help="Days since mark causative event occurred")
 @with_appcontext
 def causatives(
-    build: str, collaborator: str, category: str, document_id: str, case_id: str, json: bool
+    build: str,
+    collaborator: str,
+    category: str,
+    document_id: str | None,
+    case_id: str | None,
+    json: bool,
+    as_managed: bool,
+    managed_link_base_url: str | None,
+    within_days: int | None,
 ):
-    """Export causatives for a collaborator in .vcf format
+    """
+    Export causative variants. You can select causatives on variant document id or case id or search by collaborator, category or variant age.
 
-    If build is 'GRCh38', retrieve variants in build 38, but print them with a chr prefix
+    Supports multiple output formats:
+    - JSON (--json)
+    - Managed variants infile (--as-managed with --managed-link-base-url)
+    - VCF (default)
+
+    Data can be queried by:
+    - collaborator (institute)
+    - case ID (optional; overrides collaborator owner if provided)
+    - document ID
+    - category
+    - variant age (--within-days)
+
+    If a case ID is provided, its owner is used as the collaborator.
+    For GRCh38 builds, variants are queried using build "38" and then printed with prefix "chr".
     """
     LOG.info("Running scout export variants")
     adapter = store
-    LOG.info("Use collaborator %s", collaborator)
-    if case_id:
-        case_obj = adapter.case(case_id)
-        if not case_obj:
-            LOG.info("Case %s does not exist", case_id)
-            raise click.Abort
 
-    genome_build = build
-    if build == "GRCh38":
-        genome_build = "38"
+    collaborator, case_obj = resolve_case(adapter, case_id, collaborator)
 
-    variants = export_causative_variants(
-        adapter,
-        collaborator,
+    build = "38" if build == "GRCh38" else build
+
+    causatives = adapter.get_causatives(
         document_id=document_id,
+        institute_id=collaborator,
         case_id=case_id,
-        build=genome_build,
+        build=build,
         category=category,
+        within_days=within_days,
     )
 
     if json:
-        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
+        click.echo(json_lib.dumps(list(causatives), default=bson_handler))
         return
 
-    argv = [Path(sys.argv[0]).name] + sys.argv[1:]
-    vcf_header = build_vcf_header(
-        build=build, contains_date=True, argv=argv, source=current_app.config["MONGO_DBNAME"]
-    )
-
-    # If case_id is given, print more complete vcf entries, with INFO,
-    # and genotypes
-    if case_id:
-        vcf_header[-1] = vcf_header[-1] + "\tFORMAT"
-        case_obj = adapter.case(case_id=case_id)
-        for individual in case_obj["individuals"]:
-            vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
-
-    for line in vcf_header:
-        click.echo(line)
-
-    for variant_obj in variants:
-        if variant_string := get_vcf_entry(
-            variant_obj, case_id=case_id, build=build, info_tags={"EXPORT_CATEGORY": "CAUSATIVE"}
+    if as_managed:
+        if not managed_link_base_url:
+            LOG.info("Please provide a value for --managed-link-base-url")
+            raise click.Abort
+        for line in variants_to_managed_variants(
+            variants=causatives, type="causatives", base_url=managed_link_base_url
         ):
-            click.echo(variant_string)
+            click.echo(line)
+        return
 
-
-def get_vcf_entry(
-    variant_obj: dict, case_id: str = None, build: str = "37", info_tags: Optional[dict] = None
-) -> str | None:
-    """
-    Get vcf entry from variant object
-
-    Add any additional INFO tags in a dict info_tags.
-    """
-
-    pos = variant_obj["position"]
-    end = variant_obj.get("end") or pos
-    category = variant_obj["category"]
-    subcat = variant_obj["sub_category"].upper()
-    var_type = "TYPE" if category in ["snv", "cancer"] else "SVTYPE"
-
-    # Build INFO field
-    if category in ["snv", "cancer"] and not variant_obj.get("end"):
-        info_field = f"{var_type}={subcat}"
-    else:
-        info_field = f"END={end};{var_type}={subcat}"
-
-    for key, value in info_tags.items() if info_tags else {}:
-        info_field += f";{key}={value}"
-
-    ref = variant_obj.get("reference") or "N"
-    if ref == ".":
-        ref = "N"
-
-    alt = variant_obj.get("alternative") or "N"
-    if alt in [".", "-", variant_obj["sub_category"]]:
-        alt = f"<{subcat}>" if category == "sv" else "N"
-
-    chrom = variant_obj["chromosome"]
-    if build == "GRCh38":
-        chrom = variant_obj["chromosome"]
-        if chrom == "MT":
-            chrom = "M"
-        chrom = "".join(["chr", chrom])
-
-    filters = ";".join(variant_obj.get("filters", [])) or "."
-    vcf_fields = [
-        chrom,
-        str(pos),
-        variant_obj.get("dbsnp_id", ".") or ".",
-        ref,
-        alt,
-        str(variant_obj.get("quality", ".") or "."),
-        filters,
-        info_field,
-    ]
-
-    if case_id and variant_obj.get("samples"):
-        vcf_fields.append("GT")
-        vcf_fields.extend(sample["genotype_call"] for sample in variant_obj["samples"])
-
-    variant_string = "\t".join(vcf_fields)
-
-    if validate_vcf_line(var_type=var_type, line=variant_string)[0]:
-        return variant_string
+    print_vcf(variants=causatives, build=build, export_category="CAUSATIVE", case_obj=case_obj)
