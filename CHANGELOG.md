@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adding single managed variants with build 38 (#6300)
 - Paraphase region names alphabetically sorted on SMN/Dark regions page (#6301)
 - Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
+- "likely benign" classification overwrites "benign" for ACMG (#6325)
 
 ## [4.111.3]
 ### Fixed
