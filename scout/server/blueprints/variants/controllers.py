@@ -2083,7 +2083,6 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = None
     case_obj = case_obj or {}
 
     genome_build = get_case_genome_build(case_obj)
