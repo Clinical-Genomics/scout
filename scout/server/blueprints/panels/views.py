@@ -121,8 +121,6 @@ def panels():
 
         panel_groups.append((institute_obj, filtered_panels))
 
-    form = PanelFilterForm(request.args)
-
     return dict(
         panel_groups=sorted(panel_groups, key=lambda x: x[0]["display_name"].lower()),
         panel_names=panel_names,
@@ -131,7 +129,7 @@ def panels():
         search_string=search_string,
         search_result=institute_panels_with_gene,
         search_gene_form=GeneSearchForm(),
-        panel_filter_form=form,
+        panel_filter_form=PanelFilterForm(request.args),
     )
 
 

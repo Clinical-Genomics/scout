@@ -35,7 +35,7 @@
           {{ panel_filter_form.searchName() }}
           <select id="instituteFilter" name="institute" class="form-select w-auto">
             <option value="">All institutes</option>
-            {% for institute, panels in panel_groups %}
+            {% for institute in institutes %}
               <option value="{{ institute._id }}"
                 {% if request.args.get('institute') == institute._id %}
                   selected
