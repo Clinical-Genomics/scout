@@ -43,7 +43,12 @@ class GeneSearchForm(FlaskForm):
     )
 
     submit = SubmitField(
-        "Search", render_kw={"value": "searchGeneSubmit", "label": "Search gene", "class": "btn btn-secondary"}
+        "Search",
+        render_kw={
+            "value": "searchGeneSubmit",
+            "label": "Search gene",
+            "class": "btn btn-secondary",
+        },
     )
 
 
