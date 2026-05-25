@@ -651,6 +651,9 @@
               <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }}">
                 {{ case.status }}
               </span>
+              {% for tag in case.tags or [] %}
+                <span class="badge bg-secondary">{{ tag }}</span>
+              {% endfor %}
               {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
                 <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
               {% endif %}
