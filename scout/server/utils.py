@@ -298,7 +298,7 @@ def get_case_genome_build(case_obj: Optional[dict] = None) -> str | None:
     """returns the genome build of a case, as a string."""
     if not case_obj:
         return None
-    return "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    return "38" if "38" in str(case_obj.get("genome_build")) else "37"
 
 
 def get_case_mito_chromosome(case_obj: dict) -> str:
