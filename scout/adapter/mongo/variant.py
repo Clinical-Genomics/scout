@@ -527,7 +527,7 @@ class VariantHandler(VariantLoader):
         build: Optional[str] = None,
         category: Optional[str] = None,
         within_days: Optional[int] = None,
-    ) -> pymongo.cursor.Cursor:
+    ) -> Iterable:
         """Return all causative variants for an institute - conditionally within the provided list of genes, case_id, genome build, category, and withing a time range."""
         query = {
             "institute": institute_obj["_id"],
