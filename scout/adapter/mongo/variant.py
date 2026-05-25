@@ -24,7 +24,18 @@ CARRIER = r"[12]"  # same as re.compile()"1|2")
 ELEM_MATCH = "$elemMatch"
 
 CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
-CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1, "genome_build": 1}
+CASE_CAUSATIVES_PROJECTION = {
+    "analysis_types": 1,
+    "causatives": 1,
+    "display_name": 1,
+    "genome_build": 1,
+    "individuals": 1,
+    "partial_causatives": 1,
+    "rank_model_version": 1,
+    "status": 1,
+    "sv_rank_model_version": 1,
+    "tags": 1,
+}
 
 
 class VariantHandler(VariantLoader):
@@ -516,7 +527,7 @@ class VariantHandler(VariantLoader):
         build: Optional[str] = None,
         category: Optional[str] = None,
         within_days: Optional[int] = None,
-    ) -> pymongo.cursor.Cursor:
+    ) -> Iterable:
         """Return all causative variants for an institute - conditionally within the provided list of genes, case_id, genome build, category, and withing a time range."""
         query = {
             "institute": institute_obj["_id"],
@@ -529,19 +540,33 @@ class VariantHandler(VariantLoader):
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             query["created_at"] = {"$gte": days_datetime}
 
-        causative_events = self.event_collection.find(query)
+        case_ids = self.event_collection.distinct(
+            "case",
+            {
+                "institute": institute_obj["_id"],
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "case",
+            },
+        )
+        cases = self.case_collection.find(
+            {"_id": {"$in": case_ids}}, projection=CASE_CAUSATIVES_PROJECTION
+        )
 
+        variant_to_case = {}
         causative_ids = set()
-        for case_event in causative_events:
-            case_obj = self.case(case_event.get("case"), projection=CASE_CAUSATIVES_PROJECTION)
+        for case_obj in cases:
+
             if case_obj is None or build and get_case_genome_build(case_obj) != build:
                 continue
 
-            for var_id in case_obj.get("causatives", []):
-                causative_ids.add(var_id)
+            causatives = case_obj.get("causatives", [])
+            partials = case_obj.get("partial_causatives", {})
 
-            for var_id, _ in case_obj.get("partial_causatives", {}).items():
+            all_causatives = list(causatives) + list(partials.keys())
+
+            for var_id in all_causatives:
                 causative_ids.add(var_id)
+                variant_to_case[var_id] = case_obj
 
         filters = {"_id": {"$in": list(causative_ids)}}
         if category:
@@ -549,7 +574,14 @@ class VariantHandler(VariantLoader):
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
-        return self.variant_collection.find(filters)
+        variants = self.variant_collection.find(filters)
+
+        def attach_case():
+            for var in variants:
+                var["case_obj"] = variant_to_case.get(var["_id"])
+                yield var
+
+        return attach_case()
 
     def case_matching_causatives(self, case_obj, limit_genes=None):
         """Returns the variants of a case that were marked as causatives in other cases of the same institute.

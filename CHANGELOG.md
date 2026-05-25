@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
 ### Changed
 - Display genome build on managed variants page (#6297)
+- Improve causatives page performance by removing duplicate case query (#6312)
+- Display case tags (provisional, diagnostic, incidental, etc) on causatives and verified variants pages (#6312)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
