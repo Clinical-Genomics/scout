@@ -2,12 +2,9 @@ import datetime
 import json as json_lib
 import logging
 import os
-import sys
-from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import click
-from flask import current_app
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
@@ -20,7 +17,7 @@ from scout.export.variant import (
 )
 from scout.server.blueprints.institutes.controllers import variants_to_managed_variants
 from scout.server.extensions import store
-from scout.utils.vcf import build_vcf_header, print_vcf, validate_vcf_line
+from scout.utils.vcf import print_vcf
 
 from .export_handler import bson_handler
 from .utils import build_option, category_option, collaborator_option, json_option
