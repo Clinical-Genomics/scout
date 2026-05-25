@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
 ### Changed
 - Display genome build on managed variants page (#6297)
+- Improve causatives page performance by removing duplicate case query (#6312)
+- Display case tags (provisional, diagnostic, incidental, etc) on causatives and verified variants pages (#6312)
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
