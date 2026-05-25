@@ -25,13 +25,14 @@ ELEM_MATCH = "$elemMatch"
 
 CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
 CASE_CAUSATIVES_PROJECTION = {
-    "causatives": 1,
-    "partial_causatives": 1,
-    "display_name": 1,
-    "individuals": 1,
-    "status": 1,
     "analysis_types": 1,
+    "causatives": 1,
+    "display_name": 1,
+    "genome_build": 1,
+    "individuals": 1,
+    "partial_causatives": 1,
     "rank_model_version": 1,
+    "status": 1,
     "sv_rank_model_version": 1,
     "tags": 1,
 }
