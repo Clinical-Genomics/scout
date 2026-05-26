@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 import click
+from cyvcf2 import VCF
 from flask import current_app
 
 from scout.constants.variants_export import CONTIG_LENGTHS, VCF_HEADER
@@ -359,3 +360,9 @@ def get_vcf_entry(
 
     if validate_vcf_line(var_type=var_type, line=variant_string)[0]:
         return variant_string
+
+
+def get_vcf_chr_prefix(vcf_obj: VCF) -> str:
+    """Return "chr" if VCF contigs start with "chr"."""
+    contig_names = vcf_obj.seqnames
+    return "chr" if contig_names[0].startswith("chr") else ""
