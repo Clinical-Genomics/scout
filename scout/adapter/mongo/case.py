@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pymongo
 from bson import ObjectId
+from intervaltree import IntervalTree
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.build.case import build_case
@@ -956,7 +957,15 @@ class CaseHandler(object):
                 load_type_cat.append(pair)
         return load_type_cat
 
-    def _load_clinical_variants(self, case_obj: dict, build: str, update: bool = False):
+    def _load_clinical_variants(
+        self,
+        case_obj: dict,
+        build: str,
+        gene_to_panels: Optional[Dict[str, set]],
+        hgncid_to_gene: Optional[Dict[int, dict]],
+        genomic_intervals: Optional[Dict[str, IntervalTree]],
+        update: bool = False,
+    ):
         """Load variants in the order specified by CLINICAL_ORDERED_FILE_TYPE_MAP."""
 
         for variant_type, category in self.get_load_type_categories(case_obj):
@@ -975,7 +984,7 @@ class CaseHandler(object):
                 custom_images=self._get_variants_custom_images(
                     variant_category=category, case=case_obj
                 ),
-                gene_to_panels=self.gene_to_panels(case_obj=case_obj),
+                gene_to_panels=gene_to_panels,
             )
 
     def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
@@ -1022,12 +1031,25 @@ class CaseHandler(object):
             case_obj, existing_case, institute_obj, update, keep_actions
         )
 
+        gene_to_panels = (adapter.gene_to_panels(case_obj=case_obj),)
+        build = build or get_case_genome_build(case_obj)
+        genes = list(adapter.all_genes(build=build))
+        hgncid_to_gene = adapter.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = adapter.get_coding_intervals(genes=genes, build=build)
+
         if existing_case and keep_actions:
             # collect all variants with user actions for this case
             eval_vars, _ = self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             old_evaluated_variants = list(eval_vars)
         try:
-            self._load_clinical_variants(case_obj, build=genome_build, update=update)
+            self._load_clinical_variants(
+                case_obj,
+                build=genome_build,
+                update=update,
+                gene_to_panels=gene_to_panels,
+                hgncid_to_gene=hgncid_to_gene,
+                genomic_intervals=genomic_intervals,
+            )
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 from os import path
-from typing import Optional
+from typing import Dict, Optional
 
 import click
 from flask.cli import with_appcontext
+from intervaltree import IntervalTree
 
 from scout.adapter import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
@@ -20,6 +21,9 @@ def upload_research_variants(
     variant_type: str,
     category: str,
     rank_treshold: int,
+    gene_to_panels: Optional[Dict[str, set]],
+    hgncid_to_gene: Optional[Dict[int, dict]],
+    genomic_intervals: Optional[Dict[str, IntervalTree]],
 ):
     """Delete existing variants and upload new variants"""
     adapter.delete_variants(case_id=case_obj["_id"], variant_type=variant_type, category=category)
@@ -30,7 +34,6 @@ def upload_research_variants(
         category=category,
         rank_threshold=rank_treshold,
         build=case_obj["genome_build"],
-        gene_to_panels=adapter.gene_to_panels(case_obj=case_obj),
         gene_to_panels=gene_to_panels,
         hgncid_to_gene=hgncid_to_gene,
         genomic_intervals=genomic_intervals,
@@ -99,6 +102,12 @@ def research(case_id, institute, force):
 
         files = False
 
+        gene_to_panels = (adapter.gene_to_panels(case_obj=case_obj),)
+        build = build or get_case_genome_build(case_obj)
+        genes = list(adapter.all_genes(build=build))
+        hgncid_to_gene = adapter.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = adapter.get_coding_intervals(genes=genes, build=build)
+
         for file_type in ORDERED_FILE_TYPE_MAP:
             if ORDERED_FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
@@ -118,6 +127,9 @@ def research(case_id, institute, force):
                     variant_type="research",
                     category=ORDERED_FILE_TYPE_MAP[file_type]["category"],
                     rank_treshold=case_obj.get("rank_score_threshold", DEFAULT_RANK_THRESHOLD),
+                    gene_to_panels=gene_to_panels,
+                    hgncid_to_gene=hgncid_to_gene,
+                    genomic_intervals=genomic_intervals,
                 )
 
         if not files:
