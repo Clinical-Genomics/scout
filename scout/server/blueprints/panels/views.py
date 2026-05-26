@@ -34,10 +34,13 @@ from scout.server.utils import (
 from scout.utils.gene import parse_raw_gene_ids
 
 from . import controllers
-from .forms import PanelGeneForm
+from .forms import GeneSearchForm, PanelFilterForm, PanelGeneForm
 
 LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
+
+PANEL_VIEW = "panels.panel"
+PANELS_VIEW = "panels.panels"
 
 
 @panels_bp.route("/api/v1/panels/<panel_name>", methods=["GET", "POST"])
@@ -56,34 +59,38 @@ def api_panels(panel_name):
 def panels():
     """Show all panels for a user"""
 
+    search_name = request.args.get("searchName", "").lower().strip()
     institutes = list(user_institutes(store, current_user))
-    user_institute_ids = {inst["_id"] for inst in institutes}
 
-    # Add search box and add results if applicable
+    user_institute_ids = controllers.filter_institute_ids(req=request, institutes=institutes)
+
     institute_panels_with_gene = []
     search_string = ""
-    if request.method == "POST" and request.form.get("searchGene"):
-        # Query db for panels containing the search string. This is done with autocompletion
-        # therefor only one(1) hgnc_id will be received from the form.
-        search_string = escape(request.form.get("searchGene"))
-        try:
-            hgnc_symbols = parse_raw_gene_ids([search_string])
-            hgnc_id = hgnc_symbols.pop()
-        except ValueError:
-            flash(
-                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
-                "warning",
-            )
-        institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
 
-    # Add new panel
-    elif request.method == "POST":
-        # Edit/create a new panel and redirect to its page
-        redirect_panel_id = controllers.panel_create_or_update(store, request)
-        if redirect_panel_id:
-            return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+    if request.method == "POST":
+        if request.form.get("searchGene"):
+            search_string = escape(request.form.get("searchGene"))
 
-        return redirect(url_for("panels.panels"))
+            try:
+                hgnc_id = parse_raw_gene_ids([search_string]).pop()
+            except ValueError:
+                flash(
+                    "Provided gene info could not be parsed! "
+                    "Please allow autocompletion to finish.",
+                    "warning",
+                )
+                hgnc_id = None
+
+            if hgnc_id:
+                institute_panels_with_gene = list(store.search_panels_hgnc_id(hgnc_id))
+
+        else:
+            redirect_panel_id = controllers.panel_create_or_update(store, request)
+
+            if redirect_panel_id:
+                return redirect(url_for(PANEL_VIEW, panel_id=redirect_panel_id, **request.args))
+
+            return redirect(url_for(PANELS_VIEW, **request.args))
 
     panel_names = [
         name
@@ -93,21 +100,27 @@ def panels():
         )
     ]
 
-    panel_versions = {}
-    for name in panel_names:
-        panels = store.gene_panels(panel_id=name, include_hidden=True)
-        panel_versions[name] = [panel_obj for panel_obj in panels]
+    panel_versions = {
+        name: list(store.gene_panels(panel_id=name, include_hidden=True)) for name in panel_names
+    }
 
     panel_groups = []
+
     for institute_obj in institutes:
-        institute_panels = []
-        for panel in store.latest_panels(institute_obj["_id"], include_hidden=True):
+        if institute_obj["_id"] not in user_institute_ids:
+            continue
+
+        panels = store.latest_panels(institute_obj["_id"], include_hidden=True)
+
+        filtered_panels = controllers.filter_panels_by_name(panels=panels, search_name=search_name)
+
+        for panel in filtered_panels:
             panel["writable"] = (
                 "" if controllers.panel_write_granted(panel, current_user) else "disabled"
             )
-            institute_panels.append(panel)
 
-        panel_groups.append((institute_obj, institute_panels))
+        panel_groups.append((institute_obj, filtered_panels))
+
     return dict(
         panel_groups=sorted(panel_groups, key=lambda x: x[0]["display_name"].lower()),
         panel_names=panel_names,
@@ -115,6 +128,8 @@ def panels():
         institutes=institutes,
         search_string=search_string,
         search_result=institute_panels_with_gene,
+        search_gene_form=GeneSearchForm(),
+        panel_filter_form=PanelFilterForm(request.args),
     )
 
 
@@ -126,7 +141,7 @@ def panel(panel_id):
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
     if not panel_obj:
         flash("Panel with id {} not found.".format(panel_id), "warning")
-        return redirect(url_for("panels.panels"))
+        return redirect(url_for(PANELS_VIEW))
 
     if request.method == "POST":
         if request.form.get("update_description") or request.form.get("display_name"):
@@ -140,7 +155,7 @@ def panel(panel_id):
                     "Permission denied: please ask a panel maintainer or admin for help.",
                     "danger",
                 )
-            return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+            return redirect(url_for(PANEL_VIEW, panel_id=panel_obj["_id"]))
 
         raw_hgnc_id = request.form["hgnc_id"]
         if "|" in raw_hgnc_id:
@@ -212,7 +227,7 @@ def panel_update(panel_id):
 
     update_version = request.form.get("version")
     if not update_version:
-        return redirect(url_for("panels.panel", panel_id=panel_id))
+        return redirect(url_for(PANEL_VIEW, panel_id=panel_id))
 
     duplicate = store.gene_panel(panel_id=panel_obj["panel_name"], version=float(update_version))
     if duplicate:
@@ -220,14 +235,24 @@ def panel_update(panel_id):
             f"A panel named '{panel_obj['panel_name']}' with version {update_version} already exists.",
             "warning",
         )
-        return redirect(url_for("panels.panel", panel_id=duplicate["_id"]))
+        return redirect(url_for(PANEL_VIEW, panel_id=duplicate["_id"]))
 
     if not controllers.panel_write_granted(panel_obj, current_user):
         flash("Permission denied: please ask a panel maintainer or admin for help.", "danger")
-        return redirect(url_for("panels.panel", panel_id=panel_id))
+        return redirect(url_for(PANEL_VIEW, panel_id=panel_id))
 
     new_panel_id = store.apply_pending(panel_obj, update_version)
-    return redirect(url_for("panels.panel", panel_id=new_panel_id))
+
+    if request.args.get("searchName") or request.args.get(
+        "institute"
+    ):  # Filters applied on panels page
+        flash(
+            f"Panel {panel_obj['panel_name']} updated successfully to version {update_version}",
+            "success",
+        )
+        return redirect(url_for(PANELS_VIEW, **request.args))
+
+    return redirect(url_for(PANEL_VIEW, panel_id=new_panel_id))
 
 
 @panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])
@@ -251,7 +276,7 @@ def panel_delete(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+    return redirect(url_for(PANELS_VIEW, **request.args))
 
 
 @panels_bp.route("/panels/<panel_id>/restore", methods=["POST"])
@@ -268,7 +293,7 @@ def panel_restore(panel_id):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+    return redirect(url_for(PANELS_VIEW, **request.args))
 
 
 @panels_bp.route("/panels/export-panel-txt/<panel_id>", methods=["GET"])
