@@ -542,11 +542,7 @@ class VariantHandler(VariantLoader):
 
         case_ids = self.event_collection.distinct(
             "case",
-            {
-                "institute": institute_obj["_id"],
-                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "case",
-            },
+            query,
         )
         cases = self.case_collection.find(
             {"_id": {"$in": case_ids}}, projection=CASE_CAUSATIVES_PROJECTION
