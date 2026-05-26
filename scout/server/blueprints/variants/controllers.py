@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
+from flask_wtf import FlaskForm
 from markupsafe import Markup
 from pymongo import ASCENDING
 from pymongo.cursor import Cursor
@@ -2068,24 +2069,18 @@ def check_form_gene_symbols(
     return updated_hgnc_symbols
 
 
-def update_form_hgnc_symbols(store, case_obj, form):
+def update_form_hgnc_symbols(
+    store: MongoAdapter, case_obj: Optional[dict], form: FlaskForm
+) -> FlaskForm:
     """Update variants filter form with HGNC symbols from HPO, and check if any non-clinical genes for the case were
     requested. If so, flash a warning to the user.
-
-    Accepts:
-        store(adapter.MongoAdapter)
-        case_obj(dict)
-        form(FiltersForm)
-
-    Returns:
-        form(FiltersForm)
     """
 
     hgnc_symbols = []
     not_found_ids = []
     case_obj = case_obj or {}
 
-    genome_build = get_case_genome_build(case_obj)
+    genome_build = get_case_genome_build(case_obj) if case_obj else None
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
