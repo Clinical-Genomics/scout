@@ -663,11 +663,11 @@ class VariantLoader(object):
     def load_variants(
         self,
         case_obj: dict,
-        variant_type: str = "clinical",
-        category: str = "snv",
         gene_to_panels: Optional[Dict[str, set]],
         hgncid_to_gene: Optional[Dict[int, dict]],
         genomic_intervals: Optional[Dict[str, IntervalTree]],
+        variant_type: str = "clinical",
+        category: str = "snv",
         rank_threshold: float = None,
         chrom: str = None,
         start: int = None,

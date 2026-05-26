@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display genome build on managed variants page (#6297)
 - Improve causatives page performance by removing duplicate case query (#6312)
 - Display case tags (provisional, diagnostic, incidental, etc) on causatives and verified variants pages (#6312)
-- Associate genes to relative panels only once when loading variants ()
+- Fetch genes  and gene panel associations only once when loading variants (#6345)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 - Adding single managed variants with build 38 (#6300)

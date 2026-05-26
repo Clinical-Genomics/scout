@@ -21,6 +21,7 @@ from scout.constants import (
 )
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
+from scout.server.utils import get_case_genome_build
 from scout.utils.algorithms import ui_score
 
 LOG = logging.getLogger(__name__)
@@ -1031,11 +1032,11 @@ class CaseHandler(object):
             case_obj, existing_case, institute_obj, update, keep_actions
         )
 
-        gene_to_panels = (adapter.gene_to_panels(case_obj=case_obj),)
-        build = build or get_case_genome_build(case_obj)
-        genes = list(adapter.all_genes(build=build))
-        hgncid_to_gene = adapter.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = adapter.get_coding_intervals(genes=genes, build=build)
+        gene_to_panels = (self.gene_to_panels(case_obj=case_obj),)
+        build = get_case_genome_build(case_obj)
+        genes = list(self.all_genes(build=build))
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
         if existing_case and keep_actions:
             # collect all variants with user actions for this case

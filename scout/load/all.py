@@ -57,7 +57,7 @@ def load_region(
         end = gene_caption["end"]
 
     gene_to_panels = (adapter.gene_to_panels(case_obj=case_obj),)
-    build = build or get_case_genome_build(case_obj)
+    build = get_case_genome_build(case_obj)
     genes = list(adapter.all_genes(build=build))
     hgncid_to_gene = adapter.hgncid_to_gene(genes=genes, build=build)
     genomic_intervals = adapter.get_coding_intervals(genes=genes, build=build)
