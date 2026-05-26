@@ -665,6 +665,9 @@ class VariantLoader(object):
         case_obj: dict,
         variant_type: str = "clinical",
         category: str = "snv",
+        gene_to_panels: Optional[Dict[str, set]],
+        hgncid_to_gene: Optional[Dict[int, dict]],
+        genomic_intervals: Optional[Dict[str, IntervalTree]],
         rank_threshold: float = None,
         chrom: str = None,
         start: int = None,
@@ -672,7 +675,6 @@ class VariantLoader(object):
         gene_obj: dict = None,
         custom_images: list = None,
         build: str = "37",
-        gene_to_panels: Optional[Dict[str, set]] = None,
     ) -> int:
         """Load variants for a case into scout.
 
@@ -685,9 +687,6 @@ class VariantLoader(object):
         institute_id = case_obj["owner"]
 
         nr_inserted = 0
-        genes = list(self.all_genes(build=build))
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
         for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
             if vcf_dict["variant_type"] != variant_type:

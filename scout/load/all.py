@@ -5,6 +5,7 @@ from typing import Optional
 from scout.adapter.mongo import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
+from scout.server.utils import get_case_genome_build
 
 LOG = logging.getLogger(__name__)
 
@@ -55,6 +56,12 @@ def load_region(
         start = gene_caption["start"]
         end = gene_caption["end"]
 
+    gene_to_panels = (adapter.gene_to_panels(case_obj=case_obj),)
+    build = build or get_case_genome_build(case_obj)
+    genes = list(adapter.all_genes(build=build))
+    hgncid_to_gene = adapter.hgncid_to_gene(genes=genes, build=build)
+    genomic_intervals = adapter.get_coding_intervals(genes=genes, build=build)
+
     for file_type, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
         if not case_obj.get("vcf_files", {}).get(file_type):
             continue
@@ -75,7 +82,9 @@ def load_region(
             chrom=chrom,
             start=start,
             end=end,
-            gene_to_panels=adapter.gene_to_panels(case_obj=case_obj),
+            gene_to_panels=gene_to_panels,
+            hgncid_to_gene=hgncid_to_gene,
+            genomic_intervals=genomic_intervals,
         )
 
     # Update case variants count
