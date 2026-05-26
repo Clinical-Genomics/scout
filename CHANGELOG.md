@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer logs reporting case ID when variant loading fails (#6329)
 - Export causatives to managed variants infile via CLI, filtering variants by date (#6290, #6338)
 - MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
+- Filter selections remain visible in the UI after panel editing actions (#6305)
 ### Changed
 - Display genome build on managed variants page (#6297)
 - Improve causatives page performance by removing duplicate case query (#6312)
