@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show pending comments for gene panels (#6327)
 - Loading of variants defaulting to build 37 whenever genomic build is not passed to the loader function (#6331)
 - Removed unused imports on `commands/export/variant` module (#6334)
+- Region load command to auto-detect VCF chromosome prefix (#6343)
 
 ## [4.111.3]
 ### Fixed
