@@ -30,6 +30,7 @@ def upload_research_variants(
         category=category,
         rank_threshold=rank_treshold,
         build=case_obj["genome_build"],
+        gene_to_panels=adapter.gene_to_panels(case_obj=case_obj),
     )
 
 

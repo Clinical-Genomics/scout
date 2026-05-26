@@ -200,6 +200,7 @@ def variants(
                     end=end,
                     gene_obj=gene_obj,
                     build=case_obj["genome_build"],
+                    gene_to_panels=adapter.gene_to_panels(case_obj=case_obj),
                 )
                 # Update case variants count
                 adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)

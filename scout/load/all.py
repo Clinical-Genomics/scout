@@ -75,6 +75,7 @@ def load_region(
             chrom=chrom,
             start=start,
             end=end,
+            gene_to_panels=adapter.gene_to_panels(case_obj=case_obj),
         )
 
     # Update case variants count

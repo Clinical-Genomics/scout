@@ -672,7 +672,8 @@ class VariantLoader(object):
         gene_obj: dict = None,
         custom_images: list = None,
         build: str = "37",
-    ):
+        gene_to_panels: Optional[Dict[str, set]] = None,
+    ) -> int:
         """Load variants for a case into scout.
 
         Load the variants for a specific analysis type and category into scout.
@@ -680,24 +681,10 @@ class VariantLoader(object):
         If region or gene is specified, load all variants from that region
         disregarding variant rank(if not specified)
 
-        Args:
-            case_obj(dict): A case from the scout database
-            variant_type(str): 'clinical' or 'research'. Default: 'clinical'
-            category(str): 'snv', 'str' or 'sv'. Default: 'snv'
-            rank_threshold(float): Only load variants above this score. Default: 0
-            chrom(str): Load variants from a certain chromosome
-            start(int): Specify the start position
-            end(int): Specify the end position
-            gene_obj(dict): A gene object from the database
-
-        Returns:
-            nr_inserted(int)
         """
         institute_id = case_obj["owner"]
 
         nr_inserted = 0
-
-        gene_to_panels = self.gene_to_panels(case_obj)
         genes = list(self.all_genes(build=build))
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)

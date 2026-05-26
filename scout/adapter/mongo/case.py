@@ -975,6 +975,7 @@ class CaseHandler(object):
                 custom_images=self._get_variants_custom_images(
                     variant_category=category, case=case_obj
                 ),
+                gene_to_panels=self.gene_to_panels(case_obj=case_obj),
             )
 
     def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
