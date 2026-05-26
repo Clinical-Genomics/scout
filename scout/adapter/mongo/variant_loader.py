@@ -30,6 +30,7 @@ from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.server.utils import get_case_genome_build
 from scout.utils.md5 import generate_md5_key
+from scout.utils.vcf import get_vcf_chr_prefix
 
 LOG = logging.getLogger(__name__)
 
@@ -757,7 +758,8 @@ class VariantLoader(object):
                 rank_threshold = rank_threshold or -1000
                 if not (start and end):
                     raise SyntaxError("Specify chrom start and end")
-                region = "{0}:{1}-{2}".format(chrom, start, end)
+                chr_prefix = get_vcf_chr_prefix(vcf_obj)
+                region = f"{chr_prefix}{chrom}:{start}-{end}"
             else:
                 rank_threshold = rank_threshold or 0
 
