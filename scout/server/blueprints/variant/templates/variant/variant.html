@@ -333,16 +333,6 @@
               {% endfor %}
             </span>
           </li>
-          <li class="list-group-item">
-            LitVar2
-            <span class="float-end">
-              {% for snp in dbsnp_ids %}
-                <a target="_blank" href="{{variant.litvar_snp_links[snp]}}">
-                  {{ snp }}
-                </a>
-              {% endfor %}
-            </span>
-          </li>
         {% endif %}
       </ul>
       <table class="table table-bordered table-fixed table-sm">
