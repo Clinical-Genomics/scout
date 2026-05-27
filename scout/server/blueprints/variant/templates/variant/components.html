@@ -640,7 +640,8 @@
     }
 
     function verify_litvar_snp_ids() {
-      // Verify only the LitVar links rendered with an explicit rsID marker.
+      // Make CORS-enabled request to LitVar API by using a Scout api function for it
+      // Verify LitVar links rendered with an explicit rsID marker.
       const snpLinks = document.querySelectorAll('.litvar-snp-link[data-litvar-rsid]');
       const litvarSensorUrlTemplate = '{{ url_for("variant.litvar_sensor", rsid="__RSID__") }}';
 
@@ -651,7 +652,6 @@
         }
         const litvarApiUrl = litvarSensorUrlTemplate.replace('__RSID__', encodeURIComponent(rsid));
 
-        // Make CORS-enabled request to LitVar API
         fetch(litvarApiUrl)
           .then(function(response) {
             return response.json().then(function(data) {

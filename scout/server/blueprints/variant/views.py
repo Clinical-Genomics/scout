@@ -530,7 +530,14 @@ def ccv():
 
 @variant_bp.route("/api/v1/litvar/sensor/<rsid>")
 def litvar_sensor(rsid):
-    """Check if an rsID is available in LitVar without triggering browser CORS restrictions."""
+    """Check if an rsID is available in LitVar without triggering browser CORS restrictions.
+
+    Keep track of the status of the request to see if LitVar was really available.
+    200 + available: true with link and pmids_count when found
+    200 + available: false when not found
+    503 for upstream/network/payload errors
+    400 for invalid rsID format
+    """
     if not re.fullmatch(r"rs\d+", rsid):
         return jsonify({"available": False, "error": "invalid_rsid"}), 400
 
