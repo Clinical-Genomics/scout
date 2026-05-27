@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Avoid fetching genes and panels multiple times when loading variants ()
+- Avoid fetching genes and panels multiple times when loading variants (#6350)
 
 ## [4.112]
 ### Added
