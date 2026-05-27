@@ -660,6 +660,35 @@ class VariantLoader(object):
             LOG.warning("Variant file %s does not include any variants", variant_file)
             return False
 
+    def _build_cached_genomic_info(self, case_obj: dict, build: str) -> dict:
+        """Cache per-case gene_to_panels, hgncid_to_gene and hgncid_to_gene info."""
+
+        genes = list(self.all_genes(build=build))
+
+        return {
+            "genes": genes,
+            "gene_to_panels": self.gene_to_panels(case_obj),
+            "hgncid_to_gene": self.hgncid_to_gene(genes=genes, build=build),
+            "genomic_intervals": self.get_coding_intervals(genes=genes, build=build),
+        }
+
+    def _get_cached_genomic_info(self, case_obj: dict, build: str) -> dict:
+        """
+        Retrieve or compute cached genomic data for a case.
+        Cache key is (case_id, build) to avoid recomputation.
+        """
+
+        if not hasattr(self, "_case_cache"):
+            self._case_cache = {}
+
+        case_id = case_obj["_id"]
+        key = (case_id, build)
+
+        if key not in self._case_cache:
+            self._case_cache[key] = self._build_cached_genomic_info(case_obj, build)
+
+        return self._case_cache[key]
+
     def load_variants(
         self,
         case_obj: dict,
@@ -697,11 +726,12 @@ class VariantLoader(object):
 
         nr_inserted = 0
 
-        gene_to_panels = self.gene_to_panels(case_obj)
-        build = build if build else get_case_genome_build(case_obj)
-        genes = list(self.all_genes(build=build))
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+        build = build or get_case_genome_build(case_obj)
+        cache = self._get_cached_genomic_info(case_obj=case_obj, build=build)
+
+        gene_to_panels = cache["gene_to_panels"]
+        hgncid_to_gene = cache["hgncid_to_gene"]
+        genomic_intervals = cache["genomic_intervals"]
 
         for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
             if vcf_dict["variant_type"] != variant_type:

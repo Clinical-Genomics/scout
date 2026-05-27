@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Avoid fetching genes and panels multiple times when loading variants ()
+
 ## [4.112]
 ### Added
 - Contigs on exported variants VCF files (managed and causative variants) (#6310)
