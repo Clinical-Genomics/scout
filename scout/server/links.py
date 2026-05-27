@@ -529,7 +529,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
-        litvar_snp_link=litvar_snp_links(variant_obj),
+        litvar_snp_links=litvar_snp_links(variant_obj),
         alamut_link=alamut_variant_link(institute_obj, variant_obj, build),
     )
     return links
