@@ -698,7 +698,7 @@ class VariantLoader(object):
         nr_inserted = 0
 
         gene_to_panels = self.gene_to_panels(case_obj)
-        build = build or get_case_genome_build(case_obj)
+        build = build if build else get_case_genome_build(case_obj)
         genes = list(self.all_genes(build=build))
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
