@@ -666,7 +666,6 @@ class VariantLoader(object):
         genes = list(self.all_genes(build=build))
 
         return {
-            "genes": genes,
             "gene_to_panels": self.gene_to_panels(case_obj),
             "hgncid_to_gene": self.hgncid_to_gene(genes=genes, build=build),
             "genomic_intervals": self.get_coding_intervals(genes=genes, build=build),
