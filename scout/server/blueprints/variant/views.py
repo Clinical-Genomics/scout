@@ -1,5 +1,7 @@
 import logging
+import re
 
+import requests
 from flask import (
     Blueprint,
     current_app,
@@ -57,6 +59,7 @@ from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
+LITVAR_SENSOR_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/{}"
 
 variant_bp = Blueprint(
     "variant",
@@ -523,6 +526,45 @@ def ccv():
     ccv_bayesian = get_ccv_temperature(criteria)
     ccv_conflicts = get_ccv_conflicts(criteria)
     return jsonify({"classification": classification, "conflicts": ccv_conflicts, **ccv_bayesian})
+
+
+@variant_bp.route("/api/v1/litvar/sensor/<rsid>")
+def litvar_sensor(rsid):
+    """Check if an rsID is available in LitVar without triggering browser CORS restrictions."""
+    if not re.fullmatch(r"rs\d+", rsid):
+        return jsonify({"available": False, "error": "invalid_rsid"}), 400
+
+    try:
+        response = requests.get(LITVAR_SENSOR_URL.format(rsid), timeout=5)
+    except requests.RequestException:
+        LOG.warning("LitVar request failed for %s", rsid)
+        return jsonify({"available": None, "error": "upstream_unreachable"}), 503
+
+    if response.status_code == 404:
+        return jsonify({"available": False, "rsid": rsid}), 200
+
+    if response.status_code != 200:
+        LOG.warning("LitVar request returned status %s for %s", response.status_code, rsid)
+        return jsonify({"available": None, "error": "upstream_error"}), 503
+
+    try:
+        litvar_payload = response.json()
+    except ValueError:
+        LOG.warning("LitVar response could not be decoded for %s", rsid)
+        return jsonify({"available": None, "error": "invalid_payload"}), 503
+
+    link = litvar_payload.get("link")
+    if not link:
+        return jsonify({"available": False, "rsid": rsid}), 200
+
+    return jsonify(
+        {
+            "available": True,
+            "rsid": rsid,
+            "link": link,
+            "pmids_count": litvar_payload.get("pmids_count", 0),
+        }
+    )
 
 
 @variant_bp.route(

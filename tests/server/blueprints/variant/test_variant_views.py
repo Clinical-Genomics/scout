@@ -2,6 +2,7 @@
 from urllib.parse import urlencode
 
 import pytest
+import requests
 import responses
 from flask import url_for
 
@@ -84,6 +85,65 @@ def test_ccv(app):
         resp = client.get("/api/v1/ccv")
         assert resp.status_code == 200
         assert resp.data
+
+
+def test_litvar_sensor_available(app, mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "rsid": "rs113488022",
+        "link": "https://www.ncbi.nlm.nih.gov/research/litvar2/docsum?variant=litvar%40rs113488022%23%23&query=rs113488022",
+        "pmids_count": 31859,
+    }
+    mocker.patch("scout.server.blueprints.variant.views.requests.get", return_value=mock_response)
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_sensor", rsid="rs113488022"))
+
+    assert resp.status_code == 200
+    assert resp.json["available"] is True
+    assert resp.json["rsid"] == "rs113488022"
+    assert resp.json["pmids_count"] == 31859
+
+
+def test_litvar_sensor_not_found(app, mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 404
+    mocker.patch("scout.server.blueprints.variant.views.requests.get", return_value=mock_response)
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_sensor", rsid="rs999999999"))
+
+    assert resp.status_code == 200
+    assert resp.json == {"available": False, "rsid": "rs999999999"}
+
+
+def test_litvar_sensor_invalid_rsid(app, mocker):
+    get_mock = mocker.patch("scout.server.blueprints.variant.views.requests.get")
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_sensor", rsid="not_an_rsid"))
+
+    assert resp.status_code == 400
+    assert resp.json == {"available": False, "error": "invalid_rsid"}
+    get_mock.assert_not_called()
+
+
+def test_litvar_sensor_upstream_error(app, mocker):
+    mocker.patch(
+        "scout.server.blueprints.variant.views.requests.get",
+        side_effect=requests.RequestException("network error"),
+    )
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_sensor", rsid="rs113488022"))
+
+    assert resp.status_code == 503
+    assert resp.json == {"available": None, "error": "upstream_unreachable"}
 
 
 def test_variant(app, institute_obj, case_obj, variant_obj):

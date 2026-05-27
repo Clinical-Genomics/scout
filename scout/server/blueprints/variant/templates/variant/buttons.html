@@ -11,7 +11,16 @@
   {% if variant.dbsnp_id %}
     {% for snp in variant.dbsnp_id.split(';') %}
       <a class="btn btn-sm btn-info text-white me-1 mb-1"  target="_blank" rel="noreferrer noopener" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
-      <a class="btn btn-sm btn-info text-white me-1 mb-1"  target="_blank" rel="noreferrer noopener" id="litvar-link-{{ snp|replace('rs', '') }}" class="litvar-snp-link" href="{{variant.litvar_snp_links[snp]}}">LitVar2 ({{ snp }})</a>
+      {% if variant.litvar_snp_links and snp in variant.litvar_snp_links %}
+        <a
+          class="btn btn-sm btn-info text-white me-1 mb-1 litvar-snp-link"
+          target="_blank"
+          rel="noreferrer noopener"
+          id="litvar-link-{{ snp|replace('rs', '') }}"
+          data-litvar-rsid="{{ snp }}"
+          href="{{ variant.litvar_snp_links[snp] }}"
+        >LitVar2 ({{ snp }})</a>
+      {% endif %}
     {% endfor %}
   {% endif %}
 </div>

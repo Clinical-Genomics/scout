@@ -628,37 +628,57 @@
       }
     }
 
+    function set_tooltip_content(element, tooltipText) {
+      const existingTooltip = bootstrap.Tooltip.getInstance(element);
+      if (existingTooltip) {
+        existingTooltip.dispose();
+      }
+      element.setAttribute('title', tooltipText);
+      element.setAttribute('data-bs-title', tooltipText);
+      element.setAttribute('data-bs-toggle', 'tooltip');
+      new bootstrap.Tooltip(element, {container: 'body'});
+    }
+
     function verify_litvar_snp_ids() {
-      // Get all dbSNP links that need LitVar2 verification
-      const snpLinks = document.querySelectorAll('.litvar-snp-link');
+      // Verify only the LitVar links rendered with an explicit rsID marker.
+      const snpLinks = document.querySelectorAll('.litvar-snp-link[data-litvar-rsid]');
+      const litvarSensorUrlTemplate = '{{ url_for("variant.litvar_sensor", rsid="__RSID__") }}';
 
       snpLinks.forEach(function(link) {
-        const rsid = link.textContent.trim();
-        const litvarApiUrl = 'https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/' + rsid;
+        const rsid = link.dataset.litvarRsid;
+        if (!rsid) {
+          return;
+        }
+        const litvarApiUrl = litvarSensorUrlTemplate.replace('__RSID__', encodeURIComponent(rsid));
 
         // Make CORS-enabled request to LitVar API
         fetch(litvarApiUrl)
           .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            } else {
-              // If not found (404) or other error, throw an error
-              throw new Error('LitVar ID not found');
-            }
+            return response.json().then(function(data) {
+              return { ok: response.ok, data: data };
+            });
           })
-          .then(function(data) {
-            // Successfully found in LitVar
-            // Optionally update the link to point to LitVar if needed
-            if (data.link) {
-              link.href = data.link;
-              link.title = 'Click to view ' + rsid + ' on LitVar2 (' + data.pmids_count + ' articles)';
-              link.dataset.bsToggle = 'tooltip';
+          .then(function(result) {
+            if (result.ok && result.data.available && result.data.link) {
+              const tooltipText = 'Click to view ' + rsid + ' on LitVar2 (' + result.data.pmids_count + ' articles)';
+              link.href = result.data.link;
+              set_tooltip_content(link, tooltipText);
+              return;
             }
+
+            if (result.ok && result.data.available === false) {
+              const existingTooltip = bootstrap.Tooltip.getInstance(link);
+              if (existingTooltip) {
+                existingTooltip.dispose();
+              }
+              link.remove();
+              return;
+            }
+
+            console.warn('Could not verify LitVar ID ' + rsid + ', keeping fallback link.');
           })
           .catch(function(error) {
-            // Remove the link if not found in LitVar
-            console.warn('dbSNP ID ' + rsid + ' not found in LitVar: ', error);
-            link.remove();
+            console.warn('Could not verify LitVar ID ' + rsid + ', keeping fallback link.', error);
           });
       });
     }
