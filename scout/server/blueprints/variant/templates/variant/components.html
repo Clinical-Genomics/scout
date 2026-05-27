@@ -628,6 +628,48 @@
       }
     }
 
+    function verify_litvar_snp_ids() {
+      // Get all dbSNP links that need LitVar2 verification
+      const snpLinks = document.querySelectorAll('.litvar-snp-link');
+
+      snpLinks.forEach(function(link) {
+        const rsid = link.textContent.trim();
+        const litvarApiUrl = 'https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/' + rsid;
+
+        // Make CORS-enabled request to LitVar API
+        fetch(litvarApiUrl)
+          .then(function(response) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              // If not found (404) or other error, throw an error
+              throw new Error('LitVar ID not found');
+            }
+          })
+          .then(function(data) {
+            // Successfully found in LitVar
+            // Optionally update the link to point to LitVar if needed
+            if (data.link) {
+              link.href = data.link;
+              link.title = 'Click to view ' + rsid + ' on LitVar2 (' + data.pmids_count + ' articles)';
+              link.dataset.bsToggle = 'tooltip';
+            }
+          })
+          .catch(function(error) {
+            // Remove the link if not found in LitVar
+            console.warn('dbSNP ID ' + rsid + ' not found in LitVar: ', error);
+            link.remove();
+          });
+      });
+    }
+  </script>
+{% endmacro %}
+
+{% macro variant_coverage_scripts(institute, case, variant) %}
+  <script>
+    $(document).ready(function() {
+        update_gene_has_full_coverage();
+    });
     function update_gene_has_full_coverage() {
       $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
         if($.isEmptyObject(data.gene_has_full_coverage)) {
@@ -666,46 +708,10 @@
             complete_coverage_indicator.style.display = "none"
           }
       });
-     }
-
-    function verify_litvar_snp_ids() {
-      // Get all dbSNP links that need LitVar2 verification
-      const snpLinks = document.querySelectorAll('.litvar-snp-link');
-
-      snpLinks.forEach(function(link) {
-        const rsid = link.textContent.trim();
-        const litvarApiUrl = 'https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/' + rsid;
-
-        // Make CORS-enabled request to LitVar API
-        fetch(litvarApiUrl)
-          .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            } else {
-              // If not found (404) or other error, throw an error
-              throw new Error('LitVar ID not found');
-            }
-          })
-          .then(function(data) {
-            // Successfully found in LitVar
-            // Optionally update the link to point to LitVar if needed
-            if (data.link) {
-              link.href = data.link;
-              link.title = 'Click to view ' + rsid + ' on LitVar2 (' + data.pmids_count + ' articles)';
-              link.dataset.bsToggle = 'tooltip';
-            }
-          })
-          .catch(function(error) {
-            // Remove the link if not found in LitVar
-            console.warn('dbSNP ID ' + rsid + ' not found in LitVar: ', error);
-            link.remove();
-          });
-      });
-    }
-
-
+   }
   </script>
 {% endmacro %}
+
 
 {% macro variant_genes(variant) %}
 {% if variant.genes %}

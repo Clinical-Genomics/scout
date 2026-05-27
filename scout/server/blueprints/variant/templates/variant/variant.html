@@ -6,7 +6,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import conservations, frequencies, gtcall_panel, mappability, observations_panel, old_observations, severity_list, str_db_card %}
-{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts %}
+{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_coverage_scripts, variant_scripts %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
@@ -400,6 +400,7 @@
   {{ super() }}
   {{ external_scripts() }}
   {{ variant_scripts() }}
+  {{ variant_coverage_scripts(institute, case, variant) }}
   <script src="{{ url_for('static', filename='custom_images.js') }}"></script>
   <script src="{{ url_for('static', filename='token_utils.js') }}"></script>
   <script>
