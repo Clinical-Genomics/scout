@@ -253,6 +253,8 @@
               {{ gene.info.inheritance_models|join(',') if gene.info.inheritance_models }} <br>
               <strong>Entry version</strong>:
               {{ gene.info.database_entry_version if gene.info.database_entry_version }} <br>
+              <strong>Comment</strong>:
+              {{ gene.info.comment if gene.info.comment }} <br>
             </div>
           ">
             {{ gene.symbol }}
@@ -271,7 +273,7 @@
     </ul>
     {% if panel.pending and not panel.is_archived %}
       <div class="card-footer">
-        <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
+        <form action="{{ url_for('panels.panel_update', panel_id=panel._id, **request.args) }}" method="POST">
           <div class="row">
             <div class="form-group col-sm-3">
               <label class="col-form-label">Version</label>

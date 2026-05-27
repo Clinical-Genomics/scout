@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# stdlib modules
 import logging
 import sys
 from datetime import datetime
@@ -29,7 +28,9 @@ from scout.parse.variant.headers import (
 )
 from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.server.utils import get_case_genome_build
 from scout.utils.md5 import generate_md5_key
+from scout.utils.vcf import get_vcf_chr_prefix
 
 LOG = logging.getLogger(__name__)
 
@@ -100,7 +101,7 @@ class VariantLoader(object):
             try:
                 self.variant_collection.bulk_write(requests, ordered=False)
             except BulkWriteError as err:
-                LOG.warning("Updating variant rank failed")
+                LOG.warning(f"Updating variants rank from {case_obj['_id']} failed")
                 raise err
 
         LOG.info("Updating variant_rank done")
@@ -376,7 +377,7 @@ class VariantLoader(object):
         individual_positions refers to the order of samples in the VCF file. sample_info contains info about samples. It is used for instance to define tumor samples in cancer cases.
         local_archive_info contains info about the local archive used for annotation.
         """
-        build = build or "37"
+        build = build or get_case_genome_build(case_obj)
 
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
@@ -662,15 +663,15 @@ class VariantLoader(object):
     def load_variants(
         self,
         case_obj: dict,
-        variant_type: str = "clinical",
-        category: str = "snv",
-        rank_threshold: float = None,
-        chrom: str = None,
-        start: int = None,
-        end: int = None,
-        gene_obj: dict = None,
-        custom_images: list = None,
-        build: str = "37",
+        variant_type: Optional[str] = "clinical",
+        category: Optional[str] = "snv",
+        rank_threshold: Optional[float] = None,
+        chrom: Optional[str] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        gene_obj: Optional[dict] = None,
+        custom_images: Optional[list] = None,
+        build: Optional[str] = None,
     ):
         """Load variants for a case into scout.
 
@@ -697,6 +698,7 @@ class VariantLoader(object):
         nr_inserted = 0
 
         gene_to_panels = self.gene_to_panels(case_obj)
+        build = build if build else get_case_genome_build(case_obj)
         genes = list(self.all_genes(build=build))
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
@@ -757,7 +759,8 @@ class VariantLoader(object):
                 rank_threshold = rank_threshold or -1000
                 if not (start and end):
                     raise SyntaxError("Specify chrom start and end")
-                region = "{0}:{1}-{2}".format(chrom, start, end)
+                chr_prefix = get_vcf_chr_prefix(vcf_obj)
+                region = f"{chr_prefix}{chrom}:{start}-{end}"
             else:
                 rank_threshold = rank_threshold or 0
 
@@ -785,7 +788,9 @@ class VariantLoader(object):
                     genomic_intervals=genomic_intervals,
                 )
             except Exception as error:
-                LOG.exception("unexpected error")
+                LOG.exception(
+                    f"Unexpected error while loading variants from case {case_obj['_id']}"
+                )
                 LOG.warning("Deleting inserted variants")
                 self.delete_variants(case_obj["_id"], variant_type)
                 raise error

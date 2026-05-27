@@ -5,18 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+- Plain dbSNP rsID link to LitVar2 (#6326)
+
+## [4.112]
 ### Added
 - Contigs on exported variants VCF files (managed and causative variants) (#6310)
 - INFO tags for exported variant category `EXPORT_CATEGORY` on exported variants VCF files (#6324)
-- Plain snp rsID link to LitVar (#6326)
+- On variant page, display status and status tags from matching causatives' case (#6315)
+- Clearer logs reporting case ID when variant loading fails (#6329)
+- Export causatives to managed variants infile via CLI, filtering variants by date (#6290, #6338)
+- MitoSAlt/SAltShaker SV caller for MT SV variants (#6333)
+- Filter selections remain visible in the UI after panel editing actions (#6305)
 ### Changed
 - Display genome build on managed variants page (#6297)
+- Improve causatives page performance by removing duplicate case query (#6312)
+- Display case tags (provisional, diagnostic, incidental, etc) on causatives and verified variants pages (#6312)
+- Matching variants (causatives, managed) on the variant page are folded by default (#6346)
 ### Fixed
 - Compress demo case rnafusion VCF and add an index (#6292)
 - Adding single managed variants with build 38 (#6300)
 - Paraphase region names alphabetically sorted on SMN/Dark regions page (#6301)
-- Research variants only loaded when they overlap genes present in build 37, even if the case is analyzed using build 38 (#6322)
 - "likely benign" classification overwrites "benign" for ACMG (#6325)
+- Show pending comments for gene panels (#6327)
+- Warnings due to default build 37 used during variants loading even if case has build 38 (#6322, #6331 and #6348)
+- Removed unused imports on `commands/export/variant` module (#6334)
+- Region load command to auto-detect VCF chromosome prefix (#6343)
+- Search SNVs & SVs by gene when gene is only present on build 38 (#6340)
 
 ## [4.111.3]
 ### Fixed
