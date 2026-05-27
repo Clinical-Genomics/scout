@@ -1,5 +1,6 @@
 import logging
 import re
+from urllib.parse import urlencode
 
 import requests
 from flask import (
@@ -60,6 +61,8 @@ from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 LITVAR_SENSOR_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/{}"
+LITVAR_AUTOCOMPLETE_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2-api/variant/autocomplete/"
+LITVAR_DOCSUM_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2/docsum"
 
 variant_bp = Blueprint(
     "variant",
@@ -570,6 +573,60 @@ def litvar_sensor(rsid):
             "rsid": rsid,
             "link": link,
             "pmids_count": litvar_payload.get("pmids_count", 0),
+        }
+    )
+
+
+@variant_bp.route("/api/v1/litvar/autocomplete")
+def litvar_autocomplete():
+    """Resolve a LitVar deep link from an autocomplete query using the first rsID match."""
+    query = (request.args.get("query") or "").strip()
+    if not query:
+        return jsonify({"available": False, "error": "missing_query"}), 400
+
+    try:
+        response = requests.get(LITVAR_AUTOCOMPLETE_URL, params={"query": query}, timeout=5)
+    except requests.RequestException:
+        LOG.warning("LitVar autocomplete request failed for query %s", query)
+        return jsonify({"available": None, "error": "upstream_unreachable"}), 503
+
+    if response.status_code != 200:
+        LOG.warning(
+            "LitVar autocomplete returned status %s for query %s", response.status_code, query
+        )
+        return jsonify({"available": None, "error": "upstream_error"}), 503
+
+    try:
+        autocomplete_payload = response.json()
+    except ValueError:
+        LOG.warning("LitVar autocomplete payload could not be decoded for query %s", query)
+        return jsonify({"available": None, "error": "invalid_payload"}), 503
+
+    if not isinstance(autocomplete_payload, list):
+        LOG.warning("LitVar autocomplete payload had unexpected type for query %s", query)
+        return jsonify({"available": None, "error": "invalid_payload"}), 503
+
+    match = next(
+        (
+            item
+            for item in autocomplete_payload
+            if re.fullmatch(r"rs\d+", str(item.get("rsid", "")))
+        ),
+        None,
+    )
+    if not match:
+        return jsonify({"available": False, "query": query}), 200
+
+    rsid = match["rsid"]
+    link = f"{LITVAR_DOCSUM_URL}?{urlencode({'variant': f'litvar@{rsid}##', 'query': query})}"
+
+    return jsonify(
+        {
+            "available": True,
+            "query": query,
+            "rsid": rsid,
+            "link": link,
+            "pmids_count": match.get("pmids_count", 0),
         }
     )
 

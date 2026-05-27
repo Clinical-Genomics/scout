@@ -146,6 +146,69 @@ def test_litvar_sensor_upstream_error(app, mocker):
     assert resp.json == {"available": None, "error": "upstream_unreachable"}
 
 
+def test_litvar_autocomplete_available(app, mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {
+            "rsid": "rs707577",
+            "pmids_count": 34,
+            "name": "rs707577",
+        }
+    ]
+    mocker.patch("scout.server.blueprints.variant.views.requests.get", return_value=mock_response)
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
+
+    assert resp.status_code == 200
+    assert resp.json["available"] is True
+    assert resp.json["query"] == "PIGT"
+    assert resp.json["rsid"] == "rs707577"
+    assert resp.json["link"].endswith("variant=litvar%40rs707577%23%23&query=PIGT")
+
+
+def test_litvar_autocomplete_no_match(app, mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [{"name": "c.1342C>T"}]
+    mocker.patch("scout.server.blueprints.variant.views.requests.get", return_value=mock_response)
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
+
+    assert resp.status_code == 200
+    assert resp.json == {"available": False, "query": "PIGT"}
+
+
+def test_litvar_autocomplete_missing_query(app, mocker):
+    get_mock = mocker.patch("scout.server.blueprints.variant.views.requests.get")
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_autocomplete"))
+
+    assert resp.status_code == 400
+    assert resp.json == {"available": False, "error": "missing_query"}
+    get_mock.assert_not_called()
+
+
+def test_litvar_autocomplete_upstream_error(app, mocker):
+    mocker.patch(
+        "scout.server.blueprints.variant.views.requests.get",
+        side_effect=requests.RequestException("network error"),
+    )
+
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
+
+    assert resp.status_code == 503
+    assert resp.json == {"available": None, "error": "upstream_unreachable"}
+
+
 def test_variant(app, institute_obj, case_obj, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute

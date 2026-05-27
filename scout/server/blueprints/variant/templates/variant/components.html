@@ -510,6 +510,16 @@
         {% if gene.pubmed_link %}
             <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
         {% endif %}
+        {% set litvar_gene_query = gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol or gene.hgnc_id %}
+        <a
+          href="#"
+          class="btn btn-secondary text-white disabled litvar-gene-link"
+          rel="noopener"
+          referrerpolicy="no-referrer"
+          target="_blank"
+          aria-disabled="true"
+          data-litvar-gene-query="{{ litvar_gene_query }}"
+        >LitVar2</a>
         <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
         <a href="{{ gene.reactome_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
         <a href="{{ gene.string_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRING</a>
@@ -679,6 +689,50 @@
           })
           .catch(function(error) {
             console.warn('Could not verify LitVar ID ' + rsid + ', keeping fallback link.', error);
+          });
+      });
+    }
+
+    function verify_litvar_gene_links() {
+      // Resolve LitVar gene links asynchronously via Scout API.
+      const geneLinks = document.querySelectorAll('.litvar-gene-link[data-litvar-gene-query]');
+      const litvarAutocompleteUrl = '{{ url_for("variant.litvar_autocomplete") }}';
+
+      geneLinks.forEach(function(link) {
+        const query = link.dataset.litvarGeneQuery;
+        if (!query) {
+          return;
+        }
+
+        fetch(litvarAutocompleteUrl + '?query=' + encodeURIComponent(query))
+          .then(function(response) {
+            return response.json().then(function(data) {
+              return { ok: response.ok, data: data };
+            });
+          })
+          .then(function(result) {
+            if (result.ok && result.data.available && result.data.link) {
+              const tooltipText = 'Open LitVar2 for ' + query + ' (first hit: ' + result.data.rsid + ')';
+              link.href = result.data.link;
+              link.classList.remove('disabled');
+              link.setAttribute('aria-disabled', 'false');
+              set_tooltip_content(link, tooltipText);
+              return;
+            }
+
+            if (result.ok && result.data.available === false) {
+              const existingTooltip = bootstrap.Tooltip.getInstance(link);
+              if (existingTooltip) {
+                existingTooltip.dispose();
+              }
+              link.remove();
+              return;
+            }
+
+            console.warn('Could not resolve LitVar gene link for query: ' + query);
+          })
+          .catch(function(error) {
+            console.warn('Could not resolve LitVar gene link for query: ' + query, error);
           });
       });
     }
