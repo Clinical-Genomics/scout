@@ -330,7 +330,7 @@
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
 
-     $( window ).on( "load", function() {
+    globalThis.addEventListener('load', function() {
       verify_litvar_snp_ids();
       verify_litvar_gene_links();
     })

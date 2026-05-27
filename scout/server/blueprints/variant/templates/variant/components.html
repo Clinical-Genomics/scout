@@ -643,10 +643,11 @@
       if (existingTooltip) {
         existingTooltip.dispose();
       }
-      element.setAttribute('title', tooltipText);
-      element.setAttribute('data-bs-title', tooltipText);
-      element.setAttribute('data-bs-toggle', 'tooltip');
-      new bootstrap.Tooltip(element, {container: 'body'});
+      element.title = tooltipText;
+      element.dataset.bsTitle = tooltipText;
+      element.dataset.bsToggle = 'tooltip';
+      const tooltip = new bootstrap.Tooltip(element, {container: 'body'});
+      return tooltip;
     }
 
     function verify_litvar_snp_ids() {
