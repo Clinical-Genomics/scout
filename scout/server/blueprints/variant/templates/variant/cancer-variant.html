@@ -329,5 +329,10 @@
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
+
+     $( window ).on( "load", function() {
+      update_gene_has_full_coverage();
+      verify_litvar_snp_ids();
+    })
   </script>
 {% endblock %}
