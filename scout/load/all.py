@@ -5,6 +5,7 @@ from typing import Optional
 from scout.adapter.mongo import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
+from scout.server.utils import get_case_genome_build
 
 LOG = logging.getLogger(__name__)
 
@@ -75,6 +76,7 @@ def load_region(
             chrom=chrom,
             start=start,
             end=end,
+            build=get_case_genome_build(case_obj=case_obj),
         )
 
     # Update case variants count
