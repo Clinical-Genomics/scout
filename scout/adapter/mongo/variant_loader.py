@@ -663,15 +663,15 @@ class VariantLoader(object):
     def load_variants(
         self,
         case_obj: dict,
-        variant_type: str = "clinical",
-        category: str = "snv",
-        rank_threshold: float = None,
-        chrom: str = None,
-        start: int = None,
-        end: int = None,
-        gene_obj: dict = None,
-        custom_images: list = None,
-        build: str = "37",
+        variant_type: Optional[str] = "clinical",
+        category: Optional[str] = "snv",
+        rank_threshold: Optional[float] = None,
+        chrom: Optional[str] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        gene_obj: Optional[dict] = None,
+        custom_images: Optional[list] = None,
+        build: Optional[str] = None,
     ):
         """Load variants for a case into scout.
 
