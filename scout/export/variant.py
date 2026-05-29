@@ -40,7 +40,7 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
     nprocessed = 0
     for nprocessed, variant_obj in enumerate(managed_variants, 1):
         if nprocessed % 50 == 0:
-            LOG.info(f"Processed {i} variants")
+            LOG.info(f"Processed {nprocessed} variants")
 
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
             continue
