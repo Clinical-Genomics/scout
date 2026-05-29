@@ -660,6 +660,75 @@ class VariantLoader(object):
             LOG.warning("Variant file %s does not include any variants", variant_file)
             return False
 
+    def _get_build_genomic_info(self, build: str) -> dict:
+        """
+        Retrieve or compute build-specific genomic annotations.
+
+        This cache is shared across all cases and persists for the
+        lifetime of the adapter instance.
+
+        Cached data includes:
+            - hgncid_to_gene mapping
+            - genomic intervals
+        """
+        if not hasattr(self, "_build_cache"):
+            self._build_cache = {}
+
+        if build not in self._build_cache:
+            genes = list(self.all_genes(build=build))
+
+            self._build_cache[build] = {
+                "hgncid_to_gene": self.hgncid_to_gene(
+                    genes=genes,
+                    build=build,
+                ),
+                "genomic_intervals": self.get_coding_intervals(
+                    genes=genes,
+                    build=build,
+                ),
+            }
+
+        return self._build_cache[build]
+
+    def _get_gene_to_panels(self, case_obj: dict) -> dict:
+        """
+        Retrieve or compute case-specific gene-to-panel mapping.
+
+        This cache is scoped per case_id and is automatically cleared
+        when a new case is processed. Only the most recent case data
+        is kept in memory.
+        """
+        case_id = case_obj["_id"]
+
+        if not hasattr(self, "_last_case_id") or self._last_case_id != case_id:
+            self._gene_to_panels_cache = {}
+            self._last_case_id = case_id
+
+        if not hasattr(self, "_gene_to_panels_cache"):
+            self._gene_to_panels_cache = {}
+
+        if case_id not in self._gene_to_panels_cache:
+            self._gene_to_panels_cache[case_id] = self.gene_to_panels(case_obj)
+
+        return self._gene_to_panels_cache[case_id]
+
+    def _get_cached_genomic_info(self, case_obj: dict, build: str) -> dict:
+        """
+        Retrieve combined genomic context for a case and genome build.
+
+        This function composes two independent caches:
+        - Case-level cache: gene_to_panels
+        - Build-level cache: genomic annotations (HGNC mappings, intervals)
+        """
+        gene_to_panels = self._get_gene_to_panels(case_obj)
+        build_cache = self._get_build_genomic_info(build)
+
+        return {
+            "gene_to_panels": gene_to_panels,
+            "hgncid_to_gene": build_cache["hgncid_to_gene"],
+            "genomic_intervals": build_cache["genomic_intervals"],
+        }
+
     def load_variants(
         self,
         case_obj: dict,
@@ -697,11 +766,12 @@ class VariantLoader(object):
 
         nr_inserted = 0
 
-        gene_to_panels = self.gene_to_panels(case_obj)
-        build = build if build else get_case_genome_build(case_obj)
-        genes = list(self.all_genes(build=build))
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+        build = build or get_case_genome_build(case_obj)
+        cache = self._get_cached_genomic_info(case_obj=case_obj, build=build)
+
+        gene_to_panels = cache["gene_to_panels"]
+        hgncid_to_gene = cache["hgncid_to_gene"]
+        genomic_intervals = cache["genomic_intervals"]
 
         for vcf_file_key, vcf_dict in ORDERED_FILE_TYPE_MAP.items():
             if vcf_dict["variant_type"] != variant_type:
