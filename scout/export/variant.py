@@ -4,12 +4,12 @@ import urllib.parse
 from typing import Iterable, List
 
 import click
-import requests
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
 from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.models.managed_variant import ManagedVariant
+from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
 LOG = logging.getLogger(__name__)
 
@@ -30,15 +30,16 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
     """Perform liftover over a list of managed variants and print a list of lines formatted as a managed variants upload infile."""
 
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
-    LIFTOVER_API_URL = "https://liftover-xwkwwwxdwq-uc.a.run.app/liftover/"
+    client = BroadLiftoverApiClient()
 
     lifted_build = "38" if liftover_from == "37" else "37"
     build_to = "hg38" if lifted_build == "38" else "hg19"
     build_from = "hg19" if build_to == "hg38" else "hg38"
 
     nfailed = 0
-    for i, variant_obj in enumerate(managed_variants, 1):
-        if i % 50 == 0:
+    nprocessed = 0
+    for nprocessed, variant_obj in enumerate(managed_variants, 1):
+        if nprocessed % 50 == 0:
             LOG.info(f"Processed {i} variants")
 
         if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
@@ -52,17 +53,14 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
             alt = variant_obj.get("alternative")
 
         else:  # Do liftover
-            params = {
-                "hg": f"{build_from}-to-{build_to}",
-                "format": "variant",
-                "chrom": f"{variant_obj.get('chromosome')}",
-                "pos": variant_obj.get("position"),
-                "end": variant_obj.get("end"),
-                "ref": variant_obj.get("reference", ""),
-                "alt": variant_obj.get("alternative", ""),
-            }
-            response = requests.get(LIFTOVER_API_URL, params=params)
-            result = response.json()
+            result = client.liftover(
+                build_from=build_from,
+                chrom=variant_obj.get("chromosome"),
+                start=variant_obj.get("position"),
+                end=variant_obj.get("end"),
+                ref=variant_obj.get("reference", ""),
+                alt=variant_obj.get("alternative", ""),
+            )
 
             if "error" not in result:
                 chrom = result["output_chrom"].replace("chr", "")
@@ -72,7 +70,7 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
                 alt = result["output_alt"]
             else:
                 nfailed += 1
-                LOG.error(response.json())
+                LOG.error(result)
                 continue
 
         category = variant_obj.get("category", "snv")
@@ -88,10 +86,9 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
             f"{category};{sub_category};{lifted_build};{description};;{institutes}"
         )
 
-    LOG.info(f"Done. Total processed: {i} - total failed: {nfailed}")
+    LOG.info(f"Done. Total processed: {nprocessed} - total failed: {nfailed}")
     for line in export_lines:
         click.echo(line)
-    return export_lines
 
 
 def export_managed_variants(

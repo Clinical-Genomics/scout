@@ -150,9 +150,7 @@ def managed(
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
     if liftover_from:
-        lines = export_lift_over_managed_variants(
-            managed_variants=variants, liftover_from=liftover_from
-        )
+        export_lift_over_managed_variants(managed_variants=variants, liftover_from=liftover_from)
         return
 
     print_vcf(variants=variants, build=build, export_category="MANAGED")
