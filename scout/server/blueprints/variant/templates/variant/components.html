@@ -669,14 +669,14 @@
             });
           })
           .then(function(result) {
-            if (result.ok && result.data.available && result.data.link) {
+            if (result.ok && result.data.rsid && result.data.link) {
               const tooltipText = 'Click to view ' + rsid + ' on LitVar2 (' + result.data.pmids_count + ' articles)';
               link.href = result.data.link;
               set_tooltip_content(link, tooltipText);
               return;
             }
 
-            if (result.ok && result.data.available === false) {
+            if (result.ok && !result.data.rsid) {
               const existingTooltip = bootstrap.Tooltip.getInstance(link);
               if (existingTooltip) {
                 existingTooltip.dispose();
@@ -711,7 +711,7 @@
             });
           })
           .then(function(result) {
-            if (result.ok && result.data.available && result.data.link) {
+            if (result.ok && result.data.rsid && result.data.link) {
               const tooltipText = 'Open LitVar2 for ' + query + ' (first hit: ' + result.data.rsid + ')';
               link.href = result.data.link;
               link.classList.remove('disabled');
@@ -720,7 +720,7 @@
               return;
             }
 
-            if (result.ok && result.data.available === false) {
+            if (result.ok && !result.data.rsid) {
               const existingTooltip = bootstrap.Tooltip.getInstance(link);
               if (existingTooltip) {
                 existingTooltip.dispose();

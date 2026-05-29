@@ -98,7 +98,6 @@ def test_litvar_sensor_available(app, mocker):
         resp = client.get(url_for("variant.litvar_sensor", rsid="rs113488022"))
 
     assert resp.status_code == 200
-    assert resp.json["available"] is True
     assert resp.json["rsid"] == "rs113488022"
     assert resp.json["pmids_count"] == 31859
 
@@ -113,7 +112,7 @@ def test_litvar_sensor_not_found(app, mocker):
         resp = client.get(url_for("variant.litvar_sensor", rsid="rs999999999"))
 
     assert resp.status_code == 200
-    assert resp.json == {"available": False, "rsid": "rs999999999"}
+    assert resp.json == {}
 
 
 def test_litvar_sensor_invalid_rsid(app, mocker):
@@ -124,7 +123,7 @@ def test_litvar_sensor_invalid_rsid(app, mocker):
         resp = client.get(url_for("variant.litvar_sensor", rsid="not_an_rsid"))
 
     assert resp.status_code == 400
-    assert resp.json == {"available": False, "error": "invalid_rsid"}
+    assert resp.json == {}
     get_mock.assert_not_called()
 
 
@@ -139,7 +138,7 @@ def test_litvar_sensor_upstream_error(app, mocker):
         resp = client.get(url_for("variant.litvar_sensor", rsid="rs113488022"))
 
     assert resp.status_code == 503
-    assert resp.json == {"available": None, "error": "upstream_unreachable"}
+    assert resp.json == {}
 
 
 def test_litvar_autocomplete_available(app, mocker):
@@ -159,10 +158,10 @@ def test_litvar_autocomplete_available(app, mocker):
         resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
 
     assert resp.status_code == 200
-    assert resp.json["available"] is True
     assert resp.json["query"] == "PIGT"
     assert resp.json["rsid"] == "rs707577"
     assert resp.json["link"].endswith("variant=litvar%40rs707577%23%23&query=PIGT")
+    assert "available" not in resp.json
 
 
 def test_litvar_autocomplete_no_match(app, mocker):
@@ -176,7 +175,7 @@ def test_litvar_autocomplete_no_match(app, mocker):
         resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
 
     assert resp.status_code == 200
-    assert resp.json == {"available": False, "query": "PIGT"}
+    assert resp.json == {"query": "PIGT"}
 
 
 def test_litvar_autocomplete_missing_query(app, mocker):
@@ -187,7 +186,7 @@ def test_litvar_autocomplete_missing_query(app, mocker):
         resp = client.get(url_for("variant.litvar_autocomplete"))
 
     assert resp.status_code == 400
-    assert resp.json == {"available": False, "error": "missing_query"}
+    assert resp.json == {}
     get_mock.assert_not_called()
 
 
@@ -202,7 +201,7 @@ def test_litvar_autocomplete_upstream_error(app, mocker):
         resp = client.get(url_for("variant.litvar_autocomplete", query="PIGT"))
 
     assert resp.status_code == 503
-    assert resp.json == {"available": None, "error": "upstream_unreachable"}
+    assert resp.json == {}
 
 
 def test_variant(app, institute_obj, case_obj, variant_obj):

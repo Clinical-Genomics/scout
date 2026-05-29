@@ -535,41 +535,37 @@ def ccv():
 def litvar_sensor(rsid):
     """Check if an rsID is available in LitVar without triggering browser CORS restrictions.
 
-    Keep track of the status of the request to see if LitVar was really available.
-    200 + available: true with link and pmids_count when found
-    200 + available: false when not found
-    503 for upstream/network/payload errors
-    400 for invalid rsID format
+    Returns 200 with rsid, link and pmids_count when found; 200 with empty body when not found.
+    Returns 400 for an invalid rsID format, 503 for upstream/network/payload errors.
     """
     if not re.fullmatch(r"rs\d+", rsid):
-        return jsonify({"available": False, "error": "invalid_rsid"}), 400
+        return jsonify({}), 400
 
     try:
         response = requests.get(LITVAR_SENSOR_URL.format(rsid), timeout=5)
     except requests.RequestException:
         LOG.warning("LitVar request failed for %s", rsid)
-        return jsonify({"available": None, "error": "upstream_unreachable"}), 503
+        return jsonify({}), 503
 
     if response.status_code == 404:
-        return jsonify({"available": False, "rsid": rsid}), 200
+        return jsonify({}), 200
 
     if response.status_code != 200:
         LOG.warning("LitVar request returned status %s for %s", response.status_code, rsid)
-        return jsonify({"available": None, "error": "upstream_error"}), 503
+        return jsonify({}), 503
 
     try:
         litvar_payload = response.json()
     except ValueError:
         LOG.warning("LitVar response could not be decoded for %s", rsid)
-        return jsonify({"available": None, "error": "invalid_payload"}), 503
+        return jsonify({}), 503
 
     link = litvar_payload.get("link")
     if not link:
-        return jsonify({"available": False, "rsid": rsid}), 200
+        return jsonify({}), 200
 
     return jsonify(
         {
-            "available": True,
             "rsid": rsid,
             "link": link,
             "pmids_count": litvar_payload.get("pmids_count", 0),
@@ -582,29 +578,29 @@ def litvar_autocomplete():
     """Resolve a LitVar deep link from an autocomplete query using the first rsID match."""
     query = (request.args.get("query") or "").strip()
     if not query:
-        return jsonify({"available": False, "error": "missing_query"}), 400
+        return jsonify({}), 400
 
     try:
         response = requests.get(LITVAR_AUTOCOMPLETE_URL, params={"query": query}, timeout=5)
     except requests.RequestException:
         LOG.warning("LitVar autocomplete request failed for query %s", query)
-        return jsonify({"available": None, "error": "upstream_unreachable"}), 503
+        return jsonify({}), 503
 
     if response.status_code != 200:
         LOG.warning(
             "LitVar autocomplete returned status %s for query %s", response.status_code, query
         )
-        return jsonify({"available": None, "error": "upstream_error"}), 503
+        return jsonify({}), 503
 
     try:
         autocomplete_payload = response.json()
     except ValueError:
         LOG.warning("LitVar autocomplete payload could not be decoded for query %s", query)
-        return jsonify({"available": None, "error": "invalid_payload"}), 503
+        return jsonify({}), 503
 
     if not isinstance(autocomplete_payload, list):
         LOG.warning("LitVar autocomplete payload had unexpected type for query %s", query)
-        return jsonify({"available": None, "error": "invalid_payload"}), 503
+        return jsonify({}), 503
 
     match = next(
         (
@@ -615,14 +611,13 @@ def litvar_autocomplete():
         None,
     )
     if not match:
-        return jsonify({"available": False, "query": query}), 200
+        return jsonify({"query": query}), 200
 
     rsid = match["rsid"]
     link = f"{LITVAR_DOCSUM_URL}?{urlencode({'variant': f'litvar@{rsid}##', 'query': query})}"
 
     return jsonify(
         {
-            "available": True,
             "query": query,
             "rsid": rsid,
             "link": link,
