@@ -700,6 +700,10 @@ class VariantLoader(object):
         """
         case_id = case_obj["_id"]
 
+        if not hasattr(self, "_last_case_id") or self._last_case_id != case_id:
+            self._gene_to_panels_cache = {}
+            self._last_case_id = case_id
+
         if not hasattr(self, "_gene_to_panels_cache"):
             self._gene_to_panels_cache = {}
 
