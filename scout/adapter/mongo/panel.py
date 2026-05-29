@@ -4,7 +4,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Set, Union
 
 import pymongo
 from bson import ObjectId
@@ -545,6 +545,37 @@ class PanelHandler:
             ]
         )
         return set(item["_id"] for item in query_result)
+
+    def case_panels_to_genes(
+        self, case_obj: dict, panel_names: List[str], gene_format: str = "hgnc_id"
+    ) -> Set[Union[int, str]]:
+        """Return unique genes from selected panel names, preferring case panel versions.
+
+        For panels present on the case, use the version recorded for that case.
+        For other selectable panels (e.g. institute panels), fall back to latest.
+        """
+
+        genes: Set[Union[int, str]] = set()
+        case_panels = {panel["panel_name"]: panel for panel in case_obj.get("panels", [])}
+
+        for panel_name in panel_names:
+            panel_obj = None
+            case_panel = case_panels.get(panel_name)
+            if case_panel is not None:
+                panel_obj = self.gene_panel(panel_name, version=case_panel.get("version"))
+            if panel_obj is None:
+                panel_obj = self.gene_panel(panel_name)
+            if panel_obj is None:
+                continue
+
+            panel_genes = {
+                gene.get(gene_format)
+                for gene in panel_obj.get("genes", [])
+                if gene.get(gene_format) is not None
+            }
+            genes.update(panel_genes)
+
+        return genes
 
     def search_panels_hgnc_id(self, hgnc_id: int) -> list[dict]:
         """Return all panels and versions that contain given gene,list is sorted"""

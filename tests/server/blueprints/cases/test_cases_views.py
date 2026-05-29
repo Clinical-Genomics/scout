@@ -443,6 +443,102 @@ def test_case_sma_dark(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
+def test_case_sma_dark_gene_panel_filter(app, case_obj, institute_obj):
+    """Test SMA dark page loading with a selected gene panel filter."""
+
+    selected_panel = case_obj["panels"][0]["panel_name"]
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        resp = client.get(
+            url_for(
+                "cases.sma",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                gene_panels=[selected_panel],
+            )
+        )
+
+        assert resp.status_code == 200
+        assert bytes(selected_panel, "utf-8") in resp.data
+
+
+def test_case_sma_dark_hpo_panel_available(app, case_obj, institute_obj):
+    """SMA panel filter should include the virtual HPO panel option."""
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        resp = client.get(
+            url_for(
+                "cases.sma",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        assert resp.status_code == 200
+        assert b'value="hpo"' in resp.data
+
+
+def test_case_sma_dark_default_panels_selected(app, case_obj, institute_obj):
+    """SMA panel filter should default to case default panel(s) on initial page load."""
+
+    selected_panel = case_obj["panels"][0]["panel_name"]
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        resp = client.get(
+            url_for(
+                "cases.sma",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        assert resp.status_code == 200
+        selected_option_snippets = [
+            f'value="{selected_panel}" selected',
+            f'selected value="{selected_panel}"',
+            f'value="{selected_panel}" selected="selected"',
+            f'selected="selected" value="{selected_panel}"',
+        ]
+        assert any(bytes(snippet, "utf-8") in resp.data for snippet in selected_option_snippets)
+
+
+def test_case_sma_dark_explicit_empty_filter_shows_all(app, case_obj, institute_obj):
+    """Explicit empty panel filter should not be replaced by default case panel selection."""
+
+    selected_panel = case_obj["panels"][0]["panel_name"]
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        resp = client.get(
+            url_for(
+                "cases.sma",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                panel_filter_applied="1",
+            )
+        )
+
+        assert resp.status_code == 200
+        selected_option_snippets = [
+            f'value="{selected_panel}" selected',
+            f'selected value="{selected_panel}"',
+            f'value="{selected_panel}" selected="selected"',
+            f'selected="selected" value="{selected_panel}"',
+        ]
+        assert not any(bytes(snippet, "utf-8") in resp.data for snippet in selected_option_snippets)
+
+
 def test_case_fusion(app, fusion_case_obj, institute_obj):
     """Test the RNA fusion case page."""
 
