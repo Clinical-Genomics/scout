@@ -32,10 +32,6 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
     export_lines = [MANAGED_VARIANTS_INFILE_HEADER]
     client = BroadLiftoverApiClient()
 
-    lifted_build = "38" if liftover_from == "37" else "37"
-    build_to = "hg38" if lifted_build == "38" else "hg19"
-    build_from = "hg19" if build_to == "hg38" else "hg38"
-
     nfailed = 0
     nprocessed = 0
     for nprocessed, variant_obj in enumerate(managed_variants, 1):
@@ -54,7 +50,7 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
 
         else:  # Do liftover
             result = client.liftover(
-                build_from=build_from,
+                build_from=liftover_from,
                 chrom=variant_obj.get("chromosome"),
                 start=variant_obj.get("position"),
                 end=variant_obj.get("end"),
