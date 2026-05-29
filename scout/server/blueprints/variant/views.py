@@ -531,7 +531,7 @@ def ccv():
     return jsonify({"classification": classification, "conflicts": ccv_conflicts, **ccv_bayesian})
 
 
-@variant_bp.route("/api/v1/litvar/sensor/<rsid>")
+@variant_bp.route("/api/v1/litvar/sensor/<rsid>", methods=["GET"])
 def litvar_sensor(rsid):
     """Check if an rsID is available in LitVar without triggering browser CORS restrictions.
 
@@ -573,7 +573,7 @@ def litvar_sensor(rsid):
     )
 
 
-@variant_bp.route("/api/v1/litvar/autocomplete")
+@variant_bp.route("/api/v1/litvar/autocomplete", methods=["GET"])
 def litvar_autocomplete():
     """Resolve a LitVar deep link from an autocomplete query using the first rsID match."""
     query = (request.args.get("query") or "").strip()
