@@ -272,9 +272,9 @@ def print_vcf(
 ) -> None:
     """
     Print variants in VCF format.
+
     If a case_id is provided, the VCF header is extended with FORMAT
     and per-individual genotype columns.
-    If liftover_from is provided, then liftover is performed on variant before the export line is printed.
     """
 
     argv = [Path(sys.argv[0]).name] + sys.argv[1:]
@@ -291,7 +291,6 @@ def print_vcf(
         click.echo(line)
 
     for variant_obj in variants:
-
         if variant_string := get_vcf_entry(
             variant_obj,
             case_id=case_obj["_id"] if case_obj else None,
