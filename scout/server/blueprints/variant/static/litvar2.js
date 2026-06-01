@@ -41,6 +41,73 @@
   }
 
   /**
+   * Converts a Fetch `Response` to the `{ ok, data }` shape used by the
+   * LitVar handlers.
+   *
+   * @param {Response} response - The HTTP response returned by `fetch()`.
+   * @returns {Promise<{ok: boolean, data: Object}>} Parsed response payload.
+   */
+  function toResult(response) {
+    return response.json().then(function(data) {
+      return { ok: response.ok, data: data };
+    });
+  }
+
+  /**
+   * Applies the LitVar SNP verification result to the matching anchor.
+   *
+   * @param {Object} result - Parsed API result object.
+   * @param {HTMLElement} link - Anchor element being updated.
+   * @param {string} rsid - The rsID being verified.
+   */
+  function handleLitvarSnpResult(result, link, rsid) {
+    if (result.ok && result.data.rsid && result.data.link) {
+      const tooltipText =
+        "Click to view " +
+        rsid +
+        " on LitVar2 (" +
+        result.data.pmids_count +
+        " articles)";
+      link.href = result.data.link;
+      setTooltipContent(link, tooltipText);
+      return;
+    }
+
+    if (result.ok && !result.data.rsid) {
+      removeLinkWithTooltip(link);
+      return;
+    }
+
+    console.warn("Could not verify LitVar ID " + rsid + ", keeping fallback link.");
+  }
+
+  /**
+   * Applies the LitVar gene verification result to the matching anchor.
+   *
+   * @param {Object} result - Parsed API result object.
+   * @param {HTMLElement} link - Anchor element being updated.
+   * @param {string} query - Gene query string being verified.
+   */
+  function handleLitvarGeneResult(result, link, query) {
+    if (result.ok && result.data.rsid && result.data.link) {
+      const tooltipText =
+        "Open LitVar2 for " + query + " (first hit: " + result.data.rsid + ")";
+      link.href = result.data.link;
+      link.classList.remove("disabled");
+      link.ariaDisabled = "false";
+      setTooltipContent(link, tooltipText);
+      return;
+    }
+
+    if (result.ok && !result.data.rsid) {
+      removeLinkWithTooltip(link);
+      return;
+    }
+
+    console.warn("Could not resolve LitVar gene link for query: " + query);
+  }
+
+  /**
    * Verifies every `.litvar-snp-link[data-litvar-rsid]` element on the
    * page against the Scout LitVar sensor API.
    *
@@ -75,30 +142,9 @@
 
       let litvarApiUrl = sensorUrlTemplate.replace("__RSID__", encodeURIComponent(rsid));
       fetch(litvarApiUrl)
-        .then(function(response) {
-          return response.json().then(function(data) {
-            return { ok: response.ok, data: data };
-          });
-        })
+        .then(toResult)
         .then(function(result) {
-          if (result.ok && result.data.rsid && result.data.link) {
-            const tooltipText =
-              "Click to view " +
-              rsid +
-              " on LitVar2 (" +
-              result.data.pmids_count +
-              " articles)";
-            link.href = result.data.link;
-            setTooltipContent(link, tooltipText);
-            return;
-          }
-
-          if (result.ok && !result.data.rsid) {
-            removeLinkWithTooltip(link);
-            return;
-          }
-
-          console.warn("Could not verify LitVar ID " + rsid + ", keeping fallback link.");
+          handleLitvarSnpResult(result, link, rsid);
         })
         .catch(function(error) {
           console.warn("Could not verify LitVar ID " + rsid + ", keeping fallback link.", error);
@@ -136,28 +182,9 @@
       }
 
       fetch(autocompleteUrl + "?query=" + encodeURIComponent(query))
-        .then(function(response) {
-          return response.json().then(function(data) {
-            return { ok: response.ok, data: data };
-          });
-        })
+        .then(toResult)
         .then(function(result) {
-          if (result.ok && result.data.rsid && result.data.link) {
-            const tooltipText =
-              "Open LitVar2 for " + query + " (first hit: " + result.data.rsid + ")";
-            link.href = result.data.link;
-            link.classList.remove("disabled");
-            link.setAttribute("aria-disabled", "false");
-            setTooltipContent(link, tooltipText);
-            return;
-          }
-
-          if (result.ok && !result.data.rsid) {
-            removeLinkWithTooltip(link);
-            return;
-          }
-
-          console.warn("Could not resolve LitVar gene link for query: " + query);
+          handleLitvarGeneResult(result, link, query);
         })
         .catch(function(error) {
           console.warn("Could not resolve LitVar gene link for query: " + query, error);

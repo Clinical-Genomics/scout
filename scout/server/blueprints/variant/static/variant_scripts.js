@@ -26,7 +26,7 @@
   function initTooltips() {
    const tooltipTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-      let _ = new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
+      void new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
     });
   }
 
@@ -38,7 +38,7 @@
   function initPopovers() {
     const popoverTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.forEach(function(popoverTriggerEl) {
-      let _ = new bootstrap.Popover(popoverTriggerEl, {
+      void new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function(content) {
           if (global.DOMPurify && typeof global.DOMPurify.sanitize === "function") {
             return global.DOMPurify.sanitize(content);
@@ -143,7 +143,7 @@
     if (!global.$ || !$.fn || !$.fn.DataTable) {
       return;
     }
-    var table = document.getElementById(tableId);
+    const table = document.getElementById(tableId);
     if (!table || !table.rows || table.rows.length <= 5) {
       return;
     }
@@ -239,20 +239,16 @@
 
         if (hasCompleteCoverage) {
           coverageIndicatorButton.classList.add("btn-success");
-          coverageIndicatorButton.setAttribute(
-            "data-bs-original-title",
-            "Chanjo2 coverage is at 100% completeness."
-          );
+          coverageIndicatorButton.dataset.bsOriginalTitle =
+            "Chanjo2 coverage is at 100% completeness.";
           coverageIndicatorIcon.classList.add("fa-circle-check");
           coverageIndicatorText.textContent = "Complete";
           return;
         }
 
         coverageIndicatorButton.classList.add("btn-warning");
-        coverageIndicatorButton.setAttribute(
-          "data-bs-original-title",
-          "Note that Chanjo2 coverage is below 100% completeness."
-        );
+        coverageIndicatorButton.dataset.bsOriginalTitle =
+          "Note that Chanjo2 coverage is below 100% completeness.";
         coverageIndicatorIcon.classList.add("fa-triangle-exclamation");
         coverageIndicatorText.textContent = "Incomplete";
       });
