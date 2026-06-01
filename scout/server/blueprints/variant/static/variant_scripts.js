@@ -26,7 +26,7 @@
   function initTooltips() {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-      new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
+      var _ = new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
     });
   }
 
@@ -38,7 +38,7 @@
   function initPopovers() {
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.forEach(function(popoverTriggerEl) {
-      new bootstrap.Popover(popoverTriggerEl, {
+      var _ = new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function(content) {
           if (global.DOMPurify && typeof global.DOMPurify.sanitize === "function") {
             return global.DOMPurify.sanitize(content);
