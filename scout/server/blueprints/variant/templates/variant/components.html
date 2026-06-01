@@ -437,23 +437,6 @@
       </div><!--end card-body-->
     </div><!--end collapse-->
   </div><!--end card-->
-
-  {# Rotate chevron when expanded #}
-  <script>
-    (function () {
-      var el = document.getElementById('matchingVariantsCollapse');
-      if (!el) return;
-      el.addEventListener('show.bs.collapse', function () {
-        var chevron = el.closest('.card').querySelector('.matching-variants-chevron');
-        if (chevron) chevron.style.transform = 'rotate(180deg)';
-      });
-      el.addEventListener('hide.bs.collapse', function () {
-        var chevron = el.closest('.card').querySelector('.matching-variants-chevron');
-        if (chevron) chevron.style.transform = 'rotate(0deg)';
-      });
-    })();
-  </script>
-
 {% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}
@@ -510,6 +493,15 @@
         {% if gene.pubmed_link %}
             <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
         {% endif %}
+        <a
+          href="#"
+          class="btn btn-secondary text-white disabled litvar-gene-link"
+          rel="noopener"
+          referrerpolicy="no-referrer"
+          target="_blank"
+          aria-disabled="true"
+          data-litvar-gene-query="{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol }}"
+        >LitVar2</a>
         <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
         <a href="{{ gene.reactome_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
         <a href="{{ gene.string_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRING</a>
@@ -540,96 +532,32 @@
 {% endmacro %}
 
 {% macro variant_scripts() %}
+  <script src="{{ url_for('variant.static', filename='variant_scripts.js') }}"></script>
   <script>
-     var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
-      triggerGenesTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
-      triggerTransTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body'})
-    })
-
-    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-      $($.fn.dataTable.tables(true)).DataTable()
-      .columns.adjust().draw();
-    });
-
-    $('select[multiple]').selectpicker({
-      width: '100%'
-    });
-
-    $('.js-copy').click(function() {
-      var text = $(this).attr('data-copy');
-      var el = $(this);
-      copyToClipboard(text, el);
-    });
-
-    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
-    function copyToClipboard(text, el) {
-      var copyTest = document.queryCommandSupported('copy');
-      var elOriginalText = el.attr('data-original-title');
-
-      if (copyTest === true) {
-        var copyTextArea = document.createElement("textarea");
-        copyTextArea.value = text;
-        document.body.appendChild(copyTextArea);
-        copyTextArea.select();
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'Copied!' : 'Whoops, not copied!';
-          el.attr('data-original-title', msg).tooltip('show');
-        } catch (err) {
-          console.log('Oops, unable to copy');
-        }
-        document.body.removeChild(copyTextArea);
-        el.attr('data-original-title', elOriginalText);
-      } else {
-        // Fallback if browser doesn't support .execCommand('copy')
-        window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
-      }
-    }
-
-    function set_scrolly_table(table_id) {
-      if (document.getElementById(table_id).rows.length > 5) {
-        $('#' + table_id).DataTable({
-          scrollY: 350,
-          stripeClasses: [],
-          scrollCollapse: true,
-          paging: false,
-          searching: false,
-          ordering: true,
-          info: false})
-      }
-    }
-
+    init_variant_scripts();
   </script>
 {% endmacro %}
+
+{% macro litvar2_scripts() %}
+  <script src="{{ url_for('variant.static', filename='litvar2.js') }}"></script>
+  <script>
+    globalThis.addEventListener('load', function() {
+      init_litvar2({
+        sensorUrlTemplate: '{{ url_for("variant.litvar_sensor", rsid="__RSID__") }}',
+        autocompleteUrl: '{{ url_for("variant.litvar_autocomplete") }}'
+      });
+    });
+  </script>
+{% endmacro %}
+
+{% macro variant_coverage_scripts(institute, case, variant) %}
+  <script>
+    globalThis.addEventListener('load', function() {
+      update_gene_has_full_coverage('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}');
+    });
+  </script>
+{% endmacro %}
+
 
 {% macro variant_genes(variant) %}
 {% if variant.genes %}
