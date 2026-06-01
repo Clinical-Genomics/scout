@@ -55,6 +55,10 @@
   <div class="row" id="body-row">
     {{ panel_filter_card() }}
 
+    {% if case.paraphrase %}
+      {{ paraphrase_case_page() }}
+    {% endif %}
+
     {% if case.smn_tsv %}
       {% if show_smn_section %}
         {{ smn_case_page() }}
@@ -64,11 +68,7 @@
         </div>
       {% endif %}
     {% endif %}
-
-    {% if case.paraphrase %}
-      {{ paraphrase_case_page() }}
-    {% endif %}
-
+  
     <div class="container_spaced">
       <div class="row">
         <div class="col-4">
