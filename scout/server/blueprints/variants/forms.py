@@ -115,7 +115,7 @@ class VariantFiltersForm(FlaskForm):
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
     omim_genetic_models = SelectMultipleField(
-        label="OMIM genetic models",
+        label="OMIM Genetic Models",
         choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
     )
     genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
