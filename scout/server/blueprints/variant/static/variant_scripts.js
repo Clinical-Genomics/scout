@@ -185,8 +185,8 @@
    */
   function hideCoverageIndicators() {
     let elements = document.getElementsByClassName("complete-coverage-indicator");
-    for (let i = 0; i < elements.length; i += 1) {
-      elements[i].style.display = "none";
+    for (let element of elements) {
+      element.style.display = "none";
     }
   }
 
