@@ -15,7 +15,7 @@
     if (typeof global.set_tooltip_content === "function") {
       return global.set_tooltip_content(element, tooltipText);
     }
-    var existingTooltip = bootstrap.Tooltip.getInstance(element);
+    let existingTooltip = bootstrap.Tooltip.getInstance(element);
     if (existingTooltip) {
       existingTooltip.dispose();
     }
@@ -33,7 +33,7 @@
    * @param {HTMLElement} link - The anchor element to dispose and remove.
    */
   function removeLinkWithTooltip(link) {
-    var existingTooltip = bootstrap.Tooltip.getInstance(link);
+    let existingTooltip = bootstrap.Tooltip.getInstance(link);
     if (existingTooltip) {
       existingTooltip.dispose();
     }
@@ -66,14 +66,14 @@
       return;
     }
 
-    var snpLinks = document.querySelectorAll(".litvar-snp-link[data-litvar-rsid]");
+    let snpLinks = document.querySelectorAll(".litvar-snp-link[data-litvar-rsid]");
     snpLinks.forEach(function(link) {
-      var rsid = link.dataset.litvarRsid;
+      let rsid = link.dataset.litvarRsid;
       if (!rsid) {
         return;
       }
 
-      var litvarApiUrl = sensorUrlTemplate.replace("__RSID__", encodeURIComponent(rsid));
+      let litvarApiUrl = sensorUrlTemplate.replace("__RSID__", encodeURIComponent(rsid));
       fetch(litvarApiUrl)
         .then(function(response) {
           return response.json().then(function(data) {
@@ -82,7 +82,7 @@
         })
         .then(function(result) {
           if (result.ok && result.data.rsid && result.data.link) {
-            var tooltipText =
+            const tooltipText =
               "Click to view " +
               rsid +
               " on LitVar2 (" +
@@ -128,9 +128,9 @@
       return;
     }
 
-    var geneLinks = document.querySelectorAll(".litvar-gene-link[data-litvar-gene-query]");
+    const geneLinks = document.querySelectorAll(".litvar-gene-link[data-litvar-gene-query]");
     geneLinks.forEach(function(link) {
-      var query = link.dataset.litvarGeneQuery;
+      let query = link.dataset.litvarGeneQuery;
       if (!query) {
         return;
       }
@@ -143,7 +143,7 @@
         })
         .then(function(result) {
           if (result.ok && result.data.rsid && result.data.link) {
-            var tooltipText =
+            const tooltipText =
               "Open LitVar2 for " + query + " (first hit: " + result.data.rsid + ")";
             link.href = result.data.link;
             link.classList.remove("disabled");
@@ -196,7 +196,7 @@
    *   autocomplete endpoint (query string appended at runtime).
    */
   function initLitvar2(options) {
-    var opts = options || {};
+    let opts = options || {};
     verifyLitvarSnpIds(opts.sensorUrlTemplate);
     verifyLitvarGeneLinks(opts.autocompleteUrl);
   }

@@ -8,9 +8,9 @@
    * @param {string} selector - CSS selector that targets one or more tab trigger elements.
    */
   function initBootstrapTab(selector) {
-    var tabs = [].slice.call(document.querySelectorAll(selector));
+    let tabs = Array.prototype.slice.call(document.querySelectorAll(selector));
     tabs.forEach(function(triggerEl) {
-      var tabTrigger = new bootstrap.Tab(triggerEl);
+      let tabTrigger = new bootstrap.Tab(triggerEl);
       triggerEl.addEventListener("click", function(event) {
         event.preventDefault();
         tabTrigger.show();
@@ -24,9 +24,9 @@
    * `<body>` so it is never clipped by overflow-hidden parents.
    */
   function initTooltips() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+   const tooltipTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-      var _ = new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
+      let _ = new bootstrap.Tooltip(tooltipTriggerEl, { container: "body" });
     });
   }
 
@@ -36,9 +36,9 @@
    * with DOMPurify when it is available.
    */
   function initPopovers() {
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    const popoverTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.forEach(function(popoverTriggerEl) {
-      var _ = new bootstrap.Popover(popoverTriggerEl, {
+      let _ = new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function(content) {
           if (global.DOMPurify && typeof global.DOMPurify.sanitize === "function") {
             return global.DOMPurify.sanitize(content);
@@ -91,17 +91,17 @@
    *                        title is temporarily updated.
    */
   function copyToClipboard(text, el) {
-    var copyTest = document.queryCommandSupported("copy");
-    var elOriginalText = el.attr("data-original-title");
+    const copyTest = document.queryCommandSupported("copy");
+    const elOriginalText = el.attr("data-original-title");
 
     if (copyTest === true) {
-      var copyTextArea = document.createElement("textarea");
+      let copyTextArea = document.createElement("textarea");
       copyTextArea.value = text;
       document.body.appendChild(copyTextArea);
       copyTextArea.select();
       try {
-        var successful = document.execCommand("copy");
-        var msg = successful ? "Copied!" : "Whoops, not copied!";
+        const successful = document.execCommand("copy");
+        const msg = successful ? "Copied!" : "Whoops, not copied!";
         el.attr("data-original-title", msg).tooltip("show");
       } catch (err) {
         console.warn("Unable to copy text to clipboard", err);
@@ -125,8 +125,8 @@
     $(".js-copy")
       .off("click.scoutCopy")
       .on("click.scoutCopy", function() {
-        var text = $(this).attr("data-copy");
-        var el = $(this);
+        const text = $(this).attr("data-copy");
+        const el = $(this);
         copyToClipboard(text, el);
       });
   }
@@ -168,7 +168,7 @@
    * @returns {bootstrap.Tooltip} The newly created Tooltip instance.
    */
   function setTooltipContent(element, tooltipText) {
-    var existingTooltip = bootstrap.Tooltip.getInstance(element);
+    let existingTooltip = bootstrap.Tooltip.getInstance(element);
     if (existingTooltip) {
       existingTooltip.dispose();
     }
@@ -184,8 +184,8 @@
    * API returns no data or when the request fails.
    */
   function hideCoverageIndicators() {
-    var elements = document.getElementsByClassName("complete-coverage-indicator");
-    for (var i = 0; i < elements.length; i += 1) {
+    let elements = document.getElementsByClassName("complete-coverage-indicator");
+    for (let i = 0; i < elements.length; i += 1) {
       elements[i].style.display = "none";
     }
   }
@@ -211,19 +211,19 @@
       return;
     }
     $.getJSON(coverageUrl, function(data) {
-      var coverageByGene = data && data.gene_has_full_coverage ? data.gene_has_full_coverage : {};
+      const coverageByGene = data && data.gene_has_full_coverage ? data.gene_has_full_coverage : {};
       if ($.isEmptyObject(coverageByGene)) {
         hideCoverageIndicators();
         return;
       }
 
       Object.entries(coverageByGene).forEach(function(entry) {
-        var hgncId = entry[0];
-        var hasCompleteCoverage = entry[1];
+        const hgncId = entry[0];
+        const hasCompleteCoverage = entry[1];
 
-        var coverageIndicatorButton = document.getElementById("coverage-indicator-" + hgncId + "-button");
-        var coverageIndicatorIcon = document.getElementById("coverage-indicator-" + hgncId + "-icon");
-        var coverageIndicatorText = document.getElementById("coverage-indicator-" + hgncId + "-text");
+        let coverageIndicatorButton = document.getElementById("coverage-indicator-" + hgncId + "-button");
+        let coverageIndicatorIcon = document.getElementById("coverage-indicator-" + hgncId + "-icon");
+        let coverageIndicatorText = document.getElementById("coverage-indicator-" + hgncId + "-text");
 
         if (!coverageIndicatorButton || !coverageIndicatorIcon || !coverageIndicatorText) {
           return;
@@ -273,20 +273,20 @@
    *   the Bootstrap collapse element to observe.
    */
   function initMatchingVariantsChevron(collapseId) {
-    var collapseElement = document.getElementById(collapseId || "matchingVariantsCollapse");
+    let collapseElement = document.getElementById(collapseId || "matchingVariantsCollapse");
     if (!collapseElement) {
       return;
     }
 
     collapseElement.addEventListener("show.bs.collapse", function() {
-      var chevron = collapseElement.closest(".card").querySelector(".matching-variants-chevron");
+      let chevron = collapseElement.closest(".card").querySelector(".matching-variants-chevron");
       if (chevron) {
         chevron.style.transform = "rotate(180deg)";
       }
     });
 
     collapseElement.addEventListener("hide.bs.collapse", function() {
-      var chevron = collapseElement.closest(".card").querySelector(".matching-variants-chevron");
+      let chevron = collapseElement.closest(".card").querySelector(".matching-variants-chevron");
       if (chevron) {
         chevron.style.transform = "rotate(0deg)";
       }
@@ -307,7 +307,7 @@
     if (!element) {
       return;
     }
-    var icon = element.querySelector(".rotate-icon") || element.firstElementChild;
+    let icon = element.querySelector(".rotate-icon") || element.firstElementChild;
     if (!icon) {
       return;
     }
@@ -333,8 +333,8 @@
    *   tabs: `["#nav-genes-tab", "#nav-transcripts-tab"]`.
    */
   function initVariantScripts(options) {
-    var opts = options || {};
-    var tabSelectors = opts.tabSelectors || ["#nav-genes-tab", "#nav-transcripts-tab"];
+    const opts = options || {};
+    const tabSelectors = opts.tabSelectors || ["#nav-genes-tab", "#nav-transcripts-tab"];
 
     tabSelectors.forEach(function(tabSelector) {
       initBootstrapTab(tabSelector);
