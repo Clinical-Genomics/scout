@@ -36,21 +36,24 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
 
     nfailed = 0
     nprocessed = 0
+
     for nprocessed, variant_obj in enumerate(managed_variants, 1):
         if nprocessed % 50 == 0:
             LOG.info(f"Processed {nprocessed} variants")
 
-        if variant_obj.get("category", "snv") not in ["snv", "cancer_snv"]:
+        category = variant_obj.get("category", "snv")
+        if category not in ["snv", "cancer_snv"]:
             continue
 
-        if variant_obj.get("build") == lifted_build:
+        build = variant_obj.get("build")
+
+        if build == lifted_build:
             chrom = variant_obj["chromosome"]
             pos = variant_obj["position"]
-            end = variant_obj.get("end", variant_obj["position"])
+            end = variant_obj.get("end", pos)
             ref = variant_obj.get("reference")
             alt = variant_obj.get("alternative")
-
-        else:  # Do liftover
+        else:
             result = client.liftover(
                 build_from=liftover_from,
                 chrom=variant_obj.get("chromosome"),
@@ -60,23 +63,25 @@ def export_lift_over_managed_variants(managed_variants: Iterable, liftover_from:
                 alt=variant_obj.get("alternative", ""),
             )
 
-            if "error" not in result:
-                chrom = result["output_chrom"].replace("chr", "")
-                pos = result["output_pos"]
-                end = result.get("output_end") or result.get("output_pos")
-                ref = result["output_ref"]
-                alt = result["output_alt"]
-            else:
+            if "error" in result:
                 nfailed += 1
                 LOG.error(result)
                 continue
 
-        category = variant_obj.get("category", "snv")
+            chrom = result["output_chrom"].replace("chr", "")
+            pos = result["output_pos"]
+            end = result.get("output_end") or result.get("output_pos")
+            ref = result["output_ref"]
+            alt = result["output_alt"]
+
         sub_category = variant_obj.get("sub_category", "snv")
-        if "(causatives" not in variant_obj.get("description"):
-            description = variant_obj.get("description") + f" (managed, build{liftover_from})"
+
+        desc = variant_obj.get("description")
+        if "(causatives" not in (desc or ""):
+            description = f"{desc} (managed, build{liftover_from})"
         else:
-            description = variant_obj.get("description")
+            description = desc
+
         institutes = ",".join(variant_obj.get("institute") or [])
 
         export_lines.append(
