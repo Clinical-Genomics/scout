@@ -320,7 +320,7 @@
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-2">
+  <div class="col-1-5">
   {% if type == "snv" %}
     {{ form.symbol_file.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
     {{ form.symbol_file(class="form-control-file") }}
@@ -332,19 +332,23 @@
     {{ form.mei_name(class="form-control", data_style="btn-secondary") }}
   {% endif %}
   </div>
-  <div class="col-2">
+  <div class="col-1-5">
     {{ form.region_annotations.label(class="control-label") }}
     {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-2">
+  <div class="col-1-5">
     {{ form.functional_annotations.label(class="control-label") }}
     {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-2">
+  <div class="col-1-5">
     {{ form.genetic_models.label(class="control-label") }}
     {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
   </div>
-  <div class="col-2">
+  <div class="col-1-5">
+    {{ form.omim_genetic_models.label(class="control-label") }}
+    {{ form.omim_genetic_models(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-1-5">
     {{ form.genotypes.label(class="control-label") }}
     {{ form.genotypes(class="selectpicker", data_style="btn-secondary") }}
   </div>

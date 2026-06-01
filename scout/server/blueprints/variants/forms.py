@@ -36,6 +36,7 @@ from scout.constants import (
     SV_TYPES,
     VARIANT_GENOTYPES,
 )
+from scout.constants.disease_parsing import DISEASE_INHERITANCE_TERMS_MAPPER
 from scout.constants.filters import (
     METHBAT_IMPRINT_LABEL,
     METHBAT_PROMOTER_LABEL,
@@ -113,6 +114,10 @@ class VariantFiltersForm(FlaskForm):
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
+    omim_genetic_models = SelectMultipleField(
+        label="OMIM genetic models",
+        choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
+    )
     genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
 
     cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
