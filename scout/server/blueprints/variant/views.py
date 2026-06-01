@@ -1,5 +1,8 @@
 import logging
+import re
+from urllib.parse import urlencode
 
+import requests
 from flask import (
     Blueprint,
     current_app,
@@ -57,12 +60,16 @@ from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 from scout.utils.ccv import get_ccv, get_ccv_conflicts, get_ccv_temperature
 
 LOG = logging.getLogger(__name__)
+LITVAR_SENSOR_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2-api/sensor/{}"
+LITVAR_AUTOCOMPLETE_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2-api/variant/autocomplete/"
+LITVAR_DOCSUM_URL = "https://www.ncbi.nlm.nih.gov/research/litvar2/docsum"
 
 variant_bp = Blueprint(
     "variant",
     __name__,
     template_folder="templates",
     static_folder="static",
+    static_url_path="/variant/static",
 )
 
 
@@ -523,6 +530,101 @@ def ccv():
     ccv_bayesian = get_ccv_temperature(criteria)
     ccv_conflicts = get_ccv_conflicts(criteria)
     return jsonify({"classification": classification, "conflicts": ccv_conflicts, **ccv_bayesian})
+
+
+@variant_bp.route("/api/v1/litvar/sensor/<rsid>", methods=["GET"])
+def litvar_sensor(rsid):
+    """Check if an rsID is available in LitVar without triggering browser CORS restrictions.
+
+    Returns 200 with rsid, link and pmids_count when found; 200 with empty body when not found.
+    Returns 400 for an invalid rsID format, 503 for upstream/network/payload errors.
+    """
+    if not re.fullmatch(r"rs\d+", rsid):
+        return jsonify({}), 400
+
+    try:
+        response = requests.get(LITVAR_SENSOR_URL.format(rsid), timeout=5)
+    except requests.RequestException:
+        LOG.warning("LitVar request failed for %s", rsid)
+        return jsonify({}), 503
+
+    if response.status_code == 404:
+        return jsonify({}), 200
+
+    if response.status_code != 200:
+        LOG.warning("LitVar request returned status %s for %s", response.status_code, rsid)
+        return jsonify({}), 503
+
+    try:
+        litvar_payload = response.json()
+    except ValueError:
+        LOG.warning("LitVar response could not be decoded for %s", rsid)
+        return jsonify({}), 503
+
+    link = litvar_payload.get("link")
+    if not link:
+        return jsonify({}), 200
+
+    return jsonify(
+        {
+            "rsid": rsid,
+            "link": link,
+            "pmids_count": litvar_payload.get("pmids_count", 0),
+        }
+    )
+
+
+@variant_bp.route("/api/v1/litvar/autocomplete", methods=["GET"])
+def litvar_autocomplete():
+    """Resolve a LitVar deep link from an autocomplete query using the first rsID match."""
+    query = (request.args.get("query") or "").strip()
+    if not query:
+        return jsonify({}), 400
+
+    try:
+        response = requests.get(LITVAR_AUTOCOMPLETE_URL, params={"query": query}, timeout=5)
+    except requests.RequestException:
+        LOG.warning("LitVar autocomplete request failed for query %s", query)
+        return jsonify({}), 503
+
+    if response.status_code != 200:
+        LOG.warning(
+            "LitVar autocomplete returned status %s for query %s", response.status_code, query
+        )
+        return jsonify({}), 503
+
+    try:
+        autocomplete_payload = response.json()
+    except ValueError:
+        LOG.warning("LitVar autocomplete payload could not be decoded for query %s", query)
+        return jsonify({}), 503
+
+    if not isinstance(autocomplete_payload, list):
+        LOG.warning("LitVar autocomplete payload had unexpected type for query %s", query)
+        return jsonify({}), 503
+
+    match = next(
+        (
+            item
+            for item in autocomplete_payload
+            if re.fullmatch(r"rs\d+", str(item.get("rsid", "")))
+        ),
+        None,
+    )
+    if not match:
+        return jsonify({"query": query}), 200
+
+    rsid = match["rsid"]
+    link = f"{LITVAR_DOCSUM_URL}?{urlencode({'variant': f'litvar@{rsid}##', 'query': query})}"
+
+    return jsonify(
+        {
+            "query": query,
+            "rsid": rsid,
+            "link": link,
+            "pmids_count": match.get("pmids_count", 0),
+        }
+    )
 
 
 @variant_bp.route(
