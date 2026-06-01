@@ -530,6 +530,10 @@ def test_case_sma_dark_explicit_empty_filter_shows_all(app, case_obj, institute_
         )
 
         assert resp.status_code == 200
+        assert b'aria-controls="collapseFilters"' in resp.data
+        assert b'aria-expanded="true"' in resp.data
+        assert b'id="collapseFilters"' in resp.data
+        assert b"card-body panel-collapse collapse show" in resp.data
         selected_option_snippets = [
             f'value="{selected_panel}" selected',
             f'selected value="{selected_panel}"',

@@ -32,6 +32,14 @@
     line-height: 1.25;
     vertical-align: top;
   }
+
+  /* Keep chevron direction synced with collapse open/closed state */
+  .chevron-icon {
+    transition: transform 0.3s ease;
+  }
+  button[aria-expanded="true"] .chevron-icon {
+    transform: rotate(90deg);
+  }
 </style>
 {% endblock %}
 
@@ -89,10 +97,20 @@
 {% macro panel_filter_card() %}
   {% if sma_filter_form.gene_panels.choices %}
     <div class="container_spaced col-12">
-      <div class="card">
-        <div class="card-title">Filter SMN - Dark regions</div>
-        <div class="card-body">
-          <form class="row g-2" method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
+      <div class="card panel-default" id="filter-accordion">
+        <div class="card-header">
+          <button class="d-flex align-items-center btn btn-link p-0 text-decoration-none {{ 'collapsed' if not expand_search }}"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseFilters"
+            aria-expanded="{{ 'true' if expand_search else 'false' }}"
+            aria-controls="collapseFilters">
+            <strong class="me-2">Filters SMN - Dark regions</strong>
+            <i class="fa fa-chevron-right chevron-icon"></i>
+          </button>
+        </div>
+        <form class="row g-2" method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
+          <div class="card-body panel-collapse collapse{{ ' show' if expand_search }}" id="collapseFilters">
             {{ sma_filter_form.panel_filter_applied(value="1") }}
             <div class="col-md-8">
               <label class="form-label mb-1" for="gene-panel-filter">Gene panels</label>
@@ -109,17 +127,18 @@
               <button type="submit" class="btn btn-secondary btn-sm me-2">Apply filter</button>
               <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   {% endif %}
 {% endmacro %}
 
 {% macro paraphrase_case_page() %}
+
 <div class="container_spaced col-12">
   <div class="card">
-    <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> annotation of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a> - Individuals</div>
+    <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> annotation of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a></div>
     <div class="card-body">
       <div class="accordion accordion-flush" id="paraphrase">
       {% if paraphrase_regions|length == 0 %}

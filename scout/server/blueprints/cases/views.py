@@ -149,7 +149,9 @@ def sma(institute_id, case_name):
 
     activate_case(store, institute_obj, case_obj, current_user)
 
-    return dict(format="html", sma_filter_form=sma_filter_form, **data)
+    return dict(
+        format="html", sma_filter_form=sma_filter_form, expand_search=panel_filter_applied, **data
+    )
 
 
 @cases_bp.route("/<institute_id>/<case_name>/bionano", methods=["GET"])
