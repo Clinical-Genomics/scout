@@ -68,7 +68,7 @@
         </div>
       {% endif %}
     {% endif %}
-  
+
     <div class="container_spaced">
       <div class="row">
         <div class="col-4">
@@ -109,10 +109,11 @@
             <i class="fa fa-chevron-right chevron-icon"></i>
           </button>
         </div>
-        <form class="row g-2" method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
+        <form method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
           <div class="card-body panel-collapse collapse{{ ' show' if expand_search }}" id="collapseFilters">
+            <div class="row">
             {{ sma_filter_form.panel_filter_applied(value="1") }}
-            <div class="col-md-8">
+            <div class="col-6">
               <label class="form-label mb-1" for="gene-panel-filter">Gene panels</label>
               {{ sma_filter_form.gene_panels(
                 id="gene-panel-filter",
@@ -123,9 +124,12 @@
                 title="Select gene panel(s)"
               ) }}
             </div>
-            <div class="col-md-4 d-flex align-items-end">
-              <button type="submit" class="btn btn-secondary btn-sm me-2">Apply filter</button>
-              <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4 d-flex  align-items-end">
+                <button type="submit" class="btn btn-primary btn-sm me-2">Apply filter</button>
+                <a class="btn btn-secondary btn-sm" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
+              </div>
             </div>
           </div>
         </form>
