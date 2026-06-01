@@ -148,8 +148,6 @@
 
 {% block scripts %}
   {{ super() }}
-  {# variant_scripts() initialises tooltips, popovers, selectpickers and copy buttons.
-     This page has no tab navigation so the default tab selectors are no-ops. #}
   {{ variant_scripts() }}
 {% endblock %}
 
