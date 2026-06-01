@@ -4,7 +4,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
-{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts  %}
+{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, litvar2_scripts, matching_variants, panel_classify, variant_scripts  %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
@@ -314,25 +314,13 @@
   {{ super() }}
   {{ external_scripts() }}
   {{ variant_scripts() }}
+  {{ litvar2_scripts() }}
   <script src="{{ url_for('static', filename='token_utils.js') }}"></script>
   <script>
-    var triggerProtTabList = [].slice.call(document.querySelectorAll('#nav-proteins-tab'))
-      triggerProtTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
+    init_bootstrap_tab('#nav-proteins-tab')
 
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
-
-    globalThis.addEventListener('load', function() {
-      verify_litvar_snp_ids();
-      verify_litvar_gene_links();
-    })
   </script>
 {% endblock %}

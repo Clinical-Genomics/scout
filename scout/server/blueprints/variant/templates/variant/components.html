@@ -437,23 +437,6 @@
       </div><!--end card-body-->
     </div><!--end collapse-->
   </div><!--end card-->
-
-  {# Rotate chevron when expanded #}
-  <script>
-    (function () {
-      var el = document.getElementById('matchingVariantsCollapse');
-      if (!el) return;
-      el.addEventListener('show.bs.collapse', function () {
-        var chevron = el.closest('.card').querySelector('.matching-variants-chevron');
-        if (chevron) chevron.style.transform = 'rotate(180deg)';
-      });
-      el.addEventListener('hide.bs.collapse', function () {
-        var chevron = el.closest('.card').querySelector('.matching-variants-chevron');
-        if (chevron) chevron.style.transform = 'rotate(0deg)';
-      });
-    })();
-  </script>
-
 {% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}
@@ -549,240 +532,29 @@
 {% endmacro %}
 
 {% macro variant_scripts() %}
+  <script src="{{ url_for('variant.static', filename='variant_scripts.js') }}"></script>
   <script>
-     var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
-      triggerGenesTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
+    init_variant_scripts();
+  </script>
+{% endmacro %}
 
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
-      triggerTransTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body'})
-    })
-
-    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-      $($.fn.dataTable.tables(true)).DataTable()
-      .columns.adjust().draw();
-    });
-
-    $('select[multiple]').selectpicker({
-      width: '100%'
-    });
-
-    $('.js-copy').click(function() {
-      var text = $(this).attr('data-copy');
-      var el = $(this);
-      copyToClipboard(text, el);
-    });
-
-    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
-    function copyToClipboard(text, el) {
-      var copyTest = document.queryCommandSupported('copy');
-      var elOriginalText = el.attr('data-original-title');
-
-      if (copyTest === true) {
-        var copyTextArea = document.createElement("textarea");
-        copyTextArea.value = text;
-        document.body.appendChild(copyTextArea);
-        copyTextArea.select();
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'Copied!' : 'Whoops, not copied!';
-          el.attr('data-original-title', msg).tooltip('show');
-        } catch (err) {
-          console.log('Oops, unable to copy');
-        }
-        document.body.removeChild(copyTextArea);
-        el.attr('data-original-title', elOriginalText);
-      } else {
-        // Fallback if browser doesn't support .execCommand('copy')
-        window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
-      }
-    }
-
-    function set_scrolly_table(table_id) {
-      if (document.getElementById(table_id).rows.length > 5) {
-        $('#' + table_id).DataTable({
-          scrollY: 350,
-          stripeClasses: [],
-          scrollCollapse: true,
-          paging: false,
-          searching: false,
-          ordering: true,
-          info: false})
-      }
-    }
-
-    function set_tooltip_content(element, tooltipText) {
-      const existingTooltip = bootstrap.Tooltip.getInstance(element);
-      if (existingTooltip) {
-        existingTooltip.dispose();
-      }
-      element.title = tooltipText;
-      element.dataset.bsTitle = tooltipText;
-      element.dataset.bsToggle = 'tooltip';
-      const tooltip = new bootstrap.Tooltip(element, {container: 'body'});
-      return tooltip;
-    }
-
-    function verify_litvar_snp_ids() {
-      // Make CORS-enabled request to LitVar API by using a Scout api function for it
-      // Verify LitVar links rendered with an explicit rsID marker.
-      const snpLinks = document.querySelectorAll('.litvar-snp-link[data-litvar-rsid]');
-      const litvarSensorUrlTemplate = '{{ url_for("variant.litvar_sensor", rsid="__RSID__") }}';
-
-      snpLinks.forEach(function(link) {
-        const rsid = link.dataset.litvarRsid;
-        if (!rsid) {
-          return;
-        }
-        const litvarApiUrl = litvarSensorUrlTemplate.replace('__RSID__', encodeURIComponent(rsid));
-
-        fetch(litvarApiUrl)
-          .then(function(response) {
-            return response.json().then(function(data) {
-              return { ok: response.ok, data: data };
-            });
-          })
-          .then(function(result) {
-            if (result.ok && result.data.rsid && result.data.link) {
-              const tooltipText = 'Click to view ' + rsid + ' on LitVar2 (' + result.data.pmids_count + ' articles)';
-              link.href = result.data.link;
-              set_tooltip_content(link, tooltipText);
-              return;
-            }
-
-            if (result.ok && !result.data.rsid) {
-              const existingTooltip = bootstrap.Tooltip.getInstance(link);
-              if (existingTooltip) {
-                existingTooltip.dispose();
-              }
-              link.remove();
-              return;
-            }
-
-            console.warn('Could not verify LitVar ID ' + rsid + ', keeping fallback link.');
-          })
-          .catch(function(error) {
-            console.warn('Could not verify LitVar ID ' + rsid + ', keeping fallback link.', error);
-          });
+{% macro litvar2_scripts() %}
+  <script src="{{ url_for('variant.static', filename='litvar2.js') }}"></script>
+  <script>
+    globalThis.addEventListener('load', function() {
+      init_litvar2({
+        sensorUrlTemplate: '{{ url_for("variant.litvar_sensor", rsid="__RSID__") }}',
+        autocompleteUrl: '{{ url_for("variant.litvar_autocomplete") }}'
       });
-    }
-
-    function verify_litvar_gene_links() {
-      // Resolve LitVar gene links asynchronously via Scout API.
-      const geneLinks = document.querySelectorAll('.litvar-gene-link[data-litvar-gene-query]');
-      const litvarAutocompleteUrl = '{{ url_for("variant.litvar_autocomplete") }}';
-
-      geneLinks.forEach(function(link) {
-        const query = link.dataset.litvarGeneQuery;
-        if (!query) {
-          return;
-        }
-
-        fetch(litvarAutocompleteUrl + '?query=' + encodeURIComponent(query))
-          .then(function(response) {
-            return response.json().then(function(data) {
-              return { ok: response.ok, data: data };
-            });
-          })
-          .then(function(result) {
-            if (result.ok && result.data.rsid && result.data.link) {
-              const tooltipText = 'Open LitVar2 for ' + query + ' (first hit: ' + result.data.rsid + ')';
-              link.href = result.data.link;
-              link.classList.remove('disabled');
-              link.setAttribute('aria-disabled', 'false');
-              set_tooltip_content(link, tooltipText);
-              return;
-            }
-
-            if (result.ok && !result.data.rsid) {
-              const existingTooltip = bootstrap.Tooltip.getInstance(link);
-              if (existingTooltip) {
-                existingTooltip.dispose();
-              }
-              link.remove();
-              return;
-            }
-
-            console.warn('Could not resolve LitVar gene link for query: ' + query);
-          })
-          .catch(function(error) {
-            console.warn('Could not resolve LitVar gene link for query: ' + query, error);
-          });
-      });
-    }
+    });
   </script>
 {% endmacro %}
 
 {% macro variant_coverage_scripts(institute, case, variant) %}
   <script>
-    $(document).ready(function() {
-        update_gene_has_full_coverage();
+    globalThis.addEventListener('load', function() {
+      update_gene_has_full_coverage('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}');
     });
-    function update_gene_has_full_coverage() {
-      $.getJSON('{{ url_for("variant.gene_has_full_coverage", institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}', function (data) {
-        if($.isEmptyObject(data.gene_has_full_coverage)) {
-            const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
-            for(let complete_coverage_indicator of complete_coverage_indicator_elements) {
-              complete_coverage_indicator.style.display = "none"
-            }
-        }
-        for (const [hgnc_id, has_complete_coverage] of Object.entries(data.gene_has_full_coverage)) {
-          // reset the temp color for the outer span and icon of the inner span
-          console.log()
-          var coverage_indicator_button = document.getElementById('coverage-indicator-'+hgnc_id+'-button');
-          var coverage_indicator_icon = document.getElementById('coverage-indicator-'+hgnc_id+'-icon');
-          var coverage_indicator_text = document.getElementById('coverage-indicator-'+hgnc_id+'-text');
-
-          // this is the outer, button span
-          coverage_indicator_button.classList.remove('btn-info');
-          // this is the inner, icon span
-          coverage_indicator_icon.classList.remove('blink_me','fa-circle-question');
-
-          if (has_complete_coverage) {
-            coverage_indicator_button.classList.add('btn-success');
-            coverage_indicator_button.setAttribute('data-bs-original-title', "Chanjo2 coverage is at 100% completeness.");
-            coverage_indicator_icon.classList.add('fa-circle-check');
-            coverage_indicator_text.textContent = "Complete"
-          } else {
-            coverage_indicator_button.classList.add('btn-warning');
-            coverage_indicator_button.setAttribute('data-bs-original-title', "Note that Chanjo2 coverage is below 100% completeness.");
-            coverage_indicator_icon.classList.add('fa-triangle-exclamation');
-            coverage_indicator_text.textContent = "Incomplete"
-          }
-        }
-      }).fail(function() {
-          const complete_coverage_indicator_elements = document.getElementsByClassName("complete-coverage-indicator");
-          for(let complete_coverage_indicator of complete_coverage_indicator_elements) {
-            complete_coverage_indicator.style.display = "none"
-          }
-      });
-   }
   </script>
 {% endmacro %}
 

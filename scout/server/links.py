@@ -731,7 +731,11 @@ def beacon_link(variant_obj: dict, build: int):
 
 
 def litvar_snp_links(variant_obj):
-    """LitVar SNP links from dbSNP rsIDs"""
+    """LitVar SNP links from dbSNP rsIDs
+
+    The LitVar SNP links will work as a placeholder, and will be verified if an rsID match can be
+    found from the LitVar API at page view time.
+    """
 
     if variant_obj.get("dbsnp_id") is None:
         return
@@ -740,7 +744,7 @@ def litvar_snp_links(variant_obj):
     for snp in snp_ids:
         if "rs" in snp:
             litvar_snp_links[snp] = (
-                f"https://www.ncbi.nlm.nih.gov/research/litvar2/docsum?variant=litvar%40{snp}%23%23&query={snp}"  # litvar direct link, if present
+                f"https://www.ncbi.nlm.nih.gov/research/litvar2/docsum?variant=litvar%40{snp}%23%23&query={snp}"
             )
 
     return litvar_snp_links
