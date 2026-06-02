@@ -44,6 +44,7 @@ SECONDARY_CRITERIA = [
     "cadd_score",
     "revel",
     "genetic_models",
+    "omim_genetic_models",
     "genotypes",
     "functional_annotations",
     "region_annotations",
