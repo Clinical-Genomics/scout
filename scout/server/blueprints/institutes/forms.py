@@ -19,14 +19,17 @@ from scout.constants import (
     GENETIC_MODELS,
     PHENOTYPE_GROUPS,
     SO_TERMS,
+    SPIDEX_LEVELS,
 )
 from scout.constants.disease_parsing import DISEASE_INHERITANCE_TERMS_MAPPER
 from scout.models.case import STATUS
+from scout.server.blueprints.variants.forms import BetterDecimalField
 
 ANALYSIS_CHOICES = [(t, t.upper()) for t in ANALYSIS_TYPES]
 CATEGORY_CHOICES = [("snv", "SNV"), ("sv", "SV")]
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
+SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 
 
 class NonValidatingSelectField(SelectField):
@@ -185,6 +188,7 @@ class GeneVariantFiltersForm(FlaskForm):
     cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
     revel = BetterDecimalField("REVEL", validators=[validators.Optional()])
+    spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     institute = SelectMultipleField(choices=[])
     rank_score = IntegerField(default=15)

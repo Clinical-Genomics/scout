@@ -2,7 +2,7 @@
 {% from "utils.html" import clickable_table_row_script, comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "variants/components.html" import cell_cadd, frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
-{% from "variants/utils.html" import gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score, zygosity_badges %}
+{% from "variants/utils.html" import archived_observations_cancer_filters, archived_observations_filter, gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score, zygosity_badges %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -161,7 +161,7 @@
           {{ form.similar_case(class="form-control") }}
         </div>
       </div>
-      <div class="row">
+        <div class="row">
         <div class="col-2">
           {{ form.region_annotations.label(class="control-label") }}
           {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
@@ -178,6 +178,32 @@
           {{ form.omim_genetic_models.label(class="control-label") }}
           {{ form.omim_genetic_models(class="selectpicker", data_style="btn-secondary") }}
         </div>
+      </div>
+      <div class="row">
+        <div class="col-1">
+          {{ form.cadd_score.label(class="control-label") }}
+          {{ form.cadd_score(class="form-control") }}
+        </div>
+        <div class="col-2 d-flex align-items-end">
+          <div class="form-check mb-2">
+          {{ form.cadd_inclusive.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Include empty CADD") }}
+          {{ form.cadd_inclusive(class="form-check-input", type="checkbox") }}</div>
+        </div>
+        <div class="col-1">
+          {{ form.revel.label(class="control-label") }}
+          {{ form.revel(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.spidex_human.label(class="control-label") }}
+          {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-2">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        {{ archived_observations_cancer_filters(form) }}
       </div>
       <div class="row justify-content-center mt-3">
         <div class="col col-md-6">

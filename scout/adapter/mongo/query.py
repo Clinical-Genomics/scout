@@ -156,7 +156,7 @@ class QueryHandler(object):
         mongo_variant_query["rank_score"] = {"$gte": rank_score}
 
         secondary_filter = self.secondary_query(query)
-        mongo_variant_query = {"$and": secondary_filter}
+        mongo_variant_query["$and"] = secondary_filter
 
         LOG.debug("Querying %s" % mongo_variant_query)
 
