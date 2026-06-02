@@ -684,6 +684,10 @@ class QueryHandler(object):
                     criterion_values = query[criterion]
                     mongo_secondary_query.append({criterion: {"$in": criterion_values}})
 
+                case "omim_genetic_models":
+                    criterion_values = query[criterion]
+                    mongo_secondary_query.append({"genes.inheritance": {"$in": criterion_values}})
+
                 case "functional_annotations" | "region_annotations":
                     # filter key will be genes.[criterion (minus final char)]
                     criterion_values = query[criterion]
