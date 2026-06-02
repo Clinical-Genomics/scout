@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - LitVar2 links: variant link for variants with dbSNP rsID and a gene symbol search link (#6326)
+- Filter options for the gene variants (SNV & SVs search) page: function, inheritance, GT (#6360)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
