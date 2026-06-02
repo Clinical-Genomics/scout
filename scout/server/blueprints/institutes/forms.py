@@ -13,11 +13,20 @@ from wtforms import (
 )
 from wtforms.widgets import PasswordInput, TextInput
 
-from scout.constants import ANALYSIS_TYPES, PHENOTYPE_GROUPS
+from scout.constants import (
+    ANALYSIS_TYPES,
+    FEATURE_TYPES,
+    GENETIC_MODELS,
+    PHENOTYPE_GROUPS,
+    SO_TERMS,
+)
+from scout.constants.disease_parsing import DISEASE_INHERITANCE_TERMS_MAPPER
 from scout.models.case import STATUS
 
 ANALYSIS_CHOICES = [(t, t.upper()) for t in ANALYSIS_TYPES]
 CATEGORY_CHOICES = [("snv", "SNV"), ("sv", "SV")]
+FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
+REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 
 
 class NonValidatingSelectField(SelectField):
@@ -153,6 +162,15 @@ class GeneVariantFiltersForm(FlaskForm):
         "HGNC Symbols (comma-separated, case sensitive)",
         validators=[validators.InputRequired()],
     )
+
+    region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
+    functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
+    genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
+    omim_genetic_models = SelectMultipleField(
+        label="OMIM Genetic Models",
+        choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
+    )
+
     institute = SelectMultipleField(choices=[])
     rank_score = IntegerField(default=15)
     phenotype_terms = TagListField("HPO terms (comma-separated)")

@@ -144,21 +144,39 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
           {{ form.phenotype_terms.label(class="control-label") }}
           {{ form.phenotype_terms(class="form-control") }}
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
           {{ form.phenotype_groups.label(class="control-label") }}
           {{ form.phenotype_groups(class="form-control") }}
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
           {{ form.cohorts.label(class="control-label") }}
           {{ form.cohorts(class="form-control") }}
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
           {{ form.similar_case.label(class="control-label") }}
           {{ form.similar_case(class="form-control") }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-2">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
+        </div>
+        <div class="col-2">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
+        </div>
+        <div class="col-2">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+        </div>
+        <div class="col-2">
+          {{ form.omim_genetic_models.label(class="control-label") }}
+          {{ form.omim_genetic_models(class="selectpicker", data_style="btn-secondary") }}
         </div>
       </div>
       <div class="row justify-content-center mt-3">
