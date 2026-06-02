@@ -12,7 +12,6 @@ from scout.constants import (
     TRUSTED_REVSTAT_LEVEL,
 )
 from scout.constants.filters import METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL
-from scout.constants.query_terms import SECONDARY_VARIANT_CRITERIA
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
@@ -156,26 +155,8 @@ class QueryHandler(object):
         rank_score = query.get("rank_score") or 15
         mongo_variant_query["rank_score"] = {"$gte": rank_score}
 
-        # additional filter options
-        for criterion in SECONDARY_VARIANT_CRITERIA:
-            if not query.get(criterion):
-                continue
-
-            match criterion:
-                case "genetic_models":
-                    criterion_values = query[criterion]
-                    mongo_variant_query[criterion] = {"$in": criterion_values}
-
-                case "functional_annotations" | "region_annotations":
-                    # filter key will be genes.[criterion (minus final char)]
-                    criterion_values = query[criterion]
-                    mongo_variant_query[".".join(["genes", criterion[:-1]])] = {
-                        "$in": criterion_values
-                    }
-
-                case "omim_genetic_models":
-                    criterion_values = query[criterion]
-                    mongo_variant_query["genes.inheritance"] = {"$in": criterion_values}
+        secondary_filter = self.secondary_query(query)
+        mongo_variant_query = {"$and": secondary_filter}
 
         LOG.debug("Querying %s" % mongo_variant_query)
 

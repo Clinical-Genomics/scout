@@ -171,6 +171,21 @@ class GeneVariantFiltersForm(FlaskForm):
         choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
     )
 
+    gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
+    local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
+    local_obs_cancer_somatic_old = IntegerField(
+        "Local somatic obs. (archive)", validators=[validators.Optional()]
+    )
+    local_obs_cancer_somatic_panel_old = IntegerField(
+        "Local somatic panel obs. (archive)", validators=[validators.Optional()]
+    )
+    local_obs_cancer_germline_old = IntegerField(
+        "Local germline obs. (archive)", validators=[validators.Optional()]
+    )
+    cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
+    cadd_inclusive = BooleanField("CADD inclusive")
+    revel = BetterDecimalField("REVEL", validators=[validators.Optional()])
+
     institute = SelectMultipleField(choices=[])
     rank_score = IntegerField(default=15)
     phenotype_terms = TagListField("HPO terms (comma-separated)")

@@ -72,10 +72,3 @@ SECONDARY_CRITERIA = [
     "methbat_significance",
     "category_pop_freq",
 ]
-
-SECONDARY_VARIANT_CRITERIA = [
-    "genetic_models",
-    "omim_genetic_models",
-    "functional_annotations",
-    "region_annotations",
-]
