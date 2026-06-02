@@ -165,6 +165,28 @@ def test_soft_filters_query(adapter, case_obj):
     assert mongo_query["filters"] == {"$nin": institute_soft_filters}
 
 
+def test_genetic_models_query(adapter, case_obj):
+    """Test variants query using 'genetic models' criterion."""
+
+    # WHEN a value is provided for 'genetic_models' in variants query
+    QUERY_VALUES = ["AD", "AD_dn"]
+    query = {"genetic_models": QUERY_VALUES}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+    # THEN mongo query should contain the expected value
+    assert mongo_query["$and"] == [{"genetic_models": {"$in": QUERY_VALUES}}]
+
+
+def test_omim_genetic_models_query(adapter, case_obj):
+    """Test variants query using 'genes.inheritance' criterion (OMIM inheritance)."""
+
+    # WHEN a value is provided for 'omim_genetic_models' in variants query
+    QUERY_VALUES = ["AD", "DD"]
+    query = {"omim_genetic_models": QUERY_VALUES}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+    # THEN mongo query should contain the expected value
+    assert mongo_query["$and"] == [{"genes.inheritance": {"$in": QUERY_VALUES}}]
+
+
 def test_genotype_query_heterozygous(adapter, case_obj):
     """Test variants query using a 'genotypes' field in variants filter to filter for heterozygous variants"""
 
