@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
+### Fixed
+- Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
 
 ## [4.112]
 ### Added
