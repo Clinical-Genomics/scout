@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
+### Fixed
+- Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 
 ## [4.112]
 ### Added
