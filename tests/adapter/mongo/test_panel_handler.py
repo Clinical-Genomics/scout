@@ -405,13 +405,12 @@ def test_case_panels_to_genes_latest_fallback(adapter, testpanel_obj):
     panel_obj = adapter.panel_collection.find_one()
     assert panel_obj["genes"]
 
-    # WHEN selecting genes from the panel
+    # WHEN selecting genes from the panel alone, using the panels_to_genes function
     selected_genes_from_panels = adapter.panels_to_genes(
         panel_names=[testpanel_obj["panel_name"]],
         gene_format="hgnc_id",
     )
 
-    # THEN genes selected from the panels
+    # THEN this should equate to genes selected from the panel itself
     selected_genes_single = adapter.panel_to_genes(panel_id=panel_obj["_id"], gene_format="hgnc_id")
-
     assert selected_genes_from_panels == selected_genes_single
