@@ -396,40 +396,22 @@ def test_panel_to_genes(adapter, testpanel_obj):
     assert sorted(gene_symbols) == ["AAA", "BBB"]
 
 
-def test_case_panels_to_genes_case_version_preferred(adapter, testpanel_obj):
-    """Selected genes should come from the version recorded on the case."""
-
-    panel_v1 = dict(testpanel_obj)
-    panel_v1["version"] = 1.0
-    panel_v1["genes"] = [{"hgnc_id": 101, "symbol": "GENE1"}]
-    panel_v2 = dict(testpanel_obj)
-    panel_v2["_id"] = ObjectId()
-    panel_v2["version"] = 2.0
-    panel_v2["genes"] = [{"hgnc_id": 202, "symbol": "GENE2"}]
-    adapter.panel_collection.insert_many([panel_v1, panel_v2])
-
-    case_obj = {
-        "panels": [{"panel_name": panel_v1["panel_name"], "version": 1.0, "is_default": True}]
-    }
-
-    selected_hgnc_ids = adapter.case_panels_to_genes(
-        case_obj=case_obj,
-        panel_names=[panel_v1["panel_name"]],
-        gene_format="hgnc_id",
-    )
-    assert selected_hgnc_ids == {101}
-
-
 def test_case_panels_to_genes_latest_fallback(adapter, testpanel_obj):
     """When panel is not present on case, latest panel version should be used."""
 
-    panel_obj = dict(testpanel_obj)
-    panel_obj["genes"] = [{"hgnc_id": 303, "symbol": "GENE3"}]
-    adapter.panel_collection.insert_one(panel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
 
-    selected_symbols = adapter.case_panels_to_genes(
-        case_obj={"panels": []},
-        panel_names=[panel_obj["panel_name"]],
-        gene_format="symbol",
+    # GIVEN a adapter with a gene panel
+    panel_obj = adapter.panel_collection.find_one()
+    assert panel_obj["genes"]
+
+    # WHEN selecting genes from the panel
+    selected_genes_from_panels = adapter.panels_to_genes(
+        panel_names=[testpanel_obj["panel_name"]],
+        gene_format="hgnc_id",
     )
-    assert selected_symbols == {"GENE3"}
+
+    # THEN genes selected from the panels
+    selected_genes_single = adapter.panel_to_genes(panel_id=panel_obj["_id"], gene_format="hgnc_id")
+
+    assert selected_genes_from_panels == selected_genes_single

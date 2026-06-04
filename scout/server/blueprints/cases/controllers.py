@@ -312,6 +312,9 @@ def sma_case(
     """Preprocess a case for tabular view, SMA.
 
     Prepare lists of genes in the case panels and in the dynamic HPO gene list for filtering on the SMA/dark regions page.
+
+    For panels present on the case, and other selectable panels (e.g. institute panels),
+        fall back to latest panel version.
     """
 
     _populate_case_individuals(case_obj)
@@ -321,10 +324,8 @@ def sma_case(
     selected_gene_panels = selected_gene_panels or []
     panel_hgnc_ids = {
         hgnc_id
-        for hgnc_id in store.case_panels_to_genes(
-            case_obj=case_obj,
-            panel_names=selected_gene_panels,
-            gene_format="hgnc_id",
+        for hgnc_id in store.panels_to_genes(
+            panel_names=selected_gene_panels, gene_format="hgnc_id"
         )
         if isinstance(hgnc_id, int)
     }
