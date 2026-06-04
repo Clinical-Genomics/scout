@@ -431,26 +431,15 @@ def set_admin_list_of_settings(field_name: str, form: MultiDict) -> Optional[lis
     return values
 
 
-def get_alamut_key(form: MultiDict) -> Optional[str]:
+def get_admin_setting(field_name: str, form: MultiDict) -> Optional[str]:
     """
-    Return Alamut key from the form input.
-    This is not available on the form for unprivileged users, only admin.
-    """
-    if current_user.is_admin is False:
-        return None
-
-    return form.get("alamut_key")
-
-
-def get_alamut_institution(form: MultiDict) -> Optional[str]:
-    """
-    Return Alamut institution settting from the form input.
-    This is not available on the form for unprivileged users, only admin.
+    Return a value for an admin-only settings key.
+    For unprivileged users the value is set to None.
     """
     if current_user.is_admin is False:
         return None
 
-    return form.get("alamut_institution")
+    return form.get(field_name)
 
 
 def get_show_all_cases_status(form: MultiDict) -> Optional[List[str]]:
@@ -520,8 +509,8 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         sharing_institutes=set_admin_list_of_settings(field_name="institutes", form=form),
         cohorts=cohorts,
         loqusdb_ids=set_admin_list_of_settings(field_name="loqusdb_id", form=form),
-        alamut_key=get_alamut_key(form),
-        alamut_institution=get_alamut_institution(form),
+        alamut_key=get_admin_setting(field_name="alamut_key", form=form),
+        alamut_institution=get_admin_setting(field_name="alamut_institution", form=form),
         check_show_all_vars=get_check_show_all_vars(form),
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
