@@ -416,7 +416,7 @@ def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
     return clinvar_submitters
 
 
-def set_admin_list_of_settings(field_name: str, form: MultiDict) -> Optional[list]:
+def get_admin_setting_list(field_name: str, form: MultiDict) -> Optional[list]:
     """
     Return a list of values for an admin-only settings key.
     For unprivileged users the value is set to None.
@@ -509,12 +509,12 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         sharing_institutes=set_admin_list_of_settings(field_name="institutes", form=form),
         cohorts=cohorts,
         loqusdb_ids=set_admin_list_of_settings(field_name="loqusdb_id", form=form),
-        alamut_key=get_admin_setting(field_name="alamut_key", form=form),
-        alamut_institution=get_admin_setting(field_name="alamut_institution", form=form),
+        alamut_key=get_admin_setting_list(field_name="alamut_key", form=form),
+        alamut_institution=get_admin_setting_list(field_name="alamut_institution", form=form),
         check_show_all_vars=get_check_show_all_vars(form),
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
-        soft_filters=set_admin_list_of_settings(field_name="soft_filters", form=form),
+        soft_filters=get_admin_setting_list(field_name="soft_filters", form=form),
     )
     return updated_institute
 
