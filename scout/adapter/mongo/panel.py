@@ -4,7 +4,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional, Union
 
 import pymongo
 from bson import ObjectId
