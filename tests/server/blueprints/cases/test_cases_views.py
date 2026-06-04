@@ -422,6 +422,8 @@ def test_case_outdated_panel(app, institute_obj, case_obj):
 
 
 def test_case_sma_dark(app, case_obj, institute_obj):
+    """Test SMA dark page loading."""
+
     # GIVEN an initialized app
     # GIVEN a valid user, case and institute
 
@@ -441,6 +443,9 @@ def test_case_sma_dark(app, case_obj, institute_obj):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
+        # THEN SMA panel filter should include the virtual HPO panel option.
+        assert b'value="hpo"' in resp.data
 
 
 def test_case_sma_dark_gene_panel_filter(app, case_obj, institute_obj):
@@ -462,46 +467,10 @@ def test_case_sma_dark_gene_panel_filter(app, case_obj, institute_obj):
         )
 
         assert resp.status_code == 200
+        # THEN the selected panel should be present in the returned data
         assert bytes(selected_panel, "utf-8") in resp.data
 
-
-def test_case_sma_dark_hpo_panel_available(app, case_obj, institute_obj):
-    """SMA panel filter should include the virtual HPO panel option."""
-
-    with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        resp = client.get(
-            url_for(
-                "cases.sma",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-
-        assert resp.status_code == 200
-        assert b'value="hpo"' in resp.data
-
-
-def test_case_sma_dark_default_panels_selected(app, case_obj, institute_obj):
-    """SMA panel filter should default to case default panel(s) on initial page load."""
-
-    selected_panel = case_obj["panels"][0]["panel_name"]
-
-    with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        resp = client.get(
-            url_for(
-                "cases.sma",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-
-        assert resp.status_code == 200
+        # THEN the SMA panel filter should default to case default panel(s) on initial page load
         selected_option_snippets = [
             f'value="{selected_panel}" selected',
             f'selected value="{selected_panel}"',
