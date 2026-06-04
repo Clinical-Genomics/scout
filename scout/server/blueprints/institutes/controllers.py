@@ -416,30 +416,19 @@ def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
     return clinvar_submitters
 
 
-def get_soft_filters(form: MultiDict) -> Optional[list]:
+def set_admin_list_of_settings(field_name: str, form: MultiDict) -> Optional[list]:
     """
-    Return a list with custom soft filters or None.
-    This is not available on the form for unprivileged users, only admin.
-    """
-    if current_user.is_admin is False:
-        return None
-
-    soft_filters = []
-    for filter in form.getlist("soft_filters"):
-        soft_filters.append(filter)
-
-    return soft_filters
-
-
-def get_loqusdb_ids(form: MultiDict) -> Optional[List[str]]:
-    """
-    Return loqusdb ids from the form multiselect.
-    This is not available on the form for unprivileged users, only admin.
+    Return a list of values for an admin-only settings key.
+    For unprivileged users the value is set to None.
     """
     if current_user.is_admin is False:
         return None
 
-    return form.getlist("loqusdb_id")
+    values = []
+    for value in form.getlist(field_name):
+        values.append(value)
+
+    return values
 
 
 def get_alamut_key(form: MultiDict) -> Optional[str]:
@@ -493,10 +482,6 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
     set to something other than None if the intention is not to update those settings.
     """
 
-    sharing_institutes = []
-    for inst in form.getlist("institutes"):
-        sharing_institutes.append(inst)
-
     phenotype_groups = []
     group_abbreviations = []
 
@@ -532,15 +517,15 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         gene_panels_matching=get_gene_panels(store, form, "gene_panels_matching"),
         group_abbreviations=group_abbreviations,
         add_groups=False,
-        sharing_institutes=sharing_institutes,
+        sharing_institutes=set_admin_list_of_settings(field_name="institutes", form=form),
         cohorts=cohorts,
-        loqusdb_ids=get_loqusdb_ids(form),
+        loqusdb_ids=set_admin_list_of_settings(field_name="loqusdb_id", form=form),
         alamut_key=get_alamut_key(form),
         alamut_institution=get_alamut_institution(form),
         check_show_all_vars=get_check_show_all_vars(form),
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
-        soft_filters=get_soft_filters(form),
+        soft_filters=set_admin_list_of_settings(field_name="soft_filter", form=form),
     )
     return updated_institute
 
