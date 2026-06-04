@@ -108,7 +108,7 @@ class InstituteHandler(object):
             "clinvar_key": clinvar_key,
             "clinvar_submitters": clinvar_submitters,
             "cohorts": cohorts,
-            "collaborators": sharing_institutes,
+            "collaborators": sharing_institutes,  # Admin setting
             "coverage_cutoff": coverage_cutoff,
             "display_name": display_name,
             "frequency_cutoff": frequency_cutoff,
