@@ -366,19 +366,14 @@ class PanelHandler:
         return gene_list
 
     def case_panels_to_genes(
-        self, case_obj: dict, panel_names: List[str], gene_format: str = "hgnc_id"
+        self, panel_names: List[str], gene_format: str = "hgnc_id"
     ) -> Set[Union[int, str]]:
-        """Return unique genes from selected panel names, preferring case panel versions.
-
-        For panels present on the case, use the version recorded for that case.
-        For other selectable panels (e.g. institute panels), fall back to latest.
+        """Return unique genes from selected panel names.
+        For panels present on the case, and other selectable panels (e.g. institute panels),
+        fall back to latest version.
         """
 
-        case_panel_names = {panel["panel_name"]: panel for panel in case_obj.get("panels", [])}
-
-        panel_genes = self.panels_to_genes(panel_names=case_panel_names, gene_format=gene_format)
-
-        return set(panel_genes)
+        return set(self.panels_to_genes(panel_names=panel_names, gene_format=gene_format))
 
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
