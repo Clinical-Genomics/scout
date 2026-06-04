@@ -268,6 +268,7 @@ def variant_ccv(institute_id, case_name, variant_id):
                 term=term,
                 comment=request.form.get("comment-{}".format(term)),
                 links=[request.form.get("link-{}".format(term))],
+                modifier=request.form.get("modifier-{}".format(term)),
             )
         )
     ccv = variant_ccv_post(store, institute_id, case_name, variant_id, current_user.email, criteria)
