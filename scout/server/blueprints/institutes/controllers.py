@@ -69,6 +69,7 @@ ALL_CASES_PROJECTION = {
     "display_name": 1,
     "genome_build": 1,
     "individuals": 1,
+    "has_methylation": 1,
     "is_rerun": 1,
     "is_research": 1,
     "mme_submission": 1,
