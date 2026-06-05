@@ -181,6 +181,14 @@
                Clinical HPO MEIs
              </a>
             {% endif %}
+            {% if case.smn_tsv or case.paraphrase %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('cases.sma', institute_id=institute._id,
+                                 case_name=case.display_name, gene_panels=['hpo'],
+                                 panel_filter_applied='1') }}" target="_blank" rel="noopener">
+                 Clinical HPO Dark
+              </a>
+            {% endif %}
             {% if case.has_outliers %}
               <a class="btn btn-secondary btn-sm text-white" href="{{ url_for('omics_variants.outliers',
                 institute_id=institute._id, case_name=case.display_name, variant_type='clinical',
