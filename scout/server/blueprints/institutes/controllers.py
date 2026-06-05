@@ -633,6 +633,7 @@ def get_cases_by_query(
         name_query=name_query,
         skip_assigned=request.form.get("skip_assigned"),
         is_research=request.form.get("is_research"),
+        has_methylation=request.form.get("has_me"),
         has_rna_data=request.form.get("has_rna"),
         verification_pending=request.form.get("validation_ordered"),
         has_clinvar_submission=request.form.get("clinvar_submitted"),

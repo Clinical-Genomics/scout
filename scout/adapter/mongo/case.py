@@ -374,6 +374,7 @@ class CaseHandler(object):
         finished: bool = False,
         research_requested: bool = False,
         is_research: bool = False,
+        has_methylation: bool = False,
         has_rna_data: bool = False,
         status: Any = None,
         phenotype_terms: bool = False,
@@ -454,6 +455,10 @@ class CaseHandler(object):
             condition=has_causatives,
             set_key="causatives",
             set_value={EXISTS: True, "$ne": []},
+        )
+
+        _conditional_set_query_value(
+            query=query, condition="has_methylation", set_key="has_methylation", set_value=True
         )
 
         _conditional_set_query_value(
