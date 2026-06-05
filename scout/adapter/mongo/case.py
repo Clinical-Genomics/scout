@@ -374,6 +374,7 @@ class CaseHandler(object):
         finished: bool = False,
         research_requested: bool = False,
         is_research: bool = False,
+        has_methylation: bool = False,
         has_rna_data: bool = False,
         status: Any = None,
         phenotype_terms: bool = False,
@@ -454,6 +455,10 @@ class CaseHandler(object):
             condition=has_causatives,
             set_key="causatives",
             set_value={EXISTS: True, "$ne": []},
+        )
+
+        _conditional_set_query_value(
+            query=query, condition=has_methylation, set_key="has_methylation", set_value=True
         )
 
         _conditional_set_query_value(
@@ -1085,6 +1090,7 @@ class CaseHandler(object):
             - gene_fusion_report_research: path to the research gene fusions report
             - genome_build: If there is a new genome build
             - has_meivariants: If there are new mei variants
+            - has_methylation: if methylation data is present
             - has_outliers: If there are new outlier variants
             - has_strvariants: If there are new strvariants
             - has_svvariants: If there are new svvariants
@@ -1158,6 +1164,7 @@ class CaseHandler(object):
                 "gene_fusion_report": case_obj.get("gene_fusion_report"),
                 "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                 "genome_build": case_obj.get("genome_build", "37"),
+                "has_methylation": case_obj.get("has_methylation", False),
                 "has_meivariants": case_obj.get("has_meivariants", False),
                 "has_outliers": case_obj.get("has_outliers", False),
                 "has_strvariants": case_obj.get("has_strvariants", False),

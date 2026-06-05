@@ -182,6 +182,14 @@ def test_case_queries(
     assert len(cases) == 1
 
     # -----------------------------
+    # THEN search by methylation data should work
+    # -----------------------------
+    case_obj["has_methylation"] = True
+    adapter.update_case(case_obj)
+    cases = list(adapter.cases(owner=case_obj["owner"], has_methylation=True))
+    assert len(cases) == 1
+
+    # -----------------------------
     # THEN search by phenotype should work
     # -----------------------------
     case_obj["phenotype_terms"] = test_hpo_terms

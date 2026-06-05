@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter variants by OMIM inheritance pattern (#6355)
 - Gene panel filters to the Dark regions page (#6353)
 - A `Me` badge to designate cases with methylation data available, on cases page (#6373)
+- `Has Methylation data` filter on cases page (#6375)
 - A `--liftover-from` option to the `export managed` command line, so managed variants can be exported and imported again in another genome build (#6225)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
@@ -18,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
+- `has_methylation` field not persisting when a case document is updated (#6375)
 
 ## [4.112]
 ### Added
