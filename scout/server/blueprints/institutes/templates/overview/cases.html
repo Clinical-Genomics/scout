@@ -132,7 +132,10 @@
     <td>
       {{ analysis_type(case.analysis_types) }}
       {% if case.has_rna %}
-        <span class="badge bg-success">RNA</span>
+        <span class="badge bg-success" data-bs-toggle="tooltip" title="RNA data available">RNA</span>
+      {% endif %}
+      {% if case.has_methylation %}
+        <span class="badge bg-primary" data-bs-toggle="tooltip" title="Methylation data available">Me</span>
       {% endif %}
     </td>
     <td>
