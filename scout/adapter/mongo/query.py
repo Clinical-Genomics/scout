@@ -127,7 +127,6 @@ class QueryHandler(object):
         )
 
         select_cases = None
-        select_case_obj = None
         mongo_case_query = {}
 
         if query.get("phenotype_terms"):
@@ -155,6 +154,9 @@ class QueryHandler(object):
 
         rank_score = query.get("rank_score") or 15
         mongo_variant_query["rank_score"] = {"$gte": rank_score}
+
+        secondary_filter = self.secondary_query(query)
+        mongo_variant_query["$and"] = secondary_filter
 
         LOG.debug("Querying %s" % mongo_variant_query)
 
