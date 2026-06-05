@@ -157,7 +157,7 @@
   <div class="col-2">
     <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
     {{ form.hgnc_symbols.label(class="control-label") }}
@@ -198,7 +198,7 @@
 <div class="row">
   <div class="col-2">
     {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-8">
     <div class="row">

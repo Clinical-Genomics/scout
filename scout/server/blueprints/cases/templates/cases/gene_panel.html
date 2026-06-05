@@ -55,7 +55,7 @@
 
       <div class="row">
         <div class="col-8">
-          <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
+          <select name="panel_ids" class="selectpicker" data_live_search="true"multiple="multiple" data-style="btn-secondary">
             {% for panel in case.panels|sort(attribute='display_name')  %}
               <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>
                 {{ panel.display_name }} {% if panel.removed %} (Removed) {% endif %}
