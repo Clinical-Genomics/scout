@@ -393,7 +393,7 @@
 {% endmacro %}
 
 {% macro snv_filters(form, institute, case, filters)%}
-<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+  <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
   {{ variants_common_filters(form, "snv") }}
   <div class="row mb-2">
     <div class="col-3">
@@ -431,27 +431,28 @@
     </div>
     <div class="col-2">
       <div class="row">
-        <div class="class="form-check">
+        <div class="form-check">
           {{ form.clinvar_trusted_revstat(class="form-check-input") }}
           {{ form.clinvar_trusted_revstat.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Limit search to variants with trusted ClinVar revision status levels: mult, multiple_submitters, single, single_submitter, exp, reviewed_by_expert_panel, guideline, practice_guideline.") }}
         </div>
       </div>
       <div class="row">
-        <div class="class="form-check">
-        {{ form.clinvar_tag(class="form-check-input") }}
-        {{ form.clinvar_tag.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Return only variants with annotated ClinVar significance.") }}
+        <div class="form-check">
+          {{ form.clinvar_tag(class="form-check-input") }}
+          {{ form.clinvar_tag.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Return only variants with annotated ClinVar significance.") }}
         </div>
       </div>
       <div class="row">
-        <div class="class="form-check">
-        {{ form.prioritise_clinvar(class="form-check-input") }}
-        {{ form.prioritise_clinvar.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Include variants matching the selected ClinVar conditions, in addition to those found using the other search criteria (broadens the search). Note that variants excluded using ClinVar tags will still be returned when found using the other search criteria.") }}
+        <div class="form-check">
+          {{ form.prioritise_clinvar(class="form-check-input") }}
+          {{ form.prioritise_clinvar.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Include variants matching the selected ClinVar conditions, in addition to those found using the other search criteria (broadens the search). Note that variants excluded using ClinVar tags will still be returned when found using the other search criteria.") }}
+        </div>
       </div>
     </div>
   </div>
   <div class="row mb-2">
     <div class="col-4">
-      <div class ="row">
+      <div class="row">
         <div class="col-4">
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
