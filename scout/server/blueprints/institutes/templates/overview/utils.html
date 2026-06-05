@@ -40,23 +40,27 @@
     </div>
     {% if institute %} <!-- The following checkboxes will be displayed when the form is used on institute caseS page only, not on the dashboard -->
     <div class="row">
-        <div class="col-md-2 mb-3 form-check ms-3">
+        <div class="col-2 mb-3 form-check">
             {{ form.skip_assigned(class="form-check-input") }}
             {{ form.skip_assigned.label(class="form-check-label") }}
         </div>
-        <div class="col-md-2 mb-3 form-check">
+        <div class="col-2 mb-3 form-check">
             {{ form.is_research(class="form-check-input") }}
             {{ form.is_research.label(class="form-check-label") }}
         </div>
-        <div class="col-md-2 mb-3 form-check">
+        <div class="col-2 mb-3 form-check">
             {{ form.clinvar_submitted(class="form-check-input") }}
             {{ form.clinvar_submitted.label(class="form-check-label") }}
         </div>
-        <div class="col-md-2 mb-3 form-check">
+        <div class="col-2 mb-3 form-check">
             {{ form.has_rna(class="form-check-input") }}
             {{ form.has_rna.label(class="form-check-label") }}
         </div>
-        <div class="col-md-2 mb-3 form-check">
+        <div class="col-2 mb-3 form-check">
+            {{ form.has_me(class="form-check-input") }}
+            {{ form.has_me.label(class="form-check-label") }}
+        </div>
+        <div class="col-2 mb-3 form-check">
             {{ form.validation_ordered(class="form-check-input") }}
             {{ form.validation_ordered.label(class="form-check-label") }}
         </div>
