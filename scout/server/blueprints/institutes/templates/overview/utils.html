@@ -234,7 +234,7 @@
                 <div class="row">
                   <div class="col-5">
                     {{ form.show_all_cases_status.label(class="control-label") }}
-                    <select multiple="multiple" name="show_all_cases_status" class="selectpicker" data_live_search="true"data-style="btn-secondary">
+                    <select multiple="multiple" name="show_all_cases_status" class="selectpicker" data-live-search="true"data-style="btn-secondary">
                       {% for choice in form.show_all_cases_status.choices or [] %}
                          <option value="{{choice[0]}}" {% if institute.show_all_cases_status and choice[0] in institute.show_all_cases_status  %} selected {% endif %} >{{choice[1]}}</option>
                       {% endfor %}
@@ -242,7 +242,7 @@
                   </div>
                   <div class="col-5">
                     {{ form.institutes.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
-                    <select multiple="multiple" class="selectpicker" data_live_search="true"name="institutes" data-style="btn-secondary">
+                    <select multiple="multiple" class="selectpicker" data-live-search="true"name="institutes" data-style="btn-secondary">
                       {% for choice in form.institutes.choices %}
                         <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
                       {% endfor %}
@@ -272,7 +272,7 @@
                   </div>
                   <div class="col-3">
                     {{ form.pheno_groups.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
-                    <select multiple="multiple" name="pheno_groups" class="selectpicker" data_live_search="true"data-style="btn-secondary">
+                    <select multiple="multiple" name="pheno_groups" class="selectpicker" data-live-search="true"data-style="btn-secondary">
                       {% for choice in form.pheno_groups.choices or [] %}
                         <option value="{{choice[0]}}" {% if institute.phenotype_groups and choice[0].split(' ,')[0] in institute.phenotype_groups  %} selected {% endif %}>{{choice[1]}}</option>
                       {% endfor %}
@@ -348,7 +348,7 @@
                     </div>
                     <div class="col-6">
                       {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Scout users who should be able to submit for you institute using this key. Only accepts current Scout user emails.")}}
-                      <select class="selectpicker" data_live_search="true"id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
+                      <select class="selectpicker" data-live-search="true"id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
                         {% for user in form.clinvar_emails.choices %}
                           <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{ user[0] }}</option>
                         {% endfor %}
@@ -370,7 +370,7 @@
                       {{ form.loqusdb_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="LoqudDB id" ) }}
                     </div>
                     <div class="col-3">
-                      <select multiple="multiple" class="selectpicker" data_live_search="true"name="loqusdb_id" data-style="btn-secondary">
+                      <select multiple="multiple" class="selectpicker" data-live-search="true"name="loqusdb_id" data-style="btn-secondary">
                         {% for instance in loqus_instances %}
                           <option value="{{instance}}" {% if instance in institute.loqusdb_id %} selected {% endif %}>{{instance}}</option>
                         {% endfor %}

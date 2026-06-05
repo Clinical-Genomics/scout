@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col-md-4">
               {{ form.disease_associated_transcripts.label(class="control-label") }}<br>
-              <select name="disease_associated_transcripts" multiple class="selectpicker" data_live_search="true"data-style="btn-secondary">
+              <select name="disease_associated_transcripts" multiple class="selectpicker" data-live-search="true"data-style="btn-secondary">
                 {% for opt in form.disease_associated_transcripts.choices %}
                   <option value="{{opt[0]}}" {{ "selected" if 'previous' in opt[1] }}>{{opt[1]}}</option>
                 {% endfor %}
