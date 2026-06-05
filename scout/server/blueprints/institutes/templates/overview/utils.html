@@ -311,7 +311,7 @@
 
                 <div class="col-3">
                   {{ form.gene_panels.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Select gene panels that will be available for variants filtering.") }}
-                  <select multiple="multiple" name="gene_panels" data-live-search="true" class="selectpickerml-3" data-style="btn-secondary">
+                  <select multiple="multiple" name="gene_panels" data-live-search="true" class="selectpicker ml-3" data-style="btn-secondary">
                     {% for choice in form.gene_panels.choices or [] %}
                       <option value="{{choice[0]}}" {% if institute.gene_panels and choice[0] in institute.gene_panels.keys() %} selected {% endif %}>{{choice[1]}}</option>
                     {% endfor %}
@@ -320,7 +320,7 @@
 
                 <div class="col-4">
                   {{ form.gene_panels_matching.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed and causatives variants only in these panels") }}
-                  <select multiple="multiple" name="gene_panels_matching" data-live-search="true" class="selectpickerml-3" data-style="btn-secondary">
+                  <select multiple="multiple" name="gene_panels_matching" data-live-search="true" class="selectpicker ml-3" data-style="btn-secondary">
                     {% for choice in form.gene_panels_matching.choices or [] %}
                       <option value="{{choice[0]}}" {% if institute.gene_panels_matching and choice[0] in institute.gene_panels_matching.keys() %} selected {% endif %}>{{choice[1]}}</option>
                     {% endfor %}
@@ -441,7 +441,7 @@
           The following institute-level datasets are missing and could be created in Beacon:
         </div>
         <div class="col-5">
-          {{beacon_form.beacon_dataset(data-live-search="true" class="selectpickerbtn-secondary")}}
+          {{beacon_form.beacon_dataset(data-live-search="true" class="selectpicker btn-secondary")}}
         </div>
         <div class="col-1">
           {{beacon_form.beacon_submit_btn(class="btn-secondary btn")}}
