@@ -209,7 +209,7 @@
     <div class="row d-flex align-items-center my-1 mx-1 mb-1 ms-1">
       <div class="col-2 "><button type="button" class="btn-close" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#dismiss_bar" aria-controls="dismiss_bar" onclick='fetch("{{ url_for('variants.toggle_show_dismiss_block') }}")'></button> Dismiss selected variants:</div>
       <div class="col-4 align-items-start">
-        <select form="filters_form" multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-live-search="true"data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
+        <select form="filters_form" multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-live-search="true" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
           {% for value, data in dismiss_variant_options.items() %}
             <option value="{{ value }}">{{ data.label }}</option>
           {% endfor %}

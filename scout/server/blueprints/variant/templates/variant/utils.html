@@ -15,7 +15,7 @@
             <div class="row">
               <div class="col">
                 <label for="status_tags" class="form-label select-label">Tag causative status:</label>
-                <select name="tags" id="status_tags" multiple class="selectpicker" data-live-search="true"data-style="btn-secondary">
+                <select name="tags" id="status_tags" multiple class="selectpicker" data-live-search="true" data-style="btn-secondary">
                 {% for tag, data in case_tag_options.items() %}
                 <option {% if 'tags' in case and tag~"" in case.tags %} selected {% endif %} value="{{ tag }}" title="{{ data.description }}">
                    {{ data.label }}
@@ -47,7 +47,7 @@
                 <div class="col-6">
                   <!-- Phenotype could be specified using OMIM -->
                   <h6>Diagnosis phenotype:</h6>
-                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker" data-live-search="true"data-style="btn-secondary">
+                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker" data-live-search="true" data-style="btn-secondary">
                     {% for term in case.diagnosis_phenotypes %}
                       {% if term is number %} <!-- Old way of saving OMIM terms in cases: list of diagnosis numbers -->
                         <option value="{{term}}">
@@ -64,7 +64,7 @@
                 <div class="col-6">
                   <!-- Phenotype could also be specified by HPO terms -->
                   <h6>Phenotype terms (HPO):</h6>
-                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker" data-live-search="true"data-style="btn-secondary">
+                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker" data-live-search="true" data-style="btn-secondary">
                     {% for hpo_term in case.phenotype_terms %}
                       <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
                         {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
@@ -99,7 +99,7 @@
         <div class="row d-flex align-items-center">
             <div class="col-3">Show tracks:</div>
             <div class="col-6">
-              <select name="user_tracks" class="selectpicker" data-live-search="true"data-width="90%" data-style="btn-secondary" multiple>
+              <select name="user_tracks" class="selectpicker" data-live-search="true" data-width="90%" data-style="btn-secondary" multiple>
                 {% for track in igv_tracks|sort %}
                   <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
                   <option value="{{ track }}" {{ "selected" if current_user.igv_tracks and track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>

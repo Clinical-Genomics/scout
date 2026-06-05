@@ -111,7 +111,7 @@
             required placeholder="Search..." oninput="toggleClickableButtons('assign-disease-button', 'assign-disease-term');">
       </div>
       <div>
-        <select name="affected_inds" multiple class="selectpicker" data-live-search="true"data-style="btn-secondary">
+        <select name="affected_inds" multiple class="selectpicker" data-live-search="true" data-style="btn-secondary">
           {% for ind in case.individuals %}
             <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
               {{ind.display_name}}

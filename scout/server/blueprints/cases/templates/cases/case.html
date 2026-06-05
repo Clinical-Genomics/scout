@@ -112,7 +112,7 @@
                   </button>
                 </div>
                 <div class="btn-group ms-2" role="group">
-                  <select name="tags" id="status_tags_case" multiple class="selectpicker" data-live-search="true"data-style="btn btn-secondary">
+                  <select name="tags" id="status_tags_case" multiple class="selectpicker" data-live-search="true" data-style="btn btn-secondary">
                     {% for tag, data in case_tag_options.items() %}
                       <option {% if 'tags' in case and tag~"" in case.tags %} selected {% endif %} value="{{ tag }}" title="{{ data.label }}">
                         {{ data.label }}
@@ -556,7 +556,7 @@
           Case status tags are used for statistics and follow up. Fill them as accurately as possible.
          <div class="row mt-3">
            <div class="col">
-             <select name="tags" id="solve_status_tags" multiple class="selectpicker" data-live-search="true"data-width="90%" data-style="btn-secondary">
+             <select name="tags" id="solve_status_tags" multiple class="selectpicker" data-live-search="true" data-width="90%" data-style="btn-secondary">
               {% for tag, data in case_tag_options.items() %}
                 <option {% if 'tags' in case and tag~"" in case.tags %} selected {% endif %} value="{{ tag }}" title="{{ data.description }}">
                   {{ data.label }}
