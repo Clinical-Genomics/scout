@@ -32,6 +32,14 @@
     line-height: 1.25;
     vertical-align: top;
   }
+
+  /* Keep chevron direction synced with collapse open/closed state */
+  .chevron-icon {
+    transition: transform 0.3s ease;
+  }
+  button[aria-expanded="true"] .chevron-icon {
+    transform: rotate(90deg);
+  }
 </style>
 {% endblock %}
 
@@ -45,12 +53,20 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row">
-    {% if case.smn_tsv %}
-      {{ smn_case_page() }}
-    {% endif %}
+    {{ panel_filter_card() }}
 
     {% if case.paraphrase %}
       {{ paraphrase_case_page() }}
+    {% endif %}
+
+    {% if case.smn_tsv %}
+      {% if show_smn_section %}
+        {{ smn_case_page() }}
+      {% elif selected_gene_panels %}
+        <div class="container_spaced col-12">
+          <div class="alert alert-info mb-0">SMN Copy Number section is hidden by the selected gene panel filter.</div>
+        </div>
+      {% endif %}
     {% endif %}
 
     <div class="container_spaced">
@@ -78,12 +94,66 @@
 </div>
 {% endblock %}
 
+{% macro panel_filter_card() %}
+  {% if sma_filter_form.gene_panels.choices %}
+    <div class="container_spaced col-12">
+      <div class="card panel-default" id="filter-accordion">
+        <div class="card-header">
+          <button class="d-flex align-items-center btn btn-link p-0 text-decoration-none {{ 'collapsed' if not expand_search }}"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseFilters"
+            aria-expanded="{{ 'true' if expand_search else 'false' }}"
+            aria-controls="collapseFilters">
+            <strong class="me-2">Filters SMN - Dark regions</strong>
+            <i class="fa fa-chevron-right chevron-icon"></i>
+          </button>
+        </div>
+        <form method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
+          <div class="card-body panel-collapse collapse{{ ' show' if expand_search }}" id="collapseFilters">
+            <div class="row">
+            {{ sma_filter_form.panel_filter_applied(value="1") }}
+            <div class="col-6">
+              <label class="form-label mb-1" for="gene-panel-filter">Gene panels</label>
+              {{ sma_filter_form.gene_panels(
+                id="gene-panel-filter",
+                class="selectpicker",
+                data_style="btn-secondary",
+                data_width="100%",
+                data_live_search="true",
+                title="Select gene panel(s)"
+              ) }}
+            </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-4 d-flex  align-items-end">
+                <button type="submit" class="btn btn-primary btn-sm me-2">Apply filter</button>
+                <a class="btn btn-secondary text-white btn-sm" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endmacro %}
+
 {% macro paraphrase_case_page() %}
+
 <div class="container_spaced col-12">
   <div class="card">
+    <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> annotation of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a></div>
     <div class="card-body">
-      <div class="card-title"> Dark regions - <a href="https://github.com/Clinical-Genomics/paraphrase" target="_blank" rel="noopener">Paraphrase</a> annotation of <a href="https://github.com/PacificBiosciences/paraphase" target="_blank" rel="noopener">Paraphase</a> - Individuals</div>
       <div class="accordion accordion-flush" id="paraphrase">
+      {% if paraphrase_regions|length == 0 %}
+        <div class="alert alert-info mb-0">
+          {% if selected_gene_panels %}
+            No dark regions match the selected gene panel filter.
+          {% else %}
+            No dark regions available for this case.
+          {% endif %}
+        </div>
+      {% endif %}
       {% for region_name, region in paraphrase_regions|dictsort(case_sensitive=False, by='key') %}
         <div class="accordion-item">
           <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
@@ -141,21 +211,26 @@
             </table>
 
             <span class="d-flex mt-2">
+              {% set region_gene_symbols = region.get("genes_in_region", []) | map(attribute="hgnc_symbol") | list %}
               {% if case.vcf_files.vcf_snv %}
                 <span class="me-3">
                   <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SNVs</button>
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ region_gene_symbols | join(', ') }}"></input>
+                    {% for panel_name in selected_gene_panels %}
+                      <input type="hidden" name="gene_panels" value="{{ panel_name }}"></input>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes {{ region_gene_symbols | join(', ') }}">SNVs</button>
                   </form>
                 </span>
               {% endif %}
               {% if case.vcf_files.vcf_sv %}
                 <span class="me-3">
                   <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
-                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ case.individuals[0].paraphrase[region_name].genes_in_region }}"></input>
-                    <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
-                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ case.individuals[0].paraphrase[region_name].genes_in_region }}">SVs</button>
+                    <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="{{ region_gene_symbols | join(', ') }}"></input>
+                    {% for panel_name in selected_gene_panels %}
+                      <input type="hidden" name="gene_panels" value="{{ panel_name }}"></input>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes {{ region_gene_symbols | join(', ') }}">SVs</button>
                   </form>
                 </span>
               {% endif %}
@@ -219,8 +294,8 @@
 {% macro smn_case_page() %}
 <div class="container_spaced col-12">
   <div class="card">
+    <div class="card-title"><a href="https://github.com/Illumina/SMNCopyNumberCaller" target="_blank" rel="noopener">SMN Copy Number</a> status</div>
     <div class="card-body">
-      <div class="card-title"><a href="https://github.com/Illumina/SMNCopyNumberCaller" target="_blank" rel="noopener">SMN Copy Number</a> status - Individuals</div>
       <div class="row">
         <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
       </div> <!-- end of div class row -->
@@ -230,7 +305,9 @@
         <span class="me-3">
           <form target="_blank" rel="noopener" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
             <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
-            <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+            {% for panel_name in selected_gene_panels %}
+              <input type="hidden" name="gene_panels" value="{{ panel_name }}"></input>
+            {% endfor %}
             <span><button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="SNV and INDEL variants view filtered for the genes SMN1 and SMN2">SNVs</button></span>
           </form>
         </span>
@@ -239,7 +316,9 @@
           <span class="me-3">
             <form target="_blank" rel="noopener" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
               <input type="hidden" id="hgnc_symbols" name="hgnc_symbols" value="SMN1, SMN2"></input>
-              <input type="hidden" id="gene_panels" name="gene_panels" value=""></input>
+              {% for panel_name in selected_gene_panels %}
+                <input type="hidden" name="gene_panels" value="{{ panel_name }}"></input>
+              {% endfor %}
               <button type="submit" class="btn btn-secondary btn-sm"  data-bs-toggle="tooltip" title="Structural variants view filtered for the genes SMN1 and SMN2">SVs</button>
             </form>
           </span>
