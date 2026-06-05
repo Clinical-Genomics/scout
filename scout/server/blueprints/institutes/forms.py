@@ -159,8 +159,10 @@ class TagListField(Field):
 class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
+    # conflict with VariantFiltersForm: make polymorphic
     variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
-    category = SelectMultipleField(choices=CATEGORY_CHOICES)
+
+    # shared with VariantFiltersForm
     hgnc_symbols = TagListField(
         "HGNC Symbols (comma-separated, case sensitive)",
         validators=[validators.InputRequired()],
@@ -174,28 +176,57 @@ class GeneVariantFiltersForm(FlaskForm):
         choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
     )
 
+    cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
+    cadd_inclusive = BooleanField("CADD inclusive")
+    revel = BetterDecimalField("REVEL", validators=[validators.Optional()])
+
     gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
     local_obs_old = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
+
+    # shared with CancerFiltersForm
     local_obs_cancer_somatic_old = IntegerField(
         "Local somatic obs. (archive)", validators=[validators.Optional()]
     )
+
     local_obs_cancer_somatic_panel_old = IntegerField(
         "Local somatic panel obs. (archive)", validators=[validators.Optional()]
     )
     local_obs_cancer_germline_old = IntegerField(
         "Local germline obs. (archive)", validators=[validators.Optional()]
     )
-    cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
-    cadd_inclusive = BooleanField("CADD inclusive")
-    revel = BetterDecimalField("REVEL", validators=[validators.Optional()])
+    local_obs_cancer_germline_panel_old = IntegerField(
+        "Local germline panel obs. (archive)", validators=[validators.Optional()]
+    )
+
+    # shared with FiltersForm
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
+    # shared with CaseFiltersForm
     institute = SelectMultipleField(choices=[])
-    rank_score = IntegerField(default=15)
     phenotype_terms = TagListField("HPO terms (comma-separated)")
     phenotype_groups = TagListField("Phenotype groups")
     similar_case = TagListField("Phenotypically similar case")
     cohorts = TagListField("Cohorts")
+
+    # shared with CaseFiltersForm
+    institute = SelectMultipleField(choices=[])
+    phenotype_terms = TagListField("HPO terms (comma-separated)")
+    phenotype_groups = TagListField("Phenotype groups")
+    similar_case = TagListField("Phenotypically similar case")
+    cohorts = TagListField("Cohorts")
+
+    # specific to GeneVariants
+    category = SelectMultipleField(choices=CATEGORY_CHOICES)
+    rank_score = IntegerField(
+        default=15,
+        validators=[
+            validators.Optional(),
+            validators.NumberRange(
+                min=5, message="Searching for rank score <5 is prohibitively slow."
+            ),
+        ],
+    )
+    # actions (partly shared)
     filter_variants = SubmitField(label="Filter variants")
     filter_export_variants = SubmitField(label="Filter and export variants")
 
