@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panel filters to the Dark regions page (#6353)
 - A `Me` badge to designate cases with methylation data available, on cases page (#6373)
 - `Has Methylation data` filter on cases page (#6375)
+- More filter options for the gene variants page: function, inheritance pattern, predictors, frequency (#6357)
 - A `--liftover-from` option to the `export managed` command line, so managed variants can be exported and imported again in another genome build (#6225)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
