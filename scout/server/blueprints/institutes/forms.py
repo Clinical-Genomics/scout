@@ -208,13 +208,6 @@ class GeneVariantFiltersForm(FlaskForm):
     similar_case = TagListField("Phenotypically similar case")
     cohorts = TagListField("Cohorts")
 
-    # shared with CaseFiltersForm
-    institute = SelectMultipleField(choices=[])
-    phenotype_terms = TagListField("HPO terms (comma-separated)")
-    phenotype_groups = TagListField("Phenotype groups")
-    similar_case = TagListField("Phenotypically similar case")
-    cohorts = TagListField("Cohorts")
-
     # specific to GeneVariants
     category = SelectMultipleField(choices=CATEGORY_CHOICES)
     rank_score = IntegerField(
