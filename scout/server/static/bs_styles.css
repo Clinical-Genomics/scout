@@ -422,7 +422,7 @@ tr[data-href] {
   }
 }
 
-.col-1-5 {
+.w-12-5-percent {
     flex: 0 0 12.5%;
     max-width: 12.5%;
 }
