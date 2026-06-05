@@ -188,7 +188,7 @@
               <label class="form-check-label" for="vcfselect">
                 Variants type:
               </label>
-              <select multiple name="vcf_files" id="vcfselect" class="selectpicker w-auto" data-style="btn-secondary">
+              <select multiple name="vcf_files" id="vcfselect" data-live-search="true" class="selectpickerw-auto" data-style="btn-secondary">
                 {% for file, path in case.vcf_files.items() %}
                   {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
                     <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
@@ -202,7 +202,7 @@
               <label class="form-check-label" for="vcfselect">
                 Filter by panel:
               </label>
-              <select multiple name="panels" id="panelselect" class="selectpicker w-auto" data-style="btn-secondary">
+              <select multiple name="panels" id="panelselect" data-live-search="true" class="selectpickerw-auto" data-style="btn-secondary">
                 {% for panel in case.panels %}
                   <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
                 {% endfor %}
