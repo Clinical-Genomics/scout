@@ -89,6 +89,7 @@ COVERAGE_REPORT_TIMEOUT = 20
 
 PANEL_PROJECTION = {"version": 1, "display_name": 1, "genes": 1}
 PANEL_HIDDEN_PROJECTION = {"version": 1, "display_name": 1, "hidden": 1}
+SMN_HGNC_IDS = {11117, 11118}
 
 
 def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
@@ -302,12 +303,40 @@ def bionano_case(store, institute_obj, case_obj) -> Dict:
     return data
 
 
-def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
-    """Preprocess a case for tabular view, SMA."""
+def sma_case(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    selected_gene_panels: List[str] | None = None,
+) -> dict:
+    """Preprocess a case for tabular view, SMA.
+
+    Prepare lists of genes in the case panels and in the dynamic HPO gene list for filtering on the SMA/dark regions page.
+
+    For panels present on the case, and other selectable panels (e.g. institute panels),
+        fall back to latest panel version.
+    """
 
     _populate_case_individuals(case_obj)
 
     case_has_alignments(case_obj)
+
+    selected_gene_panels = selected_gene_panels or []
+    panel_hgnc_ids = {
+        hgnc_id
+        for hgnc_id in store.panels_to_genes(
+            panel_names=selected_gene_panels, gene_format="hgnc_id"
+        )
+        if isinstance(hgnc_id, int)
+    }
+    if "hpo" in selected_gene_panels:
+        panel_hgnc_ids.update(
+            gene.get("hgnc_id")
+            for gene in case_obj.get("dynamic_gene_list", [])
+            if isinstance(gene.get("hgnc_id"), int)
+        )
+
+    show_smn_section = (not selected_gene_panels) or bool(SMN_HGNC_IDS.intersection(panel_hgnc_ids))
 
     data = {
         "institute": institute_obj,
@@ -315,8 +344,10 @@ def sma_case(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "events": _get_events(store, institute_obj, case_obj),
         "region": GENOME_REGION[get_case_genome_build(case_obj)],
-        "paraphrase_regions": _get_paraphrase_regions(case_obj),
+        "paraphrase_regions": _get_paraphrase_regions(case_obj, panel_hgnc_ids),
         "inherit_palette": INHERITANCE_PALETTE,
+        "selected_gene_panels": selected_gene_panels,
+        "show_smn_section": show_smn_section,
     }
     return data
 
@@ -390,11 +421,15 @@ def _update_case_region(case_region: dict, region: dict, individual_is_affected:
                 )
 
 
-def _get_paraphrase_regions(case_obj: dict) -> dict:
+def _get_paraphrase_regions(case_obj: dict, panel_hgnc_ids: Set[int] | None = None) -> dict:
     """Check all case individuals for paraphrase region information.
     Move fixed global attributes (genes_in_region, phase_region) for display up from the individual level to case region
     level, which is returned.
+
     Set the status of the region to the highest status on any affected individual.
+
+    If given a set of panel hgnc ids, match genes in regions with this gene selection, and return a dict with regions left
+    after filtering.
     """
 
     case_regions = {}
@@ -409,7 +444,27 @@ def _get_paraphrase_regions(case_obj: dict) -> dict:
             case_region = case_regions.setdefault(region_name, {})
             _update_case_region(case_region, region, individual_is_affected)
 
-    return case_regions
+    if not panel_hgnc_ids:
+        return case_regions
+
+    filtered_regions = {}
+    for region_name, region in case_regions.items():
+        region_genes = region.get("genes_in_region", [])
+        if not region_genes:
+            continue
+
+        matched_genes = [
+            gene
+            for gene in region_genes
+            if gene.get("hgnc_id") is not None and gene["hgnc_id"] in panel_hgnc_ids
+        ]
+        if not matched_genes:
+            continue
+
+        region["genes_in_region"] = matched_genes
+        filtered_regions[region_name] = region
+
+    return filtered_regions
 
 
 def _get_suspects_or_causatives(

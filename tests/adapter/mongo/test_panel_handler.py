@@ -394,3 +394,23 @@ def test_panel_to_genes(adapter, testpanel_obj):
     panel_name = testpanel_obj["panel_name"]
     gene_symbols = adapter.panel_to_genes(panel_name=panel_name)
     assert sorted(gene_symbols) == ["AAA", "BBB"]
+
+
+def test_case_panels_to_genes_latest_fallback(adapter, testpanel_obj):
+    """When panel is not present on case, latest panel version should be used."""
+
+    adapter.panel_collection.insert_one(testpanel_obj)
+
+    # GIVEN a adapter with a gene panel
+    panel_obj = adapter.panel_collection.find_one()
+    assert panel_obj["genes"]
+
+    # WHEN selecting genes from the panel alone, using the panels_to_genes function
+    selected_genes_from_panels = adapter.panels_to_genes(
+        panel_names=[testpanel_obj["panel_name"]],
+        gene_format="hgnc_id",
+    )
+
+    # THEN this should equate to genes selected from the panel itself
+    selected_genes_single = adapter.panel_to_genes(panel_id=panel_obj["_id"], gene_format="hgnc_id")
+    assert selected_genes_from_panels == selected_genes_single
