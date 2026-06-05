@@ -251,6 +251,7 @@ class CaseFilterForm(FlaskForm):
     is_research = BooleanField("Research only")
     clinvar_submitted = BooleanField("Has ClinVar submissions")
     has_rna = BooleanField("Has RNA-seq data")
+    has_me = BooleanField("Has methylation data")
     validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
     export = SubmitField(label="Filter and export")
