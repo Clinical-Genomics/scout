@@ -458,7 +458,7 @@ class CaseHandler(object):
         )
 
         _conditional_set_query_value(
-            query=query, condition="has_methylation", set_key="has_methylation", set_value=True
+            query=query, condition=has_methylation, set_key="has_methylation", set_value=True
         )
 
         _conditional_set_query_value(
