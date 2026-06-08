@@ -106,10 +106,16 @@
                     {{ 'De-prioritized' if case.status == 'prioritized' else 'Prioritized' }}
                   </button>
 
+                  <!-- active/inactive -->
+                  <button name="status" value="{{ 'active' if case.status == 'inactive' else 'inactive' }}" type="submit" class="btn btn-dark btn-sm">
+                    {{ 'Active' if case.status == 'inactive' else 'Inactive' }}
+                  </button>
+
                     <!-- unused/inactive -->
                   <button name="status" value="{{ 'inactive' if case.status == 'ignored' else 'ignored' }}" type="submit" class="btn btn-light btn-sm">
                     {{ 'Inactive' if case.status == 'ignored' else 'Ignored' }}
                   </button>
+
                 </div>
                 <div class="btn-group ms-2" role="group">
                   <select name="tags" id="status_tags_case" multiple class="selectpicker" data-live-search="true" data-style="btn btn-secondary">
