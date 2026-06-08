@@ -155,7 +155,7 @@ class QueryHandler(object):
         if query.get("similar_case"):
             select_cases = self._get_similar_cases(query, institute_ids)
 
-        if query["simple_id"]:
+        if "simple_id" in query and query["simple_id"]:
             mongo_variant_query = self.build_simple_id_query(
                 simple_id=query["simple_id"],
                 variant_type=variant_type,
@@ -176,7 +176,7 @@ class QueryHandler(object):
         ):  # Could be an empty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
 
-        if query["simple_id"]:
+        if "simple_id" in query and query["simple_id"]:
             return mongo_variant_query
 
         rank_score = query.get("rank_score") or 15
