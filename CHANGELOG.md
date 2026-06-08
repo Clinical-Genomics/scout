@@ -21,7 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
 - `has_methylation` field not persisting when a case document is updated (#6375)
-- Missing mock resource resulting in failing `load_disease_terms` test ()
+- Missing mock resource resulting in failing `load_disease_terms` test (#6383)
 
 ## [4.112]
 ### Added
