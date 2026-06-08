@@ -134,13 +134,6 @@ class QueryHandler(object):
         query = query or {}
         LOG.debug("Building a mongo query for %s" % query)
 
-        if query["simple_id"]:
-            return self.build_simple_id_query(
-                simple_id=query["simple_id"],
-                variant_type=variant_type,
-                institute_ids=institute_ids,
-            )
-
         select_cases = None
         mongo_case_query = {}
 
@@ -162,19 +155,29 @@ class QueryHandler(object):
         if query.get("similar_case"):
             select_cases = self._get_similar_cases(query, institute_ids)
 
-        if not category:
-            category = "snv"
+        if query["simple_id"]:
+            mongo_variant_query = self.build_simple_id_query(
+                simple_id=query["simple_id"],
+                variant_type=variant_type,
+                institute_ids=institute_ids,
+            )
+        else:
+            if not category:
+                category = "snv"
 
-        mongo_variant_query = {
-            "hgnc_symbols": {"$in": query["hgnc_symbols"]},
-            "variant_type": {"$in": variant_type},
-            "category": ({"$in": category} if isinstance(category, list) else category),
-        }
+            mongo_variant_query = {
+                "hgnc_symbols": {"$in": query["hgnc_symbols"]},
+                "variant_type": {"$in": variant_type},
+                "category": ({"$in": category} if isinstance(category, list) else category),
+            }
 
         if (
             select_cases is not None
         ):  # Could be an empty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
+
+        if query["simple_id"]:
+            return mongo_variant_query
 
         rank_score = query.get("rank_score") or 15
         mongo_variant_query["rank_score"] = {"$gte": rank_score}
