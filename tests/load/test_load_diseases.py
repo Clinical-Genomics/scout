@@ -2,7 +2,12 @@ from scout.load.disease import load_disease_terms
 
 
 def test_load_disease_terms(
-    gene_database, genemap_handle, orpha_to_hpo_lines, orpha_to_genes_lines, orpha_inheritance_lines
+    gene_database,
+    genemap_handle,
+    orpha_to_hpo_lines,
+    orpha_to_genes_lines,
+    orpha_inheritance_lines,
+    hpo_terms_handle,
 ):
     adapter = gene_database
     alias_genes = adapter.genes_by_alias()
@@ -14,6 +19,7 @@ def test_load_disease_terms(
         adapter=adapter,
         genemap_lines=genemap_handle,
         genes=alias_genes,
+        hpo_annotation_lines=hpo_terms_handle,
         orpha_to_genes_lines=orpha_to_genes_lines,
         orpha_to_hpo_lines=orpha_to_hpo_lines,
         orpha_inheritance_lines=orpha_inheritance_lines,
