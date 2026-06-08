@@ -204,6 +204,12 @@
         </div>
         {{ archived_observations_cancer_filters(form) }}
       </div>
+      <div class="row">
+        <div class="col">
+          {{ form.simple_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Higly specific query for variant using the form 12-123456-A-C.") }}
+          {{ form.simple_id(class="form-control") }}
+        </div>
+      </div>
       <div class="row justify-content-center mt-3">
         <div class="col col-md-6">
           <div class="row">

@@ -63,6 +63,65 @@ def test_gene_variants(app, user_obj, institute_obj):
         assert "POT1" in str(resp.data)
 
 
+def test_gene_variants_requires_gene_symbol_or_simple_id(app, institute_obj):
+    """Empty submission should warn and redirect instead of running an empty query."""
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        variants_url = url_for(
+            OVERVIEW_GENE_VARIANTS_ENDPOINT,
+            institute_id=institute_obj["internal_id"],
+            _external=True,
+        )
+        resp = client.post(variants_url, data={}, headers={"Referer": variants_url})
+
+        assert resp.status_code == 302
+        assert (
+            url_for(
+                OVERVIEW_GENE_VARIANTS_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                _external=False,
+            )
+            in resp.location
+        )
+
+        with client.session_transaction() as session:
+            assert (
+                "warning",
+                "Either HGNC gene symbols or a simple variant ID is required",
+            ) in session.get("_flashes", [])
+
+
+def test_gene_variants_with_simple_id(app, institute_obj):
+    """Test gene variants search using a valid simple_id query."""
+
+    variant_obj = store.variant(document_id=VARIANT_ID)
+    assert variant_obj
+    simple_id = (
+        f"{variant_obj['chromosome']}-{variant_obj['position']}-"
+        f"{variant_obj['reference']}-{variant_obj['alternative']}"
+    )
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        resp = client.post(
+            url_for(OVERVIEW_GENE_VARIANTS_ENDPOINT, institute_id=institute_obj["internal_id"]),
+            data={
+                "simple_id": simple_id,
+                "variant_type": ["clinical"],
+                "category": "snv",
+                "institute": ["cust000"],
+            },
+        )
+
+        assert resp.status_code == 200
+        assert variant_obj["_id"] in str(resp.data)
+
+
 def test_gene_variants_export(app, user_obj, institute_obj):
     """Test that the SNPs and INDELs page exports data given a gene provided by user"""
 

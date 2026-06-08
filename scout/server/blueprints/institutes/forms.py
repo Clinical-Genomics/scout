@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from re import IGNORECASE
+
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -156,6 +158,13 @@ class TagListField(Field):
             self.data = []
 
 
+def hgnc_symbol_or_simple_id(form, field):
+    if not form.hgnc_symbols.data and not form.simple_id.data:
+        raise validators.ValidationError(
+            "Either HGNC gene symbols or a simple variant ID is required"
+        )
+
+
 class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
@@ -165,7 +174,7 @@ class GeneVariantFiltersForm(FlaskForm):
     # shared with VariantFiltersForm
     hgnc_symbols = TagListField(
         "HGNC Symbols (comma-separated, case sensitive)",
-        validators=[validators.InputRequired()],
+        validators=[validators.Optional(), hgnc_symbol_or_simple_id],
     )
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
@@ -209,6 +218,19 @@ class GeneVariantFiltersForm(FlaskForm):
     cohorts = TagListField("Cohorts")
 
     # specific to GeneVariants
+    simple_id = StringField(
+        "Simple ID",
+        [
+            validators.Optional(),
+            hgnc_symbol_or_simple_id,
+            validators.Length(min=8),
+            validators.Regexp(
+                r"^(?:[1-9]|1[0-9]|2[0-2]|X|Y|MT)-[0-9]+-[ATGCN]+-[ATGCN]+$",
+                IGNORECASE,
+                message="Use format CHR-POS-REF-ALT, e.g. 1-2345-A-C",
+            ),
+        ],
+    )
     category = SelectMultipleField(choices=CATEGORY_CHOICES)
     rank_score = IntegerField(
         default=15,
