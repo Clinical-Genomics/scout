@@ -261,10 +261,10 @@
     {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.category, class="selectpicker", data_style="btn-secondary")}}
+        {{ wtf.form_field(filters_form.category, class="selectpicker", data_live_search="true", data_style="btn-secondary")}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.sub_category, class="selectpicker", data_style="btn-secondary")}}
+        {{ wtf.form_field(filters_form.sub_category, class="selectpicker", data_live_search="true", data_style="btn-secondary")}}
       </div>
       <div class="col-4">
         {{ wtf.form_field(filters_form.description) }}
