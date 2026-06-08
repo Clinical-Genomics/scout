@@ -209,7 +209,7 @@
     <div class="row d-flex align-items-center my-1 mx-1 mb-1 ms-1">
       <div class="col-2 "><button type="button" class="btn-close" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#dismiss_bar" aria-controls="dismiss_bar" onclick='fetch("{{ url_for('variants.toggle_show_dismiss_block') }}")'></button> Dismiss selected variants:</div>
       <div class="col-4 align-items-start">
-        <select form="filters_form" multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
+        <select form="filters_form" multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-live-search="true" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
           {% for value, data in dismiss_variant_options.items() %}
             <option value="{{ value }}">{{ data.label }}</option>
           {% endfor %}
@@ -318,7 +318,7 @@
   <div class="col-2">
     <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels. ") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
   {% if type == "snv" %}
@@ -334,23 +334,23 @@
   </div>
   <div class="w-12-5-percent">
     {{ form.region_annotations.label(class="control-label") }}
-    {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.region_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="w-12-5-percent">
     {{ form.functional_annotations.label(class="control-label") }}
-    {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.functional_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="w-12-5-percent">
     {{ form.genetic_models.label(class="control-label") }}
-    {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.genetic_models(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="w-12-5-percent">
     {{ form.omim_genetic_models.label(class="control-label") }}
-    {{ form.omim_genetic_models(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.omim_genetic_models(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="w-12-5-percent">
     {{ form.genotypes.label(class="control-label") }}
-    {{ form.genotypes(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.genotypes(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
 </div>
 {% endmacro %}
@@ -422,12 +422,12 @@
     </div>
     <div class="col-1">
       {{ form.spidex_human.label(class="control-label") }}
-      {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
+      {{ form.spidex_human(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
       <span>{{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}</span>
       <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
-      {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+      {{ form.clinsig(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
       <div class="row">
@@ -462,7 +462,7 @@
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
         </div>
       </div>
     </div>
@@ -548,7 +548,7 @@
     </div>
     <div class="col-2">
       {{ form.clinsig.label(class="control-label") }}
-      {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+      {{ form.clinsig(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
     </div>
   </div>
   <div class="row mb-2">
@@ -563,7 +563,7 @@
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
         </div>
       </div>
     </div>
@@ -637,7 +637,7 @@
   <div class="col-2">
     <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-3">
     {{ form.hgnc_symbols.label(class="control-label") }}
@@ -654,7 +654,7 @@
 <div class="row">
   <div class="col-2">
     {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -716,7 +716,7 @@
   </div>
   <div class="col-2">
     {{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}
-    {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.clinsig(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-1">
     {{ form.gnomad_frequency.label(class="control-label") }}
@@ -739,7 +739,7 @@
       </div>
       <div class="col-3">
         {{ form.chrom.label(class="control-label") }}
-        {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
     </div>
   </div>
@@ -801,29 +801,29 @@
       <div class="col-2">
         <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label",  data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-        {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.region_annotations.label(class="control-label") }}
-        {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.region_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.functional_annotations.label(class="control-label") }}
-        {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.functional_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.genetic_models.label(class="control-label") }}
-        {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.genetic_models(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         <span>{{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}</span>
         <span style="float:right;">{{ form.clinsig_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with clinical significance among the selected categories.") }} {{form.clinsig_exclude}}</span>
-        {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.clinsig(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         <span>{{ form.clinsig_onc.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="ClinVar oncogenicity criteria will be applied alongside the other search criteria, not as an alternative. Oncogenicity annotations are still sparse in ClinVar, so relying solely on them could be too restrictive.") }}</span>
         <span style="float:right;">{{ form.clinsig_onc_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Exclude variants with oncogenicity among the selected categories.") }} {{form.clinsig_onc_exclude}}</span>
-        {{ form.clinsig_onc(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.clinsig_onc(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
     </div>
     <div class="row mt-2">
@@ -879,7 +879,7 @@
         {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
         </div>
         <div class="col">
           {{ wtf.form_field(form.start) }}
@@ -941,7 +941,7 @@
       <div class="col-2">
         <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering. Panels marked with an asterisk do not belong to the case's clinical panels.") }}</span>
         <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-        {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.svtype.label(class="control-label") }}
@@ -949,19 +949,19 @@
       </div>
       <div class="col-2">
         {{ form.region_annotations.label(class="control-label") }}
-        {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.region_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.functional_annotations.label(class="control-label") }}
-        {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.functional_annotations(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.genetic_models.label(class="control-label") }}
-        {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.genetic_models(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
       <div class="col-2">
         {{ form.clinsig.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Germline classification criteria.") }}
-        {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+        {{ form.clinsig(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
       </div>
     </div>
     <div class="row">
@@ -993,7 +993,7 @@
         {{ archived_observations_cancer_filters(form) }}
         <div class="col">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+          {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
         </div>
         <div class="col">
           {{ wtf.form_field(form.start) }}
@@ -1055,7 +1055,7 @@
   <div class="col-2">
     <span>{{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}</span>
     <span style="float:right;">{{ form.gene_panels_exclude.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Check this box to exclude from the search any gene listed in selected 'Gene Panels', 'Symbol file' or provided in the 'HGNC Symbols/Ids' field.") }} {{form.gene_panels_exclude}}</span>
-    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.gene_panels(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-3">
     {{ form.hgnc_symbols.label(class="control-label") }}
@@ -1072,7 +1072,7 @@
 <div class="row">
   <div class="col-2">
     {{ form.chrom.label(class="control-label") }}
-    {{ form.chrom(class="selectpicker", data_style="btn-secondary") }}
+    {{ form.chrom(class="selectpicker", data_live_search="true", data_style="btn-secondary") }}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -1089,7 +1089,7 @@
 <div class="row">
   <div class="col-2">
     {{form.fusion_caller.label(class ="control-label")}}
-    {{form.fusion_caller( class ="selectpicker", data_style="btn-secondary")}}
+    {{form.fusion_caller(class="selectpicker", data_live_search="true", data_style="btn-secondary")}}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.fusion_score) }}
