@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A `Me` badge to designate cases with methylation data available, on cases page (#6373)
 - `Has Methylation data` filter on cases page (#6375)
 - More filter options for the gene variants page: function, inheritance pattern, predictors, frequency (#6357)
-- Activate/inactivate buttons on case page (#6380)
+- Activate/inactivate button on case page (#6379)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
