@@ -219,7 +219,7 @@ def gene_variants(institute_id):
             ]
         ):
             flash(
-                "A Variant Simple ID was given. It cannot be used together with other variant filter options, such as gene symbol.",
+                "Search by variant Simple ID cannot be combined with any other variant filter except institute.",
                 "warning",
             )
 
