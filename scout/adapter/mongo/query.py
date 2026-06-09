@@ -84,7 +84,11 @@ class QueryHandler(object):
     ) -> dict:
         """Build a query to find a variant by its simple id."""
 
-        chrom, pos, ref, alt = simple_id.split("-")
+        delimiter = "-"
+        if "_" in simple_id:
+            delimiter = "_"
+
+        chrom, pos, ref, alt = simple_id.split(delimiter)
 
         variant_id_query = [
             parse_variant_id(chrom, pos, ref, alt, variant_type_element)

@@ -4,7 +4,7 @@ import io
 import json
 import logging
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file
+from flask import Blueprint, flash, jsonify, render_template, request, send_file
 from flask_login import current_user
 from pymongo import DESCENDING
 
@@ -16,6 +16,7 @@ from scout.constants import (
     CCV_MAP,
     DATE_DAY_FORMATTER,
     INHERITANCE_PALETTE,
+    SECONDARY_CRITERIA,
     VERBS_ICONS_MAP,
     VERBS_MAP,
 )
@@ -209,6 +210,26 @@ def gene_variants(institute_id):
         if not form.hgnc_symbols.data and not form.simple_id.data:
             flash("Either HGNC gene symbols or a simple variant ID is required", "warning")
             return safe_redirect_back(request)
+
+        if form.simple_id.data and any(
+            [
+                getattr(form, criterium).data
+                for criterium in set(["hgnc_symbols"] + SECONDARY_CRITERIA) - set(["rank_score"])
+                if hasattr(form, criterium)
+            ]
+        ):
+            flash(
+                "A Variant Simple ID was given. It cannot be used together with other variant filter options, such as gene symbol.",
+                "warning",
+            )
+
+            return render_template(
+                "/overview/gene_variants.html",
+                form=form,
+                institute=institute_obj,
+                result_size=result_size,
+                page=page,
+            )
 
         if not form.validate():
             seen = set()

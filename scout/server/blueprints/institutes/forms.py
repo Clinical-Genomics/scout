@@ -225,9 +225,9 @@ class GeneVariantFiltersForm(FlaskForm):
             hgnc_symbol_or_simple_id,
             validators.Length(min=8),
             validators.Regexp(
-                r"^(?:[1-9]|1[0-9]|2[0-2]|X|Y|MT)-[0-9]+-[ATGCN]+-[ATGCN]+$",
+                r"^(?:[1-9]|1[0-9]|2[0-2]|X|Y|MT)[-_][0-9]+[-_][ATGCN]+[-_][ATGCN]+$",
                 IGNORECASE,
-                message="Use format CHR-POS-REF-ALT, e.g. 1-2345-A-C",
+                message="Use format CHR-POS-REF-ALT or CHR_POS_REF_ALT, e.g. 1-2345-A-C",
             ),
         ],
     )
