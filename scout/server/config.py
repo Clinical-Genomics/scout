@@ -85,8 +85,15 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
 # LOQUSDB_SETTINGS = {
-#    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
-#    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
+#    "default": {
+#        "binary_path": "/opt/homebrew/Caskroom/miniconda/base/envs/loqusdb/bin/loqusdb",
+#        "config_path": "/home/user/settings/loqus_default.yaml",
+#        "description": "This is a CLI LoqusDB instance",
+#    },
+#    "loqus_api": {
+#        "api_url": "http://127.0.0.1:9000",
+#        "description": "This is an API LoqusDB instance",
+#    },
 # }
 
 # Connection details for Scout REViewer service
