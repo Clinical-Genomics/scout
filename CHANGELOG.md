@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Has Methylation data` filter on cases page (#6375)
 - More filter options for the gene variants page: function, inheritance pattern, predictors, frequency (#6357)
 - Activate/inactivate button on case page (#6379)
+- On variant page, Local observations panel, a tooltip showing an optional description for the LoqusDB instances (#6384)
 - A `--liftover-from` option to the `export managed` command line, so managed variants can be exported and imported again in another genome build (#6225)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)

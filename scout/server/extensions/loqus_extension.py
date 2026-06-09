@@ -96,6 +96,7 @@ class LoqusDB:
         for key, setting in self.loqusdb_settings.items():
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
+            setting["instance_description"] = setting.get("description")
             setting["id"] = key
             if app.config["TESTING"] is True:
                 setting["version"] = "2.5"
