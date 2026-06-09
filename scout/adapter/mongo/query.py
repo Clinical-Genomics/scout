@@ -85,8 +85,7 @@ class QueryHandler(object):
         """Build a query to find a variant by its simple id."""
 
         delimiter = "-"
-        if "_" in simple_id:
-            delimiter = "_"
+        simple_id = simple_id.replace("_", delimiter)
 
         chrom, pos, ref, alt = simple_id.split(delimiter)
 
