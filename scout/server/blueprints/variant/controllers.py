@@ -647,7 +647,7 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
     for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
         # collect observation on that loqusdb instance
         obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
-        instance_description = loqusdb.loqusdb_settings[loqus_id].get("description")
+        instance_description = loqusdb.loqusdb_settings.get(loqus_id, {}).get("description")
         if instance_description:
             obs_data[loqus_id]["instance_description"] = instance_description
 
