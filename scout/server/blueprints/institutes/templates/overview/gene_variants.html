@@ -206,7 +206,7 @@
       </div>
       <div class="row">
         <div class="col">
-          {{ form.simple_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Specific query for variant using the form 12-123456-A-C. You can still filter for case options, but variant search terms like the HGNC gene symbols are not used together with this.") }}
+          {{ form.simple_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Specific query for variant using the form 12-123456-A-C or 12_123456_A_C. You can still filter for institute and case options, but variant search terms like the HGNC gene symbols cannot be used together with a variant id.") }}
           {{ form.simple_id(class="form-control") }}
         </div>
       </div>
