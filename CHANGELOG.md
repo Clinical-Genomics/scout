@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `has_methylation` field not persisting when a case document is updated (#6375)
 - Missing mock resource resulting in failing `load_disease_terms` test (#6383)
 - Comment boxes not editable when reclassifying an existing ACMG classification (#6388)
-- Fix ACMG PDF export to support multi-page output ()
+- Fix ACMG PDF export to support multi-page output (#6390)
 
 ## [4.112]
 ### Added
