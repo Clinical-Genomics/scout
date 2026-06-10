@@ -114,14 +114,9 @@
                         </select>
                       </div>
                       <div class="row">
-                        {% if evaluation %}
-                          <div class="comment-box">
-                            {{ comment }}
-                          </div>
-                        {% else %}
-                          <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
-                            name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
-                        {% endif %}
+                        <textarea {{ 'disabled' if evaluation and edit is false }} class="form-control"
+                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}
+                        </textarea>
                       </div>
                       <input type="url" {{ 'disabled' if evaluation and edit is false }} class="form-control" name="link-{{ criterion_code }}"
                         placeholder="{{ link or 'Supporting link (optional)' }}" value="">
