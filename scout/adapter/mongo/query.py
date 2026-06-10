@@ -12,6 +12,7 @@ from scout.constants import (
     TRUSTED_REVSTAT_LEVEL,
 )
 from scout.constants.filters import METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL
+from scout.parse.variant.ids import parse_variant_id
 
 CLNSIG_NOT_EXISTS = {"clnsig": {"$exists": False}}
 CLNSIG_ONC_NOT_EXISTS = {"clnsig_onc": {"$exists": False}}
@@ -78,12 +79,33 @@ class QueryHandler(object):
 
         return query
 
+    def build_simple_id_query(
+        self, simple_id: str, variant_type: list, institute_ids: Optional[list]
+    ) -> dict:
+        """Build a query to find a variant by its simple id."""
+
+        delimiter = "-"
+        simple_id = simple_id.replace("_", delimiter)
+
+        chrom, pos, ref, alt = simple_id.split(delimiter)
+
+        variant_id_query = [
+            parse_variant_id(chrom, pos, ref, alt, variant_type_element)
+            for variant_type_element in variant_type
+        ]
+
+        mongo_variant_query = {"variant_id": {"$in": variant_id_query}}
+        if institute_ids:
+            mongo_variant_query["institute"] = {"$in": institute_ids}
+
+        return mongo_variant_query
+
     def build_variant_query(
         self,
         query: Optional[dict] = None,
         institute_ids: Optional[list] = [],
         category: Optional[Union[str, list]] = "snv",
-        variant_type: Optional[list] = ["clinical"],
+        variant_type: list = ["clinical"],
     ):
         """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
@@ -113,18 +135,7 @@ class QueryHandler(object):
         """
 
         query = query or {}
-        mongo_variant_query = {}
-
         LOG.debug("Building a mongo query for %s" % query)
-
-        mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
-        mongo_variant_query["variant_type"] = {"$in": variant_type}
-
-        if not category:
-            category = "snv"
-        mongo_variant_query["category"] = (
-            {"$in": category} if isinstance(category, list) else category
-        )
 
         select_cases = None
         mongo_case_query = {}
@@ -147,10 +158,29 @@ class QueryHandler(object):
         if query.get("similar_case"):
             select_cases = self._get_similar_cases(query, institute_ids)
 
+        if "simple_id" in query and query["simple_id"]:
+            mongo_variant_query = self.build_simple_id_query(
+                simple_id=query["simple_id"],
+                variant_type=variant_type,
+                institute_ids=institute_ids,
+            )
+        else:
+            if not category:
+                category = "snv"
+
+            mongo_variant_query = {
+                "hgnc_symbols": {"$in": query["hgnc_symbols"]},
+                "variant_type": {"$in": variant_type},
+                "category": ({"$in": category} if isinstance(category, list) else category),
+            }
+
         if (
             select_cases is not None
         ):  # Could be an empty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
+
+        if "simple_id" in query and query["simple_id"]:
+            return mongo_variant_query
 
         rank_score = query.get("rank_score") or 15
         mongo_variant_query["rank_score"] = {"$gte": rank_score}

@@ -16,6 +16,7 @@ from scout.constants import (
     CCV_MAP,
     DATE_DAY_FORMATTER,
     INHERITANCE_PALETTE,
+    SECONDARY_CRITERIA,
     VERBS_ICONS_MAP,
     VERBS_MAP,
 )
@@ -193,6 +194,11 @@ def gene_variants(institute_id):
     else:  # POST
         form.process(request.form)
 
+        if isinstance(form.variant_type.data, str):
+            form.variant_type.data = [form.variant_type.data]
+        if isinstance(form.category.data, str):
+            form.category.data = [form.category.data]
+
         if form.variant_type.data == []:
             form.variant_type.data = ["clinical"]
         variant_type = form.data.get("variant_type")
@@ -201,9 +207,37 @@ def gene_variants(institute_id):
 
         update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 
-        # If no valid gene is provided, redirect to form
-        if not form.hgnc_symbols.data:
-            flash("Provided gene symbols could not be used in variants' search", "warning")
+        if not form.hgnc_symbols.data and not form.simple_id.data:
+            flash("Either HGNC gene symbols or a simple variant ID is required", "warning")
+            return safe_redirect_back(request)
+
+        if form.simple_id.data and any(
+            [
+                getattr(form, criterium).data
+                for criterium in set(["hgnc_symbols"] + SECONDARY_CRITERIA) - set(["rank_score"])
+                if hasattr(form, criterium)
+            ]
+        ):
+            flash(
+                "Search by variant Simple ID cannot be combined with other variant filter options, only institute and case filter options.",
+                "warning",
+            )
+
+            return render_template(
+                "/overview/gene_variants.html",
+                form=form,
+                institute=institute_obj,
+                result_size=result_size,
+                page=page,
+            )
+
+        if not form.validate():
+            seen = set()
+            for field_errors in form.errors.values():
+                for error in field_errors:
+                    if error not in seen:
+                        seen.add(error)
+                        flash(error, "warning")
             return safe_redirect_back(request)
 
         variants_query = store.build_variant_query(
