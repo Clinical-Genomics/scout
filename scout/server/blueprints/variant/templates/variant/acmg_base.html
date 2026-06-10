@@ -292,10 +292,30 @@
       // Generate PDF
       const imgData = canvas.toDataURL('image/jpeg', 0.75);
       const { jsPDF } = globalThis.jspdf;
+
       const pdf = new jsPDF('p', 'mm', 'a4');
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // first page
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      // additional pages
+      while (heightLeft > 0) {
+        position -= pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
       {% if case %}
         pdf.save('{{ case.display_name }}{{ "_" + variant.display_name }}_acmg.pdf');
       {% else %}
@@ -304,6 +324,8 @@
         const formatted = iso.slice(0,16).replace('T','_').replace(':','-');
         pdf.save(`sandbox_${formatted}.pdf`);
       {% endif %}
+
     });
+
   </script>
 {% endblock %}
