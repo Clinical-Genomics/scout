@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Activate/inactivate button on case page (#6379)
 - On variant page, Local observations panel, a tooltip showing an optional description for the LoqusDB instances (#6384)
 - A new search mode for the gene variants page, where users can search for one specific variant, regardless of other filters (#6385)
+- Mitorsaw Mitochondrial variant caller (#6392)
 - A `--liftover-from` option to the `export managed` command line, so managed variants can be exported and imported again in another genome build (#6225)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
