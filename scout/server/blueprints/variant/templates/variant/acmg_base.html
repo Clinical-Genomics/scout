@@ -15,15 +15,6 @@
     width: 100%;
     box-sizing: border-box;
   }
-
-  .comment-box {
-    width: 90%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
   </style>
 {% endblock %}
 
@@ -39,7 +30,7 @@
           {% if evaluation %}
              <h4>
               {{ evaluation.classification.label }}
-              <span class="badge bg-info">{{ evaluation.classification.short|safe }}</span>
+              <span class="badge bg-info ms-3">{{ evaluation.classification.short|safe }}</span>
             </h4>
             On case {{ case.display_name }}. Variant {{ pretty_link_variant(variant, case) }}.<br>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
@@ -260,10 +251,35 @@
       }
     });
 
+    // Fix textarea style for text wrapping on multiple lines
+    const textareaClones = [];
+    container.querySelectorAll("textarea").forEach(el => {
+      const div = document.createElement("div");
+      // IMPORTANT: preserve line breaks exactly
+      div.innerText = el.value;
+      const style = getComputedStyle(el);
+      div.style.whiteSpace = "pre-wrap";
+      div.style.wordBreak = "break-word";
+      div.style.overflowWrap = "break-word";
+      div.style.font = style.font;
+      div.style.padding = style.padding;
+      div.style.border = style.border;
+      div.style.minHeight = style.height;
+      div.style.background = "white";
+      el.style.display = "none";
+      el.parentNode.insertBefore(div, el);
+      textareaClones.push({ el, div });
+    });
+
     // Capture PDF
       const canvas = await html2canvas(container, { scale: 1, useCORS: true, backgroundColor: '#ffffff' });
 
       // Restore original styles
+      textareaClones.forEach(({ el, div }) => {
+        div.remove();
+        el.style.display = "";
+      });
+
       allElements.forEach(el => {
         if (el.dataset.originalBg !== undefined) {
           el.style.backgroundColor = el.dataset.originalBg;
