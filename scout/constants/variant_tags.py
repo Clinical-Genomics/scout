@@ -632,6 +632,7 @@ CALLERS = {
         _GATK,
         {"id": "mutect2", "name": "MuTect2"},
         {"id": "samtools", "name": "SAMtools"},
+        {"id": "mitorsaw", "name": "Mitorsaw"},
     ],
     "cancer": [
         _FREEBAYES,
@@ -662,6 +663,7 @@ CALLERS = {
         {"id": "hificnv", "name": "HiFiCNV"},
         _MANTA,
         {"id": "mitosalt", "name": "MitoSAlt/SAltShaker"},
+        {"id": "mitorsaw", "name": "Mitorsaw"},
         {"id": "severus", "name": "Severus"},
         {"id": "sniffles", "name": "Sniffles"},
         _TIDDIT,
