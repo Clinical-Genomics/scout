@@ -536,7 +536,6 @@ class VariantHandler(VariantLoader):
         }
         if case_id:
             query["case"] = case_id
-
         if within_days:
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             query["created_at"] = {"$gte": days_datetime}
@@ -553,7 +552,7 @@ class VariantHandler(VariantLoader):
         causative_ids = set()
         for case_obj in cases:
 
-            if case_obj is None or build is not None and get_case_genome_build(case_obj) != build:
+            if case_obj is None or build and get_case_genome_build(case_obj) != build:
                 continue
 
             causatives = case_obj.get("causatives", [])
