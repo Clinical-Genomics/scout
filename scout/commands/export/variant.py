@@ -154,21 +154,22 @@ def resolve_case(
     Resolve the effective collaborator and optional case object.
 
     If case_id is provided, the case is fetched and its owner is used
-    as the collaborator. If the case does not exist, the command aborts.
+    as the collaborator. Case genome build is also returned.
+    If the case does not exist, the command aborts.
 
     Returns:
         Tuple of (collaborator, case object or None)
     """
     if not case_id:
         LOG.info("Use collaborator %s", collaborator)
-        return collaborator, None
+        return collaborator, None, None
 
     case_obj = adapter.case(case_id)
     if not case_obj:
         LOG.info("Case %s does not exist", case_id)
         raise click.Abort
 
-    return case_obj["owner"], case_obj
+    return (case_obj["owner"], case_obj, case_obj["genome_build"])
 
 
 @click.command("causatives", short_help="Export causative variants")
@@ -217,9 +218,9 @@ def causatives(
     LOG.info("Running scout export variants")
     adapter = store
 
-    collaborator, case_obj = resolve_case(adapter, case_id, collaborator)
+    collaborator, case_obj, case_build = resolve_case(adapter, case_id, collaborator)
 
-    build = "38" if build == "GRCh38" else build
+    build = "38" if build == "GRCh38" else (case_build or build)
 
     causatives = adapter.get_causatives(
         document_id=document_id,
