@@ -181,30 +181,30 @@ def variants_to_managed_variants(
         alt = variant.get("alternative")
         sub_category = variant.get("sub_category")
         build = variant.get("case_obj", {}).get("genome_build", "37")
-        institute_id = institute_id or variant.get("institute")
+        institute = institute_id or variant.get("institute")
 
         if base_url:
             variant_href = (
-                f"{base_url}/{institute_id}/{variant['case_obj']['display_name']}/{variant['_id']}"
+                f"{base_url}/{institute}/{variant['case_obj']['display_name']}/{variant['_id']}"
             )
         else:
             variant_href = url_for(
                 valid_categories[category],
-                institute_id=institute_id,
+                institute_id=institute,
                 case_name=variant["case_obj"]["display_name"],
                 variant_id=variant["_id"],
                 _external=True,
             )
         pretty_variant_name = current_app.custom_filters.pretty_variant(variant)
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
-        description = f"{link} ({type},{institute_id},build{build})"
+        description = f"{link} ({type},{institute},build{build})"
 
         if category == "cancer":
             category = "cancer_snv"
 
         managed_lines.append(
             f"{chromosome};{position};{end};{ref};{alt};"
-            f"{category};{sub_category};{build};{description};;{institute_id}"
+            f"{category};{sub_category};{build};{description};;{institute}"
         )
 
     return managed_lines
