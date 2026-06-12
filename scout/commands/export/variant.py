@@ -162,7 +162,7 @@ def resolve_case(
     """
     if not case_id:
         LOG.info("Use collaborator %s", collaborator)
-        return collaborator, None
+        return collaborator, None, None
 
     case_obj = adapter.case(case_id)
     if not case_obj:
