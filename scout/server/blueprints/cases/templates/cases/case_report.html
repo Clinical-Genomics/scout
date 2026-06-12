@@ -253,7 +253,7 @@
 	                    {% for comment in comments %}
 	                      <tr>
 	                        <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-	                        <td class="text-break"><strong>{{ comment.content }}</strong></td>
+	                        <td class="text-break"><strong>{{ comment.content|markdown }}</strong></td>
 	                      </tr>
 	                    {% endfor %}
 	                    </table>
