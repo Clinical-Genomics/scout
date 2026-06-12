@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from scout.constants.variants_export import MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants
 
@@ -26,7 +25,7 @@ def test_export_mt_variants(case_obj, real_populated_database):
     for sample in samples:
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample["individual_id"])
 
-        # check that rows to write to excel corespond to number of variants
+        # check that rows to write to excel correspond to number of variants
         assert len(sample_lines) == len(mt_variants)
-        # check that cols to write to excel corespond to fields of excel header
+        # check that cols to write to excel correspond to fields of Excel header
         assert len(sample_lines[0]) == len(MT_EXPORT_HEADER)
