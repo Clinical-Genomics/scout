@@ -181,8 +181,6 @@ def variants_to_managed_variants(
         alt = variant.get("alternative")
         sub_category = variant.get("sub_category")
         build = variant.get("case_obj", {}).get("genome_build", "37")
-        LOG.warning(institute_id)
-        LOG.warning(variant.get("institute"))
         institute_id = variant.get("institute")
 
         if base_url:
