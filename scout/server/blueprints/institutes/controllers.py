@@ -197,7 +197,7 @@ def variants_to_managed_variants(
             )
         pretty_variant_name = current_app.custom_filters.pretty_variant(variant)
         link = f'<a target="blank" rel="noopener noreferrer" href="{variant_href}">{pretty_variant_name}</a>'
-        description = f"{link} ({type},{institute_id},build{build})"
+        description = f"{link} ({type},{institute},build{build})"
 
         if category == "cancer":
             category = "cancer_snv"
