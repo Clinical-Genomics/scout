@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Comment boxes not editable when reclassifying an existing ACMG classification (#6388)
 - Fix ACMG PDF export to support multi-page output (#6390)
 - Re-introduce text wrapping in textareas on ACMG classifications exported to PDF (#6390)
+- Exporting causative variants from a case with genome build 38 when the build parameter is omitted from the command (#6399)
 - Links in causative variants exported in the managed variants format (#6398)
 
 ## [4.112]
