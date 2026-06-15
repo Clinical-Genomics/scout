@@ -5,7 +5,7 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 
-NEW_USER_EMAIL = "thisIsATest@mail.com"
+NEW_USER_EMAIL = "thisisatest@mail.com"
 USERS_INFO = {
     "institute": ["cust000"],
     "name": "Test User",

@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Exporting causative variants from a case with genome build 38 when the build parameter is omitted from the command (#6399)
 - Links in causative variants exported in the managed variants format (#6398)
 - LDAP login accepting failed authentication responses from `flask-ldap3-login` (#6400)
+- Normalize email addresses to lowercase when users are created through the GUI (#6406)
 
 ## [4.112]
 ### Added
