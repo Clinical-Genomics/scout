@@ -234,22 +234,14 @@ def variant_acmg(institute_id, case_name, variant_id):
                     modifier=request.form.get("modifier-{}".format(term)),
                 )
             )
-        acmg = variant_acmg_post(
+        acmg_id, acmg = variant_acmg_post(
             store, institute_id, case_name, variant_id, current_user.email, criteria
         )
         flash("classified as: {}".format(acmg), "info")
     else:
         flash("Empty ACMG criteria, redirecting", "info")
 
-    variant_obj = store.variant(variant_id)
-    return redirect(
-        url_for(
-            ".variant" if variant_obj.get("category") == "snv" else ".sv_variant",
-            institute_id=institute_id,
-            case_name=case_name,
-            variant_id=variant_id,
-        )
-    )
+    return redirect(url_for(".evaluation", evaluation_id=acmg_id))
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/ccv", methods=["GET", "POST"])

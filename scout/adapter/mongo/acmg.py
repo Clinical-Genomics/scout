@@ -5,7 +5,6 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.acmg import build_evaluation
-from scout.constants import ACMG_MAP
 from scout.utils.acmg import get_acmg
 
 log = logging.getLogger(__name__)
@@ -14,37 +13,15 @@ log = logging.getLogger(__name__)
 class ACMGHandler(object):
     def submit_evaluation(
         self,
-        variant_obj,
-        user_obj,
-        institute_obj,
-        case_obj,
-        link,
-        criteria=None,
-        classification=None,
-    ):
-        """Submit an evaluation to the database
-
-        Get all the relevant information, build an evaluation_obj
-
-        Args:
-            variant_obj(dict)
-            user_obj(dict)
-            institute_obj(dict)
-            case_obj(dict)
-            link(str): variant url
-            criteria(list(dict)):
-                                            [
-                                        {
-                                        'term': str,
-                                        'comment': str,
-                                        'modifier': str,
-                                        'links': list(str)
-                                        },
-                                        .
-                                        .
-                                    ]
-            classification(int)
-        """
+        variant_obj: dict,
+        user_obj: dict,
+        institute_obj: dict,
+        case_obj: dict,
+        link: str,
+        criteria: dict | None = None,
+        classification: tuple | int | None = None,
+    ) -> Tuple(str, str):
+        """Save an ACMG evaluation in the database."""
         criteria = criteria or []
 
         variant_specific = variant_obj["_id"]
@@ -76,16 +53,16 @@ class ACMGHandler(object):
                 criteria=criteria,
             )
 
-            self._load_evaluation(evaluation_obj)
+            classif_id = self._load_evaluation(evaluation_obj)
 
-        # Update the acmg classification for the variant:
+        # Update the ACMG classification for the variant:
         self.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, classification)
-        return classification
+        return classif_id, classification
 
-    def _load_evaluation(self, evaluation_obj):
+    def _load_evaluation(self, evaluation_obj: dict) -> str:
         """Load a evaluation object into the database"""
         res = self.acmg_collection.insert_one(evaluation_obj)
-        return res
+        return res.inserted_id
 
     def delete_evaluation(self, evaluation_obj):
         """Delete an evaluation from the database
