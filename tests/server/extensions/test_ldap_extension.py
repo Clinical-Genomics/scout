@@ -1,3 +1,6 @@
+from flask_ldap3_login import AuthenticationResponseStatus
+
+
 def test_ldap_manager_success(ldap_manager_instance):
     """LDAP authentication succeeds for a valid user with correct password."""
     manager = ldap_manager_instance
@@ -64,7 +67,7 @@ def test_ldap_manager_fallback_to_search_bind(ldap_manager_instance):
 
     # Simulate successful search+bind result
     class FakeResult:
-        status = True
+        status = AuthenticationResponseStatus.success
         user_dn = "uid=testuser,ou=people,dc=planetexpress,dc=com"
 
     def mock_authenticate(username, password):
