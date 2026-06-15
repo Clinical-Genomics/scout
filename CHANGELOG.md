@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
 - Only admin users can edit the list of institutes available to share cases with (#6370)
 - Enable live search on Bootstrap selectpicker controls (#6377)
+- Comments can be formatted with Markdown, like the synopsis field (#6401)
 - ACMG evaluation page doesn't close after having submitted the evaluation (#6405)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
