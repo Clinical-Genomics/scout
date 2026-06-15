@@ -1,6 +1,6 @@
 import logging
 
-from flask_ldap3_login import LDAP3LoginManager
+from flask_ldap3_login import AuthenticationResponseStatus, LDAP3LoginManager
 from ldap3 import ALL, SUBTREE, Connection, Server
 
 LOG = logging.getLogger(__name__)
@@ -41,6 +41,7 @@ class LdapManager:
         """
         Authenticate a user with LDAP, trying direct bind first if configured,
         then falling back to search+bind.
+        The flask-ldap3-login status is an enum, so compare it explicitly.
         """
         try:
             # Attempt direct bind if configured
@@ -53,7 +54,7 @@ class LdapManager:
 
             # Fallback: search+bind via flask-ldap3-login
             result = self.ldap_manager.authenticate(username, password)
-            if not result or not getattr(result, "status", False):
+            if not result or result.status != AuthenticationResponseStatus.success:
                 LOG.warning(f"LDAP search+bind authentication failed for {username}")
                 return False
 
