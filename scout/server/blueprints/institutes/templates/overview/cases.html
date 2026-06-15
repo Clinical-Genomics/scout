@@ -67,7 +67,6 @@
 </div>
 {% endmacro %}
 
-
 {% macro case_row(case) %}
   <tr data-target="_blank" data-href="{{ case_link_href(case) }}" class="{% if case.status == 'solved' %}causative{% elif case.dimmed_in_search %}dismiss{% endif %}">
     <td>
