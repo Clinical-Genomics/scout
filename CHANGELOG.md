@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links in causative variants exported in the managed variants format (#6398)
 - LDAP login accepting failed authentication responses from `flask-ldap3-login` (#6400)
 - Normalize email addresses to lowercase when users are created through the GUI (#6406)
+- Automatically convert email input to lowercase when logging in using LDAP (#6407)
 
 ## [4.112]
 ### Added
