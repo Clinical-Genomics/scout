@@ -177,7 +177,7 @@ def add_user():
     form = UserForm()
     if form.validate_on_submit():
         user_info = {
-            "email": form.email.data,
+            "email": form.email.data.lower(),
             "name": form.name.data,
             "roles": form.role.data,
             "institutes": form.institute.data,
