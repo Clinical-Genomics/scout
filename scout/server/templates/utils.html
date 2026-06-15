@@ -25,7 +25,7 @@
       	  </small>
       	</td>
       	<td>
-      	  {{ comment.content }}
+      	  {{ comment.content|markdown }}
       	</td>
       </tr>
       {% endfor %}
@@ -55,7 +55,7 @@
                   <span class='badge bg-secondary text-white'>edited</span>
                 {% endif %}
               </td>
-              <td class="text-break"><strong>{{ comment.content }}</strong></td>
+              <td class="text-break"><strong>{{ comment.content|markdown }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -104,7 +104,7 @@
             <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
             <div class="row">
               <div class="col">
-                <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
+                <textarea class="form-control" name="content" data-bs-toggle="tooltip" title="Comments can be formatted with Markdown." placeholder="Leave a comment" ></textarea>
               </div>
             </div>
             <div class="row mt-3">
@@ -129,7 +129,7 @@
 
 {% macro single_comment(institute, case, current_user, comment, index) %}
       <div class="row mx-0 p-3 mb-0 {% if index % 2 %}even{% else %}odd{% endif %}">
-          <div class="col-7 text-break">{{ comment.content }}</div>
+          <div class="col-7 text-break">{{ comment.content|markdown }}</div>
           <div class="col-5 text-end">
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
               <small>
@@ -169,6 +169,7 @@
     </div>
     <div class="modal-body">
       <div class="row">
+        <small>Comments can be formatted with <a href="https://www.markdownguide.org/basic-syntax/">Markdown</a>.</small>
         <label for="commentContent">Comment content</label>
         <textarea class="form-control" name="updatedContent" id="commentContent" required="required">{{comment.content}}</textarea>
       </div>
