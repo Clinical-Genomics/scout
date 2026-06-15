@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
 - Only admin users can edit the list of institutes available to share cases with (#6370)
 - Enable live search on Bootstrap selectpicker controls (#6377)
+- Comments can be formatted with Markdown, like the synopsis field (#6401)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
@@ -32,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Exporting causative variants from a case with genome build 38 when the build parameter is omitted from the command (#6399)
 - Links in causative variants exported in the managed variants format (#6398)
 - LDAP login accepting failed authentication responses from `flask-ldap3-login` (#6400)
+- Normalize email addresses to lowercase when users are created through the GUI (#6406)
+- Automatically convert email input to lowercase when logging in using LDAP (#6407)
 
 ## [4.112]
 ### Added
