@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import requests
 from flask import abort, current_app, flash, url_for

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Tuple
 
 import pymongo
 from bson import ObjectId
