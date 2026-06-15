@@ -31,7 +31,7 @@ class ACMGHandler(object):
         user_name = user_obj.get("name", user_obj["_id"])
         institute_id = institute_obj["_id"]
         case_id = case_obj["_id"]
-
+        classif_id = None
         evaluation_terms = []
         for evaluation_info in criteria:
             term = evaluation_info["term"]
