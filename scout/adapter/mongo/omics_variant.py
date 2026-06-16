@@ -4,7 +4,7 @@ from typing import Dict, Iterable, List, Optional
 
 from pydantic import ValidationError
 from pymongo import ASCENDING, DESCENDING
-from pymongo.collection import Collection 
+from pymongo.collection import Collection
 
 from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.models.omics_variant import OmicsVariantLoader
