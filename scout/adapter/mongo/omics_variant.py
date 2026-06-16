@@ -3,6 +3,7 @@ import os
 from typing import Dict, Iterable, List, Optional
 
 from pymongo import ASCENDING, DESCENDING
+from pymongo.collections import Collection 
 
 from scout.constants import ORDERED_OMICS_FILE_TYPE_MAP
 from scout.models.omics_variant import OmicsVariantLoader
@@ -13,6 +14,8 @@ SORT_ORDER = {"asc": ASCENDING, "desc": DESCENDING}
 
 
 class OmicsVariantHandler:
+
+    omics_variant_collection : Collection
 
     def delete_omics_variants_by_category(
         self, case_id: str, variant_type: str, category: str = None
