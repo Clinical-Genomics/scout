@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Dict, Iterable, List, Optional
 
+from pydantic import ValidationError
 from pymongo import ASCENDING, DESCENDING
 from pymongo.collections import Collection 
 
@@ -146,6 +147,7 @@ class OmicsVariantHandler:
 
         file_handle = open(case_obj["omics_files"].get(file_type), "r")
 
+        nr_skipped = 0
         for omics_info in parse_omics_file(file_handle, omics_file_type=omics_file_type):
             omics_info["case_id"] = case_obj["_id"]
             omics_info["build"] = "37" if "37" in build else "38"
@@ -154,12 +156,27 @@ class OmicsVariantHandler:
             for key in ["category", "sub_category", "variant_type", "analysis_type"]:
                 omics_info[key] = omics_file_type[key]
 
-            omics_model = OmicsVariantLoader(**omics_info).model_dump(
-                by_alias=True, exclude_none=True
-            )
-
-            self.set_genes(omics_model)
-            self.set_samples(case_obj, omics_model)
+            try:
+                omics_model = OmicsVariantLoader(**omics_info).model_dump(
+                    by_alias=True, exclude_none=True
+                )
+                self.set_genes(omics_model)
+                self.set_samples(case_obj, omics_model)
+            except (KeyError, TypeError, ValueError, ValidationError) as error:
+                nr_skipped += 1
+                LOG.error(
+                    "Skipping malformed %s OMICS variant for case %s: sample=%s, chrom=%s, start=%s, end=%s, cpg_label=%s, hgncId=%s. Error: %s",
+                    file_type,
+                    case_obj["_id"],
+                    omics_info.get("sample_id") or omics_info.get("sampleID"),
+                    omics_info.get("chrom") or omics_info.get("seqnames"),
+                    omics_info.get("start"),
+                    omics_info.get("end"),
+                    omics_info.get("cpg_label"),
+                    omics_info.get("hgncId") or omics_info.get("hgnc_id"),
+                    error,
+                )
+                continue
 
             # If case has gene panels, only add clinical variants with a matching gene
             variant_genes = [gene["hgnc_id"] for gene in omics_model.get("genes", [])]
@@ -173,6 +190,8 @@ class OmicsVariantHandler:
             self.omics_variant_collection.insert_one(omics_model)
             nr_inserted += 1
 
+        if nr_skipped:
+            LOG.warning("%s malformed OMICS variants skipped", nr_skipped)
         LOG.info("%s variants inserted", nr_inserted)
 
     def omics_variant(self, variant_id: str, projection: Optional[Dict] = None):
