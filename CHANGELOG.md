@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.113]
 ### Added
 - LitVar2 links: variant link for variants with dbSNP rsID and a gene symbol search link (#6326)
 - Filter variants by OMIM inheritance pattern (#6355)
