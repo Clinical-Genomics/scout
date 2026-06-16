@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Only admin users can edit the list of institutes available to share cases with (#6370)
 - Enable live search on Bootstrap selectpicker controls (#6377)
 - Comments can be formatted with Markdown, like the synopsis field (#6401)
+- Moved mocked liftover response to tests/confest.py ()
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
