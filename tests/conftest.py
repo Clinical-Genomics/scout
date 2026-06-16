@@ -222,7 +222,7 @@ def broad_ucsc_liftover_response():
         "pos": 141310716,
         "output_chrom": "chr8",
         "output_pos": 140300617,
-        "output_start": 140300616,
+        "output_start": 140300616,  # This is liftover position
         "output_end": 140300616,
         "output_strand": "+",
         "liftover_tool": "UCSC liftover tool",
@@ -243,11 +243,11 @@ def broad_bcftools_liftover_response():
         "hg": "hg19-to-hg38",
         "start": 141310714,
         "output_chrom": "chr8",
-        "output_pos": 140300616,
+        "output_pos": 140300616,  # This is liftover position
         "output_ref": "T",
         "output_alt": "G",
-        "output_reverse_complemented": false,
-        "output_ref_alt_swap": null,
+        "output_reverse_complemented": False,
+        "output_ref_alt_swap": None,
         "liftover_tool": "bcftools liftover plugin",
         "normalized_chrom": "8",
         "normalized_pos": "141310715",
