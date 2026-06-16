@@ -48,8 +48,10 @@ def add_gene_links(
     gene_obj["ensembl_37_link"] = ensembl_37_link
     gene_obj["ensembl_38_link"] = ensembl_38_link
     gene_obj["ensembl_link"] = ensembl_37_link
+    gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     if build == 38:
         gene_obj["ensembl_link"] = ensembl_38_link
+        gene_obj["gnomad_non_ukb_link"] = "".join([gene_obj["gnomad_link"], "_non_ukb"])
     gene_obj["hpa_link"] = hpa(ensembl_id)
     gene_obj["string_link"] = string(ensembl_id)
     gene_obj["reactome_link"] = reactome(ensembl_id)
@@ -59,7 +61,6 @@ def add_gene_links(
     gene_obj["expression_atlas_link"] = expression_atlas(ensembl_id)
     gene_obj["gtex_link"] = gtex(ensembl_id)
     gene_obj["exac_link"] = exac(ensembl_id)
-    gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     # Add links that use entrez_id
     entrez_id = gene_obj.get("common", {}).get("entrez_id")
     gene_obj["entrez_link"] = entrez(entrez_id)
@@ -218,7 +219,7 @@ def gnomad(ensembl_id, build=37):
     if build == 37:
         link += "gnomad_r2_1"
     if build == 38:
-        link += "gnomad_r4_non_ukb"
+        link += "gnomad_r4"
 
     return link.format(ensembl_id)
 
@@ -515,7 +516,8 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
     links = dict(
         thousandg_link=thousandg_link(variant_obj, build),
         exac_link=exac_link(variant_obj),
-        gnomad_link=gnomad_link(variant_obj, build),
+        gnomad_link=gnomad_link(variant_obj=variant_obj, build=build, non_ukb=False),
+        gnomad_non_ukb_link=gnomad_link(variant_obj=variant_obj, build=build, non_ukb=True),
         gnomad_sv_link=gnomad_sv_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
         cosmic_links=cosmic_links(variant_obj),
@@ -532,6 +534,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         litvar_snp_links=litvar_snp_links(variant_obj),
         alamut_link=alamut_variant_link(institute_obj, variant_obj, build),
     )
+
     return links
 
 
@@ -611,7 +614,7 @@ def exac_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def gnomad_link(variant_obj, build=37):
+def gnomad_link(variant_obj, build=37, non_ukb=False):
     """Compose link to gnomAD website for a variant."""
     url_template = (
         "https://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
@@ -626,8 +629,10 @@ def gnomad_link(variant_obj, build=37):
         url_template += "?dataset=gnomad_r4"
         return url_template
 
-    if build == 38:
+    if build == 38 and non_ukb:
         url_template += "?dataset=gnomad_r4_non_ukb"
+    elif build == 38:
+        url_template += "?dataset=gnomad_r4"
 
     return url_template
 

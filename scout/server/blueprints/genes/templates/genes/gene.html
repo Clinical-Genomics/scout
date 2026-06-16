@@ -14,6 +14,12 @@
   </li>
 {% endblock %}
 
+{% macro gnomad_links() %}
+<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>
+<a href={{ builds["38"].gnomad_non_ukb_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD non-UKB</a>
+{% endmacro %}
+
+
 {% block content_main %}
   {{ super() }}
 
@@ -92,7 +98,7 @@
                   </li>
                   {% if pli_score %}
                   <li class="list-group-item">
-                    pLi Score (<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
+                    pLi Score ({{gnomad_links()}})
                     <span class="float-end">
                       {{ pli_score|round(2) }}
                     </span>
@@ -100,7 +106,7 @@
                   {% endif %}
                   {% if constraint_lof_oe %}
                   <li class="list-group-item">
-                    LoF o/e (<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
+                    LoF o/e ({{gnomad_links()}})
                     <span class="float-end">
                       {{ constraint_lof_oe|round(2) }}({{ constraint_lof_oe_ci_lower|round(2) }} - <mark><span data-bs-toggle="tooltip" title="LOEUF {{ constraint_lof_oe_ci_upper}}">{{ constraint_lof_oe_ci_upper|round(2) }}</span></mark>)
                     </span>
@@ -108,7 +114,7 @@
                 {% endif %}
                 {% if constraint_mis_z %}
                   <li class="list-group-item">
-                    Missense Z (<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
+                    Missense Z ({{gnomad_links()}})
                     <span class="float-end">
                       {{ constraint_mis_z|round(2) }}
                     </span>
@@ -116,7 +122,7 @@
                 {% endif %}
                   {% if constraint_mis_oe %}
                   <li class="list-group-item">
-                    Missense o/e (<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
+                    Missense o/e ({{gnomad_links()}})
                     <span class="float-end">
                       {{ constraint_mis_oe|round(2) }}({{ constraint_mis_oe_ci_lower|round(2) }} - {{ constraint_mis_oe_ci_upper|round(2) }})
                     </span>
