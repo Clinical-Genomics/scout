@@ -8,6 +8,7 @@ from scout.constants import (
     CALLERS,
     CCV_COMPLETE_MAP,
     CLINSIG_MAP,
+    DISMISS_VARIANT_OPTIONS,
     SO_TERMS,
     VARIANT_FILTERS,
 )
@@ -703,3 +704,20 @@ def get_variant_genome_build(variant_obj: dict, case_obj: dict) -> str:
     """
 
     return variant_obj.get("build", get_case_genome_build(case_obj))
+
+
+def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
+    """Return variant dismiss options configured for an institute.
+    If the institute defines a non-empty `variant_dismiss_tags` list,
+    only the corresponding entries from `DISMISS_VARIANT_OPTIONS` are
+    returned. Otherwise, all dismiss options are returned.
+    """
+    dismiss_tags = institute_obj.get("variant_dismiss_tags") if institute_obj else None
+
+    if not dismiss_tags:
+        return DISMISS_VARIANT_OPTIONS
+
+    dismiss_tags = set(dismiss_tags)
+    return {
+        key: value for key, value in DISMISS_VARIANT_OPTIONS.items() if str(key) in dismiss_tags
+    }

@@ -20,7 +20,6 @@ from scout.constants import (
     CCV_CRITERIA,
     CCV_MAP,
     CCV_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
     ESCAT_TIER_OPTIONS,
     IGV_TRACKS,
     INHERITANCE_PALETTE,
@@ -62,6 +61,7 @@ from .utils import (
     get_filters,
     get_variant_genome_build,
     is_affected,
+    populate_dismiss_variant_choices,
     predictions,
 )
 
@@ -203,7 +203,7 @@ def variant(
             'manual_rank_options': MANUAL_RANK_OPTIONS,
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'escat_tier_options': ESCAT_TIER_OPTIONS
-            'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
+            'dismiss_variant_options': populate_dismiss_variant_choices(institute),
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'CCV_OPTIONS': CCV_OPTIONS,
             'igv_tracks': IGV_TRACKS,
@@ -389,10 +389,10 @@ def variant(
 
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
-    dismiss_options = DISMISS_VARIANT_OPTIONS
+    dismiss_options = populate_dismiss_variant_choices(institute_obj=institute_obj)
     if case_obj.get("track") == "cancer":
         dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
+            **dismiss_options,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
 

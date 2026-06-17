@@ -45,6 +45,7 @@ from scout.server.blueprints.variant.utils import (
     get_callers,
     get_filters,
     get_str_mc,
+    populate_dismiss_variant_choices,
     predictions,
     update_representative_gene,
     update_variant_case_panels,
@@ -127,23 +128,6 @@ def populate_persistent_filters_choices(
         for filter in sorted(available_filters, key=lambda f: f.get("display_name", "").lower())
     ]
     return available_filters
-
-
-def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
-    """Return variant dismiss options configured for an institute.
-    If the institute defines a non-empty `variant_dismiss_tags` list,
-    only the corresponding entries from `DISMISS_VARIANT_OPTIONS` are
-    returned. Otherwise, all dismiss options are returned.
-    """
-    dismiss_tags = institute_obj.get("variant_dismiss_tags") if institute_obj else None
-
-    if not dismiss_tags:
-        return DISMISS_VARIANT_OPTIONS
-
-    dismiss_tags = set(dismiss_tags)
-    return {
-        key: value for key, value in DISMISS_VARIANT_OPTIONS.items() if str(key) in dismiss_tags
-    }
 
 
 def populate_chrom_choices(form, case_obj):
