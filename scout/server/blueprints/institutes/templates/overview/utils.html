@@ -310,7 +310,7 @@
              <!-- Variants and panels searching -->
             <div class="row mt-5 d-flex align-items-center">
             <fieldset>
-              <legend>Variants and gene panels searching</legend>
+              <legend>Variants and gene panels settings</legend>
               <div class="row">
 
                 <div class="col-3">
@@ -335,6 +335,17 @@
                   <input type="checkbox" name="check_show_all_vars" {% if institute.check_show_all_vars %} checked {%endif%}>
                   {{ form.check_show_all_vars.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Check this box if you want all variants (and not just those occurring in the affected individuals) to be shown by default on variants page") }}
                 </div>
+
+                {% if "admin" in current_user.roles %}
+                <div class="col-3">
+                  {{ form.variant_dismiss_tags.label(class="control-label") }}
+                  <select multiple="multiple" name="variant_dismiss_tags" class="selectpicker" data-live-search="true" data-style="btn-secondary">
+                      {% for choice in form.variant_dismiss_tags.choices or [] %}
+                        <option value="{{choice[0]}}" {% if institute.phenotype_groups and choice[0].split(' ,')[0] in institute.phenotype_groups  %} selected {% endif %}>{{choice[1]}}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
 
               </div>
 

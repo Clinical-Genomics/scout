@@ -129,6 +129,21 @@ def populate_persistent_filters_choices(
     return available_filters
 
 
+def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
+    """Return variant dismiss options configured for an institute.
+    If the institute defines a non-empty `variant_dismiss_tags` list,
+    only the corresponding entries from `DISMISS_VARIANT_OPTIONS` are
+    returned. Otherwise, all dismiss options are returned.
+    """
+    dismiss_tags = institute_obj.get("variant_dismiss_tags") if institute_obj else None
+
+    if not dismiss_tags:
+        return DISMISS_VARIANT_OPTIONS
+
+    dismiss_tags = set(dismiss_tags)
+    return {key: value for key, value in DISMISS_VARIANT_OPTIONS.items() if key in dismiss_tags}
+
+
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select according to the case genome build"""
     # Populate chromosome choices
@@ -314,9 +329,12 @@ def render_variants_page(
     data = decorator(*args)
 
     dismiss_variant_options = (
-        {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+        {
+            **populate_dismiss_variant_choices(institute_obj=institute_obj),
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        }
         if category in ["cancer_sv", "cancer"]
-        else DISMISS_VARIANT_OPTIONS
+        else populate_dismiss_variant_choices(institute_obj=institute_obj)
     )
 
     return dict(
