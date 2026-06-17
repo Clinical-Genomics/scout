@@ -33,7 +33,9 @@ CATEGORY_CHOICES = [("snv", "SNV"), ("sv", "SV")]
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
-DISMISS_VARIANT_CHOICES = [(key, value["label"]) for key, value in DISMISS_VARIANT_OPTIONS.items()]
+DISMISS_VARIANT_CHOICES = [
+    (str(key), value["label"]) for key, value in DISMISS_VARIANT_OPTIONS.items()
+]
 
 
 class NonValidatingSelectField(SelectField):

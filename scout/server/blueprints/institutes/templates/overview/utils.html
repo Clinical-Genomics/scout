@@ -341,7 +341,7 @@
                   {{ form.variant_dismiss_tags.label(class="control-label") }}
                   <select multiple="multiple" name="variant_dismiss_tags" class="selectpicker" data-live-search="true" data-style="btn-secondary">
                       {% for choice in form.variant_dismiss_tags.choices or [] %}
-                        <option value="{{choice[0]}}" {% if institute.phenotype_groups and choice[0].split(' ,')[0] in institute.phenotype_groups  %} selected {% endif %}>{{choice[1]}}</option>
+                        <option value="{{choice[0]}}" {% if choice[0] in institute.variant_dismiss_tags  %} selected {% endif %}>{{choice[1]}}</option>
                       {% endfor %}
                     </select>
                 </div>
