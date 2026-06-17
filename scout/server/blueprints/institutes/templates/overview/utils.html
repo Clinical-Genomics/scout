@@ -202,7 +202,7 @@
                     </div>
                     <div class="col-4">
                       {{form.sanger_emails.label(for_="sanger_emails", class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
-                      <select class="select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
+                      <select class="select2" id="sanger_emails" name="sanger_emails" multiple="true" style="width:100%;">
                         {% for email in institute.sanger_recipients %}
                           <option value="{{ email }}" selected>{{ email }}</option>
                         {% endfor %}
