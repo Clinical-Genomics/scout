@@ -136,8 +136,6 @@ def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
     returned. Otherwise, all dismiss options are returned.
     """
     dismiss_tags = institute_obj.get("variant_dismiss_tags") if institute_obj else None
-    LOG.warning(dismiss_tags)
-    LOG.error(DISMISS_VARIANT_OPTIONS)
 
     if not dismiss_tags:
         return DISMISS_VARIANT_OPTIONS
