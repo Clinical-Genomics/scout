@@ -230,6 +230,33 @@ def broad_ucsc_liftover_response():
     return _response
 
 
+@pytest.fixture
+def broad_bcftools_liftover_response():
+    """Returns a  response from the Broad Institute's liftover API - BCFtools tool."""
+    _response = {
+        "alt": "G",
+        "chrom": "chr8",
+        "ref": "T",
+        "pos": "141310715",
+        "end": "141310715",
+        "format": "variant",
+        "hg": "hg19-to-hg38",
+        "start": 141310714,
+        "output_chrom": "chr8",
+        "output_pos": 140300616,  # This is liftover position
+        "output_ref": "T",
+        "output_alt": "G",
+        "output_reverse_complemented": False,
+        "output_ref_alt_swap": None,
+        "liftover_tool": "bcftools liftover plugin",
+        "normalized_chrom": "8",
+        "normalized_pos": "141310715",
+        "normalized_ref": "T",
+        "normalized_alt": "G",
+    }
+    return _response
+
+
 @pytest.fixture(scope="function")
 def gene_bulk(genes):
     """Return a list with HgncGene objects"""
