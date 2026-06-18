@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new search mode for the gene variants page, where users can search for one specific variant, regardless of other filters (#6385)
 - Mitorsaw Mitochondrial variant caller (#6392)
 - An icon to the Gens-to-cases link to distinguish it from Gens-to-individuals links on the SV variant page (#6410)
+- Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
@@ -25,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Comments can be formatted with Markdown, like the synopsis field (#6401)
 - Option to keep the ACMG page open after submitting an evaluation (#6405)
 - Display both GnomAD and GnomAD non-UK-Biobank links on variants and gene pages for build 38 SNVs (#6413)
+- Moved mocked liftover response to tests/confest.py (#6415)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
