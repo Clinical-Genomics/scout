@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enable live search on Bootstrap selectpicker controls (#6377)
 - Comments can be formatted with Markdown, like the synopsis field (#6401)
 - Option to keep the ACMG page open after submitting an evaluation (#6405)
+- Display both GnomAD and GnomAD non-UK-Biobank links on variants and gene pages for build 38 SNVs (#6413)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
