@@ -41,7 +41,7 @@ def test_check_reset_variant_classification(app, case_obj, variant_obj):
 
         # WHEN retrieving the variant again,
         current_variant = store.variant(variant_obj["_id"])
-        # THEN the classification was acutally set
+        # THEN the classification should be set
         assert current_variant.get("acmg_classification") is not None
 
         # GIVEN that there are no separate evaluations stored for the variant
