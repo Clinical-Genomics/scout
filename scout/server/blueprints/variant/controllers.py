@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import requests
 from flask import abort, current_app, flash, url_for
@@ -831,21 +831,8 @@ def variant_acmg_post(
     variant_id: str,
     user_email: str,
     criteria: list,
-) -> dict:
-    """Calculate an ACMG classification based on a list of criteria.
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_id(str): institute_obj['_id']
-        case_name(str): case_obj['display_name']
-        variant_id(str): variant_obj['document_id']
-        user_mail(str)
-        criteria()
-
-    Returns:
-        data(dict): Things for the template
-
-    """
+) -> Tuple(str | None, str):
+    """Calculate an ACMG classification based on a list of criteria."""
     variant_obj = store.variant(variant_id)
 
     if not variant_obj:
@@ -862,7 +849,7 @@ def variant_acmg_post(
         case_name=case_name,
         variant_id=variant_id,
     )
-    classification = store.submit_evaluation(
+    classification_id, classification = store.submit_evaluation(
         institute_obj=institute_obj,
         case_obj=case_obj,
         variant_obj=variant_obj,
@@ -870,7 +857,7 @@ def variant_acmg_post(
         link=variant_link,
         criteria=criteria,
     )
-    return classification
+    return classification_id, classification
 
 
 def variant_ccv(store: MongoAdapter, institute_id: str, case_name: str, variant_id: str):
