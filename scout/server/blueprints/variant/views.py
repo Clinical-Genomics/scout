@@ -241,7 +241,18 @@ def variant_acmg(institute_id, case_name, variant_id):
     else:
         flash("Empty ACMG criteria, redirecting", "info")
 
-    return redirect(url_for(".evaluation", evaluation_id=acmg_id))
+    action = request.form.get("action")
+    if action == "stay":
+        return redirect(url_for(".evaluation", evaluation_id=acmg_id))
+    variant_obj = store.variant(variant_id)
+    return redirect(
+        url_for(
+            ".variant" if variant_obj.get("category") == "snv" else ".sv_variant",
+            institute_id=institute_id,
+            case_name=case_name,
+            variant_id=variant_id,
+        )
+    )
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/ccv", methods=["GET", "POST"])
