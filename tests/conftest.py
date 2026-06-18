@@ -214,16 +214,16 @@ def ensembl_genes(request, gene_bulk):
 def broad_ucsc_liftover_response():
     """Returns a  response from the Broad Institute's liftover API - UCSC tool."""
     _response = {
-        "hg": "hg19-to-hg38",
-        "chrom": "chr7",
-        "start": "124475295",
+        "chrom": "chr8",
+        "end": "141310715",
         "format": "interval",
-        "end": "124475300",
-        "pos": 124475296,
-        "output_chrom": "chr7",
-        "output_pos": 124835242,
-        "output_start": 124835241,
-        "output_end": 124835246,
+        "start": "141310715",
+        "hg": "hg19-to-hg38",
+        "pos": 141310716,
+        "output_chrom": "chr8",
+        "output_pos": 140300617,
+        "output_start": 140300616,  # This is liftover position
+        "output_end": 140300616,
         "output_strand": "+",
         "liftover_tool": "UCSC liftover tool",
     }
