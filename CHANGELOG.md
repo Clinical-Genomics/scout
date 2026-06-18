@@ -37,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - LDAP login accepting failed authentication responses from `flask-ldap3-login` (#6400)
 - Normalize email addresses to lowercase when users are created through the GUI (#6406)
 - Automatically convert email input to lowercase when logging in using LDAP (#6407)
+- Print N/A for missing variant GQ values (#6420)
 
 ## [4.112]
 ### Added
