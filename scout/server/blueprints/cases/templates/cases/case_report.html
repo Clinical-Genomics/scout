@@ -956,8 +956,13 @@
                                     <td class="text-center"><small>N/A</small></td>
                                     <td class="text-center"><small>N/A</small></td>
                                 {% endif %}
-
-                                <td class="text-center">{{ sample.genotype_quality }}</td>
+                                <td class="text-center">
+                                  {% if sample.genotype_quality and sample.genotype_quality not in ["None", None, "-1", -1] %}
+                                    {{ sample.genotype_quality }}
+                                  {% else %}
+                                    <small>N/A</small>
+                                  {% endif %}
+                                </td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -1393,7 +1398,13 @@
             <td class="text-right">N/A</td>
           {% endif %}
         {% else %}
-          <td class="text-right">{{ sample.genotype_quality }}</td>
+          <td class="text-right">
+          {% if sample.genotype_quality and sample.genotype_quality not in ["None", None, "-1", -1] %}
+            {{ sample.genotype_quality }}
+          {% else %}
+            <small>N/A</small>
+          {% endif %}
+          </td>
         {% endif %}
       </tr>
     {% endfor %}
