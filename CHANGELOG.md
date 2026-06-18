@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variant page, Local observations panel, a tooltip showing an optional description for the LoqusDB instances (#6384)
 - A new search mode for the gene variants page, where users can search for one specific variant, regardless of other filters (#6385)
 - Mitorsaw Mitochondrial variant caller (#6392)
+- An icon to the Gens-to-cases link to distinguish it from Gens-to-individuals links on the SV variant page (#6410)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
