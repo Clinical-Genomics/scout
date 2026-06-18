@@ -51,9 +51,6 @@ def add_gene_links(
     gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     if build == 38:
         gene_obj["ensembl_link"] = ensembl_38_link
-        gene_obj["gnomad_non_ukb_link"] = (
-            "".join([gene_obj["gnomad_link"], "_non_ukb"]) if gene_obj["gnomad_link"] else None
-        )
     gene_obj["hpa_link"] = hpa(ensembl_id)
     gene_obj["string_link"] = string(ensembl_id)
     gene_obj["reactome_link"] = reactome(ensembl_id)

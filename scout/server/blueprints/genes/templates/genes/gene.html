@@ -14,11 +14,6 @@
   </li>
 {% endblock %}
 
-{% macro gnomad_links() %}
-<a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">v.4</a>
-<a class="sm-3" href={{ builds["38"].gnomad_non_ukb_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">v.4 (non-UKB)</a>
-{% endmacro %}
-
 {% block content_main %}
   {{ super() }}
 
@@ -98,7 +93,7 @@
                   <li class="list-group-item">
                     GnomAD
                     <span class="float-end">
-                      {{ gnomad_links() }}
+                      <a href={{ builds["38"].gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">v.4</a>
                     </span>
                   </li>
                   {% if pli_score %}
