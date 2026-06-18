@@ -182,15 +182,26 @@
     {% for freq_name, value, link in variant.frequencies %}
       <tr>
         <td class="py-1 px-2">
+          {{ freq_name }}
+
           {% if link %}
-            <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
-          {% else %}
-            {{ freq_name }}
+            {% set links = link if link is iterable and link is not string else [link] %}
+
+            {% for link in links %}
+              {% if link %}
+                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">
+                  <i class="fa fa-external-link ms-1"></i>
+                </a>
+              {% endif %}
+            {% endfor %}
           {% endif %}
         </td>
+
         <td class="py-1 px-2">
           {% if value %}
-            <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ value|human_decimal }}</span>
+            <span class="badge bg-secondary" style="font-size: 0.75rem;">
+              {{ value|human_decimal }}
+            </span>
           {% else %}
             -
           {% endif %}
