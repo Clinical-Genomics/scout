@@ -16,7 +16,7 @@ from datetime import datetime
 class Criterion(TypedDict):
     term: str
     comment: str
-    links: list[str]
+    links: List[str]
     modifier: str
 
 
