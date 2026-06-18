@@ -120,7 +120,10 @@
       </div>
 
     {% if not evaluation and institute %}
-      <button class="btn btn-primary form-control mt-3">Submit</button>
+      <div class="d-flex gap-2 mt-2">
+        <button type="submit" name="action" value="stay" class="btn btn-primary btn-lg flex-fill" style="width: 200px;">Save</button>
+        <button type="submit" name="action" value="return" class="btn btn-primary btn-lg flex-fill" style="width: 200px;">Save and return</button>
+      </div>
     {% elif edit %}
       <button class="btn btn-primary form-control mt-3" data-bs-toggle="tooltip" title="Editing this classification will result in a new classification">Reclassify</button>
     {%endif %}
