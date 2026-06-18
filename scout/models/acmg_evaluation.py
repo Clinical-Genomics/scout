@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from typing import List
+
 """
 scout.models.acmg_evaluation
 ~~~~~~~~~~~~~~~~~~
@@ -11,6 +12,8 @@ Evaluations are stored in its own collection
 
 from datetime import datetime
 
+criterion = dict(term=str, comment=str, links=List[str], modifier=str)
+
 evaluation = dict(
     variant_specific=str,  # md5 document id
     variant_id=str,  # md5 variant id
@@ -20,7 +23,7 @@ evaluation = dict(
     # All evaluations will have an author
     user_id=str,  # user email, required
     user_name=str,  # user name
-    criteria=list,  # List of dictionaries with criterias
+    criteria=List[criterion],  # List of dictionaries with criteria
     # timestamps
     created_at=datetime,
 )
