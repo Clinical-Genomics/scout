@@ -214,18 +214,45 @@ def ensembl_genes(request, gene_bulk):
 def broad_ucsc_liftover_response():
     """Returns a  response from the Broad Institute's liftover API - UCSC tool."""
     _response = {
-        "hg": "hg19-to-hg38",
-        "chrom": "chr7",
-        "start": "124475295",
+        "chrom": "chr8",
+        "end": "141310715",
         "format": "interval",
-        "end": "124475300",
-        "pos": 124475296,
-        "output_chrom": "chr7",
-        "output_pos": 124835242,
-        "output_start": 124835241,
-        "output_end": 124835246,
+        "start": "141310715",
+        "hg": "hg19-to-hg38",
+        "pos": 141310716,
+        "output_chrom": "chr8",
+        "output_pos": 140300617,
+        "output_start": 140300616,  # This is liftover position
+        "output_end": 140300616,
         "output_strand": "+",
         "liftover_tool": "UCSC liftover tool",
+    }
+    return _response
+
+
+@pytest.fixture
+def broad_bcftools_liftover_response():
+    """Returns a  response from the Broad Institute's liftover API - BCFtools tool."""
+    _response = {
+        "alt": "G",
+        "chrom": "chr8",
+        "ref": "T",
+        "pos": "141310715",
+        "end": "141310715",
+        "format": "variant",
+        "hg": "hg19-to-hg38",
+        "start": 141310714,
+        "output_chrom": "chr8",
+        "output_pos": 140300616,  # This is liftover position
+        "output_ref": "T",
+        "output_alt": "G",
+        "output_reverse_complemented": False,
+        "output_ref_alt_swap": None,
+        "liftover_tool": "bcftools liftover plugin",
+        "normalized_chrom": "8",
+        "normalized_pos": "141310715",
+        "normalized_ref": "T",
+        "normalized_alt": "G",
     }
     return _response
 
