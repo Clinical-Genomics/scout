@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.113]
+## [unreleased]
 ### Added
 - LitVar2 links: variant link for variants with dbSNP rsID and a gene symbol search link (#6326)
 - Filter variants by OMIM inheritance pattern (#6355)
@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new search mode for the gene variants page, where users can search for one specific variant, regardless of other filters (#6385)
 - Mitorsaw Mitochondrial variant caller (#6392)
 - An icon to the Gens-to-cases link to distinguish it from Gens-to-individuals links on the SV variant page (#6410)
-- Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs
+- Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs (#6413)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)
