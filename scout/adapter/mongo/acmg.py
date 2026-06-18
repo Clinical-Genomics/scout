@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Tuple
+from typing import List, Tuple
 
 import pymongo
 from bson import ObjectId
 
 from scout.build.acmg import build_evaluation
+from scout.models.acmg_evaluation import criterion
 from scout.utils.acmg import get_acmg
 
 log = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class ACMGHandler(object):
         institute_obj: dict,
         case_obj: dict,
         link: str,
-        criteria: dict | None = None,
+        criteria: List[criterion] | None = None,
         classification: tuple | int | None = None,
     ) -> Tuple(str | None, str):
         """Save an ACMG evaluation in the database."""
