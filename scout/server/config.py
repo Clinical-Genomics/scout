@@ -56,9 +56,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
 
 # Configure gens service
-# GENS_HOST = "127.0.0.1"
-# GENS_PORT = 5000
-# GENS_VERSION = 4
+GENS_HOST = "127.0.0.1"
+GENS_PORT = 5000
+GENS_VERSION = 4
 
 # Connection details for communicating with a rerunner service
 # RERUNNER_API_ENTRYPOINT = "http://rerunner:5001/v1.0/rerun"
