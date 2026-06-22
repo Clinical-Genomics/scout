@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import List, Optional
+from typing import List
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
 from scout.constants.managed_variant import MANAGED_CATEGORIES
+from scout.constants.query_terms import GT_NO_ALT_CALL
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
@@ -136,43 +137,60 @@ def export_verified_variants(aggregate_variants, unique_callers):
     return document_lines
 
 
-def export_mt_variants(variants, sample_id):
-    """Export mitochondrial variants for a case to create a MT excel report
+def _get_genes_and_prot_effect(variant: dict) -> tuple[str, str]:
+    """Return comma-separated gene symbols and canonical protein sequence names for a variant."""
+    genes = []
+    prot_effect = []
 
-    Args:
-        variants(list): all MT variants for a case, sorted by position
-        sample_id(str) : the id of a sample within the case
+    for gene in variant.get("genes", []):
+        genes.append(gene.get("hgnc_symbol", ""))
 
-    Returns:
-        document_lines(list): list of lines to include in the document
+        for transcript in gene.get("transcripts", []):
+            if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
+                prot_effect.append(urllib.parse.unquote(transcript["protein_sequence_name"]))
+
+    return ",".join(genes), ",".join(prot_effect)
+
+
+def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
+    """Export mitochondrial variants for a case to create a MT excel report.
+    Exclude variants with no cler genotype
     """
     document_lines = []
+
     for variant in variants:
         line = []
-        position = variant.get("position")
-        change = ">".join([variant.get("reference"), variant.get("alternative")])
-        line.append(position)
-        line.append(change)
-        line.append(str(position) + change)
-        genes = []
-        prot_effect = []
-        for gene in variant.get("genes", []):
-            genes.append(gene.get("hgnc_symbol", ""))
-            for transcript in gene.get("transcripts"):
-                if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
-                    prot_effect.append(
-                        urllib.parse.unquote(transcript.get("protein_sequence_name"))
-                    )
-        line.append(",".join(genes))
-        line.append(",".join(prot_effect))
+        skip_variant = False
+
         ref_ad = ""
         alt_ad = ""
         for sample in variant["samples"]:
             if sample.get("sample_id") == sample_id:
+                if sample["genotype_call"] in GT_NO_ALT_CALL:
+                    skip_variant = True
+                    break
+
                 ref_ad = sample["allele_depths"][0]
                 alt_ad = sample["allele_depths"][1]
+
+        if skip_variant:
+            continue
+
+        position = variant.get("position")
+        change = ">".join([variant.get("reference"), variant.get("alternative")])
+
+        line.append(position)
+        line.append(change)
+        line.append(f"{position}{change}")
+
+        genes, prot_effect = _get_genes_and_prot_effect(variant)
+        line.append(genes)
+        line.append(prot_effect)
+
         line.append(ref_ad)
         line.append(alt_ad)
+
         if alt_ad != 0:
             document_lines.append(line)
+
     return document_lines
