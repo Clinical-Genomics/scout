@@ -477,18 +477,10 @@
             <a href="{{ gene.gnomad_str_link}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GnomAD STR</a>
         {% endif %}
         <a href="{{ gene.gtex_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GTEx</a>
-        <a href="{{ gene.hpa_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HPA</a>
         {% if variant.hmtvar_variant_id %}
             <a href="{{ variant.hmtvar_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HmtVar</a>
         {% endif %}
-        {% if variant.is_mitochondrial %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MitoMap</a>
-        {% endif %}
-        <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MARRVEL</a>
-        <a href="{{ gene.panelapp_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PanelApp</a>
-        {% if gene.pubmed_link %}
-            <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
-        {% endif %}
+        <a href="{{ gene.hpa_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">HPA</a>
         <a
           href="#"
           class="btn btn-secondary text-white disabled litvar-gene-link"
@@ -498,6 +490,14 @@
           aria-disabled="true"
           data-litvar-gene-query="{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_symbol }}"
         >LitVar2</a>
+        <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MARRVEL</a>
+        {% if variant.is_mitochondrial %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">MitoMap</a>
+        {% endif %}
+        <a href="{{ gene.panelapp_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PanelApp</a>
+        {% if gene.pubmed_link %}
+            <a href="{{ gene.pubmed_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
+        {% endif %}
         <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
         <a href="{{ gene.reactome_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
         <a href="{{ gene.string_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">STRING</a>
