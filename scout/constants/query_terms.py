@@ -73,3 +73,14 @@ SECONDARY_CRITERIA = [
     "methbat_significance",
     "category_pop_freq",
 ]
+
+GT_NO_CALL = [
+    "./.",
+    ".|.",
+    "./0",
+    ".|0",
+    "0/.",
+    "0|.",
+    "0/0",
+    "0|0",
+]
