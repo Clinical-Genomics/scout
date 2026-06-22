@@ -149,7 +149,7 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
         alt_ad = ""
         for sample in variant["samples"]:
             if sample.get("sample_id") == sample_id:
-                if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "0/0", "0|0"]:
+                if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "0/.", "0|.", "0/0", "0|0"]:
                     skip_variant = True
                     break
                 ref_ad = sample["allele_depths"][0]
