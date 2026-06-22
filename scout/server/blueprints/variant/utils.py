@@ -709,11 +709,15 @@ def get_variant_genome_build(variant_obj: dict, case_obj: dict) -> str:
     return variant_obj.get("build", get_case_genome_build(case_obj))
 
 
-def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
+def populate_dismiss_variant_choices(
+    institute_obj: dict, variant_obj: Optional[dict] = None
+) -> dict[int, dict]:
     """Return variant dismiss options configured for an institute.
     If the institute defines a non-empty `variant_dismiss_tags` list,
     only the corresponding entries from `DISMISS_VARIANT_OPTIONS` are
     returned. Otherwise, all dismiss options are returned.
+    Some variants might have been dismissed with criteria no longer available in institute settings.
+    These criteria will also be shown on variant page.
     """
     dismiss_tags = institute_obj.get("variant_dismiss_tags") if institute_obj else None
 
@@ -721,6 +725,19 @@ def populate_dismiss_variant_choices(institute_obj: dict) -> dict[int, dict]:
         return DISMISS_VARIANT_OPTIONS
 
     dismiss_tags = set(dismiss_tags)
-    return {
-        key: value for key, value in DISMISS_VARIANT_OPTIONS.items() if str(key) in dismiss_tags
-    }
+    previously_dismissed_tags = set(variant_obj.get("dismiss_variant", []) if variant_obj else [])
+
+    available_tags = {}
+
+    for key, value in DISMISS_VARIANT_OPTIONS.items():
+        key_str = str(key)
+
+        if key_str in dismiss_tags or key_str in previously_dismissed_tags:
+            value_copy = dict(value)
+
+            if key_str not in dismiss_tags and key_str in previously_dismissed_tags:
+                value_copy["label"] = f"{value_copy['label']} *"
+
+            available_tags[key] = value_copy
+
+    return available_tags

@@ -203,7 +203,7 @@ def variant(
             'manual_rank_options': MANUAL_RANK_OPTIONS,
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'escat_tier_options': ESCAT_TIER_OPTIONS
-            'dismiss_variant_options': populate_dismiss_variant_choices(institute),
+            'dismiss_variant_options': populate_dismiss_variant_choices(institute, variant),
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'CCV_OPTIONS': CCV_OPTIONS,
             'igv_tracks': IGV_TRACKS,
@@ -389,7 +389,9 @@ def variant(
 
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
-    dismiss_options = populate_dismiss_variant_choices(institute_obj=institute_obj)
+    dismiss_options = populate_dismiss_variant_choices(
+        institute_obj=institute_obj, variant_obj=variant_obj
+    )
     if case_obj.get("track") == "cancer":
         dismiss_options = {
             **dismiss_options,
