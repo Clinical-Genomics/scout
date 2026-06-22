@@ -143,16 +143,20 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
     document_lines = []
     for variant in variants:
         line = []
+        skip_variant = False
 
         ref_ad = ""
         alt_ad = ""
         for sample in variant["samples"]:
             if sample.get("sample_id") == sample_id:
                 if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "0/0", "0|0"]:
-                    continue
+                    skip_variant = True
+                    break
                 ref_ad = sample["allele_depths"][0]
                 alt_ad = sample["allele_depths"][1]
 
+        if skip_variant:
+            continue
         position = variant.get("position")
         change = ">".join([variant.get("reference"), variant.get("alternative")])
         line.append(position)
