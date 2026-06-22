@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import urllib.parse
-from typing import List, Optional
+from typing import List
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
