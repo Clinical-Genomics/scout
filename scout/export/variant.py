@@ -137,11 +137,27 @@ def export_verified_variants(aggregate_variants, unique_callers):
     return document_lines
 
 
+def _get_genes_and_prot_effect(variant: dict) -> tuple[str, str]:
+    """Return comma-separated gene symbols and canonical protein sequence names for a variant."""
+    genes = []
+    prot_effect = []
+
+    for gene in variant.get("genes", []):
+        genes.append(gene.get("hgnc_symbol", ""))
+
+        for transcript in gene.get("transcripts", []):
+            if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
+                prot_effect.append(urllib.parse.unquote(transcript["protein_sequence_name"]))
+
+    return ",".join(genes), ",".join(prot_effect)
+
+
 def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
     """Export mitochondrial variants for a case to create a MT excel report.
     Exclude variants with no cler genotype
     """
     document_lines = []
+
     for variant in variants:
         line = []
         skip_variant = False
@@ -153,30 +169,28 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
                 if sample["genotype_call"] in GT_NO_ALT_CALL:
                     skip_variant = True
                     break
+
                 ref_ad = sample["allele_depths"][0]
                 alt_ad = sample["allele_depths"][1]
 
         if skip_variant:
             continue
+
         position = variant.get("position")
         change = ">".join([variant.get("reference"), variant.get("alternative")])
+
         line.append(position)
         line.append(change)
-        line.append(str(position) + change)
-        genes = []
-        prot_effect = []
-        for gene in variant.get("genes", []):
-            genes.append(gene.get("hgnc_symbol", ""))
-            for transcript in gene.get("transcripts"):
-                if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
-                    prot_effect.append(
-                        urllib.parse.unquote(transcript.get("protein_sequence_name"))
-                    )
-        line.append(",".join(genes))
-        line.append(",".join(prot_effect))
+        line.append(f"{position}{change}")
+
+        genes, prot_effect = _get_genes_and_prot_effect(variant)
+        line.append(genes)
+        line.append(prot_effect)
+
         line.append(ref_ad)
         line.append(alt_ad)
 
         if alt_ad != 0:
             document_lines.append(line)
+
     return document_lines
