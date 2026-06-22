@@ -11,7 +11,7 @@ from scout.constants import (
     SO_TERMS,
     VARIANT_FILTERS,
 )
-from scout.constants.query_terms import GT_NO_CALL
+from scout.constants.query_terms import GT_NO_ALT_CALL
 from scout.server.links import add_gene_links, add_tx_links
 from scout.server.utils import get_case_genome_build
 
@@ -689,7 +689,7 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
         return alt_mc
 
     for sample in variant_obj["samples"]:
-        if sample["genotype_call"] in GT_NO_CALL:
+        if sample["genotype_call"] in GT_NO_ALT_CALL:
             continue
         alt_mc = sample.get("alt_mc")
     if alt_mc:

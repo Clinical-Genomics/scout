@@ -74,7 +74,7 @@ SECONDARY_CRITERIA = [
     "category_pop_freq",
 ]
 
-GT_NO_CALL = [
+GT_NO_ALT_CALL = [
     "./.",
     ".|.",
     "./0",
