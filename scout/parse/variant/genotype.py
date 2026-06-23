@@ -270,6 +270,10 @@ def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[floa
     """Return the copy number for a SV variant."""
 
     def is_nan_like(value) -> bool:
+        """Determine if a value should be treated as a NaN-like value.
+        This helper converts the input to float and checks for IEEE NaN semantics, returning False if conversion fails.
+        """
+
         try:
             return math.isnan(float(value))
         except (TypeError, ValueError):
