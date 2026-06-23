@@ -369,7 +369,11 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
         "snv": {
             "gnomad_frequency": (
                 "GnomAD",
-                [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")],
+                list(
+                    dict.fromkeys(
+                        [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")]
+                    )
+                ),
             ),
             "thousand_genomes_frequency": ("1000G", variant_obj.get("thousandg_link")),
             "max_thousand_genomes_frequency": ("1000G(max)", variant_obj.get("thousandg_link")),

@@ -22,7 +22,7 @@ class ACMGHandler(object):
         link: str,
         criteria: List[Criterion] | None = None,
         classification: tuple | int | None = None,
-    ) -> Tuple(str | None, str):
+    ) -> Tuple[str | None, str]:
         """Save an ACMG evaluation in the database."""
         criteria = criteria or []
 

@@ -833,7 +833,7 @@ def variant_acmg_post(
     variant_id: str,
     user_email: str,
     criteria: list,
-) -> Tuple(str | None, str):
+) -> Tuple[str | None, str]:
     """Calculate an ACMG classification based on a list of criteria."""
     variant_obj = store.variant(variant_id)
 
