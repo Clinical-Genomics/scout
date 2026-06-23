@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Mitorsaw Mitochondrial variant caller (#6392)
 - An icon to the Gens-to-cases link to distinguish it from Gens-to-individuals links on the SV variant page (#6410)
 - Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs (#6413)
+- Variant dismiss tags shown on pages can be customised in the institute settings page by admin users (#6416)
 ### Changed
 - Replaced Ensembl rest liftover service with liftover API from the Broad Institute (#6293)
 - Avoid fetching genes and panels multiple times when loading variants (#6350)

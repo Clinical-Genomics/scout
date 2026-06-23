@@ -45,6 +45,7 @@ from scout.server.blueprints.variant.utils import (
     get_callers,
     get_filters,
     get_str_mc,
+    populate_dismiss_variant_choices,
     predictions,
     update_representative_gene,
     update_variant_case_panels,
@@ -314,9 +315,12 @@ def render_variants_page(
     data = decorator(*args)
 
     dismiss_variant_options = (
-        {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+        {
+            **populate_dismiss_variant_choices(institute_obj=institute_obj),
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        }
         if category in ["cancer_sv", "cancer"]
-        else DISMISS_VARIANT_OPTIONS
+        else populate_dismiss_variant_choices(institute_obj=institute_obj)
     )
 
     return dict(
