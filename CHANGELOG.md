@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display both GnomAD and GnomAD non-UK-Biobank links on variants and gene pages for build 38 SNVs (#6413)
 - Moved mocked liftover response to tests/confest.py (#6415)
 - MT variants with no GT call are not shown on MT reports (#6429)
+- Link out to gnomAD v4 for MT variants, and only once (#6430)
 ### Fixed
 - Enable link to previous ACMG classifications for SVs and cancer SVs (#6365)
 - Fixes bug where CCV classification ignores modifiers when submitting to db (#6369)
@@ -43,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Automatically convert email input to lowercase when logging in using LDAP (#6407)
 - Print N/A for missing variant GQ values (#6420)
 - Sort variant external gene link buttons alphabetically again (#6426)
+- Invalid Tuple type annotation syntax on adapter.mongo.acmg function (#6433)
 
 ## [4.112]
 ### Added
