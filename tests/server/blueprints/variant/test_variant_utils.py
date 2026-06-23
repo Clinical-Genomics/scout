@@ -1,3 +1,4 @@
+from scout.constants import DISMISS_VARIANT_OPTIONS
 from scout.server.blueprints.variant.utils import (
     add_panel_specific_gene_info,
     ccv_evaluation,
@@ -7,6 +8,7 @@ from scout.server.blueprints.variant.utils import (
     frequencies,
     frequency,
     is_affected,
+    populate_dismiss_variant_choices,
     predictions,
     transcript_str,
     update_transcripts_information,
@@ -461,3 +463,22 @@ def test_sv_frequencies_all():
     assert len(freq) == 8
     for annotation in freq:
         assert annotation[1] == 0.02
+
+
+def test_populate_dismiss_variant_choices(institute_obj):
+    """Test the function that populates the dismissed variant tags according to the available institute settings."""
+
+    # GIVEN an institute with no "variant_dismiss_tags" key/values
+    assert "variant_dismiss_tags" not in institute_obj
+    # THEN the dismiss tags should be equal to DISMISS_VARIANT_OPTIONS
+    dismiss_tag_choices = populate_dismiss_variant_choices(institute_obj=institute_obj)
+    assert len(dismiss_tag_choices) == len(DISMISS_VARIANT_OPTIONS)
+
+    # GIVEN an institute with a few dismissed tags saved in settings
+    INSTITUTE_DISMISSED_TAGS = ["2", "3", "5", "7"]
+    institute_obj["variant_dismiss_tags"] = INSTITUTE_DISMISSED_TAGS
+
+    # THEN the dismiss tags should be equal to the tags saved in institute settings
+    assert len(populate_dismiss_variant_choices(institute_obj=institute_obj)) == len(
+        INSTITUTE_DISMISSED_TAGS
+    )
