@@ -11,6 +11,7 @@ from scout.constants import (
     SO_TERMS,
     VARIANT_FILTERS,
 )
+from scout.constants.query_terms import GT_NO_ALT_CALL
 from scout.server.links import add_gene_links, add_tx_links
 from scout.server.utils import get_case_genome_build
 
@@ -367,7 +368,11 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
         "snv": {
             "gnomad_frequency": (
                 "GnomAD",
-                [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")],
+                list(
+                    dict.fromkeys(
+                        [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")]
+                    )
+                ),
             ),
             "thousand_genomes_frequency": ("1000G", variant_obj.get("thousandg_link")),
             "max_thousand_genomes_frequency": ("1000G(max)", variant_obj.get("thousandg_link")),
@@ -688,7 +693,7 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
         return alt_mc
 
     for sample in variant_obj["samples"]:
-        if sample["genotype_call"] in ["./.", ".|.", "./0", ".|0", "0/0", "0|0"]:
+        if sample["genotype_call"] in GT_NO_ALT_CALL:
             continue
         alt_mc = sample.get("alt_mc")
     if alt_mc:
