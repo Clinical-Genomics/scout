@@ -9,7 +9,6 @@ from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
 from scout.constants.managed_variant import MANAGED_CATEGORIES, MANAGED_VARIANTS_INFILE_HEADER
 from scout.constants.query_terms import GT_NO_ALT_CALL
-
 from scout.models.managed_variant import ManagedVariant
 from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
