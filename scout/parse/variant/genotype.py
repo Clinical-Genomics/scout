@@ -272,13 +272,13 @@ def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[floa
     try:
         cn_value = variant.format("CN")[sample_index][0]
 
-        if cn_value in [None, -1, "."]:
+        if cn_value in [None, -1, ".", "nan"]:
             return None
 
         return int(cn_value)
 
     except (ValueError, IndexError) as e:
-        LOG.error(f"Error extracting CN {cn_value} for sample {sample_index}: {e}")
+        LOG.error(f"Error extracting CN {type(cn_value)} {cn_value} for sample {sample_index}: {e}")
 
 
 def get_split_reads(variant, pos):
