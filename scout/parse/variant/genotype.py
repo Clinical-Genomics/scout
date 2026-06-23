@@ -272,7 +272,7 @@ def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[floa
     try:
         cn_value = variant.format("CN")[sample_index][0]
 
-        if cn_value in [None, -1]:
+        if cn_value in [None, -1, "."]:
             return None
 
         return int(cn_value)
