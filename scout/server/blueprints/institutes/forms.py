@@ -17,6 +17,7 @@ from wtforms.widgets import PasswordInput, TextInput
 
 from scout.constants import (
     ANALYSIS_TYPES,
+    DISMISS_VARIANT_OPTIONS,
     FEATURE_TYPES,
     GENETIC_MODELS,
     PHENOTYPE_GROUPS,
@@ -32,6 +33,9 @@ CATEGORY_CHOICES = [("snv", "SNV"), ("sv", "SV")]
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
+DISMISS_VARIANT_CHOICES = [
+    (str(key), value["label"]) for key, value in DISMISS_VARIANT_OPTIONS.items()
+]
 
 
 class NonValidatingSelectField(SelectField):
@@ -105,6 +109,12 @@ class InstituteForm(FlaskForm):
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
     loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
+
+    variant_dismiss_tags = NonValidatingSelectMultipleField(
+        "Dismiss variant tags present on pages",
+        choices=DISMISS_VARIANT_CHOICES,
+        validators=[validators.Optional()],
+    )
 
     alamut_key = StringField("Alamut API key", validators=[validators.Optional()])
 

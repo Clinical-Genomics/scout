@@ -516,6 +516,7 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         clinvar_key=form.get("clinvar_key"),
         clinvar_submitters=get_clinvar_submitters(form),
         soft_filters=get_admin_setting_list(field_name="soft_filters", form=form),
+        variant_dismiss_tags=get_admin_setting_list(field_name="variant_dismiss_tags", form=form),
     )
     return updated_institute
 

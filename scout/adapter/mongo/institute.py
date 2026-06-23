@@ -59,6 +59,7 @@ class InstituteHandler(object):
         clinvar_key: Optional[str] = None,
         clinvar_submitters: Optional[List[str]] = None,
         soft_filters: Optional[dict] = None,
+        variant_dismiss_tags: Optional[List[int]] = None,
     ) -> Union[dict, str]:
         """Update the information for an institute."""
 
@@ -119,6 +120,7 @@ class InstituteHandler(object):
             "sanger_recipients": sanger_recipients,
             "show_all_cases_status": show_all_cases_status,
             "soft_filters": soft_filters,  # Admin setting
+            "variant_dismiss_tags": variant_dismiss_tags,  # Admin setting
         }
         for key, value in UPDATE_SETTINGS.items():
             if value is None:
