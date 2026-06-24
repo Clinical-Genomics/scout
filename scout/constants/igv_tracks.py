@@ -15,14 +15,14 @@ HG38ALIAS_URL = (
 )
 HG38CYTOBAND_URL = "https://igv-genepattern-org.s3.amazonaws.com/genomes/hg38/cytoBandIdeo.txt.gz"
 
-HG38GENES_URL = "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeq.txt.gz"
+HG38GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg38/ncbiRefSeq.sorted.txt.gz"
 HG38GENES_FORMAT = "refgene"
 
 HG19GENES_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz"
 HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.org.genomes/hg19/ncbiRefSeq.sorted.txt.gz.tbi"
 HG19GENES_FORMAT = "refgene"
 
-HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
+HG38CLINVAR_URL = "https://s3.us-east-1.amazonaws.com/igv.org.genomes/hg38/clinvarMain.bb"
 HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
 
 HG38CLINVAR_SVS_URL = (
