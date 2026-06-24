@@ -46,6 +46,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Print N/A for missing variant GQ values (#6420)
 - Sort variant external gene link buttons alphabetically again (#6426)
 - Invalid Tuple type annotation syntax on adapter.mongo.acmg function (#6433)
+- Updated LDAP login instructions in user guide and demo instance config settings (#)
 
 ## [4.112]
 ### Added
