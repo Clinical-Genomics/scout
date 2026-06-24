@@ -20,6 +20,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 import ast
 import logging
+import math
 from typing import Dict, List, Optional, Tuple, Union
 
 import cyvcf2
@@ -267,18 +268,29 @@ def get_paired_ends(variant: cyvcf2.Variant, pos: int) -> tuple:
 
 def get_copy_number(variant: cyvcf2.Variant, sample_index: int) -> Optional[float]:
     """Return the copy number for a SV variant."""
+
+    def is_nan_like(value) -> bool:
+        """Determine if a value should be treated as a NaN-like value.
+        This helper converts the input to float and checks for IEEE NaN semantics, returning False if conversion fails.
+        """
+
+        try:
+            return math.isnan(float(value))
+        except (TypeError, ValueError):
+            return False
+
     if "CN" not in variant.FORMAT:
         return None
+
+    cn_value = variant.format("CN")[sample_index][0]
+
+    if cn_value in [None, -1] or is_nan_like(cn_value):
+        return None
+
     try:
-        cn_value = variant.format("CN")[sample_index][0]
-
-        if cn_value in [None, -1]:
-            return None
-
         return int(cn_value)
-
     except (ValueError, IndexError) as e:
-        LOG.error(f"Error extracting CN for sample {sample_index}: {e}")
+        LOG.error(f"Error extracting CN {type(cn_value)} {cn_value} for sample {sample_index}: {e}")
 
 
 def get_split_reads(variant, pos):
