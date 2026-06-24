@@ -27,15 +27,15 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # LDAP login Settings
 # Test configuration works with this free LDAP server: https://www.forumsys.com/2022/05/10/online-ldap-test-server/
-LDAP_HOST = "ldap.forumsys.com"
-LDAP_BIND_USER_DN = "cn=read-only-admin,dc=example,dc=com"
-LDAP_BIND_USER_PASSWORD = "password"
-LDAP_BASE_DN = "dc=example,dc=com"
-LDAP_USER_DN = ""
-LDAP_USER_RDN_ATTR = "uid"
-LDAP_USER_LOGIN_ATTR = "uid"
-LDAP_GROUP_DN = ""
-LDAP_GROUP_OBJECT_FILTER = "(objectclass=*)"
+# LDAP_HOST = "ldap.forumsys.com"
+# LDAP_BIND_USER_DN = "cn=read-only-admin,dc=example,dc=com"
+# LDAP_BIND_USER_PASSWORD = "password"
+# LDAP_BASE_DN = "dc=example,dc=com"
+# LDAP_USER_DN = ""
+# LDAP_USER_RDN_ATTR = "uid"
+# LDAP_USER_LOGIN_ATTR = "uid"
+# LDAP_GROUP_DN = ""
+# LDAP_GROUP_OBJECT_FILTER = "(objectclass=*)"
 
 # Parameters required for Google Oauth 2.0 login
 # GOOGLE = dict(
