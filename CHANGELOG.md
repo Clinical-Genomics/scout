@@ -48,6 +48,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Sort variant external gene link buttons alphabetically again (#6426)
 - Invalid Tuple type annotation syntax on adapter.mongo.acmg function (#6433)
 - SV CN FORMAT field `.` parsing issue (#6437)
+- Made comments editable and removable for users authenticated via LDAP (#6439)
 
 ## [4.112]
 ### Added
