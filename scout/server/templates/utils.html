@@ -144,7 +144,7 @@
                 {% if comment.created_at < comment.updated_at %}
                   <span class='badge bg-secondary'>edited</span>
                 {% endif %}
-                {% if comment.user_id == current_user.email %}
+                {% if comment.user_id == current_user._id %}
                   <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-times"></i></button>
                   <button class="btn btn-link btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editComment_{{index}}"><i class="fa fa-edit"></i></button>
                 {% endif %}
