@@ -122,6 +122,7 @@ class OmicsVariantHandler:
         """
         hgnc_gene = self.hgnc_gene(omics_model["hgnc_ids"][0], omics_model["build"])
         if hgnc_gene:
+            hgnc_gene["inheritance"] = hgnc_gene["inheritance_models"]
             omics_model["genes"] = [hgnc_gene]
 
     def load_omics_variants(self, case_obj: dict, file_type: str, build: Optional[str] = "37"):
