@@ -90,7 +90,7 @@ LDAP server instances are different from case to case. Some basic LDAP config op
 
 ### LDAP Authentication Setup (Test Configuration)
 
-For development and testing purposes, login system can be connected to a public LDAP test server provided by Forum Systems.
+For development and testing purposes, the login system can be connected to a public LDAP test server.
 
 The following free LDAP server can be used for testing: https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 
