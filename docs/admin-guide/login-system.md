@@ -130,7 +130,7 @@ scout --demo load user -i cust000 -u "Isaac Newton" -m newton@email.com -id newt
 
 This ensures that the LDAP identity can be mapped correctly to a Scout user record.
 
-It should be now possible to login the new user into Scout using username `newton` and password `password`
+It should now be possible to log the new user in to Scout using username `newton` and password `password`
 
 
 ### Considerations regarding the LDAP login in Scout.
