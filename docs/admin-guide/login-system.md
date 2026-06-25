@@ -92,7 +92,7 @@ LDAP server instances are different from case to case. Some basic LDAP config op
 
 For development and testing purposes, the login system can be connected to a public LDAP test server.
 
-The following free LDAP server can be used for testing: https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+The following free LDAP server provided by Forum Systems can be used for testing: https://www.forumsys.com/2022/05/10/online-ldap-test-server/
 
 This server provides a set of predefined users (e.g. einstein, tesla, newton) with a common password.
 
