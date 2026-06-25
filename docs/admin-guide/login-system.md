@@ -137,7 +137,7 @@ It should now be possible to log the new user in to Scout using username `newton
 
 Since the Scout software needs to define internal user objects, the LDAP login check against the server is only the first, authentication, step of the login process. The second, authorisation, step would be making sure that a user authenticated by a certain password exists also in the `user` collection of the Scout database. Because of this latter authorisation step, it is not strictly necessary to define a stringent set of rules (for instance which groups the user must belong to) for the LDAP login system, because a user from any group will be logged into Scout, as long as it's previously saved in the Scout database.
 
-This entails that if a user should be removed from the system, it is enough just to remove it from the Scout database.
+This means that if a user should be removed from the system, it is enough just to remove it from the Scout database.
 
 
 ## Simple login with userid
