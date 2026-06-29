@@ -26,13 +26,16 @@ MAIL_USE_SSL = False
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # LDAP login Settings
-# Complete list of accepted parameters available here: https://github.com/rroemhild/flask-ldapconn
-# LDAP_HOST = "localhost" # Can also be named LDAP_SERVER
-# LDAP_PORT = 389
-# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com # Can also be named LDAP_BINDDN
-# LDAP_USER_LOGIN_ATTR = "mail" # Can also be named LDAP_SEARCH_ATTR
-# LDAP_USE_SSL = False
-# LDAP_USE_TLS = True
+# Test configuration works with this free LDAP server: https://www.forumsys.com/2022/05/10/online-ldap-test-server/
+# LDAP_HOST = "ldap.forumsys.com"
+# LDAP_BIND_USER_DN = "cn=read-only-admin,dc=example,dc=com"
+# LDAP_BIND_USER_PASSWORD = "password"
+# LDAP_BASE_DN = "dc=example,dc=com"
+# LDAP_USER_DN = ""
+# LDAP_USER_RDN_ATTR = "uid"
+# LDAP_USER_LOGIN_ATTR = "uid"
+# LDAP_GROUP_DN = ""
+# LDAP_GROUP_OBJECT_FILTER = "(objectclass=*)"
 
 # Parameters required for Google Oauth 2.0 login
 # GOOGLE = dict(
