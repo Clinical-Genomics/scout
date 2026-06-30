@@ -6,8 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Load all mitochondrial variants, even if there is a `chr` prefix (#6553)
--
+- Load all mitochondrial variants, even if there is a `chr` prefix (#6454)
+
 ## [4.113.1]
 ### Fixed
 - Live loqusdbapi observation counts were not shown on the variant page (#6449)
