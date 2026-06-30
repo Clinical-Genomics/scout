@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Load all mitochondrial variants, even if there is a `chr` prefix (#6553)
+-
 ## [4.113.1]
 ### Fixed
 - Live loqusdbapi observation counts were not shown on the variant page (#6449)
