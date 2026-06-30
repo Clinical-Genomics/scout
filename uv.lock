@@ -2190,7 +2190,7 @@ wheels = [
 
 [[package]]
 name = "scout-browser"
-version = "4.113.1"
+version = "4.113.2"
 source = { editable = "." }
 dependencies = [
     { name = "anytree" },
