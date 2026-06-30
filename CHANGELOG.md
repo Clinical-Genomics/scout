@@ -4,9 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.113.2]
 ### Fixed
-- Load all mitochondrial variants, even if there is a `chr` prefix (#6454)
+- Load all mitochondrial variants, even if there is a `chr` chromosome name prefix (#6454)
 
 ## [4.113.1]
 ### Fixed
