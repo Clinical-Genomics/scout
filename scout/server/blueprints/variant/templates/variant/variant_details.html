@@ -253,20 +253,22 @@
         </thead>
         <tbody>
           {% for loqusid, obs in observations.items() %}
-              <tr>
-                <td
-                  {% if obs.instance_description %}
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="{{ obs.instance_description }}"
-                  {% endif %}
-                >
-                  {{ loqusid }}
-                </td>
-                <td>{{ render_obs(obs_count) }}</td>
-                <td>{{ render_obs(0 if obs_count == 0 else obs.homozygote) }}</td>
-                <td>{{ render_obs(obs.total) }}</td>
-             </tr>
+            {% set obs_count = obs.observations %}
+            <tr>
+              <td
+                {% if obs.instance_description %}
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="{{ obs.instance_description }}"
+                {% endif %}
+              >
+                {{ loqusid }}
+              </td>
+
+              <td>{{ render_obs(obs_count) }}</td>
+              <td>{{ render_obs(0 if obs_count == 0 else obs.homozygote) }}</td>
+              <td>{{ render_obs(obs.total) }}</td>
+            </tr>
             {% if obs.cases or obs.observations == 1 %}
               <tr>
                 <td colspan="4">
