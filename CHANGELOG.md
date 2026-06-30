@@ -4,7 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.113.2]
+### Fixed
+- Load all mitochondrial variants, even if there is a `chr` chromosome name prefix (#6454)
+
+## [4.113.1]
+### Fixed
+- Live loqusdbapi observation counts were not shown on the variant page (#6449)
+
+## [4.113]
 ### Added
 - LitVar2 links: variant link for variants with dbSNP rsID and a gene symbol search link (#6326)
 - Filter variants by OMIM inheritance pattern (#6355)
@@ -17,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new search mode for the gene variants page, where users can search for one specific variant, regardless of other filters (#6385)
 - Mitorsaw Mitochondrial variant caller (#6392)
 - An icon to the Gens-to-cases link to distinguish it from Gens-to-individuals links on the SV variant page (#6410)
-- Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs
+- Display both GnomAD and GnomAD non-UK-Biobank links on variants pages for build 38 SNVs (#6413)
 - Variant dismiss tags shown on pages can be customised in the institute settings page by admin users (#6416)
 - A `--liftover-from` option to the `export managed` command line, so managed variants can be exported and imported again in another genome build (#6225)
 ### Changed
