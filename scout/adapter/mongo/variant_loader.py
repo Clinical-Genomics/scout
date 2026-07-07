@@ -411,7 +411,7 @@ class VariantLoader(object):
                 if (
                     (rank_score is None)
                     or (rank_score > rank_threshold)
-                    or variant.CHROM in ["M", "MT"]
+                    or "M" in variant.CHROM
                     or category in ["str"]
                     or is_pathogenic(variant)
                     or self._is_managed(
