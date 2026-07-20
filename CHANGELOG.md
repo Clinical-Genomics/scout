@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Bug calculating allele read depth (#)
+- Bug calculating allele read depth in samples genotype module (#6469)
 
 ## [4.113.3]
 ### Fixed
