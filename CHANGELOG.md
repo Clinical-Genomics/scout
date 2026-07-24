@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.113.3]
 ### Fixed
 - Removed markdown formatting for rendering comment tables (#6452)
+- Parsing of Exac max frequency (#6472)
 
 ## [4.113.2]
 ### Fixed
