@@ -8,6 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
 
+## [4.113.3]
+### Fixed
+- Removed markdown formatting for rendering comment tables (#6452)
+
 ## [4.113.2]
 ### Fixed
 - Load all mitochondrial variants, even if there is a `chr` chromosome name prefix (#6454)
