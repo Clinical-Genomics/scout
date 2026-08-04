@@ -1,4 +1,3 @@
-import base64
 import logging
 from datetime import datetime
 from typing import Any, List, Optional
