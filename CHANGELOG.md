@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.113.4]
+### Changed
+- Changelog enforcement specific to the `unreleased` changelog section (#6216)
+
 ## [4.113.3]
 ### Fixed
 - Removed markdown formatting for rendering comment tables (#6452)
