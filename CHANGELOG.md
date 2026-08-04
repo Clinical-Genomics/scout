@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
+- Bump automation GitHub action version (#6477)
+### Fixed
+- SonarCloud security issue about pip without binary-only install in automation (#6477)
 
 ## [4.113.3]
 ### Fixed

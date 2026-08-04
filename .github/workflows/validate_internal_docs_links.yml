@@ -10,4 +10,4 @@ jobs:
             - uses: actions/checkout@v7
             - uses: astral-sh/setup-uv@v9.0.0
             - name: launch mkdocs in strict mode
-              run: uv run --only-group docs mkdocs build --strict
+              run: uv run --frozen --no-build --only-group docs mkdocs build --strict

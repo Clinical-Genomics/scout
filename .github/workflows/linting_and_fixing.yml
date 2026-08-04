@@ -23,7 +23,7 @@ jobs:
 
     - name: Install Python Dependencies
       run: |
-        pip install black flake8
+        uv pip install --binary-only :all: --group lint
 
     - name: Run linters
       uses: wearerequired/lint-action@v3

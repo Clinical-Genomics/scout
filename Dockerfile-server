@@ -10,7 +10,7 @@ COPY --chmod=644 pyproject.toml uv.lock README.md ./
 
 RUN uv venv --relocatable
 RUN uv sync --frozen --no-install-project --no-editable
-RUN uv pip install --no-cache-dir gunicorn
+RUN uv pip install --no-build --no-cache-dir gunicorn
 
 #########
 # FINAL #
@@ -47,7 +47,7 @@ RUN chown -R worker:worker /home/worker/app/.venv
 USER worker
 
 # Install Scout app
-RUN uv pip install --no-cache-dir .[coverage]
+RUN uv pip install --frozen --no-cache-dir .[coverage]
 
 ENV GUNICORN_WORKERS=1
 ENV GUNICORN_THREADS=1
