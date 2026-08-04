@@ -66,4 +66,5 @@ jobs:
        with:
          python-version-file: ".python-version"
      - name: Deploy documentation
+       uses: astral-sh/setup-uv@v9.0.0
        run: uv run --only-group docs mkdocs gh-deploy --force
