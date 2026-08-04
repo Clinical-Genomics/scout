@@ -79,6 +79,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v7
       - name: Run coverage
+        uses: astral-sh/setup-uv@v9.0.0
         run: |
           uv run --no-build --frozen --dev coverage combine coverage*/.coverage*
           uv run --no-build --frozen --dev coverage report
