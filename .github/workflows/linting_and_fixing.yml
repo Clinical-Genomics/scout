@@ -24,7 +24,7 @@ jobs:
     - name: Install Python Dependencies
       uses: astral-sh/setup-uv@v9.0.0
       run: |
-        uv pip install --no-build --frozen --binary-only :all: --group lint
+        uv pip install --no-build --binary-only :all: --group lint
 
     - name: Run linters
       uses: wearerequired/lint-action@v3
