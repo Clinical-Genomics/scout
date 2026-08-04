@@ -26,7 +26,7 @@ jobs:
           cache-dependency-glob: "uv.lock"
 
       - name: Install the project
-        run: uv sync --frozen --all-extras --dev --no-build
+        run: uv sync --frozen --all-extras --dev
 
   test:
     needs: setup
@@ -80,9 +80,9 @@ jobs:
         uses: actions/download-artifact@v7
       - name: Run coverage
         run: |
-          uv run --frozen --dev coverage combine coverage*/.coverage*
-          uv run --frozen --dev coverage report
-          uv run --frozen --dev coverage xml
+          uv run --no-build --frozen --dev coverage combine coverage*/.coverage*
+          uv run --no-build --frozen --dev coverage report
+          uv run --no-build --frozen --dev coverage xml
       - uses: codecov/codecov-action@v7
         env:
             CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
