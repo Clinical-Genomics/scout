@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
+### Fixed
+- Unprivileged users selecting no institute on gene variants page should see only all cases they can access (#6476)
 
 ## [4.113.3]
 ### Fixed

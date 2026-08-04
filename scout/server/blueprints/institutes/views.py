@@ -168,6 +168,17 @@ def lock_filter(institute_id, filter_id):
     return safe_redirect_back(request)
 
 
+def authorize_institute_access(institute_ids_requested: list, users_institute_ids: list) -> list:
+    """Check requested institute identifiers against the current user's institute identifiers
+    and return the intersection of the two lists. If the user is admin the request and return lists are allowed to stay empty.
+    Otherwise, it is populated with all the users institute identifiers.
+    """
+    if not institute_ids_requested and current_user.is_admin is False:
+        institute_ids_requested = users_institute_ids
+
+    return [inst for inst in institute_ids_requested if inst in users_institute_ids]
+
+
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
 @templated("overview/gene_variants.html")
 def gene_variants(institute_id):
@@ -240,9 +251,11 @@ def gene_variants(institute_id):
                         flash(error, "warning")
             return safe_redirect_back(request)
 
+        institute_ids_granted = authorize_institute_access(form.institute.data, users_institute_ids)
+
         variants_query = store.build_variant_query(
             query=form.data,
-            institute_ids=[inst for inst in form.institute.data if inst in users_institute_ids],
+            institute_ids=institute_ids_granted,
             category=category,
             variant_type=variant_type,
         )  # This is the actual query dictionary, not the cursor with results
