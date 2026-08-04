@@ -251,18 +251,14 @@ def gene_variants(institute_id):
                         flash(error, "warning")
             return safe_redirect_back(request)
 
-        institute_ids_granted = authorize_institute_access(form.institute.data, users_institute_ids)
-
         variants_query = store.build_variant_query(
             query=form.data,
-            institute_ids=institute_ids_granted,
+            institute_ids=authorize_institute_access(form.institute.data, users_institute_ids),
             category=category,
             variant_type=variant_type,
-        )  # This is the actual query dictionary, not the cursor with results
+        )
 
-        results = store.variant_collection.find(variants_query).sort(
-            [("rank_score", DESCENDING)]
-        )  # query results
+        results = store.variant_collection.find(variants_query).sort([("rank_score", DESCENDING)])
 
         result_size = store.variant_collection.count_documents(variants_query)
 
