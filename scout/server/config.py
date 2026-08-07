@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"  # Prevent session timeout when user closes browser
-INSTANCE_NAME = "LOCAL development"  # Name will be displayed on the top navigation menu
-INSTANCE_COLOR = "#800000"  # Color of the top navigation menu
+# INSTANCE_NAME = "Development" # Name will be displayed on the top navigation menu
+# INSTANCE_COLOR = "#800000" # Color of the top navigation menu
 
 # SESSION_TIMEOUT_MINUTES = 60  # Minutes of inactivity before session times out
 
@@ -139,27 +139,6 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 #        ],
 #    },
 # ]
-
-CUSTOM_REFERENCE = {
-    "37": {
-        "id": "hg19",
-        "name": "GRCh37",
-        "fastaURL": "../../refs/human_g1k_v37_d5ss.fasta",
-        "indexURL": "../../refs/human_g1k_v37_d5ss.fasta.fai",
-        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/cytoBand.txt.gz",
-        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab",
-    },
-    "38": {
-        "id": "hg38",
-        "name": "GRCh38",
-        "fastaURL": "../../refs/GRCh38_full_analysis_set_plus_decoy_hla.fa",
-        "indexURL": "../../refs/GRCh38_full_analysis_set_plus_decoy_hla.fa.fai",
-        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz",
-        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg38/hg38_alias.tab",
-        "chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY, chrM",
-    },
-}
-
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
