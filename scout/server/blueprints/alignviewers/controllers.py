@@ -38,12 +38,11 @@ def authorize_common_tracks(resource: str) -> bool:
     for reference_tracks in HUMAN_REFERENCE.values():
         if resource in [
             url
-            for track in reference_tracks
             for url in [
-                track.get("fastaURL"),
-                track.get("indexURL"),
-                track.get("cytobandURL"),
-                track.get("aliasURL"),
+                reference_tracks.get("fastaURL"),
+                reference_tracks.get("indexURL"),
+                reference_tracks.get("cytobandURL"),
+                reference_tracks.get("aliasURL"),
             ]
             if url is not None
         ]:
