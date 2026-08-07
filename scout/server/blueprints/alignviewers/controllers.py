@@ -55,16 +55,15 @@ def authorize_config_custom_reference(resource: str) -> bool:
     """Check if requested resource is in custom human reference tracks."""
     if hasattr(config_igv_tracks, "custom_reference"):
         for build in config_igv_tracks.custom_reference.keys():
-            build_tracks = config_igv_tracks.custom_reference.get(build, [])
+            build_tracks = config_igv_tracks.custom_reference.get(build, {})
 
             if resource in [
                 url
-                for track in build_tracks
                 for url in (
-                    track.get("fastaURL"),
-                    track.get("indexURL"),
-                    track.get("cytobandURL"),
-                    track.get("aliasURL"),
+                    build_tracks.get("fastaURL"),
+                    build_tracks.get("indexURL"),
+                    build_tracks.get("cytobandURL"),
+                    build_tracks.get("aliasURL"),
                 )
                 if url is not None
             ]:
@@ -178,6 +177,9 @@ def authorize_case_tracks(resource: str, case: dict):
     """
 
     if authorize_common_tracks(resource):
+        return True
+
+    if authorize_config_custom_reference(resource):
         return True
 
     if authorize_config_custom_tracks(resource):

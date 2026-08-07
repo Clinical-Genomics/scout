@@ -142,16 +142,20 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 
 CUSTOM_REFERENCE = {
     "37": {
-        "fastaURL": "scout/resources/custom_igv_tracks/grch37_homo_sapiens_-d5-.fasta",
-        "indexURL": "scout/resources/custom_igv_tracks/grch37_homo_sapiens_-d5-.fasta.fai",
+        "id": "hg19",
+        "name": "GRCh37",
+        "fastaURL": "../../refs/human_g1k_v37_d5ss.fasta",
+        "indexURL": "../../refs/human_g1k_v37_d5ss.fasta.fai",
         "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/cytoBand.txt.gz",
-        "aliasURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/alias.txt.gz",
+        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab",
     },
     "38": {
-        "fastaURL": "scout/resources/custom_igv_tracks/grch38_homo_sapiens_-d5-.fasta",
-        "indexURL": "scout/resources/custom_igv_tracks/grch38_homo_sapiens_-d5-.fasta.fai",
+        "id": "hg38",
+        "name": "GRCh38",
+        "fastaURL": "../../refs/GRCh38_full_analysis_set_plus_decoy_hla.fa",
+        "indexURL": "../../refs/GRCh38_full_analysis_set_plus_decoy_hla.fa.fai",
         "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz",
-        "aliasURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/alias.txt.gz",
+        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg38/hg38_alias.tab",
         "chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY, chrM",
     },
 }

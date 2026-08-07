@@ -17,14 +17,12 @@ class AlignTrackHandler:
     """Class collecting external IGV tracks stored in the cloud"""
 
     def init_app(self, app):
-        LOG.info(f"init_app called with app {app}")
         if app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS"):
             self.tracks = self.set_custom_tracks(
                 app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS")
             )
         if app.config.get("CUSTOM_REFERENCE"):
             self.custom_reference = self.set_custom_reference(app.config.get("CUSTOM_REFERENCE"))
-            LOG.info(f"set up custom reference tracks {self.custom_reference}")
 
     def track_template(self, track_info: dict) -> dict:
         """Provides the template for a VCF track object"""
@@ -58,7 +56,6 @@ class AlignTrackHandler:
             for url_type in REFERENCE_URL_KEYS:
                 if url_type in custom_ref and not URL_PATTERN.search(custom_ref[url_type]):
                     custom_ref[url_type] = self.set_local_track_path(custom_ref[url_type])
-                    LOG.info(f"abs path to {custom_ref[url_type]}")
         return custom_references
 
     def set_custom_tracks(self, track_dictionaries: List[dict]) -> dict:
