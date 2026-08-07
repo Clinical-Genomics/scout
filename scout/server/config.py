@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"  # Prevent session timeout when user closes browser
-# INSTANCE_NAME = "Development" # Name will be displayed on the top navigation menu
-# INSTANCE_COLOR = "#800000" # Color of the top navigation menu
+INSTANCE_NAME = "LOCAL development"  # Name will be displayed on the top navigation menu
+INSTANCE_COLOR = "#800000"  # Color of the top navigation menu
 
 # SESSION_TIMEOUT_MINUTES = 60  # Minutes of inactivity before session times out
 
@@ -139,6 +139,23 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 #        ],
 #    },
 # ]
+
+CUSTOM_REFERENCE = {
+    "37": {
+        "fastaURL": "scout/resources/custom_igv_tracks/grch37_homo_sapiens_-d5-.fasta",
+        "indexURL": "scout/resources/custom_igv_tracks/grch37_homo_sapiens_-d5-.fasta.fai",
+        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/cytoBand.txt.gz",
+        "aliasURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/alias.txt.gz",
+    },
+    "38": {
+        "fastaURL": "scout/resources/custom_igv_tracks/grch38_homo_sapiens_-d5-.fasta",
+        "indexURL": "scout/resources/custom_igv_tracks/grch38_homo_sapiens_-d5-.fasta.fai",
+        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz",
+        "aliasURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/alias.txt.gz",
+        "chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY, chrM",
+    },
+}
+
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"

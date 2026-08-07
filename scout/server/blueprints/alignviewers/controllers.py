@@ -53,9 +53,9 @@ def authorize_common_tracks(resource: str) -> bool:
 
 def authorize_config_custom_reference(resource: str) -> bool:
     """Check if requested resource is in custom human reference tracks."""
-    if hasattr(config_igv_tracks, "human_reference"):
-        for build in config_igv_tracks.human_reference.keys():
-            build_tracks = config_igv_tracks.human_reference.get(build, [])
+    if hasattr(config_igv_tracks, "custom_reference"):
+        for build in config_igv_tracks.custom_reference.keys():
+            build_tracks = config_igv_tracks.custom_reference.get(build, [])
 
             if resource in [
                 url
@@ -498,9 +498,11 @@ def set_common_tracks(display_obj, build):
     user_obj = store.user(email=current_user.email)
 
     # Set up IGV tracks that are common for all cases:
-    if hasattr(config_igv_tracks, "human_reference"):
-        display_obj["reference_track"] = config_igv_tracks.human_reference.get(build)
-        display_obj["chromosomeOrder"] = config_igv_tracks.human_reference.get("chromosomeOrder")
+    if hasattr(config_igv_tracks, "custom_reference"):
+        display_obj["reference_track"] = config_igv_tracks.custom_reference.get(build)
+        display_obj["chromosomeOrder"] = config_igv_tracks.custom_reference.get(build).get(
+            "chromosomeOrder"
+        )
     else:
         display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
         display_obj["chromosomeOrder"] = HUMAN_REFERENCE.get("chromosomeOrder")
