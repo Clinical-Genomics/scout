@@ -19,6 +19,8 @@ class AlignTrackHandler:
         self.tracks = self.set_custom_tracks(
             app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS")
         )
+        if app.config.get("HUMAN_REFERENCE"):
+            self.human_reference = self.set_custom_tracks(app.config.get("HUMAN_REFERENCE"))
 
     def track_template(self, track_info: dict) -> dict:
         """Provides the template for a VCF track object"""
