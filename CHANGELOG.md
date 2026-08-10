@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
-- Typo in MT coverage report (#6480)
+- Typo in MT coverage report (#6481)
 
 ## [4.113.3]
 ### Fixed
