@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bump automation GitHub action version (#6477)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
+- Users selecting no institute on gene variants page should only see cases they have access to (#6476)
 - SonarCloud security issue about pip without binary-only install in automation (#6477)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
 
