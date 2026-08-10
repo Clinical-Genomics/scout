@@ -10,8 +10,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
+- Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
+- Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
 - Users selecting no institute on gene variants page should only see cases they have access to (#6476)

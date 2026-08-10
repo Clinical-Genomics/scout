@@ -26,9 +26,48 @@ DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]
 
 def authorize_common_tracks(resource: str) -> bool:
     """Check if requested resource is in static common annotation tracks."""
-    for igv_tracks in IGV_TRACKS:
-        if resource in igv_tracks:
+    for igv_tracks in IGV_TRACKS.values():
+        if resource in [
+            url
+            for track in igv_tracks
+            for url in (track.get("url"), track.get("indexURL"))
+            if url is not None
+        ]:
             return True
+
+    for reference_tracks in HUMAN_REFERENCE.values():
+        if resource in [
+            url
+            for url in [
+                reference_tracks.get("fastaURL"),
+                reference_tracks.get("indexURL"),
+                reference_tracks.get("cytobandURL"),
+                reference_tracks.get("aliasURL"),
+            ]
+            if url is not None
+        ]:
+            return True
+
+    return False
+
+
+def authorize_config_custom_reference(resource: str) -> bool:
+    """Check if requested resource is in custom human reference tracks."""
+    if hasattr(config_igv_tracks, "custom_reference"):
+        for build in config_igv_tracks.custom_reference.keys():
+            build_tracks = config_igv_tracks.custom_reference.get(build, {})
+
+            if resource in [
+                url
+                for url in (
+                    build_tracks.get("fastaURL"),
+                    build_tracks.get("indexURL"),
+                    build_tracks.get("cytobandURL"),
+                    build_tracks.get("aliasURL"),
+                )
+                if url is not None
+            ]:
+                return True
     return False
 
 
@@ -138,6 +177,9 @@ def authorize_case_tracks(resource: str, case: dict):
     """
 
     if authorize_common_tracks(resource):
+        return True
+
+    if authorize_config_custom_reference(resource):
         return True
 
     if authorize_config_custom_tracks(resource):
@@ -458,8 +500,14 @@ def set_common_tracks(display_obj, build):
     user_obj = store.user(email=current_user.email)
 
     # Set up IGV tracks that are common for all cases:
-    display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
-    display_obj["chromosomeOrder"] = HUMAN_REFERENCE.get("chromosomeOrder")
+    if hasattr(config_igv_tracks, "custom_reference"):
+        display_obj["reference_track"] = config_igv_tracks.custom_reference.get(build)
+        display_obj["chromosomeOrder"] = config_igv_tracks.custom_reference.get(build).get(
+            "chromosomeOrder"
+        )
+    else:
+        display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
+        display_obj["chromosomeOrder"] = HUMAN_REFERENCE.get("chromosomeOrder")
 
     # if user settings for igv tracks exist -> use these settings, otherwise display default tracks ---> Genes, ClinVar and ClinVar CNVs
     custom_tracks_names = (

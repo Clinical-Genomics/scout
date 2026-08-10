@@ -3,3 +3,12 @@
   <!-- IGV JS-->
   <script src="https://cdn.jsdelivr.net/npm/igv@3.8.0/dist/igv.min.js" integrity="sha512-6M8ngYCbVOE6FuArECkoMVP9yv5PjU/kZpYwNKQjDqGIIvAVakAKCKyYbGaw0zYW4V4eGUdnM6euong7v7qfKg==" crossorigin="anonymous"></script>
 {% endmacro %}
+
+{%- macro get_custom_track_url(label, url, institute_id, case_display_name) %}
+  {%- if "http" in url %}
+    {{ label }}: "{{ url_for('alignviewers.remote_cors', remote_url=url, institute_id=institute_id, case_name=case_display_name) | safe }}",
+  {% else %}
+    {{ label }}: "{{ url_for('alignviewers.remote_static', file=url, institute_id=institute_id, case_name=case_display_name) | safe }}",
+  {% endif -%}
+{% endmacro -%}
+
