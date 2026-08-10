@@ -44,7 +44,12 @@ def remote_cors(remote_url):
         return abort(401)
 
     # And that the remote resource is among user tracks
-    if controllers.authorize_config_custom_tracks(remote_url) is False:
+    if (
+        controllers.authorize_common_tracks(remote_url) is False
+        and controllers.authorize_config_custom_tracks(remote_url) is False
+        and controllers.authorize_config_custom_reference(remote_url) is False
+    ):
+        LOG.warning("Unauthorized file requested for authenticated user via remote_static")
         return abort(403)
 
     resp = requests.request(
