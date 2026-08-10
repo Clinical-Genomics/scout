@@ -83,6 +83,28 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, broad_ucsc_liftover_respo
         assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
 
 
+def test_custom_references(app):
+    """Test function that creates custom reference tracks"""
+
+    # GIVEN an app configured with custom reference tracks
+    reference_tracks = HUMAN_REFERENCE
+    test_url = "test/url"
+    reference_tracks["37"]["fastaURL"] = test_url
+    config_igv_tracks.custom_reference = reference_tracks
+
+    display_obj = {}
+    build = "37"
+
+    with app.test_client() as client:
+        # GIVEN a logged in user
+        client.get(url_for("auto_login"))
+
+        # WHEN adding common tracks
+        controllers.set_common_tracks(display_obj, build)
+        # THEN the display object should contain the custom reference track
+        assert display_obj["reference_track"]["fastaURL"] == test_url
+
+
 def test_set_config_custom_tracks(app):
     """Test function that adds custom tracks taken from the scout config file to the IGV display object."""
 

@@ -158,7 +158,11 @@ def configure_extensions(app):
 
     set_login_system(app)
 
-    if app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS"):
+    if (
+        app.config.get("CUSTOM_IGV_TRACKS")
+        or app.config.get("CLOUD_IGV_TRACKS")
+        or app.config.get("CUSTOM_REFERENCE")
+    ):
         LOG.info("Collecting IGV tracks from cloud or local resources")
         extensions.config_igv_tracks.init_app(app)
 
