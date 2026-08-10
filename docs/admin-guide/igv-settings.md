@@ -9,8 +9,35 @@ The default file formats for viewing alignments in Scout is [BAM][bam] or [CRAM]
 - ClinVar SNVs track
 - ClinVar CNVs track
 
-Reference genome and genes track are collected from the [Broad Institute Amazon S3 storage][amazon_s3], while the ClinVar tracks are available in the UCSC Genomics Institute [Sequence and Annotation Downloads][ucsc_downloads]
+Reference genome and genes track are collected from the [Broad Institute Amazon S3 storage][amazon_s3], with the exception of old hg19 1kg references, which are served from a JP mirror. The ClinVar tracks are available from the UCSC Genomics Institute [Sequence and Annotation Downloads][ucsc_downloads]
 
+### Custom reference tracks
+
+It is possible to add custom reference tracks to the IGV browser in Scout. This is done by adding a `CUSTOM_REFERENCE` dictionary to the Scout configuration file, with the following structure:
+
+```python
+# Custom IGV.js reference tracks: use a local mirror for the most part
+CUSTOM_REFERENCE = {
+    "37": {
+        "id": "hg19",
+        "name": "GRCh37 1kg decoy",
+        "fastaURL": "/home/proj/production/scout_igv_tracks/seq/grch37_homo_sapiens_-d5-.fasta",
+        "indexURL": "/home/proj/production/scout_igv_tracks/seq/grch37_homo_sapiens_-d5-.fasta.fai",
+        "cytobandURL": "/home/proj/production/scout_igv_tracks/seq/cytoBand.txt.gz",
+        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab",
+    },
+    "38": {
+        "id": "hg38",
+        "name": "GRCh38",
+        "fastaURL": "/home/proj/production/scout_igv_tracks/seq/grch38_homo_sapiens_-assembly-.fasta",
+        "indexURL": "/home/proj/production/scout_igv_tracks/seq/grch38_homo_sapiens_-assembly-.fasta.fai",
+        "cytobandURL": "/home/proj/production/scout_igv_tracks/seq/cytoBand.txt.gz",
+        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg38/hg38_alias.tab",
+        "chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY, chrM",
+    },
+}
+```
+It is possible to locally mirror only some of the files, and give URLs for others, but if you do add any `CUSTOM_REFERENCE` you will need to supply locations for all the keys as the default references will no longer be configured.
 
 ### Custom tracks
 
