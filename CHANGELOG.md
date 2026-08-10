@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
+### Fixed
+- Bug calculating allele read depth in samples genotype module (#6469)
 
 ## [4.113.3]
 ### Fixed
