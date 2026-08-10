@@ -9,10 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Bump automation GitHub action version (#6477)
 ### Fixed
+- Bug calculating allele read depth in samples genotype module (#6469)
 - SonarCloud security issue about pip without binary-only install in automation (#6477)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
-### Fixed
-- Bug calculating allele read depth in samples genotype module (#6469)
+
 
 ## [4.113.3]
 ### Fixed
