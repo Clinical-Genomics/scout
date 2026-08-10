@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- On outliers page, show inheritance patterns badges on genes cell (#6446)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
