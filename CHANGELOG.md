@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- On outliers page, show inheritance patterns badges on genes cell (#6445)
+- On outliers page, show inheritance patterns badges on genes cell (#6446)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 ### Fixed
