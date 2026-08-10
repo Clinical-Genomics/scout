@@ -357,7 +357,7 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
             if alt_depth != -1:
                 read_depth += alt_depth
             if ref_depth != -1:
-                read_depth += alt_depth
+                read_depth += ref_depth
     return read_depth
 
 
