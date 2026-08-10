@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- On outliers page, show inheritance patterns badges on genes cell (#6446)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Bump automation GitHub action version (#6477)
