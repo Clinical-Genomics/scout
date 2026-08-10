@@ -9,11 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
+- Parsing of Exac max frequency (#6472)
 
 ## [4.113.3]
 ### Fixed
 - Removed markdown formatting for rendering comment tables (#6452)
-- Parsing of Exac max frequency (#6472)
 
 ## [4.113.2]
 ### Fixed
