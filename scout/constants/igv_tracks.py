@@ -1,8 +1,8 @@
 # igv.js track settings common for all users and all cases
-HG19REF_URL = (
-    "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/1kg_v37/human_g1k_v37_decoy.fasta"
+HG19REF_URL = "https://ddbj.nig.ac.jp/public/public-human-genomes/GRCh38/fasta_old/hs37d5.fa"
+HG19REF_INDEX_URL = (
+    "https://ddbj.nig.ac.jp/public/public-human-genomes/GRCh38/fasta_old/hs37d5.fa.fai"
 )
-HG19REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/1kg_v37/human_g1k_v37_decoy.fasta.fai"
 HG19CYTOBAND_URL = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/refs/heads/master/rare-disease/region/grch37_cytoband.bed"
 HG19ALIAS_URL = (
     "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab"
