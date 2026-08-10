@@ -40,7 +40,7 @@ MT_EXPORT_HEADER = [
 
 MT_COV_STATS_HEADER = [
     "Mean MT coverage",
-    "Mean chrom 14 scoverage",
+    "Mean chrom 14 coverage",
     "Estimated mtDNA copy number",
 ]
 
