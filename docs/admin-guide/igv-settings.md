@@ -9,7 +9,7 @@ The default file formats for viewing alignments in Scout is [BAM][bam] or [CRAM]
 - ClinVar SNVs track
 - ClinVar CNVs track
 
-Reference genome and genes track are collected from the [Broad Institute Amazon S3 storage][amazon_s3], with the exception of old hg19 1kg references, which are served from a JP mirror. The ClinVar tracks are available from the UCSC Genomics Institute [Sequence and Annotation Downloads][ucsc_downloads]
+Reference genome and genes track are collected from the [Broad Institute Amazon S3 storage][amazon_s3], with the exception of old hg19 1kg references, which are served from a Japanese National Institute of Genetics mirror. The ClinVar tracks are available from the UCSC Genomics Institute [Sequence and Annotation Downloads][ucsc_downloads]
 
 ### Custom reference tracks
 
