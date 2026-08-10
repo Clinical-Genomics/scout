@@ -13,7 +13,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SonarCloud security issue about pip without binary-only install in automation (#6477)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
 
-
 ## [4.113.3]
 ### Fixed
 - Removed markdown formatting for rendering comment tables (#6452)
