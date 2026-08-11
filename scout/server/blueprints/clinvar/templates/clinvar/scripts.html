@@ -104,21 +104,9 @@ $(".previous").click(function(){
 	});
 });
 
-// Conditions-asociated code
+// Conditions-associated code
 
 var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "HP": "e.g. 0002839, .." , "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
-
-// Set selected condition type on page load
-window.onload = function() {
-  const selectedCondId = document.getElementById('condition_type');
-  {% if variant_data.var_form.omim_terms.choices %}
-    selectedCondId.options.selectedIndex = 4;
-  {% elif variant_data.var_form.orpha_terms.choices %}
-    selectedCondId.options.selectedIndex = 5;
-  {% elif variant_data.var_form.hpo_terms.choices %}
-    selectedCondId.options.selectedIndex = 0;
-  {% endif %}
-};
 
 // Populate condition list
 $('#condition_tags').select2({
