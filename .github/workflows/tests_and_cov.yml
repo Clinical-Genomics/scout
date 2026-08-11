@@ -80,11 +80,14 @@ jobs:
         uses: actions/download-artifact@v7
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
+        with:
+            enable-cache: true
+            cache-dependency-glob: "uv.lock"
       - name: Run coverage
         run: |
           uv run --frozen --dev coverage combine coverage*/.coverage*
-          uv run --no-build --frozen --dev coverage report
-          uv run --no-build --frozen --dev coverage xml
+          uv run --frozen --dev coverage report
+          uv run --frozen --dev coverage xml
       - uses: codecov/codecov-action@v7
         env:
             CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
