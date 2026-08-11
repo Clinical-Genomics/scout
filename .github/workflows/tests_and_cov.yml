@@ -82,7 +82,7 @@ jobs:
         uses: astral-sh/setup-uv@v9.0.0
       - name: Run coverage
         run: |
-          uv run --no-build --frozen --dev coverage combine coverage*/.coverage*
+          uv run --frozen --dev coverage combine coverage*/.coverage*
           uv run --no-build --frozen --dev coverage report
           uv run --no-build --frozen --dev coverage xml
       - uses: codecov/codecov-action@v7
