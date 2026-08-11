@@ -359,7 +359,10 @@ def panel_export_case_hits(panel_id):
             "warning",
         )
         return safe_redirect_back(request)
-    data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
+    hide_case_details = request.form.get("hide_case_details", "1") == "1"
+    data = controllers.panel_export_case_hits(
+        panel_id, institute_obj, case_obj, hide_case_details=hide_case_details
+    )
     now = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)

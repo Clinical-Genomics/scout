@@ -306,6 +306,7 @@
         <div class="modal-body">
           <label for="case">Institute and case name (format: 'cust000 - 643594')</label>
           <input type="text" name="case_name" {% if case %} value="{{case.owner}} - {{case.display_name}}" {% endif %} class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10" required></input>
+          <label><input checked type="checkbox" name="hide_case_details" value="1"> Hide case identifier and details</label>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

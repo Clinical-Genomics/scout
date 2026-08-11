@@ -14,7 +14,9 @@
 <table class="table table-sm">
   <tr>
     <th>Panel details</th>
-    <th>Case details</th>
+    {% if not hide_case_details %}
+      <th>Case details</th>
+    {% endif %}
   </tr>
   <tr>
     <td>
@@ -23,19 +25,21 @@
       {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
               <a><span class="badge rounded-pill py-1 bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(', ') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(', ') or '-'}}.">!</span></a>
       {% endif %}<br>
-      Panel ID: {{ panel.panel_name }}<br>
-      Description: {{ panel.description }}<br>
+      Panel ID: <strong>{{ panel.panel_name }}</strong><br>
+      Description: <strong>{{ panel.description }}</strong><br>
       Number of genes: <strong>{{ panel.genes|length }}</strong><br>
-      Institute: {{ panel.institute }} <br>
-      Archived: {% if panel.is_archived %}<span class="badge bg-danger rounded-pill">True</span>{% else %}<span class="badge bg-secondary rounded-pill text-white">False</span>{% endif %}<br>
+      Institute: <strong>{{ panel.institute.display_name }} - {{ panel.institute._id }}</strong><br>
+      {% if panel.is_archived %}Archived: <span class="badge bg-danger rounded-pill">True</span><br>{% endif %}
     </td>
-    <td>
-      Case: <strong>{{case.display_name}}</strong><br>
-      Institute: <strong>{{institute.display_name}} - {{institute._id}}</strong><br>
-      Status: <strong>{{case.status}}</strong><br>
-      Analysis date: {{case.analysis_date}}<br>
-      Genome build: {{case.genome_build}}
-    </td>
+    {% if not hide_case_details %}
+      <td>
+        Case: <strong>{{case.display_name}}</strong><br>
+        Institute: <strong>{{institute.display_name}} - {{institute._id}}</strong><br>
+        Status: <strong>{{case.status}}</strong><br>
+        Analysis date: <strong>{{case.analysis_date}}</strong><br>
+        Genome build: <strong>{{case.genome_build}}</strong>
+      </td>
+    {% endif %}
   </tr>
 </table>
 <br>

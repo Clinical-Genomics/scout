@@ -358,7 +358,7 @@ def panel_data(store, panel_obj):
     return dict(panel=panel_obj)
 
 
-def panel_export_case_hits(panel_id, institute_obj, case_obj):
+def panel_export_case_hits(panel_id, institute_obj, case_obj, hide_case_details):
     """Fetch information required to populate the PDF report containing
     info on actual panel coverage. Currently, this is approximated with three parts:
         1) the genes on the panel for SNV and SV
@@ -376,6 +376,9 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
     panel_obj = store.panel(panel_id)
     panel_obj["name_and_version"] = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
 
+    panel_institute = store.institute(panel_obj["institute"])
+    panel_obj["institute"] = panel_institute
+
     case_obj["outdated_panels"] = {}
     panel_name = panel_obj["panel_name"]
     latest_panel = store.gene_panel(panel_name)
@@ -387,7 +390,13 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
                 "extra_genes": extra_genes,
             }
 
-    data = {"institute": institute_obj, "case": case_obj, "panel": panel_obj, "panel_genes": set()}
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "panel": panel_obj,
+        "panel_genes": set(),
+        "hide_case_details": hide_case_details == 1,
+    }
     variant_categories = {"str": set(), "smn": set()}
     variants_query = {
         "case_id": case_obj["_id"],
