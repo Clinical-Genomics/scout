@@ -170,20 +170,7 @@
 
     <br><br>
     {{ var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc). If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features. If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records."><strong>*?</strong></span>
-    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
-      {% if var_form.omim_terms.choices %}
-        {% for term, _ in var_form.omim_terms.choices %}
-          <option value="{{term}}" selected>{{term}}</option>
-        {% endfor %}
-      {% elif var_form.orpha_terms.choices %}
-        {% for term, _ in var_form.orpha_terms.choices %}
-          <option value="{{term}}" selected>{{term}}</option>
-        {% endfor %}
-      {% elif var_form.hpo_terms.choices %}
-        {% for term, _ in var_form.hpo_terms.choices %}
-          <option value="{{term}}" selected>{{term}}</option>
-        {% endfor %}
-      {% endif %}
+    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;" data-placeholder="e.g. C0001080, ..">
     </select>
 
     <div class="mt-3">

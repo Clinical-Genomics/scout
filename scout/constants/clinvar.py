@@ -189,15 +189,15 @@ COLLECTION_METHOD = [
 
 # Database that describe a condition with associated eventual prefix
 CONDITION_PREFIX = {
-    "HPO": "HP:",
     "MedGen": "",
+    "HPO": "HP:",
     "MeSH": "",
     "MONDO": "MONDO:",
     "OMIM": "",
     "Orphanet": "ORPHA",
 }
 
-CONDITION_DBS_API = ["HP", "MedGen", "MeSH", "MONDO", "OMIM", "Orphanet"]
+CONDITION_DBS_API = ["MedGen", "HP", "MeSH", "MONDO", "OMIM", "Orphanet"]
 
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
 CITATION_DBS_API = ["PubMed", "BookShelf", "DOI", "pmc"]
