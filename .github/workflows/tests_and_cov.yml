@@ -78,8 +78,9 @@ jobs:
           python-version-file: ".python-version"
       - name: Download all artifacts
         uses: actions/download-artifact@v7
-      - name: Run coverage
+      - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
+      - name: Run coverage
         run: |
           uv run --no-build --frozen --dev coverage combine coverage*/.coverage*
           uv run --no-build --frozen --dev coverage report
