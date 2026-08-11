@@ -49,4 +49,4 @@ USER worker
 # Install Scout app
 RUN uv pip install --no-cache-dir .[coverage]
 
-ENTRYPOINT ["uv", "run", "scout"]
+ENTRYPOINT ["uv", "run", "--frozen", "scout"]

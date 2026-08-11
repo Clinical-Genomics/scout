@@ -107,7 +107,7 @@ def build_case(case_data: dict, adapter) -> dict:
 
     )
     """
-    LOG.info("build case with id: {0}".format(case_data["case_id"]))
+    LOG.info("build case with id: %r", case_data["case_id"])
     case_obj = {
         "_id": case_data["case_id"],
         "display_name": case_data.get("display_name", case_data["case_id"]),
