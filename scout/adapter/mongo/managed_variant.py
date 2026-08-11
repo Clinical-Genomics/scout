@@ -38,7 +38,7 @@ class ManagedVariantHandler(object):
     ) -> Any:
         """Load or updated a managed variant object."""
 
-        LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
+        LOG.debug("Upserting variant %r", managed_variant_obj["display_id"])
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
@@ -76,7 +76,7 @@ class ManagedVariantHandler(object):
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
             LOG.debug(
-                "Variant %s already exists in database with a document id %s.",
+                "Variant %r already exists in database with a document id %r.",
                 managed_variant_obj["display_id"],
                 managed_variant_obj["_id"],
             )

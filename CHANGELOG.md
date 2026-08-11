@@ -14,11 +14,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
+- Bump automation GitHub action version (#6477)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
 - Users selecting no institute on gene variants page should only see cases they have access to (#6476)
 - Parsing of Exac max frequency (#6472)
 - Typo in MT coverage report (#6481)
+- SonarCloud security issue about pip without binary-only install in automation (#6477)
+- SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
 
 ## [4.113.3]
 ### Fixed
