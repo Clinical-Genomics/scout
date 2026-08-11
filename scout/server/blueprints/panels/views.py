@@ -359,7 +359,7 @@ def panel_export_case_hits(panel_id):
             "warning",
         )
         return safe_redirect_back(request)
-    hide_case_details = request.form.get("hide_case_details", "1") == "1"
+    hide_case_details = request.form.get("hide_case_details", "0") == "1"
     data = controllers.panel_export_case_hits(
         panel_id, institute_obj, case_obj, hide_case_details=hide_case_details
     )

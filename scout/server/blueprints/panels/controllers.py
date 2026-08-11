@@ -358,20 +358,18 @@ def panel_data(store, panel_obj):
     return dict(panel=panel_obj)
 
 
-def panel_export_case_hits(panel_id, institute_obj, case_obj, hide_case_details):
+def panel_export_case_hits(
+    panel_id: str, institute_obj: dict, case_obj: dict, hide_case_details: bool
+) -> dict:
     """Fetch information required to populate the PDF report containing
     info on actual panel coverage. Currently, this is approximated with three parts:
         1) the genes on the panel for SNV and SV
         2) the genes on the panel with any calls reported for STRs
         3) the availability of an SMN Copy Number or Paraphrase report if SMN1 or SMN2 is on the gene panel.
 
-    Args:
-        panel_id(str): _id of a gene panel
-        institute_obj(dict): scout.models.Institute
-        case_obj(dict): scout.models.Case
-
-    Returns:
-        data(dict): dictionary containing data to be displayed on PDF report
+    Returns a dictionary containing data to be displayed on the PDF report
+    Case identifying information can optionally be hidden, giving the report a more general look that can potentially be reused
+    between similar cases.
     """
     panel_obj = store.panel(panel_id)
     panel_obj["name_and_version"] = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
@@ -395,7 +393,7 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj, hide_case_details)
         "case": case_obj,
         "panel": panel_obj,
         "panel_genes": set(),
-        "hide_case_details": hide_case_details == 1,
+        "hide_case_details": hide_case_details,
     }
     variant_categories = {"str": set(), "smn": set()}
     variants_query = {
