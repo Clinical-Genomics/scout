@@ -21,8 +21,10 @@ jobs:
       with:
         python-version-file: ".python-version"
 
-    - name: Install Python Dependencies
+    - name: Set up UV
       uses: astral-sh/setup-uv@v9.0.0
+
+    - name: Install Python Dependencies
       run: |
         uv pip install --no-build --binary-only :all: --group lint
 
