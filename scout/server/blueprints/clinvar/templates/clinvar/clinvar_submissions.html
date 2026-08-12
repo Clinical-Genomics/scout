@@ -40,14 +40,15 @@
         <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" class="btn btn-secondary text-white">Show All</a>
       </form>
     </div>
+
   {% if submissions %}
     {% for status in ['open', 'closed', 'submitted'] %}
-        {% for submission in submissions|sort(attribute='status') %}
-          {% if submission.status==status %}
-            {{ submission_panel(submission) }}
-          {% endif %}
-        {% endfor %}
+      {% for submission in submissions|sort(attribute='status') %}
+        {% if submission.status==status %}
+          {{ submission_panel(submission) }}
+        {% endif %}
       {% endfor %}
+    {% endfor %}
   {% else %}
 
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
@@ -63,8 +64,38 @@
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
-      <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id or subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+      <a
+        class="accordion-button collapsed {% if subm_obj.status == 'open' %}link-primary{% elif subm_obj.status == 'submitted' %}link-success{% else %}link-secondary{% endif %}"
+        data-bs-toggle="collapse"
+        data-bs-target="#flush-{{ subm_obj._id }}"
+        aria-expanded="false"
+        aria-controls="flush-{{ subm_obj._id }}"
+        style="text-decoration: none;"
+      >
+        <div class="d-flex align-items-center w-100">
+          <div>
+            <strong>ID {{ subm_obj.clinvar_subm_id or subm_obj._id }}</strong>
+            <span class="badge ms-2
+              {% if subm_obj.status == 'open' %}
+                bg-primary
+              {% elif subm_obj.status == 'submitted' %}
+                bg-success
+              {% else %}
+                bg-secondary
+              {% endif %}
+            ">
+              {{ subm_obj.status|upper }}
+            </span>
+          </div>
+
+          <small class="text-muted ms-3">
+            {% if subm_obj.created_by %}
+              Created by <strong>{{ subm_obj.created_by }}</strong>
+            {% endif %}
+            · {{ subm_obj.created_at.strftime('%Y-%m-%d') }}
+            · Updated {{ subm_obj.updated_at.strftime('%d-%m-%Y, %T') }}
+          </small>
+        </div>
       </a>
     </h2>
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">

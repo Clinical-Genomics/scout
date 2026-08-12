@@ -110,7 +110,6 @@ def clinvar_germline_submissions(institute_id):
     all_submissions = store.get_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter
     )
-    LOG.warning(f"Result size is:{len(all_submissions)}, page is:{page}")
     data = {
         "submissions": all_submissions[start:end],
         "institute": institute_obj,

@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 - Option to hide case details on the case specific gene panel extent report (#6485)
+- Pagination on ClinVar germline submissions page ()
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
