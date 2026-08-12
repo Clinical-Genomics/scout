@@ -395,7 +395,7 @@ def panel_export_case_hits(
         "panel_genes": set(),
         "hide_case_details": hide_case_details,
     }
-    variant_categories = {"str": set(), "smn": set()}
+    variant_categories = {"str": set(), "dark_regions": set()}
     variants_query = {
         "case_id": case_obj["_id"],
         "category": None,
@@ -411,10 +411,14 @@ def panel_export_case_hits(
             if res:
                 variant_categories[cat].add(gene["symbol"])
 
-        if gene["symbol"] in ["SMN1", "SMN2"] and (
-            case_obj.get("smn_tsv") or case_obj.get("paraphrase")
-        ):
-            variant_categories["smn"].add(gene["symbol"])
+        if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
+            variant_categories["dark_regions"].add(gene["symbol"])
+
+        if case_obj.get("paraphrase"):
+            for ind in case_obj["individuals"]:
+                for region in ind.get("paraphrase", {}).values():
+                    if gene["symbol"] in region.get("genes_in_region", "").split(","):
+                        variant_categories["dark_regions"].add(gene["symbol"])
 
     data["variant_hits"] = variant_categories
 

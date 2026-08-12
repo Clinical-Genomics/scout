@@ -79,12 +79,12 @@
 </table>
 <br>
 {% endif %}
-{% if variant_hits.smn and (case.smn_tsv or case.paraphrase) %}
+{% if variant_hits.dark_regions and (case.smn_tsv or case.paraphrase) %}
 <table>
-  <tr><th scope="col">SMN Copy Number</th></tr>
+  <tr><th scope="col">Genes investigated for dark regions</th></tr>
   <tr>
     <td>
-      <em>{{ variant_hits.smn|sort|join(", ") }}</em>
+      <em>{{ variant_hits.dark_regions|sort|join(", ") }}</em>
     </td>
   </tr>
 </table>
