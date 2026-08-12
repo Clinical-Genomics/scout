@@ -368,6 +368,10 @@
   {{ super() }}
   <script type="text/javascript">
 
+  document.getElementById("pagination-form").addEventListener("submit", function () {
+      document.getElementById("page").disabled = true;
+  });
+
   $(function () {
       $('.casedata  div').hide();
       $('.vardata  div').hide();

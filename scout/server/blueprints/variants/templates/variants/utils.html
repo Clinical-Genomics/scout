@@ -1258,6 +1258,7 @@
     {% for p in range(1, total_pages + 1) %}
       <input type="submit" name="page" id="paginate-page-{{p}}" value="{{p}}" hidden>
     {% endfor %}
+    <input type="hidden" id="page" name="page" value="{{ page }}">
   </div>
 {% endmacro %}
 
