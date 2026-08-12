@@ -2,6 +2,7 @@
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 {% from "clinvar/components.html" import update_submission_status_form %}
+{% from "variants/utils.html" import pagination_hidden_div, pagination_footer %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -39,22 +40,23 @@
         <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" class="btn btn-secondary text-white">Show All</a>
       </form>
     </div>
-
   {% if submissions %}
-
-    <div style="overflow-y: auto; height: 1000px;">
     {% for status in ['open', 'closed', 'submitted'] %}
-      {% for submission in submissions|sort(attribute='status') %}
-        {% if submission.status==status %}
-          {{ submission_panel(submission) }}
-        {% endif %}
+        {% for submission in submissions|sort(attribute='status') %}
+          {% if submission.status==status %}
+            {{ submission_panel(submission) }}
+          {% endif %}
+        {% endfor %}
       {% endfor %}
-    {% endfor %}
-    </div>
   {% else %}
+
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
 </div>
+  <form id="pagination-form" method="get" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
+  {{ pagination_hidden_div(page, result_size, per_page) }}
+  {{ pagination_footer(page, result_size, per_page) }}
+</form>
 {% endmacro %}
 
 {% macro submission_panel(subm_obj) %}
