@@ -28,8 +28,7 @@ jobs:
           cache-dependency-glob: "uv.lock"
 
     - name: Install Python Dependencies
-      run:
-        uv pip install --only-binary :all: --group lint --system
+      run: uv pip install --only-binary :all: --group lint --system
 
     - name: Run linters
       uses: wearerequired/lint-action@v3
