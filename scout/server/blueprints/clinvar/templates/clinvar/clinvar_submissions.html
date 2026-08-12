@@ -54,10 +54,22 @@
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
 </div>
-  <form id="pagination-form" method="get" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
-  {{ pagination_hidden_div(page, result_size, per_page) }}
-  {{ pagination_footer(page, result_size, per_page) }}
-</form>
+  <form
+    id="pagination-form"
+    method="get"
+    action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}"
+    onclick="
+        if (event.target.matches('label.page-link[for^=paginate-]')) {
+            const input = document.getElementById(event.target.htmlFor);
+            document.getElementById('page').value = input.value;
+            event.preventDefault();
+            this.submit();
+        }
+    "
+  >
+      {{ pagination_hidden_div(page, result_size, per_page) }}
+      {{ pagination_footer(page, result_size, per_page) }}
+  </form>
 {% endmacro %}
 
 {% macro submission_panel(subm_obj) %}
@@ -367,10 +379,6 @@
 {% block scripts %}
   {{ super() }}
   <script type="text/javascript">
-
-  document.getElementById("pagination-form").addEventListener("submit", function () {
-      document.getElementById("page").disabled = true;
-  });
 
   $(function () {
       $('.casedata  div').hide();
