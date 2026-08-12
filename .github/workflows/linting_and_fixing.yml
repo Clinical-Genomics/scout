@@ -21,10 +21,15 @@ jobs:
       with:
         python-version-file: ".python-version"
 
-    - name: Install Python Dependencies
+    - name: Set up UV
       uses: astral-sh/setup-uv@v9.0.0
+      with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+    - name: Install Python Dependencies
       run: |
-        uv pip install --no-build --binary-only :all: --group lint
+        uv pip install --only-binary :all: --group lint --system
 
     - name: Run linters
       uses: wearerequired/lint-action@v3
