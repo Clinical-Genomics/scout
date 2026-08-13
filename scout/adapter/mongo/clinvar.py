@@ -312,12 +312,16 @@ class ClinVarHandler(object):
             query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
 
         total_count = self.clinvar_submission_collection.count_documents(query)
-        results = list(
-            self.clinvar_submission_collection.find(query)
-            .sort("updated_at", pymongo.DESCENDING)
-            .skip(skip)
-            .limit(limit)
-        )
+
+        sort_pipeline = [
+            {"$match": query},
+            {"$addFields": {"statusOrder": {"$cond": [{"$eq": ["$status", "open"]}, 0, 1]}}},
+            {"$sort": {"statusOrder": pymongo.ASCENDING, "updated_at": pymongo.DESCENDING}},
+            {"$skip": skip},
+            {"$limit": limit},
+            {"$project": {"statusOrder": 0}},
+        ]
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
         submissions = []
         for result in results:
