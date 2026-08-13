@@ -358,6 +358,44 @@ def panel_data(store, panel_obj):
     return dict(panel=panel_obj)
 
 
+def get_variant_hits(case_obj, panel_obj) -> dict:
+    """Fetch the genes on the panel that have any variant calls in the case.
+    Returns a dictionary with keys for each variant category and values being sets of gene symbols.
+    """
+    variant_categories = {"str": set(), "dark_regions": set()}
+    variants_query = {
+        "case_id": case_obj["_id"],
+        "category": None,
+        "hgnc_ids": None,
+    }
+
+    for gene in panel_obj.get("genes", []):
+        variants_query["hgnc_ids"] = gene["hgnc_id"]
+        for cat in variant_categories:
+            variants_query["category"] = cat
+            if res := store.variant_collection.find_one(variants_query):
+                variant_categories[cat].add(gene["symbol"])
+
+        if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
+            variant_categories["dark_regions"].add(gene["symbol"])
+
+        if case_obj.get("paraphrase"):
+            for ind in case_obj["individuals"]:
+                for region in ind.get("paraphrase", {}).values():
+                    if gene["symbol"] in region.get("genes_in_region", "").split(","):
+                        variant_categories["dark_regions"].add(gene["symbol"])
+
+    return variant_categories
+
+
+def get_panel_genes(panel_obj):
+    """Return a set of gene symbols for the genes on the panel."""
+    panel_genes = set()
+    for gene in panel_obj.get("genes", []):
+        panel_genes.add(gene["symbol"])
+    return panel_genes
+
+
 def panel_export_case_hits(
     panel_id: str, institute_obj: dict, case_obj: dict, hide_case_details: bool
 ) -> dict:
@@ -392,35 +430,10 @@ def panel_export_case_hits(
         "institute": institute_obj,
         "case": case_obj,
         "panel": panel_obj,
-        "panel_genes": set(),
+        "panel_genes": get_panel_genes(panel_obj),
         "hide_case_details": hide_case_details,
+        "variant_hits": get_variant_hits(case_obj, panel_obj),
     }
-    variant_categories = {"str": set(), "dark_regions": set()}
-    variants_query = {
-        "case_id": case_obj["_id"],
-        "category": None,
-        "hgnc_ids": None,
-    }
-
-    for gene in panel_obj.get("genes", []):
-        data["panel_genes"].add(gene["symbol"])
-        variants_query["hgnc_ids"] = gene["hgnc_id"]
-        for cat, _ in variant_categories.items():
-            variants_query["category"] = cat
-            res = store.variant_collection.find_one(variants_query)
-            if res:
-                variant_categories[cat].add(gene["symbol"])
-
-        if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
-            variant_categories["dark_regions"].add(gene["symbol"])
-
-        if case_obj.get("paraphrase"):
-            for ind in case_obj["individuals"]:
-                for region in ind.get("paraphrase", {}).values():
-                    if gene["symbol"] in region.get("genes_in_region", "").split(","):
-                        variant_categories["dark_regions"].add(gene["symbol"])
-
-    data["variant_hits"] = variant_categories
 
     return data
 
