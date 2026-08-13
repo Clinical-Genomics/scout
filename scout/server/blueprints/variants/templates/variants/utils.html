@@ -1260,8 +1260,12 @@
     {% endfor %}
 
     {# Hidden input for current page - used e.g. when dismissing a variant #}
-    <input type="hidden" id="page" name="page" value="{{ page }}">
+    {{ current_page_anchor(page) }}
   </div>
+{% endmacro %}
+
+{% macro current_page_anchor(page) %}
+  <input type="hidden" id="page" name="page" value="{{ page }}">
 {% endmacro %}
 
 {% macro pagination_footer(page, result_size, per_page=50) %}
