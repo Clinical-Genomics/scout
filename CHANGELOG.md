@@ -26,7 +26,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Lint and fix workflow uv use error (#6492)
 - Parsing of `clingen_cgh_benign` and `clingen_cgh_pathogenic` keys (#6494)
 - ClinVar pagination fetches only entries to display (#6496)
-- Fix pagination, e.g. on dismissing variants, (#6496)
+- Fix pagination, e.g. on dismissing variants. Also on ClinVar submission pages (#6496, #6498)
+- ClinVar submissions page always shows open submissions first, even if not updated for a long time (#6498)
 
 ## [4.113.3]
 ### Fixed
