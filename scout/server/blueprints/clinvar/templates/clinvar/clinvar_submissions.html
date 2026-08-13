@@ -64,8 +64,9 @@
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
+      {% set is_open = (open_submission and subm_obj._id|string == open_submission|string) %}
       <a
-        class="accordion-button collapsed {% if subm_obj.status == 'open' %}link-primary{% elif subm_obj.status == 'submitted' %}link-success{% else %}link-secondary{% endif %}"
+        class="accordion-button {% if not is_open %}collapsed{% endif %} {% if subm_obj.status == 'open' %}link-primary{% elif subm_obj.status == 'submitted' %}link-success{% else %}link-secondary{% endif %}"
         data-bs-toggle="collapse"
         data-bs-target="#flush-{{ subm_obj._id }}"
         aria-expanded="false"
@@ -98,7 +99,7 @@
         </div>
       </a>
     </h2>
-    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
+    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse {% if is_open %}show{% endif %}" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
       <div class="accordion-body">
         <div class="row">
           <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">

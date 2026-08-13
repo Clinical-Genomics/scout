@@ -110,7 +110,6 @@ def clinvar_germline_submissions(institute_id):
     submissions, total_count = store.get_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter, skip=start, limit=per_page
     )
-
     data = {
         "submissions": submissions,
         "institute": institute_obj,
@@ -122,13 +121,16 @@ def clinvar_germline_submissions(institute_id):
         "page": page,
         "result_size": total_count,
         "per_page": per_page,
+        "open_submission": request.values.get("open_submission"),
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
 
 @clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
 def clinvar_rename_casedata(submission, case, old_name):
-    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+    """Rename one or more casedata individuals belonging to the same clinvar submission, same case.
+    When redirecting to the page, we want to end up on the same page, with the same entry as before in view, with
+    the same entry open."""
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
@@ -138,6 +140,7 @@ def clinvar_rename_casedata(submission, case, old_name):
     parsed = urlparse(referrer)
     query = dict(parse_qsl(parsed.query, keep_blank_values=True))
     query["page"] = str(page)
+    query["open_submission"] = submission
 
     link = urlunparse(parsed._replace(query=urlencode(query), fragment=f"cdata_{submission}"))
     return safe_redirect_back(request, link)
