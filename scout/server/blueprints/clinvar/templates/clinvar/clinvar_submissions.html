@@ -54,10 +54,10 @@
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
 </div>
-  <form id="pagination-form" method="get" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
-  {{ pagination_hidden_div(page, result_size, per_page) }}
-  {{ pagination_footer(page, result_size, per_page) }}
-</form>
+  <form id="pagination-form" method="post" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
+    {{ pagination_hidden_div(page, result_size, per_page) }}
+    {{ pagination_footer(page, result_size, per_page) }}
+  </form>
 {% endmacro %}
 
 {% macro submission_panel(subm_obj) %}
