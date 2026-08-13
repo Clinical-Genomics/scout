@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
 - Crash when encountering omics gene without inheritance model (#6488)
 - Lint and fix workflow uv use error (#6492)
+- Parsing of `clingen_cgh_benign` and `clingen_cgh_pathogenic` keys (#6494)
 
 ## [4.113.3]
 ### Fixed
