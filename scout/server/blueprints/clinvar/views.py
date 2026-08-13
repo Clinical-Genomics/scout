@@ -2,6 +2,7 @@ import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
 from typing import List, Optional, Tuple
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
@@ -131,7 +132,15 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
-    return safe_redirect_back(request, request.referrer + f"#cdata_{submission}")
+    page = request.values.get("page", 1, type=int)
+    referrer = request.referrer or ""
+
+    parsed = urlparse(referrer)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query["page"] = str(page)
+
+    link = urlunparse(parsed._replace(query=urlencode(query), fragment=f"cdata_{submission}"))
+    return safe_redirect_back(request, link)
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
