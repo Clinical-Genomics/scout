@@ -103,17 +103,24 @@ def clinvar_germline_submissions(institute_id):
         if request.args.get("clinvar_id_filter")
         else None
     )
-
+    per_page = 15
+    page = request.args.get("page", 1, type=int)
+    start = (page - 1) * per_page
+    end = start + per_page
+    all_submissions = store.get_clinvar_germline_submissions(
+        institute_id, clinvar_id_filter=clinvar_id_filter
+    )
     data = {
-        "submissions": store.get_clinvar_germline_submissions(
-            institute_id, clinvar_id_filter=clinvar_id_filter
-        ),
+        "submissions": all_submissions[start:end],
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
+        "page": page,
+        "result_size": len(all_submissions),
+        "per_page": per_page,
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 

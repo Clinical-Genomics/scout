@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 - Option to hide case details on the case specific gene panel extent report (#6485)
+- Pagination on ClinVar germline submissions page (#6491)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
@@ -26,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
 - Crash when encountering omics gene without inheritance model (#6488)
 - Lint and fix workflow uv use error (#6492)
+- Parsing of `clingen_cgh_benign` and `clingen_cgh_pathogenic` keys (#6494)
 
 ## [4.113.3]
 ### Fixed
