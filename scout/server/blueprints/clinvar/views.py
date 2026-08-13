@@ -92,26 +92,26 @@ def clinvar_save(institute_id: str, case_name: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["POST"])
+@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET", "POST"])
 def clinvar_germline_submissions(institute_id):
     """Handle ClinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     clinvar_id_filter = (
-        request.form.get("clinvar_id_filter").strip()
-        if request.form.get("clinvar_id_filter")
+        request.values.get("clinvar_id_filter").strip()
+        if request.values.get("clinvar_id_filter")
         else None
     )
     per_page = 15
-    page = request.form.get("page", 1, type=int)
+    page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
     submissions, total_count = store.get_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter, skip=start, limit=per_page
     )
-    
+
     data = {
-        "submissions": submissions
+        "submissions": submissions,
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,

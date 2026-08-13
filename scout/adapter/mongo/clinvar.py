@@ -311,7 +311,7 @@ class ClinVarHandler(object):
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
 
-        total_count = self.clinvar_submission_collection.find(query).count()
+        total_count = self.clinvar_submission_collection.count_documents(query)
         results = list(
             self.clinvar_submission_collection.find(query)
             .sort("updated_at", pymongo.DESCENDING)
