@@ -446,8 +446,8 @@ def add_frequencies(variant_obj, frequencies):
     variant_obj["colorsdb_af"] = call_safe(float, frequencies.get("colorsdb_af"))
 
     # Add the sv counts:
-    variant_obj["clingen_cgh_benign"] = frequencies.get("clingen_benign")
-    variant_obj["clingen_cgh_pathogenic"] = frequencies.get("clingen_pathogenic")
+    variant_obj["clingen_cgh_benign"] = frequencies.get("clingen_cgh_benign")
+    variant_obj["clingen_cgh_pathogenic"] = frequencies.get("clingen_cgh_pathogenic")
     variant_obj["clingen_mip"] = frequencies.get("clingen_mip")
     variant_obj["clingen_ngi"] = frequencies.get("clingen_ngi")
     variant_obj["swegen"] = frequencies.get("swegen")
