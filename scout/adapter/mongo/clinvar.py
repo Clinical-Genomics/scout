@@ -266,15 +266,26 @@ class ClinVarHandler(object):
             "updated_at": result.get("updated_at"),
         }
 
-    def get_clinvar_onc_submissions(self, institute_id: str) -> pymongo.cursor.Cursor:
+    def get_clinvar_onc_submissions(
+        self, institute_id: str, skip: int = 0, limit: int = 15
+    ) -> pymongo.cursor.Cursor:
         """Collect all open and closed ClinVar oncogenocity submissions for an institute."""
         query = {"institute_id": institute_id, "type": "oncogenicity"}
-        return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+        return (
+            self.clinvar_submission_collection.find(query)
+            .sort("updated_at", pymongo.DESCENDING)
+            .skip(skip)
+            .limit(limit)
+        )
 
     def get_clinvar_germline_submissions(
-        self, institute_id: str, clinvar_id_filter: Optional[str] = None
-    ) -> List[dict]:
-        """Collect all open and closed ClinVar germline submissions for an institute."""
+        self,
+        institute_id: str,
+        clinvar_id_filter: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 15,
+    ) -> tuple[List[dict], int]:
+        """Collect open and closed ClinVar germline submissions for an institute."""
 
         def populate_cases_from_variant_data(variant_data, institute_id):
             cases = {}
@@ -300,8 +311,12 @@ class ClinVarHandler(object):
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
 
+        total_count = self.clinvar_submission_collection.count_documents(query)
         results = list(
-            self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+            self.clinvar_submission_collection.find(query)
+            .sort("updated_at", pymongo.DESCENDING)
+            .skip(skip)
+            .limit(limit)
         )
 
         submissions = []
@@ -333,7 +348,7 @@ class ClinVarHandler(object):
 
             submissions.append(submission)
 
-        return submissions
+        return submissions, total_count
 
     def clinvar_assertion_criteria(self, variant_data):
         """Retrieve assertion criteria from the variant data of a submission.
