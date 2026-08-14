@@ -1020,7 +1020,7 @@ def _write_mt_variants_lines(
     return row
 
 
-def mt_excel_files(store: MongoAdapter, case_obj: dict, temp_excel_dir: str) -> int:
+def mt_excel_files(case_obj: dict, temp_excel_dir: str) -> int:
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format. Create mt excel files, one for each sample,
     in a temporary directory.
