@@ -12,6 +12,7 @@ from flask import current_app, flash, redirect, url_for
 from flask_login import current_user
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
+from xlsxwriter.worksheet import Worksheet
 
 from scout import __version__
 from scout.adapter import MongoAdapter
@@ -31,6 +32,7 @@ from scout.constants import (
     PHENOTYPE_MAP,
     SAMPLE_SOURCE,
     SEX_MAP,
+    SV_MT_EXPORT_HEADER,
     VERBS_MAP,
 )
 from scout.constants.case_tags import PARAPHRASE_STATUS
@@ -977,6 +979,42 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     return data
 
 
+def _write_mt_variants_lines(
+    row: int,
+    query: dict,
+    header: str,
+    case_id: str,
+    sample_id: str,
+    category: str,
+    report_sheet: Worksheet,
+) -> int:
+
+    mt_variants = list(
+        store.variants(
+            case_id=case_id,
+            query=query,
+            nr_of_variants=-1,
+            sort_key="position",
+            category=category,
+        )
+    )
+    if not mt_variants:
+        return row
+
+    for col, field in enumerate(header):
+        report_sheet.write(row, col, field)
+
+    sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
+
+    for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
+        for col, field in enumerate(line):  # each field in line becomes a cell
+            report_sheet.write(row, col, field)
+
+    if mt_variants:
+        row += 3
+    return row
+
+
 def mt_excel_files(store: MongoAdapter, case_obj: dict, temp_excel_dir: str) -> int:
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format. Create mt excel files, one for each sample,
@@ -1029,39 +1067,37 @@ def mt_excel_files(store: MongoAdapter, case_obj: dict, temp_excel_dir: str) -> 
         )
 
     query = {"chrom": get_case_mito_chromosome(case_obj)}
-    mt_variants = list(
-        store.variants(
-            case_id=case_obj["_id"],
-            query=query,
-            nr_of_variants=-1,
-            sort_key="position",
-            category={"$in": ["snv", "sv"]},
-        )
-    )
 
     written_files = 0
     for sample in samples:
         sample_id = sample["individual_id"]
         display_name = sample["display_name"]
-        sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
         # set up document name
         document_name = ".".join([case_obj["display_name"], display_name, today]) + ".xlsx"
         workbook = Workbook(os.path.join(temp_excel_dir, document_name))
         Report_Sheet = workbook.add_worksheet()
 
-        # Write the column header
         row = 0
+        row = _write_mt_variants_lines(
+            row=row,
+            query=query,
+            header=MT_EXPORT_HEADER,
+            case_id=case_obj["_id"],
+            sample_id=sample_id,
+            category="snv",
+            report_sheet=Report_Sheet,
+        )
 
-        for col, field in enumerate(MT_EXPORT_HEADER):
-            Report_Sheet.write(row, col, field)
-
-        # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
-            for col, field in enumerate(line):  # each field in line becomes a cell
-                Report_Sheet.write(row, col, field)
-
-        row += 3
+        row = _write_mt_variants_lines(
+            row=row,
+            query=query,
+            header=SV_MT_EXPORT_HEADER,
+            case_id=case_obj["_id"],
+            sample_id=sample_id,
+            category="sv",
+            report_sheet=Report_Sheet,
+        )
 
         row = write_coverage(
             Report_Sheet,

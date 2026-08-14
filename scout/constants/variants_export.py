@@ -33,10 +33,15 @@ MT_EXPORT_HEADER = [
     "Change",
     "Position+Change",
     "Category",
-    "Gene",
+    "Sub-category",
+    "Genes",
     "HGVS Description",
     "AD Reference",
     "AD Alternative",
+]
+
+SV_MT_EXPORT_HEADER = [
+    "Size" if header == "HGVS Description" else header for header in MT_EXPORT_HEADER
 ]
 
 MT_COV_STATS_HEADER = [
