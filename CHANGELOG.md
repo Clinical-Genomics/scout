@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to hide case details on the case specific gene panel extent report (#6485)
 - Pagination on ClinVar germline submissions page (#6491)
 - Show dark region genes as a category on the case specific gene panel extent report, replacing SMN only (#6488)
+- Include MT SVs on mtDNA report (#6498)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
