@@ -988,7 +988,12 @@ def _write_mt_variants_lines(
     category: str,
     report_sheet: Worksheet,
 ) -> int:
+    """Write mitochondrial variant data to an Excel worksheet.
 
+    Retrieves the variants matching the query and category, writes the
+    provided header, and exports the variants for the given sample as
+    worksheet rows. Returns the updated row position.
+    """
     mt_variants = list(
         store.variants(
             case_id=case_id,
