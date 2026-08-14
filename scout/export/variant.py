@@ -152,6 +152,18 @@ def _get_genes_and_prot_effect(variant: dict) -> tuple[str, str]:
     return ",".join(genes), ",".join(prot_effect)
 
 
+def _get_sample_allele_depths(variant: dict, sample_id: str) -> tuple[bool, object, object]:
+    """Get allele depths for a sample and whether to skip the variant."""
+    for sample in variant["samples"]:
+        if sample.get("sample_id") == sample_id:
+            if sample["genotype_call"] in GT_NO_ALT_CALL:
+                return True, "", ""
+
+            return False, sample["allele_depths"][0], sample["allele_depths"][1]
+
+    return False, "", ""
+
+
 def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
     """Export mitochondrial variants for a case to create a MT excel report.
     Exclude variants with no cler genotype
@@ -160,32 +172,29 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
 
     for variant in variants:
         line = []
-        skip_variant = False
 
-        ref_ad = ""
-        alt_ad = ""
-        for sample in variant["samples"]:
-            if sample.get("sample_id") == sample_id:
-                if sample["genotype_call"] in GT_NO_ALT_CALL:
-                    skip_variant = True
-                    break
-
-                ref_ad = sample["allele_depths"][0]
-                alt_ad = sample["allele_depths"][1]
+        skip_variant, ref_ad, alt_ad = _get_sample_allele_depths(variant, sample_id)
 
         if skip_variant:
             continue
 
         position = variant.get("position")
-        change = ">".join([variant.get("reference"), variant.get("alternative")])
-
         line.append(position)
+        line.append(variant.get("end"))
+
+        change = ">".join([variant.get("reference"), variant.get("alternative")])
         line.append(change)
         line.append(f"{position}{change}")
 
+        line.append(variant["category"].upper())
+        line.append(variant["sub_category"].upper())
+
         genes, prot_effect = _get_genes_and_prot_effect(variant)
         line.append(genes)
-        line.append(prot_effect)
+        if variant["category"] == "sv":
+            line.append(variant["length"])
+        else:
+            line.append(prot_effect)
 
         line.append(ref_ad)
         line.append(alt_ad)
