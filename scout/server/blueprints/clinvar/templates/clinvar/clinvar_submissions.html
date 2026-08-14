@@ -2,7 +2,7 @@
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 {% from "clinvar/components.html" import update_submission_status_form %}
-{% from "variants/utils.html" import pagination_hidden_div, pagination_footer %}
+{% from "variants/utils.html" import pagination_hidden_div, pagination_footer, current_page_anchor %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -64,8 +64,9 @@
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
+      {% set is_open = (open_submission and subm_obj._id|string == open_submission|string) %}
       <a
-        class="accordion-button collapsed {% if subm_obj.status == 'open' %}link-primary{% elif subm_obj.status == 'submitted' %}link-success{% else %}link-secondary{% endif %}"
+        class="accordion-button {% if not is_open %}collapsed{% endif %} {% if subm_obj.status == 'open' %}link-primary{% elif subm_obj.status == 'submitted' %}link-success{% else %}link-secondary{% endif %}"
         data-bs-toggle="collapse"
         data-bs-target="#flush-{{ subm_obj._id }}"
         aria-expanded="false"
@@ -98,28 +99,29 @@
         </div>
       </a>
     </h2>
-    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
+    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse {% if is_open %}show{% endif %}" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
       <div class="accordion-body">
         <div class="row">
-        <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb align-items-center">
-              <li class="breadcrumb-item">
-                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
-                  Download submission json file
-                </a>
-              </li>
-              {% if subm_obj.status=='open'%}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
-              {% else %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
-              {% endif %}
-              {% if subm_obj.status != 'submitted' %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
-              {% endif %}
-                <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission from Scout</button></li>
-            </ol>
-          </nav>
+          <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb align-items-center">
+                <li class="breadcrumb-item">
+                  <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
+                    Download submission json file
+                  </a>
+                </li>
+                {% if subm_obj.status=='open'%}
+                  <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
+                {% else %}
+                  <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-primary btn-xs">Re-open submission</button></li>
+                {% endif %}
+                {% if subm_obj.status != 'submitted' %}
+                  <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
+                {% endif %}
+                  <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission from Scout</button></li>
+              </ol>
+            </nav>
+            {{ current_page_anchor(page) }}
           </form>
         </div>
         <div class="row">
@@ -128,25 +130,29 @@
             <tr><th></th></tr>
             <tr>
               <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-              <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
-              <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id or ""}}"></td>
-              <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
+                <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
+                <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id or ""}}"></td>
+                <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
+                {{ current_page_anchor(page) }}
               </form>
               {% if subm_obj.status == 'open' and show_submit  %}
                 <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-                {{ submit_modal() }}
+                  {{ submit_modal() }}
                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
+                  {{ current_page_anchor(page) }}
                 </form>
               {% endif %}
               {% if subm_obj.status == 'submitted' %} <!--Submission status query -->
-                 <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ action_modal("status", subm_obj._id) }}
-                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
-                 </form>
+                <form id="statusApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_status', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
+                  {{ action_modal("status", subm_obj._id) }}
+                  <td style="width: 20%"><button type="button" class="btn btn-sm btn-secondary form-control" name="status_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#statusModal_{{subm_obj._id}}">Submission status enquiry</button></td>
+                  {{ current_page_anchor(page) }}
+                </form>
                 <form id="deleteApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_submission_delete', submission_id=subm_obj.clinvar_subm_id) }}" method="POST">
-                   {{ action_modal("remove", subm_obj._id) }}
-                   <td style="width: 20%"><button type="button" class="btn btn-sm btn-danger form-control" name="_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#removeModal_{{subm_obj._id}}">Delete submission from ClinVar</button></td>
-                 </form>
+                  {{ action_modal("remove", subm_obj._id) }}
+                  <td style="width: 20%"><button type="button" class="btn btn-sm btn-danger form-control" name="_enquiry" value="api_status" data-bs-toggle="modal" data-bs-target="#removeModal_{{subm_obj._id}}">Delete submission from ClinVar</button></td>
+                  {{ current_page_anchor(page) }}
+                </form>
               {% endif %}
             </tr>
           </table>
@@ -215,6 +221,7 @@
                   <td>
                     <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
                       <button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+                      {{ current_page_anchor(page) }}
                     </form>
                   </td>
                 </tr>
@@ -263,9 +270,10 @@
                   <tr>
                     <td>{{loop.index}}</td>
                     <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
-                    <td>
-                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pen-square" aria-hidden="true"></span></button>
-                    </td>
+                      <td>
+                        <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pen-square" aria-hidden="true"></span></button>
+                      </td>
+                      {{ current_page_anchor(page) }}
                     </form>
                     <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td>{{ case_link(institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}</td>
@@ -274,6 +282,7 @@
                     <td>
                       <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
                         <button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash" aria-hidden="true"></span></button>
+                        {{ current_page_anchor(page) }}
                       </form>
                     </td>
                   </tr>
