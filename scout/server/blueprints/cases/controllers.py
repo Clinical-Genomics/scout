@@ -1011,7 +1011,7 @@ def _write_mt_variants_lines(
 
     sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
-    for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
+    for row, line in enumerate(sample_lines, row + 1):  # each line becomes a row in the document
         for col, field in enumerate(line):  # each field in line becomes a cell
             report_sheet.write(row, col, field)
 
