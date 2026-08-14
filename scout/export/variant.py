@@ -182,7 +182,7 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
         line.append(position)
         line.append(change)
         line.append(f"{position}{change}")
-
+        line.append(variant["category"].upper())
         genes, prot_effect = _get_genes_and_prot_effect(variant)
         line.append(genes)
         line.append(prot_effect)

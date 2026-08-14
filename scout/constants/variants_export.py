@@ -32,6 +32,7 @@ MT_EXPORT_HEADER = [
     "Position",
     "Change",
     "Position+Change",
+    "Category",
     "Gene",
     "HGVS Description",
     "AD Reference",
