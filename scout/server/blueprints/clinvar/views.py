@@ -2,6 +2,7 @@ import logging
 from json import dumps
 from tempfile import NamedTemporaryFile
 from typing import List, Optional, Tuple
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
@@ -92,26 +93,25 @@ def clinvar_save(institute_id: str, case_name: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET"])
+@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET", "POST"])
 def clinvar_germline_submissions(institute_id):
-    """Handle clinVar submission objects and files"""
+    """Handle ClinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     clinvar_id_filter = (
-        request.args.get("clinvar_id_filter").strip()
-        if request.args.get("clinvar_id_filter")
+        request.values.get("clinvar_id_filter").strip()
+        if request.values.get("clinvar_id_filter")
         else None
     )
     per_page = 15
-    page = request.args.get("page", 1, type=int)
+    page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
-    end = start + per_page
-    all_submissions = store.get_clinvar_germline_submissions(
-        institute_id, clinvar_id_filter=clinvar_id_filter
+    submissions, total_count = store.get_clinvar_germline_submissions(
+        institute_id, clinvar_id_filter=clinvar_id_filter, skip=start, limit=per_page
     )
     data = {
-        "submissions": all_submissions[start:end],
+        "submissions": submissions,
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
@@ -119,19 +119,31 @@ def clinvar_germline_submissions(institute_id):
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
         "page": page,
-        "result_size": len(all_submissions),
+        "result_size": total_count,
         "per_page": per_page,
+        "open_submission": request.values.get("open_submission"),
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
 
 @clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
 def clinvar_rename_casedata(submission, case, old_name):
-    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+    """Rename one or more casedata individuals belonging to the same clinvar submission, same case.
+    When redirecting to the page, we want to end up on the same page, with the same entry as before in view, with
+    the same entry open."""
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
-    return safe_redirect_back(request, request.referrer + f"#cdata_{submission}")
+    page = request.values.get("page", 1, type=int)
+    referrer = request.referrer or ""
+
+    parsed = urlparse(referrer)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query["page"] = str(page)
+    query["open_submission"] = submission
+
+    link = urlunparse(parsed._replace(query=urlencode(query), fragment=f"cdata_{submission}"))
+    return safe_redirect_back(request, link)
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])

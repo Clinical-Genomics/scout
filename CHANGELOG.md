@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 - Option to hide case details on the case specific gene panel extent report (#6485)
 - Pagination on ClinVar germline submissions page (#6491)
+- Show dark region genes as a category on the case specific gene panel extent report, replacing SMN only (#6488)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
@@ -25,6 +26,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Crash when encountering omics gene without inheritance model (#6488)
 - Lint and fix workflow uv use error (#6492)
 - Parsing of `clingen_cgh_benign` and `clingen_cgh_pathogenic` keys (#6494)
+- ClinVar pagination fetches only entries to display (#6496)
+- Fix pagination, e.g. on dismissing variants. Also on ClinVar submission pages (#6496, #6497)
+- ClinVar submissions page always shows open submissions first, even if not updated for a long time (#6497)
+- Keep ClinVar submission accordion open after renaming a sample (#6497)
 
 ## [4.113.3]
 ### Fixed
