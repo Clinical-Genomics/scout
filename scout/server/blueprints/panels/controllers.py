@@ -358,7 +358,7 @@ def panel_data(store, panel_obj):
     return dict(panel=panel_obj)
 
 
-def get_variant_hits(case_obj, panel_obj) -> dict:
+def get_variant_hits(case_obj: dict, panel_obj: dict) -> dict:
     """Fetch the genes on the panel that have any variant calls in the case.
     Returns a dictionary with keys for each variant category and values being sets of gene symbols.
     """
@@ -388,7 +388,7 @@ def get_variant_hits(case_obj, panel_obj) -> dict:
     return variant_categories
 
 
-def get_panel_genes(panel_obj):
+def get_panel_genes(panel_obj: dict) -> set:
     """Return a set of gene symbols for the genes on the panel."""
     panel_genes = set()
     for gene in panel_obj.get("genes", []):
