@@ -178,14 +178,20 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
 
         position = variant.get("position")
         change = ">".join([variant.get("reference"), variant.get("alternative")])
+        line.append(change)
 
         line.append(position)
-        line.append(change)
-        line.append(f"{position}{change}")
+        line.append(variant.get("end"))
+
         line.append(variant["category"].upper())
+        line.append(variant["sub_category"].upper())
+
         genes, prot_effect = _get_genes_and_prot_effect(variant)
         line.append(genes)
-        line.append(prot_effect)
+        if variant["category"] == "sv":
+            line.append(variant["length"])
+        else:
+            line.append(prot_effect)
 
         line.append(ref_ad)
         line.append(alt_ad)
