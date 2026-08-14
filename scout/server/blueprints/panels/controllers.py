@@ -373,7 +373,7 @@ def get_variant_hits(case_obj, panel_obj) -> dict:
         variants_query["hgnc_ids"] = gene["hgnc_id"]
         for cat in variant_categories:
             variants_query["category"] = cat
-            if res := store.variant_collection.find_one(variants_query):
+            if store.variant_collection.find_one(variants_query):
                 variant_categories[cat].add(gene["symbol"])
 
         if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
