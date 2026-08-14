@@ -977,19 +977,13 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     return data
 
 
-def mt_excel_files(store, case_obj, temp_excel_dir):
+def mt_excel_files(store: MongoAdapter, case_obj: dict, temp_excel_dir: str) -> int:
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format. Create mt excel files, one for each sample,
     in a temporary directory.
 
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(models.Case)
-        temp_excel_dir(os.Path): folder where the temp excel files are written to
-
     Returns:
         written_files(int): the number of files written to temp_excel_dir
-
     """
 
     def write_coverage(
@@ -1036,7 +1030,13 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
     query = {"chrom": get_case_mito_chromosome(case_obj)}
     mt_variants = list(
-        store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
+        store.variants(
+            case_id=case_obj["_id"],
+            query=query,
+            nr_of_variants=-1,
+            sort_key="position",
+            category={"$in": ["snv", "sv"]},
+        )
     )
 
     written_files = 0

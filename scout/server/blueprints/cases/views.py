@@ -347,8 +347,7 @@ def pdf_case_report(institute_id, case_name):
 def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    # create a temp folder to write excel files into
-
+    # create a temp folder to write Excel files into
     temp_excel_dir = mkdtemp(suffix="_".join([case_obj["display_name"], "mt_reports"]))
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
         data = zip_dir_to_obj(temp_excel_dir)
