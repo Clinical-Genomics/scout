@@ -179,11 +179,12 @@ def export_mt_variants(variants: List[dict], sample_id: str) -> List[str]:
             continue
 
         position = variant.get("position")
-        change = ">".join([variant.get("reference"), variant.get("alternative")])
-        line.append(change)
-
         line.append(position)
         line.append(variant.get("end"))
+
+        change = ">".join([variant.get("reference"), variant.get("alternative")])
+        line.append(change)
+        line.append(f"{position}{change}")
 
         line.append(variant["category"].upper())
         line.append(variant["sub_category"].upper())

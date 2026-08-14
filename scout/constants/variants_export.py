@@ -31,6 +31,7 @@ FUSION_EXPORT_HEADER = EXPORT_HEADER + [
 MT_EXPORT_HEADER = [
     "Position",
     "End",
+    "Change",
     "Position+Change",
     "Category",
     "Sub-category",
