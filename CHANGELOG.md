@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 - Option to hide case details on the case specific gene panel extent report (#6485)
 - Pagination on ClinVar germline submissions page (#6491)
+- Show dark region genes as a category on the case specific gene panel extent report, replacing SMN only (#6488)
 - Include MT SVs on mtDNA report (#6498)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
