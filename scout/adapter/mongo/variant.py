@@ -776,7 +776,7 @@ class VariantHandler(VariantLoader):
         variant_obj: dict,
         limit_samples: list,
         limit: int = None,
-    ) -> Tuple[Iterable[Dict], Iterable[Dict]]:
+    ) -> Tuple[Iterable[Dict], Iterable[Dict], Iterable[Dict]]:
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps, then return all variants that overlap these genes.
@@ -805,6 +805,11 @@ class VariantHandler(VariantLoader):
             self.get_omics_variants_hgnc_overlapping(
                 hgnc_ids=hgnc_ids,
                 variant_type=variant_type,
+                limit_samples=limit_samples,
+                variant_obj=variant_obj,
+            ),
+            self.get_dark_regions_hgnc_overlapping(
+                hgnc_ids=hgnc_ids,
                 limit_samples=limit_samples,
                 variant_obj=variant_obj,
             ),

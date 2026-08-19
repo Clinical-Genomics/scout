@@ -1548,6 +1548,18 @@ class CaseHandler(object):
 
         return grouped_cases
 
+    def get_dark_regions_hgnc_overlapping(
+        self, case_obj: dict, hgnc_ids=hgnc_ids, variant_obj=variant_obj, gene_symbols=gene_symbols
+    ) -> list:
+
+        _get_paraprhase_regions(
+            case_obj=case_obj,
+            panel_hgnc_ids=hgnc_ids,
+        )
+        dark_region = {"region": [], "hgnc_symbols": [], "status": "unknown", "reason": None}
+
+        return [dark_region]
+
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.

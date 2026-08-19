@@ -288,6 +288,29 @@
   </table>
 {% endmacro %}
 
+{% macro overlapping_tooltip_dark_region(institute, case, overlapping_dark_regions) %}
+  <table class='table table-bordered table-hover table-condensed'>
+    <thead>
+      <tr>
+        <th>Region</th>
+        <th>Matching gene</th>
+        <th>Status</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dark_region in overlapping_dark_regions %}
+        <tr>
+          <td>{{ dark_region.region }}</td>
+          <td>{{ dark_region.hgnc_symbols }}</td>
+          <td>{{ dark_region.status }}</td>
+          <td>{{ dark_region.reason }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}
+
 {% macro overlapping_tooltip_table(institute, case, overlapping) %}
   <table class='table table-bordered table-hover table-condensed'>
     <thead>

@@ -116,7 +116,7 @@
 </div>
 {% endmacro %}
 
-{% macro overlapping_panel(variant, overlapping_vars, overlapping_outliers, case, institute) %}
+{% macro overlapping_panel(variant, overlapping_vars, overlapping_outliers, overlapping_dark_regions, case, institute) %}
   <div class="card panel-default">
     {% if variant.category != "snv" %}
       <div class="panel-heading">Gene overlapping variants</div>
@@ -141,7 +141,7 @@
             </tr>
           </thead>
           <tbody>
-          {% for overlapping_variant in overlapping_vars + overlapping_outliers %}
+          {% for overlapping_variant in overlapping_vars + overlapping_outliers + overlapping_dark_regions %}
             <tr>
               <td>
                 {% if overlapping_variant.category in ("sv", "cancer_sv") %}
@@ -151,6 +151,8 @@
                   </a>
                 {% elif overlapping_variant.category == "outlier" %}
                   {{ overlapping_variant.display_name|truncate(50, True) }}
+                {% elif overlapping_variant.category == "paraphrase" %}
+                  {{ overlapping_variant.region|truncate(50, True) }}
                 {% else  %}
                   <a href="{{url_for('variant.variant', institute_id=institute._id,
                                  case_name=case.display_name, variant_id=overlapping_variant._id)}}" target="_blank">
@@ -163,15 +165,19 @@
               {% if overlapping_variant.rank_score %}
 	              <td class="text-end">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
                 <td class="text-end">{{ overlapping_variant.rank_score }}</td>
+              {% elif overlapping_variant.status %}
+                <td class="text-end">{{ overlapping_variant.status }}</td>
               {% else %}
                 <td class="text-end">-</td><td class="text-end">-</td>
               {% endif %}
-
               <td class="text-end">{{ overlapping_variant.length }}</td>
               <td>
+                {{ overlapping_variant.reason|join(', ') }}
                 {{ overlapping_variant.region_annotations|join(', ')|truncate(40, True) }}
                 {% if overlapping_variant.sub_category == "splicing" %}
                   {{ overlapping_variant.potential_impact }} - fs {{ overlapping_variant.causes_frameshift }}
+                {% elif overlapping_variant.reason %}
+                  {{ overlapping_variant.reason }}
                 {% endif %}
               </td>
               <td>{{ overlapping_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>

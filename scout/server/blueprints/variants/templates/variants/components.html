@@ -473,6 +473,12 @@
     data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene overlapping omics outliers - WTS or LRS methylation</div>
       {{ overlapping_tooltip_table(institute, case, variant.overlapping_outliers[:40]) }}">Gene overlapping (omics)</a>
   {% endif %}
+
+  {% if variant.overlapping_dark_regions %}
+    <a href="#" class="badge bg-dark text-white" data-bs-toggle="popover" data-bs-placement="left"
+    data-bs-html="true" data-bs-trigger="hover click" data-bs-content="<div>Gene symbol overlapping dark regions</div>
+      {{ overlapping_tooltip_dark_region(institute, case, variant.overlapping_dark_regions[:40]) }}">Gene overlapping (dark regions)</a>
+  {% endif %}
 {% endmacro %}
 
 {% macro cell_models(variant, genetic_models_palette) %}

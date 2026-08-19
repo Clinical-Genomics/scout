@@ -146,9 +146,12 @@ def populate_institute_soft_filters(form, institute_obj: dict):
 
 def set_overlapping_variants(variant_obj: dict, limit_samples: list):
     """Define DNA or WTS variants that are overlapping with a gene of a variant."""
-    overlapping_variants, overlapping_outliers = store.hgnc_overlapping(variant_obj, limit_samples)
+    overlapping_variants, overlapping_outliers, overlapping_dark_regions = store.hgnc_overlapping(
+        variant_obj, limit_samples
+    )
     variant_obj["overlapping"] = list(overlapping_variants) or None
     variant_obj["overlapping_outliers"] = list(overlapping_outliers) or None
+    variant_obj["overlapping_dark_regions"] = list(overlapping_dark_regions) or None
 
 
 def variants(
