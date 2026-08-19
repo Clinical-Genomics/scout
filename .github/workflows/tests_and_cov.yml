@@ -51,9 +51,6 @@ jobs:
             install -y --no-install-recommends --download-only wkhtmltopdf
           sudo chown -R "$USER:$USER" ~/.cache/apt
 
-      - name: Install the project
-        run: uv sync --frozen --all-extras --dev
-
   test:
     needs: setup
     runs-on: ubuntu-latest
