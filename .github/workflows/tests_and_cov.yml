@@ -25,6 +25,29 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
+      - name: Restore wkhtmltopdf apt cache
+        id: wkhtmltopdf-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/apt/archives
+            ~/.cache/apt/lists
+          key: ${{ runner.os }}-apt-wkhtmltopdf-v1
+
+      - name: Prime wkhtmltopdf apt cache
+        if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            update
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            install -y --no-install-recommends --download-only wkhtmltopdf
+          sudo chown -R "$USER:$USER" ~/.cache/apt
+
       - name: Install the project
         run: uv sync --frozen --all-extras --dev
 
@@ -54,41 +77,35 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Cache apt metadata and packages for wkhtmltopdf
-        id: wkhtmltopdf-cache
-        uses: actions/cache@v6
+      - name: Restore wkhtmltopdf apt cache
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.cache/apt/archives
             ~/.cache/apt/lists
           key: ${{ runner.os }}-apt-wkhtmltopdf-v1
 
-      - name: Refresh apt indexes for wkhtmltopdf
-        if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
-          sudo apt-get \
-            -o dir::cache::archives="$HOME/.cache/apt/archives" \
-            -o dir::state::lists="$HOME/.cache/apt/lists" \
-            update
-
       - name: Install the HTML 2 PDF renderer
         run: |
           mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
-          sudo apt-get \
+          if ! sudo apt-get \
             -o dir::cache::archives="$HOME/.cache/apt/archives" \
             -o dir::state::lists="$HOME/.cache/apt/lists" \
-            install -y --no-install-recommends wkhtmltopdf || {
-              echo "Cached apt metadata was stale, refreshing indexes and retrying..."
-              sudo apt-get \
-                -o dir::cache::archives="$HOME/.cache/apt/archives" \
-                -o dir::state::lists="$HOME/.cache/apt/lists" \
-                update
-              sudo apt-get \
-                -o dir::cache::archives="$HOME/.cache/apt/archives" \
-                -o dir::state::lists="$HOME/.cache/apt/lists" \
-                install -y --no-install-recommends wkhtmltopdf
-            }
+            install -y --no-install-recommends --no-download wkhtmltopdf; then
+            echo "wkhtmltopdf apt cache was unavailable or stale, refreshing and retrying..."
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              update
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              install -y --no-install-recommends --download-only wkhtmltopdf
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              install -y --no-install-recommends wkhtmltopdf
+          fi
           sudo chown -R "$USER:$USER" ~/.cache/apt
 
       - name: Run pytest
