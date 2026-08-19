@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submissions page always shows open submissions first, even if not updated for a long time (#6497)
 - Keep ClinVar submission accordion open after renaming a sample (#6497)
 - Cache apt wkhtmltopdf package to avoid repeated downloads in GitHub actions (#6503)
+- Set the same value for `rank_score` and `fusion_score` for fusion variants (#6504)
 
 ## [4.113.3]
 ### Fixed
