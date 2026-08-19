@@ -186,7 +186,7 @@ def build_variant(
 
     ## Fusion variant specific
     if variant_obj["category"] == "fusion":
-        variant_obj["rank_score"] = variant_obj.get("fusion_score")
+        variant_obj["rank_score"] = variant.get("fusion_score")
 
         FUSION_KEYS = [
             "tool_hits",
