@@ -8,6 +8,9 @@ on:
     branches:
     - main
 
+env:
+  WKHTMLTOPDF_CACHE_VERSION: v0.12.6
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -32,7 +35,7 @@ jobs:
           path: |
             ~/.cache/apt/archives
             ~/.cache/apt/lists
-          key: ${{ runner.os }}-apt-wkhtmltopdf-v1
+          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
 
       - name: Prime wkhtmltopdf apt cache
         if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
@@ -83,7 +86,7 @@ jobs:
           path: |
             ~/.cache/apt/archives
             ~/.cache/apt/lists
-          key: ${{ runner.os }}-apt-wkhtmltopdf-v1
+          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
 
       - name: Install the HTML 2 PDF renderer
         run: |
