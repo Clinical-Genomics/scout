@@ -14,7 +14,7 @@ reference files configurable in the Scout. In particular, reference genomes can 
 - It is now time to migrate to the new ClinVar germline submissions format, introduced in January. The submissions
 for germline variants will be done in the same way as somatic variants, directly from Scout to the ClinVar API, and the pages
 have got several improvements in the process. To fully adopt the new submission format, we will need to *close open submissions* of the old format. You have until the next update (two to three weeks) to close any open submissions.
-The submissions will still be shown as legacy submissions in Scout, but you will not be able to submit them to ClinVar anymore. You could ofcourse still add the same variants to a
+The submissions will still be shown as legacy submissions in Scout, but you will not be able to submit them to ClinVar anymore. You could of course still add the same variants to a
 new submission after the update, so no stress.
 - Inheritance patterns are shown on genes on the OMICS outliers page.
 
