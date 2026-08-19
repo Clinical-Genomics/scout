@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix pagination, e.g. on dismissing variants. Also on ClinVar submission pages (#6496, #6497)
 - ClinVar submissions page always shows open submissions first, even if not updated for a long time (#6497)
 - Keep ClinVar submission accordion open after renaming a sample (#6497)
+- Set the same value for `rank_score` and `fusion_score` for fusion variants ()
 
 ## [4.113.3]
 ### Fixed
