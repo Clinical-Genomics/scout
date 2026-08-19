@@ -54,8 +54,42 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Cache apt metadata and packages for wkhtmltopdf
+        id: wkhtmltopdf-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/apt/archives
+            ~/.cache/apt/lists
+          key: ${{ runner.os }}-apt-wkhtmltopdf-v1
+
+      - name: Refresh apt indexes for wkhtmltopdf
+        if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            update
+
       - name: Install the HTML 2 PDF renderer
-        run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
+        run: |
+          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            install -y --no-install-recommends wkhtmltopdf || {
+              echo "Cached apt metadata was stale, refreshing indexes and retrying..."
+              sudo apt-get \
+                -o dir::cache::archives="$HOME/.cache/apt/archives" \
+                -o dir::state::lists="$HOME/.cache/apt/lists" \
+                update
+              sudo apt-get \
+                -o dir::cache::archives="$HOME/.cache/apt/archives" \
+                -o dir::state::lists="$HOME/.cache/apt/lists" \
+                install -y --no-install-recommends wkhtmltopdf
+            }
+          sudo chown -R "$USER:$USER" ~/.cache/apt
 
       - name: Run pytest
         run: uv run --frozen --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
