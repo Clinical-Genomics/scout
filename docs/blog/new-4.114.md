@@ -1,25 +1,26 @@
-## What's new in 4.111?
+## What's new in 4.114?
 
-_Posted: May 7 2026_
+_Posted: Aug 19 2026_
 
-Scout 4.111 is a focused release with improvements around panel handling, managed variants,
-and Saltshaker support.
+Scout 4.114 welcomes you back after a summer hiatus.
+
+After a few short outages of UCSC downloads and GitHub that affected IGV.js availability, we have made the location of some more
+reference files configurable in the Scout. In particular, reference genomes can now be locally served if need be.
+
+*Note* that current ClinVar germline submissions will be made *obsolete* in the next update, so please make sure to close any open submissions before then.
 
 ### Highlights
 
-- **PanelApp workflow improvements:** You can now download all PanelApp panels to a file and
-  also load/update `PANELAPP-GREEN` from a pre-downloaded file. This makes panel handling
-  easier in controlled or offline-friendly workflows.
-- **Better build-aware managed variant linking:** We improved matching and counters so managed
-  variants follow the case genome build correctly. In practice, this gives more reliable linking
-  of causative variants, including build 37 causatives viewed in build 38 contexts.
-- **Saltshaker support for rare disease rollout:** Scout now supports loading custom MT
-  Saltshaker HTML reports, and the Saltshaker update command was fixed. This prepares us to use
-  Saltshaker with new rare disease cases as soon as pipeline automation is updated.
+- It is now time to migrate to the new ClinVar germline submissions format, introduced in January. The submissions
+for germline variants will be done in the same way as somatic variants, directly from Scout to the ClinVar API, and the pages
+have got several improvements in the process. To fully adopt the new submission format, we will need to *close open submissions* of the old format. You have until the next update (two to three weeks) to close any open submissions.
+The submissions will still be shown as legacy submissions in Scout, but you will not be able to submit them to ClinVar anymore. You could ofcourse still add the same variants to a
+new submission after the update, so no stress.
+- Inheritance patterns are shown on genes on the OMICS outliers page.
 
 ### Also included
+- Pagination on the ClinVar germline submissions page
+- Dark regions genes are shown as a category on the gene panel extent report, replacing the SMN only one.
+The extent report now also has an option to hide case specific identifiers, such as case ID and dates. This would potentially enable
+reuse of reports for other cases, but be aware that the extent report will still be tailored to the specific case.
 
-- Better handling of conflicts and duplicates when uploading managed variants.
-- Updated default hg38 gnomAD linkout to the `non_uk_biobank` subset.
-- Case page quality-of-life update: empty case categories are now hidden dynamically.
-- New command to remove loaded rank models. Old Nallo cases in Solna used the same URL for different rank models. This will help in updating these eventually.
