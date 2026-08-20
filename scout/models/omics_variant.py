@@ -227,9 +227,10 @@ class OmicsVariantLoader(BaseModel):
         the CPG_label joined by underscore as nanoimprint_PLAGL1_HGNC:9046.
         """
 
-        if "hgncSymbol" in values:
-            if not isinstance(values.get("hgncSymbol"), list):
-                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
+        for symbol_alias in ["hgncSymbol", "hgnc_symbol"]:
+            if symbol_alias in values:
+                if not isinstance(values.get(symbol_alias), list):
+                    values[symbol_alias] = [str(values.get(symbol_alias))]
 
         if "hgncId" in values:
             values["hgncId"] = [int(values.get("hgncId"))]
@@ -237,6 +238,7 @@ class OmicsVariantLoader(BaseModel):
             values["hgncId"] = [int(values.get("hgnc_id"))]
         elif "cpg_label" in values:
             cpg_label = values.get("cpg_label").split("_")
+            values["region_type"] = cpg_label[0]
             values["hgncSymbol"] = [cpg_label[1]]
             values["hgncId"] = [int(cpg_label[2].split(":")[1])]
 
