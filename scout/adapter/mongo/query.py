@@ -870,7 +870,7 @@ def _get_methbat_significance_query(query: dict) -> list:
             methbat_query.append(
                 {
                     "$or": [
-                        {"region_type": {"$in": methbat_region_type}},
+                        {"region_type": {"$regex": methbat_region_type}},
                         {"cpg_label": {"$regex": methbat_region_type}},
                     ]
                 }
