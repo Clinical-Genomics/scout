@@ -44,6 +44,7 @@ class OmicsVariantLoader(BaseModel):
 
     # the CPG label is temp and will be split into HGNC id, type etc.
     cpg_label: Optional[str] = None
+    region_type: Optional[str] = None
 
     # NoData, Uncategorized < Methylated, Unmethylated << AlleleSpecificMethylation
     summary_label: Optional[str] = None
@@ -84,7 +85,7 @@ class OmicsVariantLoader(BaseModel):
     )
 
     hgnc_symbols: Optional[List[str]] = Field(
-        alias="hgncSymbol", serialization_alias="hgnc_symbols"
+        alias=AliasChoices("hgncSymbol", "hgnc_symbol"), serialization_alias="hgnc_symbols"
     )
     gene_name_orig: Optional[str] = Field(
         alias=AliasChoices("geneNameOrig", "gene_name_orig"),
