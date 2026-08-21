@@ -211,18 +211,25 @@ class ClinVarHandler(object):
         subm_id: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
-    ) -> pymongo.cursor.Cursor:
+    ) -> tuple[list[dict], int]:
         """Collect all open and closed ClinVar submissions of type oncogenicity or germline  for an institute."""
         query = {"institute_id": institute_id, "type": type}
         if subm_id:
             query["clinvar_subm_id"] = {"$regex": re.escape(subm_id.strip())}
 
-        return (
-            self.clinvar_submission_collection.find(query)
-            .sort("updated_at", pymongo.DESCENDING)
-            .skip(skip)
-            .limit(limit)
-        )
+        total_count = self.clinvar_submission_collection.count_documents(query)
+
+        sort_pipeline = [
+            {"$match": query},
+            {"$addFields": {"statusOrder": {"$cond": [{"$eq": ["$status", "open"]}, 0, 1]}}},
+            {"$sort": {"statusOrder": pymongo.ASCENDING, "updated_at": pymongo.DESCENDING}},
+            {"$skip": skip},
+            {"$limit": limit},
+            {"$project": {"statusOrder": 0}},
+        ]
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
+
+        return list(results), total_count
 
     def get_deprecated_clinvar_germline_submissions(
         self,
@@ -436,10 +443,13 @@ class ClinVarHandler(object):
     def clinvar_cases(self, institute_id: str = None) -> List[str]:
         """Fetch all cases with variants contained in a ClinVar submission object"""
         clinvar_case_ids = set()
-        inst_submissions = self.get_clinvar_germline_submissions(institute_id=institute_id) + list(
-            self.get_clinvar_onc_submissions(institute_id=institute_id)
+        inst_submissions, _ = self.get_clinvar_submissions(
+            institute_id=institute_id, type="germline"
         )
-        for subm in inst_submissions:
+        inst_onc_submissions, _ = self.get_clinvar_submissions(
+            institute_id=institute_id, type="oncogenicity"
+        )
+        for subm in inst_submissions + inst_onc_submissions:
             for var in subm.get("variant_data"):
                 clinvar_case_ids.add(var["case_id"])
         return list(clinvar_case_ids)
