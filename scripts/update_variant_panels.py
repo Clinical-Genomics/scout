@@ -94,7 +94,7 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
 
         for variant_obj in variants:
             panel_names = set()
-            for hgnc_id in variant_obj["hgnc_ids"]:
+            for hgnc_id in variant_obj.get("hgnc_ids", []):
                 gene_panels = gene_to_panels.get(hgnc_id, set())
                 panel_names = panel_names.union(gene_panels)
 

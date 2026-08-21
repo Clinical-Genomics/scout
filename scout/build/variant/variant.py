@@ -212,9 +212,9 @@ def build_variant(
 
     # Make gene searches more effective
     if "hgnc_ids" in variant:
-        variant_obj["hgnc_ids"] = [hgnc_id for hgnc_id in variant["hgnc_ids"] if hgnc_id]
+        variant_obj["hgnc_ids"] = [hgnc_id for hgnc_id in variant.get("hgnc_ids", []) if hgnc_id]
 
-    add_hgnc_symbols(variant_obj, variant_obj["hgnc_ids"], hgncid_to_gene)
+    add_hgnc_symbols(variant_obj, variant_obj.get("hgnc_ids", []), hgncid_to_gene)
     link_gene_panels(variant_obj, gene_to_panels)
     add_clnsig_objects(variant_obj, variant.get("clnsig", []))
     add_clnsig_onc_objects(variant_obj, variant.get("clnsig_onc"))
@@ -292,7 +292,7 @@ def link_gene_panels(variant_obj, gene_to_panels):
     Returns: None
     """
     panel_names = set()
-    for hgnc_id in variant_obj["hgnc_ids"]:
+    for hgnc_id in variant_obj.get("hgnc_ids", []):
         gene_panels = gene_to_panels.get(hgnc_id, set())
         panel_names = panel_names.union(gene_panels)
 
