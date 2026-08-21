@@ -2,6 +2,7 @@
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 {% from "clinvar/components.html" import action_modal, render_dict_array, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
+{% from "variants/utils.html" import pagination_hidden_div, pagination_footer, current_page_anchor %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -55,6 +56,10 @@
   <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
   {% endif %}
 </div>
+<form id="pagination-form" method="post" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
+  {{ pagination_hidden_div(page, result_size, per_page) }}
+  {{ pagination_footer(page, result_size, per_page) }}
+</form>
 {% endmacro %}
 
 {% block content_main %}

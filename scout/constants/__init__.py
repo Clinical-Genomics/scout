@@ -118,6 +118,7 @@ from .variants_export import (
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
+    SV_MT_EXPORT_HEADER,
     VCF_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )

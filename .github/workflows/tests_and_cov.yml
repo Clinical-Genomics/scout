@@ -8,6 +8,9 @@ on:
     branches:
     - main
 
+env:
+  WKHTMLTOPDF_CACHE_VERSION: v0.12.6
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -25,8 +28,28 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Install the project
-        run: uv sync --frozen --all-extras --dev
+      - name: Restore wkhtmltopdf apt cache
+        id: wkhtmltopdf-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/apt/archives
+            ~/.cache/apt/lists
+          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
+
+      - name: Prime wkhtmltopdf apt cache
+        if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            update
+          sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            install -y --no-install-recommends --download-only wkhtmltopdf
+          sudo chown -R "$USER:$USER" ~/.cache/apt
 
   test:
     needs: setup
@@ -54,8 +77,36 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Restore wkhtmltopdf apt cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cache/apt/archives
+            ~/.cache/apt/lists
+          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
+
       - name: Install the HTML 2 PDF renderer
-        run: sudo apt-get update || true && sudo apt-get install -y wkhtmltopdf
+        run: |
+          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
+          if ! sudo apt-get \
+            -o dir::cache::archives="$HOME/.cache/apt/archives" \
+            -o dir::state::lists="$HOME/.cache/apt/lists" \
+            install -y --no-install-recommends --no-download wkhtmltopdf; then
+            echo "wkhtmltopdf apt cache was unavailable or stale, refreshing and retrying..."
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              update
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              install -y --no-install-recommends --download-only wkhtmltopdf
+            sudo apt-get \
+              -o dir::cache::archives="$HOME/.cache/apt/archives" \
+              -o dir::state::lists="$HOME/.cache/apt/lists" \
+              install -y --no-install-recommends wkhtmltopdf
+          fi
+          sudo chown -R "$USER:$USER" ~/.cache/apt
 
       - name: Run pytest
         run: uv run --frozen --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout

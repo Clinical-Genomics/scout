@@ -1,5 +1,6 @@
 import logging
 from typing import List
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
@@ -91,22 +92,28 @@ def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
-@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET"])
+@clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET", "POST"])
 def clinvar_germline_submissions(institute_id):
     """Handle germline ClinVar submissions."""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     clinvar_id_filter = (
-        request.args.get("clinvar_id_filter").strip()
-        if request.args.get("clinvar_id_filter")
+        request.values.get("clinvar_id_filter").strip()
+        if request.values.get("clinvar_id_filter")
         else None
     )
-    submissions = list(
-        store.get_clinvar_submissions(
-            institute_id=institute_id, type="germline", subm_id=clinvar_id_filter
-        )
+    per_page = 15
+    page = request.values.get("page", 1, type=int)
+    start = (page - 1) * per_page
+    submissions, total_count = store.get_clinvar_submissions(
+        institute_id=institute_id,
+        type="germline",
+        subm_id=clinvar_id_filter,
+        skip=start,
+        limit=per_page,
     )
+
     deprecated_submissions = store.get_deprecated_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter
     )
@@ -121,21 +128,33 @@ def clinvar_germline_submissions(institute_id):
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
+        "page": page,
+        "result_size": total_count,
+        "per_page": per_page,
+        "open_submission": request.values.get("open_submission"),
     }
     return render_template("clinvar/clinvar_germline_submissions.html", **data)
 
 
-@clinvar_bp.route("/<institute_id>/clinvar_onc_submissions", methods=["GET"])
+@clinvar_bp.route("/<institute_id>/clinvar_onc_submissions", methods=["GET", "POST"])
 def clinvar_onc_submissions(institute_id):
     """Handle clinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
+    per_page = 15
+    page = request.values.get("page", 1, type=int)
+    start = (page - 1) * per_page
+
     data = {
         "submissions": list(
-            store.get_clinvar_submissions(institute_id=institute_id, type="oncogenicity")
+            store.get_clinvar_submissions(
+                institute_id=institute_id, type="oncogenicity", skip=start, limit=per_page
+            )
         ),
         "institute": institute_obj,
+        "page": page,
+        "result_size": total_count,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
     }
@@ -150,7 +169,17 @@ def clinvar_delete_variant(submission_id: str, submission_type: str):
         variant_id=request.form.get("delete_object"),
         type=submission_type,
     )
-    return safe_redirect_back(request)
+
+    page = request.values.get("page", 1, type=int)
+    referrer = request.referrer or ""
+
+    parsed = urlparse(referrer)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query["page"] = str(page)
+    query["open_submission"] = submission_id
+
+    link = urlunparse(parsed._replace(query=urlencode(query), fragment=f"cdata_{submission_id}"))
+    return safe_redirect_back(request, link)
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])

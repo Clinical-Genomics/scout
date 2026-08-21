@@ -16,7 +16,6 @@ from scout.constants.clinvar import (
 )
 
 LOG = logging.getLogger(__name__)
-REGEX = "$regex"
 
 
 class ClinVarHandler(object):
@@ -206,17 +205,32 @@ class ClinVarHandler(object):
         }
 
     def get_clinvar_submissions(
-        self, institute_id: str, type: str, subm_id: Optional[str] = None
+        self,
+        institute_id: str,
+        type: str,
+        subm_id: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 15,
     ) -> pymongo.cursor.Cursor:
-        """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
+        """Collect all open and closed ClinVar submissions of type oncogenicity or germline  for an institute."""
         query = {"institute_id": institute_id, "type": type}
         if subm_id:
-            query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
-        return self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+            query["clinvar_subm_id"] = {"$regex": re.escape(subm_id.strip())}
+
+        return (
+            self.clinvar_submission_collection.find(query)
+            .sort("updated_at", pymongo.DESCENDING)
+            .skip(skip)
+            .limit(limit)
+        )
 
     def get_deprecated_clinvar_germline_submissions(
-        self, institute_id: str, clinvar_id_filter: Optional[str] = None
-    ) -> List[dict]:
+        self,
+        institute_id: str,
+        clinvar_id_filter: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 15,
+    ) -> tuple[List[dict], int]:
         """Collect all deprecated ClinVar germline submissions for an institute."""
 
         def populate_cases_from_variant_data(variant_data, institute_id):
@@ -241,11 +255,19 @@ class ClinVarHandler(object):
 
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         if clinvar_id_filter:
-            query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
+            query["clinvar_subm_id"] = {"$regex": clinvar_id_filter, "$options": "i"}
 
-        results = list(
-            self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
-        )
+        total_count = self.clinvar_submission_collection.count_documents(query)
+
+        sort_pipeline = [
+            {"$match": query},
+            {"$addFields": {"statusOrder": {"$cond": [{"$eq": ["$status", "open"]}, 0, 1]}}},
+            {"$sort": {"statusOrder": pymongo.ASCENDING, "updated_at": pymongo.DESCENDING}},
+            {"$skip": skip},
+            {"$limit": limit},
+            {"$project": {"statusOrder": 0}},
+        ]
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
         submissions = []
         for result in results:
@@ -276,7 +298,7 @@ class ClinVarHandler(object):
 
             submissions.append(submission)
 
-        return submissions
+        return submissions, total_count
 
     def clinvar_assertion_criteria(self, variant_data):
         """Retrieve assertion criteria from the variant data of a submission.
@@ -366,7 +388,7 @@ class ClinVarHandler(object):
             {"_id": ObjectId(submission_id)},
             {
                 "$set": {"updated_at": datetime.now()},
-                "$pull": {"case_data": {REGEX: f"^{re.escape(object_id)}"}},
+                "$pull": {"case_data": {"$regex": f"^{re.escape(object_id)}"}},
             },
             return_document=ReturnDocument.AFTER,
         )
