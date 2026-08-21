@@ -268,11 +268,9 @@ class ClinVarHandler(object):
 
         sort_pipeline = [
             {"$match": query},
-            {"$addFields": {"statusOrder": {"$cond": [{"$eq": ["$status", "open"]}, 0, 1]}}},
-            {"$sort": {"statusOrder": pymongo.ASCENDING, "updated_at": pymongo.DESCENDING}},
+            {"$sort": {"updated_at": pymongo.DESCENDING}},
             {"$skip": skip},
             {"$limit": limit},
-            {"$project": {"statusOrder": 0}},
         ]
         results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
