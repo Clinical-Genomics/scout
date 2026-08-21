@@ -20,7 +20,7 @@ $(".next").click(function(){
 	var validationPassed = true;
 
   {% if variant_data.var_obj.category == "snv" %}
-    if(current_fs.data('step') == 6){
+    if(current_fs.data('step') == 5){
       validationPassed = validateConditions();
     }
   {% elif variant_data.var_obj.category == "cancer" %}
