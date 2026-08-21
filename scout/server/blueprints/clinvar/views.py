@@ -114,7 +114,7 @@ def clinvar_germline_submissions(institute_id):
         limit=per_page,
     )
 
-    deprecated_submissions = store.get_deprecated_clinvar_germline_submissions(
+    deprecated_submissions, deprecated_count = store.get_deprecated_clinvar_germline_submissions(
         institute_id, clinvar_id_filter=clinvar_id_filter
     )
     if deprecated_submissions:
@@ -129,7 +129,7 @@ def clinvar_germline_submissions(institute_id):
         or not institute_clinvar_submitters,
         "clinvar_id_filter": clinvar_id_filter,
         "page": page,
-        "result_size": total_count,
+        "result_size": total_count + deprecated_count,
         "per_page": per_page,
         "open_submission": request.values.get("open_submission"),
     }
