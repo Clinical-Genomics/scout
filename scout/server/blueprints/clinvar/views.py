@@ -155,6 +155,7 @@ def clinvar_onc_submissions(institute_id):
         "institute": institute_obj,
         "page": page,
         "result_size": total_count,
+        "per_page": per_page,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
     }
