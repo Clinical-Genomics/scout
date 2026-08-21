@@ -146,12 +146,12 @@ def clinvar_onc_submissions(institute_id):
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
 
+    submissions, total_count = store.get_clinvar_submissions(
+        institute_id=institute_id, type="oncogenicity", skip=start, limit=per_page
+    )
+
     data = {
-        "submissions": list(
-            store.get_clinvar_submissions(
-                institute_id=institute_id, type="oncogenicity", skip=start, limit=per_page
-            )
-        ),
+        "submissions": submissions,
         "institute": institute_obj,
         "page": page,
         "result_size": total_count,
