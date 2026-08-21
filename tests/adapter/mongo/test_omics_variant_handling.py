@@ -99,3 +99,5 @@ def test_omics_variant_model_with_missing_hgnc_id(case_obj):
 
     # WHEN the OmicsVariantLoader model is parsed
     omics_model = OmicsVariantLoader(**omics_info).model_dump(by_alias=True, exclude_none=True)
+
+    assert isinstance(omics_model["hgnc_symbols"], list), "hgnc_symbols should be a list"
