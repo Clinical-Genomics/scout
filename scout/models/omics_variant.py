@@ -44,6 +44,7 @@ class OmicsVariantLoader(BaseModel):
 
     # the CPG label is temp and will be split into HGNC id, type etc.
     cpg_label: Optional[str] = None
+    region_type: Optional[str] = None
 
     # NoData, Uncategorized < Methylated, Unmethylated << AlleleSpecificMethylation
     summary_label: Optional[str] = None
@@ -78,13 +79,15 @@ class OmicsVariantLoader(BaseModel):
     )
 
     # outlier variants must identify the gene they pertain to, primarily with an hgnc_id
-    hgnc_ids: Optional[List[int]] = Field(alias="hgncId", serialization_alias="hgnc_ids")
+    hgnc_ids: Optional[List[int]] = Field(
+        alias="hgncId", serialization_alias="hgnc_ids", default=None
+    )
     ensembl_gene_id: Optional[str] = Field(
         alias="geneID", serialization_alias="ensembl_gene_id", default=None
     )
 
     hgnc_symbols: Optional[List[str]] = Field(
-        alias="hgncSymbol", serialization_alias="hgnc_symbols"
+        alias=AliasChoices("hgncSymbol", "hgnc_symbol"), serialization_alias="hgnc_symbols"
     )
     gene_name_orig: Optional[str] = Field(
         alias=AliasChoices("geneNameOrig", "gene_name_orig"),
@@ -222,23 +225,25 @@ class OmicsVariantLoader(BaseModel):
         """HGNC ids and gene symbols are found one on each line in DROP tsvs.
         Convert to a list with a single member in omics_variants for storage.
 
+        If there is a valid hgncId we want to use it, if not, we will keep trying with hgnc_id or cpg_label splitting.
+        If no valid hgncId is found, set hgncId to the default None.
+
         In case of MethBat we intend to have the same, but early versions will carry the gene symbol and HGNC id in
         the CPG_label joined by underscore as nanoimprint_PLAGL1_HGNC:9046.
         """
 
-        if "hgncSymbol" in values:
-            if not isinstance(values.get("hgncSymbol"), list):
-                values["hgncSymbol"] = [str(values.get("hgncSymbol"))]
+        for symbol_alias in ["hgncSymbol", "hgnc_symbol"]:
+            if symbol_alias in values and not isinstance(values.get(symbol_alias), list):
+                values[symbol_alias] = [str(values.get(symbol_alias))]
 
         if "hgncId" in values:
-            values["hgncId"] = [int(values.get("hgncId"))]
-        elif "hgnc_id" in values:
-            values["hgncId"] = [int(values.get("hgnc_id"))]
-        elif "cpg_label" in values:
-            cpg_label = values.get("cpg_label").split("_")
-            values["hgncSymbol"] = [cpg_label[1]]
-            values["hgncId"] = [int(cpg_label[2].split(":")[1])]
+            convert_hgncId_to_list(values)
 
+        if "hgnc_id" in values and not values.get("hgncId"):
+            convert_hgnc_id_to_list(values)
+
+        if "cpg_label" in values and not values.get("hgncId"):
+            convert_cpg_label(values)
         return values
 
     @model_validator(mode="before")
@@ -298,3 +303,49 @@ def get_qualification(values: dict) -> str:
                 qualification = values.get("summary_label")
                 return qualification
     return qualification
+
+
+def convert_hgncId_to_list(values):
+    """Test each entry with a try / except to avoid ValueErrors when converting to int, and log a warning if the conversion fails."""
+    try:
+        values["hgncId"] = [int(values.get("hgncId"))]
+    except (ValueError, TypeError):
+        values["hgncId"] = None
+        LOG.warning(
+            "Blank or invalid hgncId (%s) found in omics variant.",
+            values["hgncId"],
+        )
+
+
+def convert_hgnc_id_to_list(values):
+    """Test each entry with a try / except to avoid ValueErrors when converting to int, and log a warning if the conversion fails."""
+    try:
+        values["hgncId"] = [int(values.get("hgnc_id"))]
+    except (ValueError, TypeError):
+        values["hgncId"] = None
+        LOG.warning(
+            "Blank or invalid hgnc_id (%s) found in omics variant.",
+            values["hgnc_id"],
+        )
+
+
+def convert_cpg_label(values):
+    """Test each entry with a try / except to avoid ValueErrors when converting to int, and log a warning if the conversion fails.
+    If no valid hgncId is found, set hgncId to the default None."""
+
+    cpg_label = values.get("cpg_label").split("_")
+    if len(cpg_label) == 3:
+        values["region_type"] = cpg_label[0]
+        values["hgncSymbol"] = [cpg_label[1]]
+        if hgnc_id := cpg_label[2].split(":")[1]:
+            try:
+                values["hgncId"] = [int(hgnc_id)]
+            except (ValueError, TypeError):
+                values["hgncId"] = None
+                LOG.warning(
+                    "Blank or invalid hgncId (%s) found in omics variant cpg_label (%s).",
+                    hgnc_id,
+                    values["cpg_label"],
+                )
+        else:
+            values["hgncId"] = None

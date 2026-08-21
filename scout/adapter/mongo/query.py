@@ -865,9 +865,16 @@ def _get_methbat_significance_query(query: dict) -> list:
         {"compare_label": {"$in": sign_values}},
         {"summary_label": {"$in": sign_values}},
     ]
-    for methbat_cpg_label in [METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL]:
-        if methbat_cpg_label in sign_values:
-            methbat_query.append({"cpg_label": {"$regex": methbat_cpg_label}})
+    for methbat_region_type in [METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL]:
+        if methbat_region_type in sign_values:
+            methbat_query.append(
+                {
+                    "$or": [
+                        {"region_type": {"$regex": methbat_region_type}},
+                        {"cpg_label": {"$regex": methbat_region_type}},
+                    ]
+                }
+            )
     return methbat_query
 
 
