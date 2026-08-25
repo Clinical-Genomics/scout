@@ -11,12 +11,12 @@ LOG = logging.getLogger(__name__)
 CLINGEN_FILES = [
     {
         "desc": "ClinGen Gene-Disease Validity Curations",
-        "file_name": "ClinGen-Gene-Disease-Summary.csv",
+        "file_name": "clingen-gene-disease-summary.csv",
         "info_key": "disease",
     },
     {
         "desc": "ClinGen Dosage Sensitivity Curations",
-        "file_name": "ClinGen-Dosage-Sensitivity.csv",
+        "file_name": "clingen-dosage-sensitivity.csv",
         "info_key": "dosage",
     },
 ]
