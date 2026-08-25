@@ -35,7 +35,6 @@ def print_clingen(out_dir: str, clingen_info: dict) -> None:
         with file_path.open("w", encoding="utf-8") as outfile:
             for line in clingen_info[clingen_file["info_key"]]:
                 outfile.write(line + "\n")
-            outfile.write(line + "\n")
 
 
 @click.command("clingen", help="Download ClinGen files")
