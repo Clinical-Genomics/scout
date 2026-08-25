@@ -9,7 +9,13 @@ from urllib.error import HTTPError
 import requests
 from defusedxml import ElementTree
 
-from scout.constants import HPO_URL, HPOTERMS_URL, ORPHA_URLS
+from scout.constants import (
+    CLINGEN_DISEASE_URL,
+    CLINGEN_DOSAGE_URL,
+    HPO_URL,
+    HPOTERMS_URL,
+    ORPHA_URLS,
+)
 
 LOG = logging.getLogger(__name__)
 TIMEOUT = 20
@@ -165,6 +171,16 @@ def fetch_hpo_terms():
     url = HPOTERMS_URL
 
     return fetch_resource(url)
+
+
+def fetch_clingen_dosage():
+    """Fetch the latest version of the ClinGen dosage sensitivity (regions and genes) file in CSV format"""
+    return fetch_resource(CLINGEN_DOSAGE_URL)
+
+
+def fetch_clingen_disease():
+    """Fetch the latest version of the ClinGen gene-disease validity file in CSV format"""
+    return fetch_resource(CLINGEN_DISEASE_URL)
 
 
 def fetch_genes_to_hpo_to_disease():
