@@ -9,15 +9,20 @@ from scout.utils.scout_requests import fetch_clingen_disease, fetch_clingen_dosa
 LOG = logging.getLogger(__name__)
 
 CLINGEN_FILES = [
-    {"desc": "ClinGen Gene-Disease Validity Curations", "file_name": "ClinGen-Gene-Disease-Summary.csv", "info_key": "disease"},
+    {
+        "desc": "ClinGen Gene-Disease Validity Curations",
+        "file_name": "ClinGen-Gene-Disease-Summary.csv",
+        "info_key": "disease",
+    },
     {
         "desc": "ClinGen Dosage Sensitivity Curations",
         "file_name": "ClinGen-Dosage-Sensitivity.csv",
         "info_key": "dosage",
     },
+]
 
 
-def print_clingen(out_dir: str, clingen_info: dict ) -> None:
+def print_clingen(out_dir: str, clingen_info: dict) -> None:
     """Download ClinGen dosage sensitivity (regions and genes) and disease-gene files."""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -44,6 +49,3 @@ def clingen(out_dir: str) -> None:
     }
 
     print_clingen(out_dir, clingen_info)
-
-
-
