@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show dark region genes as a category on the case specific gene panel extent report, replacing SMN only (#6488)
 - Include MT SVs on mtDNA report (#6498)
 - A blog entry for the 4.114 release (#6500)
+- Add a command to download ClinGen files (dosage and disease) (#6512)
 - Add a `region_type` field to omics variants, to allow filtering by region type (#6505)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)

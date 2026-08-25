@@ -10,6 +10,9 @@ ORPHA_URLS = {
     "orpha_inheritance": "https://www.orphadata.com/data/xml/en_product9_ages.xml",
 }
 
+CLINGEN_DISEASE_URL = "https://search.clinicalgenome.org/kb/gene-validity/download"
+CLINGEN_DOSAGE_URL = "https://search.clinicalgenome.org/kb/gene-dosage/downloadall"
+
 PHENOTYPE_GROUPS = {
     "HP:0001298": {"name": "Encephalopathy", "abbr": "ENC"},
     "HP:0012759": {"name": "Neurodevelopmental abnormality", "abbr": "NDEV"},
