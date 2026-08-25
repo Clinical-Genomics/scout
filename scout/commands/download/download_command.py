@@ -2,6 +2,7 @@
 
 import click
 
+from .clingen import clingen as clingen_command
 from .ensembl import ensembl as ensembl_command
 from .everything import everything as everything_command
 from .exac import exac as exac_command
@@ -20,6 +21,7 @@ def download():
     return
 
 
+download.add_command(clingen_command)
 download.add_command(hpo_command)
 download.add_command(hgnc_command)
 download.add_command(ensembl_command)

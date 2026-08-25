@@ -76,6 +76,8 @@ from .igv_tracks import (
 from .indexes import ID_PROJECTION, INDEXES
 from .panels import PANELAPP_CONFIDENCE_EXCLUDE
 from .phenotype import (
+    CLINGEN_DISEASE_URL,
+    CLINGEN_DOSAGE_URL,
     COHORT_TAGS,
     HPO_LINK_URL,
     HPO_URL,
