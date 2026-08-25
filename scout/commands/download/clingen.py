@@ -9,11 +9,11 @@ from scout.utils.scout_requests import fetch_clingen_disease, fetch_clingen_dosa
 LOG = logging.getLogger(__name__)
 
 CLINGEN_FILES = [
-    {"desc": "ClinGen Gene-Disease Validity Curations", "file_name": "ClinGen-Gene-Disease-Summary.csv", "info_key": "hpo_terms"},
+    {"desc": "ClinGen Gene-Disease Validity Curations", "file_name": "ClinGen-Gene-Disease-Summary.csv", "info_key": "disease"},
     {
-        "desc": "HPO genes to phenotype",
-        "file_name": "genes_to_phenotype.txt",
-        "info_key": "genes_to_phenotype",
+        "desc": "ClinGen Dosage Sensitivity Curations",
+        "file_name": "ClinGen-Dosage-Sensitivity.csv",
+        "info_key": "dosage",
     },
 
 
@@ -23,11 +23,13 @@ def print_clingen(out_dir: str, clingen_info: dict ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     LOG.info("Download ClinGen resources to %s", out_dir)
 
-    file_name = "hgnc.txt"
-    file_path = out_dir / file_name
-    LOG.info("Downloads ClinGen file to %s", file_path)
-    with file_path.open("w", encoding="utf-8") as outfile:
-        for line in fetch_hgnc():
+    for clingen_file in CLINGEN_FILES:
+        file_name = clingen_file["file_name"]
+        file_path = out_dir / file_name
+        LOG.info("Download %s ClinGen file to %s", clingen_file["desc"], file_path)
+        with file_path.open("w", encoding="utf-8") as outfile:
+            for line in clingen_info[clingen_file["info_key"]]:
+                outfile.write(line + "\n")
             outfile.write(line + "\n")
 
 
