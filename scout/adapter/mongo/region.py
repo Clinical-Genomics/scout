@@ -1,6 +1,7 @@
 import logging
+from typing import Optional
 
-from models.region import IscaRegion
+from models.region import IscaRegion, Region
 
 LOG = logging.getLogger(__name__)
 
