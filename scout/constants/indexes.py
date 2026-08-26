@@ -186,6 +186,21 @@ INDEXES = {
             collation=Collation(locale="en_US", numericOrdering=True),
         ),
     ],
+    "region": [
+        IndexModel(
+            [("isca_id", ASCENDING), ("build", ASCENDING)],
+            name="isca_id_build",
+        ),
+        IndexModel(
+            [
+                ("build", ASCENDING),
+                ("chromosome", ASCENDING),
+                ("start", ASCENDING),
+                ("end", ASCENDING),
+            ],
+            name="build_chrom_start_end",
+        ),
+    ],
 }
 
 ID_PROJECTION = {"_id": 1}

@@ -35,3 +35,67 @@ class RegionHandler:
         else:
             LOG.info("Dropping the region collection")
             self.region_collection.drop()
+
+    def get_interval_overlapping_regions(
+        self, chromosome: str, start: int, end: int, build: str = "37"
+    ) -> list:
+        """Get regions that overlap with a given region."""
+
+        query = {
+            "chromosome": chromosome,
+            "build": build,
+            "$or": self.get_overlap_coords_query(start, end),
+        }
+
+        return list(self.region_collection.find(query))
+
+    def get_position_overlapping_regions(
+        self, chromosome: str, position: int, build: str = "37"
+    ) -> list:
+        """Get regions that overlap with a given position."""
+
+        query = {
+            "chromosome": chromosome,
+            "build": build,
+            "start": {"$lte": position},
+            "end": {"$gte": position},
+        }
+
+        return list(self.region_collection.find(query))
+
+    def get_overlap_coords_query(self, start: int, end: int) -> list:
+        """
+        Here are the possible overlapping search scenarios:
+         # Case 1
+         # filter                 xxxxxxxxx
+         # region           xxxxxxxx
+
+         # Case 2
+         # filter                 xxxxxxxxx
+         # region                    xxxxxxxx
+
+         # Case 3
+         # filter                 xxxxxxxxx
+         # region                   xx
+
+         # Case 4
+         # filter                 xxxxxxxxx
+         # region             xxxxxxxxxxxxxx
+        """
+        return [
+            # Overlapping cases 1-4 (chromosome == end_chrom)
+            {"end": {"$gte": start, "$lte": end}},  # Case 1
+            {"start": {"$gte": start, "$lte": end}},  # Case 2
+            {
+                "$and": [
+                    {"start": {"$gte": start}},
+                    {"end": {"$lte": end}},
+                ]
+            },  # Case 3
+            {
+                "$and": [
+                    {"start": {"$lte": start}},
+                    {"end": {"$gte": end}},
+                ]
+            },  # Case 4
+        ]
