@@ -1,4 +1,8 @@
+import logging
+
 from models.region import IscaRegion
+
+LOG = logging.getLogger(__name__)
 
 
 class RegionHandler:
