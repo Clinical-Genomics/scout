@@ -1,5 +1,7 @@
 from utils.scout_requests import fetch_clingen_dosage
 
+from scout.parse.clingen import parse_clingen_dosage_csv
+
 
 def load_clingen_dosage_sensitivity(adapter, dosage_lines):
     """Load the ClinGen dosage sensitivity information into the database.
@@ -9,6 +11,6 @@ def load_clingen_dosage_sensitivity(adapter, dosage_lines):
     if not dosage_lines:
         dosage_lines = fetch_clingen_dosage()
 
-    for dosage_info in parse_clingen_dosage_sensitivity(dosage_lines):
+        hgnc_info, isca_info = parse_clingen_dosage_csv(dosage_lines)
 
-        adapter.load_clingen_dosage_sensitivity(dosage_info)
+        adapter.load_regions(isca_info)
