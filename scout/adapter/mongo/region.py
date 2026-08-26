@@ -6,6 +6,44 @@ from models.region import IscaRegion, Region
 LOG = logging.getLogger(__name__)
 
 
+def get_overlap_coords_query(start: int, end: int) -> list:
+    """
+    Here are the possible overlapping search scenarios:
+     # Case 1
+     # filter                 xxxxxxxxx
+     # region           xxxxxxxx
+
+     # Case 2
+     # filter                 xxxxxxxxx
+     # region                    xxxxxxxx
+
+     # Case 3
+     # filter                 xxxxxxxxx
+     # region                   xx
+
+     # Case 4
+     # filter                 xxxxxxxxx
+     # region             xxxxxxxxxxxxxx
+    """
+    return [
+        # Overlapping cases 1-4 (chromosome == end_chrom)
+        {"end": {"$gte": start, "$lte": end}},  # Case 1
+        {"start": {"$gte": start, "$lte": end}},  # Case 2
+        {
+            "$and": [
+                {"start": {"$gte": start}},
+                {"end": {"$lte": end}},
+            ]
+        },  # Case 3
+        {
+            "$and": [
+                {"start": {"$lte": start}},
+                {"end": {"$gte": end}},
+            ]
+        },  # Case 4
+    ]
+
+
 class RegionHandler:
     """A class to handle regions in the genome."""
 
@@ -53,7 +91,7 @@ class RegionHandler:
         query = {
             "chromosome": chromosome,
             "build": build,
-            "$or": self.get_overlap_coords_query(start, end),
+            "$or": get_overlap_coords_query(start, end),
         }
 
         return list(self.region_collection.find(query))
@@ -71,40 +109,3 @@ class RegionHandler:
         }
 
         return list(self.region_collection.find(query))
-
-    def get_overlap_coords_query(self, start: int, end: int) -> list:
-        """
-        Here are the possible overlapping search scenarios:
-         # Case 1
-         # filter                 xxxxxxxxx
-         # region           xxxxxxxx
-
-         # Case 2
-         # filter                 xxxxxxxxx
-         # region                    xxxxxxxx
-
-         # Case 3
-         # filter                 xxxxxxxxx
-         # region                   xx
-
-         # Case 4
-         # filter                 xxxxxxxxx
-         # region             xxxxxxxxxxxxxx
-        """
-        return [
-            # Overlapping cases 1-4 (chromosome == end_chrom)
-            {"end": {"$gte": start, "$lte": end}},  # Case 1
-            {"start": {"$gte": start, "$lte": end}},  # Case 2
-            {
-                "$and": [
-                    {"start": {"$gte": start}},
-                    {"end": {"$lte": end}},
-                ]
-            },  # Case 3
-            {
-                "$and": [
-                    {"start": {"$lte": start}},
-                    {"end": {"$gte": end}},
-                ]
-            },  # Case 4
-        ]
