@@ -71,8 +71,14 @@ class RegionHandler:
         return self.region_collection.insert_one(region_data)
 
     def load_regions(self, regions_data: list):
-        """Load multiple regions into the collection."""
-        return self.region_collection.insert_many(regions_data)
+        """Load multiple ISCA regions into the collection."""
+
+        regions = [
+            IscaRegion(**parsed_region).model_dump(exclude_none=True)
+            for parsed_region in regions_data
+        ]
+
+        return self.region_collection.insert_many(regions)
 
     def drop_regions(self, build=None):
         """Delete the regions collection"""
