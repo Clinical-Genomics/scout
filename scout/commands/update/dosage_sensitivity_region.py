@@ -10,7 +10,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command("region", short_help="Update dosage sensitivity regions")
+@click.command("regions", short_help="Update dosage sensitivity regions")
 @click.option(
     "-f",
     "--downloads-folder",
@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
     help="specify path to folder where files necessary to update dosage sensitivity regions are pre-downloaded",
 )
 @with_appcontext
-def dosage_sensitivity_region(downloads_folder):
+def dosage_sensitivity_regions(downloads_folder):
     """Update dosage sensitivity regions in the database.
 
     This command updates the dosage sensitivity regions in the database using the ClinGen dosage sensitivity information.

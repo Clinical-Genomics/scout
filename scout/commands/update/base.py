@@ -6,7 +6,7 @@ from .case import case as case_command
 from .compounds import compounds as compound_command
 from .disease import diseases as disease_command
 from .dosage_sensitivity_region import (
-    dosage_sensitivity_region as dosage_sensitivity_region_command,
+    dosage_sensitivity_regions as dosage_sensitivity_region_command,
 )
 from .genes import genes as gene_command
 from .hpo import hpo as hpo_command

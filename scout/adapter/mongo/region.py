@@ -72,13 +72,21 @@ class RegionHandler:
 
     def load_regions(self, regions_data: list):
         """Load multiple ISCA regions into the collection."""
+        isca_regions = []
+        for parsed_region in regions_data:
+            coords = split_coords_according_to_build(parsed_region)
+            for build in ["37", "38"]:
+                if coords[build]:
+                    parsed_region["chromosome"] = coords[build]["chrom"].lstrip("chr")
+                    parsed_region["start"] = int(coords[build]["start"])
+                    parsed_region["end"] = int(coords[build]["end"])
+                    parsed_region["build"] = build
 
-        regions = [
-            IscaRegion(**parsed_region).model_dump(exclude_none=True)
-            for parsed_region in regions_data
-        ]
+                    isca_region = IscaRegion(**parsed_region).model_dump(exclude_none=True)
+                    isca_regions.append(isca_region)
 
-        return self.region_collection.insert_many(regions)
+        LOG.info("Inserting %d ISCA regions", len(isca_regions))
+        self.region_collection.insert_many(isca_regions)
 
     def drop_regions(self, build=None):
         """Delete the regions collection"""
@@ -115,3 +123,27 @@ class RegionHandler:
         }
 
         return list(self.region_collection.find(query))
+
+
+def split_coords_according_to_build(parsed_region: dict) -> dict:
+    """Split the coordinates of a parsed region according to the build.
+
+    Each build coord is in the format "chrom:start-end". This function splits the coordinates into a dictionary with keys "37" and "38" for each build.
+    """
+
+    coords = {"37": {}, "38": {}}
+    if parsed_region.get("build_37_coordinates"):
+        coords["37"]["chrom"] = parsed_region.get("build_37_coordinates").split(":")[0]
+        coords["37"]["start"] = (
+            parsed_region.get("build_37_coordinates").split(":")[1].split("-")[0]
+        )
+        coords["37"]["end"] = parsed_region.get("build_37_coordinates").split(":")[1].split("-")[1]
+
+    if parsed_region.get("build_38_coordinates"):
+        coords["38"]["chrom"] = parsed_region.get("build_38_coordinates").split(":")[0]
+        coords["38"]["start"] = (
+            parsed_region.get("build_38_coordinates").split(":")[1].split("-")[0]
+        )
+        coords["38"]["end"] = parsed_region.get("build_38_coordinates").split(":")[1].split("-")[1]
+
+    return coords

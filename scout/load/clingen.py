@@ -1,5 +1,9 @@
+import logging
+
 from scout.parse.clingen import parse_clingen_dosage_csv
 from scout.utils.scout_requests import fetch_clingen_dosage
+
+LOG = logging.getLogger(__name__)
 
 
 def load_clingen_dosage_sensitivity(adapter, dosage_lines):
@@ -8,6 +12,7 @@ def load_clingen_dosage_sensitivity(adapter, dosage_lines):
     """
 
     if not dosage_lines:
+        LOG.info("Fetching ClinGen dosage sensitivity information from the remote URL.")
         dosage_lines = fetch_clingen_dosage()
 
     if not dosage_lines:

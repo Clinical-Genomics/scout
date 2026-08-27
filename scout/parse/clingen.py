@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Dict, Iterable, List, Tuple
 
 LOG = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ CLINGEN_DOSAGE_HEADER_ISCA_MAP = [
     "date",
 ]
 
+FIELD_RE = re.compile(r"""\s*("(?:""|[^"])*"|(?!$)[^,]*)\s*(?:,|$)""")
+
 
 def parse_clingen_dosage_csv(
     lines: Iterable[str],
@@ -47,19 +50,29 @@ def parse_clingen_dosage_csv(
     gene_dosage_infos = []
     isca_region_infos = []
 
-    remove_quotes = lambda x: x[1:-1] if x.startswith('"') and x.endswith('"') else x
-
     for i, line in enumerate(lines):
         if i > 6:
             line = line.rstrip()
             data_line = []
-            for cell in line.split(","):
 
-                if not (cell.startswith('"') and cell.endswith('"')):
+            if not line:
+                continue
+
+            for match in FIELD_RE.finditer(line):
+                cell = match.group(1)
+
+                if not cell:
+                    data_line.append(cell)
+                    continue
+
+                if (cell.startswith('"') and not cell.endswith('"')) or (
+                    cell.endswith('"') and not cell.startswith('"')
+                ):
                     LOG.warning(f"Cell '{cell}' does not both start and end with a quote")
+                    data_line.append(cell)
+                    continue
 
-                cell = remove_quotes(cell)
-
+                cell = cell[1:-1].replace('""', '"')
                 data_line.append(cell)
 
             if data_line[1].startswith("HGNC:"):
