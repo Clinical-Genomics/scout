@@ -47,24 +47,26 @@ def parse_clingen_dosage_csv(
     gene_dosage_infos = []
     isca_region_infos = []
 
+    remove_quotes = lambda x: x[1:-1] if x.startswith('"') and x.endswith('"') else x
+
     for i, line in enumerate(lines):
         if i > 6:
             line = line.rstrip()
             data_line = []
             for cell in line.split(","):
-                if cell.startswith('"') and cell.endswith('"'):
-                    cell = cell[1:-1]
-                elif cell.startswith('"') and not cell.endswith('"'):
-                    LOG.warning(f"Cell '{cell}' starts with a quote but does not end with one.")
-                elif not cell.startswith('"') and cell.endswith('"'):
-                    LOG.warning(f"Cell '{cell}' ends with a quote but does not start with one.")
+
+                if not (cell.startswith('"') and cell.endswith('"')):
+                    LOG.warning(f"Cell '{cell}' does not both start and end with a quote")
+
+                cell = remove_quotes(cell)
 
                 data_line.append(cell)
 
             if data_line[1].startswith("HGNC:"):
                 info = dict(zip(CLINGEN_DOSAGE_HEADER_HGNC_MAP, data_line))
                 gene_dosage_infos.append(info)
-            elif data_line[1].startswith("ISCA-"):
+
+            if data_line[1].startswith("ISCA-"):
                 info = dict(zip(CLINGEN_DOSAGE_HEADER_ISCA_MAP, data_line))
                 isca_region_infos.append(info)
 
