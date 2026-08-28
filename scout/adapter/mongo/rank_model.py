@@ -82,9 +82,9 @@ class RankModelHandler(object):
         Otherwise fetch it with HTTP request and save it to database.
         """
 
-        rank_model = self.rank_model_collection.find_one(rank_model_url) or self.add_rank_model(
-            rank_model_url
-        )
+        rank_model = self.rank_model_collection.find_one(
+            {"_id": rank_model_url}
+        ) or self.add_rank_model(rank_model_url)
 
         return rank_model
 
