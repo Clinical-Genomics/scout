@@ -23,7 +23,7 @@ def test_rank_model_from_url_snv(adapter, case_obj):
     assert isinstance(rank_model_dict, dict)
 
     # And should also be saved to database
-    assert adapter.rank_model_collection.find_one()
+    assert adapter.rank_model_collection.find_one({"_id": rank_model_url})
 
 
 def test_rank_model_from_url_sv(adapter, case_obj):
@@ -48,7 +48,7 @@ def test_rank_model_from_url_sv(adapter, case_obj):
     assert isinstance(rank_model_dict, dict)
 
     # And should also be saved to database
-    assert adapter.rank_model_collection.find_one()
+    assert adapter.rank_model_collection.find_one({"_id": sv_rank_model_url})
 
 
 def test_rank_model_from_file(adapter):
