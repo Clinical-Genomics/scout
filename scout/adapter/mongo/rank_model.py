@@ -57,7 +57,7 @@ class RankModelHandler(object):
         if config := self.parse_rank_model(rank_model_lines):
             config.update({"_id": rank_model_url})
             config_id = self.rank_model_collection.insert_one(config).inserted_id
-            return self.rank_model_collection.find_one(config_id)
+            return self.rank_model_collection.find_one({"_id": config_id})
 
         return {}
 
@@ -82,9 +82,9 @@ class RankModelHandler(object):
         Otherwise fetch it with HTTP request and save it to database.
         """
 
-        rank_model = self.rank_model_collection.find_one(rank_model_url) or self.add_rank_model(
-            rank_model_url
-        )
+        rank_model = self.rank_model_collection.find_one(
+            {"_id": rank_model_url}
+        ) or self.add_rank_model(rank_model_url)
 
         return rank_model
 
