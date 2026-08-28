@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Keep ClinVar submission accordion open after renaming a sample (#6497)
 - Cache apt wkhtmltopdf package to avoid repeated downloads in GitHub actions (#6503)
 - Set the same value for `rank_score` and `fusion_score` for fusion variants (#6504)
+- Avoid trying to store the same rank model multiple times (#6517)
 
 ## [4.113.3]
 ### Fixed
