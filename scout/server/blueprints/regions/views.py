@@ -27,7 +27,7 @@ def api_regions():
 @regions_bp.route("/api/v1/regions/bed")
 @public_endpoint
 def api_regions_bed():
-    """Return JSON data about regions."""
+    """Return bed data about regions."""
     query = request.args.get("query")
     if query is None or query.replace("-", "").isalnum() is False:
         return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
