@@ -60,10 +60,23 @@ class RegionHandler:
 
         return self.region_collection.find_one({"isca_id": isca_id, "build": build})
 
-    def get_isca_regions(self, build: str = "37") -> list[IscaRegion]:
-        """Get all ISCA regions for a build."""
+    def get_regions(self, build: str = "37", query: str = None) -> list:
+        """Get all regions for a build."""
+        filter_query = {"build": build}
 
-        return list(self.region_collection.find({"isca_id": {"$exists": True}, "build": build}))
+        if query:
+            filter_query.update(query)
+
+        return list(self.region_collection.find(filter_query))
+
+    def get_isca_regions(self, build: str = "37", query: str = None) -> list[IscaRegion]:
+        """Get all ISCA regions for a build."""
+        filter_query = {"isca_id": {"$exists": True}, "build": build}
+
+        if query:
+            filter_query.update(query)
+
+        return list(self.region_collection.find(filter_query))
 
     def load_region(self, region_data: dict):
         """Load a region into the collection."""

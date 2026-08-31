@@ -2,6 +2,8 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
+from scout.server.blueprints.regions.controllers import region as region_controller
+from scout.server.blueprints.regions.controllers import region as regions_controller
 from scout.server.blueprints.regions.controllers import regions_to_bed, regions_to_json
 from scout.server.extensions import store
 from scout.server.utils import public_endpoint, templated
@@ -13,7 +15,8 @@ regions_bp = Blueprint("regions", __name__, template_folder="templates")
 
 def get_build(request):
     """Get build from request values, default to 38 if not specified"""
-    build = "37" if "37" in request.values.get("build") else "38"
+    request_build = request.values.get("build") or "38"
+    build = "37" if "37" in request_build else "38"
     return build
 
 
@@ -43,14 +46,15 @@ def api_regions_bed():
     return jsonify(json_out)
 
 
-@regions_bp.route("/regions/<query>")
+@regions_bp.route("/regions")
 @templated("regions/regions.html")
-def regions(query):
+def regions():
     """Render information about regions."""
+    query = request.values.get("query")
     build = get_build(request)
     data = {
         "build": build,
-        "regions": regions_to_json(store, query, build),
+        "regions": regions_controller(store, query, build),
     }
     return data
 
@@ -59,9 +63,9 @@ def regions(query):
 @templated("regions/region.html")
 def region(region_type, region_id):
     """Render information about a region."""
-    build = "37" if "37" in request.values.get("build") else "38"
+    build = get_build(request)
     data = {
         "build": build,
-        "region": regions_to_json(store, f"{region_type}/{region_id}", build),
+        "region": region_controller(store, f"{region_type}/{region_id}", build),
     }
     return data

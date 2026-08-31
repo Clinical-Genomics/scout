@@ -30,6 +30,7 @@ from .blueprints import (
     phenomodels,
     phenotypes,
     public,
+    regions,
     variant,
     variants,
 )
@@ -206,6 +207,7 @@ def register_blueprints(app):
     app.register_blueprint(alignviewers.alignviewers_bp)
     app.register_blueprint(phenotypes.hpo_bp)
     app.register_blueprint(phenomodels.phenomodels_bp)
+    app.register_blueprint(regions.regions_bp)
     app.register_blueprint(diagnoses.omim_bp)
     app.register_blueprint(institutes.overview)
     app.register_blueprint(managed_variants.managed_variants_bp)
