@@ -11,6 +11,12 @@ LOG = logging.getLogger(__name__)
 regions_bp = Blueprint("regions", __name__, template_folder="templates")
 
 
+def get_build(request):
+    """Get build from request values, default to 38 if not specified"""
+    build = "37" if "37" in request.values.get("build") else "38"
+    return build
+
+
 @regions_bp.route("/api/v1/regions")
 @public_endpoint
 def api_regions():
@@ -18,7 +24,7 @@ def api_regions():
     query = request.args.get("query")
     if query is None or query.replace("-", "").isalnum() is False:
         return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
-    build = request.args.get("build")
+    build = get_build(request)
 
     json_out = regions_to_json(store, query, build)
     return jsonify(json_out)
@@ -28,11 +34,11 @@ def api_regions():
 @public_endpoint
 def api_regions_bed():
     """Return bed data about regions."""
-    query = request.args.get("query")
+    query = request.values.get("query")
     if query is None or query.replace("-", "").isalnum() is False:
         return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
-    build = request.args.get("build")
 
+    build = get_build(request)
     json_out = regions_to_bed(store, query, build)
     return jsonify(json_out)
 
@@ -41,9 +47,8 @@ def api_regions_bed():
 @templated("regions/regions.html")
 def regions(query):
     """Render information about regions."""
-    build = request.args.get("build")
+    build = get_build(request)
     data = {
-        "query": query,
         "build": build,
         "regions": regions_to_json(store, query, build),
     }
@@ -54,3 +59,9 @@ def regions(query):
 @templated("regions/region.html")
 def region(region_type, region_id):
     """Render information about a region."""
+    build = "37" if "37" in request.values.get("build") else "38"
+    data = {
+        "build": build,
+        "region": regions_to_json(store, f"{region_type}/{region_id}", build),
+    }
+    return data
