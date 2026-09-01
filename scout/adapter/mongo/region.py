@@ -5,43 +5,18 @@ from scout.models.region import IscaRegion, Region
 
 LOG = logging.getLogger(__name__)
 
-
-def get_overlap_coords_query(start: int, end: int) -> list:
-    """
-    Here are the possible overlapping search scenarios:
-     # Case 1
-     # filter                 xxxxxxxxx
-     # region           xxxxxxxx
-
-     # Case 2
-     # filter                 xxxxxxxxx
-     # region                    xxxxxxxx
-
-     # Case 3
-     # filter                 xxxxxxxxx
-     # region                   xx
-
-     # Case 4
-     # filter                 xxxxxxxxx
-     # region             xxxxxxxxxxxxxx
-    """
-    return [
-        # Overlapping cases 1-4 (chromosome == end_chrom)
-        {"end": {"$gte": start, "$lte": end}},  # Case 1
-        {"start": {"$gte": start, "$lte": end}},  # Case 2
-        {
-            "$and": [
-                {"start": {"$gte": start}},
-                {"end": {"$lte": end}},
-            ]
-        },  # Case 3
-        {
-            "$and": [
-                {"start": {"$lte": start}},
-                {"end": {"$gte": end}},
-            ]
-        },  # Case 4
-    ]
+REGION_PROJECTION = {
+    "_id": 0,
+    "isca_id": 1,
+    "display_name": 1,
+    "chromosome": 1,
+    "start": 1,
+    "end": 1,
+    "haploinsufficiency": 1,
+    "triplosensitivity": 1,
+    "source": 1,
+    "build": 1,
+}
 
 
 class RegionHandler:
@@ -65,18 +40,23 @@ class RegionHandler:
         filter_query = {"build": build}
 
         if query:
-            filter_query.update(query)
-
-        return list(self.region_collection.find(filter_query))
+            filter_query["$or"] = [
+                {"display_name": {"$regex": query, "$options": "i"}},
+                {"isca_id": {"$regex": query, "$options": "i"}},
+            ]
+        return list(self.region_collection.find(filter_query, REGION_PROJECTION))
 
     def get_isca_regions(self, build: str = "37", query: str = None) -> list[IscaRegion]:
         """Get all ISCA regions for a build."""
         filter_query = {"isca_id": {"$exists": True}, "build": build}
 
         if query:
-            filter_query.update(query)
+            filter_query["$or"] = [
+                {"display_name": {"$regex": query, "$options": "i"}},
+                {"isca_id": {"$regex": query, "$options": "i"}},
+            ]
 
-        return list(self.region_collection.find(filter_query))
+        return list(self.region_collection.find(filter_query, REGION_PROJECTION))
 
     def region_type_count(self) -> list:
         """Return the count of regions for each type in the db"""
@@ -165,3 +145,41 @@ def split_coords_according_to_build(parsed_region: dict) -> dict:
         coords["38"]["end"] = parsed_region.get("build_38_coordinates").split(":")[1].split("-")[1]
 
     return coords
+
+
+def get_overlap_coords_query(start: int, end: int) -> list:
+    """
+    Here are the possible overlapping search scenarios:
+     # Case 1
+     # filter                 xxxxxxxxx
+     # region           xxxxxxxx
+
+     # Case 2
+     # filter                 xxxxxxxxx
+     # region                    xxxxxxxx
+
+     # Case 3
+     # filter                 xxxxxxxxx
+     # region                   xx
+
+     # Case 4
+     # filter                 xxxxxxxxx
+     # region             xxxxxxxxxxxxxx
+    """
+    return [
+        # Overlapping cases 1-4 (chromosome == end_chrom)
+        {"end": {"$gte": start, "$lte": end}},  # Case 1
+        {"start": {"$gte": start, "$lte": end}},  # Case 2
+        {
+            "$and": [
+                {"start": {"$gte": start}},
+                {"end": {"$lte": end}},
+            ]
+        },  # Case 3
+        {
+            "$and": [
+                {"start": {"$lte": start}},
+                {"end": {"$gte": end}},
+            ]
+        },  # Case 4
+    ]

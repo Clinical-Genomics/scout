@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
 
 {% block css %}
 {{ super() }}
+    {{ db_table_external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -51,41 +53,65 @@
           </table>
         </div><!--end of card body-->
       </div><!--end of card-->
-    </div>
+    </div><!--end of col-->
+
     <div class="col-lg-9">
-
-  <div class="card">
-    <div class="card-header">Regions in database</div>
-    <div id="diagnoses-card" class="card-body">
-      <div class="d-flex align-items-center">
-        <div >
-          <input name=search-disease-term" id="search-disease-term" class="form-control" onkeydown="if (event.key == 'Enter'){loadDiseases()}" placeholder="Search...">
-        </div>
-        <div class="mx-4">
-          <button id="load-button" class="btn btn-primary my-2" onClick="loadDiseases()">Search regions</button>
-        </div>
-      </div>
-      <div id="load-container" class="d-flex align-items-center">
-      </div>
-      <table id="diagnoses_table" class="table table-sm" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;" aria-label="Table containing all diagnoses in the scout database">
-          <thead class="table-light thead">
-            <th>Diagnosis code</th>
-            <th></th>
-            <th>Phenotype description</th>
-            <th>Inheritance</th>
-            <th>Associated genes</th>
-            <th>Associated HPO terms</th>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-    </div><!--end of card body-->
-  </div><!--end of card-->
-
-
+      <div class="card">
+        <div class="card-header">Regions in database</div>
+        <div id="regions-card" class="card-body">
+          <div class="d-flex align-items-center">
+            <div >
+              <input name="search-region-query" id="region-query" class="form-control" onkeydown="if (event.key == 'Enter'){loadRegions()}" placeholder="Search...">
+            </div>
+            <div class="mx-4">
+              <button id="load-button" class="btn btn-primary my-2" onClick="loadRegions()">Search regions</button>
+            </div>
+            <div>
+              <select id="build" class="form-control form-select btn btn-secondary" aria-label="Select genome build" onchange="loadRegions()">
+                <option value="37" {% if build == "37" %}selected{% endif %}>GRCh37</option>
+                <option value="38" {% if build == "38" %}selected{% endif %}>GRCh38</option>
+              </select>
+            </div>
+          </div>
+          <div id="load-container" class="d-flex align-items-center">
+          </div>
+          <table id="regions_table" class="table table-sm" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;" aria-label="Table containing all regions in the Scout database">
+            <thead class="table-light thead">
+              <th>ID</th>
+              <th></th>
+              <th>Region</th>
+              <th>Build</th>
+              <th>Chromosome</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Haploinsufficiency</th>
+              <th>Triplosensitivity</th>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div><!--end of card body-->
+      </div><!--end of card-->
+    </div><!--end of col-->
+  </div><!--end of row-->
+  <table id="super_secret_table_template" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;">
+  <tr id="region-row">
+    <td><a id="external-link" href="https://search.clinicalgenome.org/kb/gene-dosage/region/" target="_blank" rel=noopener ></a></td>
+    <td><a id="internal-link" href="{{ url_for('regions.region', isca_id='')}}" target="_blank"><span class="fa fa-link"></span></a></td>
+    <td><span id="display-name" class="text-body"></span></td>
+    <td><span id="build" class="text-body"></span></td>
+    <td><span id="chromosome" class="text-body"></span></td>
+    <td><span id="start" class="text-body"></span></td>
+    <td><span id="end" class="text-body"></span></td>
+    <td><span id="haploinsufficiency" class="text-body"></span></td>
+    <td><span id="triplosensitivity" class="text-body"></span></td>
+  </tr>
+  </table>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('regions.static', filename='regions.js') }}"></script>
 {{ super() }}
+{{ db_table_external_scripts() }}
 {% endblock %}
