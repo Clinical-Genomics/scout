@@ -31,12 +31,16 @@
             {% else %}
               <thead class="table-light thead">
                 <th>Region source</th>
+                <th>Build</th>
                 <th>Quantity</th>
               </thead>
               {% for region_type in counts %}
                 <tr>
                   <td>
-                    {{region_type._id}}
+                    {{region_type._id.source}}
+                  </td>
+                  <td>
+                    {{region_type._id.build}}
                   </td>
                   <td>
                     {{region_type.count}}

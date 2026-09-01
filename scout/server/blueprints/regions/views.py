@@ -55,6 +55,7 @@ def regions():
     data = {
         "build": build,
         "regions": regions_controller(store, query, build),
+        "counts": store.region_type_count(),
     }
     return data
 

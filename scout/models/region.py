@@ -11,6 +11,7 @@ class Region(BaseModel):
     start: int
     end: int
 
+    source: Optional[str] = None
     display_name: Optional[str] = None
 
 
@@ -20,5 +21,6 @@ class IscaRegion(Region):
 
     isca_id: str
 
+    source: str = "ClinGen ISCA"
     haploinsufficiency: Optional[str] = None
     triplosensitivity: Optional[str] = None

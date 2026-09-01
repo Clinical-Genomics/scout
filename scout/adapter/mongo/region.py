@@ -78,6 +78,11 @@ class RegionHandler:
 
         return list(self.region_collection.find(filter_query))
 
+    def region_type_count(self) -> list:
+        """Return the count of regions for each type in the db"""
+        query = {"$group": {"_id": {"source": "$source", "build": "$build"}, "count": {"$sum": 1}}}
+        return list(self.region_collection.aggregate([query]))
+
     def load_region(self, region_data: dict):
         """Load a region into the collection."""
 
