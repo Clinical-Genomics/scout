@@ -67,7 +67,7 @@
               <button id="load-button" class="btn btn-primary my-2" onClick="loadRegions()">Search regions</button>
             </div>
             <div>
-              <select id="build" class="form-control form-select btn btn-secondary" aria-label="Select genome build" onchange="loadRegions()">
+              <select id="build" class="form-select btn btn-secondary w-auto" aria-label="Select genome build" onchange="loadRegions()">
                 <option value="37" {% if build == "37" %}selected{% endif %}>GRCh37</option>
                 <option value="38" {% if build == "38" %}selected{% endif %}>GRCh38</option>
               </select>
@@ -97,7 +97,7 @@
   <table id="super_secret_table_template" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;">
   <tr id="region-row">
     <td><a id="external-link" href="https://search.clinicalgenome.org/kb/gene-dosage/region/" target="_blank" rel=noopener ></a></td>
-    <td><a id="internal-link" href="{{ url_for('regions.region', isca_id='')}}" target="_blank"><span class="fa fa-link"></span></a></td>
+    <td><a id="internal-link" href="{{ url_for('regions.isca_region', isca_id='')}}" target="_blank"><span class="fa fa-link"></span></a></td>
     <td><span id="display-name" class="text-body"></span></td>
     <td><span id="build" class="text-body"></span></td>
     <td><span id="chromosome" class="text-body"></span></td>

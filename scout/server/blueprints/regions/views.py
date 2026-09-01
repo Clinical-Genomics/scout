@@ -2,9 +2,8 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
-from scout.server.blueprints.regions.controllers import region as region_controller
+from scout.server.blueprints.regions.controllers import isca_region as region_controller
 from scout.server.blueprints.regions.controllers import regions as regions_controller
-from scout.server.blueprints.regions.controllers import regions_to_bed
 from scout.server.extensions import store
 from scout.server.utils import public_endpoint, templated
 
@@ -40,38 +39,16 @@ def api_regions():
     return jsonify(json_out)
 
 
-@regions_bp.route("/api/v1/regions/bed")
-@public_endpoint
-def api_regions_bed():
-    """Return bed data about regions."""
-    query = request.values.get("query")
-    if query is None or query.replace("-", "").isalnum() is False:
-        return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
-
-    build = get_build(request)
-    json_out = regions_to_bed(store, query, build)
-    return jsonify(json_out)
-
-
 @regions_bp.route("/regions")
 @templated("regions/regions.html")
 def regions():
     """Render information about regions."""
-    build = get_build(request)
-    data = {
-        "build": build,
-        "counts": store.region_type_count(),
-    }
-    return data
+    return regions_controller(store)
 
 
-@regions_bp.route("/region/<isca_id>")
-@templated("regions/region.html")
-def region(isca_id):
+@regions_bp.route("/isca_region/<isca_id>")
+@templated("regions/isca_region.html")
+def isca_region(isca_id):
     """Render information about a region."""
     build = get_build(request)
-    data = {
-        "build": build,
-        "region": region_controller(store, {"isca_id": f"{isca_id}"}, build),
-    }
-    return data
+    return region_controller(store, f"{isca_id}", build)
