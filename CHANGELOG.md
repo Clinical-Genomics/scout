@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include MT SVs on mtDNA report (#6498)
 - A blog entry for the 4.114 release (#6500)
 - Add a command to download ClinGen files (dosage and disease) (#6512)
+- Add a `region_type` field to omics variants, to allow filtering by region type (#6505)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
 - Add a region view (#6515)
 ### Changed
