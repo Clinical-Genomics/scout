@@ -178,7 +178,7 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     for latest_panel in case_obj.get("latest_panels") or []:
         if latest_panel["panel_name"] not in variant_panel_names:
             continue
-        if not set(latest_panel["hgnc_ids"]).isdisjoint(variant_obj["hgnc_ids"]):
+        if not set(latest_panel["hgnc_ids"]).isdisjoint(variant_obj.get("hgnc_ids", [])):
             variant_obj["case_panels"].append(latest_panel)
 
 

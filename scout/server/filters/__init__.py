@@ -183,9 +183,12 @@ def pretty_variant(variant: dict) -> str:
                         arrow = ""
                     detail = f"{l2fc}{arrow}"
                 case "methylation":
-                    cpg = variant.get("cpg_label", "")
-                    cpg = cpg.split("_")[0] if cpg else ""
-                    detail = f"{variant.get('compare_label', '')} {cpg}"
+                    if variant.get("region_type"):
+                        region_type = variant.get("region_type", "")
+                    else:
+                        cpg = variant.get("cpg_label", "")
+                        region_type = cpg.split("_")[0] if cpg else ""
+                    detail = f"{variant.get('compare_label', '')} {region_type}"
                 case _:
                     detail = ""
 
