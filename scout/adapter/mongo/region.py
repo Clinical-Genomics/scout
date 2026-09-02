@@ -36,7 +36,7 @@ class RegionHandler:
         return self.region_collection.find_one({"isca_id": isca_id, "build": build})
 
     def get_regions(self, build: str = "37", query: str = None) -> list:
-        """Get all regions for a build."""
+        """Get all regions for a build. If a query is provided, filter by pattern match to display_name or isca_id."""
         filter_query = {"build": build}
 
         if query:
