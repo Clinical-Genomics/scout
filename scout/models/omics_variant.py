@@ -237,10 +237,10 @@ class OmicsVariantLoader(BaseModel):
                 values[symbol_alias] = [str(values.get(symbol_alias))]
 
         if "hgncId" in values:
-            convert_to_hgncId_list(values, "hgncId")
+            convert_to_list(values, source_key_name="hgncId", target_key_name="hgncId")
 
         if "hgnc_id" in values and not values.get("hgncId"):
-            convert_to_hgncId_list(values, "hgnc_id")
+            convert_to_list(values, source_key_name="hgnc_id", target_key_name="hgncId")
 
         if "cpg_label" in values and not values.get("hgncId"):
             convert_cpg_label(values)
@@ -305,16 +305,16 @@ def get_qualification(values: dict) -> str:
     return qualification
 
 
-def convert_to_hgncId_list(values, key_name):
+def convert_to_list(values, source_key_name, target_key_name):
     """Test each entry with a try / except to avoid ValueErrors when converting to int, and log a warning if the conversion fails."""
     try:
-        values["hgncId"] = [int(values.get(key_name))]
+        values[target_key_name] = [int(values.get(source_key_name))]
     except (ValueError, TypeError):
-        values["hgncId"] = None
+        values[target_key_name] = None
         LOG.warning(
             "Blank or invalid %s (%s) found in omics variant.",
-            key_name,
-            values[key_name],
+            source_key_name,
+            values.get(source_key_name),
         )
 
 
