@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include MT SVs on mtDNA report (#6498)
 - A blog entry for the 4.114 release (#6500)
 - Add a command to download ClinGen files (dosage and disease) (#6512)
+- Add a `region_type` field to omics variants, to allow filtering by region type (#6505)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)

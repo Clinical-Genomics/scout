@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from pprint import pprint as pp
 
 import click
 import coloredlogs

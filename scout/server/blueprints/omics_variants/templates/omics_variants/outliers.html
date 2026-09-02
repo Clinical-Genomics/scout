@@ -48,7 +48,9 @@
           {% else %}
             {{ variant.gene_name_orig }}
           {% endif %}
-          {% if variant.cpg_label %}
+          {% if variant.region_type %}
+            <div style="white-space: nowrap;">{{ variant.region_type }}</div>
+          {% elif variant.cpg_label %}
             {% set cpg_label_parts = variant.cpg_label.split("_") %}
             <div style="white-space: nowrap;">{{ cpg_label_parts[0] }}</div>
           {% endif %}
