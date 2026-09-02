@@ -910,6 +910,7 @@ def test_build_mathbat_significance_query(adapter):
     assert str({"summary_label": {"$in": METHBAT_SIGN_VALUES}}) in str(mongo_query["$and"])
 
     assert str({"cpg_label": {"$regex": METHBAT_IMPRINT_LABEL}}) in str(mongo_query["$and"])
+    assert str({"region_type": {"$regex": METHBAT_IMPRINT_LABEL}}) in str(mongo_query["$and"])
 
 
 def test_query_snvs_by_coordinates(real_populated_database, variant_objs, case_obj):
