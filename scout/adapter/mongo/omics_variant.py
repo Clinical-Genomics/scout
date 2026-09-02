@@ -120,6 +120,12 @@ class OmicsVariantHandler:
         """Connect the gene to the omics model using its HGNC ID and build.
         If the gene is found, its inheritance models are added to the gene.
         """
+        if not omics_model.get("hgnc_ids"):
+            LOG.warning(
+                "OMICS variant %s does not have any HGNC IDs. Skipping gene connection.",
+                omics_model.get("omics_variant_id"),
+            )
+            return
         if hgnc_gene := self.hgnc_gene(omics_model["hgnc_ids"][0], omics_model["build"]):
             if hgnc_gene.get("inheritance_models"):
                 hgnc_gene["inheritance"] = hgnc_gene.get("inheritance_models")
