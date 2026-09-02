@@ -78,7 +78,7 @@ def test_omics_variant_model_with_missing_hgnc_id(case_obj):
         "chrom": "chr6",
         "start": "144007487",
         "end": "144008719",
-        "cpg_label": "dummy",
+        "cpg_label": "notreallyalabel",
         "region_type": "nanoimprint",
         "hgnc_id": "",
         "hgnc_symbol": "PLAGL1",
