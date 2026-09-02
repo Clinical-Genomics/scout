@@ -320,21 +320,24 @@ def convert_to_list(values, key_name):
 
 def convert_cpg_label(values):
     """Test each entry with a try / except to avoid ValueErrors when converting to int, and log a warning if the conversion fails.
+
+    A CPG label is expected to be in the format regionType_HGNCsymbol_HGNCid, e.g.
+    nanoimprint_MEG3_HGNC:14575
+    Do not parse the label if it does not have exactly 3 parts separated by underscores.
+
     If no valid hgncId is found, set hgncId to the default None."""
 
     cpg_label = values.get("cpg_label").split("_")
     if len(cpg_label) == 3:
         values["region_type"] = cpg_label[0]
         values["hgncSymbol"] = [cpg_label[1]]
-        if hgnc_id := cpg_label[2].split(":")[1]:
-            try:
-                values["hgncId"] = [int(hgnc_id)]
-            except (ValueError, TypeError):
-                values["hgncId"] = None
-                LOG.warning(
-                    "Blank or invalid hgncId (%s) found in omics variant cpg_label (%s).",
-                    hgnc_id,
-                    values["cpg_label"],
-                )
-        else:
+        hgnc_id = cpg_label[2].split(":")[1]
+        try:
+            values["hgncId"] = [int(hgnc_id)]
+        except (ValueError, TypeError):
             values["hgncId"] = None
+            LOG.warning(
+                "Blank or invalid hgncId (%s) found in omics variant cpg_label (%s).",
+                hgnc_id,
+                values["cpg_label"],
+            )
