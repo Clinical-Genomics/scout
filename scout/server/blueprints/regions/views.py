@@ -30,8 +30,6 @@ def get_build(request):
 def api_regions():
     """Return JSON data about regions."""
     query = request.values.get("query")
-    if query is None or query.replace("-", "").isalnum() is False:
-        return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
 
     build = get_build(request)
 
