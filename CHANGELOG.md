@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
+- Add a region view (#6515)
+
+
 ## [4.114]
 ### Added
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
@@ -15,8 +21,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A blog entry for the 4.114 release (#6500)
 - Add a command to download ClinGen files (dosage and disease) (#6512)
 - Add a `region_type` field to omics variants, to allow filtering by region type (#6505)
-- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
-- Add a region view (#6515)
 ### Changed
 - Changelog enforcement specific to the `unreleased` changelog section (#6216)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
