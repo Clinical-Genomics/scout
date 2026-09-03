@@ -4,10 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased - dev branch only]
 
+## [unreleased - dev branch only]
 ## [unreleased - main branch]
-## [unreleased]
+
+
+## [4.114]
 ### Added
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
@@ -30,7 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in MT coverage report (#6481)
 - SonarCloud security issue about pip without binary-only install in automation (#6477)
 - SonarCloud security issue about uv and pip without frozen dependencies in automation (#6477)
-- Crash when encountering omics gene without inheritance model (#6488)
+- Crash when encountering omics gene without inheritance model (#6489)
 - Lint and fix workflow uv use error (#6492)
 - Parsing of `clingen_cgh_benign` and `clingen_cgh_pathogenic` keys (#6494)
 - ClinVar pagination fetches only entries to display (#6496)
