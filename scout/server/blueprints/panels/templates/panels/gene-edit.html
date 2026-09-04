@@ -47,6 +47,10 @@
               {{ form.custom_inheritance_models(class="form-control", placeholder="free text, comma separated") }}
             </div>
             <div class="col-md-2">
+              {{ form.proxy_region.label(class="control-label") }}
+              {{ form.proxy_region(class="form-control") }}
+            </div>
+            <div class="col-md-2">
               {{ form.database_entry_version.label(class="control-label") }}
               (ex: 1.2)
               {{ form.database_entry_version(class="form-control") }}

@@ -112,6 +112,7 @@ def parse_gene(gene_info: dict) -> dict:
             "disease_associated_transcripts": get_alias_keys_value(PANEL_GENE_INFO_TRANSCRIPTS),
             "inheritance_models": get_alias_keys_value(PANEL_GENE_INFO_MODELS),
             "custom_inheritance_models": get_alias_keys_value(["custom_inheritance_models"]),
+            "proxy_region": get_alias_keys_value(["proxy_region"]),
         }
     )
 
