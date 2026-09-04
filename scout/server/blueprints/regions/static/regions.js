@@ -70,7 +70,7 @@ function generateRegionTableRow(region, rowTemplate) {
     let displayNameElement = newNode.querySelector("#display-name")
     displayNameElement.textContent = `${display_name}`
 
-		let buildElement = newNode.querySelector("#build")
+		let buildElement = newNode.querySelector("#build-cell")
 		buildElement.textContent = `${build}`
 
     let chromosomeElement = newNode.querySelector("#chromosome")
