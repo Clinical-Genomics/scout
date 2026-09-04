@@ -1,31 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-pymongo.py
 
-This is the new mongo adapter for scout that skips mongoengine and uses pymongo,
-it is a communicator for quering and updating the mongodatabase.
-
-
-This is best practice:
-
- uri = "mongodb://%s:%s@%s" % (
-        quote_plus(user), quote_plus(password), host)
-    client = MongoClient(uri)
-
-This is to check if server is available:
-
-from pymongo.errors import ConnectionFailure
-    client = MongoClient()
-    try:
-        # The ismaster command is cheap and does not require auth.
-        client.admin.command('ismaster')
-    except ConnectionFailure:
-        print("Server not available")
+This is the PyMongo MongoDB adapter for Scout.
 
 Created by Måns Magnusson on 2017-02-15.
 Copyright (c) 2017 __MoonsoInc__. All rights reserved.
-
 """
 
 import logging
@@ -52,6 +32,7 @@ from .panel import PanelHandler
 from .phenomodel import PhenoModelHandler
 from .query import QueryHandler
 from .rank_model import RankModelHandler
+from .region import RegionHandler
 from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
@@ -80,6 +61,7 @@ class MongoAdapter(
     PhenoModelHandler,
     QueryHandler,
     RankModelHandler,
+    RegionHandler,
     TranscriptHandler,
     UserHandler,
     VariantHandler,
@@ -118,6 +100,7 @@ class MongoAdapter(
         self.panel_collection = database.gene_panel
         self.phenomodel_collection = database.phenomodel
         self.rank_model_collection = database.rank_model
+        self.region_collection = database.region
         self.transcript_collection = database.transcript
         self.user_collection = database.user
         self.variant_collection = database.variant
