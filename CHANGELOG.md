@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+<<<<<<< HEAD
 
 ## [unreleased - dev branch only]
-## [unreleased - main branch]
 
+## [unreleased]
+### Fixed
+- Syntax fix rerunner individual select (#6527)
 
 ## [4.114]
 ### Added
