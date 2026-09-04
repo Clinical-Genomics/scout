@@ -29,6 +29,27 @@ CLINGEN_DOSAGE_HEADER_ISCA_MAP = [
 FIELD_RE = re.compile(r"""\s*("(?:""|[^"])*"|(?!$)[^,]*)\s*(?:,|$)""")
 
 
+def parse_clingen_dosage_line(line: str, data_line: List[str]):
+    """Parse a line from the ClinGen dosage sensitivity file into individual cells.
+    Note that cells can have commas inside quotes, so we need to handle that."""
+    for match in FIELD_RE.finditer(line):
+        cell = match.group(1)
+
+        if not cell:
+            data_line.append(cell)
+            continue
+
+        if (cell.startswith('"') and not cell.endswith('"')) or (
+            cell.endswith('"') and not cell.startswith('"')
+        ):
+            LOG.warning(f"Cell '{cell}' does not both start and end with a quote")
+            data_line.append(cell)
+            continue
+
+        cell = cell[1:-1].replace('""', '"')
+        data_line.append(cell)
+
+
 def parse_clingen_dosage_csv(
     lines: Iterable[str],
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
@@ -58,22 +79,7 @@ def parse_clingen_dosage_csv(
             if not line:
                 continue
 
-            for match in FIELD_RE.finditer(line):
-                cell = match.group(1)
-
-                if not cell:
-                    data_line.append(cell)
-                    continue
-
-                if (cell.startswith('"') and not cell.endswith('"')) or (
-                    cell.endswith('"') and not cell.startswith('"')
-                ):
-                    LOG.warning(f"Cell '{cell}' does not both start and end with a quote")
-                    data_line.append(cell)
-                    continue
-
-                cell = cell[1:-1].replace('""', '"')
-                data_line.append(cell)
+            parse_clingen_dosage_line(line, data_line)
 
             if data_line[1].startswith("HGNC:"):
                 info = dict(zip(CLINGEN_DOSAGE_HEADER_HGNC_MAP, data_line))
