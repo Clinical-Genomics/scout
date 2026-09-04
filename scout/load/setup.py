@@ -19,6 +19,7 @@ from scout.demo import cancer_load_path, load_path, panel_path, rnafusion_load_p
 ### Import demo files ###
 from scout.demo.resources import demo_files
 from scout.load import load_cytobands, load_hgnc_genes, load_transcripts
+from scout.load.clingen import load_clingen_dosage_sensitivity
 from scout.load.disease import load_disease_terms
 from scout.load.hpo import load_hpo_terms
 
@@ -170,6 +171,10 @@ def setup_scout(
             ensembl_transcripts = ensembl_client.stream_resource(interval_type="transcripts")
         # Load the transcripts for a certain build
         load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+
+    if resource_files.get("clingen_dosage_path"):
+        clingen_dosage_handle = get_file_handle(resource_files["clingen_dosage_path"])
+        load_clingen_dosage_sensitivity(adapter, clingen_dosage_handle)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):
