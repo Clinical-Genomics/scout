@@ -5,6 +5,9 @@ import click
 from .case import case as case_command
 from .compounds import compounds as compound_command
 from .disease import diseases as disease_command
+from .dosage_sensitivity_region import (
+    dosage_sensitivity_regions as dosage_sensitivity_region_command,
+)
 from .genes import genes as gene_command
 from .hpo import hpo as hpo_command
 from .individual import individual as individual_command
@@ -31,6 +34,7 @@ def update(context):
 update.add_command(case_command)
 update.add_command(compound_command)
 update.add_command(disease_command)
+update.add_command(dosage_sensitivity_region_command)
 update.add_command(gene_command)
 update.add_command(groups_command)
 update.add_command(hpo_command)
