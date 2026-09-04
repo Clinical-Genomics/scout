@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block css %}
+{{ super() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('regions.regions') }}">Regions</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">{{ isca_id }}</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header">{{ isca_id }}</div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li class="list-group-item">{{ display_name }}</li>
+            <li class="list-group-item"><span class="badge bg-secondary me-3">Source</span><strong>{{ source }}</strong></li>
+            <li class="list-group-item"><span class="badge bg-secondary me-3">Build</span><strong>{{ build }}</strong></li>
+            <li class="list-group-item"><span class="badge bg-secondary me-3">Locus</span><strong>{{ chromosome }}:{{ start }}-{{ end }}</strong></li>
+            <li class="list-group-item"><span class="badge bg-secondary me-3">Haploinsufficiency</span> <strong>{{ haploinsufficiency }}</strong></li>
+            <li class="list-group-item"><span class="badge bg-secondary me-3">Triplosensitivity</span> <strong>{{ triplosensitivity }}</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

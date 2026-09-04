@@ -28,6 +28,14 @@ orpha_to_hpo_reduced_path = str(files(BASE_PATH).joinpath("orphadata_en_product4
 orpha_to_genes_reduced_path = str(files(BASE_PATH).joinpath("orphadata_en_product6_reduced.xml"))
 orpha_inheritance_reduced_path = str(files(BASE_PATH).joinpath("en_product9_ages_reduced.xml"))
 
+# ClinGen paths
+clingen_dosage_reduced_path = str(
+    files(BASE_PATH).joinpath("clingen_dosage_sensitivity_reduced.csv")
+)
+clingen_disease_reduced_path = str(
+    files(BASE_PATH).joinpath("clingen_gene_disease_validity_reduced.csv")
+)
+
 # HPO paths
 hpoterms_reduced_path = str(files(BASE_PATH).joinpath("reduced.hpo.obo"))
 hpo_phenotype_annotation_reduced_path = str(files(BASE_PATH).joinpath("reduced.phenotype.hpoa"))
@@ -57,4 +65,6 @@ demo_files = {
     "orpha_to_genes_path": orpha_to_genes_reduced_path,
     "orpha_to_hpo_path": orpha_to_hpo_reduced_path,
     "orpha_inheritance_path": orpha_inheritance_reduced_path,
+    "clingen_dosage_path": clingen_dosage_reduced_path,
+    "clingen_disease_path": clingen_disease_reduced_path,
 }

@@ -97,6 +97,8 @@ class HgncGene(BaseModel):
     constraint_mis_oe_ci_lower: Optional[float] = None
     constraint_mis_oe_ci_upper: Optional[float] = None
     constraint_mis_z: Optional[float] = None
+    haploinsufficiency: Optional[str] = None
+    triplosensitivity: Optional[str] = None
 
     @model_validator(mode="before")
     def set_gene_length(cls, values) -> "HgncGene":
