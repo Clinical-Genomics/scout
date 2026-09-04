@@ -35,7 +35,12 @@ def build_gene(gene_info: dict, adapter) -> dict:
     gene_obj.update(
         {
             key: gene_info[key]
-            for key in ["disease_associated_transcripts", "comment", "database_entry_version"]
+            for key in [
+                "disease_associated_transcripts",
+                "comment",
+                "database_entry_version",
+                "proxy_region",
+            ]
             if key in gene_info
         }
     )

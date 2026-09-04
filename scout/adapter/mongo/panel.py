@@ -405,7 +405,7 @@ class PanelHandler:
 
         return updated_panel
 
-    def add_pending(self, panel_obj, hgnc_gene, action, info=None):
+    def add_pending(self, panel_obj: dict, hgnc_gene: dict, action: str, info: dict = None) -> dict:
         """Add a pending action to a gene panel
 
         Store the pending actions in panel.pending
@@ -416,11 +416,10 @@ class PanelHandler:
             action(str): choices=['add','delete','edit']
             info(dict): additional gene info (disease_associated_transcripts,
                         reduced_penetrance, mosaicism, database_entry_version,
-                        inheritance_models, custom_inheritance_models, comment, region_proxy)
+                        inheritance_models, custom_inheritance_models, comment, proxy_region)
 
         Returns:
             updated_panel(dict):
-
         """
 
         valid_actions = ["add", "delete", "edit"]
@@ -443,14 +442,10 @@ class PanelHandler:
 
         return updated_panel
 
-    def reset_pending(self, panel_obj):
+    def reset_pending(self, panel_obj: dict) -> dict:
         """Reset the pending status of a gene panel
 
-        Args:
-            panel_obj(dict): panel in database to update
-
-        Returns:
-            updated_panel(dict): the updated gene panel
+        Takes a panel in database to update, replaces the db collection entry and returns the updated gene panel
         """
 
         if "pending" in panel_obj:

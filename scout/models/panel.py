@@ -11,7 +11,7 @@ panel_gene = dict(
     inheritance_models=list,
     custom_inheritance_models=list,
     comment=str,  # panel context gene comment
-    region_proxy=str,  # region proxy for gene, if any
+    proxy_region=str,  # region proxy for gene, if any
 )
 
 

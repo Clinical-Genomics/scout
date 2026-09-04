@@ -209,7 +209,7 @@
               </td>
               <td>{{ gene.inheritance_models|join(', ') }}</td>
               <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
-              <td>{{ gene.region_proxy }}</td>
+              <td>{{ gene.proxy_region }}</td>
               <td>{{ gene.comment }}</td>
             </tr>
           {% endfor %}
@@ -255,8 +255,8 @@
               {{ gene.info.inheritance_models|join(',') if gene.info.inheritance_models }} <br>
               <strong>Entry version</strong>:
               {{ gene.info.database_entry_version if gene.info.database_entry_version }} <br>
-              <strong>Region proxy</strong>:
-              {{ gene.info.region_proxy if gene.info.region_proxy }} <br>
+              <strong>Proxy region</strong>:
+              {{ gene.info.proxy_region if gene.info.proxy_region }} <br>
               <strong>Comment</strong>:
               {{ gene.info.comment if gene.info.comment }} <br>
             </div>
