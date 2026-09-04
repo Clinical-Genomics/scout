@@ -25,7 +25,7 @@ def get_build(request):
     return build
 
 
-@regions_bp.route("/api/v1/regions")
+@regions_bp.route("/api/v1/regions", methods=["GET"])
 @public_endpoint
 def api_regions():
     """Return JSON data about regions."""
@@ -37,14 +37,14 @@ def api_regions():
     return jsonify(json_out)
 
 
-@regions_bp.route("/regions")
+@regions_bp.route("/regions", methods=["GET"])
 @templated("regions/regions.html")
 def regions():
     """Render information about regions."""
     return regions_controller(store)
 
 
-@regions_bp.route("/isca_region/<isca_id>")
+@regions_bp.route("/isca_region/<isca_id>", methods=["GET"])
 @templated("regions/isca_region.html")
 def isca_region(isca_id):
     """Render information about a region."""
