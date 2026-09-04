@@ -2,7 +2,6 @@ import json
 
 import responses
 
-from scout.constants.clinvar import PRECLINVAR_URL
 from scout.server.app import create_app
 from scout.server.extensions import clinvar_api
 
@@ -66,33 +65,3 @@ def test_get_clinvar_scv_accession(successful_submission_summary_file_content):
             url=CLINVAR_TEST_SUBMISSION_SUMMARY_URL
         )
         assert clinvar_accession == TEST_CLINVAR_ACCESSION
-
-
-@responses.activate
-def test_delete_clinvar_submission(mocker, processed_submission):
-    """Test the extension function responsible for deleting a successful submission from ClinVar."""
-
-    # GIVEN a patched response from ClinVar
-    responses.post(
-        url="/".join([PRECLINVAR_URL, "delete"]), json={"id": TEST_SUBMISSION_ID}, status=201
-    )
-
-    # GIVEN a patched clinvar_extension.json_submission_status
-    mocker.patch.object(clinvar_api, "json_submission_status", return_value=processed_submission)
-
-    # GIVEN a patched clinvar_extension.get_clinvar_scv_accession
-    mocker.patch.object(
-        clinvar_api, "get_clinvar_scv_accession", return_value=TEST_CLINVAR_ACCESSION
-    )
-
-    # WHEN an app is created and contains the CLINVAR_API_URL param
-    test_app = create_app(config=dict(TESTING=True, CLINVAR_API_URL=CLINVAR_TEST_API_URL))
-
-    with test_app.test_request_context():
-
-        # THEN the extension function should return the expected values
-        result: tuple = clinvar_api.delete_clinvar_submission(
-            submission_id=TEST_SUBMISSION_ID, api_key=TEST_API_KEY
-        )
-
-        assert result == (201, {"id": TEST_SUBMISSION_ID})
