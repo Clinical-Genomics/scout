@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
 - Add a region view (#6515)
+- Add a region proxy field to gene panel genes (#6529)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 

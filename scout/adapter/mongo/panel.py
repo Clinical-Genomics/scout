@@ -416,7 +416,7 @@ class PanelHandler:
             action(str): choices=['add','delete','edit']
             info(dict): additional gene info (disease_associated_transcripts,
                         reduced_penetrance, mosaicism, database_entry_version,
-                        inheritance_models, custom_inheritance_models, comment)
+                        inheritance_models, custom_inheritance_models, comment, region_proxy)
 
         Returns:
             updated_panel(dict):
