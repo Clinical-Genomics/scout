@@ -19,7 +19,17 @@
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
       <a class="accordion-button {% if open_submission == subm_obj._id|string %}{% else %}collapsed{% endif %} {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="{{ 'true' if open_submission == subm_obj._id|string else 'false' }}" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id if subm_obj.clinvar_subm_id else subm_obj._id }} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+        Submission&nbsp;
+        <strong>{{subm_obj.clinvar_subm_id if subm_obj.clinvar_subm_id else subm_obj._id }} - ({{subm_obj.status|upper}})</strong>
+        &nbsp;/&nbsp;Created {% if subm_obj.created_by %}
+        &nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}
+        &nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>
+        &nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+        {% if subm_obj.deprecated_at %}
+          <span class="badge bg-danger text-white position-absolute end-0 me-5" data-bs-toggle="tooltip" data-bs-placement="top" title="The data contained in this submission can be viewed but cannot be submitted to ClinVar because the current ClinVar API does not support the old format.">
+            Deprecated
+          </span>
+        {% endif %}
       </a>
     </h2>
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse {% if open_submission == subm_obj._id|string %}show{% endif %}" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">

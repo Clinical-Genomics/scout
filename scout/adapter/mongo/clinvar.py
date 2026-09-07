@@ -295,7 +295,7 @@ class ClinVarHandler(object):
         for result in results:
             submission = self._basic_submission_info(result)
             cases = {}
-
+            submission["deprecated_at"] = result.get("deprecated_at")
             if result.get("clinvar_subm_id"):
                 submission["clinvar_subm_id"] = result["clinvar_subm_id"]
 
