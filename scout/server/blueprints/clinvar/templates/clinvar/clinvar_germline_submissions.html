@@ -32,7 +32,7 @@
 
   <div class="mb-2">
       <form id="search-form" class="d-flex gap-2 align-items-start" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
-        <input type="text" class="form-control" name="clinvar_id_filter"
+        <input type="text" class="form-control" id="clinvar_id_filter" name="clinvar_id_filter"
                placeholder="Enter ClinVar submission ID…"
                value="{{clinvar_id_filter if clinvar_id_filter}}"
                style="max-width: 250px;">
