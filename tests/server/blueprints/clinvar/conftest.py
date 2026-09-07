@@ -8,7 +8,6 @@ CLINICAL_TESTING = "clinical testing"
 #############################################################
 
 
-@pytest.fixture(scope="function")
 def clinvar_snv_form():
     """Mocks a germline SNV form compiled by the user"""
     data = ImmutableMultiDict(
