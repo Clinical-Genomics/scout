@@ -436,12 +436,14 @@ class ClinVarHandler(object):
         for germvar in self.clinvar_collection.find(query):
             case_germline_clinvars[germvar.get("local_id")] = germvar
 
-        case_germline_clinvars.update(self.case_to_api_clinvar(case_id=case_id, type="germline"))
+        case_germline_clinvars.update(
+            self.get_clinvar_submission_variants_for_case(case_id=case_id, type="germline")
+        )
 
         return case_germline_clinvars
 
-    def case_to_api_clinvar(self, case_id: str, type: str) -> dict[str, dict]:
-        """Returns all variants dict(var_id:var_obj) for a case that belong to a ClinVar submission."""
+    def get_clinvar_submission_variants_for_case(self, case_id: str, type: str) -> dict[str, dict]:
+        """Return variants from ClinVar submissions that belong to the specified case."""
         query = {
             "type": type,
             f"{type}Submission.case_id": case_id,
