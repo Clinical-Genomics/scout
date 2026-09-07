@@ -47,7 +47,7 @@
     {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
-          {{ submission_panel(submission, institute, show_submit, variant_header_fields, casedata_header_fields) }}
+          {{ submission_panel(submission, institute, show_submit, variant_header_fields, casedata_header_fields, page, open_submission) }}
         {% endif %}
       {% endfor %}
     {% endfor %}
