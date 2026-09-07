@@ -25,7 +25,7 @@ class ClinVarHandler(object):
     def deprecate_type_none_germline_submissions(self):
         """Set 'deprecated' key to today's date in all existing submissions which have no type (either 'germline' or 'oncogenicity')."""
         result = self.clinvar_submission_collection.update_many(
-            {"type": {"$exists": False}}, {"$set": {"deprecated": datetime.now}}
+            {"type": {"$exists": False}}, {"$set": {"deprecated_at": datetime.now()}}
         )
         LOG.info(f"Deprecated ClinVar submission objects: {result.modified_count} ")
 

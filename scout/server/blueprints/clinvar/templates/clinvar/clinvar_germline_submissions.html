@@ -44,7 +44,7 @@
   {% if submissions %}
 
     <div style="overflow-y: auto; height: 1000px;">
-    {% for status in ['open', 'closed', 'submitted', 'deprecated'] %}
+    {% for status in ['open', 'closed', 'submitted'] %}
       {% for submission in submissions|sort(attribute='status') %}
         {% if submission.status==status %}
           {{ submission_panel(submission, institute, show_submit, variant_header_fields, casedata_header_fields, page, open_submission) }}
