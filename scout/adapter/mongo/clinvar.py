@@ -22,12 +22,28 @@ REGEX = "$regex"
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
+    from datetime import datetime
+
     def deprecate_type_none_germline_submissions(self):
-        """Set 'deprecated' key to today's date in all existing submissions which have no type (either 'germline' or 'oncogenicity')."""
+        """Set 'deprecated_at' to today's date and close existing open submissions which have no type."""
         result = self.clinvar_submission_collection.update_many(
-            {"type": {"$exists": False}}, {"$set": {"deprecated_at": datetime.now()}}
+            {"type": {"$exists": False}},
+            [
+                {
+                    "$set": {
+                        "deprecated_at": datetime.now(),
+                        "status": {
+                            "$cond": [
+                                {"$eq": ["$status", "open"]},
+                                "closed",
+                                "$status",
+                            ]
+                        },
+                    }
+                }
+            ],
         )
-        LOG.info(f"Deprecated ClinVar submission objects: {result.modified_count} ")
+        LOG.info(f"Deprecated ClinVar submission objects: {result.modified_count}")
 
     def create_germline_submission(self, institute_id: str, user_id: str) -> ObjectId:
         """Create an open ClinVar germline submission for an institute."""
