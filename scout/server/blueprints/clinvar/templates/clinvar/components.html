@@ -13,12 +13,11 @@
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
-      {% set is_open = (open_submission and subm_obj._id|string == open_submission|string) %}
-      <a class="accordion-button {% if not is_open %}collapsed{% endif %} {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
+      <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
         Submission&nbsp;<strong>{{subm_obj.clinvar_subm_id if subm_obj.clinvar_subm_id else subm_obj._id }} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
       </a>
     </h2>
-    <div id="flush-{{subm_obj._id}}" class="accordion-collapse {% if is_open %}collapse{% endif %}" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
+    <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
       <div class="accordion-body">
         <div class="row">
           {{ update_submission_status_form(institute, subm_obj) }}
