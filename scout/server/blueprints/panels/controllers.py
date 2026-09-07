@@ -399,8 +399,9 @@ def get_panel_genes(panel_obj):
 def get_panel_proxy_region(panel_obj):
     """Return a set of gene symbols for the genes included as region proxy genes on the panel."""
     panel_proxy_region = set()
-    for gene in panel_obj.get("proxy_region", []):
-        panel_proxy_region.add(gene["symbol"])
+    for gene in panel_obj.get("genes", []):
+        if gene.get("proxy_region"):
+            panel_proxy_region.add(f"{gene['symbol']} - {gene['proxy_region']}")
     return panel_proxy_region
 
 
