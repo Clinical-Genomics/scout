@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
+### Changed
+- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
+- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
+- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
+- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
@@ -15,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
 - Allow custom config human reference tracks, e.g. for local emergency copies when UCSC is unreachable (#6479)
 - Option to hide case details on the case specific gene panel extent report (#6485)
-- Pagination on ClinVar germline and oncogenicity submissions pages (#6491, #5994)
+- Pagination on ClinVar germline and oncogenicity submissions pages (#6491)
 - Show dark region genes as a category on the case specific gene panel extent report, replacing SMN only (#6488)
 - Include MT SVs on mtDNA report (#6498)
 - A blog entry for the 4.114 release (#6500)
@@ -26,10 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Decoy GRCh37 build no longer available from igv. Add JP mirror to avoid UCSC fallback and its recent downtime issues (#6479)
 - Bump automation GitHub action version (#6477)
 - Condition ID type MedGen is now the default instead of HPO in the ClinVar submission form (#6486)
-- Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
-- Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
-- Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
-- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 ### Fixed
 - Bug calculating allele read depth in samples genotype module (#6469)
 - Users selecting no institute on gene variants page should only see cases they have access to (#6476)
@@ -171,7 +174,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Command line option to export causative variants by category and/or genome build (#6202)
 - An additional button on causatives and verified pages to download SNVs and SVs as input for the managed variants list (admins only) (#6205 and #6231)
 - Display total number of variants and number of variants returned by a filter on Managed Variants page (#6223)
-- ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Genome build is now shown on variant verification "Sanger" emails (#6194)
 - Refactor, speedup (dry-run only) and add a progress bar to `scout delete variants` cmd (#6094)
