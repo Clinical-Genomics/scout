@@ -23,9 +23,9 @@ class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
     def deprecate_type_none_germline_submissions(self):
-        """Set status 'deprecated' to all existing submissions which have no type (either 'germline' or 'oncogenicity') set."""
+        """Set 'deprecated' key to today's date in all existing submissions which have no type (either 'germline' or 'oncogenicity')."""
         result = self.clinvar_submission_collection.update_many(
-            {"type": {"$exists": False}}, {"$set": {"status": "deprecated"}}
+            {"type": {"$exists": False}}, {"$set": {"deprecated": datetime.now}}
         )
         LOG.info(f"Deprecated ClinVar submission objects: {result.modified_count} ")
 
