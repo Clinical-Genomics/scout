@@ -396,6 +396,14 @@ def get_panel_genes(panel_obj):
     return panel_genes
 
 
+def get_panel_proxy_region(panel_obj):
+    """Return a set of gene symbols for the genes included as region proxy genes on the panel."""
+    panel_proxy_region = set()
+    for gene in panel_obj.get("proxy_region", []):
+        panel_proxy_region.add(gene["symbol"])
+    return panel_proxy_region
+
+
 def panel_export_case_hits(
     panel_id: str, institute_obj: dict, case_obj: dict, hide_case_details: bool
 ) -> dict:
@@ -404,6 +412,7 @@ def panel_export_case_hits(
         1) the genes on the panel for SNV and SV
         2) the genes on the panel with any calls reported for STRs
         3) the availability of an SMN Copy Number or Paraphrase report if SMN1 or SMN2 is on the gene panel.
+        4) the genes on the panel that are included as region proxy genes
 
     Returns a dictionary containing data to be displayed on the PDF report
     Case identifying information can optionally be hidden, giving the report a more general look that can potentially be reused
@@ -431,6 +440,7 @@ def panel_export_case_hits(
         "case": case_obj,
         "panel": panel_obj,
         "panel_genes": get_panel_genes(panel_obj),
+        "panel_proxy_region": get_panel_proxy_region(panel_obj),
         "hide_case_details": hide_case_details,
         "variant_hits": get_variant_hits(case_obj, panel_obj),
     }
