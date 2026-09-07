@@ -17,6 +17,7 @@ from scout.constants.clinvar import (
 
 LOG = logging.getLogger(__name__)
 REGEX = "$regex"
+STATUS = "$status"
 
 
 class ClinVarHandler(object):
@@ -34,9 +35,9 @@ class ClinVarHandler(object):
                         "deprecated_at": datetime.now(),
                         "status": {
                             "$cond": [
-                                {"$eq": ["$status", "open"]},
+                                {"$eq": [STATUS, "open"]},
                                 "closed",
-                                "$status",
+                                STATUS,
                             ]
                         },
                     }
@@ -238,7 +239,7 @@ class ClinVarHandler(object):
 
         sort_pipeline = [
             {"$match": query},
-            {"$addFields": {"statusOrder": {"$cond": [{"$eq": ["$status", "open"]}, 0, 1]}}},
+            {"$addFields": {"statusOrder": {"$cond": [{"$eq": [STATUS, "open"]}, 0, 1]}}},
             {"$sort": {"statusOrder": pymongo.ASCENDING, "updated_at": pymongo.DESCENDING}},
             {"$skip": skip},
             {"$limit": limit},
