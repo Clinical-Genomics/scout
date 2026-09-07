@@ -119,7 +119,7 @@ class ClinVarHandler(object):
 
         Args:
             clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from ClinVar portal when starting a new submission
-            submission_id(str): submission_id(str) : id of the submission in scout to be updated
+            submission_id(str): submission_id(str) : internal id of the submission to be updated
 
         Returns:
             updated_submission(obj): a ClinVar submission object, updated
