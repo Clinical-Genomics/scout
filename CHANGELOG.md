@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Gens viewer for a case opens in a new tab (#6538)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
