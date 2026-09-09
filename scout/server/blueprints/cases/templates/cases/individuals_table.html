@@ -10,6 +10,7 @@
           <tr>
             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Sample display name">Sample</th>
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
             <th class="col-xs-2" title="Tumor Type">Tumor Type</th>
             <th class="col-xs-1" title="Phenotype">Phenotype</th>
             <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
@@ -33,6 +34,11 @@
           {% for ind in case.individuals %}
             <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
               <td>{{ ind.display_name }}{{ gens_individual_button(case, ind, gens_info) }}</td>
+              <td>
+                <div class="sex-display fw-bold">
+                  {{ sex_table_cell_content(ind) }}
+                </div>
+              </td>
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
               {% else %}

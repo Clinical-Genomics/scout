@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Show `Sex` column on cancer cases' samples table (#6539)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
