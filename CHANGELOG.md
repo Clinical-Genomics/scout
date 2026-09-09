@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a region proxy field to gene panel genes (#6529)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
+- Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 
 ## [4.114]
 ### Added
