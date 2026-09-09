@@ -56,8 +56,12 @@ class RankModelHandler(object):
 
         if config := self.parse_rank_model(rank_model_lines):
             config.update({"_id": rank_model_url})
-            config_id = self.rank_model_collection.insert_one(config).inserted_id
-            return self.rank_model_collection.find_one({"_id": config_id})
+            self.rank_model_collection.update_one(
+                {"_id": rank_model_url},
+                {"$setOnInsert": config},
+                upsert=True,
+            )
+            return self.rank_model_collection.find_one({"_id": rank_model_url}) or {}
 
         return {}
 
