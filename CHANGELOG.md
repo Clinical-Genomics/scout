@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
+- Update igv.js to 3.8.7 (#6539)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
