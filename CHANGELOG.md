@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Show `Sex` column on cancer cases' samples table (#6539)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
