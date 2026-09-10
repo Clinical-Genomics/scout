@@ -1,5 +1,7 @@
 """Code for performing requests"""
 
+import gzip
+import io
 import logging
 import urllib.request
 import zlib
@@ -149,17 +151,17 @@ def fetch_resource(url, json=False):
 
     if json:
         LOG.info("Return in json")
-        data = response.json()
-    else:
-        content = response.text
-        if response.url.endswith(".gz"):
-            LOG.info("gzipped!")
-            encoded_content = b"".join(chunk for chunk in response.iter_content(chunk_size=128))
-            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode("utf-8")
+        return response.json()
 
-        data = content.split("\n")
+    content_bytes = response.content
 
-    return data
+    if response.url.endswith((".gz", ".bgz")):
+        LOG.info("Decompressing gzipped response")
+        with gzip.GzipFile(fileobj=io.BytesIO(content_bytes)) as file:
+            decompressed_text = file.read().decode("utf-8")
+        return decompressed_text.split("\n")
+
+    return content_bytes.decode("utf-8").split("\n")
 
 
 def fetch_hpo_terms():
@@ -333,30 +335,29 @@ def fetch_hgnc() -> List[str]:
     return fetch_resource(url)
 
 
-def fetch_constraint():
+def fetch_constraint() -> List[str] | None:
     """Fetch the file with gnomAD constraint scores
 
     Returns:
         exac_lines(iterable(str))
     """
-    path = "/release/4.1/constraint/gnomad.v4.1.constraint_metrics.tsv"
+    path = "/release/4.1.1/constraint/gnomad.v4.1.1.constraint_metrics.tsv.bgz"
     mirror_urls = [
         f"https://storage.googleapis.com/gcp-public-data--gnomad{path}",
         f"https://gnomad-public-us-east-1.s3.amazonaws.com{path}",
         f"https://datasetgnomad.blob.core.windows.net/dataset{path}",
     ]
 
-    exac_lines = None
-
     LOG.info("Fetching GnomAD constraint scores.")
 
     for url in mirror_urls:
         try:
             exac_lines = fetch_resource(url)
+            return exac_lines
         except HTTPError:
             LOG.info("Failed to fetch constraint scores from %s. Trying next mirror.", url)
 
-        return exac_lines
+    raise HTTPError("Failed to fetch constraint scores from all mirrors")
 
 
 def fetch_refseq_version(refseq_acc: str) -> str:

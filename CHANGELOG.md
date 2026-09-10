@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Update igv.js to 3.8.7 (#6539)
+- Update GnomAD constraint to v4.1.1 (#6541)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
