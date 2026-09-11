@@ -510,7 +510,12 @@
         {% if gene.iarctp53_link %}
             <a href="{{ gene.iarctp53_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">TP53 Database</a>
         {% endif %}
-        <a href="{{ variant.ucsc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">UCSC</a>
+        {% if variant.ucsc_link %}
+          <a href="{{ variant.ucsc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">UCSC</a>
+        {% endif %}
+        {% if variant.alphagenome_atlas_link %}
+          <a href="{{ variant.alphagenome_atlas_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">AlphaGenome Atlas</a>
+        {% endif %}
     </div>
     {% endfor %}
   </div>
