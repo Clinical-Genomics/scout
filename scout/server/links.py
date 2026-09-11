@@ -523,6 +523,7 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         beacon_link=beacon_link(variant_obj, build),
         franklin_link=franklin_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
+        alphagenome_atlas_link=alphagenome_atlas_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
@@ -786,6 +787,18 @@ def ucsc_link(variant_obj, build=None):
             "position=chr{this[chromosome]}:{this[position]}"
             "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack"
         )
+
+    return url_template.format(this=variant_obj)
+
+
+def alphagenome_atlas_link(variant_obj, build=None):
+    """Compose link to AlphaGenome Atlas. Only works for GRCh38 SNVs so far."""
+    build = build or 38
+    url_template = "https://deepmind.google.com/science/alphagenome/atlas?q=chr{this[chromosome]}:{this[position]}:{this[reference]}%3E{this[alternative]}&m=variant"
+    if build != 38:
+        return None
+    if len(variant_obj["alternative"]) > 1 or len(variant_obj["reference"]) > 1:
+        return None
 
     return url_template.format(this=variant_obj)
 

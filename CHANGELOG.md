@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Show `Sex` column on cancer cases' samples table (#6539)
+- Add AlphaGenome Atlas links (#6547)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.7 (#6539)
