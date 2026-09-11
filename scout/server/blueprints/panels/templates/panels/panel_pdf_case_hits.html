@@ -88,5 +88,17 @@
     </td>
   </tr>
 </table>
+<br>
+{% endif %}
+{% if panel_proxy_region %}
+<table>
+  <tr><th scope="col">Panel genes included as region proxy genes</th></tr>
+  <tr>
+    <td>
+      <em>{{ panel_proxy_region|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
 {% endif %}
 {% endmacro %}

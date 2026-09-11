@@ -9,6 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show `Sex` column on cancer cases' samples table (#6539)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 - Add AlphaGenome Atlas links (#6547)
+- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
+- Add a region view (#6515)
+- Add a region proxy field to gene panel genes, with a typeahead (#6530)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.7 (#6539)
@@ -18,10 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
-- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
-- Add a region view (#6515)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 - Fix ACMG form crash when saving without criteria (#6546)
+
 
 ## [4.114]
 ### Added

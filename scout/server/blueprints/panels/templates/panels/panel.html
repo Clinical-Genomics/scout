@@ -176,6 +176,7 @@
             <th>Entry version</th>
             <th>Manual inheritance (pre-set terms)</th>
             <th>Manual inheritance (free text terms)</th>
+            <th>Region proxy</th>
             <th>Comment</th>
           </tr>
         </thead>
@@ -208,6 +209,7 @@
               </td>
               <td>{{ gene.inheritance_models|join(', ') }}</td>
               <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
+              <td>{{ gene.proxy_region }}</td>
               <td>{{ gene.comment }}</td>
             </tr>
           {% endfor %}
@@ -253,6 +255,8 @@
               {{ gene.info.inheritance_models|join(',') if gene.info.inheritance_models }} <br>
               <strong>Entry version</strong>:
               {{ gene.info.database_entry_version if gene.info.database_entry_version }} <br>
+              <strong>Proxy region</strong>:
+              {{ gene.info.proxy_region if gene.info.proxy_region }} <br>
               <strong>Comment</strong>:
               {{ gene.info.comment if gene.info.comment }} <br>
             </div>

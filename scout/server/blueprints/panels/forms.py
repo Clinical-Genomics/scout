@@ -20,6 +20,7 @@ class PanelGeneForm(FlaskForm):
         "Manual inheritance (free text terms)",
     )
     comment = StringField()
+    proxy_region = StringField("Region proxy ID", render_kw={"placeholder": "ISCA-1234"})
 
 
 class GeneSearchForm(FlaskForm):

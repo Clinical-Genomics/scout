@@ -464,6 +464,7 @@ def gene_edit(panel_id, hgnc_id):
             "inheritance_models",
             "custom_inheritance_models",
             "database_entry_version",
+            "proxy_region",
             "comment",
         ]:
             form_field = getattr(form, field_key)

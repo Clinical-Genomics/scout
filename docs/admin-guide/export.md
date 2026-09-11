@@ -182,7 +182,7 @@ Options:
 **Output Header (default format):**
 
 ```
-#hgnc_id	symbol	disease_associated_transcripts	reduced_penetrance	mosaicism	database_entry_version	inheritance_models	custom_inheritance_models	comment
+#hgnc_id	symbol	disease_associated_transcripts	reduced_penetrance	mosaicism	database_entry_version	inheritance_models	custom_inheritance_models	proxy_region	comment
 ```
 
 ---
