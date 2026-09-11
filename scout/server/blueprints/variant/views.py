@@ -234,12 +234,12 @@ def variant_acmg(institute_id, case_name, variant_id):
             store, institute_id, case_name, variant_id, current_user.email, criteria
         )
         flash("classified as: {}".format(acmg), "info")
+
+        if request.form.get("action") == "stay":
+            return redirect(url_for(".evaluation", evaluation_id=acmg_id))
     else:
         flash("Empty ACMG criteria, redirecting", "info")
 
-    action = request.form.get("action")
-    if action == "stay":
-        return redirect(url_for(".evaluation", evaluation_id=acmg_id))
     variant_obj = store.variant(variant_id)
     return redirect(
         url_for(
