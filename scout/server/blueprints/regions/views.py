@@ -46,7 +46,6 @@ def api_regionlist():
 
     try:
         regions = store.get_regions(build=build, query=query)
-        LOG.info("Build %s query %s returned %d regions", build, query, len(regions))
     except OperationFailure as of:
         return jsonify({"error": of._message})
 
@@ -54,7 +53,6 @@ def api_regionlist():
         {"name": f"{region['isca_id']} | {region['display_name']}", "id": region["isca_id"]}
         for region in regions
     ]
-    LOG.info(f"Found {len(json_terms)} regions")
     return jsonify(json_terms)
 
 
