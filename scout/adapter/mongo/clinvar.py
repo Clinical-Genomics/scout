@@ -169,7 +169,15 @@ class ClinVarHandler(object):
     def update_clinvar_submission_status(
         self, institute_id: str, submission_id: str, status: str
     ) -> dict:
-        """Update the status of a ClinVar submission object."""
+        """Update the status of a ClinVar submission.
+        Deprecated submissions cannot be set to open and are instead set to closed.
+        When a submission is set to open, any other open submissions for the same institute are closed.
+        """
+        submission = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission_id)})
+
+        if status == "open" and "deprecated_at" in submission:
+            status = "closed"
+
         # When setting one submission as open
         # Close all other submissions for this institute first
         if status == "open":
@@ -177,6 +185,7 @@ class ClinVarHandler(object):
                 {"institute_id": institute_id, "status": "open"},
                 {"$set": {"status": "closed", "updated_at": datetime.now()}},
             )
+
         updated_submission = self.clinvar_submission_collection.find_one_and_update(
             {"_id": ObjectId(submission_id)},
             {"$set": {"status": status, "updated_at": datetime.now()}},
