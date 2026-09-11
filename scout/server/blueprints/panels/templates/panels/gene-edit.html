@@ -48,7 +48,7 @@
             </div>
             <div class="col-md-2">
               {{ form.proxy_region.label(class="control-label") }}
-              {{ form.proxy_region(class="form-control") }}
+              {{ form.proxy_region(class="form-control typeahead_region", data_provide="typeahead", autocomplete="off") }}
             </div>
             <div class="col-md-2">
               {{ form.database_entry_version.label(class="control-label") }}
@@ -81,4 +81,33 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+  <script>
+  $(function () {
+    function getRegionTerms(query, process) {
+      $.getJSON("{{ url_for('regions.api_regionlist') }}", {query: query})
+      .done(
+        function (data) {
+          process(data);
+        })
+      .fail(
+        function (jqxhr, textStatus, error) {
+          var err = textStatus + ", " + error;
+          console.log("Region autocomplete failed: " + err);
+        });
+    }
+
+    $(".typeahead_region").typeahead({
+      source: getRegionTerms,
+      minLength: 6,
+      displayText: function (item) {
+        return item.name;
+      },
+      afterSelect: function (item) {
+        this.$element.val(item.id);
+      },
+    });
+  });
+  </script>
 {% endblock %}

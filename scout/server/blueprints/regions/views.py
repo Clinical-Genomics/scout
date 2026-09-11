@@ -1,6 +1,7 @@
 import logging
 
 from flask import Blueprint, jsonify, request
+from pymongo.errors import OperationFailure
 
 from scout.server.blueprints.regions.controllers import isca_region as region_controller
 from scout.server.blueprints.regions.controllers import regions as regions_controller
@@ -35,6 +36,26 @@ def api_regions():
 
     json_out = {"regions": store.get_regions(build, query)}
     return jsonify(json_out)
+
+
+@regions_bp.route("/api/v1/regionlist", methods=["GET"])
+def api_regionlist():
+    """Return JSON data about the list of regions."""
+    build = get_build(request)
+    query = request.values.get("query")
+
+    try:
+        regions = store.get_regions(build=build, query=query)
+        LOG.info("Build %s query %s returned %d regions", build, query, len(regions))
+    except OperationFailure as of:
+        return jsonify({"error": of._message})
+
+    json_terms = [
+        {"name": f"{region['isca_id']} | {region['display_name']}", "id": region["isca_id"]}
+        for region in regions
+    ]
+    LOG.info(f"Found {len(json_terms)} regions")
+    return jsonify(json_terms)
 
 
 @regions_bp.route("/regions", methods=["GET"])
