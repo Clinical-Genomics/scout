@@ -4,7 +4,6 @@ import gzip
 import io
 import logging
 import urllib.request
-import zlib
 from typing import Dict, List
 from urllib.error import HTTPError
 
@@ -152,6 +151,17 @@ def fetch_resource(url, json=False):
     if json:
         LOG.info("Return in json")
         return response.json()
+
+    if isinstance(response, Exception):
+        raise response
+    if isinstance(response, type(None)):
+        raise HTTPError(
+            url,
+            500,
+            f"Failed to fetch resource from URL {url}",
+            hdrs=None,
+            fp=None,
+        )
 
     content_bytes = response.content
 

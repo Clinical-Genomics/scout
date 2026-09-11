@@ -1,7 +1,7 @@
 """Tests for scout requests"""
 
+import gzip
 import tempfile
-from urllib.error import HTTPError
 
 import requests
 import responses
@@ -314,45 +314,61 @@ def test_fetch_hgnc(hgnc_file, mocker):
     assert "hgnc_id\tsymbol" in data[0]
 
 
+@responses.activate
 def test_fetch_constraint(exac_file, mocker):
     """Test fetch ExAC / GnomAD constraint file"""
 
-    # GIVEN file with hgnc info
-    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    # GIVEN file with constraint info
     with open(exac_file, "rb") as exac_handle:
         exac_info = exac_handle.read()
-    with tempfile.TemporaryFile() as temp:
-        temp.write(exac_info)
-        temp.seek(0)
-        scout_requests.urllib.request.urlopen.return_value = temp
-        # WHEN fetching the resource
-        data = scout_requests.fetch_constraint()
 
-    # THEN assert that the exac header is there
-    assert "gene\tgene_id\ttranscript" in data[0]
+    compressed_exac_info = gzip.compress(exac_info)
 
-
-@responses.activate
-def test_fetch_constraint_failed_mirror(variant_clinical_file, mocker):
-    """Test fetch GnomAD constraint file when one of the mirrors fails"""
-
-    # GIVEN file with hgnc info
-    # GIVEN a mocked call that raises a HTTPError when fetching from ftp
-    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    # GIVEN a mocked call that returns the gzipped file
     url = (
         "https://storage.googleapis.com/gcp-public-data--gnomad"
         "/release/4.1.1/constraint/gnomad.v4.1.1.constraint_metrics.tsv.bgz"
     )
-    scout_requests.urllib.request.urlopen.return_value = HTTPError(
-        url, 500, "Internal Error", {}, None
+    responses.add(responses.GET, url, body=compressed_exac_info, status=200)
+
+    data = scout_requests.fetch_constraint()
+
+    # THEN assert that the exac header is there
+    assert "gene\tgene_id\ttranscript" in data[0]
+
+    # THEN the test was made with the correct, mocked URL
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == url
+
+
+@responses.activate
+def test_fetch_constraint_failed_mirror(exac_file, mocker):
+    """Test fetch GnomAD constraint file when one of the mirrors fails"""
+
+    # GIVEN file with hgnc info
+    # GIVEN a mocked call that raises a HTTPError when fetching from the first URL
+    first_url = (
+        "https://storage.googleapis.com/gcp-public-data--gnomad"
+        "/release/4.1.1/constraint/gnomad.v4.1.1.constraint_metrics.tsv.bgz"
     )
+
+    second_url = (
+        "https://gnomad-public-us-east-1.s3.amazonaws.com"
+        "/release/4.1.1/constraint/gnomad.v4.1.1.constraint_metrics.tsv.bgz"
+    )
+
     # GIVEN a gzipped file
-    with open(variant_clinical_file, "rb") as zipped_file:
-        content = zipped_file.read()
+    with open(exac_file, "rb") as zipped_file:
+        content = gzip.compress(zipped_file.read())
 
     responses.add(
         responses.GET,
-        url,
+        first_url,
+        status=500,
+    )
+    responses.add(
+        responses.GET,
+        second_url,
         body=content,
         status=200,
     )
@@ -360,8 +376,12 @@ def test_fetch_constraint_failed_mirror(variant_clinical_file, mocker):
     # WHEN fetching the resource
     data = scout_requests.fetch_constraint()
 
-    # THEN some content is returned
-    assert len(data) > 10
+    # THEN the test was made with the expected mocked URLs
+    assert responses.calls[0].request.url == first_url
+    assert responses.calls[1].request.url == second_url
+    assert len(responses.calls) == 2
+    # THEN content is returned with the expected header
+    assert "gene\tgene_id\ttranscript" in data[0]
 
 
 @responses.activate
