@@ -9,7 +9,7 @@ import zipfile
 from functools import wraps
 from io import BytesIO
 from typing import Dict, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import pdfkit
 import requests
@@ -121,12 +121,23 @@ def public_endpoint(function):
 
 def safe_redirect_back(request: LocalProxy, link: Optional[str] = None) -> Response:
     """Safely redirects the user back to the referring URL, if it originates from the same host.
-    Otherwise, the user is redirected to a default '/'."""
+    Otherwise, the user is redirected to a default '/'.
+    """
     referrer = request.referrer
     if referrer:
         parsed_referrer = urlparse(referrer)
         if parsed_referrer.netloc == request.host:
-            return redirect(link or referrer)
+            query = parse_qs(parsed_referrer.query)
+
+            for field in ("page", "open_submission"):
+                value = request.form.get(field)
+                if value is not None:
+                    query[field] = [value]
+
+            parsed_referrer = parsed_referrer._replace(query=urlencode(query, doseq=True))
+
+            return redirect(link or urlunparse(parsed_referrer))
+
     return redirect("/")
 
 
