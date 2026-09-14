@@ -4,7 +4,6 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
-    Response,
     abort,
     flash,
     redirect,
