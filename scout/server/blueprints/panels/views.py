@@ -432,7 +432,7 @@ def gene_edit(panel_id, hgnc_id):
     ) or store.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
 
-    form = PanelGeneForm()
+    form = PanelGeneForm(store)
 
     form.disease_associated_transcripts.choices = tx_choices(hgnc_id, panel_obj)
     if form.validate_on_submit():
@@ -464,6 +464,7 @@ def gene_edit(panel_id, hgnc_id):
             "inheritance_models",
             "custom_inheritance_models",
             "database_entry_version",
+            "proxy_region",
             "comment",
         ]:
             form_field = getattr(form, field_key)

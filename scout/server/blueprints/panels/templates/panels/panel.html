@@ -151,8 +151,8 @@
         <div class="d-flex justify-content-between">
           <a href="{{ url_for('panels.panel_export_pdf', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
           <a data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="Download this panel in a format ready to be imported in Scout as a new gene panel." href="{{ url_for('panels.panel_export_txt', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to TXT</a>
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
-            Case specific STR and SMN extent PDF
+          <span data-bs-toggle="tooltip" data-bs-html="true" title="Case specific <i>in silico</i> panel extent report with STR, dark region and ISCA region proxy coverage details"><button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits"> </span>
+            Case specific gene panel extent PDF
           </button>
         </div>
       </li>
@@ -176,6 +176,7 @@
             <th>Entry version</th>
             <th>Manual inheritance (pre-set terms)</th>
             <th>Manual inheritance (free text terms)</th>
+            <th>Region proxy</th>
             <th>Comment</th>
           </tr>
         </thead>
@@ -208,6 +209,7 @@
               </td>
               <td>{{ gene.inheritance_models|join(', ') }}</td>
               <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
+              <td>{{ gene.proxy_region }}</td>
               <td>{{ gene.comment }}</td>
             </tr>
           {% endfor %}
@@ -253,6 +255,8 @@
               {{ gene.info.inheritance_models|join(',') if gene.info.inheritance_models }} <br>
               <strong>Entry version</strong>:
               {{ gene.info.database_entry_version if gene.info.database_entry_version }} <br>
+              <strong>Proxy region</strong>:
+              {{ gene.info.proxy_region if gene.info.proxy_region }} <br>
               <strong>Comment</strong>:
               {{ gene.info.comment if gene.info.comment }} <br>
             </div>

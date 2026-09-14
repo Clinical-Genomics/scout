@@ -25,6 +25,7 @@ The columns that will be used by scout are the following. **Please note that if 
 - **mosaicism(str)** If a gene is known to be associated with mosaicism this is annotated. *Optional*
 - **reduced_penetrance(str)** If a gene is known to have reduced penetrance this is annotated. *Optional*
 - **database_entry_version(str)** The database entry version is a way to track when a a gene was added or modified. *Optional*
+- **proxy_region(str)** A valid ISCA region, `ISCA-1234`, for which the gene is a proxy. This is used to flag variants in the region, when there is not sufficient evidence to link the specific gene to disease but the region is established haploinsufficient or triplosensitive. *Optional*
 
 Each gene in a gene panel have to be identified with a [HGNC](https://www.genenames.org/) id.
 
@@ -51,6 +52,7 @@ Example:
 
 - **hgnc_id**: has valid HGNC id. **Please check that a gene with the give HGNC ID exists in Scout in the available genome build**. If for instance Scout is using genome build GRCh37 and a user tries to save a gene only available in genome build GRCh38 the upload of the panel will fail.
 - **genetic_disease_models** A comma-separated list of inheritance models. Any standard model (AR,AD,XR,XD,MT,X,Y) will be saved under `inheritance_models`. Models different from standard models will be saved as `custom_inheritance_models`.
+- **proxy_region** A valid ISCA region, `ISCA-1234`, for which the gene is a proxy. This is used to flag variants in the region, when there is not sufficient evidence to link the specific gene to disease but the region is established as haploinsufficient or triplosensitive. *Optional*
 - **mosaicism** Any entry here will be interpreted as true
 - **reduced_penetrance** Any entry here will be interpreted as true
 - **database_entry_version** This should refer to a earlier version of the panel

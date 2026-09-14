@@ -39,6 +39,7 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     mosaicism = False
     manual_inheritance = set()
     comment = list()
+    proxy_region = list()
 
     # We need to loop since there can be information from multiple panels
     for gene_info in panel_info:
@@ -55,10 +56,11 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
         if gene_info.get("mosaicism"):
             mosaicism = True
 
-        if gene_info.get("comment"):
-            panel_gene_comment = gene_info.get("comment")
-            if panel_gene_comment:
-                comment.append(panel_gene_comment)
+        if panel_gene_comment := gene_info.get("comment"):
+            comment.append(panel_gene_comment)
+
+        if panel_gene_proxy_region := gene_info.get("proxy_region"):
+            proxy_region.append(panel_gene_proxy_region)
 
         manual_inheritance.update(gene_info.get("inheritance_models", []))
         manual_inheritance.update(gene_info.get("custom_inheritance_models", []))
@@ -68,6 +70,7 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     panel_specific["manual_penetrance"] = manual_penetrance
     panel_specific["mosaicism"] = mosaicism
     panel_specific["manual_inheritance"] = list(manual_inheritance)
+    panel_specific["proxy_region"] = proxy_region
     panel_specific["comment"] = comment
 
     return panel_specific
