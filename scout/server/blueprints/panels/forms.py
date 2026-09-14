@@ -2,12 +2,17 @@
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectField, SelectMultipleField, StringField, SubmitField
-from wtforms.validators import DataRequired, Optional, Regexp
+from wtforms.validators import DataRequired, Optional, Regexp, ValidationError
 
 from scout.constants import GENE_PANELS_INHERITANCE_MODELS
 
 
 class PanelGeneForm(FlaskForm):
+    def __init__(self, store, *args, **kwargs):
+        """Initialize the form with a store instance for database access"""
+        super().__init__(*args, **kwargs)
+        self.store = store
+
     disease_associated_transcripts = SelectMultipleField("Disease transcripts", choices=[])
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()
@@ -20,6 +25,21 @@ class PanelGeneForm(FlaskForm):
         "Manual inheritance (free text terms)",
     )
     comment = StringField()
+    proxy_region = StringField("Region proxy ID", render_kw={"placeholder": "ISCA-1234"})
+
+    def validate_proxy_region(self, region_field):
+        """Ensure the supplied proxy region exists in the regions collection."""
+        if not region_field.data:
+            return
+
+        region_id = region_field.data.strip()
+        region = self.store.region_collection.find_one(
+            {"isca_id": region_id},
+            {"_id": 1},
+        )
+
+        if region is None:
+            raise ValidationError(f"Region '{region_id}' was not found.")
 
 
 class GeneSearchForm(FlaskForm):

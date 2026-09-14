@@ -7,6 +7,7 @@ EXPORT_PANEL_FIELDS = [
     ("database_entry_version", "database_entry_version"),
     ("inheritance_models", "inheritance_models"),
     ("custom_inheritance_models", "custom_inheritance_models"),
+    ("proxy_region", "proxy_region"),
     ("comment", "comment"),
 ]
 
