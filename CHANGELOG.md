@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show `Sex` column on cancer cases' samples table (#6539)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 - Add AlphaGenome Atlas links (#6547)
+- Search also oncogenicity submission by ClinVar ID (#6552)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.7 (#6539)

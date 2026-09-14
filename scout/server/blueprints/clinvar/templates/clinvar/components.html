@@ -14,6 +14,20 @@
   {% endif %}
 {% endmacro %}
 
+{% macro submissions_filter(action_url) %}
+<div class="mb-2">
+    <form id="search-form" class="d-flex gap-2 align-items-start" action={{action_url}}>
+      <label for="clinvar_id_filter" class="visually-hidden">ClinVar submission ID</label>
+      <input type="text" class="form-control" id="clinvar_id_filter" name="clinvar_id_filter"
+             placeholder="Enter ClinVar submission ID…"
+             value="{{clinvar_id_filter if clinvar_id_filter}}"
+             style="max-width: 250px;">
+      <button class="btn btn-primary" type="submit">Search</button>
+      <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
+    </form>
+</div>
+{% endmacro %}
+
 {% macro submission_panel(subm_obj, institute, show_submit, variant_header_fields, casedata_header_fields, page, open_submission) %}
 <div class="accordion accordion-flush" id="accordionFlushSubmissions">
   <div class="accordion-item">
