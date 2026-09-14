@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
+- Add a region view (#6515)
 - Show `Sex` column on cancer cases' samples table (#6539)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 - Add AlphaGenome Atlas links (#6547)
@@ -16,10 +18,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
+- Update GnomAD constraint to v4.1.1 (#6541)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
-- Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
-- Add a region view (#6515)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 - Fix ACMG form crash when saving without criteria (#6546)
 
