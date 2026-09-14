@@ -8,7 +8,7 @@
           <thead class="thead table-light">
             <tr>
               <th>Gene</th>
-              <th> OMIM Phenotype</th>
+              <th>OMIM Phenotype</th>
               <th>Inheritance model</th>
             </tr>
           </thead>
@@ -24,7 +24,6 @@
                           </a>
                       </td>
                       <td>
-
                           <a href="{{ disease_term.disease_link }}" rel="noopener" target="_blank">
                             {{ disease_term.description }}
                           </a>
@@ -176,6 +175,9 @@
             {% if gene.comment %}
               {% set ns.comments_exist = true %}
             {% endif %}
+            {% if gene.proxy_region %}
+              {% set ns.proxy_region_exist = true %}
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>
@@ -188,6 +190,20 @@
             {% for gene in variant.genes %}
               {% for comment in gene.comment %}
                 <tr><td>{{ gene.hgnc_symbol }}</td><td>{{ comment }}</td></tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+      {% if ns.proxy_region_exist %}
+        <table class="table table-bordered table-sm" aria-label="Gene proxy regions in case gene panels">
+          <thead class="thead table-light">
+            <th>Gene</th><th>Proxy regions</th>
+          </thead>
+          <tbody>
+            {% for gene in variant.genes %}
+              {% for proxy_region in gene.proxy_region %}
+                <tr><td>{{ gene.hgnc_symbol }}</td><td>{{ proxy_region }}</td></tr>
               {% endfor %}
             {% endfor %}
           </tbody>
