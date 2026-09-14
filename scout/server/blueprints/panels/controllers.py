@@ -401,7 +401,10 @@ def get_panel_proxy_region(panel_obj):
     panel_proxy_region = set()
     for gene in panel_obj.get("genes", []):
         if gene.get("proxy_region"):
-            panel_proxy_region.add(f"{gene['symbol']} - {gene['proxy_region']}")
+            if region := store.get_isca_region(gene["proxy_region"]):
+                panel_proxy_region.add(
+                    f"{gene['symbol']} - {gene['proxy_region']} ({region['display_name']})"
+                )
     return panel_proxy_region
 
 
