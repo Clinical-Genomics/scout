@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 - Fix ACMG form crash when saving without criteria (#6546)
+- `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
 
 ## [4.114]
 ### Added
