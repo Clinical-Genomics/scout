@@ -49,6 +49,9 @@
             <div class="col-md-2">
               {{ form.proxy_region.label(class="control-label") }}
               {{ form.proxy_region(class="form-control typeahead_region", data_provide="typeahead", autocomplete="off") }}
+              {% for error in form.proxy_region.errors %}
+                <div class="text-danger">{{ error }}</div>
+              {% endfor %}
             </div>
             <div class="col-md-2">
               {{ form.database_entry_version.label(class="control-label") }}
