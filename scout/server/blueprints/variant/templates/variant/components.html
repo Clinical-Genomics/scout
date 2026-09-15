@@ -60,10 +60,10 @@
         <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
-        <span class="badge bg-info">{{ data.classification.short }}</span>
+        <span class="badge bg-info" data-bs-toggle="tooltip" title="Suggested classification based on Richards et al 2015.">{{ data.classification.short }}</span>
       </span>
       {% if data.bayesian_acmg %}
-        <span class="badge rounded-pill bg-{{data.bayesian_acmg.temperature_class}}">Score {{data.bayesian_acmg.points|string}} <span class='fa {{data.bayesian_acmg.temperature_icon}}'></span> {{data.bayesian_acmg.temperature}} ({{data.bayesian_acmg.point_classification}})</span>
+        <span class="badge rounded-pill bg-{{data.bayesian_acmg.temperature_class}}" data-bs-toggle="tooltip" title="Classification based on the Bayesian score model in Tavtigian et al.">Score {{data.bayesian_acmg.points|string}} <span class='fa {{data.bayesian_acmg.temperature_icon}}'></span> {{data.bayesian_acmg.temperature}} ({{data.bayesian_acmg.point_classification}})</span>
       {% endif %}
       <span>
         {% if not current_variant %}
