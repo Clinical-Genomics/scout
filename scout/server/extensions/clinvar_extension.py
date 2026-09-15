@@ -1,7 +1,7 @@
 import json
 import logging
 from io import StringIO
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 import requests
 from flask import flash
