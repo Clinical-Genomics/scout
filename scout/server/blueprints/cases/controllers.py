@@ -76,7 +76,7 @@ from scout.server.utils import (
     institute_and_case,
     safe_redirect_back,
 )
-from scout.utils.acmg import get_acmg_temperature
+from scout.utils.acmg import get_acmg_temperature, get_evaluation_terms
 from scout.utils.ccv import get_ccv_temperature
 
 LOG = logging.getLogger(__name__)
@@ -830,12 +830,7 @@ def add_bayesian_acmg_classification(variant_obj: dict):
         store.get_evaluations_case_specific(document_id=variant_obj["_id"])
     )
     if variant_acmg_classifications:
-        terms = set()
-        for criterium in variant_acmg_classifications[0].get("criteria", []):
-            term = criterium.get("term")
-            if criterium.get("modifier"):
-                term += f"_{criterium.get('modifier')}"
-            terms.add(term)
+        terms = get_evaluation_terms(variant_acmg_classifications[0])
         variant_obj["bayesian_acmg"] = get_acmg_temperature(terms)
 
 
@@ -850,12 +845,7 @@ def add_bayesian_ccv_classification(variant_obj: dict):
         store.get_ccv_evaluations_case_specific(document_id=variant_obj["_id"])
     )
     if variant_ccv_classifications:
-        terms = set()
-        for criterium in variant_ccv_classifications[0].get("ccv_criteria", []):
-            term = criterium.get("term")
-            if criterium.get("modifier"):
-                term += f"_{criterium.get('modifier')}"
-            terms.add(term)
+        terms = get_evaluation_terms(variant_ccv_classifications[0])
         variant_obj["bayesian_ccv"] = get_ccv_temperature(terms)
 
 

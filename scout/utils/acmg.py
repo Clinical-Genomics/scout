@@ -277,6 +277,24 @@ def get_acmg(acmg_terms: set) -> Optional[str]:
     return prediction
 
 
+def get_evaluation_terms(evaluation_obj: dict) -> set:
+    """Get a set of terms from an evaluation object
+
+    Args:
+        evaluation_obj(dict): An evaluation object from the database
+
+    Returns:
+        set(str): A set of ACMG terms
+    """
+    terms = set()
+    for criterium in evaluation_obj.get("criteria", []):
+        term = criterium.get("term")
+        if criterium.get("modifier"):
+            term += f"_{criterium.get('modifier')}"
+        terms.add(term)
+    return terms
+
+
 def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     """
     Use the algorithm described in Tavtigian 2020 to classifiy variants.

@@ -62,6 +62,9 @@
         </a>
         <span class="badge bg-info">{{ data.classification.short }}</span>
       </span>
+      {% if data.bayesian_acmg %}
+        <span class="badge rounded-pill bg-{{data.bayesian_acmg.temperature_class}}">Score {{data.bayesian_acmg.points|string}} <span class='fa {{data.bayesian_acmg.temperature_icon}}'></span> {{data.bayesian_acmg.temperature}} ({{data.bayesian_acmg.point_classification}})</span>
+      {% endif %}
       <span>
         {% if not current_variant %}
           <small>{{ data.case.display_name }}</small>
