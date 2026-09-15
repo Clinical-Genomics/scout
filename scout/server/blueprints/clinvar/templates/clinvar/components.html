@@ -1,11 +1,42 @@
-{% macro render_dict_array(list_of_dicts) %}
-  {% for item in list_of_dicts %}
-    {% for key, value in item.items() %}
-      {{key}} : {{value}}<br>
+{% macro format_key(key) %}
+    {% set ns = namespace(text='') %}
+    {% for char in key %}
+        {% if char.isupper() %}
+            {% set ns.text = ns.text ~ ' ' ~ char.lower() %}
+        {% else %}
+            {% set ns.text = ns.text ~ char %}
+        {% endif %}
     {% endfor %}
-  {% endfor %}
-  {% if list_of_dicts|length > 1%}<br>{% endif %}
+    {{ ns.text | trim | capitalize }}
 {% endmacro %}
+
+{% macro render_value(value) %}
+    {% if value is mapping %}
+        {% for key, nested_value in value.items() %}
+            <div class="ms-3">
+                <strong>{{ format_key(key) }}</strong>: {{ render_value(nested_value) }}
+            </div>
+        {% endfor %}
+    {% elif value is iterable and value is not string %}
+        {% for item in value %}
+            {{ render_value(item) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {{ value }}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_dict_array(list_of_dicts) %}
+    {% for item in list_of_dicts %}
+        {% for key, value in item.items() %}
+            <strong>{{ format_key(key) }}</strong>:
+            {{ render_value(value) }}
+            <br>
+        {% endfor %}
+    {% endfor %}
+    {% if list_of_dicts|length > 1 %}<br>{% endif %}
+{% endmacro %}
+
 
 {% macro current_page_anchor(page, open_submission=None) %}
   <input type="hidden" id="page" name="page" value="{{ page }}">
