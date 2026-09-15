@@ -80,8 +80,11 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # BEACON_TOKEN = "DEMO"
 
 # ClinVar API URL
-# Comment the line below to use the official (non-test) ClinVar API
+# The test endpoint is used by default.
+# For a production server, comment out the test endpoint below
+# and uncomment the production endpoint.
 # Documentation: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+# CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
 CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 
 # connection details for LoqusDB MongoDB database
