@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 - Update GnomAD constraint to v4.1.1 (#6541)
+- Indicate prod/stage ClinVar environment on ClinVar submission button (#6556)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
