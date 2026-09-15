@@ -228,7 +228,7 @@
     {{ var_form.hpo_terms.label(class="fw-bold, text-dark" )}}<br>
     <ul class="list-group">
     {% for term in var_form.hpo_terms %}
-      <li class="list-group-item">{{ term.label }}</li>
+      <li class="list-group-item bg-white">{{ term.label(class="fw-bold, text-dark") }}</li>
     {% else %}
     N/A
     </ul>
@@ -255,15 +255,15 @@
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.affected_status.label.text }}</label>
-          {{ cdata.affected_status(class="form-select") }}
+          {{ cdata.affected_status(class="form-control, btn-secondary") }}
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.allele_of_origin.label.text }}</label>
-          {{ cdata.allele_of_origin(class="form-select") }}
+          {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.collection_method.label.text }}</label>
-          {{ cdata.collection_method(class="form-select") }}
+          {{ cdata.collection_method(class="form-control, btn-secondary") }}
         </div>
       </div>
 
