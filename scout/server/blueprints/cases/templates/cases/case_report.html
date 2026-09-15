@@ -701,6 +701,7 @@
           </tr>
         </tbody>
       </table>
+      {% if variant.acmg_terms %}
       <table id="acmg-details" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
@@ -709,19 +710,15 @@
           </tr>
         </thead>
         <tbody>
-          {% if variant.acmg_terms %}
-            {% for criterion in variant.acmg_terms %}
-              <tr>
-                <td><span class="badge rounded-pill bg-{% if "VS" in criterion.term %}danger{% elif "S" in criterion.term %}warning{% elif "B"in criterion.term %}success{% else %}secondary{% endif %}">{{ criterion.term }}</span></td>
-                <td>{{ criterion.comment }}</td>
-              </tr>
-            {% endfor %}
-          {% else %}
+          {% for criterion in variant.acmg_terms %}
             <tr>
-              <td colspan=2>No ACMG criteria available for this variant</td>
+              <td><span class="badge rounded-pill bg-{% if "PVS" in criterion.term %}danger{% elif "PS" in criterion.term %}orange{% elif "PM" in criterion.term %}yellow{% elif "PP" in criterion.term %}info{% elif "B" in criterion.term %}success{% else %}secondary{% endif %}">{{ criterion.term }}</span></td>
+              <td>{{ criterion.comment }}</td>
             </tr>
-          {% endif %}
+          {% endfor %}
         </tbody>
+      </table>
+      {% endif %}
       <table id="severity-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
@@ -731,6 +728,7 @@
             <th>Polyphen</th>
             <th>SPIDEX</th>
             <th>SpliceAI DS max</th>
+          </tr>
         </thead>
         <tbody>
           <tr>
