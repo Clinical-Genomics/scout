@@ -4,7 +4,6 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
-    Response,
     abort,
     flash,
     redirect,
@@ -148,8 +147,18 @@ def clinvar_onc_submissions(institute_id):
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
 
+    clinvar_id_filter = (
+        request.values.get("clinvar_id_filter").strip()
+        if request.values.get("clinvar_id_filter")
+        else None
+    )
+
     submissions, total_count = store.get_clinvar_submissions(
-        institute_id=institute_id, type="oncogenicity", skip=start, limit=per_page
+        institute_id=institute_id,
+        type="oncogenicity",
+        subm_id=clinvar_id_filter,
+        skip=start,
+        limit=per_page,
     )
 
     data = {
