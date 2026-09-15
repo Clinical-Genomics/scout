@@ -674,13 +674,13 @@
               {% else %}
                 -
               {% endif %}
+            </td>
             <td>
               {% if variant.bayesian_acmg %}
                 <span class="badge rounded-pill bg-{{variant.bayesian_acmg.temperature_class}}">Score {{variant.bayesian_acmg.points|string}} <span class='fa {{variant.bayesian_acmg.temperature_icon}}'></span> {{variant.bayesian_acmg.temperature}} ({{variant.bayesian_acmg.point_classification}})</span>
               {% else %}
                 -
               {% endif %}
-            </td>
             </td>
             {% if cancer %}
             <td>
@@ -701,6 +701,27 @@
           </tr>
         </tbody>
       </table>
+      <table id="acmg-details" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th style="width: 10%;">ACMG term</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if variant.acmg_terms %}
+            {% for criterion in variant.acmg_terms %}
+              <tr>
+                <td><span class="badge rounded-pill bg-{% if "VS" in criterion.term %}danger{% elif "S" in criterion.term %}warning{% elif "B"in criterion.term %}success{% else %}secondary{% endif %}">{{ criterion.term }}</span></td>
+                <td>{{ criterion.comment }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan=2>No ACMG criteria available for this variant</td>
+            </tr>
+          {% endif %}
+        </tbody>
       <table id="severity-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
