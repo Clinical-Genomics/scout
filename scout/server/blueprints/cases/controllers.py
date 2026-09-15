@@ -831,12 +831,18 @@ def add_bayesian_acmg_classification(variant_obj: dict):
     )
     if variant_acmg_classifications:
         terms = set()
+        variant_acmg_terms = []
         for criterium in variant_acmg_classifications[0].get("criteria", []):
             term = criterium.get("term")
             if criterium.get("modifier"):
                 term += f"_{criterium.get('modifier')}"
             terms.add(term)
+
+            acmg_term = {"term": term, "comment": criterium.get("comment", "")}
+            variant_acmg_terms.append(acmg_term)
+
         variant_obj["bayesian_acmg"] = get_acmg_temperature(terms)
+        variant_obj["acmg_terms"] = variant_acmg_terms
 
 
 def add_bayesian_ccv_classification(variant_obj: dict):

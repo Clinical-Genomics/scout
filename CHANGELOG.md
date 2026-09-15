@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar germline submissions allows assigning 3 new VUS terms: VUS-high, VUS-mid and VUS-low (#5994)
 - Add AlphaGenome Atlas links (#6547)
 - Add a region proxy field to gene panel genes, with a typeahead (#6530)
+- ACMG term criterion details on case general report (#6558)
 - Search also oncogenicity submission by ClinVar ID (#6552)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
