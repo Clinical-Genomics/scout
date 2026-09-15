@@ -295,6 +295,26 @@ def get_evaluation_terms(evaluation_obj: dict) -> set:
     return terms
 
 
+def get_evaluation_terms_with_comments(evaluation_obj: dict) -> list:
+    """Get a list of terms with comments from an evaluation object
+
+    Args:
+        evaluation_obj(dict): An evaluation object from the database
+
+    Returns:
+        list(dict): A list of ACMG terms with comments
+    """
+    acmg_terms = []
+    for criterium in evaluation_obj.get("criteria", []):
+        term = criterium.get("term")
+        if criterium.get("modifier"):
+            term += f"_{criterium.get('modifier')}"
+        acmg_term = {"term": term, "comment": criterium.get("comment", "")}
+        acmg_terms.append(acmg_term)
+
+    return acmg_terms
+
+
 def get_acmg_temperature(acmg_terms: set) -> Optional[dict]:
     """
     Use the algorithm described in Tavtigian 2020 to classifiy variants.

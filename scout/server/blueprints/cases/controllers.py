@@ -76,7 +76,11 @@ from scout.server.utils import (
     institute_and_case,
     safe_redirect_back,
 )
-from scout.utils.acmg import get_acmg_temperature, get_evaluation_terms
+from scout.utils.acmg import (
+    get_acmg_temperature,
+    get_evaluation_terms,
+    get_evaluation_terms_with_comments,
+)
 from scout.utils.ccv import get_ccv_temperature
 
 LOG = logging.getLogger(__name__)
@@ -832,6 +836,10 @@ def add_bayesian_acmg_classification(variant_obj: dict):
     if variant_acmg_classifications:
         terms = get_evaluation_terms(variant_acmg_classifications[0])
         variant_obj["bayesian_acmg"] = get_acmg_temperature(terms)
+
+        variant_obj["acmg_terms"] = get_evaluation_terms_with_comments(
+            variant_acmg_classifications[0]
+        )
 
 
 def add_bayesian_ccv_classification(variant_obj: dict):
