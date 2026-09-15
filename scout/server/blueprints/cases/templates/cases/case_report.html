@@ -674,13 +674,13 @@
               {% else %}
                 -
               {% endif %}
+            </td>
             <td>
               {% if variant.bayesian_acmg %}
                 <span class="badge rounded-pill bg-{{variant.bayesian_acmg.temperature_class}}">Score {{variant.bayesian_acmg.points|string}} <span class='fa {{variant.bayesian_acmg.temperature_icon}}'></span> {{variant.bayesian_acmg.temperature}} ({{variant.bayesian_acmg.point_classification}})</span>
               {% else %}
                 -
               {% endif %}
-            </td>
             </td>
             {% if cancer %}
             <td>
@@ -701,6 +701,24 @@
           </tr>
         </tbody>
       </table>
+      {% if variant.acmg_terms %}
+      <table id="acmg-details" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th style="width: 10%;">ACMG term</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for criterion in variant.acmg_terms %}
+            <tr>
+              <td><span class="badge rounded-pill bg-{% if "PVS" in criterion.term %}danger{% elif "PS" in criterion.term %}orange{% elif "PM" in criterion.term %}yellow{% elif "PP" in criterion.term %}info{% elif "B" in criterion.term %}success{% else %}secondary{% endif %}">{{ criterion.term }}</span></td>
+              <td>{{ criterion.comment }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
       <table id="severity-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
@@ -710,6 +728,7 @@
             <th>Polyphen</th>
             <th>SPIDEX</th>
             <th>SpliceAI DS max</th>
+          </tr>
         </thead>
         <tbody>
           <tr>
