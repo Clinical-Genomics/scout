@@ -20,7 +20,7 @@ class ClinVarApi:
     def init_app(self, app):
         self.submit_service_url = app.config.get("CLINVAR_API_URL") or CLINVAR_API_URL_DEFAULT
         app.jinja_env.globals["clinvar_env"] = (
-            "stage" if "apitest" in self.submit_service_url else "prod"
+            "test" if "apitest" in self.submit_service_url else ""
         )
 
     def set_header(self, api_key) -> dict:
