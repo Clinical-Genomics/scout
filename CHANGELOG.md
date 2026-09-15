@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
 - Update GnomAD constraint to v4.1.1 (#6541)
 - Clearer description of CLINVAR_API_URL settings parameter, on default config and admin docs (#6557)
+- Make it clear when ClinVar submissions are sent to the test endpoint by adding "test" to the submission buttons. (#6556)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
