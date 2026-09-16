@@ -205,33 +205,27 @@ def update_sv_frequency_from_vcf(frequency, variant, key_list, new_key):
             break
 
 
-def update_frequency_from_transcript(frequencies, transcripts):
+def update_frequency_from_transcript(frequencies: dict, transcripts: list):
+    """Update frequencies dict from transcript information.
+    Only update frequencies that are not already set in the frequencies dict.
+
+    Args:
+        frequencies(dict) - Updated with transcript frequencies if available
+        transcripts(list of dict)
+    """
+
     for transcript in transcripts:
-        exac = transcript.get("exac_maf")
-        exac_max = transcript.get("exac_max")
+        transcript_frequencies = {
+            "exac": transcript.get("exac_maf"),
+            "exac_max": transcript.get("exac_max"),
+            "thousand_g": transcript.get("thousand_g_maf"),
+            "thousandg_max": transcript.get("thousandg_max"),
+            "gnomad": transcript.get("gnomad_maf"),
+            "gnomad_max": transcript.get("gnomad_max"),
+            "gnomad_mt_hom": transcript.get("gnomad_mt_homoplasmic"),
+            "gnomad_mt_het": transcript.get("gnomad_mt_heteroplasmic"),
+        }
 
-        thousand_g = transcript.get("thousand_g_maf")
-        thousandg_max = transcript.get("thousandg_max")
-
-        gnomad = transcript.get("gnomad_maf")
-        gnomad_max = transcript.get("gnomad_max")
-
-        gnomad_mt_hom = transcript.get("gnomad_mt_homoplasmic")
-        gnomad_mt_het = transcript.get("gnomad_mt_heteroplasmic")
-
-        if exac and not frequencies.get("exac"):
-            frequencies["exac"] = exac
-        if exac_max and not frequencies.get("exac_max"):
-            frequencies["exac_max"] = exac_max
-        if thousand_g and not frequencies.get("thousand_g"):
-            frequencies["thousand_g"] = thousand_g
-        if thousandg_max and not frequencies.get("thousand_g_max"):
-            frequencies["thousand_g_max"] = thousandg_max
-        if gnomad and not frequencies.get("gnomad"):
-            frequencies["gnomad"] = gnomad
-        if gnomad_max and not frequencies.get("gnomad_max"):
-            frequencies["gnomad_max"] = gnomad_max
-        if gnomad_mt_hom and not frequencies.get("gnomad_mt_homoplasmic"):
-            frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
-        if gnomad_mt_het and not frequencies.get("gnomad_mt_heteroplasmic"):
-            frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
+        for freq_type, freq_value in transcript_frequencies.items():
+            if freq_value is not None and not frequencies.get(freq_type):
+                frequencies[freq_type] = freq_value
