@@ -15,6 +15,7 @@ from scout.constants import (
 from scout.constants.query_terms import GT_NO_ALT_CALL
 from scout.server.links import add_gene_links, add_tx_links
 from scout.server.utils import get_case_genome_build
+from scout.utils.acmg import get_acmg_temperature, get_evaluation_terms
 
 LOG = logging.getLogger(__name__)
 
@@ -473,9 +474,14 @@ def evaluation(store, evaluation_obj):
     evaluation_obj["institute"] = store.institute(evaluation_obj["institute_id"])
     evaluation_obj["case"] = store.case(evaluation_obj["case_id"])
     evaluation_obj["variant"] = store.variant(evaluation_obj["variant_specific"])
+
+    terms = get_evaluation_terms(evaluation_obj)
+    evaluation_obj["bayesian_acmg"] = get_acmg_temperature(terms)
+
     evaluation_obj["criteria"] = {
         criterion["term"]: criterion for criterion in evaluation_obj["criteria"]
     }
+
     evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(evaluation_obj["classification"])
     return evaluation_obj
 
