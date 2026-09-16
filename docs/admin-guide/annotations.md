@@ -55,7 +55,7 @@ The alternate allele frequency of all populations in [gnomAD][gnomad] population
 - Value: `Float`
 - Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
-#### GnomAD ####
+#### GnomAD MAX AF alias POPMAX alias GRPMAX ####
 
 The alternate allele frequency of all populations in [gnomAD][gnomad] population database.
 
