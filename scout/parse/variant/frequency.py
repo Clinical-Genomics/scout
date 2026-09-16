@@ -18,6 +18,8 @@ GNOMAD_INFO_MAX_KEYS = [
     "GNOMADAF_POPMAX",
     "GNOMADAF_MAX",
     "gnomad_popmax_af",
+    "GNOMADAF_grpmax",
+    "MAX_AF",
 ]
 
 # SV

@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 - Fix ACMG form crash when saving without criteria (#6546)
 - `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
+- GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
 
 ## [4.114]
 ### Added
