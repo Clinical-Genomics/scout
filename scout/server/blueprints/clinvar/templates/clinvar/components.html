@@ -14,16 +14,17 @@
   {% endif %}
 {% endmacro %}
 
-{% macro submissions_filter(action_url) %}
+{% macro submissions_filter(action_url, filter_form) %}
 <div class="mb-2">
     <form id="search-form" class="d-flex gap-2 align-items-start" action={{action_url}}>
-      <label for="clinvar_id_filter" class="visually-hidden">ClinVar submission ID</label>
-      <input type="text" class="form-control" id="clinvar_id_filter" name="clinvar_id_filter"
-             placeholder="Enter ClinVar submission ID…"
-             value="{{clinvar_id_filter if clinvar_id_filter}}"
-             style="max-width: 250px;">
-      <button class="btn btn-primary" type="submit">Search</button>
-      <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
+      {{ filter_form.clinvar_id_filter.label(class="visually-hidden") }}
+        {{ filter_form.clinvar_id_filter(
+            class="form-control",
+            placeholder="Enter ClinVar submission ID…",
+            style="max-width: 250px;"
+        ) }}
+        {{ filter_form.submit(class="btn btn-primary") }}
+        <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
     </form>
 </div>
 {% endmacro %}
@@ -522,7 +523,6 @@
 </div>
 {% endmacro %}
 
-
 {% macro submit_modal(institute) %}
 <div class="modal fade" id="submitModal" tabindex="-1">
   <div class="modal-dialog">
@@ -542,4 +542,17 @@
     </div>
   </div>
 </div>
+{% endmacro %}
+
+{% macro no_submissions_found(filter_form)%}
+  {% if filter_form.clinvar_id_filter.data %}
+    <div class="alert alert-info">
+      No ClinVar submissions matched your search.
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      No ClinVar submissions found. You can create one by choosing one or more
+      pinned variants on a case page and clicking the button "Submit to ClinVar".
+    </div>
+  {% endif %}
 {% endmacro %}

@@ -19,6 +19,7 @@ from scout.constants.clinvar import (
     GERMLINE_CLASSIF_TERMS,
     ONCOGENIC_CLASSIF_TERMS,
 )
+from scout.server.blueprints.clinvar.form import ClinvarSubmissionFilterForm
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case, safe_redirect_back
 
@@ -133,6 +134,7 @@ def clinvar_germline_submissions(institute_id):
         "result_size": total_count + deprecated_count,
         "per_page": per_page,
         "open_submission": request.values.get("open_submission"),
+        "filter_form": ClinvarSubmissionFilterForm(request.args),
     }
     return render_template("clinvar/clinvar_germline_submissions.html", **data)
 
@@ -169,6 +171,7 @@ def clinvar_onc_submissions(institute_id):
         "per_page": per_page,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
+        "filter_form": ClinvarSubmissionFilterForm(request.args),
     }
     return render_template("clinvar/clinvar_onc_submissions.html", **data)
 
