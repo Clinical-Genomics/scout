@@ -10,6 +10,7 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     StringField,
+    SubmitField,
     TextAreaField,
     validators,
     widgets,
@@ -37,6 +38,13 @@ LOG = logging.getLogger(__name__)
 class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
+
+
+class ClinvarSubmissionFilterForm(FlaskForm):
+    """Form for filtering ClinVar submissions."""
+
+    clinvar_id_filter = StringField("ClinVar submission ID")
+    submit = SubmitField("Search")
 
 
 class ClinVarVariantForm(FlaskForm):
