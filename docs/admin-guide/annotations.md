@@ -49,12 +49,19 @@ The maximum allele frequency of all populations in the [ExAC][exac] population d
 
 #### GnomAD ####
 
-The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
-
+The alternate allele frequency of all populations in [gnomAD][gnomad] population database.
 
 - Key: `gnomAD_AF` in VEP `CSQ` field
 - Value: `Float`
-- Tools: [VEP][vep]
+- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
+
+#### GnomAD MAX AF alias POPMAX alias GRPMAX ####
+
+The alternate allele frequency of all populations in [gnomAD][gnomad] population database.
+
+- Key: `GNOMADAF_grpmax`, `gnomad_popmax_af` in `INFO` field,
+- Value: `Float`
+  - Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno], [echtvar][echtvar]
 
 ### Severity ###
 
@@ -157,6 +164,7 @@ What variants is this variant in Autosomal Recessive Compound with?
 [genmod]: https://github.com/moonso/genmod
 [vcfanno]: https://github.com/brentp/vcfanno
 [snpsift]: http://snpeff.sourceforge.net/SnpSift.html
+[echtvar]: https://github.com/brentp/echtvar
 
 [1000g]: http://www.1000genomes.org/
 [exac]: http://exac.broadinstitute.org
