@@ -207,7 +207,7 @@ def update_sv_frequency_from_vcf(frequency, variant, key_list, new_key):
 
 def update_frequency_from_transcript(frequencies: dict, transcripts: list):
     """Update frequencies dict from transcript information.
-    Only update frequencies that are not already set in the frequencies dict.
+    Only update frequencies that are not already set in the frequencies dict. The first available frequency found in the transcripts will be used.
 
     Args:
         frequencies(dict) - Updated with transcript frequencies if available
