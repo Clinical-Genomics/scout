@@ -79,9 +79,8 @@ def parse_frequencies(variant, transcripts):
     update_frequency_from_vcf(frequencies, variant, ["right_1000GAF"], "thousand_g_right")
     update_frequency_from_vcf(frequencies, variant, ["colorsdb_af"], "colorsdb_af")
 
-    # Search transcripts CSQ if not found in VCF INFO
-    if not frequencies:
-        update_frequency_from_transcript(frequencies, transcripts)
+    # Search transcripts CSQ, add only if not found in VCF INFO
+    update_frequency_from_transcript(frequencies, transcripts)
 
     return frequencies
 
@@ -220,19 +219,19 @@ def update_frequency_from_transcript(frequencies, transcripts):
         gnomad_mt_hom = transcript.get("gnomad_mt_homoplasmic")
         gnomad_mt_het = transcript.get("gnomad_mt_heteroplasmic")
 
-        if exac:
+        if exac and not frequencies.get("exac"):
             frequencies["exac"] = exac
-        if exac_max:
+        if exac_max and not frequencies.get("exac_max"):
             frequencies["exac_max"] = exac_max
-        if thousand_g:
+        if thousand_g and not frequencies.get("thousand_g"):
             frequencies["thousand_g"] = thousand_g
-        if thousandg_max:
+        if thousandg_max and not frequencies.get("thousand_g_max"):
             frequencies["thousand_g_max"] = thousandg_max
-        if gnomad:
+        if gnomad and not frequencies.get("gnomad"):
             frequencies["gnomad"] = gnomad
-        if gnomad_max:
+        if gnomad_max and not frequencies.get("gnomad_max"):
             frequencies["gnomad_max"] = gnomad_max
-        if gnomad_mt_hom:
+        if gnomad_mt_hom and not frequencies.get("gnomad_mt_homoplasmic"):
             frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
-        if gnomad_mt_het:
+        if gnomad_mt_het and not frequencies.get("gnomad_mt_heteroplasmic"):
             frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het

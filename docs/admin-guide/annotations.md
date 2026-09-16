@@ -61,7 +61,7 @@ The alternate allele frequency of all populations in [gnomAD][gnomad] population
 
 - Key: `GNOMADAF_grpmax`, `gnomad_popmax_af` in `INFO` field,
 - Value: `Float`
-- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno], [echtvar][echtvar]
+  - Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno], [echtvar][echtvar]
 
 ### Severity ###
 
