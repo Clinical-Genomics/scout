@@ -379,7 +379,7 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
                     )
                 ),
             ),
-            "gnomad_max_frequency": (
+            "max_gnomad_frequency": (
                 "GnomAD(max)",
                 list(
                     dict.fromkeys(
