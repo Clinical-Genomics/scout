@@ -4,7 +4,6 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
     Blueprint,
-    Response,
     abort,
     flash,
     redirect,
@@ -20,6 +19,7 @@ from scout.constants.clinvar import (
     GERMLINE_CLASSIF_TERMS,
     ONCOGENIC_CLASSIF_TERMS,
 )
+from scout.server.blueprints.clinvar.form import ClinvarSubmissionFilterForm
 from scout.server.extensions import clinvar_api, store
 from scout.server.utils import institute_and_case, safe_redirect_back
 
@@ -134,6 +134,7 @@ def clinvar_germline_submissions(institute_id):
         "result_size": total_count + deprecated_count,
         "per_page": per_page,
         "open_submission": request.values.get("open_submission"),
+        "filter_form": ClinvarSubmissionFilterForm(request.args),
     }
     return render_template("clinvar/clinvar_germline_submissions.html", **data)
 
@@ -148,8 +149,18 @@ def clinvar_onc_submissions(institute_id):
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
 
+    clinvar_id_filter = (
+        request.values.get("clinvar_id_filter").strip()
+        if request.values.get("clinvar_id_filter")
+        else None
+    )
+
     submissions, total_count = store.get_clinvar_submissions(
-        institute_id=institute_id, type="oncogenicity", skip=start, limit=per_page
+        institute_id=institute_id,
+        type="oncogenicity",
+        subm_id=clinvar_id_filter,
+        skip=start,
+        limit=per_page,
     )
 
     data = {
@@ -160,6 +171,7 @@ def clinvar_onc_submissions(institute_id):
         "per_page": per_page,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
+        "filter_form": ClinvarSubmissionFilterForm(request.args),
     }
     return render_template("clinvar/clinvar_onc_submissions.html", **data)
 

@@ -76,28 +76,29 @@
                   </div>
                   <br><br>
                   <div class="mb-3 col-md-2 offset-md-5">
-                    {{ variant_data.var_form.last_evaluated.label }}
-                    {{ variant_data.var_form.last_evaluated }}
+                    {{ variant_data.var_form.last_evaluated.label(class="fw-bold, text-dark") }}
+                    {{ variant_data.var_form.last_evaluated(class="bg-white") }}
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
-                    {{ variant_data.var_form.clinsig_comment.label }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
-                    {{ variant_data.var_form.clinsig_comment(rows=4, class="form-control") }}
+                    {{ variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark") }} <span data-bs-toggle='tooltip' title="Optional, but highly encouraged. Free text describing the rationale for the classification."><strong>*</strong></span>
+                    {{ variant_data.var_form.clinsig_comment(rows=4, class="bg-white") }}
                   </div>
                   <br><br>
                   <div class="mb-3">
-                    {{ variant_data.var_form.assertion_method_cit_db.label }}
-                    {{ variant_data.var_form.assertion_method_cit_db }}
+                    {{ variant_data.var_form.assertion_method_cit_db.label(class="fw-bold, text-dark") }}
+                    {{ variant_data.var_form.assertion_method_cit_db(class="form-control, btn-secondary") }}
                     <span class="text-danger" data-bs-toggle='tooltip' title="This citation is specific to this variant only. Leave blanc if unsure. Note the whole submission, containing one or more variants, will be already containing the following citation reference: 'Standards and guidelines for the interpretation of sequence variants: a joint consensus recommendation of the American College of Medical Genetics and Genomics and the Association for Molecular Pathology. Genet Med. 2015 (Pubmed:25741868)'."><strong>?</strong></span>
                     <span data-bs-toggle='tooltip' title="Optional field"><strong>*</strong></span>
                   </div>
 
                   <div class="mb-3 col-md-6 offset-md-3">
                     {{ variant_data.var_form.assertion_method_cit_id.label(
+                        class="fw-bold, text-dark",
                         id="citation_tooltip",
                         **{'data-bs-toggle': 'tooltip', 'title': 'Original tooltip text'}
                     ) }}
-                    {{ variant_data.var_form.assertion_method_cit_id }}
+                    {{ variant_data.var_form.assertion_method_cit_id(class="bg-white") }}
                   </div>
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>

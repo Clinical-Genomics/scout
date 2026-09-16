@@ -1,17 +1,63 @@
-{% macro render_dict_array(list_of_dicts) %}
-  {% for item in list_of_dicts %}
-    {% for key, value in item.items() %}
-      {{key}} : {{value}}<br>
+{% macro format_key(key) %}
+    {% set ns = namespace(text='') %}
+    {% for char in key %}
+        {% if char.isupper() %}
+            {% set ns.text = ns.text ~ ' ' ~ char.lower() %}
+        {% else %}
+            {% set ns.text = ns.text ~ char %}
+        {% endif %}
     {% endfor %}
-  {% endfor %}
-  {% if list_of_dicts|length > 1%}<br>{% endif %}
+    {{ ns.text | trim | capitalize }}
 {% endmacro %}
+
+{% macro render_value(value) %}
+    {% if value is mapping %}
+        {% for key, nested_value in value.items() %}
+            <div class="ms-3">
+                <strong>{{ format_key(key) }}</strong>: {{ render_value(nested_value) }}
+            </div>
+        {% endfor %}
+    {% elif value is iterable and value is not string %}
+        {% for item in value %}
+            {{ render_value(item) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {{ value }}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_dict_array(list_of_dicts) %}
+    {% for item in list_of_dicts %}
+        {% for key, value in item.items() %}
+            <strong>{{ format_key(key) }}</strong>:
+            {{ render_value(value) }}
+            <br>
+        {% endfor %}
+    {% endfor %}
+    {% if list_of_dicts|length > 1 %}<br>{% endif %}
+{% endmacro %}
+
 
 {% macro current_page_anchor(page, open_submission=None) %}
   <input type="hidden" id="page" name="page" value="{{ page }}">
   {% if open_submission %}
     <input type="hidden" id="open_submission" name="open_submission" value="{{ open_submission }}">
   {% endif %}
+{% endmacro %}
+
+{% macro submissions_filter(action_url, filter_form) %}
+<div class="mb-2">
+    <form id="search-form" class="d-flex gap-2 align-items-start" action={{action_url}}>
+      {{ filter_form.clinvar_id_filter.label(class="visually-hidden") }}
+        {{ filter_form.clinvar_id_filter(
+            class="form-control",
+            placeholder="Enter ClinVar submission ID…",
+            style="max-width: 250px;"
+        ) }}
+        {{ filter_form.submit(class="btn btn-primary") }}
+        <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
+    </form>
+</div>
 {% endmacro %}
 
 {% macro submission_panel(subm_obj, institute, show_submit, variant_header_fields, casedata_header_fields, page, open_submission) %}
@@ -190,7 +236,7 @@
     </select>
 
     <br><br>
-    {{ var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc). If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features. If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records."><strong>*?</strong></span>
+    {{ var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Do not mix IDs from different database types (e.g. MedGen and OMIM). Prefer MedGen or OMIM disease terms over HPO terms, as HPO terms generally describe patient-level phenotypes, whereas variant classifications should describe the variant’s association with a disease. If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s) (e.g. the variant causes both condition A and condition B). This is most commonly used for a new disease or syndrome that does not yet have a name and is described by several clinical features."><strong>*?</strong></span>
     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;" data-placeholder="e.g. C0001080, ..">
     </select>
 
@@ -228,7 +274,7 @@
     {{ var_form.hpo_terms.label(class="fw-bold, text-dark" )}}<br>
     <ul class="list-group">
     {% for term in var_form.hpo_terms %}
-      <li class="list-group-item">{{ term.label }}</li>
+      <li class="list-group-item bg-white">{{ term.label(class="fw-bold, text-dark") }}</li>
     {% else %}
     N/A
     </ul>
@@ -255,15 +301,15 @@
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.affected_status.label.text }}</label>
-          {{ cdata.affected_status(class="form-select") }}
+          {{ cdata.affected_status(class="form-control, btn-secondary") }}
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.allele_of_origin.label.text }}</label>
-          {{ cdata.allele_of_origin(class="form-select") }}
+          {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.collection_method.label.text }}</label>
-          {{ cdata.collection_method(class="form-select") }}
+          {{ cdata.collection_method(class="form-control, btn-secondary") }}
         </div>
       </div>
 
@@ -271,11 +317,11 @@
       <div class="row align-items-start">
         <div class="col-md-2 offset-md-6 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.somatic_allele_fraction.label.text }}</label>
-          {{ cdata.somatic_allele_fraction(class="form-control") }}
+          {{ cdata.somatic_allele_fraction(class="form-control, btn-secondary") }}
         </div>
         <div class="col-md-2 mb-3">
           <label class="form-label fw-bold text-dark">{{ cdata.somatic_allele_in_normal.label.text }}</label>
-          {{ cdata.somatic_allele_in_normal(class="form-control") }}
+          {{ cdata.somatic_allele_in_normal(class="form-control, btn-secondary") }}
         </div>
       </div>
       {% endif %}
@@ -311,7 +357,7 @@
         </td>
         <td>
           <a href="{{ url_for('variant.variant', institute_id=var.institute_id, case_name=var.case_name, variant_id=var.variant_id) }}" target="_blank">
-            link
+            <span class="fa fa-link">
           </a>
         </td>
 
@@ -358,7 +404,6 @@
     <tr>
       <th></th>
       <th>Variant</th>
-      <th></th>
       <th>Type</th>
       <th>Case</th>
       <th>Refseq</th>
@@ -385,7 +430,6 @@
                 {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
               {% endif %}
             </td>
-            <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
             <td><div class="badge bg-warning">SV</div></td>
           {% else %} <!-- SNV -->
             {% if subm_variant.ref_seq and subm_variant.hgvs %}
@@ -400,7 +444,6 @@
                 {{ var_key_name[subm_variant.local_id]|truncate(25,true,'..') }} (N/A)
               {% endif %}
             </td>
-            <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
             <td><div class="badge bg-success">SNV</div></td>
           {% endif %}
         </td>
@@ -442,7 +485,6 @@
     <tr>
       <th></th>
       <th>Individual</th>
-      <th></th>
       <th>Case</th>
       <th>Variant</th>
       <th>Allele origin</th>
@@ -454,7 +496,6 @@
       <tr>
         <td>{{loop.index}}</td>
         <td>{{case.individual_id}}</td>
-        <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
         <td>{{ case_link(institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}</td>
         <td>{{var_key_name[case.linking_id]|truncate(100,true,'..')}}</td>
         <td>{{case.allele_origin}}</td>
@@ -508,7 +549,6 @@
 </div>
 {% endmacro %}
 
-
 {% macro submit_modal(institute) %}
 <div class="modal fade" id="submitModal" tabindex="-1">
   <div class="modal-dialog">
@@ -528,4 +568,17 @@
     </div>
   </div>
 </div>
+{% endmacro %}
+
+{% macro no_submissions_found(filter_form)%}
+  {% if filter_form.clinvar_id_filter.data %}
+    <div class="alert alert-info">
+      No ClinVar submissions matched your search.
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      No ClinVar submissions found. You can create one by choosing one or more
+      pinned variants on a case page and clicking the button "Submit to ClinVar".
+    </div>
+  {% endif %}
 {% endmacro %}

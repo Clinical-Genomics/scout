@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add AlphaGenome Atlas links (#6547)
 - Add a region proxy field to gene panel genes, with a typeahead (#6530)
 - ACMG term criterion details on case general report (#6558)
+- Search also oncogenicity submission by ClinVar ID (#6552)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.7 (#6539)
@@ -23,11 +24,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update GnomAD constraint to v4.1.1 (#6541)
 - Clearer description of CLINVAR_API_URL settings parameter, on default config and admin docs (#6557)
 - Make it clear when ClinVar submissions are sent to the test endpoint by adding "test" to the submission buttons. (#6556)
+- Show ACMG Bayesian (Tavtigian et al) classification on the variant page (#6561)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
 - Fix ACMG form crash when saving without criteria (#6546)
 - `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
+- Style and dark mode visibility of ClinVar multistep submission form (#6559)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
 
 ## [4.114]
