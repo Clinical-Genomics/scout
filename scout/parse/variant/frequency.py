@@ -219,11 +219,11 @@ def update_frequency_from_transcript(frequencies: dict, transcripts: list):
             "exac": transcript.get("exac_maf"),
             "exac_max": transcript.get("exac_max"),
             "thousand_g": transcript.get("thousand_g_maf"),
-            "thousandg_max": transcript.get("thousandg_max"),
+            "thousand_g_max": transcript.get("thousandg_max"),
             "gnomad": transcript.get("gnomad_maf"),
             "gnomad_max": transcript.get("gnomad_max"),
-            "gnomad_mt_hom": transcript.get("gnomad_mt_homoplasmic"),
-            "gnomad_mt_het": transcript.get("gnomad_mt_heteroplasmic"),
+            "gnomad_mt_homoplasmic": transcript.get("gnomad_mt_homoplasmic"),
+            "gnomad_mt_heteroplasmic": transcript.get("gnomad_mt_heteroplasmic"),
         }
 
         for freq_type, freq_value in transcript_frequencies.items():
