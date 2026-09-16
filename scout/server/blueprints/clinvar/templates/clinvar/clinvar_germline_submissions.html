@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
-{% from "clinvar/components.html" import action_modal, render_dict_array, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
+{% from "clinvar/components.html" import action_modal, no_submissions_found, render_dict_array, submissions_filter, submission_panel, submit_modal, variant_submission_table, update_submission_status_form %}
 {% from "variants/utils.html" import pagination_hidden_div, pagination_footer, current_page_anchor %}
 
 {% block title %}
@@ -29,18 +29,7 @@
   {{ clinvar_howto_modal() }}
   <!-- Modal end -->
   <br>
-
-  <div class="mb-2">
-      <form id="search-form" class="d-flex gap-2 align-items-start" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
-        <label for="clinvar_id_filter" class="visually-hidden">ClinVar submission ID</label>
-        <input type="text" class="form-control" id="clinvar_id_filter" name="clinvar_id_filter"
-               placeholder="Enter ClinVar submission ID…"
-               value="{{clinvar_id_filter if clinvar_id_filter}}"
-               style="max-width: 250px;">
-        <button class="btn btn-primary" type="submit">Search</button>
-        <a href="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}" class="btn btn-secondary text-white">Show All</a>
-      </form>
-    </div>
+  {{ submissions_filter(action_url=url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id), filter_form=filter_form) }}
 
   {% if submissions %}
 
@@ -54,7 +43,7 @@
     {% endfor %}
     </div>
   {% else %}
-  <p>No ClinVar submissions found. You can create one by choosing one or more pinned variants on a case page and clicking the button "Submit to ClinVar".</p>
+    {{ no_submissions_found(filter_form) }}
   {% endif %}
 </div>
 <form id="pagination-form" method="post" action="{{ url_for('clinvar.clinvar_germline_submissions', institute_id=institute._id) }}">
