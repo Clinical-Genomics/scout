@@ -516,7 +516,7 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
         variant["referenceCopyNumber"] = int(form["ref_copy"])
 
     if form.get("ncopy"):
-        variant["copyNumber"] = int(form["ncopy"])
+        variant["copyNumber"] = form["ncopy"]
 
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
