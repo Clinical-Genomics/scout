@@ -502,8 +502,6 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
             "start": int(form.get("start", form.get("breakpoint1"))),
             "stop": int(form.get("stop", form.get("breakpoint2"))),
         }
-        if form.get("alt"):
-            variant["chromosomeCoordinates"]["alternateAllele"] = form["alt"]
 
         for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
             if form.get(field):
@@ -511,6 +509,9 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
 
         if form.get("length"):
             variant["chromosomeCoordinates"]["variantLength"] = int(form["length"])
+
+        if form.get("category") in ["snv", "cancer"] and form.get("alt"):
+            variant["chromosomeCoordinates"]["alternateAllele"] = form["alt"]
 
     if form.get("ref_copy"):
         variant["referenceCopyNumber"] = int(form["ref_copy"])
