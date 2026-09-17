@@ -489,21 +489,29 @@ def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, submission_type:
 def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
     """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
     variant = {}
-    if form.get("category") == "sv":
-        for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
-            if form.get(field):
-                variant[field.replace("_", "").title()] = form.get(field)
-    elif form.get("tx_hgvs") not in UNDEFINED_HGVS:
+
+    if form.get("tx_hgvs") not in UNDEFINED_HGVS:
         subm_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
         variant["chromosomeCoordinates"] = {
             "assembly": form.get("assembly"),
             "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),
-            "start": int(form.get("start")),
-            "stop": int(form.get("stop")),
-            "alternateAllele": form.get("alt"),
+            "start": int(form.get("start", form.get("breakpoint1"))),
+            "stop": int(form.get("stop", form.get("breakpoint2"))),
         }
+        if form.get("alt"):
+            variant["chromosomeCoordinates"]["alternateAllele"] = form["alt"]
+
+        for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
+            if form.get(field):
+                variant["chromosomeCoordinates"][field.replace("_", "").title()] = form.get(field)
+
+    if form.get("ref_copy"):
+        variant["referenceCopyNumber"] = int(form["ref_copy"])
+
+    if form.get("ncopy"):
+        variant["copyNumber"] = int(form["ncopy"])
 
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
@@ -565,7 +573,6 @@ def parse_clinvar_form(form: ImmutableMultiDict, subm_type: str) -> dict:
     _parse_variant_set(subm_item=subm_item, form=form)
     _parse_condition_set(subm_item=subm_item, form=form)
     _parse_observations(subm_item=subm_item, form=form, subm_type=subm_type)
-
     return subm_item
 
 
