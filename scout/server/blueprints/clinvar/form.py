@@ -82,7 +82,8 @@ class ClinVarVariantForm(FlaskForm):
     last_evaluated = DateField("Date evaluated")
     multiple_condition_explanation = SelectField(
         "Explanation for multiple conditions",
-        choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
+        choices=[("", "-")] + [(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
+        default="",
     )
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
