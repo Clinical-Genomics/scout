@@ -251,13 +251,7 @@
       <strong>*?</strong>
     </span>
 
-    <select
-      class="select2"
-      id="condition_tags"
-      name="conditions"
-      multiple
-      style="width:100%;"
-    ></select>
+    {{ var_form.conditions( id="condition_tags", class="select2", multiple=true, style="width:100%;") }}
 
     <div class="mt-3">
       {{ var_form.multiple_condition_explanation.label(class="fw-bold text-dark") }}
@@ -269,16 +263,8 @@
         <strong>?</strong>
       </span>
 
-      <select
-        name="multiple_condition_explanation"
-        id="multiple_condition_explanation"
-        class="form-control btn-secondary"
-      >
-        <option selected value>-</option>
-        {% for choice, _ in var_form.multiple_condition_explanation.choices %}
-          <option value="{{ choice }}">{{ choice }}</option>
-        {% endfor %}
-      </select>
+      {{ var_form.multiple_condition_explanation( id="multiple_condition_explanation", class="form-control btn-secondary", style="width:100%;") }}
+
     </div>
   </div>
 
