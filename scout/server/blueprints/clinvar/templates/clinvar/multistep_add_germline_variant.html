@@ -120,47 +120,57 @@
                   {% else %} <!--SV variant-->
                     <div class="row">
                       <div class="col-6">
-                      <!-- Variant type -->
-                        {{variant_data.var_form.var_type.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.var_type(class="form-control, btn-secondary")}}
+                        <!-- Variant type -->
+                        {{ variant_data.var_form.var_type.label(class="fw-bold text-dark d-inline-block", style="width: 180px;") }}
+                        {{ variant_data.var_form.var_type(class="form-control d-inline-block", style="width: 200px;") }}
                         <br><br>
-                      <!-- Reference copy number -->
-                        {{variant_data.var_form.ref_copy.label(class="fw-bold, text-dark")}}
-                        {{ variant_data.var_form.ref_copy(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
+
+                        <!-- Reference copy number -->
+                        {{ variant_data.var_form.ref_copy.label(class="fw-bold text-dark d-inline-block", style="width: 180px;") }}
+                        {{ variant_data.var_form.ref_copy(size=5, class="bg-white w-auto", style="width: 100px;") }}
                         <br><br>
-                      <!-- Copy number -->
-                        {{variant_data.var_form.ncopy.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
-                        {{variant_data.var_form.ncopy(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
+
+                        <!-- Copy number -->
+                        {{ variant_data.var_form.ncopy.label(class="fw-bold text-dark d-inline-block", style="width: 180px;") }}
+                        <span class="text-danger" data-bs-toggle="tooltip" title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
+                        {{ variant_data.var_form.ncopy(size=5, class="bg-white w-auto", style="width: 100px;") }}
                         <br><br>
-                      <!--start and end chroms-->
-                        {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.chromosome(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
+
+                        <!-- Chromosome -->
+                        {{ variant_data.var_form.chromosome.label(class="fw-bold text-dark d-inline-block", style="width: 180px;") }}
+                        {{ variant_data.var_form.chromosome(size=5, class="bg-white w-auto, d-inline-block", style="width: 100px;") }}
                         <br><br>
                       </div>
-                      <div class=col-6>
+
+                      <div class="col-6">
                         <!-- BP1 -->
-                        {{variant_data.var_form.breakpoint1.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.breakpoint1(class="bg-white")}}
+                        {{ variant_data.var_form.breakpoint1.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.breakpoint1(class="bg-white", style="width: 300px;") }}
                         <br><br>
+
                         <!-- BP2 -->
-                        {{variant_data.var_form.breakpoint2.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.breakpoint2(class="bg-white")}}
+                        {{ variant_data.var_form.breakpoint2.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.breakpoint2(class="bg-white", style="width: 300px;") }}
                         <br><br>
+
                         <!-- Outer start -->
-                        {{variant_data.var_form.outer_start.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.outer_start(size=20, class="bg-white")}}
+                        {{ variant_data.var_form.outer_start.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.outer_start(size=20, class="bg-white", style="width: 300px;") }}
                         <br><br>
+
                         <!-- Inner start -->
-                        {{variant_data.var_form.inner_start.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.inner_start(size=20, class="bg-white")}}
+                        {{ variant_data.var_form.inner_start.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.inner_start(size=20, class="bg-white", style="width: 300px;") }}
                         <br><br>
+
                         <!-- Inner stop -->
-                        {{variant_data.var_form.inner_stop.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.inner_stop(size=20, class="bg-white")}}
+                        {{ variant_data.var_form.inner_stop.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.inner_stop(size=20, class="bg-white", style="width: 300px;") }}
                         <br><br>
+
                         <!-- Outer stop -->
-                        {{variant_data.var_form.outer_stop.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.outer_stop(size=20, class="bg-white")}}
+                        {{ variant_data.var_form.outer_stop.label(class="fw-bold text-dark") }}
+                        {{ variant_data.var_form.outer_stop(size=20, class="bg-white", style="width: 300px;") }}
                       </div>
                     </div>
                   {% endif %}
