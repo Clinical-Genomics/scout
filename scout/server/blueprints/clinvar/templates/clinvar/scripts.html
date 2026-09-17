@@ -19,7 +19,7 @@ $(".next").click(function(){
 	// run the validations on the input for the current step
 	var validationPassed = true;
 
-  {% if variant_data.var_obj.category == "sv" %}
+  {% if variant_data.var_obj.category in ["snv", "sv"] %}
     if(current_fs.data('step') == 6){
       validationPassed = validateConditions();
     }
