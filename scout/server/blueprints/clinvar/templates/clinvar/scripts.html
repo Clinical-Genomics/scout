@@ -105,11 +105,19 @@ $(".previous").click(function(){
 });
 
 // Conditions-associated code
-
-var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "HP": "e.g. 0002839, .." , "MedGen": "e.g. C0001080, ..", "MeSH": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
+var conditionsPlaceHolders = {
+  "OMIM": "e.g. 100800, ..",
+  "HPO": "e.g. 0002839, ..",
+  "HP": "e.g. 0002839, ..",
+  "MedGen": "e.g. C0001080, ..",
+  "MeSH": "e.g. D000130, ..",
+  "MONDO": "e.g. 0007947, ..",
+  "Orphanet": "e.g. 155, .."
+};
 
 // Populate condition list
 $('#condition_tags').select2({
+  placeholder: conditionsPlaceHolders[$('#condition_type').val()],
   tags: true,
   theme: 'bootstrap-5',
   tokenSeparators: [','],
@@ -136,24 +144,22 @@ $(function(){
       choices = {{ variant_data.var_form.medgen_terms.choices|tuple_list_to_dict(0,1)|tojson }};
     }
 
+    $('#condition_tags').select2('destroy');
     $('#condition_tags').empty();
 
     for (const key in choices) {
       $('#condition_tags').append(new Option(key, key, true, true));
     }
 
-    $('#condition_tags').val(Object.keys(choices)).trigger('change');
-
     $('#condition_tags').select2({
       placeholder: conditionsPlaceHolders[conditionType],
-      theme: 'bootstrap-5',
       tags: true,
+      theme: 'bootstrap-5',
       tokenSeparators: [','],
       allowClear: true
     });
   });
 });
-
 
 // Validates fields for conditions associated to a variant
 function validateConditions(){
