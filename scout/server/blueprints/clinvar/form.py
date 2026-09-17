@@ -75,7 +75,6 @@ class ClinVarVariantForm(FlaskForm):
     classification = SelectField(
         "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS]
     )
-    hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     inheritance_mode = SelectField(
         "Inheritance model",
         choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
@@ -85,8 +84,12 @@ class ClinVarVariantForm(FlaskForm):
         "Explanation for multiple conditions",
         choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
     )
+    hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
+    mesh_terms = MultiCheckboxField("Case-associated MeSH IDs", choices=[])
+    mondo_terms = MultiCheckboxField("Case-associated MONDO IDs", choices=[])
+    medgen_terms = MultiCheckboxField("Case-associated MedGen IDs", choices=[])
 
 
 class SNVariantForm(ClinVarVariantForm):
