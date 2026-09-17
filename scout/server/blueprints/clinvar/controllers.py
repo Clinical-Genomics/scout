@@ -87,8 +87,9 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
-    if variant_obj.get("category") in ["snv", "cancer"]:
-        var_form.gene_symbol.data = ",".join(variant_obj.get("hgnc_symbols", []))
+    if variant_obj.get("hgnc_symbols") and len(variant_obj["hgnc_symbols"]) < 10:
+        var_form.gene_symbol.data = ",".join(variant_obj["hgnc_symbols"])
+
     var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
         (
