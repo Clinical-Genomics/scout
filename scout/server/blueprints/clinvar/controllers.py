@@ -150,6 +150,7 @@ def _get_sv_var_form(variant_obj, case_obj):
     var_form.breakpoint1.data = variant_obj.get("position")
     var_form.breakpoint2.data = variant_obj.get("end")
     var_form.category.data = variant_obj.get("category")
+    var_form.length.data = variant_obj.get("length")
 
     # try to preselect variant type from variant subcategory
     if variant_obj["sub_category"] in SCOUT_CLINVAR_SV_TYPES_MAP:
@@ -506,6 +507,9 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
         for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
             if form.get(field):
                 variant["chromosomeCoordinates"][field.replace("_", "").title()] = form.get(field)
+
+        if form.get("length"):
+            variant["chromosomeCoordinates"]["variantLength"] = int(form["length"])
 
     if form.get("ref_copy"):
         variant["referenceCopyNumber"] = int(form["ref_copy"])

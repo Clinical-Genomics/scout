@@ -58,6 +58,7 @@ class ClinVarVariantForm(FlaskForm):
     linking_id = HiddenField()
     local_id = HiddenField()
     ref = HiddenField()
+    length = HiddenField()
 
     # Custom fields
     assertion_method_cit_db = SelectField(
