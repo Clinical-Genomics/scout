@@ -126,15 +126,15 @@
                         <br><br>
                       <!-- Reference copy number -->
                         {{variant_data.var_form.ref_copy.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.ref_copy(size=5, class="bg-white")}}
+                        {{ variant_data.var_form.ref_copy(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
                         <br><br>
                       <!-- Copy number -->
                         {{variant_data.var_form.ncopy.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
-                        {{variant_data.var_form.ncopy(size=5, class="bg-white")}}
+                        {{variant_data.var_form.ncopy(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
                         <br><br>
                       <!--start and end chroms-->
                         {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.chromosome(size=5, class="bg-white")}}
+                        {{variant_data.var_form.chromosome(size=5, class="bg-white w-auto", style="max-width: 100px;")}}
                         <br><br>
                       </div>
                       <div class=col-6>

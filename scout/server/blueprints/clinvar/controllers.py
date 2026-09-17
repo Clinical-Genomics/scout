@@ -219,30 +219,6 @@ def _variant_classification(var_obj: dict):
         return MANUAL_RANK_OPTIONS[var_obj["manual_rank"]]["name"]
 
 
-def set_clinvar_form(var_id, data):
-    """Adds form key/values to the form used in ClinVar create submission page
-
-    Args:
-        var_id(str): variant _id
-        data(dict): data to show in clinvar_create.html template
-    """
-    var_obj = store.variant(var_id)
-    if not var_obj:
-        return
-
-    var_obj["classification"] = _variant_classification(var_obj)
-
-    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
-    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
-    variant_data = {
-        "var_id": var_id,
-        "var_obj": var_obj,
-        "var_form": var_form,
-        "cdata_forms": cdata_forms,
-    }
-    data["variant_data"] = variant_data
-
-
 def _parse_tx_hgvs(clinvar_var, form):
     """Set ref_seq and hgvs symbols for a clinvar variant
 
@@ -476,8 +452,8 @@ def set_clinvar_form(var_id: str, data: dict):
 
     var_obj["classification"] = _variant_classification(var_obj)
 
-    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
-    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
+    var_form = _populate_variant_form(var_obj, data["case"])
+    cdata_forms = _populate_case_data_form(var_obj, data["case"])
     variant_data = {
         "var_id": var_id,
         "var_obj": var_obj,
@@ -512,9 +488,12 @@ def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, submission_type:
 
 def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
     """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
-
     variant = {}
-    if form.get("tx_hgvs") not in UNDEFINED_HGVS:
+    if form.get("category") == "sv":
+        for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
+            if form.get(field):
+                variant[field.replace("_", "").title()] = form.get(field)
+    elif form.get("tx_hgvs") not in UNDEFINED_HGVS:
         subm_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
     else:  # Use coordinates
@@ -593,11 +572,9 @@ def parse_clinvar_form(form: ImmutableMultiDict, subm_type: str) -> dict:
 def add_variant_to_submission(
     institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, subm_type: str
 ):
-    """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists create it."""
+    """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists, create it."""
 
-    subm_item: dict = parse_clinvar_form(
-        form=form, subm_type=subm_type
-    )  # The variant item to add to an open submission
+    subm_item: dict = parse_clinvar_form(form=form, subm_type=subm_type)
 
     # Add case specifics to the submission item
     subm_item["institute_id"] = institute_obj["_id"]
