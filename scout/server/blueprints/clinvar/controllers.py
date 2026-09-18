@@ -499,7 +499,7 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
         subm_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
     else:
-        variant["chromosomeCoordinates"] = _parse_chromosome_coordinates(form)
+        variant["chromosomeCoordinates"] = parse_chromosome_coordinates(form)
 
     if form.get("ref_copy"):
         variant["referenceCopyNumber"] = int(form["ref_copy"])
@@ -519,23 +519,37 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
 def parse_chromosome_coordinates(form: ImmutableMultiDict) -> dict:
     """Parse chromosome coordinates from the ClinVar user form."""
 
-    SV_APPROX_COORDINATES = {
-        "outer_start": "OuterStart",
-        "inner_start": "InnerStart",
-        "inner_stop": "InnerStop",
-        "outer_stop": "OuterStop",
-    }
+    LOG.warning(f"---------{form}")
 
     coordinates = {
         "assembly": form.get("assembly"),
         "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),
-        "start": int(form.get("start", form.get("breakpoint1"))),
-        "stop": int(form.get("stop", form.get("breakpoint2"))),
     }
 
-    for field, key in SV_APPROX_COORDINATES.items():
-        if form.get(field):
-            coordinates[key] = form.get(field)
+    if form.get("category") == "sv":
+        if form.get("coordinate_type") == "approximate":
+            coordinates.update(
+                {
+                    "outerStart": int(form.get("outer_start")),
+                    "innerStart": int(form.get("inner_start")),
+                    "innerStop": int(form.get("inner_stop")),
+                    "outerStop": int(form.get("outer_stop")),
+                }
+            )
+        else:
+            coordinates.update(
+                {
+                    "start": int(form.get("breakpoint1")),
+                    "stop": int(form.get("breakpoint2")),
+                }
+            )
+    else:
+        coordinates.update(
+            {
+                "start": int(form.get("start")),
+                "stop": int(form.get("stop")),
+            }
+        )
 
     if form.get("length"):
         coordinates["variantLength"] = int(form["length"])
