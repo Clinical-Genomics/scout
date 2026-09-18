@@ -109,6 +109,10 @@ a.dropdown-item:visited {
 		font-weight: bold;
 	}
 
+	a:visited {
+        color: #ff69b4;
+    }
+
 	/* dismiss table row */
 	.dismiss {
 		color:var(--bs-black);
