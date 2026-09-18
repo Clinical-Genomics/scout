@@ -516,7 +516,7 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
     subm_item["variantSet"] = {"variant": [variant]}
 
 
-def _parse_chromosome_coordinates(form: ImmutableMultiDict) -> dict:
+def parse_chromosome_coordinates(form: ImmutableMultiDict) -> dict:
     """Parse chromosome coordinates from the ClinVar user form."""
 
     SV_APPROX_COORDINATES = {
