@@ -1240,6 +1240,25 @@
   {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
+{% macro rank_cell(variant) %}
+  {% if variant.rank_score is defined %}
+    {% if variant.rank_score <= 4 %}
+      {% set label_class = 'secondary' %}
+    {% elif variant.rank_score == 5 %}
+      {% set label_class = 'info' %}
+    {% elif variant.rank_score == 6 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.rank_score == 7 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.rank_score > 8 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
+      {{ variant_rank_score(variant) }}
+    </div>
+  {% endif %}
+{% endmacro %}
+
 {% macro pagination_hidden_div(page, result_size, per_page=50) %}
   {% set per_page = per_page %}
   {% if result_size is not none %}
