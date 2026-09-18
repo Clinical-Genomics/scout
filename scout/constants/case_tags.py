@@ -34,7 +34,7 @@ CUSTOM_CASE_REPORTS = {
     "oncoanalyser_orange_report": {
         "key_name": "oncoanalyser_orange_report",
         "format": "pdf",
-        "pdf_export": True,
+        "pdf_export": False,
     },
     "reference_info": {"key_name": "reference_info", "format": "YAML", "pdf_export": True},
     "RNAfusion_inspector": {
