@@ -82,6 +82,12 @@ def gene_fusion_report(case_id, report_path, research, update):
 
 ####### End of deprecated commands #######
 
+REPORT_TYPE_HELP = (
+    "Type of report.\n\n"
+    "\b\n"
+    "Choices:\n" + "\n".join(f"  {report_type}" for report_type in CUSTOM_CASE_REPORTS)
+)
+
 
 @click.command("report")
 @click.argument("case-id", required=True)
@@ -89,9 +95,10 @@ def gene_fusion_report(case_id, report_path, research, update):
 @click.option(
     "-t",
     "--report-type",
+    metavar="TYPE",
     type=click.Choice(list(CUSTOM_CASE_REPORTS.keys())),
     required=True,
-    help="Type of report",
+    help=REPORT_TYPE_HELP,
 )
 @with_appcontext
 def report(case_id, report_path, report_type):
