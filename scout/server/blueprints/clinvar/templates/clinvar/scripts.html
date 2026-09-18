@@ -19,8 +19,8 @@ $(".next").click(function(){
 	// run the validations on the input for the current step
 	var validationPassed = true;
 
-  {% if variant_data.var_obj.category == "snv" %}
-    if(current_fs.data('step') == 5){
+  {% if variant_data.var_obj.category in ["snv", "sv"] %}
+    if(current_fs.data('step') == 6){
       validationPassed = validateConditions();
     }
   {% elif variant_data.var_obj.category == "cancer" %}
@@ -105,47 +105,59 @@ $(".previous").click(function(){
 });
 
 // Conditions-associated code
-
-var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "HP": "e.g. 0002839, .." , "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
+var conditionsPlaceHolders = {
+  "OMIM": "e.g. 100800, ..",
+  "HPO": "e.g. 0002839, ..",
+  "HP": "e.g. 0002839, ..",
+  "MedGen": "e.g. C0001080, ..",
+  "MeSH": "e.g. D000130, ..",
+  "MONDO": "e.g. 0007947, ..",
+  "Orphanet": "e.g. 155, .."
+};
 
 // Populate condition list
 $('#condition_tags').select2({
+  placeholder: conditionsPlaceHolders[$('#condition_type').val()],
   tags: true,
   theme: 'bootstrap-5',
   tokenSeparators: [','],
   allowClear: true,
 });
 
-// reset and modify conditions field's placeholder when condition ID type changes
+// Reset and modify conditions field's placeholder when condition ID type changes
 $(function(){
   $("#condition_type").change(function(){
-    $('#condition_tags')[0].options.length = 0; // reset conditions multiselect
+    const conditionType = $(this).val();
+    let choices = {};
 
-    // Change placeholder
-    selectedCondId = $("#condition_type option:selected").text();
+    if (conditionType == 'OMIM'){
+      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    } else if (conditionType == 'Orphanet'){
+      choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    } else if (conditionType == 'HPO' || conditionType == 'HP'){
+      choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    } else if (conditionType == 'MeSH'){
+      choices = {{ variant_data.var_form.mesh_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    } else if (conditionType == 'MONDO'){
+      choices = {{ variant_data.var_form.mondo_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    } else if (conditionType == 'MedGen'){
+      choices = {{ variant_data.var_form.medgen_terms.choices|tuple_list_to_dict(0,1)|tojson }};
+    }
+
+    $('#condition_tags').select2('destroy');
+    $('#condition_tags').empty();
+
+    for (const key in choices) {
+      $('#condition_tags').append(new Option(key, key, true, true));
+    }
+
     $('#condition_tags').select2({
-      placeholder: conditionsPlaceHolders[selectedCondId],
-      theme: 'bootstrap-5',
+      placeholder: conditionsPlaceHolders[conditionType],
       tags: true,
+      theme: 'bootstrap-5',
       tokenSeparators: [','],
-      allowClear: true,
+      allowClear: true
     });
-
-    // repopulate option values according to the selected condition ID
-    choices = {};
-    if ($('#condition_type').val() == 'OMIM'){
-      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe}};
-    }
-    if ($('#condition_type').val() == 'Orphanet'){
-      choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|safe }};
-    }
-    if ($('#condition_type').val() == 'HPO' || $('#condition_type').val() == 'HP'){
-      choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
-    }
-    for (var key in choices) {
-      var newOption = new Option(key, key, true, true);
-      $('#condition_tags').append(newOption).trigger('change');
-    }
   });
 });
 
@@ -167,10 +179,12 @@ function validateConditions(){
     return false;
   }
 
-  // Make sure that provided conditions are numbers, except when condition type is MeSH or MedGen
+  // Make sure that provided conditions are numbers, except for MeSH and MedGen
   var selectedConditionsValues = $('#condition_tags').val();
+  var conditionType = $('#condition_type').val();
+
   for (let i = 0; i < selectedConditionsValues.length; i++) {
-    if (isNaN(selectedConditionsValues[i]) && !['Mesh', 'MedGen'].includes($('#condition_type').val())){
+    if (isNaN(selectedConditionsValues[i]) && !['MeSH', 'MedGen'].includes(conditionType)) {
       alert(`Condition ID "${selectedConditionsValues[i]}" has an invalid format.`);
       return false;
     }
