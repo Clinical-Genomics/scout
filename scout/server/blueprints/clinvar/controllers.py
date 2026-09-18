@@ -522,6 +522,9 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
     if form.get("gene_symbol"):
         variant["gene"] = [{"symbol": form["gene_symbol"]}]
 
+    if form.get("category") == "sv":
+        variant["variantType"] = form.get("var_type")
+
     subm_item["variantSet"] = {"variant": [variant]}
 
 
