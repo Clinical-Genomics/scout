@@ -489,29 +489,17 @@ def _parse_assertion(subm_item: dict, form: ImmutableMultiDict, submission_type:
 
 
 def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
-    """Parse variant specifics from the ClinVar user form. It's an array but we support oonly one variant per oncogenic item."""
+    """Parse variant specifics from the ClinVar user form.
+
+    It's an array, but we support only one variant per oncogenic item.
+    """
     variant = {}
 
     if form.get("tx_hgvs") not in UNDEFINED_HGVS:
         subm_item["submittedAssembly"] = form.get("assembly")
         variant["hgvs"] = form["tx_hgvs"]
-    else:  # Use coordinates
-        variant["chromosomeCoordinates"] = {
-            "assembly": form.get("assembly"),
-            "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),
-            "start": int(form.get("start", form.get("breakpoint1"))),
-            "stop": int(form.get("stop", form.get("breakpoint2"))),
-        }
-
-        for field in ("outer_start", "inner_start", "inner_stop", "outer_stop"):
-            if form.get(field):
-                variant["chromosomeCoordinates"][field.replace("_", "").title()] = form.get(field)
-
-        if form.get("length"):
-            variant["chromosomeCoordinates"]["variantLength"] = int(form["length"])
-
-        if form.get("category") in ["snv", "cancer"] and form.get("alt"):
-            variant["chromosomeCoordinates"]["alternateAllele"] = form["alt"]
+    else:
+        variant["chromosomeCoordinates"] = _parse_chromosome_coordinates(form)
 
     if form.get("ref_copy"):
         variant["referenceCopyNumber"] = int(form["ref_copy"])
@@ -526,6 +514,36 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
         variant["variantType"] = form.get("var_type")
 
     subm_item["variantSet"] = {"variant": [variant]}
+
+
+def _parse_chromosome_coordinates(form: ImmutableMultiDict) -> dict:
+    """Parse chromosome coordinates from the ClinVar user form."""
+
+    SV_APPROX_COORDINATES = {
+        "outer_start": "OuterStart",
+        "inner_start": "InnerStart",
+        "inner_stop": "InnerStop",
+        "outer_stop": "OuterStop",
+    }
+
+    coordinates = {
+        "assembly": form.get("assembly"),
+        "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),
+        "start": int(form.get("start", form.get("breakpoint1"))),
+        "stop": int(form.get("stop", form.get("breakpoint2"))),
+    }
+
+    for field, key in SV_APPROX_COORDINATES.items():
+        if form.get(field):
+            coordinates[key] = form.get(field)
+
+    if form.get("length"):
+        coordinates["variantLength"] = int(form["length"])
+
+    if form.get("category") in ("snv", "cancer") and form.get("alt"):
+        coordinates["alternateAllele"] = form["alt"]
+
+    return coordinates
 
 
 def _parse_condition_set(subm_item: dict, form: ImmutableMultiDict):
