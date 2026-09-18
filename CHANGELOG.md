@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a region proxy field to gene panel genes, with a typeahead (#6530)
 - ACMG term criterion details on case general report (#6558)
 - Search also oncogenicity submission by ClinVar ID (#6552)
-- Add an Oncoanalyser Orange report to an existing case via CLI (#)
+- Add an Oncoanalyser Orange report to an existing case via CLI (#6569)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.7 (#6539)
