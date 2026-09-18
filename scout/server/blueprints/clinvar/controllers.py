@@ -519,8 +519,6 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
 def parse_chromosome_coordinates(form: ImmutableMultiDict) -> dict:
     """Parse chromosome coordinates from the ClinVar user form."""
 
-    LOG.warning(f"---------{form}")
-
     coordinates = {
         "assembly": form.get("assembly"),
         "chromosome": "MT" if form.get("chromosome") == "M" else form.get("chromosome"),

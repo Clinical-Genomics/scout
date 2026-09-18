@@ -4,7 +4,7 @@ from scout.server.blueprints.clinvar.controllers import parse_chromosome_coordin
 
 
 def test_parse_chromosome_coordinates():
-    """Test parsing chromosome coordinates and optional variant fields."""
+    """Test parsing precise SNV chromosome coordinates and optional variant fields."""
     form = ImmutableMultiDict(
         {
             "assembly": "GRCh38",
@@ -28,10 +28,6 @@ def test_parse_chromosome_coordinates():
         "chromosome": "1",
         "start": 100,
         "stop": 200,
-        "OuterStart": "90",
-        "InnerStart": "95",
-        "InnerStop": "205",
-        "OuterStop": "210",
         "variantLength": 101,
         "alternateAllele": "A",
     }
@@ -46,6 +42,7 @@ def test_parse_chromosome_coordinates_uses_breakpoints():
             "breakpoint1": "1000",
             "breakpoint2": "2000",
             "category": "sv",
+            "coordinate_type": "precise",
             "length": "1001",
         }
     )
@@ -58,4 +55,33 @@ def test_parse_chromosome_coordinates_uses_breakpoints():
         "start": 1000,
         "stop": 2000,
         "variantLength": 1001,
+    }
+
+
+def test_parse_chromosome_coordinates_uses_approximate_coordinates():
+    """Test parsing approximate SV chromosome coordinates."""
+    form = ImmutableMultiDict(
+        {
+            "assembly": "GRCh37",
+            "chromosome": "20",
+            "outer_start": "54963140",
+            "inner_start": "54963189",
+            "inner_stop": "54963200",
+            "outer_stop": "54963300",
+            "category": "sv",
+            "coordinate_type": "approximate",
+            "length": "61",
+        }
+    )
+
+    result = parse_chromosome_coordinates(form)
+
+    assert result == {
+        "assembly": "GRCh37",
+        "chromosome": "20",
+        "outerStart": 54963140,
+        "innerStart": 54963189,
+        "innerStop": 54963200,
+        "outerStop": 54963300,
+        "variantLength": 61,
     }
