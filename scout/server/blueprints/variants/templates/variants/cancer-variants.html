@@ -1,6 +1,6 @@
 {% extends "variants/variants_layout.html" %}
 {% from "variants/components.html" import allele_cell, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
-{% from "variants/utils.html" import callers_cell, cancer_filters, cell_rank, filter_form_footer, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import callers_cell, cancer_filters, cell_rank, filter_form_footer, rank_cell, variant_link_href %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, other_escat_tiered_variants, research_assessments_badge %}
 
 {% block category_title %}
@@ -109,25 +109,6 @@
                       variant_id=variant._id, cancer='yes') }}">View</a>
   {% if variant.comments %}
     <span class="glyphicon glyphicon-comment"></span>
-  {% endif %}
-{% endmacro %}
-
-{% macro rank_cell(variant) %}
-  {% if variant.rank_score is defined %}
-    {% if variant.rank_score <= 4 %}
-      {% set label_class = 'secondary' %}
-    {% elif variant.rank_score == 5 %}
-      {% set label_class = 'info' %}
-    {% elif variant.rank_score == 6 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.rank_score == 7 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.rank_score > 8 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
-      {{ variant_rank_score(variant) }}
-    </div>
   {% endif %}
 {% endmacro %}
 
