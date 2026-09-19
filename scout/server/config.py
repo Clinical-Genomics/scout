@@ -143,6 +143,27 @@ CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
 #    },
 # ]
 
+# Custom IGV.js reference tracks: use a local mirror for the most part
+# CUSTOM_REFERENCE = {
+#    "37": {
+#        "id": "hg19",
+#        "name": "GRCh37 1kg decoy",
+#        "fastaURL": "/home/proj/stage/scout_igv_tracks/seq/grch37_homo_sapiens_-d5-.fasta",
+#        "indexURL": "/home/proj/stage/scout_igv_tracks/seq/grch37_homo_sapiens_-d5-.fasta.fai",
+#        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/cytoBand.txt.gz",
+#        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg19/hg19_alias.tab",
+#    },
+#    "38": {
+#        "id": "hg38",
+#        "name": "GRCh38",
+#        "fastaURL": "/home/proj/stage/scout_igv_tracks/seq/grch38_homo_sapiens_-assembly-.fasta",
+#        "indexURL": "/home/proj/stage/scout_igv_tracks/seq/grch38_homo_sapiens_-assembly-.fasta.fai",
+#        "cytobandURL": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBand.txt.gz",
+#        "aliasURL": "https://raw.githubusercontent.com/igvteam/igv-data/refs/heads/main/data/hg38/hg38_alias.tab",
+#        "chromosomeOrder": "chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12, chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY, chrM",
+#    },
+# }
+
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
 ACCEPT_LANGUAGES = ["en", "sv"]
