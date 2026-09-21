@@ -28,7 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show ACMG Bayesian (Tavtigian et al) classification on the variant page (#6561)
 - Improved visibility of visited links when in dark mode (#6564)
 - Removed unused code from previous ClinVar submissions system (#6570)
-- Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form ()
+- Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form (#6575)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
