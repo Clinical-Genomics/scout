@@ -30,18 +30,6 @@ def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
         phenotype_obj["feature"] = phenotype["description"]
     return phenotype_obj
 
-
-def _populate_pipeline_info(case_obj, case_data):
-    """Populates the field named pipeline_version
-
-    Args:
-        case_obj(dict): scout.models.Case
-        case_data (dict): A dictionary with the relevant case information
-    """
-    if case_data.get("exe_ver"):
-        case_obj["pipeline_version"] = case_data["exe_ver"]
-
-
 def build_case(case_data: dict, adapter) -> dict:
     """Build a case object that is to be inserted to the database
 
@@ -286,8 +274,6 @@ def build_case(case_data: dict, adapter) -> dict:
     case_obj["omics_files"] = case_data.get("omics_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
     case_obj["rna_delivery_report"] = case_data.get("rna_delivery_report")
-
-    _populate_pipeline_info(case_obj, case_data)
 
     case_obj["has_svvariants"] = bool(
         case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research")
