@@ -8,7 +8,10 @@ from os.path import abspath, dirname, exists, isabs
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from pydantic import AliasChoices, BaseModel, Field
+
 from scout.constants import CASE_STATUSES
+from scout.constants.case_tags import CUSTOM_CASE_REPORTS
 
 try:
     from typing import Literal
@@ -43,30 +46,15 @@ SAMPLES_FILE_PATH_CHECKS = [
     "vcf2cytosure",
 ]
 
-CASE_FILE_PATH_CHECKS = [
-    "cnv_report",
-    "coverage_qc_report",
-    "delivery_report",
-    "exe_ver",
+CASE_FILE_PATH_CHECKS = [report["key_name"] for report in CUSTOM_CASE_REPORTS.values()] + [
     "fraser_tsv",
-    "gene_fusion_report",
-    "gene_fusion_report_research",
     "madeline_info",
-    "multiqc",
-    "multiqc_rna",
     "outrider_tsv",
     "paraphrase",
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
     "rank_model_url",
-    "reference_info",
-    "RNAfusion_inspector",
-    "RNAfusion_inspector_research",
-    "RNAfusion_report",
-    "RNAfusion_report_research",
-    "rna_delivery_report",
-    "saltshaker_report",
     "smn_tsv",
     "somalier_ancestry",
     "somalier_pairs",
@@ -428,7 +416,10 @@ class CaseLoader(BaseModel):
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(None, alias="family_name")
-    exe_ver: Optional[str] = None
+    pipeline_version: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices("pipeline_version", "exe_ver"),
+    )
     family: Optional[str] = None
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
@@ -441,6 +432,7 @@ class CaseLoader(BaseModel):
     multiqc: Optional[str] = None
     multiqc_rna: Optional[str] = None
     omics_files: Optional[OmicsFiles] = None
+    oncoanalyser_orange_report: Optional[str] = None
     owner: Optional[str] = None
     paraphrase: Optional[str] = None
     peddy_ped: Optional[str] = None  # Soon to be deprecated
