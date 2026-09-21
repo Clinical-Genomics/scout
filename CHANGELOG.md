@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer description of CLINVAR_API_URL settings parameter, on default config and admin docs (#6557)
 - Make it clear when ClinVar submissions are sent to the test endpoint by adding "test" to the submission buttons. (#6556)
 - Show ACMG Bayesian (Tavtigian et al) classification on the variant page (#6561)
-- Improved visibility of visited links when in dark mode (#6564)
+- Improved visibility of links when in dark mode (#6564 and )
 - Removed unused code from previous ClinVar submissions system (#6570)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
