@@ -82,21 +82,29 @@ def gene_fusion_report(case_id, report_path, research, update):
 
 ####### End of deprecated commands #######
 
+REPORT_TYPES_HELP = "\n".join(f"    {report_type}" for report_type in CUSTOM_CASE_REPORTS)
 
-@click.command("report")
+REPORT_HELP = (
+    "Load (or delete) a report document for a case.\n\n"
+    "\b\n"
+    "Available report types:\n"
+    f"{REPORT_TYPES_HELP}"
+)
+
+
+@click.command("report", help=REPORT_HELP)
 @click.argument("case-id", required=True)
 @click.argument("report-path", type=click.Path(exists=True), required=False)
 @click.option(
     "-t",
     "--report-type",
     type=click.Choice(list(CUSTOM_CASE_REPORTS.keys())),
+    metavar="TYPE",
     required=True,
-    help="Type of report",
+    help="Type of report.",
 )
 @with_appcontext
 def report(case_id, report_path, report_type):
-    """Load (or delete) a report document for a case."""
-
     if not report_path:
         LOG.error("No report path given!")
         raise click.Abort()
