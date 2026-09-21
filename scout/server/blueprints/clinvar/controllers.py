@@ -10,13 +10,10 @@ from werkzeug.datastructures import ImmutableMultiDict
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.ccv import CCV_MAP
 from scout.constants.clinvar import (
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    CONDITION_PREFIX,
     SCOUT_CLINVAR_SV_TYPES_MAP,
 )
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem, clinvar_variant
+from scout.models.clinvar import GermlineSubmissionItem, OncogenicitySubmissionItem
 from scout.server.blueprints.variant.utils import add_gene_info
 from scout.server.extensions import store
 from scout.server.utils import get_case_genome_build
@@ -219,134 +216,6 @@ def _variant_classification(var_obj: dict):
         return MANUAL_RANK_OPTIONS[var_obj["manual_rank"]]["name"]
 
 
-def set_clinvar_form(var_id, data):
-    """Adds form key/values to the form used in ClinVar create submission page
-
-    Args:
-        var_id(str): variant _id
-        data(dict): data to show in clinvar_create.html template
-    """
-    var_obj = store.variant(var_id)
-    if not var_obj:
-        return
-
-    var_obj["classification"] = _variant_classification(var_obj)
-
-    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
-    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
-    variant_data = {
-        "var_id": var_id,
-        "var_obj": var_obj,
-        "var_form": var_form,
-        "cdata_forms": cdata_forms,
-    }
-    data["variant_data"] = variant_data
-
-
-def _parse_tx_hgvs(clinvar_var, form):
-    """Set ref_seq and hgvs symbols for a clinvar variant
-
-    Args:
-        clinvar_var(dict): scout.models.clinvar.clinvar_variant
-        form(werkzeug.datastructures.ImmutableMultiDic)
-    """
-    tx_hgvs = form.get("tx_hgvs")
-    if tx_hgvs in UNDEFINED_HGVS:
-        return
-    clinvar_var["ref_seq"] = tx_hgvs.split(":")[0]
-    clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
-
-
-def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
-    """Set condition_id_type and condition_id_values for a ClinVar variant."""
-
-    condition_db: str = form.get("condition_type")
-    clinvar_var["condition_id_type"] = condition_db
-    condition_prefix: str = CONDITION_PREFIX[condition_db]
-    clinvar_var["condition_id_value"] = ";".join(
-        [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
-    )
-    if bool(form.get("multiple_condition_explanation")):
-        clinvar_var["explanation_for_multiple_conditions"] = form.get(
-            "multiple_condition_explanation"
-        )
-
-
-def parse_variant_form_fields(form):
-    """Parses input values provided by the user in the ClinVar add_one form
-       and creates a Variant ClinVar dictionary to be saved in database (ClinVar collection)
-
-    Args:
-        form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
-
-    Returns:
-        clinvar_var(dict): scout.models.clinvar.clinvar_variant
-    """
-    clinvar_var = {"csv_type": "variant"}
-
-    # Set key/values in clinvar_var dictionary
-    for key in clinvar_variant:
-        if key in form and form[key] != "":
-            clinvar_var[key] = form[key]
-
-    clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
-    clinvar_var["assertion_method_cit"] = ":".join(
-        [form["assertion_method_cit_db"], form["assertion_method_cit_id"]]
-    )
-    _parse_tx_hgvs(clinvar_var, form)
-    _set_conditions(clinvar_var, form)
-    if form.get("dbsnp_id"):
-        clinvar_var["variations_ids"] = form["dbsnp_id"]
-
-    if clinvar_var.get("ref_seq") and clinvar_var.get("hgvs"):
-        # Variant is described by RefSeq and HGVS already, remove redundant fields from submission
-        for item in ["chromosome", "start", "stop", "ref", "alt"]:
-            clinvar_var.pop(item)
-
-    return clinvar_var
-
-
-def parse_casedata_form_fields(form):
-    """Parses input values provided by the user in the ClinVar add_one form
-      and creates a Variant ClinVar dictionary to be saved in database (clinvar collection)
-
-    Args:
-        form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
-
-    Returns:
-        casedata_list(list of dicts): [scout.models.clinvar.clinvar_casedata, ..]
-    """
-    casedata_list = []
-
-    # Get the list of individuals to be included in CaseData
-    # Each individual will become a document in clinvar collection and a line in the CaseData CVS file
-    inds_included = form.getlist("include_ind")
-
-    if not inds_included:
-        return casedata_list
-
-    ind_ids = form.getlist("individual_id")
-    ind_affected = form.getlist("affected_status")
-    ind_allele_origin = form.getlist("allele_of_origin")
-    coll_methods = form.getlist("collection_method")
-
-    for ind in inds_included:
-        casedata_dict = {"csv_type": "casedata"}
-        casedata_dict["case_id"] = form["case_id"]
-        casedata_dict["_id"] = "_".join([form["case_id"], form["local_id"], ind])
-        casedata_dict["linking_id"] = form["local_id"]  # associate individual obs to a variant
-        casedata_dict["individual_id"] = ind
-
-        indx = ind_ids.index(ind)  # collect items at this index from the form lists
-        casedata_dict["collection_method"] = coll_methods[indx]
-        casedata_dict["allele_origin"] = ind_allele_origin[indx]
-        casedata_dict["is_affected"] = ind_affected[indx]
-
-        casedata_list.append(casedata_dict)
-
-    return casedata_list
-
-
 def update_clinvar_submission_status(request_obj: dict, institute_id: str, submission_id: str):
     """Update the status of a clinVar submission"""
     update_status = request_obj.form.get("update_submission")
@@ -365,55 +234,6 @@ def update_clinvar_submission_status(request_obj: dict, institute_id: str, submi
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
-
-
-def _clinvar_submission_lines(submission_objs, submission_header):
-    """Create the lines to include in a Clinvar submission csv file from a list of submission objects and a custom document header
-    Args:
-        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
-        submission_header(dict) : as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only
-    Returns:
-        submission_lines(list) a list of strings, each string represents a line of the clinvar csv file to be doenloaded
-    """
-    submission_lines = []
-
-    for subm_obj in submission_objs:  # Loop over the submission objects. Each of these is a line
-        csv_line = []
-        for (
-            header_key,
-            header_value,
-        ) in submission_header.items():  # header_keys are the same keys as in submission_objs
-            if header_key not in subm_obj:
-                csv_line.append("")
-            else:
-                csv_line.append(subm_obj.get(header_key))
-        submission_lines.append(csv_line)
-
-    return submission_lines
-
-
-def _clinvar_submission_header(submission_objs, csv_type):
-    """Determine which fields to include in csv header by checking a list of submission objects
-    Args:
-        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
-        csv_type(str) : 'variant_data' or 'case_data'
-    Returns:
-        custom_header(dict): A dictionary with the fields required in the csv header. Keys and values are specified in CLINVAR_HEADER and CASEDATA_HEADER
-    """
-
-    complete_header = {}  # header containing all available fields
-    custom_header = {}  # header keys reflecting the real data included in the submission objects
-    if csv_type == "variant_data":
-        complete_header = CLINVAR_HEADER
-    else:
-        complete_header = CASEDATA_HEADER
-
-    for key, value in complete_header.items():
-        for clinvar_obj in submission_objs:
-            if key not in clinvar_obj or key in custom_header:
-                continue
-            custom_header[key] = value
-    return custom_header
 
 
 def add_clinvar_events(institute_obj: dict, case_obj: dict, variant_id: str):
