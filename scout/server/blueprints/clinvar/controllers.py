@@ -462,7 +462,7 @@ def parse_clinvar_form(form: ImmutableMultiDict, subm_type: str) -> dict:
 def add_variant_to_submission(
     institute_obj: dict, case_obj: dict, form: ImmutableMultiDict, subm_type: str
 ):
-    """Adds a somatic variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists, create it."""
+    """Adds a variant to a pre-existing open germline or oncogenicity submission. If the latter doesn't exists, create it."""
 
     subm_item: dict = parse_clinvar_form(form=form, subm_type=subm_type)
 
