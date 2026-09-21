@@ -8,6 +8,8 @@ from os.path import abspath, dirname, exists, isabs
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from pydantic import AliasChoices, BaseModel, Field
+
 from scout.constants import CASE_STATUSES
 from scout.constants.case_tags import CUSTOM_CASE_REPORTS
 
@@ -414,7 +416,10 @@ class CaseLoader(BaseModel):
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(None, alias="family_name")
-    pipeline_version: Optional[str] = Field(None, alias="exe_ver")
+    pipeline_version: Optional[str] = Field(
+        None,
+        validation_alias=AliasChoices("pipeline_version", "exe_ver"),
+    )
     family: Optional[str] = None
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
