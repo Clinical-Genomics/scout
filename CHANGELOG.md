@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
 - Style and dark mode visibility of ClinVar multistep submission form (#6559)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
+- Use local references also for RNA IGV viewer (#6578)
 
 ## [4.114]
 ### Added
