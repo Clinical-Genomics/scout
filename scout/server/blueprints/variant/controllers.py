@@ -802,13 +802,14 @@ def check_reset_variant_classification(
         return abort(404)
 
     if evaluations:
-        variant_obj["acmg_classification"] = evaluations[0]["classification"]
+        classification = evaluations[0]["classification"]
+        variant_obj["acmg_classification"] = next(
+            key for key, value in ACMG_MAP.items() if value == classification
+        )
     else:
         variant_obj.pop("acmg_classification", None)
 
     store.update_variant(variant_obj)
-
-    return True
 
 
 def variant_acmg_post(
