@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
+## [4.114.1]
+### Fixed
+- Use local references also for RNA IGV viewer (#6578)
+
 ## [4.114]
 ### Added
 - On outliers page, show inheritance patterns badges on genes cell (#6446)
