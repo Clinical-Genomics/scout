@@ -1,4 +1,4 @@
-{% from "alignviewers/utils.html" import igv_script %}
+{% from "alignviewers/utils.html" import get_custom_track_url, igv_script %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,16 +43,15 @@
       {% set counter = namespace(loop=0) %}
         var options =
             {
-                // Example of fully specifying a reference GRCh38. Scout is supporting only this for now
                 reference:
                     {
                         id: "{{ reference_track.id }}",
                         name: "{{ reference_track.name }}",
-                        fastaURL: "{{ reference_track.fastaURL }}",
-                        indexURL: "{{ reference_track.indexURL }}",
-                        cytobandURL: "{{ reference_track.cytobandURL }}",
-                        aliasURL: "{{ reference_track.aliasURL }}",
-                      {% if reference_track.chromosomeOrder %}chromosomeOrder: "{{ reference_track.chromosomeOrder }}",{% endif %}
+                        {{- get_custom_track_url("fastaURL", reference_track.fastaURL, institute_id, case_display_name) -}}
+                        {{- get_custom_track_url("indexURL", reference_track.indexURL, institute_id, case_display_name) -}}
+                        {{- get_custom_track_url("cytobandURL", reference_track.cytobandURL, institute_id, case_display_name) -}}
+                        {{- get_custom_track_url("aliasURL", reference_track.aliasURL, institute_id, case_display_name) -}}
+                        {% if reference_track.chromosomeOrder %}chromosomeOrder: "{{ reference_track.chromosomeOrder }}",{% endif %}
                     },
                 locus: '{{ locus }}',
                 tracks:
