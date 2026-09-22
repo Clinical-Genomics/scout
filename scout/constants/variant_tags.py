@@ -43,13 +43,13 @@ CADD_SCORE_LABEL_COLOR_MAP = {
 }
 
 RANK_SCORE_LABEL_COLOR_MAP = {
-    (30, 100): {"label": "Highest interest", "color": "danger"},
-    (25, 30): {"label": "Probable interest", "color": "red"},
-    (20, 25): {"label": "Likely interest", "color": "orange"},
-    (15, 20): {"label": "Possible interest", "color": "secondary"},
-    (10, 15): {"label": "Possible uninterest", "color": "secondary"},
-    (-1, 10): {"label": "Probable uninterest", "color": "info"},
-    (-100, -1): {"label": "Lowest interest", "color": "success"},
+    (0.7, 1): {"label": "Highest interest", "color": "danger"},
+    (0.65, 0.7): {"label": "Probable interest", "color": "red"},
+    (0.6, 0.65): {"label": "Likely interest", "color": "orange"},
+    (0.55, 0.6): {"label": "Possible interest", "color": "secondary"},
+    (0.5, 0.55): {"label": "Possible uninterest", "color": "secondary"},
+    (0.36, 0.5): {"label": "Probable uninterest", "color": "info"},
+    (0, 0.36): {"label": "Lowest interest", "color": "success"},
 }
 
 FEATURE_TYPES = (
