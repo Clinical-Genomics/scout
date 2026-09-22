@@ -781,20 +781,20 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
 def check_reset_variant_classification(
     store: MongoAdapter, evaluation_obj: dict, link: str
 ) -> bool:
-    """Check if this was the last ACMG evaluation left on the variant.
-    If there is still a classification we want to remove the classification.
+    """Check if the variant classification should be updated.
+
+    If there is a remaining ACMG evaluation, use its classification.
+    Otherwise, reset the variant classification.
 
     Args:
-            stores(cout.adapter.MongoAdapter)
-            evaluation_obj(dict): ACMG evaluation object
-            link(str): link for event
+        store: MongoAdapter
+        evaluation_obj: ACMG evaluation object
+        link: link for event
 
-    Returns: reset(bool) - True if classification reset was attempted
-
+    Returns:
+        True if the variant classification was updated.
     """
-
-    if list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"])):
-        return False
+    evaluations = list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))
 
     variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
 
@@ -806,23 +806,13 @@ def check_reset_variant_classification(
     if not isinstance(acmg_classification, int):
         return False
 
-    institute_obj, case_obj = variant_institute_and_case(
-        store,
-        variant_obj,
-        evaluation_obj["institute"]["_id"],
-        evaluation_obj["case"]["display_name"],
-    )
-    user_obj = store.user(current_user.email)
+    if evaluations:
+        variant_obj["acmg_classification"] = evaluations[0]["classification"]
+    else:
+        variant_obj.pop("acmg_classification", None)
 
-    new_acmg = None
-    store.submit_evaluation(
-        variant_obj=variant_obj,
-        user_obj=user_obj,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
-        link=link,
-        classification=new_acmg,
-    )
+    store.update_variant(variant_obj)
+
     return True
 
 

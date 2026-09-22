@@ -440,7 +440,7 @@ def evaluation(evaluation_id):
         store.delete_evaluation(evaluation_obj)
 
         if check_reset_variant_classification(store, evaluation_obj, link):
-            flash("Cleared ACMG classification.", "info")
+            flash("ACMG classification was modified.", "info")
 
         return safe_redirect_back(request)
 
