@@ -1,6 +1,6 @@
 {% from "variant/gene_disease_relations.html" import incomplete_penetrance_badge, inheritance_badge %}
 {% from "variants/utils.html" import compounds_table, overlapping_tooltip_table %}
-{% from "variants/indicators.html" import causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, other_escat_tiered_variants, research_assessments_badge %}
+{% from "variants/indicators.html" import causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
 
 {% macro variant_gene_symbols_cell(variant, inherit_palette) %}
@@ -428,16 +428,8 @@
 
 
 {% macro assessment_badges(variant, case) %}
-      {{ causative_badge(variant, case) }}
-      {{ matching_manual_rank(variant) }}
-      {{ other_tiered_variants(variant.matching_tiered) }}
-      {{ other_escat_tiered_variants(variant.matching_escat_tiered) }}
       {{ evaluations_badge(variant.evaluations) }}
-      {{ research_assessments_badge(variant) }}
-      {{ clinical_assessments_badge(variant) }}
-      {{ group_assessments_badge(variant) }}
-      {{ comments_badge(case, institute, variant)
-      {{ evaluations_badge(variant.evaluations) }}
+      {{ evaluations_badge(variant.ccv_evaluations) }}
       {{ dismissals_badge(variant) }}
       {{ matching_manual_rank(variant) }}
       {{ research_assessments_badge(variant) }}
@@ -447,20 +439,19 @@
       {{ causative_badge(variant, case) }}
       {{ other_tiered_variants(variant.matching_tiered) }}
       {{ other_tiered_variants(variant.matching_escat_tiered) }}
-      {{ evaluations_badge(variant.ccv_evaluations) }}
 {% endmacro %}
 
 
 {% macro cadd_cell(variant) %}
   <div class="badge bg-{{variant.cadd_score|get_label_or_color_by_score('cadd', 'color')}} rounded-pill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="left" title="
     <div class='text-start'>
-      <strong>CADD</strong> {{ variant.revel or '-' }} - {{variant.cadd_score|get_label_or_color_by_score('cadd', 'label')}}<br>
+      <strong>CADD</strong> {{ variant.cadd_score or '-' }}{% if variant.cadd_score %} - {{variant.cadd_score|get_label_or_color_by_score('cadd', 'label')}}{% endif %}<br>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>
       {{ (variant.polyphen_predictions or ['-'])|join(',') }} <br>
       <strong>REVEL</strong>
-      {{ variant.revel|get_label_or_color_by_score('revel', 'label') }} <br>
+      {{ variant.revel or '-' }}{% if variant.revel %} - {{ variant.revel|get_label_or_color_by_score('revel', 'label') }}{% endif %}<br>
     </div>
   ">
     {% if variant.cadd_score %}

@@ -1241,10 +1241,9 @@
 {% endmacro %}
 
 {% macro rank_score_cell(variant) %}
-    <div class="badge bg-{{variant.rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score - {{variant.rank_score|get_label_or_color_by_score('rank', 'label')}}">
+    <div class="badge bg-{{variant.rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score {% if variant.rank_score %}{{variant.rank_score|get_label_or_color_by_score('rank', 'label')}}{% endif %}">
       {{ variant_rank_score(variant) }}
     </div>
-  {% endif %}
 {% endmacro %}
 
 {% macro pagination_hidden_div(page, result_size, per_page=50) %}
