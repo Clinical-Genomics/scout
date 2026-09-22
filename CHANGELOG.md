@@ -35,7 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
 - Style and dark mode visibility of ClinVar multistep submission form (#6559)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
-- Fix ACMG reset to latest classification when one is removed (#)
+- Fix ACMG reset to latest classification when one is removed (#6579)
 
 ## [4.114]
 ### Added
