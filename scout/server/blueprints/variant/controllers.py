@@ -810,6 +810,7 @@ def check_reset_variant_classification(
         variant_obj.pop("acmg_classification", None)
 
     store.update_variant(variant_obj)
+    return True
 
 
 def variant_acmg_post(
