@@ -1,6 +1,6 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import cell_rank, filter_form_footer, mark_heteroplasmic_mt, snv_filters, variant_link_href, variant_rank_score %}
-{% from "variants/components.html" import cell_cadd, cell_models, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell, variant_funct_anno_cell %}
+{% from "variants/utils.html" import rank_cell, filter_form_footer, mark_heteroplasmic_mt, snv_filters, variant_link_href, variant_rank_score %}
+{% from "variants/components.html" import cadd_cell, cell_models, frequency_cell_general, gene_cell, observed_cell_general, overlapping_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
   SNVs and INDELs
@@ -56,8 +56,8 @@
        >
     {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
-    <td class="text-start">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-    <td class="text-start">{{variant_rank_score(variant=variant, other_score_as_tooltip=True)}}
+    <td class="text-start">{{ rank_cell(variant, institute, case, form, manual_rank_options) }}</td>
+    <td class="text-start">{{ variant_rank_score(variant=variant, other_score_as_tooltip=True) }}
     </td>
     <td>
       {{ variant.chromosome }}
@@ -68,7 +68,7 @@
     <td>{{ gene_cell(variant, inherit_palette) }}</td>
     <td class="text-start">{{ frequency_cell_general(variant) }}</td>
     <td class="text-start">{{ observed_cell_general(variant) }}</td>
-    <td class="text-end">{{ cell_cadd(variant) }}</td>
+    <td class="text-end">{{ cadd_cell(variant) }}</td>
     <td>
       {{ variant_funct_anno_cell(variant) }}
     </td>

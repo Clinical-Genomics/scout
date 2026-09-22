@@ -1223,7 +1223,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
+{% macro rank_cell(variant, institute, case, form, manual_rank_options) %}
   <a class="variants-row-item flex-small layout"
       href="{{ variant_link_href(variant, institute, case) }}" target='_blank'>
   {{ variant.variant_rank }}</a>&nbsp;
@@ -1240,20 +1240,8 @@
   {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
-{% macro rank_cell(variant) %}
-  {% if variant.rank_score is defined %}
-    {% if variant.rank_score <= 4 %}
-      {% set label_class = 'secondary' %}
-    {% elif variant.rank_score == 5 %}
-      {% set label_class = 'info' %}
-    {% elif variant.rank_score == 6 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.rank_score == 7 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.rank_score > 8 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
+{% macro rank_score_cell(variant) %}
+    <div class="badge bg-{{variant.rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score - {{variant.rank_score|get_label_or_color_by_score('rank', 'label')}}">
       {{ variant_rank_score(variant) }}
     </div>
   {% endif %}

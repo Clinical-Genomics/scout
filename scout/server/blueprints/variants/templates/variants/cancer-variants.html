@@ -1,7 +1,7 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/components.html" import allele_cell, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
-{% from "variants/utils.html" import callers_cell, cancer_filters, cell_rank, filter_form_footer, rank_cell, variant_link_href %}
-{% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, other_escat_tiered_variants, research_assessments_badge %}
+{% from "variants/components.html" import allele_cell, assessment_badges, cadd_cell, gene_cell, frequency_cell_general, observed_cell_general, variant_funct_anno_cell %}
+{% from "variants/utils.html" import callers_cell, cancer_filters, rank_cell, filter_form_footer, rank_score_cell, variant_link_href %}
+{% from "variants/indicators.html" import pin_indicator %}
 
 {% block category_title %}
   somatic variants
@@ -79,19 +79,9 @@
       </a>
     </td>
     <td>
-      {{ evaluations_badge(variant.evaluations) }}
-      {{ dismissals_badge(variant) }}
-      {{ matching_manual_rank(variant) }}
-      {{ research_assessments_badge(variant) }}
-      {{ clinical_assessments_badge(variant) }}
-      {{ group_assessments_badge(variant) }}
-      {{ comments_badge(case, institute, variant) }}
-      {{ causative_badge(variant, case) }}
-      {{ other_tiered_variants(variant.matching_tiered) }}
-      {{ other_tiered_variants(variant.matching_escat_tiered) }}
-      {{ evaluations_badge(variant.ccv_evaluations) }}
+      {{ assessment_badges(variant, case) }}
     </td>
-    <td>{{ rank_cell(variant) }}</td>
+    <td>{{ rank_score_cell(variant) }}</td>
     <td>{{ cadd_cell(variant) }}</td>
     <td>{{ position_cell(variant) }}</td>
     <td class="text-end">{{ frequency_cell_general(variant) }}</td>
@@ -104,6 +94,7 @@
   </tr>
 {% endmacro %}
 
+
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id, cancer='yes') }}">View</a>
@@ -112,20 +103,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro cadd_cell(variant) %}
-  {% if variant.cadd_score %}
-    {% if variant.cadd_score <= 10 %}
-      {% set label_class = 'secondary' %}
-    {% elif variant.cadd_score <= 20 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.cadd_score <= 25 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cadd_score > 29 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="CADD score">{{ variant.cadd_score|round }}</div>
-  {% endif %}
-{% endmacro %}
 
 {% macro position_cell(variant) %}
   <span class="text-body"><b>{{ variant.chromosome }}</b>:{{ variant.position }}</span>

@@ -3,7 +3,7 @@
 {% from "variant/buttons.html" import reviewer_button%}
 {% from "variant/gene_disease_relations.html" import inheritance_badge %}
 {% from "variants/components.html" import frequency_cell_general, overlapping_cell %}
-{% from "variants/utils.html" import callers_cell, cell_rank, filter_form_footer, str_filters, variant_link_href %}
+{% from "variants/utils.html" import callers_cell, rank_cell, filter_form_footer, str_filters, variant_link_href %}
 
 {% block category_title %}
   STR variants
@@ -60,7 +60,7 @@
         >
     {% endif %}
       <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()" onkeyup="enableDismiss()" tabindex="0"></td>
-      <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+      <td class="str-link">{{ rank_cell(variant, institute, case, form, manual_rank_options) }}</td>
       <td class="str-link">{{ str_locus_info(variant) }}</td>
   <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.str_display_ru or variant.str_ru or variant.reference }}">
     {% if variant.str_display_ru %}{{variant.str_display_ru | truncate(12, True)}}

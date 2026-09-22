@@ -1,5 +1,5 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import cancer_sv_filters, callers_cell, cell_rank, filter_form_footer, rank_cell, variant_link_href %}
+{% from "variants/utils.html" import cancer_sv_filters, callers_cell, rank_cell, filter_form_footer, rank_score_cell, variant_link_href %}
 {% from "variants/components.html" import allele_cell, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
@@ -59,9 +59,9 @@
   {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
-      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+      {{ rank_cell(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td>{{ rank_cell(variant) }}</td>
+    <td>{{ rank_score_cell(variant) }}</td>
     <td>
       {{ callers_cell(variant) }}
     </td>
