@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show ACMG Bayesian (Tavtigian et al) classification on the variant page (#6561)
 - Improved visibility of visited links when in dark mode (#6564)
 - Removed unused code from previous ClinVar submissions system (#6570)
+- Refactored ClinVar submission of germline SV variants (#5994, #6565)
 - Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form (#6575)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
@@ -36,6 +37,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Howto` popup window explaining how to submit variants to ClinVar, now available also for oncogenicity submissions (#6551)
 - Style and dark mode visibility of ClinVar multistep submission form (#6559)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
+- Condition options placeholders and checks on multistep ClinVar submission form (#6565)
+
+## [4.114.1]
+### Fixed
+- Use local references also for RNA IGV viewer (#6578)
 
 ## [4.114]
 ### Added

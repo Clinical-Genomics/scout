@@ -135,53 +135,159 @@
                     {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
                     {{variant_data.var_form.variations_ids(class="bg-white")}}
                     <br>
-                  {% else %} <!--SV variant-->
+                  {% else %} <!-- SV variant -->
+                    {{ variant_data.var_form.length() }}
+
                     <div class="row">
                       <div class="col-6">
-                      <!-- Variant type -->
-                        {{variant_data.var_form.var_type.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.var_type(class="form-control, btn-secondary")}}
+                        <!-- Variant type -->
+                        {{ variant_data.var_form.var_type.label(
+                            class="fw-bold text-dark d-inline-block",
+                            style="width: 180px;"
+                        ) }}
+                        {{ variant_data.var_form.var_type(
+                            class="form-control d-inline-block btn-secondary",
+                            style="width: 200px;"
+                        ) }}
                         <br><br>
-                      <!-- Reference copy number -->
-                        {{variant_data.var_form.ref_copy.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.ref_copy(size=5, class="bg-white")}}
+
+                        <!-- Reference copy number -->
+                        {{ variant_data.var_form.ref_copy.label(
+                            class="fw-bold text-dark d-inline-block",
+                            style="width: 180px;"
+                        ) }}
+                        {{ variant_data.var_form.ref_copy(
+                            size=5,
+                            class="bg-white w-auto",
+                            style="width: 100px;"
+                        ) }}
                         <br><br>
-                      <!-- Copy number -->
-                        {{variant_data.var_form.ncopy.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
-                        {{variant_data.var_form.ncopy(size=5, class="bg-white")}}
+
+                        <!-- Copy number -->
+                        {{ variant_data.var_form.ncopy.label(
+                            class="fw-bold text-dark d-inline-block",
+                            style="width: 180px;"
+                        ) }}
+                        <span
+                          class="text-danger"
+                          data-bs-toggle="tooltip"
+                          title="For copy number variants, both the reference copy number and the observed copy number can be provided."
+                        >
+                          <strong>?</strong>
+                        </span>
+                        {{ variant_data.var_form.ncopy(
+                            size=5,
+                            class="bg-white w-auto",
+                            style="width: 100px;"
+                        ) }}
                         <br><br>
-                      <!--start and end chroms-->
-                        {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.chromosome(size=5, class="bg-white")}}
+
+                        <!-- Chromosome -->
+                        {{ variant_data.var_form.chromosome.label(
+                            class="fw-bold text-dark d-inline-block",
+                            style="width: 180px;"
+                        ) }}
+                        {{ variant_data.var_form.chromosome(
+                            size=5,
+                            class="bg-white d-inline-block",
+                            style="width: 100px;"
+                        ) }}
                         <br><br>
                       </div>
-                      <div class=col-6>
-                        <!-- BP1 -->
-                        {{variant_data.var_form.breakpoint1.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.breakpoint1(class="bg-white")}}
-                        <br><br>
-                        <!-- BP2 -->
-                        {{variant_data.var_form.breakpoint2.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.breakpoint2(class="bg-white")}}
-                        <br><br>
-                        <!-- Outer start -->
-                        {{variant_data.var_form.outer_start.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.outer_start(size=20, class="bg-white")}}
-                        <br><br>
-                        <!-- Inner start -->
-                        {{variant_data.var_form.inner_start.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.inner_start(size=20, class="bg-white")}}
-                        <br><br>
-                        <!-- Inner stop -->
-                        {{variant_data.var_form.inner_stop.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.inner_stop(size=20, class="bg-white")}}
-                        <br><br>
-                        <!-- Outer stop -->
-                        {{variant_data.var_form.outer_stop.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.outer_stop(size=20, class="bg-white")}}
+
+                      <div class="col-6">
+                        <!-- Coordinate type -->
+                        <div class="mb-3">
+                          <span class="fw-bold text-dark d-inline-block" style="width: 180px;">
+                            Coordinates
+                          </span>
+
+                          <div class="btn-group" role="group" aria-label="Coordinate type">
+                            <input
+                              type="radio"
+                              class="btn-check"
+                              name="coordinate_type"
+                              id="precise_coordinates"
+                              value="precise"
+                              autocomplete="off"
+                              checked
+                            >
+                            <label
+                              class="btn btn-outline-secondary"
+                              for="precise_coordinates"
+                            >
+                              Precise
+                            </label>
+
+                            <input
+                              type="radio"
+                              class="btn-check"
+                              name="coordinate_type"
+                              id="approximate_coordinates"
+                              value="approximate"
+                              autocomplete="off"
+                            >
+                            <label
+                              class="btn btn-outline-secondary"
+                              for="approximate_coordinates"
+                            >
+                              Approximate
+                            </label>
+                          </div>
+                        </div>
+
+                        <!-- Precise coordinates -->
+                        <div id="precise-coordinate-fields">
+                          <!-- Start -->
+                          {{ variant_data.var_form.breakpoint1.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.breakpoint1(class="bg-white", style="width: 300px;") }}
+                          <br><br>
+
+                          <!-- Stop -->
+                          {{ variant_data.var_form.breakpoint2.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.breakpoint2(class="bg-white", style="width: 300px;") }}
+                        </div>
+
+                        <!-- Approximate coordinates -->
+                        <div id="approximate-coordinate-fields" class="d-none">
+                          <!-- Outer start -->
+                          {{ variant_data.var_form.outer_start.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.outer_start(
+                              size=20,
+                              class="bg-white",
+                              style="width: 300px;"
+                          ) }}
+                          <br><br>
+
+                          <!-- Inner start -->
+                          {{ variant_data.var_form.inner_start.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.inner_start(
+                              size=20,
+                              class="bg-white",
+                              style="width: 300px;"
+                          ) }}
+                          <br><br>
+
+                          <!-- Inner stop -->
+                          {{ variant_data.var_form.inner_stop.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.inner_stop(
+                              size=20,
+                              class="bg-white",
+                              style="width: 300px;"
+                          ) }}
+                          <br><br>
+
+                          <!-- Outer stop -->
+                          {{ variant_data.var_form.outer_stop.label(class="fw-bold text-dark me-2") }}
+                          {{ variant_data.var_form.outer_stop(
+                              size=20,
+                              class="bg-white",
+                              style="width: 300px;"
+                          ) }}
+                        </div>
                       </div>
                     </div>
-                  {% endif %}
+                  {% endif %} <!-- End of SV coordinates fields -->
                   <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                   <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
@@ -228,5 +334,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  document.querySelectorAll('input[name="coordinate_type"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      const preciseFields = document.getElementById("precise-coordinate-fields");
+      const approximateFields = document.getElementById("approximate-coordinate-fields");
+      const precise = this.value === "precise";
+
+      preciseFields.classList.toggle("d-none", !precise);
+      approximateFields.classList.toggle("d-none", precise);
+
+      preciseFields.querySelectorAll("input").forEach(function (input) {
+        input.disabled = !precise;
+      });
+
+      approximateFields.querySelectorAll("input").forEach(function (input) {
+        input.disabled = precise;
+      });
+    });
+  });
+</script>
 {% include "clinvar/scripts.html" %}
 {% endblock %}
