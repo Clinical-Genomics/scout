@@ -1,5 +1,5 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import callers_cell, cell_rank, filter_form_footer, sv_filters, variant_link_href, variant_rank_score %}
+{% from "variants/utils.html" import callers_cell, filter_form_footer, rank_cell, rank_score_cell, sv_filters, variant_link_href %}
 {% from "variants/components.html" import cell_models, frequency_cell_general, observed_cell_general, overlapping_cell, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
@@ -59,9 +59,9 @@
     {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">
-      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+      {{ rank_cell(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-start">{{variant_rank_score(variant)}}</td>
+    <td>{{ rank_score_cell(variant) }}</td>
     <td>
       {{ callers_cell(variant) }}
     </td>

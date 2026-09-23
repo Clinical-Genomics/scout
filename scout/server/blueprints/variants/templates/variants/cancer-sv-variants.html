@@ -1,5 +1,5 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import cancer_sv_filters, callers_cell, cell_rank, filter_form_footer, variant_link_href %}
+{% from "variants/utils.html" import cancer_sv_filters, callers_cell, rank_cell, filter_form_footer, rank_score_cell, variant_link_href %}
 {% from "variants/components.html" import allele_cell, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block category_title %}
@@ -22,6 +22,7 @@
   <tr>
     <th scope="col" style="width:2%"></th>
     <th scope="col" style="width:3%">Index</th>
+    <th scope="col" data-bs-toggle="tooltip" title="Rank score (normalized rank score in the range 0-1)" style="width:5%">Score</th>
     <th scope="col" style="width:9%">Callers</th>
     <th scope="col">Type</th>
     <th scope="col" style="width:5%">Chr</th>
@@ -58,8 +59,9 @@
   {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
-      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+      {{ rank_cell(variant, institute, case, form, manual_rank_options) }}
     </td>
+    <td>{{ rank_score_cell(variant) }}</td>
     <td>
       {{ callers_cell(variant) }}
     </td>
