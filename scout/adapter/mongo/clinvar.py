@@ -270,6 +270,27 @@ class ClinVarHandler(object):
         results = self.clinvar_submission_collection.aggregate(sort_pipeline)
         return list(results), total_count
 
+    def _populate_cases_from_variant_data(self, variant_data, institute_id):
+        """Populate case information for the variants in a deprecatd ClinVar submission."""
+        cases = {}
+        for var_info in variant_data:
+            case_id = var_info["_id"].rsplit("_", 1)[0]
+            CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
+            var_info["added_by"] = self.clinvar_variant_submitter(
+                institute_id=institute_id,
+                case_id=case_id,
+                variant_id=var_info["local_id"],
+            )
+            case_obj = self.case(
+                case_id=case_id,
+                projection=CASE_CLINVAR_SUBMISSION_PROJECTION,
+            )
+            if not case_obj:
+                cases[case_id] = f"{case_id} (N/A)"
+                continue
+            cases[case_id] = case_obj.get("display_name")
+        return cases
+
     def get_and_deprecate_type_none_germline_submissions(
         self,
         institute_id: str,
@@ -281,26 +302,6 @@ class ClinVarHandler(object):
         """Collect and, if needed, deprecate ClinVar germline submissions without a type."""
 
         self.deprecate_type_none_germline_submissions(institute_id)
-
-        def populate_cases_from_variant_data(variant_data, institute_id):
-            cases = {}
-            for var_info in variant_data:
-                case_id = var_info["_id"].rsplit("_", 1)[0]
-                CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
-                var_info["added_by"] = self.clinvar_variant_submitter(
-                    institute_id=institute_id,
-                    case_id=case_id,
-                    variant_id=var_info["local_id"],
-                )
-                case_obj = self.case(
-                    case_id=case_id,
-                    projection=CASE_CLINVAR_SUBMISSION_PROJECTION,
-                )
-                if not case_obj:
-                    cases[case_id] = f"{case_id} (N/A)"
-                    continue
-                cases[case_id] = case_obj.get("display_name")
-            return cases
 
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         if clinvar_id_filter:
@@ -340,7 +341,7 @@ class ClinVarHandler(object):
             ):
                 continue
 
-            submission["cases"] = populate_cases_from_variant_data(
+            submission["cases"] = self._populate_cases_from_variant_data(
                 submission["variant_data"], institute_id
             )
 
