@@ -35,6 +35,23 @@ SPLICEAI_SCORE_LABEL_COLOR_MAP = {
     (0.00, 0.10): {"label": "No impact on splicing", "color": "success"},
 }
 
+CADD_SCORE_LABEL_COLOR_MAP = {
+    (28, 100): {"label": "Moderate pathogenic", "color": "danger"},
+    (22, 28): {"label": "Supporting pathogenic", "color": "warning"},
+    (17, 22): {"label": "Supporting benign", "color": "info"},
+    (0, 17): {"label": "Moderate benign", "color": "success"},
+}
+
+RANK_SCORE_LABEL_COLOR_MAP = {
+    (0.7, 1): {"label": "Highest interest", "color": "danger"},
+    (0.65, 0.7): {"label": "Probable interest", "color": "red"},
+    (0.6, 0.65): {"label": "Likely interest", "color": "orange"},
+    (0.55, 0.6): {"label": "Possible interest", "color": "secondary"},
+    (0.5, 0.55): {"label": "Possible uninterest", "color": "secondary"},
+    (0.36, 0.5): {"label": "Probable uninterest", "color": "info"},
+    (0, 0.36): {"label": "Lowest interest", "color": "success"},
+}
+
 FEATURE_TYPES = (
     "exonic",
     "splicing",

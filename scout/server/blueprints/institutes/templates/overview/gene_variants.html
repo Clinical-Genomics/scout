@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "utils.html" import clickable_table_row_script, comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/components.html" import cell_cadd, frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
+{% from "variants/components.html" import cadd_cell, frequency_cell_general, variant_funct_anno_cell, variant_gene_symbols_cell %}
 {% from "variants/utils.html" import archived_observations_cancer_filters, archived_observations_filter, gene_variant_link_href, pagination_footer, pagination_hidden_div, variant_rank_score, zygosity_badges %}
 
 {% block title %}
@@ -55,13 +55,13 @@
       {% else %}
         >
       {% endif %}
-            <td class="align-middle">{{ cell_rank(variant) }}</td>
+            <td class="align-middle">{{ case_rank_score_cell(variant) }}</td>
             <td class="align-middle">{{ pretty_link_no_gene(variant) }} </td>
             <td>{{ zygosity_badges(variant, variant.case) }}
             </td>
             <td class="align-middle">{{ variant_gene_symbols_cell(variant, inherit_palette) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
-            <td class="align-middle">{{ cell_cadd(variant) }}</td>
+            <td class="align-middle">{{ cadd_cell(variant) }}</td>
             <td class="align-middle">{{ variant_funct_anno_cell(variant) }}</td>
           </tr>
         {% endfor %}
@@ -113,7 +113,7 @@
    </a>
 {% endmacro %}
 
-{% macro cell_rank(variant) %}
+{% macro case_rank_score_cell(variant) %}
    {{ variant.case_display_name }}
     :
     <span class="badge bg-info">{{ variant_rank_score(variant) }}</span>
