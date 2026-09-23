@@ -24,10 +24,14 @@ class ClinVarHandler(object):
 
     from datetime import datetime
 
-    def deprecate_type_none_germline_submissions(self):
-        """Set 'deprecated_at' to today's date and close existing open submissions which have no type."""
+    def deprecate_type_none_germline_submissions(self, institute_id: str):
+        """Set 'deprecated_at' and close open submissions without a type for an institute."""
         result = self.clinvar_submission_collection.update_many(
-            {"type": {"$exists": False}},
+            {
+                "institute_id": institute_id,
+                "type": {"$exists": False},
+                "deprecated_at": {"$exists": False},
+            },
             [
                 {
                     "$set": {
@@ -263,14 +267,16 @@ class ClinVarHandler(object):
 
         return list(results), total_count
 
-    def get_deprecated_clinvar_germline_submissions(
+    def get_and_deprecate_type_none_germline_submissions(
         self,
         institute_id: str,
         clinvar_id_filter: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[List[dict], int]:
-        """Collect all deprecated ClinVar germline submissions for an institute."""
+        """Collect and, if needed, deprecate ClinVar germline submissions without a type."""
+
+        self.deprecate_type_none_germline_submissions(institute_id)
 
         def populate_cases_from_variant_data(variant_data, institute_id):
             cases = {}
