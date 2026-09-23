@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
@@ -107,18 +107,22 @@ def clinvar_germline_submissions(institute_id):
     per_page = 15
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
+
+    subm_id = get_filter(request, "clinvar_id_filter")
+    gene_symbol = (get_filter(request, "gene_symbol"),)
+
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="germline",
-        subm_id=get_filter(request, "clinvar_id_filter"),
-        gene_symbol=get_filter(request, "gene_symbol"),
+        subm_id=subm_id,
+        gene_symbol=gene_symbol,
         skip=start,
         limit=per_page,
     )
 
     deprecated_submissions, deprecated_count = (
         store.get_and_deprecate_type_none_germline_submissions(
-            institute_id, clinvar_id_filter=clinvar_id_filter
+            institute_id, clinvar_id_filter=subm_id
         )
     )
 
@@ -148,12 +152,6 @@ def clinvar_onc_submissions(institute_id):
     per_page = 15
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
-
-    clinvar_id_filter = (
-        request.values.get("clinvar_id_filter").strip()
-        if request.values.get("clinvar_id_filter")
-        else None
-    )
 
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
