@@ -30,6 +30,7 @@ def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
         phenotype_obj["feature"] = phenotype["description"]
     return phenotype_obj
 
+
 def build_case(case_data: dict, adapter) -> dict:
     """Build a case object that is to be inserted to the database
 
