@@ -243,15 +243,18 @@ class ClinVarHandler(object):
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[list[dict], int]:
-        """Collect all open and closed ClinVar submissions of type oncogenicity or germline  for an institute."""
+        """Collect all open and closed ClinVar submissions of type oncogenicity or germline for an institute."""
+
         query = {"institute_id": institute_id, "type": type}
+
         if subm_id:
             query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
+
         if gene_symbol:
-            query["$or"] = [
-                {"germlineSubmission.variantSet.variant.gene.symbol": gene_symbol},
-                {"oncogenicitySubmission.variantSet.variant.gene.symbol": gene_symbol},
-            ]
+            if type == "germline":
+                query["germlineSubmission.variantSet.variant.gene.symbol"] = gene_symbol
+            else:
+                query["oncogenicitySubmission.variantSet.variant.gene.symbol"] = gene_symbol
 
         total_count = self.clinvar_submission_collection.count_documents(query)
 
@@ -263,8 +266,8 @@ class ClinVarHandler(object):
             {"$limit": limit},
             {"$project": {"statusOrder": 0}},
         ]
-        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
         return list(results), total_count
 
     def get_and_deprecate_type_none_germline_submissions(
@@ -328,14 +331,10 @@ class ClinVarHandler(object):
                     )
                 )
 
-                if gene_symbol:  # Return submission only if includes queried gene
-                    has_queried_gene = False
-                    for var in submission["variant_data"]:
-                        if var.get("gene_symbol") == gene_symbol:
-                            has_queried_gene = True
-
-                    if not has_queried_gene:
-                        continue
+                if gene_symbol and not any(
+                    var.get("gene_symbol") == gene_symbol for var in submission["variant_data"]
+                ):
+                    continue
 
                 cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
 

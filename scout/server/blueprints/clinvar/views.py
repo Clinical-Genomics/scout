@@ -122,7 +122,7 @@ def clinvar_germline_submissions(institute_id):
 
     deprecated_submissions, deprecated_count = (
         store.get_and_deprecate_type_none_germline_submissions(
-            institute_id, clinvar_id_filter=subm_id
+            institute_id, clinvar_id_filter=subm_id, gene_symbol=gene_symbol
         )
     )
 
