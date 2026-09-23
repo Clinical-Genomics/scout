@@ -37,8 +37,8 @@ SPLICEAI_SCORE_LABEL_COLOR_MAP = {
 
 CADD_SCORE_LABEL_COLOR_MAP = {
     (28, 100): {"label": "Moderate pathogenic", "color": "danger"},
-    (22, 28): {"label": "~0.1% level supporting pathogenic", "color": "warning"},
-    (17, 22): {"label": "~1% level supporting benign", "color": "info"},
+    (22, 28): {"label": "Supporting pathogenic", "color": "warning"},
+    (17, 22): {"label": "Supporting benign", "color": "info"},
     (0, 17): {"label": "Moderate benign", "color": "success"},
 }
 

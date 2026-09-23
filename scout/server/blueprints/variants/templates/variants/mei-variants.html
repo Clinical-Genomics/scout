@@ -57,7 +57,7 @@ Mobile Element Insertion variants
     <td class="text-start">
       {{ rank_cell(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-end">{{ rank_score_cell(variant) }}</td>
+    <td>{{ rank_score_cell(variant) }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.mei_name }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
