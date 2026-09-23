@@ -479,7 +479,6 @@ def add_variant_to_submission(
         else:
             GermlineSubmissionItem(**subm_item)
     except ValidationError as ve:
-        LOG.error(ve)
         flash(str(ve), "warning")
         return
 

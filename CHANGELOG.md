@@ -41,6 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style and dark mode visibility of ClinVar multistep submission form (#6559)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
 - Condition options placeholders and checks on multistep ClinVar submission form (#6565)
+- Refresh ClinVar submissions after deprecating those with no type="germline" (#6584)
 
 ## [4.114.1]
 ### Fixed
