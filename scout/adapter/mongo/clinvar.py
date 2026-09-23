@@ -335,8 +335,8 @@ class ClinVarHandler(object):
                 )
             )
 
-            if gene_symbol and not any(
-                var.get("gene_symbol") == gene_symbol for var in submission["variant_data"]
+            if gene_symbol and all(
+                var.get("gene_symbol") != gene_symbol for var in submission["variant_data"]
             ):
                 continue
 
