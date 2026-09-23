@@ -235,6 +235,7 @@ class ClinVarHandler(object):
         institute_id: str,
         type: str,
         subm_id: Optional[str] = None,
+        gene_symbol: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[list[dict], int]:
@@ -242,6 +243,11 @@ class ClinVarHandler(object):
         query = {"institute_id": institute_id, "type": type}
         if subm_id:
             query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
+        if gene_symbol:
+            query["$or"] = [
+                {"germlineSubmission.variantSet.variant.gene.symbol": gene_symbol},
+                {"oncogenicitySubmission.variantSet.variant.gene.symbol": gene_symbol},
+            ]
 
         total_count = self.clinvar_submission_collection.count_documents(query)
 

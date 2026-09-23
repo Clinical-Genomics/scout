@@ -92,24 +92,26 @@ def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
+def get_filter(request, field: str) -> Optional[str]:
+    """Get a filter value from the request."""
+    value = request.form.get(field)
+    return value.strip() if value else None
+
+
 @clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET", "POST"])
 def clinvar_germline_submissions(institute_id):
     """Handle germline ClinVar submissions."""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
-    clinvar_id_filter = (
-        request.values.get("clinvar_id_filter").strip()
-        if request.values.get("clinvar_id_filter")
-        else None
-    )
     per_page = 15
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="germline",
-        subm_id=clinvar_id_filter,
+        subm_id=get_filter(request, "clinvar_id_filter"),
+        gene_symbol=get_filter(request, "gene_symbol"),
         skip=start,
         limit=per_page,
     )
@@ -158,7 +160,8 @@ def clinvar_onc_submissions(institute_id):
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="oncogenicity",
-        subm_id=clinvar_id_filter,
+        subm_id=get_filter(request, "clinvar_id_filter"),
+        gene_symbol=get_filter(request, "gene_symbol"),
         skip=start,
         limit=per_page,
     )
