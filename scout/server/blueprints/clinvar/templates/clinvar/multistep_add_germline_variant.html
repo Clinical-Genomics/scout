@@ -1,4 +1,4 @@
-{% extends "bootstrap_global.html" %}
+{% extends "layout.html" %}
 {% from "clinvar/components.html" import condition_identifiers, hgvs_choices, observations %}
 
 {% block css %}
@@ -8,9 +8,27 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" integrity="sha512-z/90a5SWiu4MWVelb5+ny7sAayYUfMmdXKEAbpj27PfdkamNdyI3hcjxPxkOPbrXoKIm7r9V2mElt5f1OtVhqA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
-{% block head %}
+{% block title %}
+  {{ super() }} - {{ institute.display_name }}
+{% endblock %}
+
+{% block top_nav %}
   {{ super() }}
-{% endblock head %}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ variant_data.var_obj.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
 
 {% block content %}
 {% if variant_data.var_obj.category in ["snv", "cancer"]%}
