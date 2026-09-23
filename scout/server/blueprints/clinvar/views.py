@@ -114,13 +114,11 @@ def clinvar_germline_submissions(institute_id):
         limit=per_page,
     )
 
-    deprecated_submissions, deprecated_count = store.get_deprecated_clinvar_germline_submissions(
-        institute_id, clinvar_id_filter=clinvar_id_filter
+    deprecated_submissions, deprecated_count = (
+        store.get_and_deprecate_type_none_germline_submissions(
+            institute_id, clinvar_id_filter=clinvar_id_filter
+        )
     )
-    if deprecated_submissions and not all(
-        subm.get("deprecated_at") for subm in deprecated_submissions
-    ):
-        store.deprecate_type_none_germline_submissions()
 
     data = {
         "submissions": submissions + deprecated_submissions,
