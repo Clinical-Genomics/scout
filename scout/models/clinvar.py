@@ -65,7 +65,7 @@ Chromosome = Enum(
 
 
 class Variant(BaseModel):
-    """It's defined by either coordinates or hgvs."""
+    """It's defined by either coordinates or HGVS."""
 
     alternateAllele: Optional[str] = None
     assembly: Optional[Literal["GRCh37", "GRCh38"]] = None
@@ -74,6 +74,10 @@ class Variant(BaseModel):
     hgvs: Optional[str] = None
     start: Optional[int] = None
     stop: Optional[int] = None
+    innerStart: Optional[int] = None
+    innerStop: Optional[int] = None
+    outerStart: Optional[int] = None
+    outerStop: Optional[int] = None
 
 
 class VariantSet(BaseModel):
