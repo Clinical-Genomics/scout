@@ -3,14 +3,16 @@
 {% from "cases/utils.html" import pretty_link_variant %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
-{% macro variant_rank_score(variant, uid, other_score_as_tooltip=False) %}
-  {% if variant.rank_score is defined and variant.rank_score is not none %}
-    {{ variant.rank_score|int }}
-  {% endif %}
-  {% if variant.norm_rank_score is defined and variant.norm_rank_score is not none %}
-    ({{ variant.norm_rank_score|round(2) }})
-  {% endif %}
 
+{% macro rank_score_cell(variant, other_score_as_tooltip=False) %}
+  {# Since norm_rank_score is populated with 0 if missing we can't test for missing, hence color for 0 will be same as undefined. #}
+  {% if variant.norm_rank_score %}
+    <div class="badge bg-{{variant.norm_rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score {% if variant.rank_score %} - {{variant.norm_rank_score|get_label_or_color_by_score('rank', 'label')}}{% endif %}">
+  {% else %}
+    <div class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
+  {% endif %}
+      {{ variant_rank_score(variant) }}
+    </div>
   {% if variant.rank_score_other %}
     {% if other_score_as_tooltip %}
       {# Capture the macro output as a string #}
@@ -25,6 +27,15 @@
     {% else %}
       {{ variant_rank_score_other(variant, other_score_as_tooltip) }}
     {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% macro variant_rank_score(variant) %}
+  {% if variant.rank_score is defined and variant.rank_score is not none %}
+    {{ variant.rank_score|int }}
+  {% endif %}
+  {% if variant.norm_rank_score %}
+    ({{ variant.norm_rank_score|round(2) }})
   {% endif %}
 {% endmacro %}
 
@@ -1240,15 +1251,6 @@
   {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
-{% macro rank_score_cell(variant) %}
-  {% if variant.norm_rank_score is defined and variant.norm_rank_score is not none %}
-    <div class="badge bg-{{variant.norm_rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score {% if variant.rank_score %} - {{variant.norm_rank_score|get_label_or_color_by_score('rank', 'label')}}{% endif %}">
-  {% else %}
-    <div class="badge bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">
-  {% endif %}
-      {{ variant_rank_score(variant) }}
-    </div>
-{% endmacro %}
 
 {% macro pagination_hidden_div(page, result_size, per_page=50) %}
   {% set per_page = per_page %}
