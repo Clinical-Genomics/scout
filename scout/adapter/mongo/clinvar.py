@@ -306,51 +306,55 @@ class ClinVarHandler(object):
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
 
-        total_count = 0
-
         sort_pipeline = [
             {"$match": query},
             {"$sort": {"updated_at": pymongo.DESCENDING}},
             {"$skip": skip},
             {"$limit": limit},
         ]
-        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
         submissions = []
+
         for result in results:
             submission = self._basic_submission_info(result)
-            cases = {}
             submission["deprecated_at"] = result.get("deprecated_at")
+
             if result.get("clinvar_subm_id"):
                 submission["clinvar_subm_id"] = result["clinvar_subm_id"]
 
-            if result.get("variant_data"):
-                submission["variant_data"] = list(
-                    self.clinvar_collection.find({"_id": {"$in": result["variant_data"]}}).sort(
-                        "last_evaluated", pymongo.ASCENDING
-                    )
+            variant_data = result.get("variant_data")
+            if not variant_data:
+                submission["cases"] = {}
+                submissions.append(submission)
+                continue
+
+            submission["variant_data"] = list(
+                self.clinvar_collection.find({"_id": {"$in": variant_data}}).sort(
+                    "last_evaluated", pymongo.ASCENDING
                 )
+            )
 
-                if gene_symbol and not any(
-                    var.get("gene_symbol") == gene_symbol for var in submission["variant_data"]
-                ):
-                    continue
+            if gene_symbol and not any(
+                var.get("gene_symbol") == gene_symbol for var in submission["variant_data"]
+            ):
+                continue
 
-                cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
-
-            submission["cases"] = cases
+            submission["cases"] = populate_cases_from_variant_data(
+                submission["variant_data"], institute_id
+            )
 
             if result.get("case_data"):
                 unsorted_case_data = list(
                     self.clinvar_collection.find({"_id": {"$in": result["case_data"]}})
                 )
                 submission["case_data"] = self.sort_clinvar_case_data(
-                    submission.get("variant_data", []), unsorted_case_data or []
+                    submission["variant_data"], unsorted_case_data
                 )
-            total_count += 1
+
             submissions.append(submission)
 
-        return submissions, total_count
+        return submissions, len(submissions)
 
     def clinvar_assertion_criteria(self, variant_data):
         """Retrieve assertion criteria from the variant data of a submission.
