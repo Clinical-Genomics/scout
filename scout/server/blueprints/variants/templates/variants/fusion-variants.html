@@ -1,5 +1,5 @@
 {% extends "variants/variants_layout.html" %}
-{% from "variants/utils.html" import cell_rank, filter_form_footer, fusion_filters, variant_link_href %}
+{% from "variants/utils.html" import rank_cell, filter_form_footer, fusion_filters, variant_link_href %}
 {% from "variants/components.html" import fusion_variant_gene_symbols_cell, fusion_variants_header, default_fusion_variant_cells %}
 
 {% block category_title %}
@@ -43,7 +43,7 @@
   {% endif %}
     <td class="no-row-click"><input form="filters_form" type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-start">
-      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+      {{ rank_cell(variant, institute, case, form, manual_rank_options) }}
     </td>
     {{ default_fusion_variant_cells(institute, case, variant) }}
   </tr>
