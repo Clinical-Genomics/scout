@@ -133,7 +133,6 @@ def clinvar_germline_submissions(institute_id):
         "casedata_header_fields": CASEDATA_HEADER,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
-        "clinvar_id_filter": clinvar_id_filter,
         "page": page,
         "result_size": total_count + deprecated_count,
         "per_page": per_page,
