@@ -109,7 +109,7 @@ def clinvar_germline_submissions(institute_id):
     start = (page - 1) * per_page
 
     subm_id = get_filter(request, "clinvar_id_filter")
-    gene_symbol = (get_filter(request, "gene_symbol"),)
+    gene_symbol = get_filter(request, "gene_symbol")
 
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
