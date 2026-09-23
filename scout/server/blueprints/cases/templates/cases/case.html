@@ -144,7 +144,7 @@
       <div class="card panel-default" >
         <div class="row">
           <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-          <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+          <div class="col">{{ suspects_list(suspects, institute, case, sanger_options) }}</div>
           <!-- end of data sharing panels -->
         </div>
 
@@ -197,7 +197,7 @@
               </div>
             </div>
           </div> <!--end of row>-->
-        </div> <!--end of card panel-default  -->
+        </div> <!--end of panel-default  -->
 
           <!-- diagnoses-related code-->
         {% if not case.track == 'cancer' %}
@@ -257,6 +257,7 @@
       {{ reanalysis_modal(institute, case) }}
       {{ beacon_modal(institute, case) }}
       {{ matchmaker_modal(institute, case, suspects, mme_nodes) }}
+    </div>
   </div><!-- end of containter -->
 </div><!-- end of col -->
 {% endmacro %}
@@ -832,5 +833,26 @@ function dynamicPhenotypeCheck(source){
     checkboxes[i].checked = source.checked;
   }
 }
+
+// Update Sanger select color
+function updateSangerColor(select) {
+  const sangerOptions = {{ sanger_options|tojson }};
+
+  const colors = Object.values(sangerOptions);
+  select.classList.remove(
+    ...colors, "text-white"
+  );
+
+  const color = sangerOptions[select.value];
+
+  if (color) {
+    select.classList.add(color, "text-white");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".sanger-select").forEach(updateSangerColor);
+});
+
 </script>
 {% endblock %}
