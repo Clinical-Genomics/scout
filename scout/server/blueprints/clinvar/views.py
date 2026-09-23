@@ -94,7 +94,7 @@ def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
 
 def get_filter(request, field: str) -> Optional[str]:
     """Get a filter value from the request."""
-    value = request.form.get(field)
+    value = request.args.get(field)
     return value.strip() if value else None
 
 

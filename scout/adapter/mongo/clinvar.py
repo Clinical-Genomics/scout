@@ -271,6 +271,7 @@ class ClinVarHandler(object):
         self,
         institute_id: str,
         clinvar_id_filter: Optional[str] = None,
+        gene_symbol: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[List[dict], int]:
@@ -302,7 +303,7 @@ class ClinVarHandler(object):
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
 
-        total_count = self.clinvar_submission_collection.count_documents(query)
+        total_count = 0
 
         sort_pipeline = [
             {"$match": query},
@@ -327,6 +328,15 @@ class ClinVarHandler(object):
                     )
                 )
 
+                if gene_symbol:  # Return submission only if includes queried gene
+                    has_queried_gene = False
+                    for var in submission["variant_data"]:
+                        if var.get("gene_symbol") == gene_symbol:
+                            has_queried_gene = True
+
+                    if not has_queried_gene:
+                        continue
+
                 cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
 
             submission["cases"] = cases
@@ -338,7 +348,7 @@ class ClinVarHandler(object):
                 submission["case_data"] = self.sort_clinvar_case_data(
                     submission.get("variant_data", []), unsorted_case_data or []
                 )
-
+            total_count += 1
             submissions.append(submission)
 
         return submissions, total_count
