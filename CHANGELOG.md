@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved visibility of visited links when in dark mode (#6564)
 - Removed unused code from previous ClinVar submissions system (#6570)
 - Refactored ClinVar submission of germline SV variants (#5994, #6565)
+- Re-enable display of rank scores on cancer SVs (#6572)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
