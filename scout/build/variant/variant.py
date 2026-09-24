@@ -423,6 +423,25 @@ def add_frequencies(variant_obj: dict, frequencies: dict):
     variant_obj["exac_frequency"] = call_safe(float, frequencies.get("exac"))
     variant_obj["gnomad_frequency"] = call_safe(float, frequencies.get("gnomad"))
     variant_obj["gnomad_wes_frequency"] = call_safe(float, frequencies.get("gnomad_wes"))
+    variant_obj["gnomad_obs"] = call_safe(int, frequencies.get("gnomad_obs"))
+    variant_obj["gnomad_wes_obs"] = call_safe(int, frequencies.get("gnomad_wes_obs"))
+    variant_obj["gnomad_nhomalt_frequency"] = call_safe(int, frequencies.get("gnomad_nhomalt"))
+    variant_obj["gnomad_nhomalt_xy_frequency"] = call_safe(
+        int, frequencies.get("gnomad_nhomalt_xy")
+    )
+    variant_obj["gnomad_nhomalt_xx_frequency"] = call_safe(
+        int, frequencies.get("gnomad_nhomalt_xx")
+    )
+    variant_obj["gnomad_wes_nhomalt_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt")
+    )
+    variant_obj["gnomad_wes_nhomalt_xy_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt_xy")
+    )
+    variant_obj["gnomad_wes_nhomalt_xx_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt_xx")
+    )
+
     variant_obj["gnomad_mt_heteroplasmic_frequency"] = call_safe(
         float, frequencies.get("gnomad_mt_heteroplasmic")
     )

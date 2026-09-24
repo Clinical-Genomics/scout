@@ -348,6 +348,10 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
     is_mitochondrial_variant = variant_obj.get("chromosome") == "MT"
     category = variant_obj["category"]
 
+    gnomad_link_list = list(
+        dict.fromkeys([variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")])
+    )
+
     # Define frequency mappings for each category
     frequency_mappings = {
         "sv": {
@@ -373,20 +377,24 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
         "snv": {
             "gnomad_frequency": (
                 "GnomAD",
-                list(
-                    dict.fromkeys(
-                        [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")]
-                    )
-                ),
+                gnomad_link_list,
             ),
             "max_gnomad_frequency": (
                 "GnomAD(max)",
-                list(
-                    dict.fromkeys(
-                        [variant_obj.get("gnomad_link"), variant_obj.get("gnomad_non_ukb_link")]
-                    )
-                ),
+                gnomad_link_list,
             ),
+            "gnomad_wes_frequency": (
+                "GnomAD WES",
+                gnomad_link_list,
+            ),
+            "gnomad_wes_max_frequency": ("GnomAD WES(max)", gnomad_link_list),
+            "gnomad_obs": ("GnomAD(obs)", gnomad_link_list),
+            "gnomad_nhomalt_frequency": ("GnomAD(nhomalt)", gnomad_link_list),
+            "gnomad_nhomalt_xy_frequency": ("GnomAD(nhomalt_xy)", gnomad_link_list),
+            "gnomad_nhomalt_xx_frequency": ("GnomAD(nhomalt_xx)", gnomad_link_list),
+            "gnomad_wes_nhomalt_frequency": ("GnomAD WES(nhomalt)", gnomad_link_list),
+            "gnomad_wes_nhomalt_xy_frequency": ("GnomAD WES(nhomalt_xy)", gnomad_link_list),
+            "gnomad_wes_nhomalt_xx_frequency": ("GnomAD WES(nhomalt_xx)", gnomad_link_list),
             "thousand_genomes_frequency": ("1000G", variant_obj.get("thousandg_link")),
             "max_thousand_genomes_frequency": ("1000G(max)", variant_obj.get("thousandg_link")),
             "exac_frequency": ("ExAC", variant_obj.get("exac_link")),
