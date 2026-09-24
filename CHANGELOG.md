@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG term criterion details on case general report (#6558)
 - Search also oncogenicity submission by ClinVar ID (#6552)
 - Add an Oncoanalyser Orange report to an existing case via the CLI or at case loading (#6569)
+- Filter ClinVar submissions by gene (#6585)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
@@ -42,7 +43,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - GnomAD max AF parsing from `nf-core/raredisease`: use `GNOMADAF_grpmax` (#6563)
 - Condition options placeholders and checks on multistep ClinVar submission form (#6565)
 - Refresh ClinVar submissions after deprecating those with no type="germline" (#6584)
-
 
 ## [4.114.1]
 ### Fixed
