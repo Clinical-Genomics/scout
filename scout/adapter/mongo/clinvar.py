@@ -244,7 +244,8 @@ class ClinVarHandler(object):
         limit: int = 15,
     ) -> tuple[list[dict], int]:
         """Collect open and closed ClinVar submissions of type oncogenicity or germline for an institute.
-        Further filter and limit the submissions returned by submission id, gene symbol or skip/limit values."""
+        Further filter and limit the submissions returned by submission id, gene symbol or skip/limit values.
+        """
 
         query = {"institute_id": institute_id, "type": type}
 
