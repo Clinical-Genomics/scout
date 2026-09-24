@@ -44,6 +44,7 @@ class ClinvarSubmissionFilterForm(FlaskForm):
     """Form for filtering ClinVar submissions."""
 
     clinvar_id_filter = StringField("ClinVar submission ID")
+    gene_symbol = StringField("Gene symbol")
     submit = SubmitField("Search")
 
 

@@ -239,13 +239,24 @@ class ClinVarHandler(object):
         institute_id: str,
         type: str,
         subm_id: Optional[str] = None,
+        gene_symbol: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[list[dict], int]:
-        """Collect all open and closed ClinVar submissions of type oncogenicity or germline  for an institute."""
+        """Collect open and closed ClinVar submissions of type oncogenicity or germline for an institute.
+        Further filter and limit the submissions returned by submission id, gene symbol or skip/limit values.
+        """
+
         query = {"institute_id": institute_id, "type": type}
+
         if subm_id:
             query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
+
+        if gene_symbol:
+            if type == "germline":
+                query["germlineSubmission.variantSet.variant.gene.symbol"] = gene_symbol
+            else:
+                query["oncogenicitySubmission.variantSet.variant.gene.symbol"] = gene_symbol
 
         total_count = self.clinvar_submission_collection.count_documents(query)
 
@@ -257,14 +268,36 @@ class ClinVarHandler(object):
             {"$limit": limit},
             {"$project": {"statusOrder": 0}},
         ]
-        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
         return list(results), total_count
+
+    def _populate_cases_from_variant_data(self, variant_data, institute_id):
+        """Populate case information for the variants in a deprecatd ClinVar submission."""
+        cases = {}
+        for var_info in variant_data:
+            case_id = var_info["_id"].rsplit("_", 1)[0]
+            CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
+            var_info["added_by"] = self.clinvar_variant_submitter(
+                institute_id=institute_id,
+                case_id=case_id,
+                variant_id=var_info["local_id"],
+            )
+            case_obj = self.case(
+                case_id=case_id,
+                projection=CASE_CLINVAR_SUBMISSION_PROJECTION,
+            )
+            if not case_obj:
+                cases[case_id] = f"{case_id} (N/A)"
+                continue
+            cases[case_id] = case_obj.get("display_name")
+        return cases
 
     def get_and_deprecate_type_none_germline_submissions(
         self,
         institute_id: str,
         clinvar_id_filter: Optional[str] = None,
+        gene_symbol: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[List[dict], int]:
@@ -272,31 +305,9 @@ class ClinVarHandler(object):
 
         self.deprecate_type_none_germline_submissions(institute_id)
 
-        def populate_cases_from_variant_data(variant_data, institute_id):
-            cases = {}
-            for var_info in variant_data:
-                case_id = var_info["_id"].rsplit("_", 1)[0]
-                CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
-                var_info["added_by"] = self.clinvar_variant_submitter(
-                    institute_id=institute_id,
-                    case_id=case_id,
-                    variant_id=var_info["local_id"],
-                )
-                case_obj = self.case(
-                    case_id=case_id,
-                    projection=CASE_CLINVAR_SUBMISSION_PROJECTION,
-                )
-                if not case_obj:
-                    cases[case_id] = f"{case_id} (N/A)"
-                    continue
-                cases[case_id] = case_obj.get("display_name")
-            return cases
-
         query = {"institute_id": institute_id, "type": {"$exists": False}}
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
-
-        total_count = self.clinvar_submission_collection.count_documents(query)
 
         sort_pipeline = [
             {"$match": query},
@@ -304,38 +315,49 @@ class ClinVarHandler(object):
             {"$skip": skip},
             {"$limit": limit},
         ]
-        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
 
+        results = self.clinvar_submission_collection.aggregate(sort_pipeline)
         submissions = []
+
         for result in results:
             submission = self._basic_submission_info(result)
-            cases = {}
             submission["deprecated_at"] = result.get("deprecated_at")
+
             if result.get("clinvar_subm_id"):
                 submission["clinvar_subm_id"] = result["clinvar_subm_id"]
 
-            if result.get("variant_data"):
-                submission["variant_data"] = list(
-                    self.clinvar_collection.find({"_id": {"$in": result["variant_data"]}}).sort(
-                        "last_evaluated", pymongo.ASCENDING
-                    )
+            variant_data = result.get("variant_data")
+            if not variant_data:
+                submission["cases"] = {}
+                submissions.append(submission)
+                continue
+
+            submission["variant_data"] = list(
+                self.clinvar_collection.find({"_id": {"$in": variant_data}}).sort(
+                    "last_evaluated", pymongo.ASCENDING
                 )
+            )
 
-                cases = populate_cases_from_variant_data(submission["variant_data"], institute_id)
+            if gene_symbol and all(
+                var.get("gene_symbol") != gene_symbol for var in submission["variant_data"]
+            ):
+                continue
 
-            submission["cases"] = cases
+            submission["cases"] = self._populate_cases_from_variant_data(
+                submission["variant_data"], institute_id
+            )
 
             if result.get("case_data"):
                 unsorted_case_data = list(
                     self.clinvar_collection.find({"_id": {"$in": result["case_data"]}})
                 )
                 submission["case_data"] = self.sort_clinvar_case_data(
-                    submission.get("variant_data", []), unsorted_case_data or []
+                    submission["variant_data"], unsorted_case_data
                 )
 
             submissions.append(submission)
 
-        return submissions, total_count
+        return submissions, len(submissions)
 
     def clinvar_assertion_criteria(self, variant_data):
         """Retrieve assertion criteria from the variant data of a submission.
