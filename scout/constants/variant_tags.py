@@ -695,3 +695,9 @@ CALLERS = {
         {"id": "starfusion", "name": "STARfusion"},
     ],
 }
+
+SANGER_OPTIONS = {
+    "True positive": "bg-success",
+    "False positive": "bg-danger",
+    "Not validated": "bg-secondary",
+}

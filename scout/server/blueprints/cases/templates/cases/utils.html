@@ -291,9 +291,9 @@
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation == 'True positive' %}
-    <span class="badge bg-success">Validated</span>
+    <span class="badge bg-success">Validated TP</span>
   {% elif variant.validation == 'False positive' %}
-    <span class="badge bg-danger">Validated</span>
+    <span class="badge bg-danger">Validated FP</span>
   {% elif variant.sanger_ordered %}
     <span class="badge bg-secondary">Verification ordered</span>
   {% endif %}
@@ -468,7 +468,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
+{% macro suspects_list(suspects, institute, case, sanger_options) %}
   <div class="card mt-3">
     <div class="d-flex align-items-center" data-bs-toggle='tooltip' title="Displays all variants that have been pinned or included in a ClinVar submission for this case">
       <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants pinned ({{suspects|length}}) or included in a ClinVar submission({{ case.clinvar_variants.items()|length }})</h6>
@@ -503,8 +503,8 @@
                                          case_name=case.display_name,
                                          variant_id=variant._id) }}"
                       method="POST" accept-charset="utf-8">
-                  <select class="form-control form-control-sm" onchange="this.form.submit()" name="type">
-                    {% for type in ('Not validated', 'True positive', 'False positive') %}
+                  <select class="form-control form-control-sm sanger-select" onchange="updateSangerColor(this); this.form.submit()" name="type">
+                    {% for type in sanger_options %}
                       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
                     {% endfor %}
                   </select>
