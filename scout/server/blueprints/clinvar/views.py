@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from flask import (
@@ -92,31 +92,37 @@ def clinvar_variant_save(institute_id: str, case_name: str, subm_type: str):
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
+def get_filter(request, field: str) -> Optional[str]:
+    """Get a filter value from the request."""
+    value = request.args.get(field)
+    return value.strip() if value else None
+
+
 @clinvar_bp.route("/<institute_id>/clinvar_germline_submissions", methods=["GET", "POST"])
 def clinvar_germline_submissions(institute_id):
     """Handle germline ClinVar submissions."""
 
     institute_obj = institute_and_case(store, institute_id)
     institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
-    clinvar_id_filter = (
-        request.values.get("clinvar_id_filter").strip()
-        if request.values.get("clinvar_id_filter")
-        else None
-    )
     per_page = 15
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
+
+    subm_id = get_filter(request, "clinvar_id_filter")
+    gene_symbol = get_filter(request, "gene_symbol")
+
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="germline",
-        subm_id=clinvar_id_filter,
+        subm_id=subm_id,
+        gene_symbol=gene_symbol,
         skip=start,
         limit=per_page,
     )
 
     deprecated_submissions, deprecated_count = (
         store.get_and_deprecate_type_none_germline_submissions(
-            institute_id, clinvar_id_filter=clinvar_id_filter
+            institute_id, clinvar_id_filter=subm_id, gene_symbol=gene_symbol
         )
     )
 
@@ -127,7 +133,6 @@ def clinvar_germline_submissions(institute_id):
         "casedata_header_fields": CASEDATA_HEADER,
         "show_submit": current_user.email in institute_clinvar_submitters
         or not institute_clinvar_submitters,
-        "clinvar_id_filter": clinvar_id_filter,
         "page": page,
         "result_size": total_count + deprecated_count,
         "per_page": per_page,
@@ -147,16 +152,11 @@ def clinvar_onc_submissions(institute_id):
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
 
-    clinvar_id_filter = (
-        request.values.get("clinvar_id_filter").strip()
-        if request.values.get("clinvar_id_filter")
-        else None
-    )
-
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="oncogenicity",
-        subm_id=clinvar_id_filter,
+        subm_id=get_filter(request, "clinvar_id_filter"),
+        gene_symbol=get_filter(request, "gene_symbol"),
         skip=start,
         limit=per_page,
     )
