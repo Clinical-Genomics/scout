@@ -49,13 +49,22 @@
 <div class="mb-2">
     <form id="search-form" class="d-flex gap-2 align-items-start" action={{action_url}}>
       {{ filter_form.clinvar_id_filter.label(class="visually-hidden") }}
-        {{ filter_form.clinvar_id_filter(
-            class="form-control",
-            placeholder="Enter ClinVar submission ID…",
-            style="max-width: 250px;"
-        ) }}
-        {{ filter_form.submit(class="btn btn-primary") }}
-        <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
+      {{ filter_form.clinvar_id_filter(
+          class="form-control",
+          placeholder="Enter ClinVar submission ID…",
+          style="max-width: 250px;"
+      ) }}
+
+      {{ filter_form.gene_symbol.label(class="visually-hidden") }}
+      {{ filter_form.gene_symbol(
+        class="form-control",
+        placeholder="Enter gene symbol…",
+        style="max-width: 200px;"
+      ) }}
+
+      {{ filter_form.submit(class="btn btn-primary") }}
+
+      <a href="{{ action_url }}" class="btn btn-secondary text-white">Show All</a>
     </form>
 </div>
 {% endmacro %}
