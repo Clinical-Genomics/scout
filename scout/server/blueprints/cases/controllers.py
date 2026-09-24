@@ -43,6 +43,7 @@ from scout.constants.variant_tags import (
     ESCAT_TIER_OPTIONS,
     GENETIC_MODELS,
     MANUAL_RANK_OPTIONS,
+    SANGER_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import (
@@ -671,6 +672,7 @@ def case(
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
         "escat_tier_options": ESCAT_TIER_OPTIONS,
+        "sanger_options": SANGER_OPTIONS,
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,

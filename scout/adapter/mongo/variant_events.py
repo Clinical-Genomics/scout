@@ -10,9 +10,8 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     REV_ACMG_MAP,
     REV_CCV_MAP,
+    SANGER_OPTIONS,
 )
-
-SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
 LOG = logging.getLogger(__name__)
 
@@ -348,14 +347,14 @@ class VariantEventHandler(object):
             link (str): The url to be used in the event
             variant (dict): A variant object
             validate_type(str): The outcome of validation.
-                                choices=('True positive', 'False positive')
+                                choices=('True positive', 'False positive', 'Not validated')
 
         Returns:
             updated_variant(dict)
         """
         if not validate_type in SANGER_OPTIONS:
             LOG.warning("Invalid validation string: %s", validate_type)
-            LOG.info("Validation options: %s", ", ".join(SANGER_OPTIONS))
+            LOG.info("Validation options: %s", ", ".join(SANGER_OPTIONS.keys()))
             return
 
         LOG.info("Set validation status to %s for %s", validate_type, variant["display_name"])
