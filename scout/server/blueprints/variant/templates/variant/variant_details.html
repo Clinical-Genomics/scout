@@ -189,9 +189,10 @@
 
             {% for link in links %}
               {% if link %}
-                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">
-                  <i class="fa fa-external-link ms-1"></i>
+                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer" class="text-decoration-none">
+                  <i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>
                 </a>
+
               {% endif %}
             {% endfor %}
           {% endif %}
