@@ -394,7 +394,7 @@ def get_locus_from_variant(
 ) -> tuple:
     """
     Check if variant coordinates are in display genome build (typically 38), otherwise do variant coords liftover.
-    Use original coordinates only if genome build was already 38 or liftover didn't work. If no display build is given,
+    Use original coordinates only if genome build was already 38, or if it'a MT variant or liftover didn't work. If no display build is given,
     assume it is the same as the case genome build.
     Omics variants have build set on them, but for ordinary DNA variants we need to fetch case build.
     Collect locus coordinates.
@@ -408,7 +408,10 @@ def get_locus_from_variant(
     if not display_build:
         display_build = case_build
 
-    variant_build = variant_obj["build"] if "build" in variant_obj else case_build
+    if variant_obj.get("chromosome") in ("MT", "M"):
+        variant_build = "38"
+    else:
+        variant_build = variant_obj["build"] if "build" in variant_obj else case_build
 
     if variant_build not in display_build:
         client = BroadLiftoverApiClient()
