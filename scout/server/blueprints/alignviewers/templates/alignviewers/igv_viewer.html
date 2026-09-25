@@ -58,20 +58,24 @@
                     {% endif %}
                     tracks: [
                       {% for custTrack in custom_tracks %}
-                        {
-                            name: "{{ custTrack.name }}",
-                            type: "{{ custTrack.type }}",
-                            format: "{{ custTrack.format }}",
-                            sourceType: "{{ custTrack.sourceType }}",
-                            url: "{{ custTrack.url|replace('%2F','/') }}",
-                            displayMode: "{{ custTrack.displayMode }}",
-                            visibilityWindow: {{ custTrack.visibilityWindow }},
-                            order: Number.MIN_VALUE,
-                            {% if custTrack.name == "Genes" %}
-                                indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
-                                height: 150,
-                            {% endif %}
-                        },
+                          {
+                              name: "{{ custTrack.name }}",
+                              type: "{{ custTrack.type }}",
+                              format: "{{ custTrack.format }}",
+                              {% if custTrack.sourceType %}
+                              sourceType: "{{ custTrack.sourceType }}",
+                              {% endif %}
+                              url: "{{ custTrack.url|replace('%2F','/') }}",
+                              {% if custTrack.displayMode %}
+                              displayMode: "{{ custTrack.displayMode }}",
+                              {% endif %}
+                              visibilityWindow: {{ custTrack.visibilityWindow }},
+                              order: Number.MIN_VALUE,
+                              {% if custTrack.name == "Genes" %}
+                                  indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                                  height: 150,
+                              {% endif %}
+                          },
                       {% endfor %}
                       {% for custTrack in config_custom_tracks %}
                         {

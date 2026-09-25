@@ -138,6 +138,15 @@ MANE_TRANSCRIPTS = {
     "order": 1000000,
 }
 
+NMD_ESCAPE_REFSEQ = {
+    "name": "Predicted NMD escape",
+    "type": "annotation",
+    "visibilityWindow": 300000000,
+    "format": "bigbed",
+    "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/nmd/nmdEscNcbiRefSeq.bb",
+    "order": 1000000,
+}
+
 CASE_SPECIFIC_TRACKS = {
     "paraphase_alignments": "Paraphase Alignment",
     "phase_blocks": "Phase Blocks",
@@ -157,8 +166,16 @@ USER_DEFAULT_TRACKS = ["Genes", "ClinVar", "ClinVar CNVs"]
 # Export selectable custom tracks into lists
 IGV_TRACKS = {
     "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_SV_37],
-    "38": [HUMAN_GENES_38, MANE_TRANSCRIPTS, CLINVAR_SNV_38, CLINVAR_SV_38],
+    "38": [HUMAN_GENES_38, MANE_TRANSCRIPTS, CLINVAR_SNV_38, CLINVAR_SV_38, NMD_ESCAPE_REFSEQ],
 }
+
+DEFAULT_TRACK_NAMES = [
+    "Genes",
+    "MANE Transcripts",
+    "ClinVar",
+    "ClinVar CNVs",
+    "Predicted NMD escape",
+]
 
 CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP = [
     {"path": "bam_file", "append_to": "bam_files", "index": "bai_files"},

@@ -97,22 +97,30 @@
                                 ]
                               },
                             {% endif %}
-                            {% if custom_tracks|selectattr("name","equalto", "Genes")|list|length > 0 %}
-                                { // genes track
-                                  name: geneTrack.name,
-                                  type: geneTrack.type,
-                                  format: geneTrack.format,
-                                  sourceType: geneTrack.sourceType,
-                                  url: geneTrack.url,
-                                  indexURL: geneTrack.indexURL,
-                                  displayMode: geneTrack.displayMode,
-                                  visibilityWindow: 300000000,
-                                  height: 100,
+                            {% for custom_track in custom_tracks if custom_track.name in ["Genes", "Predicted NMD escape"] %}
+                              {% set counter.loop = counter.loop + 1 %}
+                              {
+                                name: "{{ custom_track.name }}",
+                                type: "{{ custom_track.type }}",
+                                format: "{{ custom_track.format }}",
+                                {% if custom_track.sourceType %}
+                                  sourceType: "{{ custom_track.sourceType }}",
+                                {% endif %}
+                                url: "{{ custom_track.url }}",
+                                {% if custom_track.indexURL %}
+                                  indexURL: "{{ custom_track.indexURL }}",
+                                {% endif %}
+                                {% if custom_track.displayMode %}
+                                  displayMode: "{{ custom_track.displayMode }}",
+                                {% endif %}
+                                visibilityWindow: {{ custom_track.visibilityWindow }},
+                                order: {{ counter.loop }},
+                                {% if custom_track.name == "Genes" %}
                                   searchable: true,
-                                  order: {{counter.loop}},
                                   infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
-                                }, // end of genes track
-                             {% endif %}
+                                {% endif %}
+                              },
+                          {% endfor %}
                        {% endfor %}
                     ] // end of tracks
             };
