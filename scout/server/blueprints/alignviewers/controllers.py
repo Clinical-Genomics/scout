@@ -405,15 +405,14 @@ def get_locus_from_variant(
     locus_end_coord = variant_obj.get("end")
 
     case_build = get_case_genome_build(case_obj)
-    if not display_build:
-        display_build = case_build
 
     if variant_obj.get("chromosome") in ("MT", "M"):
-        variant_build = "38"
+        variant_build = display_build = "38"
     else:
-        variant_build = variant_obj["build"] if "build" in variant_obj else case_build
+        display_build = display_build or case_build
+        variant_build = variant_obj.get("build", case_build)
 
-    if variant_build not in display_build:
+    if variant_build != display_build:
         client = BroadLiftoverApiClient()
         if mapped_coords := client.liftover(
             build_from=variant_build,
