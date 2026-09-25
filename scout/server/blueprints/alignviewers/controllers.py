@@ -326,14 +326,21 @@ def make_sashimi_tracks(
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
 
+    def get_variant_build(variant_obj):
+        if variant_obj.get("chromosome") in ("M", "MT"):
+            return "38"
+        return "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
+
     locus = "All"
     build = "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
 
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
+        build = get_variant_build(variant_obj)
         locus = make_locus_from_gene(variant_obj, case_obj, build)
     if omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
+        build = get_variant_build(variant_obj)
         locus = make_locus_from_variant(variant_obj, case_obj, build)
 
     display_obj = {
