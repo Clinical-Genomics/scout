@@ -53,7 +53,7 @@ def test_check_reset_variant_classification(app, case_obj, variant_obj):
             variant_id=variant_obj["variant_id"],
             institute_id=case_obj["owner"],
             case_id=case_obj["case_id"],
-            classification="LP",
+            classification="likely_pathogenic",
             criteria=[],
             user_id=current_user.email,
             user_name=current_user.name,

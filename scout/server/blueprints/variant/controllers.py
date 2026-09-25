@@ -781,48 +781,35 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
 def check_reset_variant_classification(
     store: MongoAdapter, evaluation_obj: dict, link: str
 ) -> bool:
-    """Check if this was the last ACMG evaluation left on the variant.
-    If there is still a classification we want to remove the classification.
+    """Check if the variant classification should be updated.
+
+    If there is a remaining ACMG evaluation, use its classification.
+    Otherwise, reset the variant classification.
 
     Args:
-            stores(cout.adapter.MongoAdapter)
-            evaluation_obj(dict): ACMG evaluation object
-            link(str): link for event
+        store: MongoAdapter
+        evaluation_obj: ACMG evaluation object
+        link: link for event
 
-    Returns: reset(bool) - True if classification reset was attempted
-
+    Returns:
+        True if the variant classification was updated.
     """
-
-    if list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"])):
-        return False
+    evaluations = list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))
 
     variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
 
     if not variant_obj:
         return abort(404)
 
-    acmg_classification = variant_obj.get("acmg_classification")
+    if evaluations:
+        classification = evaluations[0]["classification"]
+        variant_obj["acmg_classification"] = next(
+            key for key, value in ACMG_MAP.items() if value == classification
+        )
+    else:
+        variant_obj.pop("acmg_classification", None)
 
-    if not isinstance(acmg_classification, int):
-        return False
-
-    institute_obj, case_obj = variant_institute_and_case(
-        store,
-        variant_obj,
-        evaluation_obj["institute"]["_id"],
-        evaluation_obj["case"]["display_name"],
-    )
-    user_obj = store.user(current_user.email)
-
-    new_acmg = None
-    store.submit_evaluation(
-        variant_obj=variant_obj,
-        user_obj=user_obj,
-        institute_obj=institute_obj,
-        case_obj=case_obj,
-        link=link,
-        classification=new_acmg,
-    )
+    store.update_variant(variant_obj)
     return True
 
 
