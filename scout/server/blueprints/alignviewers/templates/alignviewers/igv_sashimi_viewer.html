@@ -104,20 +104,20 @@
                                 type: "{{ custom_track.type }}",
                                 format: "{{ custom_track.format }}",
                                 {% if custom_track.sourceType %}
-                                sourceType: "{{ custom_track.sourceType }}",
+                                  sourceType: "{{ custom_track.sourceType }}",
                                 {% endif %}
                                 url: "{{ custom_track.url }}",
                                 {% if custom_track.indexURL %}
-                                indexURL: "{{ custom_track.indexURL }}",
+                                  indexURL: "{{ custom_track.indexURL }}",
                                 {% endif %}
                                 {% if custom_track.displayMode %}
-                                displayMode: "{{ custom_track.displayMode }}",
+                                  displayMode: "{{ custom_track.displayMode }}",
                                 {% endif %}
                                 visibilityWindow: {{ custom_track.visibilityWindow }},
                                 order: {{ counter.loop }},
                                 {% if custom_track.name == "Genes" %}
-                                searchable: true,
-                                infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
+                                  searchable: true,
+                                  infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
                                 {% endif %}
                               },
                           {% endfor %}
