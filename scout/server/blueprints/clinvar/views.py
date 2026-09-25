@@ -109,23 +109,25 @@ def clinvar_germline_submissions(institute_id):
     start = (page - 1) * per_page
 
     subm_id = get_filter(request, "clinvar_id_filter")
+
     gene_symbol = get_filter(request, "gene_symbol")
-    gene_symbol_aliases = store.gene_aliases(symbol=gene_symbol, build="37") + store.gene_aliases(
-        symbol=gene_symbol, build="38"
-    )
+    gene_symbol_aliases = store.aliases_for_symbol(symbol=gene_symbol)
+
+    if gene_symbol and not gene_symbol_aliases:
+        flash(f"No gene symbol or aliases found for {gene_symbol} in the database.", "warning")
 
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="germline",
         subm_id=subm_id,
-        gene_symbol=gene_symbol_aliases,
+        gene_symbol_aliases=gene_symbol_aliases,
         skip=start,
         limit=per_page,
     )
 
     deprecated_submissions, deprecated_count = (
         store.get_and_deprecate_type_none_germline_submissions(
-            institute_id, clinvar_id_filter=subm_id, gene_symbol=gene_symbol
+            institute_id, clinvar_id_filter=subm_id, gene_symbol_aliases=gene_symbol_aliases
         )
     )
 
@@ -155,11 +157,17 @@ def clinvar_onc_submissions(institute_id):
     page = request.values.get("page", 1, type=int)
     start = (page - 1) * per_page
 
+    gene_symbol = get_filter(request, "gene_symbol")
+    gene_symbol_aliases = store.aliases_for_symbol(symbol=gene_symbol)
+
+    if gene_symbol and not gene_symbol_aliases:
+        flash(f"No gene symbol or aliases found for {gene_symbol} in the database.", "warning")
+
     submissions, total_count = store.get_clinvar_submissions(
         institute_id=institute_id,
         type="oncogenicity",
         subm_id=get_filter(request, "clinvar_id_filter"),
-        gene_symbol=get_filter(request, "gene_symbol"),
+        gene_symbol_aliases=gene_symbol_aliases,
         skip=start,
         limit=per_page,
     )
