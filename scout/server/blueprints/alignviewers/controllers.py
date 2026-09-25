@@ -9,6 +9,7 @@ from flask_login import current_user
 from scout.constants import (
     CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     CASE_SPECIFIC_TRACKS,
+    DEFAULT_TRACK_NAMES,
     HUMAN_REFERENCE,
     IGV_TRACKS,
 )
@@ -21,7 +22,6 @@ from scout.server.utils import (
 from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
 LOG = logging.getLogger(__name__)
-DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]
 
 
 def authorize_common_tracks(resource: str) -> bool:

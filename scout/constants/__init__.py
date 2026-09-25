@@ -67,6 +67,7 @@ from .gene_tags import (
 from .igv_tracks import (
     CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     CASE_SPECIFIC_TRACKS,
+    DEFAULT_TRACK_NAMES,
     HUMAN_REFERENCE,
     IGV_TRACKS,
     USER_DEFAULT_TRACKS,
