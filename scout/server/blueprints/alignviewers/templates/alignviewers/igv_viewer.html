@@ -72,7 +72,7 @@
                               {% endif %}
                               visibilityWindow: {{ custTrack.visibilityWindow }},
                               order: Number.MIN_VALUE,
-                              {%  if custTrack.height %}height: {{ custTrack.height }},{% endif %}
+                              {% if custTrack.height %}height: {{ custTrack.height }},{% endif %}
                               {% if custTrack.name == "Genes" %}
                                   indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
                               {% endif %}
