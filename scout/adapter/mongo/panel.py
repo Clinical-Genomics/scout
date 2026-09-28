@@ -473,9 +473,10 @@ class PanelHandler:
 
         db_gene = self.hgnc_gene_caption(hgnc_identifier=panel_gene["hgnc_id"])
         if not db_gene:
-            return
+            return gene_update
         old_symbol = panel_gene.get("symbol")
         new_symbol = db_gene.get("hgnc_symbol")
+
         if old_symbol != new_symbol:
             flash(f"Old symbol '{old_symbol}' replaced by new symbol '{new_symbol}'", "warning")
             gene_update["action"] = "edit"
