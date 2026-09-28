@@ -473,7 +473,13 @@ class PanelHandler:
 
         db_gene = self.hgnc_gene_caption(hgnc_identifier=panel_gene["hgnc_id"])
         if not db_gene:
+            flash(
+                f"No gene with HGNC ID '{panel_gene['hgnc_id']}' was found in the database. "
+                "Edit or delete this gene to correct the error.",
+                "error",
+            )
             return gene_update
+
         old_symbol = panel_gene.get("symbol")
         new_symbol = db_gene.get("hgnc_symbol")
 
