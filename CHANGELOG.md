@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.115]
 ### Added
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
 - Add a region view (#6515)
