@@ -115,6 +115,7 @@ HUMAN_GENES_37 = {
     "format": HG19GENES_FORMAT,
     "url": HG19GENES_URL,
     "indexURL": HG19GENES_INDEX_URL,
+    "height": 150,
 }
 
 # Human genes track, build 38
@@ -127,6 +128,7 @@ HUMAN_GENES_38 = {
     "format": HG38GENES_FORMAT,
     "url": HG38GENES_URL,
     "order": 1000000,
+    "height": 150,
 }
 
 MANE_TRANSCRIPTS = {
@@ -134,16 +136,18 @@ MANE_TRANSCRIPTS = {
     "type": "annotation",
     "visibilityWindow": 300000000,
     "format": "bigbed",
+    "height": 40,
     "url": "https://ftp.ncbi.nlm.nih.gov/refseq/MANE/trackhub/data/release_1.5/MANE.GRCh38.v1.5.ensembl.bb",
     "order": 1000000,
 }
 
-NMD_ESCAPE_REFSEQ = {
+NMD_ESCAPE_MANE = {
     "name": "Predicted NMD escape",
     "type": "annotation",
     "visibilityWindow": 300000000,
     "format": "bigbed",
-    "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/nmd/nmdEscNcbiRefSeq.bb",
+    "height": 40,
+    "url": "https://hgdownload.soe.ucsc.edu/gbdb/hg38/nmd/nmdEscMane.bb",
     "order": 1000000,
 }
 
@@ -166,7 +170,7 @@ USER_DEFAULT_TRACKS = ["Genes", "ClinVar", "ClinVar CNVs"]
 # Export selectable custom tracks into lists
 IGV_TRACKS = {
     "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_SV_37],
-    "38": [HUMAN_GENES_38, MANE_TRANSCRIPTS, CLINVAR_SNV_38, CLINVAR_SV_38, NMD_ESCAPE_REFSEQ],
+    "38": [HUMAN_GENES_38, MANE_TRANSCRIPTS, CLINVAR_SNV_38, CLINVAR_SV_38, NMD_ESCAPE_MANE],
 }
 
 DEFAULT_TRACK_NAMES = [
