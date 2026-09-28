@@ -467,6 +467,10 @@ class PanelHandler:
         they differ. Existing entries in gene_update are preserved and returned.
         """
         gene_update = pending_update or {}
+
+        if gene_update.get("action") == "delete":
+            return gene_update
+
         db_gene = self.hgnc_gene_caption(hgnc_identifier=panel_gene["hgnc_id"])
         if not db_gene:
             return
