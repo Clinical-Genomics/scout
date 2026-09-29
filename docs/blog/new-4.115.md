@@ -25,7 +25,7 @@ Scout 4.115 is here! 🎉 This release brings a major update to the ClinVar germ
 * Rank scores can be displayed for cancer SVs.
 * An **Oncoanalyser Orange report** can be added to an existing case through the CLI or when loading a case.
 * Variant and case IDs are displayed throughout the multistep ClinVar add-variant-to-submission form.
-* The Sanger verification button now changes according to its verification status.
+* The Sanger verification button now changes color according to its verification status.
 * gnomAD constraint data has been updated to v4.1.1.
 * IGV.js has been updated to 3.8.9, including a fix for a rare issue with TLEN colouring.
 * Links and the ClinVar multistep submission form are now easier to see in dark mode.
