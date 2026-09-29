@@ -6,7 +6,7 @@ Scout 4.115 is here! 🎉 This release brings a major update to the ClinVar germ
 
 ### Highlights
 
-* **A new region view — and new dosage sensitivity regions!** 🧬 Scout can now display genomic regions directly. We have also added **ClinGen dosage sensitivity data**, including [ISCA regions](https://search.clinicalgenome.org/kb/gene-dosage?page=1&size=25&search=), to the database. These regions can be explored in Scout and **added to gene panels**, by editing genes present in the panel.
+* **A new region view — and new dosage sensitivity regions!** 🧬 Scout can now display genomic regions directly. We have also added **ClinGen dosage sensitivity data**, including [ISCA regions](https://search.clinicalgenome.org/kb/gene-dosage?page=1&size=25&search=), to the database. These regions can be explored in Scout and **used to annotate genes in gene panels as proxies for the respective regions**. In future updates, together with the pipeline developers we will be able to add a more complete region suport, but this is a first step.
 
 * **ClinVar germline submissions have moved to the new API format.** Germline submissions are now handled using the new `germlineSubmission` format introduced by the [ClinVar API](https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/). Old-format germline submissions are automatically deprecated. They will remain available for viewing in Scout, but can no longer be submitted to ClinVar. New germline submissions can be created using the updated workflow. The submission pages have also received several usability improvements, including clearer test-endpoint buttons, better condition handling, and variant and case IDs throughout the multistep form.
 
