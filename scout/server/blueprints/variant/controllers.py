@@ -779,7 +779,8 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
 
 
 def check_reset_variant_classification(
-    store: MongoAdapter, evaluation_obj: dict, link: str
+    store: MongoAdapter,
+    evaluation_obj: dict,
 ) -> bool:
     """Check if the variant classification should be updated.
 
@@ -800,6 +801,11 @@ def check_reset_variant_classification(
 
     if not variant_obj:
         return abort(404)
+
+    acmg_classification = variant_obj.get("acmg_classification")
+
+    if not isinstance(acmg_classification, int):
+        return False
 
     if evaluations:
         classification = evaluations[0]["classification"]
