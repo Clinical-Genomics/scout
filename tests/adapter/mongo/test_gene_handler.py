@@ -151,6 +151,17 @@ def test_get_genes_alias(adapter):
         assert result["hgnc_id"] == 1
 
 
+def test_aliases_for_symbol(adapter, monkeypatch):
+    def gene_aliases(symbol, build):
+        if build == "37":
+            return [{"aliases": ["ABC", "DEF"]}]
+        return [{"aliases": ["DEF", "GHI"]}]
+
+    monkeypatch.setattr(adapter, "gene_aliases", gene_aliases)
+
+    assert adapter.aliases_for_symbol("GENE") == ["ABC", "DEF", "GHI"]
+
+
 def test_get_genes_regex(real_adapter):
     adapter = real_adapter
     ##GIVEN a empty adapter
