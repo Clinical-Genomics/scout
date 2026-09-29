@@ -239,7 +239,7 @@ class ClinVarHandler(object):
         institute_id: str,
         type: str,
         subm_id: Optional[str] = None,
-        gene_symbol: Optional[str] = None,
+        gene_symbol_aliases: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[list[dict], int]:
@@ -252,11 +252,15 @@ class ClinVarHandler(object):
         if subm_id:
             query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
 
-        if gene_symbol:
+        if gene_symbol_aliases:
             if type == "germline":
-                query["germlineSubmission.variantSet.variant.gene.symbol"] = gene_symbol
+                query["germlineSubmission.variantSet.variant.gene.symbol"] = {
+                    "$in": gene_symbol_aliases
+                }
             else:
-                query["oncogenicitySubmission.variantSet.variant.gene.symbol"] = gene_symbol
+                query["oncogenicitySubmission.variantSet.variant.gene.symbol"] = {
+                    "$in": gene_symbol_aliases
+                }
 
         total_count = self.clinvar_submission_collection.count_documents(query)
 
@@ -297,7 +301,7 @@ class ClinVarHandler(object):
         self,
         institute_id: str,
         clinvar_id_filter: Optional[str] = None,
-        gene_symbol: Optional[str] = None,
+        gene_symbol_aliases: Optional[str] = None,
         skip: int = 0,
         limit: int = 15,
     ) -> tuple[List[dict], int]:
@@ -338,8 +342,9 @@ class ClinVarHandler(object):
                 )
             )
 
-            if gene_symbol and all(
-                var.get("gene_symbol") != gene_symbol for var in submission["variant_data"]
+            if gene_symbol_aliases and all(
+                var.get("gene_symbol") not in gene_symbol_aliases
+                for var in submission["variant_data"]
             ):
                 continue
 
@@ -358,25 +363,6 @@ class ClinVarHandler(object):
             submissions.append(submission)
 
         return submissions, len(submissions)
-
-    def clinvar_assertion_criteria(self, variant_data):
-        """Retrieve assertion criteria from the variant data of a submission.
-           ClinVar no longer supports Assertion Criteria data as columns of the CSV file,
-           so it has to be passed as optional parameters the the ClinVar API helper (preClinVar)
-
-        Args:
-            variant_data(dict): a document from the store.clinvar collection
-
-        Returns:
-            criteria (dict): a dict containing assertionCriteriaDB and assertionCriteriaID key/values
-                             or None
-        """
-        amc = variant_data.get("assertion_method_cit", "")
-        if ":" in amc:
-            amc_db = amc.split(":")[0].replace("PMID", "PubMed")
-            amc_id = amc.split(":")[1]
-            criteria = {"assertionCriteriaDB": amc_db, "assertionCriteriaID": amc_id}
-            return criteria
 
     def clinvar_objs(self, submission_id: str, key_id: str) -> list:
         """Collects a list of objects from the ClinVar collection (variants of case data) as specified by the key_id in the submission.
