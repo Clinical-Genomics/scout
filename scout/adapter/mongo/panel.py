@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Union
 import pymongo
 from bson import ObjectId
 from bson.errors import InvalidId
+from flask import flash
 
 from scout.build import build_panel
 from scout.constants.panels import EXPORT_PANEL_FIELDS
@@ -458,6 +459,34 @@ class PanelHandler:
         )
         return updated_panel
 
+    def gene_updates(self, panel_gene: dict, pending_update: Optional[dict]) -> Optional[dict]:
+        """Check for pending gene updates, including an updated HGNC symbol.
+
+        Compares the gene symbol in the panel with the corresponding gene in the
+        HGNC gene collection and adds the current HGNC symbol to gene_update if
+        they differ. Existing entries in gene_update are preserved and returned.
+        """
+        gene_update = pending_update or {}
+
+        if gene_update.get("action") == "delete":
+            return gene_update
+
+        db_gene = self.hgnc_gene_caption(hgnc_identifier=panel_gene["hgnc_id"])
+        if not db_gene:
+            return gene_update
+
+        old_symbol = panel_gene.get("symbol")
+        new_symbol = db_gene.get("hgnc_symbol")
+
+        if old_symbol != new_symbol:
+            flash(f"Old symbol '{old_symbol}' replaced by new symbol '{new_symbol}'", "warning")
+            gene_update["action"] = "edit"
+            gene_update["hgnc_id"] = panel_gene["hgnc_id"]
+            gene_update["symbol"] = new_symbol
+            gene_update["info"] = gene_update.get("info") or {}
+
+        return gene_update or None
+
     def apply_pending(self, panel_obj: dict, version: str) -> str:
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
 
@@ -480,16 +509,16 @@ class PanelHandler:
         # Process existing genes
         for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
-            update = updates.get(hgnc_id)
+            update = self.gene_updates(panel_gene=gene, pending_update=updates.get(hgnc_id))
 
             if not update:  # No update, keep the gene
                 new_genes.append(gene)
             elif update["action"] == "edit":  # Edit gene fields
+                gene["symbol"] = update.get("symbol") or gene["symbol"]
                 for key in EXPORT_PANEL_FIELDS[2:]:
-                    gene.pop(key[1], None)  # Reset all fields except hgnc and symbol
+                    gene.pop(key[1], None)  # Reset all fields except hgnc_id and gene symbol
                 gene.update(update["info"])
                 new_genes.append(gene)
-            # Skip 'delete' actions
 
         new_panel["genes"] = new_genes
         new_panel["version"] = float(version)
