@@ -46,6 +46,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Condition options placeholders and checks on multistep ClinVar submission form (#6565)
 - Refresh ClinVar submissions after deprecating those with no type="germline" (#6584)
 - Automatically use genome build 38 for MT/M variants when determining the variant locus (#6598)
+- Fix coloring of CADD badges on missing value (#6608)
 - Set variant's ACMG classification to latest remaining classification when one classification is removed is removed (#6579)
 
 ## [4.114.1]
