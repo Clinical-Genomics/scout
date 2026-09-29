@@ -16,7 +16,7 @@ Scout 4.115 is here! 🎉 This release brings a major update to the ClinVar germ
 
 * **More genomic context with AlphaGenome Atlas.** Links to the AlphaGenome Atlas have been added, giving you another way to explore the genomic context around variants.
 
-* **More ACMG information in Scout.** The variant page now shows the **ACMG Bayesian classification** based on [Tavtigian et al.](https://pubmed.ncbi.nlm.nih.gov/29300386/), and ACMG criterion details are now included in the case general report.
+* **More ACMG information in Scout.** The variant page now shows the **ACMG Bayesian classification** based on [Tavtigian et al.](https://pubmed.ncbi.nlm.nih.gov/29300386/), and ACMG criterion details are included in the case general report.
 
 ### Also included
 
