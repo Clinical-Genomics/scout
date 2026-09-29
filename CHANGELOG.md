@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search also oncogenicity submission by ClinVar ID (#6552)
 - Add an Oncoanalyser Orange report to an existing case via the CLI or at case loading (#6569)
 - Filter ClinVar submissions by gene (#6585)
+- Changes to gene panels trigger a gene symbol sync to keep gene symbols up to date with the latest HGNC information (#6600)
 - The UCSC/Decipher `Predicted NMD escape` track is now available in the IGV viewer (#6597)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
