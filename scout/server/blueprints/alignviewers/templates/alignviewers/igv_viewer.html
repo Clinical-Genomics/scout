@@ -51,6 +51,7 @@
                         {{- get_custom_track_url("indexURL", reference_track.indexURL, institute_id, case_display_name) -}}
                         {{- get_custom_track_url("cytobandURL", reference_track.cytobandURL, institute_id, case_display_name) -}}
                         {{- get_custom_track_url("aliasURL", reference_track.aliasURL, institute_id, case_display_name) -}}
+                        {%  if reference_track.height %}height: {{ reference_track.height }},{% endif %}
                         {% if reference_track.chromosomeOrder %}chromosomeOrder: "{{ reference_track.chromosomeOrder }}",{% endif %}
                     },
                     {% if loci %}
@@ -58,20 +59,24 @@
                     {% endif %}
                     tracks: [
                       {% for custTrack in custom_tracks %}
-                        {
-                            name: "{{ custTrack.name }}",
-                            type: "{{ custTrack.type }}",
-                            format: "{{ custTrack.format }}",
-                            sourceType: "{{ custTrack.sourceType }}",
-                            url: "{{ custTrack.url|replace('%2F','/') }}",
-                            displayMode: "{{ custTrack.displayMode }}",
-                            visibilityWindow: {{ custTrack.visibilityWindow }},
-                            order: Number.MIN_VALUE,
-                            {% if custTrack.name == "Genes" %}
-                                indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
-                                height: 150,
-                            {% endif %}
-                        },
+                          {
+                              name: "{{ custTrack.name }}",
+                              type: "{{ custTrack.type }}",
+                              format: "{{ custTrack.format }}",
+                              {% if custTrack.sourceType %}
+                              sourceType: "{{ custTrack.sourceType }}",
+                              {% endif %}
+                              url: "{{ custTrack.url|replace('%2F','/') }}",
+                              {% if custTrack.displayMode %}
+                              displayMode: "{{ custTrack.displayMode }}",
+                              {% endif %}
+                              visibilityWindow: {{ custTrack.visibilityWindow }},
+                              order: Number.MIN_VALUE,
+                              {% if custTrack.height %}height: {{ custTrack.height }},{% endif %}
+                              {% if custTrack.name == "Genes" %}
+                                  indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                              {% endif %}
+                          },
                       {% endfor %}
                       {% for custTrack in config_custom_tracks %}
                         {
