@@ -63,11 +63,10 @@ def get_label_or_color_by_score(
     except (TypeError, ValueError):
         return "secondary"
 
-    for (low, high), info in score_map.items():
-        if low <= score <= high:
-            return info.get(map_key)
-
-    return "secondary"
+    return next(
+        (info.get(map_key) for (low, high), info in score_map.items() if low <= score <= high),
+        "secondary",
+    )
 
 
 def l2fc_2_fc(l2fc: float) -> float:
