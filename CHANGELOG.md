@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changes to gene panels trigger a gene symbol sync to keep gene symbols up to date with the latest HGNC information (#6600)
 - Filter ClinVar submissions by gene and gene aliases (#6585, #6599)
 - The UCSC/Decipher `Predicted NMD escape` track is now available in the IGV viewer (#6597)
+- A blog entry for the 4.115 release (#6603)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
