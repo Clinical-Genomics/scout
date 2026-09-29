@@ -443,7 +443,7 @@
 
 
 {% macro cadd_cell(variant) %}
-  <div class="badge bg-{{variant.cadd_score|get_label_or_color_by_score('cadd', 'color')}} rounded-pill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="left" title="
+  <div class="badge bg-{% if variant.cadd_score %}{{variant.cadd_score|get_label_or_color_by_score('cadd', 'color')}}{% else %}secondary{% endif %} rounded-pill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="left" title="
     <div class='text-start'>
       <strong>CADD</strong> {{ variant.cadd_score or '-' }}{% if variant.cadd_score %} - {{variant.cadd_score|get_label_or_color_by_score('cadd', 'label')}}{% endif %}<br>
       <strong>Sift</strong>
