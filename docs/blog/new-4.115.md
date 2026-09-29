@@ -14,7 +14,7 @@ Scout 4.115 is here! 🎉 This release brings a major update to the ClinVar germ
 
 * **More detailed VUS classification.** ClinVar germline submissions now support three additional VUS terms: **VUS-high, VUS-mid and VUS-low**.
 
-* **More genomic context with AlphaGenome Atlas.** Links to the AlphaGenome Atlas have been added, giving you another way to explore the genomic context around variants.
+* **More variant consequence predictions with AlphaGenome Atlas.** Links to the AlphaGenome Atlas have been added, giving you another way to explore the predicted effects of variants, including their AVI score. AVI score ranking and filtering is planned in an upcoming Scout release.
 
 * **More ACMG information in Scout.** The variant page now shows the **ACMG Bayesian classification** based on [Tavtigian et al.](https://pubmed.ncbi.nlm.nih.gov/29300386/), and ACMG criterion details are included in the case general report.
 
