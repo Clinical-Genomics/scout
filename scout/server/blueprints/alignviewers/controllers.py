@@ -9,6 +9,7 @@ from flask_login import current_user
 from scout.constants import (
     CASE_INDIVIDUAL_DISPLAY_OBJECT_MAP,
     CASE_SPECIFIC_TRACKS,
+    DEFAULT_TRACK_NAMES,
     HUMAN_REFERENCE,
     IGV_TRACKS,
 )
@@ -21,7 +22,6 @@ from scout.server.utils import (
 from scout.utils.broad_liftover_client import BroadLiftoverApiClient
 
 LOG = logging.getLogger(__name__)
-DEFAULT_TRACK_NAMES = ["Genes", "MANE Transcripts", "ClinVar", "ClinVar CNVs"]
 
 
 def authorize_common_tracks(resource: str) -> bool:
@@ -326,14 +326,21 @@ def make_sashimi_tracks(
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
 
+    def get_variant_build(variant_obj):
+        if variant_obj.get("chromosome") in ("M", "MT"):
+            return "38"
+        return "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
+
     locus = "All"
     build = "37" if "37" in str(case_obj.get("rna_genome_build", "38")) else "38"
 
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
+        build = get_variant_build(variant_obj)
         locus = make_locus_from_gene(variant_obj, case_obj, build)
     if omics_variant_id:
         variant_obj = store.omics_variant(variant_id=omics_variant_id)
+        build = get_variant_build(variant_obj)
         locus = make_locus_from_variant(variant_obj, case_obj, build)
 
     display_obj = {
