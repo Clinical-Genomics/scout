@@ -37,20 +37,37 @@ def spidex_human(spidex: int | float | None) -> str:
 
 
 def get_label_or_color_by_score(
-    score: float,
+    score: float | int | None,
     map: str,
     map_key: str,
 ) -> str:
-    """Return a label or color for a given score based on predefined score ranges from the provided items_map."""
-    SCORE_ITEM_MAPS = {
+    """Return a label or color for a given score based on predefined score ranges from the provided items_map.
+    Defaults to "secondary" if score is None, or not found within the map ranges."""
+
+    score_item_maps = {
         "cadd": CADD_SCORE_LABEL_COLOR_MAP,
         "rank": RANK_SCORE_LABEL_COLOR_MAP,
         "revel": REVEL_SCORE_LABEL_COLOR_MAP,
         "spliceai": SPLICEAI_SCORE_LABEL_COLOR_MAP,
     }
-    for (low, high), info in SCORE_ITEM_MAPS[map].items():
+
+    if score is None:
+        return "secondary"
+
+    try:
+        score_map = score_item_maps.get(map)
+        if score_map is None:
+            return "secondary"
+
+        score = float(score)
+    except (TypeError, ValueError):
+        return "secondary"
+
+    for (low, high), info in score_map.items():
         if low <= score <= high:
-            return info[map_key]
+            return info.get(map_key)
+
+    return "secondary"
 
 
 def l2fc_2_fc(l2fc: float) -> float:
