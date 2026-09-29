@@ -516,7 +516,7 @@ class PanelHandler:
             elif update["action"] == "edit":  # Edit gene fields
                 gene["symbol"] = update.get("symbol") or gene["symbol"]
                 for key in EXPORT_PANEL_FIELDS[2:]:
-                    gene.pop(key[1], None)  # Reset all fields except hgnc_id
+                    gene.pop(key[1], None)  # Reset all fields except hgnc_id and gene symbol
                 gene.update(update["info"])
                 new_genes.append(gene)
 
