@@ -305,6 +305,27 @@ class GeneHandler(object):
 
         return self.gene_aliases(symbol, build=build)
 
+    def aliases_for_symbol(self, symbol: str) -> Optional[list[str]]:
+        """Return unique aliases for the provided symbol across builds 37 and 38.
+
+        Args:
+            symbol (str): Gene symbol.
+
+        Returns:
+            Optional[list[str]]: Unique gene aliases, or None if no symbol is provided.
+        """
+        if symbol is None:
+            return None
+
+        return list(
+            dict.fromkeys(
+                alias
+                for build in ("37", "38")
+                for gene in self.gene_aliases(symbol, build)
+                for alias in gene.get("aliases", [])
+            )
+        )
+
     def gene_aliases(self, symbol, build="37"):
         """Return an iterable with hgnc_genes which have the provided symbol in the gene aliases
         Args:
