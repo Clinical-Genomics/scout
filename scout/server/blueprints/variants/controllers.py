@@ -1339,6 +1339,7 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
     Get generic rare disease variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
     """
+    LOG.error(variant_export_lines_rare)
     variant_line = []
 
     variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
@@ -1362,6 +1363,7 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     Get SV-specific variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
     """
+    LOG.error("IN variant_export_lines_sv")
     variant_line = []
     variant_line.append(variant.get("rank_score", "N/A"))
     variant_line.append("  ".join([f"{name}:{caller}" for name, caller in get_callers(variant)]))
@@ -1378,11 +1380,7 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     variant_line.append(change)
     variant_line.append("_".join([str(position), change]))
     variant_line.append(variant.get("sub_category").upper())
-    gene_list: List[dict] = variant.get("genes", [])
-    if gene_list:
-        gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
-        variant_line += gene_info
-
+    variant_line.append(", ".join(variant.get("hgnc_symbols", [])))
     return variant_line
 
 
@@ -1399,17 +1397,17 @@ def variant_export_lines(
     export_variants = []
 
     for variant in variants_query:
-        if variant.get("category") == "sv":
+        if variant.get("category") in ["sv", "cancer_sv"]:
             variant_line = variant_export_lines_sv(variant=variant, case_obj=case_obj)
         else:
             variant_line = variant_export_lines_common(store, variant, case_obj)
 
-            if category == "fusion":
-                variant_line.extend(variant_export_lines_fusion(variant, case_obj))
-            elif case_obj.get("track") == "cancer":
-                variant_line.extend(variant_export_lines_cancer(variant))
-            else:
-                variant_line.extend(variant_export_lines_rare(variant, case_obj))
+        if category == "fusion":
+            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
+        elif case_obj.get("track") == "cancer":
+            variant_line.extend(variant_export_lines_cancer(variant))
+        else:
+            variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
