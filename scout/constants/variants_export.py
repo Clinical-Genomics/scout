@@ -45,6 +45,19 @@ SV_MT_EXPORT_HEADER = [
     "Size" if header == "HGVS Description" else header for header in MT_EXPORT_HEADER
 ]
 
+SV_EXPORT_HEADER = [
+    "Rank_score",
+    "Callers",
+    "Chromosome",
+    "Position",
+    "End",
+    "Size",
+    "Change",
+    "Position+Change",
+    "Category",
+    "Genes",
+]
+
 MT_COV_STATS_HEADER = [
     "Mean MT coverage",
     "Mean chrom 14 coverage",

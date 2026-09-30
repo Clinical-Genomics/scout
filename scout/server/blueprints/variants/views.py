@@ -57,9 +57,9 @@ def form_builder(store, inst, case, cat, vtype):
     )
 
 
-def data_exporter(store, case, variants_query):
+def data_exporter(store, case_obj, variants_query, category):
     """Calls the variants exporter."""
-    return controllers.download_variants(store, case, variants_query)
+    return controllers.download_variants(store, case_obj, variants_query, category)
 
 
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])

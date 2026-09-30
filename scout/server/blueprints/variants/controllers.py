@@ -37,6 +37,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
     SPIDEX_HUMAN,
+    SV_EXPORT_HEADER,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.constants.filters import CLINICAL_FILTER_BASE_OUTLIER_METHYLATION
@@ -304,7 +305,9 @@ def render_variants_page(
     )
 
     if request.form.get("export"):
-        return data_exporter(store, case_obj, variants_query)
+        return data_exporter(
+            store=store, case_obj=case_obj, variants_query=variants_query, category=category
+        )
 
     args = [store, institute_obj, case_obj, variants_query, page]
     if category == "snv":
@@ -1354,6 +1357,35 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
     return variant_line
 
 
+def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
+    """
+    Get SV-specific variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+    variant_line.append(variant.get("rank_score", "N/A"))
+    variant_line.append("  ".join([f"{name}:{caller}" for name, caller in get_callers(variant)]))
+    variant_line.append(
+        variant["chromosome"]
+        if variant["chromosome"] == variant.get("end_chrom")
+        else f'{variant["chromosome"]}/{variant.get("end_chrom")}'
+    )
+    position = variant["position"]
+    variant_line.append(position)
+    variant_line.append(variant.get("end"))
+    variant_line.append(variant.get("length"))
+    change = variant["reference"] + ">" + variant["alternative"]
+    variant_line.append(change)
+    variant_line.append("_".join([str(position), change]))
+    variant_line.append(variant.get("sub_category").upper())
+    gene_list: List[dict] = variant.get("genes", [])
+    if gene_list:
+        gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
+        variant_line += gene_info
+
+    return variant_line
+
+
 def variant_export_lines(
     store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
 ) -> List[str]:
@@ -1367,14 +1399,17 @@ def variant_export_lines(
     export_variants = []
 
     for variant in variants_query:
-        variant_line = variant_export_lines_common(store, variant, case_obj)
-
-        if category == "fusion":
-            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
-        elif case_obj.get("track") == "cancer":
-            variant_line.extend(variant_export_lines_cancer(variant))
+        if variant.get("category") == "sv":
+            variant_line = variant_export_lines_sv(variant=variant, case_obj=case_obj)
         else:
-            variant_line.extend(variant_export_lines_rare(variant, case_obj))
+            variant_line = variant_export_lines_common(store, variant, case_obj)
+
+            if category == "fusion":
+                variant_line.extend(variant_export_lines_fusion(variant, case_obj))
+            elif case_obj.get("track") == "cancer":
+                variant_line.extend(variant_export_lines_cancer(variant))
+            else:
+                variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
@@ -1469,10 +1504,12 @@ def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
         header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
-
+    LOG.warning(category)
     header = []
     if category == "fusion":
         header = header + FUSION_EXPORT_HEADER
+    elif category == "sv":
+        header = header + SV_EXPORT_HEADER
     elif case_obj.get("track") == "cancer":
         header = header + CANCER_EXPORT_HEADER
     else:
