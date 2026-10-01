@@ -1358,26 +1358,22 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
 
 
 def variant_export_lines_sv(variant: dict) -> List[str]:
-    """
-    Get SV-specific variant info to be exported. Returns a list to be merged into a string
-    in suitable export format.
-    """
-    variant_line = []
-    variant_line.append(variant.get("rank_score", "N/A"))
-    variant_line.append(", ".join(variant.get("filters", [])))
-    variant_line.append(
-        variant["chromosome"]
-        if variant["chromosome"] == variant.get("end_chrom")
-        else f'{variant["chromosome"]}/{variant.get("end_chrom")}'
-    )
-    position = variant["position"]
-    variant_line.append(position)
-    variant_line.append(variant.get("end"))
-    variant_line.append(variant.get("sub_category").upper())
-    variant_line.append(variant.get("length"))
-    variant_line.append(variant["reference"] + ">" + variant["alternative"])
-    variant_line.append(", ".join(variant.get("hgnc_symbols", [])))
-    return variant_line
+    """Get SV-specific variant info to be exported."""
+
+    chromosome = variant["chromosome"]
+    end_chromosome = variant.get("end_chrom")
+
+    return [
+        variant.get("rank_score", "N/A"),
+        ", ".join(variant.get("filters", [])),
+        chromosome if chromosome == end_chromosome else f"{chromosome}/{end_chromosome}",
+        variant["position"],
+        variant.get("end"),
+        variant.get("sub_category").upper(),
+        variant.get("length"),
+        f'{variant["reference"]}>{variant["alternative"]}',
+        ", ".join(variant.get("hgnc_symbols", [])),
+    ]
 
 
 def variant_export_lines(
