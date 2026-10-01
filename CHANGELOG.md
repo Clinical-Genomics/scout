@@ -36,7 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Re-enable display of rank scores on cancer SVs (#6572)
 - Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form (#6575)
 - Color verification (Sanger) button according to status (#6586)
-- Improved the format and content of downloaded structural variant export files ()
+- Improved the format and content of downloaded structural variant export files (#6622)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
