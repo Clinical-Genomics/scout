@@ -47,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refresh ClinVar submissions after deprecating those with no type="germline" (#6584)
 - Automatically use genome build 38 for MT/M variants when determining the variant locus (#6598)
 - Fix coloring of CADD badges on missing value (#6608)
+- Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
 
 ## [4.114.1]
 ### Fixed
@@ -700,7 +701,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Downloading of Ensembl resources by fixing the URL to the schug server, pointing to the production instance instead of the staging one (#5348)
 - Missing MT genes from the IGV track (#5339)
 - Paraphase and de novo assembly tracks could mismatch alignment sample labels - refactor to case specific tracks (#5357)
-- Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
 
 ## [4.98]
 ### Added
