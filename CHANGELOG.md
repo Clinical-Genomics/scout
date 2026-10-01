@@ -700,7 +700,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Downloading of Ensembl resources by fixing the URL to the schug server, pointing to the production instance instead of the staging one (#5348)
 - Missing MT genes from the IGV track (#5339)
 - Paraphase and de novo assembly tracks could mismatch alignment sample labels - refactor to case specific tracks (#5357)
-- Aalignment index lookup when alignment is missing in str_variant_reviewer variant controller (#)
+- Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
 
 ## [4.98]
 ### Added
