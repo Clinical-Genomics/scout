@@ -1364,7 +1364,7 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     """
     variant_line = []
     variant_line.append(variant.get("rank_score", "N/A"))
-    variant_line.append("  ".join([f"{name}:{caller}" for name, caller in get_callers(variant)]))
+    variant_line.append(", ".join(variant.get("filters", [])))
     variant_line.append(
         variant["chromosome"]
         if variant["chromosome"] == variant.get("end_chrom")
@@ -1373,9 +1373,9 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     position = variant["position"]
     variant_line.append(position)
     variant_line.append(variant.get("end"))
+    variant_line.append(variant.get("sub_category").upper())
     variant_line.append(variant.get("length"))
     variant_line.append(variant["reference"] + ">" + variant["alternative"])
-    variant_line.append(variant.get("sub_category").upper())
     variant_line.append(", ".join(variant.get("hgnc_symbols", [])))
     return variant_line
 

@@ -21,9 +21,9 @@ SV_EXPORT_HEADER = [
     "Chromosome",
     "Position",
     "End",
+    "Category",
     "Size",
     "Change",
-    "Category",
     "Genes",
 ]
 
