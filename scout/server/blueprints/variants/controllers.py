@@ -1377,7 +1377,7 @@ def variant_export_lines_sv(variant: dict) -> List[str]:
 
 
 def variant_export_lines(
-    store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variants_query: Iterable, category: Optional[str] = None
 ) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant."""
 
