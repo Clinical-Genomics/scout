@@ -1384,17 +1384,19 @@ def variant_export_lines(
     export_variants = []
 
     for variant in variants_query:
-        if variant.get("category") in ("sv", "cancer_sv"):
-            variant_line = variant_export_lines_sv(variant=variant)
-        else:
-            variant_line = variant_export_lines_common(store, variant, case_obj)
+        match variant.get("category"):
+            case "sv" | "cancer_sv":
+                variant_line = variant_export_lines_sv(variant=variant)
+            case _:
+                variant_line = variant_export_lines_common(store, variant, case_obj)
 
-        if category == "fusion":
-            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
-        elif category == "cancer":
-            variant_line.extend(variant_export_lines_cancer(variant))
-        else:
-            variant_line.extend(variant_export_lines_rare(variant, case_obj))
+        match category:
+            case "fusion":
+                variant_line.extend(variant_export_lines_fusion(variant, case_obj))
+            case "cancer":
+                variant_line.extend(variant_export_lines_cancer(variant))
+            case _:
+                variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         export_variants.append(",".join(map(str, variant_line)))
 
@@ -1482,14 +1484,15 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 def variants_export_header(case_obj: dict, category: str) -> List[str]:
     """Returns a header for the CSV file with the filtered variants to be exported."""
 
-    if category == "fusion":
-        header = FUSION_EXPORT_HEADER.copy()
-    elif category in ["sv", "cancer_sv"]:
-        header = SV_EXPORT_HEADER.copy()
-    elif category == "cancer":
-        header = CANCER_EXPORT_HEADER.copy()
-    else:
-        header = EXPORT_HEADER.copy()
+    match category:
+        case "fusion":
+            header = FUSION_EXPORT_HEADER.copy()
+        case "sv" | "cancer_sv":
+            header = SV_EXPORT_HEADER.copy()
+        case "cancer":
+            header = CANCER_EXPORT_HEADER.copy()
+        case _:
+            header = EXPORT_HEADER.copy()
 
     if category not in ("fusion", "cancer"):
         for individual in case_obj["individuals"]:
