@@ -1483,20 +1483,19 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     return gene_info
 
 
-def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
+def variants_export_header(case_obj: dict, category: str) -> List[str]:
     """Returns a header for the CSV file with the filtered variants to be exported."""
 
     if category == "fusion":
         header = FUSION_EXPORT_HEADER.copy()
     elif category in ["sv", "cancer_sv"]:
         header = SV_EXPORT_HEADER.copy()
-    elif category in ["cancer"]:
+    elif category == "cancer":
         header = CANCER_EXPORT_HEADER.copy()
     else:
         header = EXPORT_HEADER.copy()
 
-    if category not in ("cancer", "fusion"):
-        print(repr(category))
+    if category != "fusion":
         for individual in case_obj["individuals"]:
             display_name = str(individual["display_name"])
             header.extend(
