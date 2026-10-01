@@ -1357,7 +1357,7 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
     return variant_line
 
 
-def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
+def variant_export_lines_sv(variant: dict) -> List[str]:
     """
     Get SV-specific variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
@@ -1389,7 +1389,7 @@ def variant_export_lines(
 
     for variant in variants_query:
         if variant.get("category") in ("sv", "cancer_sv"):
-            variant_line = variant_export_lines_sv(variant=variant, case_obj=case_obj)
+            variant_line = variant_export_lines_sv(variant=variant)
         else:
             variant_line = variant_export_lines_common(store, variant, case_obj)
 
