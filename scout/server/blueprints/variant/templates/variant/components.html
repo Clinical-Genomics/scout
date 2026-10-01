@@ -55,7 +55,7 @@
 {% macro acmg_classification_item(variant, data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
-    <div class="d-flex">
+    <div class="d-flex align-items-baseline gap-1">
       <span>
         <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
