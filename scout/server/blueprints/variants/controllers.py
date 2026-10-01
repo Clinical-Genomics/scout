@@ -1387,6 +1387,8 @@ def variant_export_lines(
 
     export_variants = []
 
+    LOG.error(category)
+
     for variant in variants_query:
         if variant.get("category") in ("sv", "cancer_sv"):
             variant_line = variant_export_lines_sv(variant=variant)
@@ -1495,7 +1497,7 @@ def variants_export_header(case_obj: dict, category: str) -> List[str]:
     else:
         header = EXPORT_HEADER.copy()
 
-    if category != "fusion":
+    if category not in ("fusion", "cancer"):
         for individual in case_obj["individuals"]:
             display_name = str(individual["display_name"])
             header.extend(

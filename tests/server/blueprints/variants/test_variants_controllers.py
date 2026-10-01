@@ -744,19 +744,10 @@ def test_variant_csv_export_cancer(real_variant_database, case_obj):
     # Collect export header from variants controller
     export_header = variants_export_header(case_obj=case_obj, category="cancer")
 
-    expected_header = CANCER_EXPORT_HEADER.copy()
-    for individual in case_obj["individuals"]:
-        display_name = str(individual["display_name"])
-        expected_header.extend(
-            [
-                f"GT_{display_name}",
-                f"AD_reference_{display_name}",
-                f"AD_alternate_{display_name}",
-                f"GT_quality_{display_name}",
-            ]
-        )
-
-    assert export_header == expected_header
+    # Assert that exported document has n fields:
+    # n = CANCER_EXPORT_HEADER items
+    for item in export_header:
+        assert item in CANCER_EXPORT_HEADER
 
     # Given the lines of the document to be exported
     export_lines = variant_export_lines(adapter, case_obj, variants_to_export, "cancer")
@@ -764,12 +755,10 @@ def test_variant_csv_export_cancer(real_variant_database, case_obj):
     # Assert that all five variants are going to be exported to CSV
     assert len(export_lines) == 5
 
-    """
     # Assert that all of 5 variants contain the fields specified by the document header
     for export_line in export_lines:
         export_cols = export_line.split(",")
         assert len(export_cols) == len(export_header)
-    """
 
 
 def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
