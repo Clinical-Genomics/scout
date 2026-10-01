@@ -726,8 +726,8 @@ def str_variant_reviewer(
 
         if ind_reviewer.get("alignment_index"):
             srs_query_data["reads_index"] = ind_reviewer.get("alignment_index")
-        elif os.path.exists(ind_reviewer.get("alignment") + ".bai"):
-            srs_query_data["reads_index"] = f"{ind_reviewer.get('alignment')}.bai"
+        elif ind_reviewer.get("alignment") and os.path.exists(ind_reviewer["alignment"] + ".bai"):
+            srs_query_data["reads_index"] = f"{ind_reviewer['alignment']}.bai"
 
         try:
             resp = requests.post(url, json=srs_query_data)
