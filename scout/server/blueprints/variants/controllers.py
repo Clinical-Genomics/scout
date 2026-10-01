@@ -1362,7 +1362,6 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     Get SV-specific variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
     """
-    LOG.error("IN variant_export_lines_sv")
     variant_line = []
     variant_line.append(variant.get("rank_score", "N/A"))
     variant_line.append("  ".join([f"{name}:{caller}" for name, caller in get_callers(variant)]))
@@ -1384,30 +1383,24 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
 def variant_export_lines(
     store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
 ) -> List[str]:
-    """Get variants info to be exported to file, one list (line) per variant.
-
-    Returns:
-        export_variants: a list of strings. Each string  of the list corresponding to the fields
-                         of a variant to be exported to file, separated by comma.
-    """
+    """Get variants info to be exported to file, one list (line) per variant."""
 
     export_variants = []
 
     for variant in variants_query:
-        if variant.get("category") in ["sv", "cancer_sv"]:
+        if variant.get("category") in ("sv", "cancer_sv"):
             variant_line = variant_export_lines_sv(variant=variant, case_obj=case_obj)
         else:
             variant_line = variant_export_lines_common(store, variant, case_obj)
 
         if category == "fusion":
             variant_line.extend(variant_export_lines_fusion(variant, case_obj))
-        elif case_obj.get("track") == "cancer":
+        elif category == "cancer":
             variant_line.extend(variant_export_lines_cancer(variant))
         else:
             variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
-        variant_line = [str(i) for i in variant_line]
-        export_variants.append(",".join(variant_line))
+        export_variants.append(",".join(map(str, variant_line)))
 
     return export_variants
 
@@ -1491,32 +1484,29 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 
 
 def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
-    """Returns a header for the CSV file with the filtered variants to be exported.
-    Args:
-        case_obj(scout.models.Case)
-        category: Variant category to prepare export for e.g. "fusion"
-    Returns:
-        header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
-                + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
-    """
-    LOG.warning(category)
-    header = []
-    if category == "fusion":
-        header = header + FUSION_EXPORT_HEADER
-    elif category == "sv":
-        header = header + SV_EXPORT_HEADER
-    elif case_obj.get("track") == "cancer":
-        header = header + CANCER_EXPORT_HEADER
-    else:
-        header = header + EXPORT_HEADER
+    """Returns a header for the CSV file with the filtered variants to be exported."""
 
-    # Add fields specific for case samples
-    for individual in case_obj["individuals"]:
-        display_name = str(individual["display_name"])
-        header.append("GT_" + display_name)  # Add Genotype filed for a sample
-        header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-        header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-        header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+    if category == "fusion":
+        header = FUSION_EXPORT_HEADER.copy()
+    elif category in ["sv", "cancer_sv"]:
+        header = SV_EXPORT_HEADER.copy()
+    elif category in ["cancer"]:
+        header = CANCER_EXPORT_HEADER.copy()
+    else:
+        header = EXPORT_HEADER.copy()
+
+    if category not in ("cancer", "fusion"):
+        print(repr(category))
+        for individual in case_obj["individuals"]:
+            display_name = str(individual["display_name"])
+            header.extend(
+                [
+                    f"GT_{display_name}",
+                    f"AD_reference_{display_name}",
+                    f"AD_alternate_{display_name}",
+                    f"GT_quality_{display_name}",
+                ]
+            )
 
     return header
 
