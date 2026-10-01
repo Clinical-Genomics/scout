@@ -15,6 +15,18 @@ EXPORT_HEADER = [
     "GnomAD AF",
 ]
 
+SV_EXPORT_HEADER = [
+    "Rank_score",
+    "Callers",
+    "Chromosome",
+    "Position",
+    "End",
+    "Size",
+    "Change",
+    "Category",
+    "Genes",
+]
+
 CANCER_EXPORT_HEADER = EXPORT_HEADER + ["VAF TUMOR", "VAF NORMAL", "COSMIC ID"]
 
 FUSION_EXPORT_HEADER = EXPORT_HEADER + [
@@ -43,19 +55,6 @@ MT_EXPORT_HEADER = [
 
 SV_MT_EXPORT_HEADER = [
     "Size" if header == "HGVS Description" else header for header in MT_EXPORT_HEADER
-]
-
-SV_EXPORT_HEADER = [
-    "Rank_score",
-    "Callers",
-    "Chromosome",
-    "Position",
-    "End",
-    "Size",
-    "Change",
-    "Position+Change",
-    "Category",
-    "Genes",
 ]
 
 MT_COV_STATS_HEADER = [

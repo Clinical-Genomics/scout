@@ -1339,7 +1339,6 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
     Get generic rare disease variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
     """
-    LOG.error(variant_export_lines_rare)
     variant_line = []
 
     variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
@@ -1376,9 +1375,7 @@ def variant_export_lines_sv(variant: dict, case_obj: dict) -> List[str]:
     variant_line.append(position)
     variant_line.append(variant.get("end"))
     variant_line.append(variant.get("length"))
-    change = variant["reference"] + ">" + variant["alternative"]
-    variant_line.append(change)
-    variant_line.append("_".join([str(position), change]))
+    variant_line.append(variant["reference"] + ">" + variant["alternative"])
     variant_line.append(variant.get("sub_category").upper())
     variant_line.append(", ".join(variant.get("hgnc_symbols", [])))
     return variant_line
@@ -1512,13 +1509,14 @@ def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
         header = header + CANCER_EXPORT_HEADER
     else:
         header = header + EXPORT_HEADER
-        # Add fields specific for case samples
-        for individual in case_obj["individuals"]:
-            display_name = str(individual["display_name"])
-            header.append("GT_" + display_name)  # Add Genotype filed for a sample
-            header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-            header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-            header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+
+    # Add fields specific for case samples
+    for individual in case_obj["individuals"]:
+        display_name = str(individual["display_name"])
+        header.append("GT_" + display_name)  # Add Genotype filed for a sample
+        header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
+        header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
+        header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
 
     return header
 
