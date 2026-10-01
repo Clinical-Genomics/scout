@@ -1383,8 +1383,6 @@ def variant_export_lines(
 
     export_variants = []
 
-    LOG.error(category)
-
     for variant in variants_query:
         if variant.get("category") in ("sv", "cancer_sv"):
             variant_line = variant_export_lines_sv(variant=variant)
