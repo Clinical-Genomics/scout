@@ -1366,7 +1366,7 @@ def variant_export_lines_sv(variant: dict) -> List[str]:
     return [
         variant.get("rank_score", "N/A"),
         ", ".join(variant.get("filters", [])),
-        chromosome if chromosome == end_chromosome else f"{chromosome}/{end_chromosome}",
+        chromosome if chromosome == end_chromosome else f"{chromosome}::{end_chromosome}",
         variant["position"],
         variant.get("end"),
         variant.get("sub_category").upper(),
