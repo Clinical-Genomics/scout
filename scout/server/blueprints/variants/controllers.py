@@ -2,7 +2,7 @@ import decimal
 import io
 import logging
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
