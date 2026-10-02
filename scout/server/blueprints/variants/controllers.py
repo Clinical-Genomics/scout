@@ -2,7 +2,7 @@ import decimal
 import io
 import logging
 import re
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from flask import Response, flash, request, session, url_for
 from flask_login import current_user
@@ -37,6 +37,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
     SPIDEX_HUMAN,
+    SV_EXPORT_HEADER,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.constants.filters import CLINICAL_FILTER_BASE_OUTLIER_METHYLATION
@@ -304,7 +305,9 @@ def render_variants_page(
     )
 
     if request.form.get("export"):
-        return data_exporter(store, case_obj, variants_query)
+        return data_exporter(
+            store=store, case_obj=case_obj, variants_query=variants_query, category=category
+        )
 
     args = [store, institute_obj, case_obj, variants_query, page]
     if category == "snv":
@@ -1354,30 +1357,48 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
     return variant_line
 
 
-def variant_export_lines(
-    store: MongoAdapter, case_obj: dict, variants_query: Cursor, category: Optional[str] = None
-) -> List[str]:
-    """Get variants info to be exported to file, one list (line) per variant.
+def variant_export_lines_sv(variant: dict) -> List[str]:
+    """Get SV-specific variant info to be exported."""
 
-    Returns:
-        export_variants: a list of strings. Each string  of the list corresponding to the fields
-                         of a variant to be exported to file, separated by comma.
-    """
+    chromosome = variant["chromosome"]
+    end_chromosome = variant.get("end_chrom")
+
+    return [
+        variant.get("rank_score", "N/A"),
+        ", ".join(variant.get("filters", [])),
+        chromosome if chromosome == end_chromosome else f"{chromosome}::{end_chromosome}",
+        variant["position"],
+        variant.get("end"),
+        variant.get("sub_category").upper(),
+        variant.get("length"),
+        f'{variant["reference"]}>{variant["alternative"]}',
+        ", ".join(variant.get("hgnc_symbols", [])),
+    ]
+
+
+def variant_export_lines(
+    store: MongoAdapter, case_obj: dict, variants_query: Iterable, category: str
+) -> List[str]:
+    """Get variants info to be exported to file, one list (line) per variant."""
 
     export_variants = []
 
     for variant in variants_query:
-        variant_line = variant_export_lines_common(store, variant, case_obj)
+        match category:
+            case "sv" | "cancer_sv":
+                variant_line = variant_export_lines_sv(variant)
+                variant_line.extend(variant_export_lines_rare(variant, case_obj))
+            case "fusion":
+                variant_line = variant_export_lines_common(store, variant, case_obj)
+                variant_line.extend(variant_export_lines_fusion(variant, case_obj))
+            case "cancer":
+                variant_line = variant_export_lines_common(store, variant, case_obj)
+                variant_line.extend(variant_export_lines_cancer(variant))
+            case _:
+                variant_line = variant_export_lines_common(store, variant, case_obj)
+                variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
-        if category == "fusion":
-            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
-        elif case_obj.get("track") == "cancer":
-            variant_line.extend(variant_export_lines_cancer(variant))
-        else:
-            variant_line.extend(variant_export_lines_rare(variant, case_obj))
-
-        variant_line = [str(i) for i in variant_line]
-        export_variants.append(",".join(variant_line))
+        export_variants.append(",".join(map(str, variant_line)))
 
     return export_variants
 
@@ -1460,30 +1481,30 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     return gene_info
 
 
-def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
-    """Returns a header for the CSV file with the filtered variants to be exported.
-    Args:
-        case_obj(scout.models.Case)
-        category: Variant category to prepare export for e.g. "fusion"
-    Returns:
-        header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
-                + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
-    """
+def variants_export_header(case_obj: dict, category: str) -> List[str]:
+    """Returns a header for the CSV file with the filtered variants to be exported."""
 
-    header = []
-    if category == "fusion":
-        header = header + FUSION_EXPORT_HEADER
-    elif case_obj.get("track") == "cancer":
-        header = header + CANCER_EXPORT_HEADER
-    else:
-        header = header + EXPORT_HEADER
-        # Add fields specific for case samples
+    match category:
+        case "fusion":
+            header = FUSION_EXPORT_HEADER.copy()
+        case "sv" | "cancer_sv":
+            header = SV_EXPORT_HEADER.copy()
+        case "cancer":
+            header = CANCER_EXPORT_HEADER.copy()
+        case _:
+            header = EXPORT_HEADER.copy()
+
+    if category not in ("fusion", "cancer"):
         for individual in case_obj["individuals"]:
             display_name = str(individual["display_name"])
-            header.append("GT_" + display_name)  # Add Genotype filed for a sample
-            header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-            header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-            header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+            header.extend(
+                [
+                    f"GT_{display_name}",
+                    f"AD_reference_{display_name}",
+                    f"AD_alternate_{display_name}",
+                    f"GT_quality_{display_name}",
+                ]
+            )
 
     return header
 
