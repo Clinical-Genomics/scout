@@ -234,7 +234,7 @@ wheels = [
 
 [[package]]
 name = "chanjo"
-version = "4.9.1"
+version = "4.9.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -244,19 +244,19 @@ dependencies = [
     { name = "importlib-resources" },
     { name = "pymysql" },
     { name = "pyyaml" },
-    { name = "sqlalchemy" },
+    { name = "sqlalchemy", extra = ["asyncio"] },
     { name = "sqlservice" },
     { name = "toolz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f8/eb/6e033e4e0649b26284f325bb76c0bbf771a1fb429e76df516ad6a826315c/chanjo-4.9.1.tar.gz", hash = "sha256:68a682e14097699f122b2add3a4ce3011eeed22739f9a03921bb8ffabf704261", size = 371811, upload-time = "2026-05-08T08:06:32.399Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/ba/a5d59033b183f7364a8389a7c7ae9d064725edb439325e8cd2ee99834214/chanjo-4.9.2.tar.gz", hash = "sha256:fa61e398d63140ddd4637c5107ce0b107fb55ac2ea944271e869cb99a2805d7b", size = 371869, upload-time = "2026-10-02T09:05:47.751Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/3d/d70ccb9e05ade50bb59f28f655c0ea9cc76c77d0e0c7ce4bb603c3f13366/chanjo-4.9.1-py2.py3-none-any.whl", hash = "sha256:b8c888f8444db353067f87364b9ab18b398840972e0bb3c5e21d68ba15dbf10e", size = 45800, upload-time = "2026-05-08T08:06:31.333Z" },
+    { url = "https://files.pythonhosted.org/packages/22/db/54557c0bf4d0a144c4c0d839516e1b685b8c03179ad62ba97713d7493eda/chanjo-4.9.2-py2.py3-none-any.whl", hash = "sha256:0312a17dc3b0ca1be28ff92081c6d75ae8e739a513dd2a8418187b6ad69c2299", size = 45781, upload-time = "2026-10-02T09:05:46.72Z" },
 ]
 
 [[package]]
 name = "chanjo-report"
 version = "4.12.2"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix#b8da0d40af7b8dfc46c7fba3f6162e1b6f69973f" }
 dependencies = [
     { name = "chanjo" },
     { name = "cryptography" },
@@ -274,10 +274,6 @@ dependencies = [
     { name = "tabulate" },
     { name = "toml" },
     { name = "toolz" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/82/4b/c3a3a43d3705abf37fd58548d1643fe4624a0d89b553e56707370cb4796e/chanjo_report-4.12.2.tar.gz", hash = "sha256:88433d3f93d7b16c644a688ff8083fdc244d0415c79bf654d4ebf594ee715953", size = 36580, upload-time = "2026-05-08T12:53:36.31Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/c8/f095343b5a8659f68308ca1b374222ab4d3a4ef6e9d798d892c8a03ee093/chanjo_report-4.12.2-py2.py3-none-any.whl", hash = "sha256:498374272c84a1ea6bacf2a6c0b939225639f5f83b3079285c729fdb61a51eba", size = 26852, upload-time = "2026-05-08T12:53:35.208Z" },
 ]
 
 [[package]]
@@ -751,7 +747,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -2532,8 +2528,8 @@ lint = [
 requires-dist = [
     { name = "anytree" },
     { name = "authlib" },
-    { name = "chanjo-report", specifier = ">=4.12.2" },
-    { name = "chanjo-report", marker = "extra == 'coverage'" },
+    { name = "chanjo-report", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix" },
+    { name = "chanjo-report", marker = "extra == 'coverage'", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix" },
     { name = "click" },
     { name = "coloredlogs" },
     { name = "configobj" },
@@ -2672,6 +2668,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/96/d7/8ac6ffa1e36169e762ef65bd835046abb2251b1bc17f8f6708e14ed8d31f/sqlalchemy-2.0.52-cp314-cp314-win_amd64.whl", hash = "sha256:a593db51b3bae75db17a5738ad5f992244b3a03863f83c28117ee482c6a3f76d", size = 2156718, upload-time = "2026-08-11T21:14:58.667Z" },
     { url = "https://files.pythonhosted.org/packages/dc/4b/e01a737eef378e734cc6394a82248a6ce13b167dfa36c731075ce9fc9c64/sqlalchemy-2.0.52-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:c1e61d08bdf4ee2f41024569e3400de7d6734ba498144766b11260936ccfa582", size = 2190344, upload-time = "2026-08-11T19:53:21.393Z" },
     { url = "https://files.pythonhosted.org/packages/b3/3f/3582293d1e185e71d19d7c731c3e2ee20ba21981c4a1115c0806c1f62120/sqlalchemy-2.0.52-py3-none-any.whl", hash = "sha256:3b81b8363a919ce53453591cdb93702e6bd54ade6c4fa2f468fc053baee5ed89", size = 1950700, upload-time = "2026-08-11T20:47:21.603Z" },
+]
+
+[package.optional-dependencies]
+asyncio = [
+    { name = "greenlet" },
 ]
 
 [[package]]

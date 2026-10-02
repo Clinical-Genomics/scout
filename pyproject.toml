@@ -74,7 +74,7 @@ dependencies = [
 	# Required by scripts
 	"tabulate",
 	"flask-ldap3-login>=1.0.2",
-	"chanjo-report @ git+https://github.com/Clinical-Genomics/chanjo-report.git@chanjo_sqlalch_fix",
+	"chanjo-report",
 ]
 
 [project.optional-dependencies]
@@ -83,7 +83,6 @@ coverage=[
             "pymysql",
 			"python-dateutil",
         ]
-
 
 [project.urls]
 Repository = "https://github.com/Clinical-Genomics/scout"
@@ -126,6 +125,8 @@ profile = "black"
 
 [tool.uv.sources]
 flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
+chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "chanjo_sqlalch_fix" }
+
 
 [dependency-groups]
 dev = [
