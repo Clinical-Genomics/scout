@@ -256,7 +256,7 @@ wheels = [
 [[package]]
 name = "chanjo-report"
 version = "4.12.2"
-source = { git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix#b8da0d40af7b8dfc46c7fba3f6162e1b6f69973f" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "chanjo" },
     { name = "cryptography" },
@@ -274,6 +274,10 @@ dependencies = [
     { name = "tabulate" },
     { name = "toml" },
     { name = "toolz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/82/4b/c3a3a43d3705abf37fd58548d1643fe4624a0d89b553e56707370cb4796e/chanjo_report-4.12.2.tar.gz", hash = "sha256:88433d3f93d7b16c644a688ff8083fdc244d0415c79bf654d4ebf594ee715953", size = 36580, upload-time = "2026-05-08T12:53:36.31Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/c8/f095343b5a8659f68308ca1b374222ab4d3a4ef6e9d798d892c8a03ee093/chanjo_report-4.12.2-py2.py3-none-any.whl", hash = "sha256:498374272c84a1ea6bacf2a6c0b939225639f5f83b3079285c729fdb61a51eba", size = 26852, upload-time = "2026-05-08T12:53:35.208Z" },
 ]
 
 [[package]]
@@ -2528,8 +2532,8 @@ lint = [
 requires-dist = [
     { name = "anytree" },
     { name = "authlib" },
-    { name = "chanjo-report", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix" },
-    { name = "chanjo-report", marker = "extra == 'coverage'", git = "https://github.com/Clinical-Genomics/chanjo-report.git?rev=chanjo_sqlalch_fix" },
+    { name = "chanjo-report" },
+    { name = "chanjo-report", marker = "extra == 'coverage'" },
     { name = "click" },
     { name = "coloredlogs" },
     { name = "configobj" },

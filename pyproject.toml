@@ -125,8 +125,6 @@ profile = "black"
 
 [tool.uv.sources]
 flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
-chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "chanjo_sqlalch_fix" }
-
 
 [dependency-groups]
 dev = [
