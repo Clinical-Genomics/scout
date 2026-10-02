@@ -1377,25 +1377,25 @@ def variant_export_lines_sv(variant: dict) -> List[str]:
 
 
 def variant_export_lines(
-    store: MongoAdapter, case_obj: dict, variants_query: Iterable, category: Optional[str] = None
+    store: MongoAdapter, case_obj: dict, variants_query: Iterable, category: str
 ) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant."""
 
     export_variants = []
 
     for variant in variants_query:
-        match variant.get("category"):
-            case "sv" | "cancer_sv":
-                variant_line = variant_export_lines_sv(variant=variant)
-            case _:
-                variant_line = variant_export_lines_common(store, variant, case_obj)
-
         match category:
+            case "sv" | "cancer_sv":
+                variant_line = variant_export_lines_sv(variant)
+                variant_line.extend(variant_export_lines_rare(variant, case_obj))
             case "fusion":
+                variant_line = variant_export_lines_common(store, variant, case_obj)
                 variant_line.extend(variant_export_lines_fusion(variant, case_obj))
             case "cancer":
+                variant_line = variant_export_lines_common(store, variant, case_obj)
                 variant_line.extend(variant_export_lines_cancer(variant))
             case _:
+                variant_line = variant_export_lines_common(store, variant, case_obj)
                 variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         export_variants.append(",".join(map(str, variant_line)))
