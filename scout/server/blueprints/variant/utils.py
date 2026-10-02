@@ -643,7 +643,6 @@ def get_callers(variant_obj: dict) -> List[Tuple]:
     for caller in CALLERS[category]:
         if variant_obj.get(caller["id"]):
             calls.add((caller["name"], variant_obj[caller["id"]]))
-
     return list(calls)
 
 
