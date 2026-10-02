@@ -2,11 +2,13 @@
 
 import io
 import logging
+from typing import Iterable
 
 from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
+from scout.adapter import MongoAdapter
 from scout.constants import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
@@ -57,9 +59,9 @@ def form_builder(store, inst, case, cat, vtype):
     )
 
 
-def data_exporter(store, case, variants_query):
+def data_exporter(store: MongoAdapter, case_obj: dict, variants_query: Iterable, category: str):
     """Calls the variants exporter."""
-    return controllers.download_variants(store, case, variants_query)
+    return controllers.download_variants(store, case_obj, variants_query, category)
 
 
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
