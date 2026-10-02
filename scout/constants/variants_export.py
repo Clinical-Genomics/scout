@@ -15,6 +15,18 @@ EXPORT_HEADER = [
     "GnomAD AF",
 ]
 
+SV_EXPORT_HEADER = [
+    "Rank_score",
+    "Callers",
+    "Chromosome",
+    "Position",
+    "End",
+    "Category",
+    "Size",
+    "Change",
+    "Genes",
+]
+
 CANCER_EXPORT_HEADER = EXPORT_HEADER + ["VAF TUMOR", "VAF NORMAL", "COSMIC ID"]
 
 FUSION_EXPORT_HEADER = EXPORT_HEADER + [
