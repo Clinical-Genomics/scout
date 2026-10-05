@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from typing import List, Tuple, Union
 
-from flask import flash, request
+from flask import flash
 from flask_login import current_user
 from pydantic_core._pydantic_core import ValidationError
 from werkzeug.datastructures import ImmutableMultiDict
