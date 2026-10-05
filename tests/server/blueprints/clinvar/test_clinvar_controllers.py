@@ -91,6 +91,7 @@ def test_parse_chromosome_coordinates_uses_approximate_coordinates():
 
 
 def test_parse_variant_set_multiple_gene_symbols():
+    """Parse multiple comma-separated gene symbols into a gene array."""
     subm_item = {}
     form = ImmutableMultiDict(
         {
