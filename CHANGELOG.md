@@ -51,6 +51,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Automatically use genome build 38 for MT/M variants when determining the variant locus (#6598)
 - Fix coloring of CADD badges on missing value (#6608)
 - Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
+- Genes with short names (two characters) are also searchable using autocomplete on the case and panels pages (#6632)
 
 ## [4.114.1]
 ### Fixed
