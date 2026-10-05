@@ -1,6 +1,9 @@
 from werkzeug.datastructures import ImmutableMultiDict
 
-from scout.server.blueprints.clinvar.controllers import parse_chromosome_coordinates
+from scout.server.blueprints.clinvar.controllers import (
+    _parse_variant_set,
+    parse_chromosome_coordinates,
+)
 
 
 def test_parse_chromosome_coordinates():
@@ -85,3 +88,22 @@ def test_parse_chromosome_coordinates_uses_approximate_coordinates():
         "outerStop": 54963300,
         "variantLength": 61,
     }
+
+
+def test_parse_variant_set_multiple_gene_symbols():
+    subm_item = {}
+    form = ImmutableMultiDict(
+        {
+            "tx_hgvs": "NM_000059.4:c.1A>G",
+            "assembly": "GRCh38",
+            "gene_symbol": "BRCA1, BRCA2, TP53",
+        }
+    )
+
+    _parse_variant_set(subm_item, form)
+
+    assert subm_item["variantSet"]["variant"][0]["gene"] == [
+        {"symbol": "BRCA1"},
+        {"symbol": "BRCA2"},
+        {"symbol": "TP53"},
+    ]
