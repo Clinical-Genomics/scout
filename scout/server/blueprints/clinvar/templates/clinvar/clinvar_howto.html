@@ -28,9 +28,9 @@
 
             <b>Please note that this is only a basic, local validation. The actual validation and processing of the submission is performed by the ClinVar portal and is not immediately available</b>.<br>
 
-            After submitting, wait for some time and then click the "Submission status enquiry" button to check the processing status in ClinVar. Scout will display a message indicating whether the submission was processed successfully or resulted in an error.
+            After submitting, wait for some time and then click the "Submission status enquiry" button to check the processing status in ClinVar. Scout will display a message indicating whether the submission was processed successfully or resulted in an error. <br><br>
 
-              <img width="332" alt="Submission status enquiry button" src="{{ url_for('static', filename='img/clinvar_status.png') }}">
+              <img width="400" alt="Submission status enquiry button" src="{{ url_for('clinvar.static', filename='clinvar/clinvar_status.png') }}"><br><br>
 
             If ClinVar reports an error, the message may also contain a link to a file provided by ClinVar with additional details about the error. This file can be downloaded and used to investigate and correct the submission.
 
