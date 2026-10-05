@@ -1,5 +1,4 @@
 {% macro clinvar_howto_modal() %}
-
 <div class="modal fade" id="howto" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
@@ -24,6 +23,17 @@
               <img width="264" alt="image" src="https://user-images.githubusercontent.com/28093618/208666318-0efac91e-c5d2-42a0-9ceb-d7fc68c6d920.png"><br><br>
 
             If the submission object is processed without errors then it will be marked as "submitted" in Scout, otherwise eventual validation errors should be displayed on top of the page.<br><br>
+
+            If the submission object is processed without errors, it will be marked as "submitted" in Scout. Any validation errors detected by Scout's local validation will be displayed at the top of the page.
+
+            <b>Please note that this is only a basic, local validation. The actual validation and processing of the submission is performed by the ClinVar portal and is not immediately available</b>.<br>
+
+            After submitting, wait for some time and then click the "Submission status enquiry" button to check the processing status in ClinVar. Scout will display a message indicating whether the submission was processed successfully or resulted in an error.
+
+              <img width="329" height="51" alt="Image" src="https://github.com/user-attachments/assets/0cce5756-9b05-400d-9178-cac48fad4092" />
+
+            If ClinVar reports an error, the message may also contain a link to a file provided by ClinVar with additional details about the error. This file can be downloaded and used to investigate and correct the submission.
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

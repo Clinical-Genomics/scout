@@ -22,7 +22,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.9 (#6539, #6566, #6590) - fixes rare bug with TLEN coloring
-- Temporarily deactivated the submission of SVs to ClinVar using the API (#5994)
 - Refactored ClinVar germline submissions to be compliant to the changes introduced by the ClinVar API: `clinvarSubmission` -> `germlineSubmission` (#5994)
 - Old ClinVar germline submissions become automatically deprecated. They can be viewed but not submitted to ClinVar (#5994)
 - Temporarily removed button `Delete submission from ClinVar` (based on the deprecated preClinVar software) to be replaced with a direct request to the ClinVar API instead (#5994)
@@ -37,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form (#6575)
 - Color verification (Sanger) button according to status (#6586)
 - Improved the format and content of downloaded structural variant export files (#6622)
+- Improved ClinVar howto by adding the description of the submission status enquiry button ()
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
 - Prevent duplicate rank model insertion in `add_rank_model` function (#6535)
