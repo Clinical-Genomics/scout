@@ -504,6 +504,9 @@
                                          variant_id=variant._id) }}"
                       method="POST" accept-charset="utf-8">
                   <select class="form-control form-control-sm sanger-select" onchange="updateSangerColor(this); this.form.submit()" name="type">
+                    <option value="" {% if not variant.validation %}selected{% endif %}>
+                      Verify variant...
+                    </option>
                     {% for type in sanger_options %}
                       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
                     {% endfor %}
