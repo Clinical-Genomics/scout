@@ -50,6 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix coloring of CADD badges on missing value (#6608)
 - Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
 - Genes with short names (two characters) are also searchable using autocomplete on the case and panels pages (#6632)
+- Gene column in export files of multigenic variants (#6635)
 - Set variant's ACMG classification to latest remaining classification when one classification is removed (#6579)
 
 ## [4.114.1]
