@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from typing import List, Tuple, Union
 
-from flask import flash, request
+from flask import flash
 from flask_login import current_user
 from pydantic_core._pydantic_core import ValidationError
 from werkzeug.datastructures import ImmutableMultiDict
@@ -352,7 +352,11 @@ def _parse_variant_set(subm_item: dict, form: ImmutableMultiDict):
         variant["copyNumber"] = form["ncopy"]
 
     if form.get("gene_symbol"):
-        variant["gene"] = [{"symbol": form["gene_symbol"]}]
+        variant["gene"] = [
+            {"symbol": symbol.strip()}
+            for symbol in form["gene_symbol"].split(",")
+            if symbol.strip()
+        ]
 
     if form.get("category") == "sv":
         variant["variantType"] = form.get("var_type")
