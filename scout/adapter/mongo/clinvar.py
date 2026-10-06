@@ -253,13 +253,14 @@ class ClinVarHandler(object):
             query["clinvar_subm_id"] = {REGEX: re.escape(subm_id.strip())}
 
         if gene_symbol_aliases:
+            gene_pattern = "|".join(re.escape(alias) for alias in gene_symbol_aliases)
             if type == "germline":
                 query["germlineSubmission.variantSet.variant.gene.symbol"] = {
-                    "$in": gene_symbol_aliases
+                    "$regex": rf"(^|,)({gene_pattern})(,|$)"
                 }
             else:
                 query["oncogenicitySubmission.variantSet.variant.gene.symbol"] = {
-                    "$in": gene_symbol_aliases
+                    "$regex": rf"(^|,)({gene_pattern})(,|$)"
                 }
 
         total_count = self.clinvar_submission_collection.count_documents(query)
@@ -343,7 +344,10 @@ class ClinVarHandler(object):
             )
 
             if gene_symbol_aliases and all(
-                var.get("gene_symbol") not in gene_symbol_aliases
+                not any(
+                    symbol.strip() in gene_symbol_aliases
+                    for symbol in var.get("gene_symbol", "").split(",")
+                )
                 for var in submission["variant_data"]
             ):
                 continue
