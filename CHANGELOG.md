@@ -37,7 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored ClinVar submission of germline SV variants (#5994, #6565)
 - Re-enable display of rank scores on cancer SVs (#6572)
 - Display variant and case IDs throughout the multistep ClinVar add-variant-to-submission form (#6575)
-- Color verification (Sanger) button according to status (#6586)
+- Color verification (Sanger) button according to status (#6586, #6636)
 - Improved the format and content of downloaded structural variant export files (#6622)
 ### Fixed
 - Syntax fix rerunner individual select (#6527)
