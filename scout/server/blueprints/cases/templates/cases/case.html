@@ -847,6 +847,8 @@ function updateSangerColor(select) {
 
   if (color) {
     select.classList.add(color, "text-white");
+  } else {
+    select.classList.add("bg-secondary", "text-white");
   }
 }
 
