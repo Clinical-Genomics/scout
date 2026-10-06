@@ -1372,7 +1372,7 @@ def variant_export_lines_sv(variant: dict) -> List[str]:
         variant.get("sub_category").upper(),
         variant.get("length"),
         f'{variant["reference"]}>{variant["alternative"]}',
-        ", ".join(variant.get("hgnc_symbols", [])),
+        "| ".join(variant.get("hgnc_symbols", [])),
     ]
 
 
