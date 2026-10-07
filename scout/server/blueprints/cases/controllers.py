@@ -902,7 +902,6 @@ def _get_decorated_var(
         store=store,
         variant_id=None,
         institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
         variant_obj=var_obj,
         add_other=False,
         get_overlapping=False,
