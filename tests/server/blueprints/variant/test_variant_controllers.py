@@ -53,7 +53,7 @@ def test_check_reset_variant_classification(app, case_obj, variant_obj):
             variant_id=variant_obj["variant_id"],
             institute_id=case_obj["owner"],
             case_id=case_obj["case_id"],
-            classification="LP",
+            classification="likely_pathogenic",
             criteria=[],
             user_id=current_user.email,
             user_name=current_user.name,
@@ -63,7 +63,7 @@ def test_check_reset_variant_classification(app, case_obj, variant_obj):
 
         # WHEN checking if variant evaluations have been removed,
         # THEN it returns true
-        assert check_reset_variant_classification(store, deleted_evaluation_obj, "link")
+        assert check_reset_variant_classification(store, deleted_evaluation_obj)
 
         # WHEN retrieving the variant again,
         current_variant = store.variant(variant_obj["_id"])
