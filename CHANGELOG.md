@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.115]
 ### Added
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
 - Add a region view (#6515)
@@ -49,11 +49,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refresh ClinVar submissions after deprecating those with no type="germline" (#6584)
 - Automatically use genome build 38 for MT/M variants when determining the variant locus (#6598)
 - Fix coloring of CADD badges on missing value (#6608)
-- Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6623)
 - Genes with short names (two characters) are also searchable using autocomplete on the case and panels pages (#6632)
 - Gene column in export files of multigenic variants (#6635)
 - Fix ClinVar submissions so that multigene variants store genes as an array of gene symbols (#6633)
 - Set variant's ACMG classification to latest remaining classification when one classification is removed (#6579)
+- Alignment index lookup when alignment is missing in str_variant_reviewer variant controller (#6624)
 
 ## [4.114.1]
 ### Fixed
