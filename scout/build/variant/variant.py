@@ -418,13 +418,30 @@ def add_rank_score(variant_obj: dict, variant: dict):
         variant_obj["rank_score_other"] = variant["rank_score_other"]
 
 
-def add_frequencies(variant_obj, frequencies):
-    """Add the rank score results
-    Args: variant_obj (Dict)
-          frequencies (Dict)
-    Returns: None"""
+def add_frequencies(variant_obj: dict, frequencies: dict):
+    """Add frequencies to the variant object"""
     variant_obj["exac_frequency"] = call_safe(float, frequencies.get("exac"))
     variant_obj["gnomad_frequency"] = call_safe(float, frequencies.get("gnomad"))
+    variant_obj["gnomad_wes_frequency"] = call_safe(float, frequencies.get("gnomad_wes"))
+    variant_obj["gnomad_obs"] = call_safe(int, frequencies.get("gnomad_obs"))
+    variant_obj["gnomad_wes_obs"] = call_safe(int, frequencies.get("gnomad_wes_obs"))
+    variant_obj["gnomad_nhomalt_frequency"] = call_safe(int, frequencies.get("gnomad_nhomalt"))
+    variant_obj["gnomad_nhomalt_xy_frequency"] = call_safe(
+        int, frequencies.get("gnomad_nhomalt_xy")
+    )
+    variant_obj["gnomad_nhomalt_xx_frequency"] = call_safe(
+        int, frequencies.get("gnomad_nhomalt_xx")
+    )
+    variant_obj["gnomad_wes_nhomalt_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt")
+    )
+    variant_obj["gnomad_wes_nhomalt_xy_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt_xy")
+    )
+    variant_obj["gnomad_wes_nhomalt_xx_frequency"] = call_safe(
+        int, frequencies.get("gnomad_wes_nhomalt_xx")
+    )
+
     variant_obj["gnomad_mt_heteroplasmic_frequency"] = call_safe(
         float, frequencies.get("gnomad_mt_heteroplasmic")
     )
@@ -433,6 +450,7 @@ def add_frequencies(variant_obj, frequencies):
     )
     variant_obj["max_exac_frequency"] = call_safe(float, frequencies.get("exac_max"))
     variant_obj["max_gnomad_frequency"] = call_safe(float, frequencies.get("gnomad_max"))
+    variant_obj["max_gnomad_wes_frequency"] = call_safe(float, frequencies.get("gnomad_wes_max"))
     variant_obj["max_thousand_genomes_frequency"] = call_safe(
         float, frequencies.get("thousand_g_max")
     )

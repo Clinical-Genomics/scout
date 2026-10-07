@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter ClinVar submissions by gene and gene aliases (#6585, #6599, #6631)
 - The UCSC/Decipher `Predicted NMD escape` track is now available in the IGV viewer (#6597)
 - A blog entry for the 4.115 release (#6603)
+- New GnomAD frequency fields: WES, homalt, AC (#6591)
 ### Changed
 - Gens viewer for a case opens in a new tab (#6538)
 - Update igv.js to 3.8.9 (#6539, #6566, #6590) - fixes rare bug with TLEN coloring
