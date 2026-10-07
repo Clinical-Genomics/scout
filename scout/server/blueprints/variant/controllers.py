@@ -805,6 +805,10 @@ def check_reset_variant_classification(
     acmg_classification = variant_obj.get("acmg_classification")
 
     if not isinstance(acmg_classification, int):
+        flash(
+            "The variant document could not be reset to a previous classification because it uses an old ACMG format.",
+            "warning",
+        )
         return False
 
     if evaluations:
