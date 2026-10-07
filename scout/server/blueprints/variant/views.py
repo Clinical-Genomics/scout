@@ -433,9 +433,24 @@ def evaluation(evaluation_id):
     if request.method == "POST":
         store.delete_evaluation(evaluation_obj)
 
-        if check_reset_variant_classification(store, evaluation_obj):
+        if check_reset_variant_classification(store=store, evaluation_obj=evaluation_obj):
             flash("ACMG classification was modified.", "info")
-
+            link = url_for(
+                ".variant",
+                institute_id=evaluation_obj["institute"]["_id"],
+                case_name=evaluation_obj["case"]["display_name"],
+                variant_id=evaluation_obj["variant_specific"],
+            )
+            store.create_event(
+                institute=evaluation_obj["institute"],
+                case=evaluation_obj["case"],
+                user=store.user(current_user.email),
+                link=link,
+                category="variant",
+                verb="acmg",
+                variant=evaluation_obj["variant"],
+                subject=evaluation_obj["variant"]["display_name"],
+            )
         return safe_redirect_back(request)
 
     acmg_decorated_variant = acmg_controller(
