@@ -107,15 +107,12 @@ class ClinVarApi:
             subm_summary_url: str = subm_response["files"][0]["url"]
             scv_accession: Optional(str) = self.get_clinvar_scv_accession(url=subm_summary_url)
 
-            LOG.error(f"scv_accession:{scv_accession}")
-
-            # Remove ClinVar submission using preClinVar's 'delete' endpoint
-            """
-            resp = requests.post(
-                self.delete_service, data={"api_key": api_key, "clinvar_accession": scv_accession}
-            )
-            return resp.status_code, resp.json()
-            """
+            if scv_accession:
+                delete_obj = {"clinvarDeletion": {"accessionSet": [{"accession": scv_accession}]}}
+                service_url, code, delete_res = self.submit_json(
+                    json_data=delete_obj, api_key=api_key
+                )
+                return code, delete_res.json()
 
         except Exception as ex:
             return 500, str(ex)
