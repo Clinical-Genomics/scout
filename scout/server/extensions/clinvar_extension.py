@@ -1,7 +1,7 @@
 import json
 import logging
 from io import StringIO
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 import requests
 from flask import flash
@@ -85,3 +85,32 @@ class ClinVarApi:
                 )
                 return
             return submission_data["identifiers"]["clinvarAccession"]
+
+    def delete_clinvar_submission(self, submission_id: str, api_key=None) -> Tuple[int, dict]:
+        """Remove a successfully processed submission from ClinVar."""
+
+        try:
+            submission_status_doc: dict = self.json_submission_status(
+                submission_id=submission_id, api_key=api_key
+            )
+
+            subm_response: dict = submission_status_doc["actions"][0]["responses"][0]
+            submission_status = subm_response["status"]
+
+            if submission_status != "processed":
+                return (
+                    500,
+                    f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
+                )
+
+            # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
+            subm_summary_url: str = subm_response["files"][0]["url"]
+            scv_accession: Optional(str) = self.get_clinvar_scv_accession(url=subm_summary_url)
+
+            if scv_accession:
+                delete_obj = {"clinvarDeletion": {"accessionSet": [{"accession": scv_accession}]}}
+                _, code, delete_res = self.submit_json(json_data=delete_obj, api_key=api_key)
+                return code, delete_res.json()
+
+        except Exception as ex:
+            return 500, str(ex)
