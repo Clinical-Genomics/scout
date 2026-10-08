@@ -109,9 +109,7 @@ class ClinVarApi:
 
             if scv_accession:
                 delete_obj = {"clinvarDeletion": {"accessionSet": [{"accession": scv_accession}]}}
-                service_url, code, delete_res = self.submit_json(
-                    json_data=delete_obj, api_key=api_key
-                )
+                _, code, delete_res = self.submit_json(json_data=delete_obj, api_key=api_key)
                 return code, delete_res.json()
 
         except Exception as ex:
