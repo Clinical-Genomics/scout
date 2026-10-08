@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ## Added
-- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API. ()
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API ()
 
 ## [4.115]
 ### Added
