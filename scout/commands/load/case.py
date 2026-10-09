@@ -4,6 +4,7 @@ import traceback
 
 import click
 import yaml
+from flask import current_app
 from flask.cli import with_appcontext
 
 from scout.parse.case import parse_case_data
@@ -81,7 +82,6 @@ def case(
     # Scout needs a config object with the necessary information
     # If no config is used create a dictionary
     config_raw = yaml.load(config, Loader=yaml.SafeLoader) if config else {}
-
     try:
         config_data = parse_case_data(
             config=config_raw,
@@ -120,8 +120,12 @@ def case(
 
     LOG.info("Use family %s" % config_data["family"])
 
+    variants_loader = current_app.get("VARIANTS_LOADER")
+
     try:
-        adapter.load_case(config_data, update, keep_actions)
+        if variants_loader:
+            adapter.run_scout_loader(case_config=config)
+        adapter.load_case(config_data, update, keep_actions, config_raw=config_raw)
     except SyntaxError as err:
         LOG.error(
             "SyntaxError {} missing when loading '{}' {}".format(

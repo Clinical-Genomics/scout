@@ -982,7 +982,13 @@ class CaseHandler(object):
                 ),
             )
 
-    def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
+    def load_case(
+        self,
+        config_data: dict,
+        update: bool = False,
+        keep_actions: bool = True,
+        skip_variants: bool = False,
+    ) -> dict:
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -1031,7 +1037,10 @@ class CaseHandler(object):
             eval_vars, _ = self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             old_evaluated_variants = list(eval_vars)
         try:
-            self._load_clinical_variants(case_obj, build=genome_build, update=update)
+            if (
+                not skip_variants
+            ):  # Load variants using scout if no external loader was provided in the scout config
+                self._load_clinical_variants(case_obj, build=genome_build, update=update)
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
