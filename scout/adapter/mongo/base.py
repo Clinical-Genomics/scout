@@ -20,6 +20,7 @@ from .clinvar import ClinVarHandler
 from .cytoband import CytobandHandler
 from .disease_terms import DiagnosisHandler
 from .event import EventHandler
+from .external_variant_loader import ExternalVariantLoader
 from .filter import FilterHandler
 from .hgnc import GeneHandler
 from .hpo import HpoHandler
@@ -49,6 +50,7 @@ class MongoAdapter(
     CytobandHandler,
     DiagnosisHandler,
     EventHandler,
+    ExternalVariantLoader,
     FilterHandler,
     GeneHandler,
     HpoHandler,
