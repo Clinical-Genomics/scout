@@ -8,6 +8,7 @@ from flask import current_app
 
 LOG = logging.getLogger(__name__)
 
+
 class ExternalVariantLoader:
     """Run external variant loaders."""
 
@@ -31,8 +32,7 @@ class ExternalVariantLoader:
             mongo_uri = current_app.config.get("MONGO_URI") or "mongodb://127.0.0.1:27017"
             mongo_dbname = current_app.config.get("MONGO_DBNAME") or "scout-demo"
             mongo_config_path.write_text(
-                f'mongo_uri = "{mongo_uri}"\n'
-                f'mongo_dbname = "{mongo_dbname}"\n',
+                f'mongo_uri = "{mongo_uri}"\n' f'mongo_dbname = "{mongo_dbname}"\n',
                 encoding="utf-8",
             )
 
