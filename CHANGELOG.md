@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Changed
-- Only color the normalised rank score badge (#6655)
+- Only color the normalised rank score badge (#6656)
 
 ## [4.115.1]
 ### Changed
