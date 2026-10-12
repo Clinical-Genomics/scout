@@ -40,7 +40,6 @@ def test_run_scout_loader(monkeypatch, tmp_path):
     ]
     assert captured["check"] is True
     assert captured["config"] == (
-        'mongo_uri = "mongodb://localhost:27017"\n'
-        'mongo_dbname = "scout_test"\n'
+        'mongo_uri = "mongodb://localhost:27017"\n' 'mongo_dbname = "scout_test"\n'
     )
     assert not captured["config_path"].exists()
