@@ -126,7 +126,11 @@ def case(
         if external_variants_loader:
             adapter.run_scout_loader(case_config=config)
         adapter.load_case(
-            config_data, update, keep_actions, config_raw=config_raw, skip_variants=True
+            config_data,
+            update,
+            keep_actions,
+            config_raw=config_raw,
+            skip_variants=external_variants_loader,
         )
     except SyntaxError as err:
         LOG.error(
