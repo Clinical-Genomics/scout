@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Added
+### Added
 - A header to Paraphase regions (dark regions) table (#6655)
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 
