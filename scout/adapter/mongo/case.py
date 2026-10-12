@@ -1040,13 +1040,14 @@ class CaseHandler(object):
             if not skip_variants:
                 self._load_clinical_variants(case_obj, build=genome_build, update=update)
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
-        except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-            LOG.exception(error)
-            raise
-        else:
+
             if not existing_case:
                 LOG.info("Loading case %s into database", case_obj["display_name"])
                 self.add_case(case_obj, institute_obj)
+
+        except (IntegrityError, ValueError, ConfigError, KeyError) as error:
+            LOG.exception(error)
+            raise
         finally:
             if existing_case:
                 self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
