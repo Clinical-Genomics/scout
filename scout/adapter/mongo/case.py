@@ -1037,15 +1037,12 @@ class CaseHandler(object):
             eval_vars, _ = self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             old_evaluated_variants = list(eval_vars)
         try:
-            if (
-                not skip_variants
-            ):  # Load variants using scout if no external loader was provided in the scout config
+            if not skip_variants:
                 self._load_clinical_variants(case_obj, build=genome_build, update=update)
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
-
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.exception(error)
-            raise error
+            raise
         else:
             if not existing_case:
                 LOG.info("Loading case %s into database", case_obj["display_name"])
