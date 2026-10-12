@@ -155,6 +155,15 @@
           {% endif %}
         </div>
       {% endif %}
+
+      <div class="row fw-bold border-bottom pb-2 mb-2">
+        <div class="col-1" data-bs-toggle="tooltip"
+          title="The region name may correspond to a gene, but does not necessarily mean that the gene is present in the region.">
+          Region name
+        </div>
+        <div class="col-1">Status</div>
+        <div class="col-9">Genes in region</div>
+      </div>
       {% for region_name, region in paraphrase_regions|dictsort(case_sensitive=False, by='key') %}
         <div class="accordion-item">
           <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
