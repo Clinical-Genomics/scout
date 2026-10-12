@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - A header to Paraphase regions (dark regions) table (#6655)
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+### Changed
+- Only color the normalised rank score badge (#6656)
 
 ## [4.115.1]
 ### Changed
