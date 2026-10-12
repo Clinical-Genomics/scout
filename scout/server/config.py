@@ -56,7 +56,10 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
 
 # Path to the alternative Rust-based variant loader (scout_loader).
-# Download precompiled binaries from https://github.com/Clinical-Genomics/scout_loader/releases
+# Beta feature: not fully tested and not ready for production use.
+# Enable only for testing and evaluation.
+# Download precompiled binaries from:
+# https://github.com/Clinical-Genomics/scout_loader/releases
 # VARIANTS_LOADER = "/opt/scout_loader/scout_loader-v0.1.2-linux-x86_64"
 
 # URL to an instance of Chanjo2, for generating coverage report
