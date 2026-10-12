@@ -10,7 +10,7 @@
     {{ variant_rank_score(variant) }}
   </div>
   {% if variant.norm_rank_score %}
-    <div class="badge bg-{{variant.norm_rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score {% if variant.rank_score %} - {{variant.norm_rank_score|get_label_or_color_by_score('rank', 'label')}}{% endif %}">
+    <div class="badge bg-{{variant.norm_rank_score|get_label_or_color_by_score('rank', 'color')}}" data-bs-toggle="tooltip" data-bs-placement="top" title="Normalised rank score {% if variant.rank_score %} - {{variant.norm_rank_score|get_label_or_color_by_score('rank', 'label')}}{% endif %}">
     {{ variant_norm_rank_score(variant) }}
     </div>
   {% endif %}
