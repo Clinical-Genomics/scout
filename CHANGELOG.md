@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - A header to Paraphase regions (dark regions) table (#6655)
+- Optionally load variants using an external scout_loader software when loading a new case ()
 
 ## [4.115.1]
 ### Changed
