@@ -497,16 +497,16 @@
 {% macro cadd_cell(variant) %}
   <div class="badge bg-{% if variant.cadd_score %}{{variant.cadd_score|get_label_or_color_by_score('cadd', 'color')}}{% else %}secondary{% endif %} rounded-pill" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="left" title="
     <div class='text-start'>
-      <strong>CADD</strong> {{ variant.cadd_score or '-' }}{% if variant.cadd_score %} - {{variant.cadd_score|get_label_or_color_by_score('cadd', 'label')}}{% endif %}<br>
+      <strong>CADD</strong>{% if 'cadd_score' in variant and variant.cadd_score is not none %}{{ variant.cadd_score|round(1) }} - {{variant.cadd_score|get_label_or_color_by_score('cadd', 'label')}}{% else %}-{% endif %}<br>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>
       {{ (variant.polyphen_predictions or ['-'])|join(',') }} <br>
       <strong>REVEL</strong>
-      {{ variant.revel or '-' }}{% if variant.revel %} - {{ variant.revel|get_label_or_color_by_score('revel', 'label') }}{% endif %}<br>
+      {% if 'revel' in variant and variant.revel is not none %}{{ variant.revel|float|round(1) }} - {{ variant.revel|get_label_or_color_by_score('revel', 'label') }}{% else %}-{% endif %}<br>
     </div>
   ">
-    {% if variant.cadd_score %}
+    {% if 'cadd_score' in variant and variant.cadd_score is not none %}
       {{ variant.cadd_score|round(1) }}
     {% else %}
       -
