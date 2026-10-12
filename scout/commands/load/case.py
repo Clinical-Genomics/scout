@@ -120,16 +120,15 @@ def case(
 
     LOG.info("Use family %s" % config_data["family"])
 
-    external_variants_loader = current_app.get("VARIANTS_LOADER")
+    external_variants_loader = current_app.config.get("VARIANTS_LOADER")
 
     try:
         if external_variants_loader:
             adapter.run_scout_loader(case_config=config)
         adapter.load_case(
-            config_data,
-            update,
-            keep_actions,
-            config_raw=config_raw,
+            config_data=config_data,
+            update=update,
+            keep_actions=keep_actions,
             skip_variants=external_variants_loader,
         )
     except SyntaxError as err:
