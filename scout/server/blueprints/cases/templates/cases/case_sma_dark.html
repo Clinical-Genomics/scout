@@ -155,6 +155,13 @@
           {% endif %}
         </div>
       {% endif %}
+        <div class="d-flex fw-bold border-bottom pb-2 mb-2" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+          <div class="col-1" data-bs-toggle="tooltip" title="The region name follows Paraphase definitions. A region may contain multiple genes. A region name matching a gene symbol does not necessarily mean that the gene is present in the region.">
+            Region name
+          </div>
+          <div class="col-1">Status</div>
+          <div class="col-9">Genes in region</div>
+        </div>
       {% for region_name, region in paraphrase_regions|dictsort(case_sensitive=False, by='key') %}
         <div class="accordion-item">
           <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
