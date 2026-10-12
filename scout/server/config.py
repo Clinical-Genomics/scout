@@ -57,7 +57,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Path to the alternative Rust-based variant loader (scout_loader).
 # Download precompiled binaries from https://github.com/Clinical-Genomics/scout_loader/releases
-VARIANTS_LOADER = "/Users/chiararasi/Documents/work/progs/scout_loader-v0.1.1-macos-arm64"
+# VARIANTS_LOADER = "/opt/scout_loader/scout_loader-v0.1.2-linux-x86_64"
 
 # URL to an instance of Chanjo2, for generating coverage report
 # CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
