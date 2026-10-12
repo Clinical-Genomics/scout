@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - A header to Paraphase regions (dark regions) table (#6655)
-- Add an optional beta feature to load variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use. (#6657)
+- Add an optional beta feature to load variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use (#6657)
 ### Changed
 - Only color the normalised rank score badge (#6656)
 
