@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- A header to Paraphase regions (dark regions) table (#6655)
+
+## [4.115.1]
+### Changed
+- Updated libs
+### Fixed
+- Bug affecting cancer cases when opening the variants page if one or more variants have comments (#6647)
+
 ## [4.115]
 ### Added
 - Parse ClinGen dosage sensitivity files, add ISCA regions to db (#6515)
