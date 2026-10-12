@@ -4,7 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [unreleased]
+### Added
+- A header to Paraphase regions (dark regions) table (#6655)
 ### Changed
 - Only color the normalised rank score badge (#6656)
 
