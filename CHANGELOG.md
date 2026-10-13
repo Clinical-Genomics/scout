@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Only color the normalised rank score badge (#6656)
 - Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
+### Fixed
+- Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
 
 ## [4.115.1]
 ### Changed
