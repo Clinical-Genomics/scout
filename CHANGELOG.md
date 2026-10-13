@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A header to Paraphase regions (dark regions) table (#6655)
 ### Changed
 - Only color the normalised rank score badge (#6656)
+### Fixed
+- Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
 
 ## [4.115.1]
 ### Changed
