@@ -65,7 +65,7 @@ def variant_verification(
 
     recipients = institute_obj.get("sanger_recipients", [])
     if len(recipients) == 0:
-        raise MissingVerificationRecipientError("")
+        raise MissingVerificationRecipientError
 
     category = variant_obj.get("category", "snv")
     display_name = variant_obj.get("display_name")
@@ -89,7 +89,6 @@ def variant_verification(
         str(ident) for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
     ]
     hgnc_symbol = ", ".join(gene_identifiers)
-    email_subj_gene_symbol = None
     if len(gene_identifiers) > 3:
         email_subj_gene_symbol = " ".join([str(len(gene_identifiers)) + "genes"])
     else:
