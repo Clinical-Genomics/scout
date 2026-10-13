@@ -47,7 +47,7 @@ own feature branch, based on an updated master branch.
 
 - We try to follow [PEP8][pep8] with an line length of 100
 - Always include docstrings to explain functions/classes
-- All code has to work for recent python versions. See the [pyproject.toml](pyproject.toml) file for the recommended version of Python and dependencies.
+- All code has to work for recent Python versions. See the [pyproject.toml](pyproject.toml) file for the recommended version of Python and dependencies.
 
 [release_flow]: https://www.nebbiatech.com/2019/03/15/git-branching-strategies-which-one-should-i-pick/
 [pep8]: https://www.python.org/dev/peps/pep-0008/
