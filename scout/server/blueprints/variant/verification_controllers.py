@@ -1,6 +1,5 @@
 import logging
 import urllib
-from pprint import pprint as pp
 
 from flask import url_for
 from flask_login import current_user
@@ -62,17 +61,14 @@ def variant_verification(
     variant_obj = data["variant"]
     case_obj = data["case"]
     institute_obj = data["institute"]
-    pp(variant_obj)
-    recipients = institute_obj["sanger_recipients"]
-    if len(recipients) == 0:
-        raise MissingVerificationRecipientError()
 
-    view_type = None
-    email_subject = None
+    recipients = institute_obj.get("sanger_recipients", [])
+    if len(recipients) == 0:
+        raise MissingVerificationRecipientError
+
     category = variant_obj.get("category", "snv")
     display_name = variant_obj.get("display_name")
     chromosome = variant_obj["chromosome"]
-    position = variant_obj["position"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
     chr_position = (
         ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv"] else "-"
@@ -87,13 +83,11 @@ def variant_verification(
         if category in ["sv", "cancer_sv"]
         else "-"
     )
-    variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [
         str(ident) for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
     ]
     hgnc_symbol = ", ".join(gene_identifiers)
-    email_subj_gene_symbol = None
     if len(gene_identifiers) > 3:
         email_subj_gene_symbol = " ".join([str(len(gene_identifiers)) + "genes"])
     else:
