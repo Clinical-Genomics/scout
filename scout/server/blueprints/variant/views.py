@@ -657,7 +657,7 @@ def verify(institute_id, case_name, variant_id, order):
             url_builder=url_for,
         )
     except MissingVerificationRecipientError:
-        flash("No verification recipients added to institute.", "danger")
+        flash("No Sanger verification recipients are configured for this institute. Please update the institute settings to add recipient email addresses.", "danger")
 
     return safe_redirect_back(request)
 
