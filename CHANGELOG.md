@@ -6,11 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- A header to Paraphase regions (dark regions) table (#6655)
 - Add an optional beta feature to load variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use (#6657)
+
+## [4.115.2]
 ### Changed
 - Only color the normalised rank score badge (#6656)
 - Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
+- Show a header on the Paraphase regions (dark regions) table (#6655)
 ### Fixed
 - Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
 
