@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 - Add an optional beta feature to load variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use (#6657)
 
 ## [4.115.2]
