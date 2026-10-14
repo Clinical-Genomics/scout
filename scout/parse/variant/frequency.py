@@ -21,6 +21,17 @@ GNOMAD_INFO_MAX_KEYS = [
     "GNOMADAF_grpmax",
     "MAX_AF",
 ]
+GNOMAD_OBS = ["GNOMADAC"]
+GNOMAD_WES_MAX = ["GNOMAD_WES_AF_grpmax"]
+GNOMAD_NHOMALT = ["GNOMAD_nhomalt"]
+GNOMAD_NHOMALT_XX = ["GNOMAD_nhomalt_XX"]
+GNOMAD_NHOMALT_XY = ["GNOMAD_nhomalt_XY"]
+GNOMAD_WES = ["GNOMAD_WES_AF"]
+GNOMAD_WES_MAX = ["GNOMAD_WES_AF_grpmax"]
+GNOMAD_WES_OBS = ["GNOMAD_WES_AC"]
+GNOMAD_WES_NHOMALT = ["GNOMAD_WES_nhomalt"]
+GNOMAD_WES_NHOMALT_XX = ["GNOMAD_WES_nhomalt_XX"]
+GNOMAD_WES_NHOMALT_XY = ["GNOMAD_WES_nhomalt_XY"]
 
 # SV
 CLINGEN_BENIGN_KEYS = [
@@ -65,6 +76,17 @@ def parse_frequencies(variant, transcripts):
     update_frequency_from_vcf(frequencies, variant, EXAC_KEYS, "exac")
     update_frequency_from_vcf(frequencies, variant, EXAC_MAX_KEYS, "exac_max")
     update_frequency_from_vcf(frequencies, variant, GNOMAD_INFO_KEYS, "gnomad")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_OBS, "gnomad_obs")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_NHOMALT, "gnomad_nhomalt")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_NHOMALT_XX, "gnomad_nhomalt_xx")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_NHOMALT_XY, "gnomad_nhomalt_xy")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES, "gnomad_wes_af")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES_OBS, "gnomad_wes_obs")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES_MAX, "gnomad_wes_max")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES_NHOMALT, "gnomad_wes_nhomalt")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES_NHOMALT_XX, "gnomad_wes_nhomalt_xx")
+    update_frequency_from_vcf(frequencies, variant, GNOMAD_WES_NHOMALT_XY, "gnomad_wes_nhomalt_xy")
+
     update_frequency_from_vcf(frequencies, variant, SWEGEN_KEYS, "swegen")
     update_frequency_from_vcf(frequencies, variant, GNOMAD_INFO_MAX_KEYS, "gnomad_max")
     update_frequency_from_vcf(frequencies, variant, THOUSAND_GENOMES_KEYS, "thousand_g")
@@ -221,7 +243,17 @@ def update_frequency_from_transcript(frequencies: dict, transcripts: list):
             "thousand_g": transcript.get("thousand_g_maf"),
             "thousand_g_max": transcript.get("thousandg_max"),
             "gnomad": transcript.get("gnomad_maf"),
+            "gnomad_wes": transcript.get("gnomad_wes"),
             "gnomad_max": transcript.get("gnomad_max"),
+            "gnomad_wes_max": transcript.get("gnomad_wes_max"),
+            "gnomad_obs": transcript.get("gnomad_ac"),
+            "gnomad_wes_obs": transcript.get("gnomad_wes_ac"),
+            "gnomad_nhomalt": transcript.get("gnomad_nhomalt"),
+            "gnomad_wes_nhomalt": transcript.get("gnomad_wes_nhomalt"),
+            "gnomad_nhomalt_xx": transcript.get("gnomad_nhomalt_xx"),
+            "gnomad_wes_nhomalt_xx": transcript.get("gnomad_wes_nhomalt_xx"),
+            "gnomad_nhomalt_xy": transcript.get("gnomad_nhomalt_xy"),
+            "gnomad_wes_nhomalt_xy": transcript.get("gnomad_wes_nhomalt_xy"),
             "gnomad_mt_homoplasmic": transcript.get("gnomad_mt_homoplasmic"),
             "gnomad_mt_heteroplasmic": transcript.get("gnomad_mt_heteroplasmic"),
         }
