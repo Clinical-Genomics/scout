@@ -100,7 +100,7 @@ class ClinVarApi:
             if submission_status != "processed":
                 return (
                     500,
-                    f"Clinvar submission status should be 'processed' and in order to attempt data deletion. Submission status is '{submission_status}'.",
+                    f"Clinvar submission status should be 'processed' in order to attempt data deletion. Submission status is '{submission_status}'.",
                 )
 
             # retrieve ClinVar SCV accession (SCVxxxxxxxx) from file url returned by subm_response
