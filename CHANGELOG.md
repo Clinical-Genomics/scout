@@ -6,6 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
 
+## [unreleased]
+### Added
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+
 ## [4.115.2]
 ### Changed
 - Only color the normalised rank score badge (#6656)
