@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+### Changed
+- Parse GT for haploid variants, e.g. LRS STR chrX (#6665)
 
 ## [4.115.2]
 ### Changed
