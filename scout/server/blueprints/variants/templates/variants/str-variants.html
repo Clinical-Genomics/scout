@@ -71,7 +71,7 @@
       <td>{{ callers_cell(variant) }}</td>
       <td>{{ str_status(variant) }}</td>
       <td>{% for sample in variant.samples %}
-            {% if sample.genotype_call != "./." %}
+            {% if sample.genotype_call not in  ["./.", "."] %}
               <div class="row">
                 <div class="col-8">{{ sample.display_name }}</div>
                 <div class="col-4 text-end">{{ sample.genotype_call }}</div>
