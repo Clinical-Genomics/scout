@@ -98,7 +98,7 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
 
         phase_sep = "|" if variant.gt_phases[pos] else "/"
         gt_call["genotype_call"] = phase_sep.join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
-        if variant.ploidy[pos] == 1:
+        if variant.ploidy == 1:
             gt_call["genotype_call"] = GENOTYPE_MAP[ref_call]
 
     # STR specific
