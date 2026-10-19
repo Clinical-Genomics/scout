@@ -98,7 +98,7 @@ def human_decimal(number: float, ndigits: int = 4) -> str | int:
         return 0
 
     if number < min_number:
-        return "<{}".format(min_number)
+        return f"<{min_number:.{ndigits}f}"
 
     return f"{number:.{ndigits}f}".rstrip("0").rstrip(".")
 
