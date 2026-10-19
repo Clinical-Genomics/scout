@@ -76,10 +76,11 @@ def l2fc_2_fc(l2fc: float) -> float:
 
 
 def human_decimal(number: float, ndigits: int = 4) -> str | int:
-    """Return a standard representation of a decimal number.
+    """Return a standard fixed-point representation of a decimal number.
 
-    Inputs number to humanize and a max number of digits to round to
-    and outputs a humanized string of the decimal number.
+    Inputs number to humanize and a max number of digits to round to;
+    outputs a humanized string of the decimal number.
+
     Small non-zero values below the requested precision are represented with a
     less-than sign; other values are rounded without scientific notation.
 
