@@ -387,7 +387,7 @@ def frequencies(variant_obj: dict) -> list[Tuple]:
                 "GnomAD WES",
                 gnomad_link_list,
             ),
-            "gnomad_wes_max_frequency": ("GnomAD WES(max)", gnomad_link_list),
+            "max_gnomad_wes_frequency": ("GnomAD WES(max)", gnomad_link_list),
             "gnomad_obs": ("GnomAD(obs)", gnomad_link_list),
             "gnomad_wes_obs": ("GnomAD WES(obs)", gnomad_link_list),
             "gnomad_nhomalt_frequency": ("GnomAD(nhomalt)", gnomad_link_list),
