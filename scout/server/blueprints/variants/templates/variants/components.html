@@ -360,17 +360,17 @@
       {% endif %}
       {%  if 'gnomad_wes_nhomalt_wes_frequency' in variant %}
         <div>
-          <strong>gnomAD nhomalt(WES)</strong>: {{ variant.gnomad_wes_nhomalt_wes_frequency|human_decimal if variant.gnomad_wes_nhomalt_wes_frequency }}
+          <strong>gnomAD nhomalt(WES)</strong>: {{ variant.gnomad_wes_nhomalt_frequency|human_decimal if variant.gnomad_wes_nhomalt_frequency }}
         </div>
       {% endif %}
       {%  if 'gnomad_wes_nhomalt_xx_frequency' in variant %}
         <div>
-          <strong>gnomAD nhomalt(XX)</strong>: {{ variant.gnomad_wes_nhomalt_xx_frequency|human_decimal if variant.gnomad_wes_nhomalt_xx_frequency }}
+          <strong>gnomAD nhomalt(WES XX)</strong>: {{ variant.gnomad_wes_nhomalt_xx_frequency|human_decimal if variant.gnomad_wes_nhomalt_xx_frequency }}
         </div>
       {% endif %}
       {%  if 'gnomad_wes_nhomalt_xy_frequency' in variant %}
         <div>
-          <strong>gnomAD nhomalt(XY)</strong>: {{ variant.gnomad_wes_nhomalt_xy_frequency|human_decimal if variant.gnomad_wes_nhomalt_xy_frequency }}
+          <strong>gnomAD nhomalt(WES XY)</strong>: {{ variant.gnomad_wes_nhomalt_xy_frequency|human_decimal if variant.gnomad_wes_nhomalt_xy_frequency }}
         </div>
       {% endif %}
 

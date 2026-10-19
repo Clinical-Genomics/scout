@@ -27,7 +27,6 @@ GNOMAD_NHOMALT = ["GNOMAD_nhomalt"]
 GNOMAD_NHOMALT_XX = ["GNOMAD_nhomalt_XX"]
 GNOMAD_NHOMALT_XY = ["GNOMAD_nhomalt_XY"]
 GNOMAD_WES = ["GNOMAD_WES_AF"]
-GNOMAD_WES_MAX = ["GNOMAD_WES_AF_grpmax"]
 GNOMAD_WES_OBS = ["GNOMAD_WES_AC"]
 GNOMAD_WES_NHOMALT = ["GNOMAD_WES_nhomalt"]
 GNOMAD_WES_NHOMALT_XX = ["GNOMAD_WES_nhomalt_XX"]
@@ -243,7 +242,7 @@ def update_frequency_from_transcript(frequencies: dict, transcripts: list):
             "thousand_g": transcript.get("thousand_g_maf"),
             "thousand_g_max": transcript.get("thousandg_max"),
             "gnomad": transcript.get("gnomad_maf"),
-            "gnomad_wes": transcript.get("gnomad_wes"),
+            "gnomad_wes": transcript.get("gnomad_wes_af"),
             "gnomad_max": transcript.get("gnomad_max"),
             "gnomad_wes_max": transcript.get("gnomad_wes_max"),
             "gnomad_obs": transcript.get("gnomad_ac"),
