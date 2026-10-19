@@ -80,22 +80,27 @@ def human_decimal(number: float, ndigits: int = 4) -> str | int:
 
     Inputs number to humanize and a max number of digits to round to
     and outputs a humanized string of the decimal number.
+    Small non-zero values below the requested precision are represented with a
+    less-than sign; other values are rounded without scientific notation.
 
     Returns 0 if value is 0 to avoid confusion over what is rounded and what is actually 0
     """
     min_number = 10**-ndigits
+
     if isinstance(number, str):
         number = None
+
     if number is None:
         # NaN
         return "-"
+
     if number == 0:
         return 0
+
     if number < min_number:
         return "<{}".format(min_number)
 
-    # round all other numbers
-    return round(number, ndigits)
+    return f"{number:.{ndigits}f}".rstrip("0").rstrip(".")
 
 
 def markdown(text: str) -> Markup:
