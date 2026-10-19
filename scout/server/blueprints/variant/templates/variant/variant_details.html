@@ -199,7 +199,7 @@
         <td class="py-1 px-2">
           {% if value %}
             <span class="badge bg-secondary" style="font-size: 0.75rem;">
-              {{ value|human_decimal }}
+              {{ value|human_decimal(5) }}
             </span>
           {% else %}
             -

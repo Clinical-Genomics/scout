@@ -898,9 +898,9 @@
                               </td>
                               <td>
                                 {% if variant.max_thousand_genomes_frequency %}
-                                  {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
+                                  {{ variant.max_thousand_genomes_frequency|human_decimal(3) }} <small>(max)</small> |
                                 {% endif %}
-                                {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+                                {{ variant.thousand_genomes_frequency|human_decimal(3) if variant.thousand_genomes_frequency }}
                                 {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
                                   <span class="text-muted">Not annotated</span>
                                 {% endif %}
@@ -910,9 +910,9 @@
                               <td><a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
                               <td>
                                 {% if variant.max_exac_frequency %}
-                                  {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
+                                  {{ variant.max_exac_frequency|human_decimal(3) }} <small>(max)</small> |
                                 {% endif %}
-                                {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
+                                {{ variant.exac_frequency|human_decimal(3) if variant.exac_frequency }}
                                 {% if not variant.max_exac_frequency and not variant.exac_frequency %}
                                   <span class="text-muted">Not annotated</span>
                                 {% endif %}
@@ -923,10 +923,10 @@
                               <td>
                                 {% if 'gnomad_frequency' in variant%}
                                   {% if variant.max_gnomad_frequency %}
-                                    {{ variant.max_gnomad_frequency|human_decimal }}
+                                    {{ variant.max_gnomad_frequency|human_decimal(5) }}
                                     <small>(max)</small> |
                                   {% endif %}
-                                  {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+                                  {{ variant.gnomad_frequency|human_decimal(5) if variant.gnomad_frequency }}
                                 {% else %}
                                   <span class="text-muted">Not annotated</span>
                                 {% endif %}
