@@ -395,7 +395,7 @@ class QueryHandler(object):
         if len(case_inds) == 1 and not gt_query:
             return
 
-        gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}
+        gt_query = gt_query or {"$nin": ["0/0", "./.", ".", "0", "./0", "0/."]}
 
         affected_query = {
             "$elemMatch": {
@@ -949,9 +949,15 @@ def _get_genotype_query(query):
     """
     q_value = query.get("genotypes")
     if q_value == "other":
-        return {"$nin": ["0/1", "1/1", "0/0", "1/0", "./."]}
+        return {"$nin": ["0/1", "0|1", "1/1", "1|1", "0/0", "1/0", "1|0", "./.", "."]}
     elif q_value == "0/1 or 1/0":
-        return {"$in": ["0/1", "1/0"]}
+        return {"$in": ["0/1", "1/0", "0|1", "1|0"]}
+    elif q_value == "./.":
+        return {"$in": ["./.", "."]}
+    elif q_value == "1/1":
+        return {"$in": ["1/1", "1|1", "1"]}
+    elif q_value == "0/0":
+        return {"$in": ["0/0", "0|0", "0"]}
     elif q_value:
         return q_value
 
