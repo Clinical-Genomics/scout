@@ -444,7 +444,7 @@
   {% if variant.category == "mei" %}
     {{ variant.swegen_mei_max|human_decimal(3) if variant.swegen_mei_max else '~' }}
   {% elif variant.chromosome != "MT" %}
-    {{ variant.gnomad_frequency|human_decimal(3) if variant.gnomad_frequency else '~' }}
+    {{ variant.gnomad_frequency|human_decimal(5) if variant.gnomad_frequency else '~' }}
   {% else %}
     {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal(3) if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
