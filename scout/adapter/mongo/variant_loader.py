@@ -317,7 +317,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            LOG.warning("Variant %s already exists in database - modifying", variant_obj["_id"])
+            LOG.error("Variant %s already exists in database - modifying", variant_obj["_id"])
             result = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"compounds": variant_obj.get("compounds", [])}},
@@ -325,32 +325,21 @@ class VariantLoader(object):
         return result
 
     def load_variant_bulk(self, variants: List[dict]) -> None:
-        """Load a batch of variants, keeping the highest-scoring variant when multiple variants share an ID.
-
-        Args:
-            variants: Variants to insert into the database.
-        """
+        """Load a batch of variants."""
         if len(variants) == 0:
             return
 
-        variants_by_id = {}
-        for variant in variants:
-            variant_id = variant["_id"]
-            existing = variants_by_id.get(variant_id)
-
-            if existing is None or variant["rank_score"] > existing["rank_score"]:
-                variants_by_id[variant_id] = variant
-
-        variants = list(variants_by_id.values())
-
+        LOG.debug("Loading variant bulk")
         try:
-            self.variant_collection.insert_many(variants)
-        except (DuplicateKeyError, BulkWriteError):
+            result = self.variant_collection.insert_many(variants)
+        except (DuplicateKeyError, BulkWriteError) as err:
+            # If the bulk write is wrong there are probably some variants already existing
+            # In the database. So insert each variant
             LOG.warning("Bulk insertion failed - attempting separate variant upsert for this bulk")
             for var_obj in variants:
                 try:
                     self.upsert_variant(var_obj)
-                except IntegrityError:
+                except IntegrityError as err:
                     pass
 
     def _load_variants(
@@ -489,13 +478,11 @@ class VariantLoader(object):
                         if len(images) > 0:
                             variant_obj["custom_images"] = images
 
-                    # Load the variant object
                     if load:
                         # If the variant bulk contains coding variants we want to update the compounds
                         if current_region:
                             self.update_compounds(bulk)
                         try:
-                            # Load the variants
                             self.load_variant_bulk(list(bulk.values()))
                             nr_bulks += 1
                         except IntegrityError as error:
@@ -504,14 +491,18 @@ class VariantLoader(object):
 
                     current_region = new_region
                     if var_id in bulk:
-                        LOG.warning(
-                            "Duplicated variant %s detected in same bulk. Attempting separate upsert.",
-                            variant_obj.get("simple_id"),
-                        )
-                        try:
-                            self.upsert_variant(variant_obj)
-                        except IntegrityError as err:
-                            pass
+                        existing_score = bulk[var_id].get("rank_score")
+
+                        if existing_score is None or (
+                            rank_score is not None and rank_score > existing_score
+                        ):
+                            LOG.warning(
+                                "Replacing variant %s in bulk with higher-scoring variant (score %s -> %s)",
+                                variant_obj.get("simple_id"),
+                                existing_score,
+                                rank_score,
+                            )
+                            bulk[var_id] = variant_obj
                     else:
                         bulk[var_id] = variant_obj
 
