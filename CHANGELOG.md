@@ -6,8 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)e
 ### Changed
+- New GnomAD frequency fields: WES, homalt, AC (#6591)
+- More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within loading batch (#6671)
 
 ## [4.115.2]
