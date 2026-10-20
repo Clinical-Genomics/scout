@@ -324,32 +324,34 @@ class VariantLoader(object):
             )
         return result
 
-    def load_variant_bulk(self, variants):
-        """Load a bulk of variants
+    def load_variant_bulk(self, variants: list[dict]) -> None:
+        """Load a batch of variants, keeping the highest-scoring variant when multiple variants share an ID.
 
         Args:
-            variants(iterable(scout.models.Variant))
-
-        Returns:
-            object_ids
+            variants: Variants to insert into the database.
         """
         if len(variants) == 0:
             return
 
-        LOG.debug("Loading variant bulk")
+        variants_by_id = {}
+        for variant in variants:
+            variant_id = variant["_id"]
+            existing = variants_by_id.get(variant_id)
+
+            if existing is None or variant["rank_score"] > existing["rank_score"]:
+                variants_by_id[variant_id] = variant
+
+        variants = list(variants_by_id.values())
+
         try:
-            result = self.variant_collection.insert_many(variants)
-        except (DuplicateKeyError, BulkWriteError) as err:
-            # If the bulk write is wrong there are probably some variants already existing
-            # In the database. So insert each variant
+            self.variant_collection.insert_many(variants)
+        except (DuplicateKeyError, BulkWriteError):
             LOG.warning("Bulk insertion failed - attempting separate variant upsert for this bulk")
             for var_obj in variants:
                 try:
                     self.upsert_variant(var_obj)
-                except IntegrityError as err:
+                except IntegrityError:
                     pass
-
-        return
 
     def _load_variants(
         self,
