@@ -186,11 +186,10 @@
 
           {% if link %}
             {% set links = link if link is iterable and link is not string else [link] %}
-
             {% for link in links %}
               {% if link %}
-                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">
-                  <i class="fa fa-external-link ms-1"></i>
+                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer" class="text-decoration-none">
+                  <i class="fas fa-external-link-alt ms-1" aria-hidden="true"></i>
                 </a>
               {% endif %}
             {% endfor %}
@@ -200,7 +199,7 @@
         <td class="py-1 px-2">
           {% if value %}
             <span class="badge bg-secondary" style="font-size: 0.75rem;">
-              {{ value|human_decimal }}
+              {{ value|human_decimal(5) }}
             </span>
           {% else %}
             -
