@@ -2,7 +2,7 @@
 import logging
 import sys
 from datetime import datetime
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, List, Optional
 
 import cyvcf2
 
@@ -324,15 +324,8 @@ class VariantLoader(object):
             )
         return result
 
-    def load_variant_bulk(self, variants):
-        """Load a bulk of variants
-
-        Args:
-            variants(iterable(scout.models.Variant))
-
-        Returns:
-            object_ids
-        """
+    def load_variant_bulk(self, variants: List[dict]) -> None:
+        """Insert variants in bulk, falling back to individual upserts if bulk insertion fails due to duplicate keys or write errors."""
         if len(variants) == 0:
             return
 
@@ -348,8 +341,6 @@ class VariantLoader(object):
                     self.upsert_variant(var_obj)
                 except IntegrityError as err:
                     pass
-
-        return
 
     def _load_variants(
         self,
@@ -487,13 +478,11 @@ class VariantLoader(object):
                         if len(images) > 0:
                             variant_obj["custom_images"] = images
 
-                    # Load the variant object
                     if load:
                         # If the variant bulk contains coding variants we want to update the compounds
                         if current_region:
                             self.update_compounds(bulk)
                         try:
-                            # Load the variants
                             self.load_variant_bulk(list(bulk.values()))
                             nr_bulks += 1
                         except IntegrityError as error:
@@ -501,17 +490,24 @@ class VariantLoader(object):
                         bulk = {}
 
                     current_region = new_region
-                    if var_id in bulk:
-                        LOG.warning(
-                            "Duplicated variant %s detected in same bulk. Attempting separate upsert.",
-                            variant_obj.get("simple_id"),
-                        )
-                        try:
-                            self.upsert_variant(variant_obj)
-                        except IntegrityError as err:
-                            pass
-                    else:
+                    if var_id not in bulk:
                         bulk[var_id] = variant_obj
+                    else:
+                        existing_variant = bulk[var_id]
+                        existing_score = existing_variant.get("rank_score")
+
+                        if (
+                            existing_score is not None
+                            and rank_score is not None
+                            and rank_score > existing_score
+                        ):
+                            LOG.warning(
+                                "Replacing id identical variant %s in bulk with one of higher score (%s -> %s)",
+                                variant_obj.get("simple_id"),
+                                existing_score,
+                                rank_score,
+                            )
+                            bulk[var_id] = variant_obj
 
                     if nr_variants != 0 and nr_variants % 5000 == 0:
                         LOG.info("%s variants parsed", str(nr_variants))
