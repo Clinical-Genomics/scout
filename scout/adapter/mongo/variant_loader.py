@@ -490,20 +490,19 @@ class VariantLoader(object):
                         bulk = {}
 
                     current_region = new_region
-                    if var_id in bulk:
-                        existing_score = bulk[var_id].get("rank_score")
-
-                        if existing_score is None or (
-                            rank_score is not None and rank_score > existing_score
-                        ):
-                            LOG.warning(
-                                "Replacing variant %s in bulk with higher-scoring variant (score %s -> %s)",
-                                variant_obj.get("simple_id"),
-                                existing_score,
-                                rank_score,
-                            )
-                            bulk[var_id] = variant_obj
-                    else:
+                    if var_id not in bulk:
+                        bulk[var_id] = variant_obj
+                    elif (
+                        bulk[var_id].get("rank_score") is not None
+                        and rank_score is not None
+                        and rank_score > bulk[var_id]["rank_score"]
+                    ):
+                        LOG.debug(
+                            "Replacing variant %s in bulk with higher score (%s -> %s)",
+                            variant_obj.get("simple_id"),
+                            bulk[var_id]["rank_score"],
+                            rank_score,
+                        )
                         bulk[var_id] = variant_obj
 
                     if nr_variants != 0 and nr_variants % 5000 == 0:
