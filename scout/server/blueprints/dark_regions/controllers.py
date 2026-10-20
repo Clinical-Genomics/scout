@@ -1,5 +1,6 @@
 import logging
 
+from scout.adapter.mongo import MongoAdapter
 from scout.constants import GENOME_REGION, INHERITANCE_PALETTE
 from scout.server.blueprints.cases.controllers import _get_events, _populate_case_individuals
 from scout.server.blueprints.dark_regions.helpers import SMN_HGNC_IDS, _get_paraphrase_regions
@@ -8,7 +9,12 @@ from scout.server.utils import case_has_alignments, get_case_genome_build
 LOG = logging.getLogger(__name__)
 
 
-def sma_case(store, institute_obj, case_obj, selected_gene_panels=None):
+def sma_case(
+    store: MongoAdapter,
+    institute_obj: dict,
+    case_obj: dict,
+    selected_gene_panels: list | None = None,
+):
     """Preprocess a case for the dark regions SMA view."""
 
     _populate_case_individuals(case_obj)

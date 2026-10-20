@@ -27,7 +27,7 @@ dark_regions_bp = Blueprint(
 
 @dark_regions_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
 @templated("dark_regions/sma_dark.html")
-def sma(institute_id, case_name):
+def sma(institute_id: str, case_name: str):
     """Visualize case SMA and other dark region data."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     sma_filter_form = SmaPanelFilterForm(request.args)
