@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
-- Keep the highest-scoring variant when duplicate IDs occur within loading batch (#6671)
+- Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
 
 ## [4.115.2]
 ### Changed
