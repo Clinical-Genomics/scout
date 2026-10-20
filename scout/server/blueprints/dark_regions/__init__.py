@@ -1,1 +1,1 @@
-# Intentionally left minimal to avoid importing blueprint views during package import.
+# Nothing to see here. The blueprint is imported directly from create_app.
