@@ -317,7 +317,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            LOG.error("Variant %s already exists in database - modifying", variant_obj["_id"])
+            LOG.warning("Variant %s already exists in database - modifying", variant_obj["_id"])
             result = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"compounds": variant_obj.get("compounds", [])}},
