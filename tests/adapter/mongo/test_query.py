@@ -194,7 +194,7 @@ def test_genotype_query_heterozygous(adapter, case_obj):
     query = {"genotypes": "0/1 or 1/0", "show_unaffected": True}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
     # THEN mongo query should contain the expected value
-    assert mongo_query["$and"] == [{"samples.genotype_call": {"$in": ["0/1", "1/0"]}}]
+    assert mongo_query["$and"] == [{"samples.genotype_call": {"$in": ["0/1", "1/0", "0|1", "1|0"]}}]
 
 
 def test_genotype_query_heterozygous_affected_only(adapter, case_obj):
@@ -209,7 +209,7 @@ def test_genotype_query_heterozygous_affected_only(adapter, case_obj):
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
     # THEN mongo query should contain the expected value
     assert mongo_query["samples"]["$elemMatch"]["$or"][0]["genotype_call"] == {
-        "$in": ["0/1", "1/0"]
+        "$in": ["0/1", "1/0", "0|1", "1|0"]
     }
 
 
