@@ -23,12 +23,38 @@
 ## What is Scout?
 
 - **Simple** - Analyze variants in a simple to use web interface.
-- **Aggregation** - Combine results from multiple analyses and VCFs into a centralized database.
+- **Aggregation** - Combine results from multiple analyses, analysis modalities and VCFs into a centralized database.
 - **Collaboration** - Write comments and share cases between users and institutes.
+
+## Why use Scout?
+
+- **Clinically relevant** - Scout is a variant triage system used in clinical practice at several hospitals and clinics in Sweden, and is being adopted internationally.
+- **Open source** - Scout is open source and free to use, actively maintained by an active community where contributions are encouraged.
+- **Research ready** - Scout is used in research projects and is being developed to support research use cases.
+
+## Multiomics
+
+Data from multiple sequencing modalities and caller types can be loaded into Scout and analyzed together. This includes among others:
+- Short read sequencing (SRS) WGS, WES, gene panels
+- RNA-seq: isoform changes, RNA fusion, RNA expression
+- Long read sequencing (LRS) WGS, WES, gene panels
+- Optical mapping data from BioNano Genomics
+- Somatic variant calling from tumor-normal pairs, or tumor-only samples
+- Structural variant calling, including copy number variants
+- Short tandem repeat expansions
+- Mobile element insertions
+- Mitochondrial variant calling reports
+- Methylation data and outliers from long read sequencing data
+- Dark region variant and copy number calling
+
+## Multiple pipelines
+
+Scout is compatible with a range of genomics pipelines, and open to support new pipelines. For a list of supported pipelines, see the [FAQ](docs/faq.md).
 
 ## Documentation
 
 This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: https://clinical-genomics.github.io/scout .
+This is divided into a user guide, and an admin guide. For some common questions and answers, please see our [FAQ](docs/faq.md) or the discussions on GitHub.
 
 ## Runnable demo image - does not require installing of software and database
 
@@ -50,7 +76,7 @@ Instructions on how to run a Scout image connected to your local database or a c
 
 ## Installation
 
-Here is a quick start. Please see e.g. the [Installation instructions](docs/install.md) for more details.
+Here is a quick start. Please see e.g. the [Installation instructions](docs/install.md) or the [Admin guide - setup](docs/admin-guide/setup-scout.md) for more details.
 
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
@@ -240,12 +266,23 @@ pytest
 ```
 
 
+### Citations
+
+Please cite this website and the Scout software in your publications if you use it for your research.
+
+See the following for a selection of publications that have done so:
+[Stranneheim et al, Genome Medicine, 2021](https://doi.org/10.1186/s13073-021-00855-5)
+[Ek et al, Frontiers Neurology, 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10234573/)
+[Delgado-Vega et al, Nature Genetics, 2024](https://pmc.ncbi.nlm.nih.gov/articles/PMC12198426/)
+[Lindstrand et al, Genome Medicine, 2026](https://doi.org/10.1186/s13073-026-01611-3)
+
 ### Contributing to Scout
 
-If you want to contribute and make Scout better, you help is very appreciated! Bug reports or
-feature requests are really helpful and can be submitted via github issues.
+If you want to contribute and make Scout better, your help is most appreciated! Bug reports or
+feature requests are really helpful and can be submitted via GitHub issues.
 Feel free to open a pull request to add a new functionality or fixing a bug. We welcome any help,
-regardless of the amount of code provided or your skills as a programmer.
+regardless of the amount of code provided or your skills as a programmer. LLM refactors and code suggestions are also welcome,
+as long as they are tested and verified to work, but please try to stick to code you understand and could reasonably maintain.
 More info on how to contribute to the project and a description of the Scout branching workflow can
 be found in [CONTRIBUTING](CONTRIBUTING.md).
 
