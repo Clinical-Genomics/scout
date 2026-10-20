@@ -502,7 +502,7 @@ class VariantLoader(object):
                             and rank_score > existing_score
                         ):
                             LOG.warning(
-                                "Replacing variant %s in bulk with higher score (%s -> %s)",
+                                "Replacing id identical variant %s in bulk with one of higher score (%s -> %s)",
                                 variant_obj.get("simple_id"),
                                 existing_score,
                                 rank_score,
