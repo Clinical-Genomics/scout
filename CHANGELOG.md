@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
+- Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
 
 ## [4.115.2]
 ### Changed
