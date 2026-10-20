@@ -325,7 +325,7 @@ class VariantLoader(object):
         return result
 
     def load_variant_bulk(self, variants: List[dict]) -> None:
-        """Load a batch of variants."""
+        """Insert variants in bulk, falling back to individual upserts if bulk insertion fails due to duplicate keys or write errors."""
         if len(variants) == 0:
             return
 
