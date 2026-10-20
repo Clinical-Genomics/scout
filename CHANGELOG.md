@@ -8,7 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 ### Fixed
+- New GnomAD frequency fields: WES, homalt, AC (#6591)
 - Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
+### Changed
+- More significant digits for GnomAD frequency fields (#6591)
 
 ## [4.115.2]
 ### Changed
