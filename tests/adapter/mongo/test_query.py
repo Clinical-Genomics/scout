@@ -65,7 +65,7 @@ def test_build_query_hide_not_in_affected(adapter, case_obj):
             "$or": [
                 {
                     "sample_id": case_obj["individuals"][0]["individual_id"],
-                    "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
+                    "genotype_call": {"$nin": ["0/0", "./.", ".", "0", "./0", "0/."]},
                 }
             ]
         }
@@ -221,7 +221,11 @@ def test_genotype_query_other(adapter, case_obj):
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
     # THEN mongo query should contain the expected value
     assert mongo_query["$and"] == [
-        {"samples.genotype_call": {"$nin": ["0/1", "1/1", "0/0", "1/0", "./."]}}
+        {
+            "samples.genotype_call": {
+                "$nin": ["0/1", "0|1", "1/1", "1|1", "0/0", "1/0", "1|0", "./.", "."]
+            }
+        }
     ]
 
 
