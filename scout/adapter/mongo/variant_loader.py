@@ -2,7 +2,7 @@
 import logging
 import sys
 from datetime import datetime
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, List, Optional
 
 import cyvcf2
 
@@ -324,7 +324,7 @@ class VariantLoader(object):
             )
         return result
 
-    def load_variant_bulk(self, variants: list[dict]) -> None:
+    def load_variant_bulk(self, variants: List[dict]) -> None:
         """Load a batch of variants, keeping the highest-scoring variant when multiple variants share an ID.
 
         Args:
