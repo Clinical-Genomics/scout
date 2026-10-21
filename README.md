@@ -29,7 +29,7 @@
 ## Why use Scout?
 
 - **Clinically relevant** - Scout is a variant triage system used in clinical practice at several hospitals and clinics in Sweden, and is being adopted internationally.
-- **Open source** - Scout is open source and free to use, actively maintained by an active community where contributions are encouraged.
+- **Open source** - Scout is open source and free to use, maintained by an active community.
 - **Research ready** - Scout is used in research projects and is being developed to support research use cases.
 
 ## Multiomics

@@ -29,7 +29,7 @@ Say hi to the developers in a GitHub issue or discussion, describe your pipeline
 
 Rest assured you are not the first to suggest it. Scout displays variants sorted by a rank score. This is intentional, encouraging the user to focus on the most likely causal variants first.
 You can however filter the variants by selecting options on the filter panel which usually solves the intended use case.
-You are encouraged to save your filter settings as a named custom filter, and you can use the "Audit "
+You are encouraged to save and reuse your filter settings as a named custom filter, and you can use the "Audit filter" function to log the investigation to the case audit log.
 If you are missing a filter option, please open a GitHub issue or discussion and we will consider adding it.
 
 
