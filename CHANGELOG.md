@@ -11,8 +11,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
+<<<<<<< HEAD
 - Documentation README overview of recent functionality, and link to the FAQ page for supported pipelines (#6674)
 - Fix STR genotype depth parsing for NumPy strings ()
+=======
+- Fix STR genotype depth parsing for NumPy strings (#6676)
+>>>>>>> 35b11bcbf (PR ref)
 
 ## [4.115.2]
 ### Changed
