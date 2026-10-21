@@ -87,7 +87,6 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
     """
-    print(variant)
     gt_call = {"individual_id": ind["individual_id"], "display_name": ind["display_name"]}
 
     # Fill the object with the relevant information:
@@ -162,7 +161,6 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     gt_call["split_read"] = split_read_alt
     gt_call["copy_number"] = get_copy_number(variant, pos)
 
-    print(f"FINAL GT call is:{gt_call}\n\n\n")
     return gt_call
 
 
@@ -375,20 +373,6 @@ def get_ref_depth(
     spanning_mei_ref: int,
 ) -> int:
     """Get reference read depth"""
-
-    print(
-        f"get_ref_depth: variant={variant.CHROM}:{variant.POS}, "
-        f"sample_index={pos}, "
-        f"paired_end_ref={paired_end_ref}, "
-        f"split_read_ref={split_read_ref}, "
-        f"spanning_ref={spanning_ref}, "
-        f"flanking_ref={flanking_ref}, "
-        f"inrepeat_ref={inrepeat_ref}, "
-        f"sd_ref={sd_ref}, "
-        f"spanning_mei_ref={spanning_mei_ref}, "
-        f"gt_ref_depth={variant.gt_ref_depths[pos]}"
-    )
-
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth != -1:
         return ref_depth
@@ -421,7 +405,6 @@ def get_alt_depth(
     clip3_alt: int,
 ) -> int:
     """Get alternative read depth"""
-
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth != -1:
         return alt_depth
@@ -488,11 +471,6 @@ def _parse_format_entry(
     if format_entry_name in variant.FORMAT:
         try:
             requested_format_entry = variant.format(format_entry_name)[pos]
-
-            print(
-                f"FORMAT={format_entry_name}, sample_index={pos}, "
-                f"raw={requested_format_entry!r}, type={type(requested_format_entry)}"
-            )
 
             values = (
                 split_values([str(requested_format_entry)])
