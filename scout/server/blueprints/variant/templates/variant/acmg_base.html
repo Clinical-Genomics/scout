@@ -78,13 +78,13 @@
                     {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
                   {% endif %}
                   <div class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
+                    <div class="row">
+                      <div class="col-xxl-9 col-xl-7 col-sm-6 col-4 me-auto" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
                         <span class="badge bg-info me-1">{{ criterion_code }}</span>
                         {{ criterion.short|safe}}
                       </div>
-                      <div><span id="{{ criterion_code }}-current-score-contribution" class="badge rounded-pill bg-light text-dark" style="font-size:1.1em"</span></div>
-                      <div class="form-check form-switch">
+                      <div class="col-xxl-2 col-xl-3 col-sm-4 col-4"><span id="{{ criterion_code }}-current-score-contribution" class="badge rounded-pill bg-light text-dark" style="font-size:1.1em"</span></div>
+                      <div class="col-xxl-1 col-xl-2 col-sm-2 col-4 form-check form-switch">
                         <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" onchange="updateCriterionContribution('{{ criterion_code }}');" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
                         <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
