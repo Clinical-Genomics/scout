@@ -93,11 +93,16 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
 
     if "GT" in variant.FORMAT:
         genotype = variant.genotypes[pos]
-        ref_call = genotype[0]
-        alt_call = genotype[1]
+        alleles, phased = _extract_genotype_alleles(genotype)
 
-        phase_sep = "|" if variant.gt_phases[pos] else "/"
-        gt_call["genotype_call"] = phase_sep.join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
+        # Fall back to gt_phases for callers/parsers where phase info is not embedded in GT.
+        if phased is None:
+            phased = bool(variant.gt_phases[pos])
+
+        phase_sep = "|" if phased else "/"
+        gt_call["genotype_call"] = phase_sep.join(
+            _genotype_call_symbol(allele) for allele in alleles
+        )
 
     # STR specific
     gt_call["so"] = get_str_so(variant, pos)
@@ -455,6 +460,42 @@ def split_values(values: List[str]) -> List[str]:
     return values
 
 
+def _genotype_call_symbol(allele: int) -> str:
+    """Map internal allele integers to VCF-style genotype chars."""
+    return GENOTYPE_MAP.get(allele, str(allele))
+
+
+def _extract_genotype_alleles(genotype: list) -> Tuple[List[int], Optional[bool]]:
+    """Extract alleles/phase from cyvcf2 genotype arrays.
+
+    cyvcf2 commonly returns [a0, a1, phased] for diploid calls, but for mixed
+    ploidy records it may return padded arrays where `phased` appears before
+    trailing filler values (e.g. [a0, phased, filler]). The filler value is -2.
+
+    There is a risk of misinterpreting a phase indicator as an allele, since bool is a subclass of int.
+    We avoid this by checking for bool first.
+    """
+    if not genotype:
+        return ([-1], None)
+
+    alleles: List[int] = []
+    phased: Optional[bool] = None
+    for value in genotype:
+
+        if isinstance(value, bool):
+            phased = value
+            break
+        allele = int(value)
+        if allele < -1:
+            continue
+        alleles.append(allele)
+
+    if not alleles:
+        alleles = [-1]
+
+    return (alleles, phased)
+
+
 def _parse_format_entry(
     variant: cyvcf2.Variant,
     pos: int,
@@ -551,10 +592,10 @@ def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
 
     ref_idx = None
     gt = variant.genotypes[pos]
-    if gt:
-        for idx, allele in enumerate(gt):
-            if allele == 0:
-                ref_idx = idx
+    gt_alleles, _ = _extract_genotype_alleles(gt)
+    for idx, allele in enumerate(gt_alleles):
+        if allele == 0:
+            ref_idx = idx
 
     pathologic_struc = _get_pathologic_struc(variant)
 
