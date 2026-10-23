@@ -472,9 +472,8 @@ def _parse_format_entry(
             requested_format_entry = variant.format(format_entry_name)[pos]
 
             values = (
-                split_values([str(requested_format_entry)])
+                split_values([requested_format_entry])
                 if isinstance(requested_format_entry, str)
-                or type(requested_format_entry).__name__ == "str_"
                 else requested_format_entry
             )
 
@@ -522,8 +521,8 @@ def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
     pathologic_struc_entry = variant.INFO.get("PathologicStruc", None)
     if not pathologic_struc_entry:
         return pathologic_struc_entry
-    if isinstance(pathologic_struc_entry, str) or type(pathologic_struc_entry).__name__ == "str_":
-        return ast.literal_eval(str(pathologic_struc_entry))
+    if isinstance(pathologic_struc_entry, str):
+        return ast.literal_eval(pathologic_struc_entry)
     if isinstance(pathologic_struc_entry, list):
         return pathologic_struc_entry
 
