@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
-- Add an optional beta feature to load variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use (#6657)
+- Add an optional beta feature to load cases and researcg variants using the external Rust-based scout_loader when loading a new case. Not yet tested for production use (#6657)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)

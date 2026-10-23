@@ -76,23 +76,20 @@ def temp_case_config_from_case_dict(case_obj: dict) -> Iterator[TextIO]:
         ],
     }
 
-    RESEARCH_VCF_FIELDS = [
+    research_vcf_fields = [
+        "vcf_snv_research",
         "vcf_sv_research",
         "vcf_snv_research_mt",
-        "vcf_sv_research",
         "vcf_sv_research_mt",
         "vcf_mei_research",
         "vcf_cancer_research",
         "vcf_cancer_sv_research",
         "vcf_fusion_research",
     ]
-    case_config.update(
-        {
-            key: case_obj.get("vcf_files", []).get(key)
-            for key in RESEARCH_VCF_FIELDS
-            if key in case_obj
-        }
-    )
+
+    vcf_files = case_obj.get("vcf_files", {})
+
+    case_config.update({key: vcf_files[key] for key in research_vcf_fields if key in vcf_files})
 
     LOG.warning(case_config)
 
