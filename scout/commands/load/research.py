@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
+import tempfile
+from contextlib import contextmanager
 from os import path
-from typing import Optional
+from typing import Iterator, Optional, TextIO
 
 import click
+import yaml
+from flask import current_app
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
@@ -56,6 +60,48 @@ def get_case_and_institute(
     return case_id, institute_id
 
 
+@contextmanager
+def temp_case_config_from_case_dict(case_obj: dict) -> Iterator[TextIO]:
+    """Create a temporary case config YAML file from a case dictionary."""
+    case_config = {
+        "family": case_obj["_id"],
+        "owner": case_obj["owner"],
+        "human_genome_build": case_obj["genome_build"],
+        "rank_score_threshold": int(case_obj["rank_score_threshold"]),
+        "samples": [
+            {
+                "sample_id": individual["individual_id"],
+            }
+            for individual in case_obj.get("individuals", [])
+        ],
+        "gene_panels": [panel["panel_name"] for panel in case_obj.get("gene_panels", [])],
+    }
+
+    research_vcf_fields = [
+        "vcf_snv_research",
+        "vcf_sv_research",
+        "vcf_snv_research_mt",
+        "vcf_sv_research_mt",
+        "vcf_mei_research",
+        "vcf_cancer_research",
+        "vcf_cancer_sv_research",
+        "vcf_fusion_research",
+    ]
+
+    vcf_files = case_obj.get("vcf_files", {})
+
+    case_config.update({key: vcf_files[key] for key in research_vcf_fields if key in vcf_files})
+
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        suffix=".yaml",
+        encoding="utf-8",
+    ) as yaml_file:
+        yaml.safe_dump(case_config, yaml_file, sort_keys=False)
+        yaml_file.flush()
+        yield yaml_file
+
+
 @click.command(short_help="Upload research variants")
 @click.option("-c", "--case-id", help="family or case id")
 @click.option("-i", "--institute", help="institute id of related cases")
@@ -88,10 +134,17 @@ def research(case_id, institute, force):
     raise_file_not_found = False
     missing_per_case = {}
 
+    external_variants_loader = current_app.config.get("VARIANTS_LOADER")
+
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
             continue
+
+        if external_variants_loader:
+            with temp_case_config_from_case_dict(case_obj=case_obj) as yaml_file:
+                adapter.run_scout_loader(case_config=yaml_file, research=True)
+                continue
 
         files = False
 
