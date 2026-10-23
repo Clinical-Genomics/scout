@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 class ExternalVariantLoader:
     """Run external variant loaders."""
 
-    def run_scout_loader(self, case_config: TextIO) -> None:
+    def run_scout_loader(self, case_config: TextIO, research: bool = False) -> None:
         """Run scout_loader using the provided case configuration file.
 
         Create a temporary TOML configuration with Scout's MongoDB connection
@@ -22,7 +22,8 @@ class ExternalVariantLoader:
         scout_loader (https://github.com/Clinical-Genomics/scout_loader)
 
         Args:
-            case_config: Open file containing the case configuration YAML.
+            case_config: file containing the case configuration YAML.
+            research: load research variants instead of clinical variants
 
         Raises:
             subprocess.CalledProcessError: If scout_loader exits with a non-zero status.
@@ -36,13 +37,15 @@ class ExternalVariantLoader:
                 encoding="utf-8",
             )
 
-            subprocess.run(
-                [
-                    current_app.config["VARIANTS_LOADER"],
-                    "--case-config",
-                    str(case_config.name),
-                    "--config",
-                    str(mongo_config_path),
-                ],
-                check=True,
-            )
+            command = [
+                current_app.config["VARIANTS_LOADER"],
+                "--case-config",
+                str(case_config.name),
+                "--config",
+                str(mongo_config_path),
+            ]
+
+            if research:
+                command.append("--research")
+
+            subprocess.run(command, check=True)
