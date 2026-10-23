@@ -24,7 +24,6 @@ import math
 from typing import Dict, List, Optional, Tuple, Union
 
 import cyvcf2
-import numpy as np
 
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 LOG = logging.getLogger(__name__)
@@ -474,7 +473,8 @@ def _parse_format_entry(
 
             values = (
                 split_values([str(requested_format_entry)])
-                if isinstance(requested_format_entry, (str, np.str_))
+                if isinstance(requested_format_entry, str)
+                or type(requested_format_entry).__name__ == "str_"
                 else requested_format_entry
             )
 
@@ -522,9 +522,9 @@ def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
     pathologic_struc_entry = variant.INFO.get("PathologicStruc", None)
     if not pathologic_struc_entry:
         return pathologic_struc_entry
-    if type(pathologic_struc_entry) is str:
-        return ast.literal_eval(pathologic_struc_entry)
-    if type(pathologic_struc_entry) is list:
+    if isinstance(pathologic_struc_entry, str) or type(pathologic_struc_entry).__name__ == "str_":
+        return ast.literal_eval(str(pathologic_struc_entry))
+    if isinstance(pathologic_struc_entry, list):
         return pathologic_struc_entry
 
 
