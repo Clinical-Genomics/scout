@@ -74,6 +74,7 @@ def temp_case_config_from_case_dict(case_obj: dict) -> Iterator[TextIO]:
             }
             for individual in case_obj.get("individuals", [])
         ],
+        "gene_panels": [panel["panel_name"] for panel in case_obj.get("gene_panels", [])],
     }
 
     research_vcf_fields = [
