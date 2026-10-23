@@ -91,8 +91,6 @@ def temp_case_config_from_case_dict(case_obj: dict) -> Iterator[TextIO]:
 
     case_config.update({key: vcf_files[key] for key in research_vcf_fields if key in vcf_files})
 
-    LOG.warning(case_config)
-
     with tempfile.NamedTemporaryFile(
         mode="w",
         suffix=".yaml",
