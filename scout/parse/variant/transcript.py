@@ -110,7 +110,8 @@ def parse_transcripts(raw_transcripts):
         superdups_fractmatch = entry.get("GENOMIC_SUPERDUPS_FRAC_MATCH")
         if superdups_fractmatch:
             transcript["superdups_fracmatch"] = [
-                float(fractmatch) for fractmatch in superdups_fractmatch.split("&")
+                float(value) if value != "..." else None
+                for value in superdups_fractmatch.split("&")
             ]
 
         # Get mitochondrial gnomAD frequencies
