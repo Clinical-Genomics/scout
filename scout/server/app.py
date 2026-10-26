@@ -34,6 +34,7 @@ from .blueprints import (
     variant,
     variants,
 )
+from .blueprints.dark_regions.views import dark_regions_bp
 from .filters import register_template_filters
 
 LOG = logging.getLogger(__name__)
@@ -205,6 +206,7 @@ def register_blueprints(app):
     app.register_blueprint(dashboard.dashboard_bp)
     app.register_blueprint(api.api_bp)
     app.register_blueprint(alignviewers.alignviewers_bp)
+    app.register_blueprint(dark_regions_bp)
     app.register_blueprint(phenotypes.hpo_bp)
     app.register_blueprint(phenomodels.phenomodels_bp)
     app.register_blueprint(regions.regions_bp)
