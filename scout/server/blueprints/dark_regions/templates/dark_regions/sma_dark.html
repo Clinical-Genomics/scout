@@ -20,13 +20,13 @@
     padding: 0.25rem 0;
     font-size: 0.75rem;
     font-weight: 600;
-    word-break: break-word;
+    word-break: break-all;
     white-space: normal;
     border-bottom: 1px solid #dee2e6;
   }
   .paraphrase-nested-table tbody tr td {
     padding: 0.25rem 0;
-    word-break: break-word;
+    word-break: break-all;
     white-space: normal;
     font-size: 0.875rem;
     line-height: 1.25;
@@ -109,7 +109,7 @@
             <i class="fa fa-chevron-right chevron-icon"></i>
           </button>
         </div>
-        <form method="get" action="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">
+        <form method="get" action="{{ url_for('dark_regions.sma', institute_id=institute._id, case_name=case.display_name) }}">
           <div class="card-body panel-collapse collapse{{ ' show' if expand_search }}" id="collapseFilters">
             <div class="row">
             {{ sma_filter_form.panel_filter_applied(value="1") }}
@@ -129,7 +129,7 @@
             <div class="row mt-2">
               <div class="col-4 d-flex  align-items-end">
                 <button type="submit" class="btn btn-primary btn-sm me-2">Apply filter</button>
-                <a class="btn btn-secondary text-white btn-sm" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
+                <a class="btn btn-secondary text-white btn-sm" href="{{ url_for('dark_regions.sma', institute_id=institute._id, case_name=case.display_name) }}">Reset</a>
               </div>
             </div>
           </div>
@@ -374,7 +374,7 @@
              <th data-bs-toggle='tooltip' data-bs-container='body'
               title="SMN2 Estimated Copy Number" style="width: 5%">SMN2 CN</th>
               <th data-bs-toggle='tooltip' data-bs-container='body'
-               title="SMN2Δ7–8 (SMN2 with deletion of Exon 7-8) Estimated Copy Number" style="width: 10%">SMN2Δ7–8_CN</th>
+               title="SMN2Δ7-8 (SMN2 with deletion of Exon 7-8) Estimated Copy Number" style="width: 10%">SMN2Δ7-8_CN</th>
                <th data-bs-toggle='tooltip' data-bs-container='body'
                 title="g.27134T>G_CN Estimated Copy Number - an SNP associated with 2+0 silent carrier" style="width: 10%">g.27134T>G CN</th>
             <th data-bs-toggle='tooltip' data-bs-container='body'
@@ -417,3 +417,4 @@
 {% block scripts %}
 {{ super() }}
 {% endblock %}
+

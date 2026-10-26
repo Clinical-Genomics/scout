@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
 - Documentation README overview of recent functionality, and link to the FAQ page for supported pipelines (#6674)
+- Move Dark regions/SMN to a separate blueprint (#6675)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
 
