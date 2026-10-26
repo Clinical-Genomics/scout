@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Move Dark regions/SMN to a separate blueprint (#6675)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
+- Fix STR genotype depth parsing for NumPy strings (#6676)
 
 ## [4.115.2]
 ### Changed
