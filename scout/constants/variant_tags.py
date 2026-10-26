@@ -109,12 +109,27 @@ VARIANT_GENOTYPE_CHOICES = (
     ("./.", "Both alleles missing (./.)"),
     ("other", "Other"),
 )
-# The "other" option is used to filter for genotypes that are not in the other categories, and joined in query.py.
+# The "other" option is used to filter for genotypes that are NOT in the other clear categories - currently this includes e.g. "./0" and similar.
 VARIANT_GENOTYPE_FILTERS = {
     "0/1 or 1/0": ["0/1", "1/0", "0|1", "1|0"],
     "./.": ["./.", ".|.", "."],
     "1/1": ["1/1", "1|1", "1"],
     "0/0": ["0/0", "0|0", "0"],
+    "other": [
+        "0/1",
+        "1/0",
+        "0|1",
+        "1|0",
+        "./.",
+        ".|.",
+        ".",
+        "1/1",
+        "1|1",
+        "1",
+        "0/0",
+        "0|0",
+        "0",
+    ],
 }
 
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")

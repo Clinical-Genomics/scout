@@ -948,18 +948,13 @@ def _get_genotype_query(query) -> dict | None:
     Args:
         query(dict): form dictionary with variantS query terms
     """
-    variant_genotype_filters = VARIANT_GENOTYPE_FILTERS
 
     q_value = query.get("genotypes")
 
     if q_value == "other":
-        variant_genotype_filters["other"] = []
-        for gt in variant_genotype_filters:
-            if gt != "other":
-                variant_genotype_filters["other"].extend(variant_genotype_filters[gt])
-        return {"$nin": variant_genotype_filters[q_value]}
-    elif q_value in variant_genotype_filters:
-        return {"$in": variant_genotype_filters[q_value]}
+        return {"$nin": VARIANT_GENOTYPE_FILTERS[q_value]}
+    elif q_value in VARIANT_GENOTYPE_FILTERS:
+        return {"$in": VARIANT_GENOTYPE_FILTERS[q_value]}
     elif q_value:
         return q_value
     else:
