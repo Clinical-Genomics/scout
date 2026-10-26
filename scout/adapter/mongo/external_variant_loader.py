@@ -30,7 +30,6 @@ class ExternalVariantLoader:
         self, case_obj: dict, is_research: False
     ) -> Iterator[TextIO]:
         """Create a temporary case config YAML file from a case dictionary."""
-        LOG.warning(case_obj)
         case_config = {
             "family": case_obj.get("_id", case_obj.get("case_id")),
             "owner": case_obj["owner"],
