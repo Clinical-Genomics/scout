@@ -101,7 +101,7 @@ GENETIC_MODELS_PALETTE = {
 }
 
 # Used for filtering variants in blueprints.variants
-VARIANT_GENOTYPES = (
+VARIANT_GENOTYPE_CHOICES = (
     ("", ""),
     ("0/1 or 1/0", "Heterozygous (0/1 or 1/0)"),
     ("1/1", "Homozygous (1/1)"),
@@ -109,6 +109,28 @@ VARIANT_GENOTYPES = (
     ("./.", "Both alleles missing (./.)"),
     ("other", "Other"),
 )
+# The "other" option is used to filter for genotypes that are NOT in the other clear categories - currently this includes e.g. "./0" and similar.
+VARIANT_GENOTYPE_FILTERS = {
+    "0/1 or 1/0": ["0/1", "1/0", "0|1", "1|0"],
+    "./.": ["./.", ".|.", "."],
+    "1/1": ["1/1", "1|1", "1"],
+    "0/0": ["0/0", "0|0", "0"],
+    "other": [
+        "0/1",
+        "1/0",
+        "0|1",
+        "1|0",
+        "./.",
+        ".|.",
+        ".",
+        "1/1",
+        "1|1",
+        "1",
+        "0/0",
+        "0|0",
+        "0",
+    ],
+}
 
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 

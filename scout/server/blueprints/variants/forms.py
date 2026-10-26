@@ -34,7 +34,7 @@ from scout.constants import (
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
-    VARIANT_GENOTYPES,
+    VARIANT_GENOTYPE_CHOICES,
 )
 from scout.constants.disease_parsing import DISEASE_INHERITANCE_TERMS_MAPPER
 from scout.constants.filters import (
@@ -118,7 +118,7 @@ class VariantFiltersForm(FlaskForm):
         label="OMIM Genetic Models",
         choices=[(code, term) for term, code in DISEASE_INHERITANCE_TERMS_MAPPER.items()],
     )
-    genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
+    genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPE_CHOICES)
 
     cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
     revel = BetterDecimalField("REVEL", validators=[validators.Optional()])

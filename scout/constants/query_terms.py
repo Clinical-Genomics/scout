@@ -76,7 +76,9 @@ SECONDARY_CRITERIA = [
 
 GT_NO_ALT_CALL = [
     "./.",
+    ".",
     ".|.",
+    "0",
     "./0",
     ".|0",
     "0/.",
