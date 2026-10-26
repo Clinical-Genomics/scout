@@ -78,20 +78,21 @@
                     {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
                   {% endif %}
                   <div class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
+                    <div class="row">
+                      <div class="col-xxl-9 col-xl-7 col-sm-6 col-4 me-auto" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description|safe }}">
                         <span class="badge bg-info me-1">{{ criterion_code }}</span>
                         {{ criterion.short|safe}}
                       </div>
-                      <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
+                      <div class="col-xxl-2 col-xl-3 col-sm-4 col-4"><span id="{{ criterion_code }}-current-score-contribution" class="badge rounded-pill bg-light text-dark" style="font-size:1.1em"</span></div>
+                      <div class="col-xxl-1 col-xl-2 col-sm-2 col-4 form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" onchange="updateCriterionContribution('{{ criterion_code }}');" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation and edit is false }}>
                         <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe }}</span></div>{% endif %}
                       <div class="row">
-                        <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
+                        <select {{ 'disabled' if evaluation and edit is false}} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select" onchange="updateCriterionContribution('{{ criterion_code }}');">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
                           {% set sa_level = "Stand-alone" %}
                           {% if category == "pathogenicity" %}
@@ -176,6 +177,44 @@
       });
     });
 
+    function getCriterionTerm(criterionCode) {
+      const checkbox = document.getElementById(`checkbox-${criterionCode}`);
+
+      if (!checkbox || !checkbox.checked) {
+        return null;
+      }
+
+      const modifier = document.getElementById(`modifier-${criterionCode}`)?.value;
+      return modifier
+        ? `${criterionCode}_${modifier}`
+        : criterionCode;
+    }
+
+    function updateCriterionContribution(criterionCode) {
+      const contributionSpan = document.getElementById(`${criterionCode}-current-score-contribution`);
+
+      const term = getCriterionTerm(criterionCode);
+
+      if (!term) {
+        contributionSpan.textContent = "";
+        return;
+    }
+
+    const params = new URLSearchParams({ criterion: term });
+      $.getJSON('/api/v1/acmg?' + params.toString(), function(data) {
+        if (data.points === undefined || data.points === null) {
+            contributionSpan.textContent = "";
+            contributionSpan.className = "badge rounded-pill bg-light text-dark";
+            return;
+        }
+
+        const points = Number(data.points);
+        const formattedPoints = points > 0 ? `+${points}` : `${points}`;
+
+        contributionSpan.textContent = formattedPoints;
+        contributionSpan.className = `badge rounded-pill bg-${data.temperature_class || "secondary"} text-dark`;
+      });
+    }
 
     function update_classification() {
       var criteria = $(':checked').map(function(idx, elem) {
