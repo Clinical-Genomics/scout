@@ -4,6 +4,7 @@ from os import path
 from typing import Optional
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
@@ -88,9 +89,15 @@ def research(case_id, institute, force):
     raise_file_not_found = False
     missing_per_case = {}
 
+    external_variants_loader = current_app.config.get("VARIANTS_LOADER")
+
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
+            continue
+
+        if external_variants_loader:
+            adapter.run_external_scout_loader(case_obj=case_obj, is_research=True)
             continue
 
         files = False

@@ -982,7 +982,13 @@ class CaseHandler(object):
                 ),
             )
 
-    def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
+    def load_case(
+        self,
+        config_data: dict,
+        update: bool = False,
+        keep_actions: bool = True,
+        skip_variants: bool = False,
+    ) -> dict:
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -1031,16 +1037,17 @@ class CaseHandler(object):
             eval_vars, _ = self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             old_evaluated_variants = list(eval_vars)
         try:
-            self._load_clinical_variants(case_obj, build=genome_build, update=update)
+            if not skip_variants:
+                self._load_clinical_variants(case_obj, build=genome_build, update=update)
             self._load_clinical_omics_variants(case_obj, build=genome_build, update=update)
 
-        except (IntegrityError, ValueError, ConfigError, KeyError) as error:
-            LOG.exception(error)
-            raise error
-        else:
             if not existing_case:
                 LOG.info("Loading case %s into database", case_obj["display_name"])
                 self.add_case(case_obj, institute_obj)
+
+        except (IntegrityError, ValueError, ConfigError, KeyError) as error:
+            LOG.exception(error)
+            raise
         finally:
             if existing_case:
                 self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
