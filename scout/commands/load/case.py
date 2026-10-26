@@ -124,7 +124,7 @@ def case(
 
     try:
         if external_variants_loader:
-            adapter.run_scout_loader(case_config=config)
+            adapter.run_external_scout_loader(case_obj=config_data, is_research=False)
         adapter.load_case(
             config_data=config_data,
             update=update,
