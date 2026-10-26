@@ -10,6 +10,7 @@ from scout.constants import (
     SECONDARY_CRITERIA,
     SPIDEX_HUMAN,
     TRUSTED_REVSTAT_LEVEL,
+    VARIANT_GENOTYPE_FILTERS,
 )
 from scout.constants.filters import METHBAT_IMPRINT_LABEL, METHBAT_PROMOTER_LABEL
 from scout.parse.variant.ids import parse_variant_id
@@ -941,25 +942,28 @@ def _get_outlier_query(query: dict) -> dict:
     return outlier_padjust_query
 
 
-def _get_genotype_query(query):
+def _get_genotype_query(query) -> dict | None:
     """Query helper that returns the specific genotype selected by the user for a variantS query
 
     Args:
         query(dict): form dictionary with variantS query terms
     """
+    variant_genotype_filters = VARIANT_GENOTYPE_FILTERS
+
     q_value = query.get("genotypes")
+
     if q_value == "other":
-        return {"$nin": ["0/1", "0|1", "1/1", "1|1", "0/0", "1/0", "1|0", "./.", "."]}
-    elif q_value == "0/1 or 1/0":
-        return {"$in": ["0/1", "1/0", "0|1", "1|0"]}
-    elif q_value == "./.":
-        return {"$in": ["./.", "."]}
-    elif q_value == "1/1":
-        return {"$in": ["1/1", "1|1", "1"]}
-    elif q_value == "0/0":
-        return {"$in": ["0/0", "0|0", "0"]}
+        variant_genotype_filters["other"] = []
+        for gt in variant_genotype_filters:
+            if gt != "other":
+                variant_genotype_filters["other"].extend(variant_genotype_filters[gt])
+        return {"$nin": variant_genotype_filters[q_value]}
+    elif q_value in variant_genotype_filters:
+        return {"$in": variant_genotype_filters[q_value]}
     elif q_value:
         return q_value
+    else:
+        return None
 
 
 def _get_clinsig_onc_query(query: dict) -> dict:
