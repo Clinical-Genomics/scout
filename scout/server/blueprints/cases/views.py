@@ -29,11 +29,7 @@ from pymongo.errors import OperationFailure
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import DATE_DAY_FORMATTER
-from scout.server.blueprints.variants.controllers import (
-    activate_case,
-    case_default_panels,
-    gene_panel_choices,
-)
+from scout.server.blueprints.variants.controllers import activate_case
 from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
@@ -48,7 +44,6 @@ from scout.server.utils import (
 from scout.utils.gene import parse_raw_gene_ids, parse_raw_gene_symbols
 
 from . import controllers
-from .forms import SmaPanelFilterForm
 
 LOG = logging.getLogger(__name__)
 
@@ -119,38 +114,6 @@ def case(
 
     return dict(
         **data,
-    )
-
-
-@cases_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
-@templated("cases/case_sma_dark.html")
-def sma(institute_id, case_name):
-    """Visualize case SMA and other dark region data - SMN CN calls, Paraphrase/Paraphase calls"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    sma_filter_form = SmaPanelFilterForm(request.args)
-    sma_filter_form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
-
-    selected_gene_panels = sma_filter_form.gene_panels.data or []
-    panel_filter_applied = request.args.get("panel_filter_applied") == "1"
-    if (
-        request.method == "GET"
-        and not panel_filter_applied
-        and not request.args.getlist("gene_panels")
-    ):
-        selected_gene_panels = case_default_panels(case_obj)
-        sma_filter_form.gene_panels.data = selected_gene_panels
-
-    data = controllers.sma_case(
-        store,
-        institute_obj,
-        case_obj,
-        selected_gene_panels=selected_gene_panels,
-    )
-
-    activate_case(store, institute_obj, case_obj, current_user)
-
-    return dict(
-        format="html", sma_filter_form=sma_filter_form, expand_search=panel_filter_applied, **data
     )
 
 
