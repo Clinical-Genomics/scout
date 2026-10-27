@@ -664,7 +664,7 @@ def gnomad_lrs_link(variant_obj: dict, build: int = 38):
 
     url = (
         "https://long-read-beta.gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-        "{this[position]}-{this[reference]}-{this[alternative]}?dataset=gnomad_r4_lr"
+        "{this[position]}-{this[reference]}-{this[alternative]}~1?dataset=gnomad_r4_lr"
     ).format(this=variant_obj)
 
     return url
