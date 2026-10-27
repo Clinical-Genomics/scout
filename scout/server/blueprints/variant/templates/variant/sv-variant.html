@@ -341,10 +341,13 @@
 	        <td>
 	          <a class="btn btn-secondary form-control" href="{{variant.decipher_link}}" target="_blank" rel="noopener">DECIPHER</a>
           </td>
+          {% if variant.gnomad_lrs_sv_link %}
+            <td>
+              <a class="btn btn-secondary form-control" href="{{ variant.gnomad_lrs_sv_link }}" rel="noreferrer noopener" target="_blank">gnomAD LRS</a>
+            </td>
+          {% endif %}
         </tr>
-        {% if variant.gnomad_lrs_sv_link %}
-          <a class="btn btn-sm btn-info text-white me-1 mb-1" href="{{ variant.gnomad_lrs_sv_link }}" rel="noreferrer noopener" target="_blank">gnomAD LRS</a>
-        {% endif %}
+
       </tbody>
     </table>
   </div>
