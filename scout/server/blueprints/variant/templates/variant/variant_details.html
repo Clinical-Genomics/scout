@@ -153,6 +153,11 @@
               <tr><td colspan=2>&nbsp;</td></tr>
             {% endif %}
             {% for gene in variant.genes %}
+              {% if gene.strchive_link %}
+                <tr><td>
+                  <a href="{{ gene.strchive_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">STRchive</a>
+                </td><td>{{ gene.hgnc_symbol }}</td></tr>
+              {% endif %}
               {% if gene.stripy_link %}
                 <tr><td>
                   <a href="{{ gene.gnomad_str_link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">gnomAD</a>
