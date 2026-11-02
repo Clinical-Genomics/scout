@@ -12,6 +12,7 @@ from scout.server.blueprints.variants.controllers import (
     hide_compounds_query,
     match_gene_txs_variant_txs,
     populate_chrom_choices,
+    str_variants,
     sv_mei_variants,
     update_form_hgnc_symbols,
     variant_export_lines,
@@ -805,3 +806,23 @@ def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
 
     # Form should be updated correctly
     assert form.hgnc_symbols.data == ["POT1"]
+
+
+def test_str_variants_sort_has_variant_rank_tiebreaker(app, institute_obj, case_obj, mocker):
+    """STR variants sharing all other sort keys must be ordered deterministically by rank,
+    otherwise pagination may skip or repeat variants."""
+
+    # GIVEN a query cursor and a mocked variants pre-processing function
+    cursor = mocker.MagicMock()
+    cursor.sort.return_value = cursor
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.variants", return_value={"variants": []}
+    )
+
+    # WHEN pre-processing STR variants
+    with app.test_request_context():
+        str_variants(store, institute_obj, case_obj, cursor, page=2, per_page=50)
+
+    # THEN the sort ends with variant_rank, which breaks ties between otherwise equal variants
+    sort_spec = cursor.sort.call_args[0][0]
+    assert sort_spec[-1][0] == "variant_rank"
