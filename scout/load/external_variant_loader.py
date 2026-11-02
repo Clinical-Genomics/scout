@@ -19,7 +19,6 @@ RESEARCH_VCF_FIELDS = [
     "vcf_cancer_research",
     "vcf_cancer_sv_research",
     "vcf_fusion_research",
-    "vcf_snv_research",
 ]
 
 
