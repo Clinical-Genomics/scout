@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 - Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
+- STRchive links for STRs (#6689)
 - Link to dbNSFP for hg38 variants (#6686)
 - Link to gnomAD LRS for hg38 variants (#6686)
 ### Changed
