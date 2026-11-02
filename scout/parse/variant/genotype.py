@@ -86,7 +86,6 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
     ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
     """
-
     gt_call = {"individual_id": ind["individual_id"], "display_name": ind["display_name"]}
 
     # Fill the object with the relevant information:
@@ -473,8 +472,8 @@ def _parse_format_entry(
             requested_format_entry = variant.format(format_entry_name)[pos]
 
             values = (
-                split_values(requested_format_entry)
-                if type(requested_format_entry) is str
+                split_values([requested_format_entry])
+                if isinstance(requested_format_entry, str)
                 else requested_format_entry
             )
 
@@ -522,9 +521,9 @@ def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
     pathologic_struc_entry = variant.INFO.get("PathologicStruc", None)
     if not pathologic_struc_entry:
         return pathologic_struc_entry
-    if type(pathologic_struc_entry) is str:
+    if isinstance(pathologic_struc_entry, str):
         return ast.literal_eval(pathologic_struc_entry)
-    if type(pathologic_struc_entry) is list:
+    if isinstance(pathologic_struc_entry, list):
         return pathologic_struc_entry
 
 
