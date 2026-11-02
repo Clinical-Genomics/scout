@@ -78,6 +78,7 @@ def add_gene_links(
     gene_obj["cbioportal_link"] = cbioportal_gene(hgnc_symbol)
     gene_obj["civic_link"] = civic_gene(hgnc_symbol)
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
+    gene_obj["strchive_link"] = strchive_gene(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
@@ -104,6 +105,17 @@ def panelapp_gene(hgnc_symbol):
 
     if not hgnc_symbol:
         return None
+    return link.format(hgnc_symbol)
+
+
+def strchive_gene(hgnc_symbol):
+    link = "https://strchive.org/loci/{}"
+
+    if not hgnc_symbol:
+        return None
+
+    if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
+        return "https://strchive.org/loci"
     return link.format(hgnc_symbol)
 
 
