@@ -78,6 +78,7 @@ def add_gene_links(
     gene_obj["cbioportal_link"] = cbioportal_gene(hgnc_symbol)
     gene_obj["civic_link"] = civic_gene(hgnc_symbol)
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
+    gene_obj["strchive_link"] = strchive_gene(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
@@ -104,6 +105,17 @@ def panelapp_gene(hgnc_symbol):
 
     if not hgnc_symbol:
         return None
+    return link.format(hgnc_symbol)
+
+
+def strchive_gene(hgnc_symbol):
+    link = "https://strchive.org/loci/{}"
+
+    if not hgnc_symbol:
+        return None
+
+    if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
+        return "https://strchive.org/loci"
     return link.format(hgnc_symbol)
 
 
@@ -518,6 +530,8 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         gnomad_link=gnomad_link(variant_obj=variant_obj, build=build, non_ukb=False),
         gnomad_non_ukb_link=gnomad_link(variant_obj=variant_obj, build=build, non_ukb=True),
         gnomad_sv_link=gnomad_sv_link(variant_obj, build),
+        gnomad_lrs_link=gnomad_lrs_link(variant_obj, build),
+        gnomad_lrs_sv_link=gnomad_lrs_sv_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
         cosmic_links=cosmic_links(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
@@ -533,9 +547,26 @@ def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None)
         snp_links=snp_links(variant_obj),
         litvar_snp_links=litvar_snp_links(variant_obj),
         alamut_link=alamut_variant_link(institute_obj, variant_obj, build),
+        dbnsfp_link=dbnsfp_link(variant_obj, build),
     )
 
     return links
+
+
+def dbnsfp_link(variant_obj: dict, build: int):
+    """Compose link to dbNSFP page for detailed non-synonymous variant information.
+    The direct permanent link API is only available for GRCh38, so we return None for GRCh37."""
+
+    url_template = (
+        "https://query.dbnsfp.org/variant/"
+        "{this[chromosome]}-{this[position]}-{this[reference]}"
+        "-{this[alternative]}"
+    )
+
+    if build == 37:
+        return None
+
+    return url_template.format(this=variant_obj)
 
 
 def str_source_link(variant_obj):
@@ -635,6 +666,41 @@ def gnomad_link(variant_obj, build=37, non_ukb=False):
         url_template += "?dataset=gnomad_r4"
 
     return url_template
+
+
+def gnomad_lrs_link(variant_obj: dict, build: int = 38):
+    """Compose link to a variant. The gnomAD LRS beta is only available for GRCh38, so we return None for GRCh37."""
+
+    if build == 37 or variant_obj["chromosome"] in ["M", "MT"]:
+        return None
+
+    url = (
+        "https://long-read-beta.gnomad.broadinstitute.org/variant/chr{this[chromosome]}-"
+        "{this[position]}-{this[reference]}-{this[alternative]}~1?dataset=gnomad_r4_lr"
+    ).format(this=variant_obj)
+
+    return url
+
+
+def gnomad_lrs_sv_link(variant_obj: dict, build: int = 38):
+    """Compose link to a structural variant. The gnomAD LRS beta is only available for GRCh38, so we return None for GRCh37."""
+
+    if build == 37 or variant_obj["chromosome"] in ["M", "MT"]:
+        return None
+
+    url = (
+        "https://long-read-beta.gnomad.broadinstitute.org/"
+        "region/{this[chromosome]}-{this[position]}"
+    ).format(this=variant_obj)
+
+    if variant_obj["chromosome"] == variant_obj.get("end_chrom"):
+        url += f"-{variant_obj['end']}"
+    else:
+        url += f"-{variant_obj['position']}"
+
+    url += "?dataset=gnomad_r4_lr&show_haplotypes=true"
+
+    return url
 
 
 def spliceai_link(variant_obj, build=37):

@@ -7,17 +7,22 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+- STRchive links for STRs (#6689)
+- Link to dbNSFP for hg38 variants (#6686)
+- Link to gnomAD LRS for hg38 variants (#6686)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
-- Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
 - Documentation README overview of recent functionality, and link to the FAQ page for supported pipelines (#6674)
+- Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Move Dark regions/SMN to a separate blueprint (#6675)
 - Links to SNVs and SVs from the Dark Regions page are no longer filtered by the gene panels selected on that page (#6693)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
 - Fix STR genotype depth parsing for NumPy strings (#6676)
+- Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
+- Fix a bug where STR variants with identical sort keys could be returned in random order, e.g. for different query index plans, resulting in missed variants when paginating (#6690)
 
 ## [4.115.2]
 ### Changed

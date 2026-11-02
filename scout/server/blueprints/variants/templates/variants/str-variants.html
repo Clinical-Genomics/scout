@@ -71,7 +71,7 @@
       <td>{{ callers_cell(variant) }}</td>
       <td>{{ str_status(variant) }}</td>
       <td>{% for sample in variant.samples %}
-            {% if sample.genotype_call != "./." %}
+            {% if sample.genotype_call not in ["./.", "."] %}
               <div class="row">
                 <div class="col-8">{{ sample.display_name }}</div>
                 <div class="col-4 text-end">{{ sample.genotype_call }}</div>
@@ -193,6 +193,7 @@
       {% else %}
         {% for model in gene.inheritance %} {{ inheritance_badge(model,inherit_palette) }} {% endfor %}
       {% endif %}
+    <span class="badge bg-secondary"><a href="{{ gene.strchive_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">C</a></span>
     <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">S</a></span>
     <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">G</a></span>
   {% endfor %}
