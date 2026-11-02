@@ -9,16 +9,18 @@ import yaml
 from flask import current_app
 
 LOG = logging.getLogger(__name__)
+from scout.constants import ORDERED_FILE_TYPE_MAP
+
+CLINICAL_VCF_FIELDS = [
+    file_type
+    for file_type, config in ORDERED_FILE_TYPE_MAP.items()
+    if config["variant_type"] == "clinical"
+]
 
 RESEARCH_VCF_FIELDS = [
-    "vcf_snv_research",
-    "vcf_sv_research",
-    "vcf_snv_research_mt",
-    "vcf_sv_research_mt",
-    "vcf_mei_research",
-    "vcf_cancer_research",
-    "vcf_cancer_sv_research",
-    "vcf_fusion_research",
+    file_type
+    for file_type, config in ORDERED_FILE_TYPE_MAP.items()
+    if config["variant_type"] == "research"
 ]
 
 
@@ -51,6 +53,9 @@ class ExternalVariantLoader:
                 {key: vcf_files[key] for key in RESEARCH_VCF_FIELDS if key in vcf_files}
             )
         else:
+            case_config.update(
+                {key: vcf_files[key] for key in CLINICAL_VCF_FIELDS if key in vcf_files}
+            )
             case_config["gene_panels"] = case_obj.get("gene_panels", [])
 
         with tempfile.NamedTemporaryFile(
