@@ -111,7 +111,8 @@ from .variant_tags import (
     SV_TYPES,
     VARIANT_CALL,
     VARIANT_FILTERS,
-    VARIANT_GENOTYPES,
+    VARIANT_GENOTYPE_CHOICES,
+    VARIANT_GENOTYPE_FILTERS,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
 from .variants_export import (

@@ -1394,11 +1394,11 @@
 {% macro zygosity_icon(genotype) %}
   {% if genotype is not none %}
     <span class="
-      {%- if genotype == "1/1" -%}
+      {%- if genotype in ["1/1", "1|1", "1"] -%}
         fa-solid fa-circle
-      {%- elif genotype == "0/0" -%}
+      {%- elif genotype in ["0/0", "0|0", "0"] -%}
         fa-regular fa-circle
-      {%- elif genotype in ["0/1", "1/0"] -%}
+      {%- elif genotype in ["0/1", "1/0", "0|1", "1|0"] -%}
         fa-solid fa-circle-half-stroke
       {%- elif "." in genotype -%}
         fa-solid fa-circle-question
