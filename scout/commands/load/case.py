@@ -7,6 +7,7 @@ import yaml
 from flask import current_app
 from flask.cli import with_appcontext
 
+from scout.load.external_variant_loader import ExternalVariantLoader as external_loader
 from scout.parse.case import parse_case_data
 from scout.server.extensions import store
 
@@ -123,8 +124,8 @@ def case(
     external_variants_loader = current_app.config.get("VARIANTS_LOADER")
 
     try:
-        if external_variants_loader:
-            adapter.run_external_scout_loader(case_obj=config_data, is_research=False)
+        if external_variants_loader and config:
+            external_loader.run_external_scout_loader(case_obj=config_data, is_research=False)
         adapter.load_case(
             config_data=config_data,
             update=update,
@@ -134,13 +135,15 @@ def case(
     except SyntaxError as err:
         LOG.error(
             "SyntaxError {} missing when loading '{}' {}".format(
-                err, config.name, traceback.format_exc()
+                err, config.name if config else None, traceback.format_exc()
             )
         )
         raise click.Abort()
     except KeyError as err:
         LOG.error(
-            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+            "KeyError {} when loading '{}' {}".format(
+                err, config.name if config else None, traceback.format_exc()
+            )
         )
         raise click.Abort()
     except Exception as err:

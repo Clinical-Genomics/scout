@@ -9,6 +9,7 @@ from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
+from scout.load.external_variant_loader import ExternalVariantLoader as external_loader
 from scout.server.extensions import store
 
 DEFAULT_RANK_THRESHOLD = 8
@@ -97,7 +98,7 @@ def research(case_id, institute, force):
             continue
 
         if external_variants_loader:
-            adapter.run_external_scout_loader(case_obj=case_obj, is_research=True)
+            external_loader.run_external_scout_loader(case_obj=case_obj, is_research=True)
             continue
 
         files = False

@@ -26,9 +26,10 @@ RESEARCH_VCF_FIELDS = [
 class ExternalVariantLoader:
     """Run external variant loaders."""
 
+    @staticmethod
     @contextmanager
     def temp_case_config_from_case_dict(
-        self, case_obj: dict, is_research: False
+        case_obj: dict, is_research: bool = False
     ) -> Iterator[TextIO]:
         """Create a temporary case config YAML file from a case dictionary."""
         case_config = {
@@ -62,7 +63,8 @@ class ExternalVariantLoader:
             yaml_file.flush()
             yield yaml_file
 
-    def run_external_scout_loader(self, case_obj: dict, is_research: bool = False) -> None:
+    @staticmethod
+    def run_external_scout_loader(case_obj: dict, is_research: bool = False) -> None:
         """Run scout_loader using the provided case configuration file.
 
         Create a temporary TOML configuration with Scout's MongoDB connection
@@ -79,7 +81,7 @@ class ExternalVariantLoader:
             subprocess.CalledProcessError: If scout_loader exits with a non-zero status.
         """
         with (
-            self.temp_case_config_from_case_dict(
+            ExternalVariantLoader.temp_case_config_from_case_dict(
                 case_obj=case_obj, is_research=is_research
             ) as case_yaml_file,
             tempfile.TemporaryDirectory() as temp_dir,

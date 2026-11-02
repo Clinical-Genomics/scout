@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 from flask import Flask
 
-from scout.adapter.mongo.external_variant_loader import ExternalVariantLoader
+from scout.load.external_variant_loader import ExternalVariantLoader
 
 
 def test_temp_case_config_from_case_dict_research():
