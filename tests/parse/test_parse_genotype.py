@@ -3,6 +3,8 @@ from cyvcf2 import VCF
 
 from scout.parse.variant.genotype import (
     GENOTYPE_MAP,
+    _extract_genotype_alleles,
+    _parse_format_entry_trgt_mc,
     get_alt_depth,
     get_copy_number,
     get_ref_depth,
@@ -157,3 +159,68 @@ def test_get_copy_number(format_keys, format_dict, expected):
     result = get_copy_number(variant, 0)
 
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "raw_gt, expected_alleles, expected_phased",
+    [
+        ([-1, False, -2], [-1], False),
+        ([0, 1, True], [0, 1], True),
+        ([1, -1, False], [1, -1], False),
+    ],
+)
+def test_extract_genotype_alleles_mixed_ploidy_padding(raw_gt, expected_alleles, expected_phased):
+    """cyvcf2 may place phase before trailing filler values for mixed ploidy."""
+    alleles, phased = _extract_genotype_alleles(raw_gt)
+    assert alleles == expected_alleles
+    assert phased is expected_phased
+
+
+def test_parse_genotype_haploid_missing_gt_padding():
+    """Ensure padded haploid missing GT does not become 0/0 due to bool/int coercion."""
+
+    class FakeVariant:
+        FORMAT = ["GT"]
+
+        def __init__(self):
+            self.genotypes = [[-1, False, -2]]
+            self.gt_phases = [False]
+            self.gt_alt_depths = [-1]
+            self.gt_ref_depths = [-1]
+            self.gt_depths = [0]
+            self.gt_alt_freqs = [0.0]
+            self.gt_quals = [0]
+            self.INFO = {}
+
+        def format(self, _key):
+            raise KeyError("No FORMAT entries available in this fake variant")
+
+    ind = {"individual_id": "sample", "display_name": "sample"}
+
+    gt_call = parse_genotype(FakeVariant(), ind, 0)
+
+    assert gt_call["genotype_call"] == "."
+
+
+def test_parse_trgt_mc_ignores_phase_slot_in_haploid_padding():
+    """Do not treat phase boolean as a reference allele in padded haploid GT arrays."""
+
+    class FakeInfo(dict):
+        pass
+
+    class FakeVariant:
+        FORMAT = ["MC"]
+
+        def __init__(self):
+            self.genotypes = [[1, False, -2]]
+            self.INFO = FakeInfo()
+
+        def format(self, key):
+            if key == "MC":
+                return ["5,8"]
+            raise KeyError(key)
+
+    mc_ref, mc_alt = _parse_format_entry_trgt_mc(FakeVariant(), 0)
+
+    assert mc_ref is None
+    assert mc_alt == 8
