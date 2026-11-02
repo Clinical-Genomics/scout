@@ -412,6 +412,7 @@ def str_variants(
             ("str_trid", ASCENDING),
             ("chromosome", ASCENDING),
             ("position", ASCENDING),
+            ("variant_rank", ASCENDING),
         ]
     )
 
