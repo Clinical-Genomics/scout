@@ -84,7 +84,7 @@ def test_run_external_scout_loader(monkeypatch):
         captured["mongo_config"] = captured["mongo_config_path"].read_text(encoding="utf-8")
 
     monkeypatch.setattr(
-        "scout.adapter.mongo.external_variant_loader.subprocess.run",
+        "scout.load.external_variant_loader.subprocess.run",
         mock_run,
     )
 
