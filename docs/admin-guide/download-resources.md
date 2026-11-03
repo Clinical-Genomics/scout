@@ -36,6 +36,6 @@ These are requested by the running Scout server (not by `scout download`), so th
 | Rank model files (SNV and SV), old cases - likely other solution for KS | `https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/{rank_model,svrank_model}_-v<version>-.ini` (configurable via `RANK_MODEL_LINK_PREFIX` / `SV_RANK_MODEL_LINK_PREFIX`) | `scout/server/config.py`, `scout/adapter/mongo/rank_model.py` |
 | PanelApp panels (panel updates from the UI) | `https://panelapp.genomicsengland.co.uk/api/v1/panels/` | `scout/server/extensions/panelapp_extension.py` |
 
-Optional services configured by the admin (no fixed URL): Chanjo2 (`CHANJO2_URL`), Scout Reviewer (`SCOUT_REVIEWER_URL`), rerunner (`RERUNNER_API_ENTRYPOINT`), Matchmaker Exchange (`MME_URL`), Beacon (`BEACON_URL`), Keycloak (`KEYCLOAK`), BioNano Access (`BIONANO_ACCESS`).
+Optional services configured by the admin (no fixed URL): Gens (`GENS_HOST`), Chanjo (`SQLALCHEMY_DATABASE_URI`) Chanjo2 (`CHANJO2_URL`), Scout Reviewer (`SCOUT_REVIEWER_URL`), tip2toe (`PHENOPACKET_API_URL`), Matchmaker Exchange (`MME_URL`), Beacon (`BEACON_URL`), Keycloak (`KEYCLOAK`), BioNano Access (`BIONANO_ACCESS`), rerunner (`RERUNNER_API_ENTRYPOINT`),.
 
 Remote files used by the IGV browser (reference genomes, cytobands, public tracks) are fetched by the user's browser, not the server. They are defined in `scout/constants/igv_tracks.py`.
