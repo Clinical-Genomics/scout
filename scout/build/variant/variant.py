@@ -276,6 +276,10 @@ def build_variant(
     variant_obj["revel_score"] = variant.get("revel_score")
     variant_obj["revel"] = variant.get("revel")
     variant_obj["spidex"] = variant.get("spidex")
+    variant_obj["avi_raw"] = variant.get("avi_raw")
+    variant_obj["avi_phred"] = variant.get("avi_phred")
+    variant_obj["am_class"] = variant.get("am_class")
+    variant_obj["am_pathogenicity"] = variant.get("am_pathogenicity")
 
     add_rank_score(variant_obj, variant)
 
