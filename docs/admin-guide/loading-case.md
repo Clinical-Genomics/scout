@@ -166,7 +166,7 @@ Given the two files above, this configuration
 custom_images:
   str_variants_images:
     - title: <string> A jpg image {REPID} [mandatory]
-      str_repid: '{REPID}' [mandatory]
+      str_repid: {REPID} [mandatory]
       path: <string> scout/demo/images/custom_images/640x480_{REPID}.jpg [mandatory]
 ```
 
