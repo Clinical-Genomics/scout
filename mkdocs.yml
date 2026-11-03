@@ -90,6 +90,7 @@ nav:
       - Gene definitions: 'admin-guide/genes.md'
       - PanelApp gene panels: 'admin-guide/panelapp_panels.md'
       - HPO terms: 'admin-guide/hpo.md'
+      - External resources fetched by download: 'admin-guide/download-resources.md'
       - Annotations: 'admin-guide/annotations.md'
       - IGV browser settings: 'admin-guide/igv-settings.md'
       - Server: 'admin-guide/server.md'
