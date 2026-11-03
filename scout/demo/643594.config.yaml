@@ -95,21 +95,13 @@ custom_images:
       height: 100
       path: scout/demo/images/custom_images/640x480_one.png
     - title: An SVG image
-      str_repid: AFF2
+      str_repid: AFF2 # Can be replaced with str_trid when available
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
     - title: Image for replicon {REPID}
-      str_repid: '{REPID}'
+      str_repid: '{REPID}'  # Can be replaced with str_trid: '{TRID}' when available
       description: Usage of substitution
       path: scout/demo/images/custom_images/replicons/640x480_{REPID}.svg
-    - title: Image for tandem repeat
-      str_trid: HTT
-      description: A tandem repeat image
-      path: scout/demo/images/custom_images/640x480_two.png
-    - title: Image for tandem repeat {TRID}
-      str_trid: '{TRID}'
-      description: Image for tandem repeat {TRID}
-      path: scout/demo/images/custom_images/tandem_repeats/640x480_{TRID}.svg
 
   case_images:
     section_one:
