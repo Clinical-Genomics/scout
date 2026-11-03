@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to dbNSFP for hg38 variants (#6686)
 - Link to gnomAD LRS for hg38 variants (#6686)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
+- Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants ()
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)

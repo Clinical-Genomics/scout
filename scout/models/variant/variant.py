@@ -71,6 +71,7 @@ variant = dict(
     str_source=dict,  # STR source dict with keys {"display": str, "type": str ("PubMed", "GeneReviews"), "id": str}
     str_swegen_mean=float,
     str_swegen_std=float,
+    str_trid=str,
     sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str', 'mei')
     thousand_genomes_frequency=float,
     thousand_genomes_frequency_left=float,

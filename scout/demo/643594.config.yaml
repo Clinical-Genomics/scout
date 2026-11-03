@@ -102,6 +102,15 @@ custom_images:
       str_repid: '{REPID}'
       description: Usage of substitution
       path: scout/demo/images/custom_images/replicons/640x480_{REPID}.svg
+    - title: Image for tandem repeat
+      str_trid: 12345
+      description: A tandem repeat image
+      path: scout/demo/images/custom_images/640x480_two.png
+    - title: Image for tandem repeat {TRID}
+      str_trid: '{TRID}'
+      description: Image for tandem repeat {TRID}
+      path: scout/demo/images/custom_images/tandem_repeats/640x480_{TRID}.svg
+
   case_images:
     section_one:
       - title: A png image
