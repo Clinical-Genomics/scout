@@ -1,4 +1,6 @@
-# External resources fetched by `scout download`
+# External resources used by the Scout server
+
+## External resources fetched by `scout download`
 
 The `scout download` commands fetch the following external resources. `scout download everything` runs all of them (OMIM only if `--api-key` is given). Access is needed, from where the CLI runs, during database update and initial setup.
 

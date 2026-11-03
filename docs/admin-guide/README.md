@@ -13,7 +13,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Updating a case](./updating-case.md)
   * [Genes, transcripts and exons](./genes.md)
   * [HPO terms](./hpo.md)
-  * [External resources fetched by download](./download-resources.md)
+  * [External resources used by the server](./download-resources.md)
   * [Annotations](./annotations.md)
   * [IGV browser settings](./igv-settings.md)
   * [Server](./server.md)
