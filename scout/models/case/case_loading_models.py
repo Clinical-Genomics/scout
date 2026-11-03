@@ -362,30 +362,30 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
     real_folder_images: List[Image] = []
 
     for image in images:
-        identifier_field = None
-        identifier = None
-
         if image.str_repid == REPID:
-            identifier_field = "str_repid"
             identifier = REPID
+            identifier_field = "str_repid"
         elif image.str_trid == TRID:
-            identifier_field = "str_trid"
             identifier = TRID
+            identifier_field = "str_trid"
+        else:
+            image.path = _resource_abs_path(image.path)
+            real_folder_images.append(image)
+            continue
 
-        if identifier_field:
-            for match in _glob_wildcard(path=image.path):
-                matched_id = match["id"]
+        for match in _glob_wildcard(path=image.path):
+            matched_id = match["id"]
 
-                new_image = {
-                    "description": image.description.replace(identifier, matched_id),
-                    "height": image.height,
-                    "format": None,
-                    "path": _resource_abs_path(str(match["path"])),
-                    "title": image.title.replace(identifier, matched_id),
-                    "width": image.width,
-                    identifier_field: matched_id,
-                }
-                real_folder_images.append(Image(**new_image))
+            new_image = {
+                "description": image.description.replace(identifier, matched_id),
+                "height": image.height,
+                "format": None,
+                "path": _resource_abs_path(str(match["path"])),
+                "title": image.title.replace(identifier, matched_id),
+                "width": image.width,
+                identifier_field: matched_id,
+            }
+            real_folder_images.append(Image(**new_image))
         else:
             image.path = _resource_abs_path(image.path)
             real_folder_images.append(image)
