@@ -20,7 +20,7 @@ The `scout download` commands fetch the following external resources. `scout dow
 | `ensembl` | Genes, transcripts, exons (Ensembl BioMart via [Schug](https://schug.scilifelab.se)) | `https://schug.scilifelab.se/genes/ensembl_genes/?build=<GRCh37\|GRCh38>` <br> `https://schug.scilifelab.se/transcripts/ensembl_transcripts/?build=<GRCh37\|GRCh38>` <br> `https://schug.scilifelab.se/exons/ensembl_exons/?build=<GRCh37\|GRCh38>` | `scout/utils/ensembl_biomart_clients.py` |
 | `panelapp` | PanelApp panels (API) | `https://panelapp.genomicsengland.co.uk/api/v1/panels/` | `scout/server/extensions/panelapp_extension.py` |
 
-Schug is a SciLifeLab Clinical Genomics Solna service that provides a proxy to Ensembl BioMart. You are welcome to use it, or deploy a copy of that service on a machine of your own. The proxy is used to fetch gene, transcript and exon data for the genome build in use.
+Schug is a SciLifeLab Clinical Genomics Solna service that provides a proxy to Ensembl BioMart. You are welcome to use it, or deploy a copy of that service on a machine of your own. The proxy is used to fetch gene, transcript and exon data for the different genome builds.
 
 ## External resources contacted by the server at runtime
 
