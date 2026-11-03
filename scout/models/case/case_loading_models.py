@@ -386,9 +386,6 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                 identifier_field: matched_id,
             }
             real_folder_images.append(Image(**new_image))
-        else:
-            image.path = _resource_abs_path(image.path)
-            real_folder_images.append(image)
 
     return real_folder_images
 
