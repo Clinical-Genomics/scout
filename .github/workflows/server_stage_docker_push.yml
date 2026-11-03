@@ -37,3 +37,13 @@ jobs:
          provenance: mode=max
          sbom: true
          tags: "clinicalgenomics/scout-server-stage:${{steps.branch-name.outputs.current_branch}}, clinicalgenomics/scout-server-stage:latest"
+
+     - name: Build and publish CLI image
+       uses: docker/build-push-action@v7
+       with:
+         context: ./
+         file: ./Dockerfile
+         push: true
+         provenance: mode=max
+         sbom: true
+         tags: "clinicalgenomics/scout-cli:latest, clinicalgenomics/scout-cli:${{steps.branch-name.outputs.current_branch}}"
