@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to dbNSFP for hg38 variants (#6686)
 - Link to gnomAD LRS for hg38 variants (#6686)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
+- Documentation for external services accessed from a Scout installation (#6695)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
