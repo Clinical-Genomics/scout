@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation README overview of recent functionality, and link to the FAQ page for supported pipelines (#6674)
 - Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Move Dark regions/SMN to a separate blueprint (#6675)
+- Links to SNVs and SVs from the Dark Regions page are no longer filtered by the gene panels selected on that page (#6693)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
 - Fix STR genotype depth parsing for NumPy strings (#6676)
