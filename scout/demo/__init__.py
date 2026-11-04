@@ -37,7 +37,7 @@ vep_97_annotated_path = str(
 )
 vep_104_annotated_path = str(files(BASE_PATH).joinpath("vep104_annotated.vcf"))
 vep_113_existing_variation_path = str(files(BASE_PATH).joinpath("vep113_existing_variation.vcf"))
-vep_116_existing_variation_path = str(files(BASE_PATH).joinpath("vep116_existing_variation.vcf"))
+vep_116_existing_variation_path = str(files(BASE_PATH).joinpath("vep_116_one_var.vcf"))
 research_snv_path = str(files(BASE_PATH).joinpath("643594.research.vcf.gz"))
 research_sv_path = str(files(BASE_PATH).joinpath("643594.research.SV.vcf.gz"))
 cancer_snv_path = str(files(BASE_PATH).joinpath("cancer_test.vcf.gz"))
