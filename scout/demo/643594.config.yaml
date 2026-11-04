@@ -95,7 +95,7 @@ custom_images:
       height: 100
       path: scout/demo/images/custom_images/640x480_one.png
     - title: An SVG image
-      str_repid: AFF2 # Can be replaced with str_trid when available
+      str_repid: AFF2 # Can be replaced with str_trid: '{TRID}' for TRGT loci
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
     - title: Image for replicon {REPID}
