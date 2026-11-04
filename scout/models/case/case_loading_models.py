@@ -338,9 +338,10 @@ class Image(BaseModel):
 def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
     """Resolve custom image paths and expand wildcard images for STR repetitions and tandem repeats.
 
-    Images matching REPID or TRID are expanded into separate images for each matching
-    file, with the corresponding STR identifier, title, description, and absolute path.
-    Images without wildcards are kept with their paths resolved.
+    Config image entries with str_repid or str_trid matching the path wildcard keywords REPID or TRID are
+    further expanded into separate image objects for each matching file in the path, with the corresponding
+    STR identifier, title, description, and absolute path.
+    Images without wildcards are returned with their given paths resolved to absolute paths.
     """
     if images is None:
         return
