@@ -26,6 +26,7 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 REPID = "{REPID}"
+TRID = "{TRID}"
 
 SAMPLES_FILE_PATH_CHECKS = [
     "assembly_alignment_path",
@@ -315,6 +316,7 @@ class Image(BaseModel):
     format: Optional[str] = None
     path: Optional[str] = None
     str_repid: Optional[str] = None
+    str_trid: Optional[str] = None
     title: Optional[str] = None
     width: Optional[int] = None
 
@@ -327,50 +329,64 @@ class Image(BaseModel):
             raise TypeError(
                 f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
             )
-        if REPID not in path and exists(path) is False:
+        if REPID not in path and TRID not in path and exists(path) is False:
             raise ValueError(f"Image path '{path}' is not valid.")
 
         return path
 
 
 def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
-    """Fix custom image's path and data."""
+    """Resolve custom image paths and expand wildcard images for STR repetitions and tandem repeats.
 
+    Config image entries with str_repid or str_trid matching the path wildcard keywords REPID or TRID are
+    further expanded into separate image objects for each matching file in the path, with the corresponding
+    STR identifier, title, description, and absolute path.
+    Images without wildcards are returned with their given paths resolved to absolute paths.
+    """
     if images is None:
         return
 
     def _glob_wildcard(path) -> Tuple[Dict]:
         """Search for multiple files using a path with wildcard."""
         wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
-        # make proper wildcard path
         glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
         wildcard_end = len(path) - wildcard.end()
-        matches = tuple(
+
+        return tuple(
             {
-                "repid": match[wildcard.start() : -wildcard_end],
+                "id": match[wildcard.start() : -wildcard_end],
                 "path": Path(match),
             }
             for match in glob(glob_path)
         )
-        return matches
 
     real_folder_images: List[Image] = []
+
     for image in images:
-        if image.str_repid == REPID:  # This will be more than one image in a folder
-            for match in _glob_wildcard(path=image.path):
-                new_image: Dict = {
-                    "description": image.description.replace(REPID, match["repid"]),
-                    "height": image.height,
-                    "format": None,
-                    "path": _resource_abs_path(str(match["path"])),
-                    "str_repid": match["repid"],
-                    "title": image.title.replace(REPID, match["repid"]),
-                    "width": image.width,
-                }
-                real_folder_images.append(Image(**new_image))
+        if image.str_repid == REPID:
+            identifier = REPID
+            identifier_field = "str_repid"
+        elif image.str_trid == TRID:
+            identifier = TRID
+            identifier_field = "str_trid"
         else:
             image.path = _resource_abs_path(image.path)
-            real_folder_images.append(image)  # append other non-repid images
+            real_folder_images.append(image)
+            continue
+
+        for match in _glob_wildcard(path=image.path):
+            matched_id = match["id"]
+
+            new_image = {
+                "description": image.description.replace(identifier, matched_id),
+                "height": image.height,
+                "format": None,
+                "path": _resource_abs_path(str(match["path"])),
+                "title": image.title.replace(identifier, matched_id),
+                "width": image.width,
+                identifier_field: matched_id,
+            }
+            real_folder_images.append(Image(**new_image))
 
     return real_folder_images
 
