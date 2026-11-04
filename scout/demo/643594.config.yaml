@@ -99,7 +99,7 @@ custom_images:
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
     - title: Image for replicon {REPID}
-      str_repid: '{REPID}'  # Can be replaced with str_trid: '{TRID}' when available
+      str_repid: '{REPID}'  # Can be replaced with str_trid: '{TRID}'  for TRGT loci
       description: Usage of substitution
       path: scout/demo/images/custom_images/replicons/640x480_{REPID}.svg
 
