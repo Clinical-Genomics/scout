@@ -107,18 +107,18 @@ Options:
 #### Adding custom images to a case
 
 Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a separate pipeline.
+
 The custom images are defined in the case config file. Scout stores image metadata (for example title, description, dimensions and path) in the database, while image files are read from disk when rendered. Scout currently supports `gif`, `jpeg`, `png` and `svg` images.
 
 The syntax for loading an image differs depending on where it is going to be displayed.
 Images on the case view can be grouped into different groups that are displayed as accordion-type UI elements named after the group.
-Images can be associated with structural variants with a given HGNC symbol.
+Images can be associated with STR repetitions using a REPID or a TRID.
 
 The fields `title`, `description` and `path` are mandatory regardless of location.
 The image size can be defined with the optional parameters `width` and `height`.
 The image height and width unit is pixels.
 
-``` yaml
-
+```yaml
 custom_images:
   case_images:
     group_one:
@@ -147,22 +147,22 @@ custom_images:
       description: <string> A very good description [mandatory]
       width: <string> 500
       path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
-
 ```
 
 ##### Loading multiple images with wildcards
 
 If you have multiple images you would like to associate with different variants, you can use wildcards to reduce the number of lines in the load config file.
-For example, you have two images `640x480_AR.svg` and `640x480_ATN1.svg` that should be attached to variants in _AR_ and _ATN1_.
-Instead of writing a long list with one entry per image, you can use wildcards to flag which part of the path name corresponds to the REPID.
-Wildcards are a variable name surrounded by curly brackets, `{VARIABLE_NAME}`. The variable name can contain letters, numbers and underscores.
+For example, you have two images `640x480_AFF2.svg` and `640x480_DAB1.svg` that should be attached to variants in `AFF2` and `DAB1`.
+Instead of writing a long list with one entry per image, you can use wildcards to flag which part of the path name corresponds to the REPID or TRID.
 
-When custom image metadata is loaded the algorithm finds files matching the pattern and substitutes the wildcard with the string.
+The supported wildcards are `{REPID}` and `{TRID}`, corresponding to `str_repid` and `str_trid`, respectively.
+
+When custom image metadata is loaded the algorithm finds files matching the pattern and substitutes the wildcard with the string. The same substitution is applied to the image title and description.
 In other words this expands the path using the configuration pattern and populates the case object accordingly.
 
 Given the two files above, this configuration
 
-``` yaml
+```yaml
 custom_images:
   str_variants_images:
     - title: <string> A jpg image {REPID} [mandatory]
@@ -172,16 +172,18 @@ custom_images:
 
 is equivalent to
 
-``` yaml
+```yaml
 custom_images:
   str_variants_images:
-    - title: <string> An image of AR
-      str_repid: AR
-      path: <string> scout/demo/images/custom_images/640x480_AR.jpg
-    - title: <string> An image of ATN1
-      str_repid: ATN1
-      path: <string> scout/demo/images/custom_images/640x480_ATN1.jpg
+    - title: <string> An image of AFF2
+      str_repid: AFF2
+      path: <string> scout/demo/images/custom_images/640x480_AFF2.jpg
+    - title: <string> An image of DAB1
+      str_repid: DAB1
+      path: <string> scout/demo/images/custom_images/640x480_DAB1.jpg
 ```
+
+The same syntax can be used with `{TRID}` and `str_trid` instead of `{REPID}` and `str_repid`.
 
 
 ### Load case from CLI without config
