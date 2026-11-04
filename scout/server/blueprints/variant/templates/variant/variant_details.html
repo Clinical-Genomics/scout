@@ -424,6 +424,40 @@
           {% endif %}
         </li>
         <li class="list-group-item">
+          <a href="{{ variant.alpha_genome_link }}" target="_blank" data-bs-toggle="tooltip" title="AlphaGenome Variant Impact (AVI) combines AlphaGenome and AlphaMissense scores. PHRED-scaled quantile (0 to approximately 80). A phred of 20 means the variant is among the top 1% most deleterious substitutions genome-wide. Higher => more deleterious.">AVI</a>
+          <span class="float-end badge bg-{{ variant.avi_phred|get_label_or_color_by_score('cadd', 'color') }}" data-bs-toggle="tooltip" title="{{ variant.avi_phred|get_label_or_color_by_score('cadd', 'label') }}">
+            {% if variant.avi_phred is not none %}
+              {{ variant.avi_phred|round(1) }}
+            {% else %}
+              {{ "-" }}
+            {% endif %}
+            {% if variant.avi_phred %}
+              {{ variant.avi_phred }}
+            {% else %}
+              {{ "-" }}
+            {% endif %}
+        </li>
+        <li class="list-group-item">
+          <a href="{{ variant.alpha_genome_link }}" target="_blank" data-bs-toggle="tooltip" title="AlphaGenome Variant Impact (AVI) combines AlphaGenome and AlphaMissense scores. Raw score, approximately -1.3 to +4.0. Higher => more deleterious.">AVI raw</a>
+          <span class="float-end">
+            {% if variant.avi_raw %}
+              {{ variant.avi_raw }}
+            {% else %}
+              {{ "-" }}
+            {% endif %}
+        </li>
+        <li class="list-group-item">
+          <a href="{{ variant.alpha_genome_link }}" target="_blank" data-bs-toggle="tooltip" title="Continuous AlphaMissense score between 0 and 1 which can be interpreted as the predicted probability of the variant being pathogenic. The AlphaMissense thresholds are: 'Likely benign' if score < 0.34, 'Likely pathogenic' if score > 0.564, 'ambiguous' otherwise -- see doi.org/10.1126/science.adg7492 for details. Class {{ variant.am_class if 'am_class' in variant else '-' }}.">AlphaMissense</a>
+          <span class="badge float-end bg-{{variant.am_pathogenicity|get_label_or_color_by_score('am_pathogenicity', 'color')}}">
+            {% if variant.am_pathogenicity %}
+              {{ variant.am_pathogenicity }}
+            {% else %}
+              {{ "-" }}
+            {% endif %}
+        </li>
+
+
+        <li class="list-group-item">
           <a href="http://database.liulab.science/dbNSFP" target="_blank" data-bs-toggle="tooltip"
              title="REVEL scores were ranked among all REVEL scores in dbNSFP. The REVEL rank score is the ratio of the rank of the score over the total number of REVEL scores in dbNSFP">REVEL rank score</a>
           <span class="float-end">

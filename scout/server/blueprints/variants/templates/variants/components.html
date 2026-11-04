@@ -504,6 +504,12 @@
       {{ (variant.polyphen_predictions or ['-'])|join(',') }} <br>
       <strong>REVEL</strong>
       {% if 'revel' in variant and variant.revel is not none %}{{ variant.revel|float|round(1) }} - {{ variant.revel|get_label_or_color_by_score('revel', 'label') }}{% else %}-{% endif %}<br>
+      <strong>AlphaMissense</strong>
+      {% if 'am_pathogenicity' in variant and variant.am_pathogenicity is not none %}{{ variant.am_pathogenicity|float|round(1) }} - {{ variant.am_class if 'am_class' in variant else '-' }}{% else %}-{% endif %}<br>
+      <strong>AlphaGenome Variant Impact</strong>
+      {% if 'avi_phred' in variant and variant.avi_phred is not none %}{{ variant.avi_phred|float|round(1) }} - AVI raw {{ variant.avi_raw if 'avi_raw' in variant else '-' }}{% else %}-{% endif %}<br>
+      <strong>SpliceAI</strong>
+      {% if 'spliceai' in variant and variant.spliceai is not none %}{{ variant.spliceai|float|round(1) }} - {{ variant.spliceai|get_label_or_color_by_score('spliceai', 'label') }}{% else %}-{% endif %}<br>
     </div>
   ">
     {% if 'cadd_score' in variant and variant.cadd_score is not none %}

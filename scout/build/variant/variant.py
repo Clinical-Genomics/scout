@@ -44,6 +44,10 @@ def build_variant(
         _id = str, # required, same as document_id
         acmg_evaluation = str, # choices=ACMG_TERMS
         alternative = str, # required
+        am_class = str, # "likely_benign", "ambiguous", "likely_pathogenic"
+        am_pathogenicity = float
+        avi_raw = float
+        avi_phred = float
         cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
         case_id = str, # case_id is a string like owner_caseid
         category = str, # choices=('sv', 'snv', 'str', 'fusion')
