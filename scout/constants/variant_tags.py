@@ -35,6 +35,12 @@ SPLICEAI_SCORE_LABEL_COLOR_MAP = {
     (0.00, 0.10): {"label": "No impact on splicing", "color": "success"},
 }
 
+AM_PATHOGENICITY_LABEL_COLOR_MAP = {
+    (0.564, 1.0): {"label": "Likely pathogenic", "color": "danger"},
+    (0.34, 0.564): {"label": "Ambiguous", "color": "warning"},
+    (0.0, 0.34): {"label": "Likely benign", "color": "success"},
+}
+
 CADD_SCORE_LABEL_COLOR_MAP = {
     (28, 100): {"label": "Moderate pathogenic", "color": "danger"},
     (22, 28): {"label": "Supporting pathogenic", "color": "warning"},
