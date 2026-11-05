@@ -160,7 +160,6 @@ def build_variant(
     variant_obj["norm_rank_score"] = float(variant["norm_rank_score"])
     variant_obj["simple_id"] = variant["ids"].get("simple_id")
     variant_obj["sub_category"] = variant.get("sub_category")
-    variant_obj["phase_set"] = call_safe(int, variant.get("phase_set"))
 
     ### STR variant specific
     variant_obj["str_disease"] = variant.get("str_disease")

@@ -164,8 +164,19 @@ def parse_genotype(variant: cyvcf2.Variant, ind: dict, pos: int) -> dict:
     gt_call["ffpm"] = get_ffpm_info(variant, pos)
     gt_call["split_read"] = split_read_alt
     gt_call["copy_number"] = get_copy_number(variant, pos)
+    gt_call["phase_set"] = get_phase_set(variant, pos)
 
     return gt_call
+
+
+def get_phase_set(variant: cyvcf2.Variant, pos: int) -> Optional[int]:
+    """Get phase set from variant FORMAT. It should be a single value."""
+    if "PS" in variant.FORMAT:
+        try:
+            values = variant.format("PS")[pos]
+            return int(values[0])
+        except ValueError as _ignore_error:
+            pass
 
 
 def get_mei_reads(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ...]:

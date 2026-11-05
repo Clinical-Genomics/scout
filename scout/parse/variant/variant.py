@@ -101,7 +101,6 @@ def parse_variant(
     )
 
     set_coordinates(parsed_variant, variant, case, category)
-    set_phase_set(parsed_variant, variant)
 
     set_custom_data(parsed_variant, variant)
 
@@ -189,14 +188,6 @@ def set_coordinates(parsed_variant: dict, variant: dict, case: dict, category: s
             "sub_category": coordinates["sub_category"],
         }
     )
-
-
-def set_phase_set(parsed_variant: dict, variant: dict):
-    """
-    Parse and set phase information
-    """
-    if "PS" in variant.INFO:
-        parsed_variant["phase_set"] = call_safe(int, variant.INFO.get("PS"))
 
 
 def set_mei_specific_annotations(parsed_variant: dict, variant: dict):
