@@ -174,6 +174,8 @@ def get_phase_set(variant: cyvcf2.Variant, pos: int) -> Optional[int]:
     if "PS" in variant.FORMAT:
         try:
             values = variant.format("PS")[pos]
+            if values[0] in [None, -1, -2147483648, ".", b"."]:
+                return None
             return int(values[0])
         except ValueError as _ignore_error:
             pass
