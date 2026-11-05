@@ -38,7 +38,11 @@
           {% for sample in variant.samples %}
            <tr{% if sample.is_affected %} class="table-danger"{% endif %}>
               <td>{{ sample.display_name }}</td>
-              <td>{{ sample.genotype_call }}</td>
+              <td>{{ sample.genotype_call }}
+                {% if sample.phase_set %}
+                  <span class="badge bg-warning" tooltip="Alleles are phased into haplotype, as indicated by a | separator, only within the same phase set block. The order of alleles for the locus, and the read alignment HP indicates the same haplotype only if the Phase Set numbers are identical.">Phase set {{ sample.phase_set }}</span>
+                {% endif %}
+              </td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
                     <td>
@@ -101,9 +105,6 @@
           {% endfor %}
         </tbody>
       </table>
-      {% if variant.phase_set %}
-        <span class="badge bg-warning" tooltip="Alleles are phased into haplotype, as indicated by a | separator, only within the same phase set block. The order of alleles for the locus, and the read alignment HP indicates the same haplotype only if the Phase Set numbers are identical.">Phase set {{ variant.phase_set }}</span>
-      {% endif %}
     </div>
     <div class="panel-footer">
        {% for filter in variant.filters %} <!-- collect info from variant's filters (PASS) -->

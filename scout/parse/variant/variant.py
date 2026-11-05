@@ -117,10 +117,9 @@ def parse_variant(
     parsed_variant["azqual"] = call_safe(float, variant.INFO.get("AZQUAL"))
 
     # STR variant info
-    if parsed_variant.get("category") == "str":
-        set_str_info(variant, parsed_variant)
-        # STR source dict with display string, source type and entry id
-        set_str_source(parsed_variant, variant)
+    set_str_info(variant, parsed_variant)
+    # STR source dict with display string, source type and entry id
+    set_str_source(parsed_variant, variant)
 
     # MEI variant info
     set_mei_info(variant, parsed_variant)
@@ -416,6 +415,9 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """
     ################ Add STR info if present ################
     """
+    if parsed_variant.get("category") != "str":
+        return
+
     # repeat id generally corresponds to gene symbol
     parsed_variant["str_repid"] = call_safe(str, variant.INFO.get("REPID"))
 
