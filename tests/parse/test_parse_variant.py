@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from unittest.mock import Mock
+
 from scout.exceptions import VcfError
 from scout.parse.variant import parse_variant
+from scout.parse.variant.variant import set_phase_set
 
 
 def test_parse_old_obs_archive_SV(case_obj, cyvcf2_variant):
@@ -133,3 +136,33 @@ def test_parse_hmtvar(cyvcf2_variant, case_obj):
     hmtvar_variant_id = int(cyvcf2_variant.INFO["HmtVar"])
     parsed_variant = parse_variant(cyvcf2_variant, case_obj)
     assert parsed_variant["hmtvar_variant_id"] == hmtvar_variant_id
+
+
+def test_set_phase_set():
+    """Test parsing a phase set tag from variant INFO."""
+
+    # GIVEN a variant with a phase set tag in the INFO field
+    parsed_variant = {}
+    variant = Mock()
+    variant.INFO = {"PS": "12345"}
+
+    # WHEN the phase set is parsed
+    set_phase_set(parsed_variant, variant)
+
+    # THEN the parsed variant should contain the phase set as an integer
+    assert parsed_variant["phase_set"] == 12345
+
+
+def test_set_phase_set_without_phase_set():
+    """Test that a missing phase set is represented as None."""
+
+    # GIVEN a variant without a phase set tag in the INFO field
+    parsed_variant = {}
+    variant = Mock()
+    variant.INFO = {}
+
+    # WHEN the phase set is parsed
+    set_phase_set(parsed_variant, variant)
+
+    # THEN the parsed variant should not contain a phase set key
+    assert "phase_set" not in parsed_variant
