@@ -117,9 +117,10 @@ def parse_variant(
     parsed_variant["azqual"] = call_safe(float, variant.INFO.get("AZQUAL"))
 
     # STR variant info
-    set_str_info(variant, parsed_variant)
-    # STR source dict with display string, source type and entry id
-    set_str_source(parsed_variant, variant)
+    if parsed_variant.get("category") == "str":
+        set_str_info(variant, parsed_variant)
+        # STR source dict with display string, source type and entry id
+        set_str_source(parsed_variant, variant)
 
     # MEI variant info
     set_mei_info(variant, parsed_variant)
