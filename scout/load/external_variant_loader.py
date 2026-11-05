@@ -42,7 +42,11 @@ class ExternalVariantLoader:
                 {
                     "sample_id": individual["individual_id"],
                     "sample_name": individual.get("display_name"),
-                    "phenotype": "affected" if individual.get("phenotype") == "2" else "unaffected",
+                    "phenotype": (
+                        "affected"
+                        if individual.get("phenotype") in ["2", "affected"]
+                        else "unaffected"
+                    ),
                 }
                 for individual in case_obj.get("individuals", [])
             ],
