@@ -40,7 +40,7 @@
               <td>{{ sample.display_name }}</td>
               <td>{{ sample.genotype_call }}
                 {% if sample.phase_set %}
-                  <span class="badge bg-warning" tooltip="Phase set number - by convention the haplotype block start position on this chr. Alleles are phased into haplotype, as indicated by a | separator, only within the same phase set block. The order of alleles for the locus, and the read alignment HP indicates the same haplotype only if the Phase Set numbers are identical within the same chromosome and individual.">Phase set {{ sample.phase_set }}</span>
+                  <span class="badge bg-warning" data-bs-toggle="tooltip" title="Phase set number - by convention the haplotype block start position on this chr. Alleles are phased into haplotype, as indicated by a | separator, only within the same phase set block. The order of alleles for the locus, and the read alignment HP indicates the same haplotype only if the Phase Set numbers are identical within the same chromosome and individual.">Phase set {{ sample.phase_set }}</span>
                 {% endif %}
               </td>
               {% if sample.allele_depths %}
