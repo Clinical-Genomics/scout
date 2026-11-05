@@ -41,6 +41,8 @@ class ExternalVariantLoader:
             "samples": [
                 {
                     "sample_id": individual["individual_id"],
+                    "sample_name": individual.get("display_name"),
+                    "phenotype": "affected" if individual.get("phenotype") == "2" else "unaffected",
                 }
                 for individual in case_obj.get("individuals", [])
             ],
