@@ -87,10 +87,6 @@ def parse_variant(
         "norm_rank_score": parse_rank_score(variant.INFO.get("RankScoreNormalized", ""), genmod_key)
         or 0,
         "genetic_models": parse_genetic_models(variant.INFO.get("GeneticModels"), genmod_key),
-        "str_swegen_mean": call_safe(float, variant.INFO.get("SweGenMean")),
-        "str_swegen_std": call_safe(float, variant.INFO.get("SweGenStd")),
-        "somatic_score": call_safe(int, variant.INFO.get("SOMATICSCORE")),
-        "custom": parse_custom_data(variant.INFO.get("SCOUT_CUSTOM")),
     }
     category = get_and_set_category(parsed_variant, variant, category)
     alt = get_and_set_variant_alternative(parsed_variant, variant, category)
@@ -105,6 +101,9 @@ def parse_variant(
     )
 
     set_coordinates(parsed_variant, variant, case, category)
+    set_phase_set(parsed_variant, variant)
+
+    set_custom_data(parsed_variant, variant)
 
     parsed_variant["samples"] = get_samples(variant, individual_positions, case, category)
 
@@ -192,6 +191,13 @@ def set_coordinates(parsed_variant: dict, variant: dict, case: dict, category: s
     )
 
 
+def set_phase_set(parsed_variant: dict, variant: dict):
+    """
+    Parse and set phase information
+    """
+    parsed_variant["phase_set"] = call_safe(int, variant.INFO.get("PS"))
+
+
 def set_mei_specific_annotations(parsed_variant: dict, variant: dict):
     """Add MEI specific annotations"""
     if parsed_variant.get("category") in ["mei"]:
@@ -208,6 +214,9 @@ def set_cancer_specific_annotations(parsed_variant: dict, variant: dict):
     """
     if variant.INFO.get("MSK_MVL"):
         parsed_variant["mvl_tag"] = True
+
+    if variant.INFO.get("SOMATICSCORE"):
+        parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
 
 
 def set_sv_specific_annotations(parsed_variant: dict, variant: dict):
@@ -456,6 +465,10 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     # str disease inheritance mode string annotation
     parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
 
+    # str SweGen mean and std - used for STR z-score calculations
+    parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
+    parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
+
 
 def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """Add Fusion information if present."""
@@ -696,6 +709,15 @@ def add_hmtvar(parsed_variant, variant):
     hmtvar_variant_id = variant.INFO.get("HmtVar")
     if hmtvar_variant_id and hmtvar_variant_id != ".":
         parsed_variant["hmtvar_variant_id"] = int(hmtvar_variant_id)
+
+
+def set_custom_data(parsed_variant, variant):
+    """Set custom data in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+    """
+    parsed_variant["custom"] = parse_custom_data(variant.INFO.get("SCOUT_CUSTOM"))
 
 
 def parse_custom_data(custom_str):
