@@ -38,6 +38,7 @@ from scout.demo import (
     vep_97_annotated_path,
     vep_104_annotated_path,
     vep_113_existing_variation_path,
+    vep_116_existing_variation_path,
 )
 
 # These are the reduced data files
@@ -1244,6 +1245,14 @@ def one_vep113_existing_variation_variant(request, vep_113_existing_variation_fi
 
 
 @pytest.fixture(scope="function")
+def one_vep116_existing_variation_variant(request, vep_116_existing_variation_file):
+    variant_parser = VCF(vep_116_existing_variation_file)
+
+    variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file):
     LOG.info("Return one parsed cancer SV variant")
     variant_parser = VCF(vep_94_manta_annotated_SV_variants_file)
@@ -1604,6 +1613,12 @@ def vep_113_existing_variation_file(request):
     and a custom annotation with an unmodified ClinVar VCF file.
     """
     return vep_113_existing_variation_path
+
+
+@pytest.fixture(scope="function")
+def vep_116_existing_variation_file(request):
+    """Get a path to a VCF file annotated with VEP 116, including AVI score and AlphaMissense."""
+    return vep_116_existing_variation_path
 
 
 @pytest.fixture(scope="function")

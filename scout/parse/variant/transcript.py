@@ -56,6 +56,20 @@ def parse_transcripts(raw_transcripts):
                 entry.get("REVEL_SCORE")
             )
 
+        if entry.get("AVI_PHRED"):
+            transcript["avi_phred"] = get_highest_float_score_in_string(entry.get("AVI_PHRED"))
+
+        if entry.get("AVI_RAW"):
+            transcript["avi_raw"] = get_highest_float_score_in_string(entry.get("AVI_RAW"))
+
+        if entry.get("AM_PATHOGENICITY"):
+            transcript["am_pathogenicity"] = get_highest_float_score_in_string(
+                entry.get("AM_PATHOGENICITY")
+            )
+
+        if entry.get("AM_CLASS"):
+            transcript["am_class"] = entry.get("AM_CLASS")
+
         parse_transcripts_spliceai(transcript, entry)
 
         ##  SWISSPROT ##
