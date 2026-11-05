@@ -269,22 +269,44 @@ def set_severity_predictions(parsed_variant: dict, variant: dict, parsed_transcr
     parsed_variant["cadd_score"] = parse_cadd(variant, parsed_transcripts)
     parsed_variant["spidex"] = call_safe(float, variant.INFO.get("SPIDEX"))
 
-    if len(parsed_transcripts) > 0:
-        parsed_variant["revel_score"] = get_highest_revel_score_in_transcripts(
+    if parsed_transcripts:
+        parsed_variant["revel_score"] = get_highest_score_in_transcripts(
             parsed_transcripts=parsed_transcripts, key="revel_rankscore"
         )  # will be displayed as "REVEL rank score"
-        parsed_variant["revel"] = get_highest_revel_score_in_transcripts(
+        parsed_variant["revel"] = get_highest_score_in_transcripts(
             parsed_transcripts=parsed_transcripts, key="revel_raw_score"
         )  # will be displayed as "REVEL score"
+        parsed_variant["avi_phred"] = get_highest_score_in_transcripts(
+            parsed_transcripts=parsed_transcripts, key="avi_phred"
+        )
+        parsed_variant["avi_raw"] = get_highest_score_in_transcripts(
+            parsed_transcripts=parsed_transcripts, key="avi_raw"
+        )
+        parsed_variant["am_pathogenicity"] = get_highest_score_in_transcripts(
+            parsed_transcripts=parsed_transcripts, key="am_pathogenicity"
+        )
+        parsed_variant["am_class"] = get_highest_am_class_in_transcripts(
+            parsed_transcripts=parsed_transcripts
+        )
 
 
-def get_highest_revel_score_in_transcripts(
-    parsed_transcripts: List[dict], key: str
-) -> Optional[float]:
-    """Retrieve the highest REVEL score values from parsed variant transcripts."""
-    tx_revel_scores: List(float) = [tx.get(key) for tx in parsed_transcripts if tx.get(key) != None]
-    if tx_revel_scores:
-        return max(tx_revel_scores)
+def get_highest_score_in_transcripts(parsed_transcripts: List[dict], key: str) -> Optional[float]:
+    """Retrieve the highest predictor score values from parsed variant transcripts."""
+    tx_scores: List(float) = [tx.get(key) for tx in parsed_transcripts if tx.get(key) != None]
+    if tx_scores:
+        return max(tx_scores)
+
+
+def get_highest_am_class_in_transcripts(parsed_transcripts: List[dict]) -> Optional[str]:
+    """Retrieve the highest AlphaMissense class from parsed variant transcripts."""
+    tx_classes: List[str] = [
+        tx.get("am_class") for tx in parsed_transcripts if tx.get("am_class") is not None
+    ]
+    if tx_classes:
+        for am_class in ["likely_pathogenic", "ambiguous", "likely_benign"]:
+            if am_class in tx_classes:
+                return am_class
+    return None
 
 
 def get_genmod_key(case):

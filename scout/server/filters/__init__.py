@@ -9,6 +9,7 @@ from markupsafe import Markup
 from pymongo.cursor import Cursor
 
 from scout.constants import (
+    AM_PATHOGENICITY_LABEL_COLOR_MAP,
     CADD_SCORE_LABEL_COLOR_MAP,
     RANK_SCORE_LABEL_COLOR_MAP,
     REVEL_SCORE_LABEL_COLOR_MAP,
@@ -49,6 +50,7 @@ def get_label_or_color_by_score(
         "rank": RANK_SCORE_LABEL_COLOR_MAP,
         "revel": REVEL_SCORE_LABEL_COLOR_MAP,
         "spliceai": SPLICEAI_SCORE_LABEL_COLOR_MAP,
+        "am_pathogenicity": AM_PATHOGENICITY_LABEL_COLOR_MAP,
     }
 
     if score is None:
