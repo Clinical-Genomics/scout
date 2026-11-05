@@ -68,7 +68,11 @@ def test_run_external_scout_loader(monkeypatch):
         "owner": "cust000",
         "genome_build": "38",
         "rank_score_threshold": "5",
-        "individuals": [{"individual_id": "sample1"}],
+        "individuals": [
+            {
+                "individual_id": "sample1",
+            }
+        ],
         "gene_panels": [{"panel_name": "OMIM-AUTO"}],
     }
     captured = {}
@@ -98,7 +102,9 @@ def test_run_external_scout_loader(monkeypatch):
     assert captured["command"][3] == "--config"
     assert captured["check"] is True
     assert captured["case_config"]["family"] == "test"
-    assert captured["case_config"]["samples"] == [{"sample_id": "sample1"}]
+    assert captured["case_config"]["samples"] == [
+        {"sample_id": "sample1", "sample_name": None, "phenotype": "unaffected"}
+    ]
     assert captured["case_config"]["gene_panels"] == [{"panel_name": "OMIM-AUTO"}]
     assert captured["mongo_config"] == (
         'mongo_uri = "mongodb://localhost:27017"\n' 'mongo_dbname = "scout_test"\n'
