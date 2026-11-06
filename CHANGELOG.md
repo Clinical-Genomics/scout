@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants (#6694)
 - Parse and display AlphaGenome Variant Impact (AVI) and AlphaMissense scores (#6700)
 - Parse and display phase set (PS) information for phased variants (#6701)
+- Optionally load cases or variants using an external, Rust-based, scout_loader. Not yet tested for production use (#6657)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)

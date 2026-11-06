@@ -4,10 +4,12 @@ from os import path
 from typing import Optional
 
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
 from scout.constants import ORDERED_FILE_TYPE_MAP
+from scout.load.external_variant_loader import ExternalVariantLoader as external_loader
 from scout.server.extensions import store
 
 DEFAULT_RANK_THRESHOLD = 8
@@ -88,9 +90,15 @@ def research(case_id, institute, force):
     raise_file_not_found = False
     missing_per_case = {}
 
+    external_variants_loader = current_app.config.get("VARIANTS_LOADER")
+
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
+            continue
+
+        if external_variants_loader:
+            external_loader.run_external_scout_loader(case_obj=case_obj, is_research=True)
             continue
 
         files = False
