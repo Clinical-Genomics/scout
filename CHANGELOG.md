@@ -30,7 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix a bug where STR variants with identical sort keys could be returned in random order, e.g. for different query index plans, resulting in missed variants when paginating (#6690)
 - Replace the Ubuntu APT installation of wkhtmltopdf with a cached Ubuntu 26.04-compatible binary (#6706)
 - Parsing of multiple clnsig values separated by `|` (#6705)
-- Typo in code parsing cancer variants' oncogenicity fields ()
+- Bug in code parsing cancer variants' oncogenicity fields, causing all classifications containing an underscore not to be saved (#6708)
 
 ## [4.115.2]
 ### Changed
