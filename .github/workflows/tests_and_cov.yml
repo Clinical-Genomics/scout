@@ -38,11 +38,12 @@ jobs:
       - name: Download wkhtmltopdf
         if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ~/.cache/wkhtmltopdf
-          curl -fL https://github.com/newinnovations/wkhtml-packaging/releases/download/2026-05-06/wkhtmltopdf_0.12.6.1-resolute_amd64 \
+            mkdir -p ~/.cache/wkhtmltopdf
+            curl -fL --proto-redir =https \
+            https://github.com/newinnovations/wkhtml-packaging/releases/download/2026-05-06/wkhtmltopdf_0.12.6.1-resolute_amd64 \
             -o ~/.cache/wkhtmltopdf/wkhtmltopdf
-          echo "17537866fbbeb121d2f03a297a47a25d1369a348bd5142e5b15ccce7174201e0  $HOME/.cache/wkhtmltopdf/wkhtmltopdf" | sha256sum -c
-          chmod +x ~/.cache/wkhtmltopdf/wkhtmltopdf
+            echo "17537866fbbeb121d2f03a297a47a25d1369a348bd5142e5b15ccce7174201e0  $HOME/.cache/wkhtmltopdf/wkhtmltopdf" | sha256sum -c
+            chmod +x ~/.cache/wkhtmltopdf/wkhtmltopdf
 
   test:
     needs: setup
