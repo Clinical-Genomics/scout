@@ -86,6 +86,8 @@ def parse_clnsig(
                     for anno in annotation.split("/"):
                         clnsig.add(anno.lstrip("_"))
             for annotation in clnsig:
+                if "|" in anno:
+                    raise ValueError(anno)
                 clnsig_accessions.append({"value": annotation})
 
         # VEP 97+ annotated clinvar info:
@@ -101,7 +103,7 @@ def parse_clnsig(
             revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
         sig_groups = []
-        for significance in sig.replace("&", ",").split(","):
+        for significance in sig.replace("&", ",").replace("|", ",").split(","):
             for term in significance.lstrip("_").split("/"):
                 sig_groups.append("_".join(term.split(" ")))
 

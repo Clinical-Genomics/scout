@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix STR genotype depth parsing for NumPy strings (#6676)
 - Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
 - Fix a bug where STR variants with identical sort keys could be returned in random order, e.g. for different query index plans, resulting in missed variants when paginating (#6690)
+- Parsing of multiple clnsig values separated by `|` ()
 
 ## [4.115.2]
 ### Changed
