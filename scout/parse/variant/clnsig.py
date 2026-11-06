@@ -86,8 +86,6 @@ def parse_clnsig(
                     for anno in annotation.split("/"):
                         clnsig.add(anno.lstrip("_"))
             for annotation in clnsig:
-                if "|" in anno:
-                    raise ValueError(anno)
                 clnsig_accessions.append({"value": annotation})
 
         # VEP 97+ annotated clinvar info:
