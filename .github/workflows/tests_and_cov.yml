@@ -80,7 +80,6 @@ jobs:
       - name: Install the HTML 2 PDF renderer
         run: |
           sudo install -m 755 ~/.cache/wkhtmltopdf/wkhtmltopdf /usr/local/bin/wkhtmltopdf
-          wkhtmltopdf --version
 
       - name: Run pytest
         run: uv run --frozen --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
