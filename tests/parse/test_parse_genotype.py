@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 from cyvcf2 import VCF
 
@@ -7,6 +9,7 @@ from scout.parse.variant.genotype import (
     _parse_format_entry_trgt_mc,
     get_alt_depth,
     get_copy_number,
+    get_phase_set,
     get_ref_depth,
     parse_genotype,
     parse_genotypes,
@@ -224,3 +227,30 @@ def test_parse_trgt_mc_ignores_phase_slot_in_haploid_padding():
 
     assert mc_ref is None
     assert mc_alt == 8
+
+
+def test_get_phase_set():
+    """Test parsing a phase set from a genotype FORMAT field."""
+    # GIVEN that a variant has a PS field in its FORMAT
+    variant = Mock()
+    variant.FORMAT = ["GT", "PS"]
+    variant.format.return_value = [[12345]]
+
+    # WHEN parsing the phase set
+    phase_set = get_phase_set(variant, 0)
+
+    # THEN the correct phase set should be returned
+    assert phase_set == 12345
+
+
+def test_get_phase_set_without_phase_set():
+    """Test that no phase set is returned when PS is absent."""
+    # GIVEN that a variant does not have a PS field in its FORMAT
+    variant = Mock()
+    variant.FORMAT = ["GT"]
+
+    # WHEN parsing the phase set
+    phase_set = get_phase_set(variant, 0)
+
+    # THEN the result should be None
+    assert phase_set is None
