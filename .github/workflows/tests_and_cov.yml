@@ -9,7 +9,7 @@ on:
     - main
 
 env:
-  WKHTMLTOPDF_CACHE_VERSION: v0.12.6
+  WKHTMLTOPDF_CACHE_VERSION: v0.12.6.1-resolute
 
 jobs:
   setup:
@@ -28,28 +28,21 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Restore wkhtmltopdf apt cache
+      - name: Cache wkhtmltopdf
         id: wkhtmltopdf-cache
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.cache/apt/archives
-            ~/.cache/apt/lists
-          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
+          path: ~/.cache/wkhtmltopdf
+          key: ${{ runner.os }}-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
 
-      - name: Prime wkhtmltopdf apt cache
+      - name: Download wkhtmltopdf
         if: steps.wkhtmltopdf-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
-          sudo apt-get \
-            -o dir::cache::archives="$HOME/.cache/apt/archives" \
-            -o dir::state::lists="$HOME/.cache/apt/lists" \
-            update
-          sudo apt-get \
-            -o dir::cache::archives="$HOME/.cache/apt/archives" \
-            -o dir::state::lists="$HOME/.cache/apt/lists" \
-            install -y --no-install-recommends --download-only wkhtmltopdf
-          sudo chown -R "$USER:$USER" ~/.cache/apt
+          mkdir -p ~/.cache/wkhtmltopdf
+          curl -fL https://github.com/newinnovations/wkhtml-packaging/releases/download/2026-05-06/wkhtmltopdf_0.12.6.1-resolute_amd64 \
+            -o ~/.cache/wkhtmltopdf/wkhtmltopdf
+          echo "17537866fbbeb121d2f03a297a47a25d1369a348bd5142e5b15ccce7174201e0  $HOME/.cache/wkhtmltopdf/wkhtmltopdf" | sha256sum -c
+          chmod +x ~/.cache/wkhtmltopdf/wkhtmltopdf
 
   test:
     needs: setup
@@ -62,7 +55,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@v1
         with:
-         mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - uses: actions/checkout@v7
 
@@ -77,36 +70,16 @@ jobs:
         with:
           python-version-file: ".python-version"
 
-      - name: Restore wkhtmltopdf apt cache
+      - name: Restore wkhtmltopdf cache
         uses: actions/cache/restore@v6
         with:
-          path: |
-            ~/.cache/apt/archives
-            ~/.cache/apt/lists
-          key: ${{ runner.os }}-apt-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
+          path: ~/.cache/wkhtmltopdf
+          key: ${{ runner.os }}-wkhtmltopdf-${{ env.WKHTMLTOPDF_CACHE_VERSION }}
 
       - name: Install the HTML 2 PDF renderer
         run: |
-          mkdir -p ~/.cache/apt/archives/partial ~/.cache/apt/lists/partial
-          if ! sudo apt-get \
-            -o dir::cache::archives="$HOME/.cache/apt/archives" \
-            -o dir::state::lists="$HOME/.cache/apt/lists" \
-            install -y --no-install-recommends --no-download wkhtmltopdf; then
-            echo "wkhtmltopdf apt cache was unavailable or stale, refreshing and retrying..."
-            sudo apt-get \
-              -o dir::cache::archives="$HOME/.cache/apt/archives" \
-              -o dir::state::lists="$HOME/.cache/apt/lists" \
-              update
-            sudo apt-get \
-              -o dir::cache::archives="$HOME/.cache/apt/archives" \
-              -o dir::state::lists="$HOME/.cache/apt/lists" \
-              install -y --no-install-recommends --download-only wkhtmltopdf
-            sudo apt-get \
-              -o dir::cache::archives="$HOME/.cache/apt/archives" \
-              -o dir::state::lists="$HOME/.cache/apt/lists" \
-              install -y --no-install-recommends wkhtmltopdf
-          fi
-          sudo chown -R "$USER:$USER" ~/.cache/apt
+          sudo install -m 755 ~/.cache/wkhtmltopdf/wkhtmltopdf /usr/local/bin/wkhtmltopdf
+          wkhtmltopdf --version
 
       - name: Run pytest
         run: uv run --frozen --dev pytest --cov --test-group-count 8 --test-group=${{ matrix.group }} --test-group-random-seed=12345 --rootdir=/home/runner/work/scout
@@ -123,22 +96,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version-file: ".python-version"
+
       - name: Download all artifacts
         uses: actions/download-artifact@v7
+
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-            enable-cache: true
-            cache-dependency-glob: "uv.lock"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
       - name: Run coverage
         run: |
           uv run --frozen --dev coverage combine coverage*/.coverage*
           uv run --frozen --dev coverage report
           uv run --frozen --dev coverage xml
+
       - uses: codecov/codecov-action@v7
         env:
-            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
