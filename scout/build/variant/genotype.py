@@ -13,7 +13,16 @@ def build_genotype(gt_call: dict) -> dict:
         genotype_quality=gt_call["genotype_quality"],
     )
 
-    for format_tag in ["alt_mc", "copy_number", "ffpm", "sdp", "sdr", "so", "split_read"]:
+    for format_tag in [
+        "alt_mc",
+        "copy_number",
+        "ffpm",
+        "phase_set",
+        "sdp",
+        "sdr",
+        "so",
+        "split_read",
+    ]:
         if format_tag in gt_call:
             gt_obj[format_tag] = gt_call[format_tag]
 
