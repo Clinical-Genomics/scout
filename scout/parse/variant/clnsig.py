@@ -101,7 +101,7 @@ def parse_clnsig(
             revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
         sig_groups = []
-        for significance in sig.replace("&", ",").split(","):
+        for significance in sig.replace("&", ",").replace("|", ",").split(","):
             for term in significance.lstrip("_").split("/"):
                 sig_groups.append("_".join(term.split(" ")))
 
