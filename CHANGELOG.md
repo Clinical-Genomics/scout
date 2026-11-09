@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643, #)
 - STRchive links for STRs (#6689)
 - Link to dbNSFP for hg38 variants (#6686)
 - Link to gnomAD LRS for hg38 variants (#6686)
