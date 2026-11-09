@@ -75,20 +75,18 @@ def parse_clnsig(
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
-    sig_list = []
+    sig_list = set()
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
     clnsig_accessions = []
 
     if not sig and transcripts:
-        if transcripts[0].get("clnsig"):
-            clnsig = set()
-            for transcript in transcripts:
-                for annotation in transcript.get("clnsig", []):
-                    for anno in annotation.split("/"):
-                        clnsig.add(anno.lstrip("_"))
-            for annotation in clnsig:
-                sig_list.append(annotation)
+        for transcript in transcripts:
+            for annotation in transcript.get("clnsig", []):
+                for anno in annotation.split("/"):
+                    value = anno.lstrip("_")
+                    if value:
+                        sig_list.add(value)
 
         # VEP 97+ annotated clinvar info:
         if transcripts[0].get("clinvar_clnvid"):
