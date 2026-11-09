@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643, #)
+- Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 - STRchive links for STRs (#6689)
 - Link to dbNSFP for hg38 variants (#6686)
 - Link to gnomAD LRS for hg38 variants (#6686)
@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Move Dark regions/SMN to a separate blueprint (#6675)
 - Links to SNVs and SVs from the Dark Regions page are no longer filtered by the gene panels selected on that page (#6693)
+- When a submission is deleted from ClinVar, set its status to "closed" (#6712)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
 - Fix STR genotype depth parsing for NumPy strings (#6676)
