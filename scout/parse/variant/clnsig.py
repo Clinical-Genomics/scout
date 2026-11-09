@@ -75,11 +75,12 @@ def parse_clnsig(
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
+    sig_list = []
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
     clnsig_accessions = []
 
-    if acc == "" and transcripts:
+    if not sig and transcripts:
         if transcripts[0].get("clnsig"):
             clnsig = set()
             for transcript in transcripts:
@@ -87,7 +88,7 @@ def parse_clnsig(
                     for anno in annotation.split("/"):
                         clnsig.add(anno.lstrip("_"))
             for annotation in clnsig:
-                clnsig_accessions.append({"value": annotation})
+                sig_list.append(annotation)
 
         # VEP 97+ annotated clinvar info:
         if transcripts[0].get("clinvar_clnvid"):
@@ -104,9 +105,13 @@ def parse_clnsig(
         sig_groups = []
         for significance in sig.replace("&", ",").replace("|", ",").split(","):
             for term in significance.lstrip("_").split("/"):
-                sig_groups.append("_".join(term.split(" ")))
+                term = "_".join(term.split(" "))
+                if term:
+                    sig_groups.append(term)
 
         sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
+        if not sig_groups and sig_list:
+            sig_groups = sig_list
 
         for sig_term in sig_groups:
             clnsig_accession = {
@@ -117,7 +122,7 @@ def parse_clnsig(
             clnsig_accessions.append(clnsig_accession)
 
     # Test to parse the older format
-    if acc and not clnsig_accessions:
+    if acc and and sig and not clnsig_accessions :
         acc_groups = acc.split("|")
         sig_groups = sig.split("|")
         revstat_groups = revstat.split("|")
