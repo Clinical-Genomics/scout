@@ -122,7 +122,7 @@ def parse_clnsig(
             clnsig_accessions.append(clnsig_accession)
 
     # Test to parse the older format
-    if acc and and sig and not clnsig_accessions :
+    if acc and sig and not clnsig_accessions:
         acc_groups = acc.split("|")
         sig_groups = sig.split("|")
         revstat_groups = revstat.split("|")
