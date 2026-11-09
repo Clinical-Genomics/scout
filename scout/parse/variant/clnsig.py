@@ -88,7 +88,7 @@ def parse_clnsig(
                 for anno in annotation.split("/"):
                     value = anno.lstrip("_")
                     if value:
-                        sig_list.add(value)
+                        transcripts_clnsig_set.add(value)
 
         # VEP 97+ annotated ClinVar info:
         if transcripts[0].get("clinvar_clnvid"):
