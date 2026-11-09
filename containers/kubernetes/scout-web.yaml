@@ -28,7 +28,7 @@ spec:
         ports:
         - containerPort: 5000
         command: ["scout"]
-        args: ["--flask-config", "/config/config.py", "serve", "--host", "0.0.0.0"]
+        args: ["--config", "/config/config.toml", "serve", "--host", "0.0.0.0"]
 ---
 # External service document
 apiVersion: v1

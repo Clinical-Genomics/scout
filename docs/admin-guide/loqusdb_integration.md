@@ -27,14 +27,15 @@ Loqusdbapi should be running on a server with host and port reachable by the sco
 
 ## Configuring the loqusdb connections in Scout using the config file
 
-Once a loqusdb instance is created via one one the two options (or both actually, since Scout supports the connection to multiple loqusdb instances), the `LOQUSDB_SETTINGS` parameter in the Scout config file (config.py) should be edited as shown in the following example:
+Once a LoqusDB instance is created, add it to `LOQUSDB_SETTINGS` in your Scout TOML app config. Scout supports multiple instances:
 
-```
-LOQUSDB_SETTINGS = {
-  "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"}, # Example of an executable loqusdb binary file
-  "loqus_api" : {"api_url": "http://127.0.0.1:9000"}, # Example or a loqusdb instance reachable via REST API,
-  ..
-}
+```toml
+[LOQUSDB_SETTINGS.default]
+binary_path = "/miniconda3/envs/loqus2.5/bin/loqusdb"
+config_path = "/home/user/settings/loqus_default.yaml"
+
+[LOQUSDB_SETTINGS.loqus_api]
+api_url = "http://127.0.0.1:9000"
 ```
 The example above is showing the LOQUSDB_SETTINGS parameter as a dictionary containing 2 key/values, reflecting 2 eventual instances of loqusdb, one based on the executable binary file (option 1) and one reachable via REST API (option2). To reflect the infrastructure needs, it is possible to set as many connections to loqusdb instances as required.
 
@@ -44,12 +45,12 @@ Note also that regardless of the number of loqusdb instances (key/values present
 
 ## Switching between loqusdb instances from the institute settings in the Scout browser
 
-This part applies only if more than one loqusdb instance is connected to Scout using the `LOQUSDB_SETTINGS` parameter present in the Scout config file. As mentioned before, **at the moment Scout support one loqusdb connection at the time for each single institute**.
+This part applies only if more than one LoqusDB instance is connected to Scout using the `LOQUSDB_SETTINGS` parameter in the Scout TOML config file. As mentioned before, **at the moment Scout supports one LoqusDB connection at a time for each institute**.
 The first time that the Scout browser is launched, all institutes will be set to use the default loqusdb instance. **Configuring a different loqusdb instance than the default one is done at the institute level, and only admin users have the permissions to change these settings**.
 
 ### Configuring institute-specific loqusdb instance via institute settings
 From the institute page in the Scout browser, go to sidebar 'Settings'. Find 'LoqusDB id' and enter the configured id from
-config.py. Click Save. Your configuration is now active.
+TOML config file. Click Save. Your configuration is now active.
 
 ![Screenshot 2020-07-10 at 12 52 16](https://user-images.githubusercontent.com/1150065/87147271-9ea50600-c2ac-11ea-9f66-333b37783d52.png)
 

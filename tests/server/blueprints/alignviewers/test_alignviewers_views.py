@@ -37,7 +37,7 @@ def test_remote_static_not_in_session(app, case_obj, institute_obj):
         resp = client.get(
             url_for(
                 "alignviewers.remote_static",
-                file="config.py",
+                file="config.toml",
                 case_name=case_obj["display_name"],
                 institute_id=institute_obj["_id"],
             )

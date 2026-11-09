@@ -46,19 +46,19 @@ This secret should be edited to include the real scout-username and scout-passwo
 1. **Create the above secrets** with the command:
 `kubectl apply -f scout/containers/kubernetes/secrets.yaml`
 
-1. Create s ConfigMap for passing setup parameters to Scout pods. This ConfigMap will contain all parameters specified by a python config file. Basic ConfigMap allowing to authenticate to mongodb:
+1. Create s ConfigMap for passing setup parameters to Scout pods. This ConfigMap contains the Scout app settings in TOML. Here is a basic ConfigMap for MongoDB authentication:
 ```
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: scoutconfig
 data:
-  config.py: |
-    MONGO_HOST="mongodb-service"
-    MONGO_PORT= 27017
-    MONGO_DBNAME= "scout-demo"
-    MONGO_USERNAME= "scoutUser"
-    MONGO_PASSWORD= "scoutPassword"
+  config.toml: |
+    MONGO_HOST = "mongodb-service"
+    MONGO_PORT = 27017
+    MONGO_DBNAME = "scout-demo"
+    MONGO_USERNAME = "scoutUser"
+    MONGO_PASSWORD = "scoutPassword"
 ```
 The config parameters should be modified according to the MongoDB connection settings on the server.
 
@@ -91,7 +91,7 @@ spec:
     configMap:
       name: scoutconfig
 ```
-Note that the configMap representing the config file is mapped inside "volumes". This is necessary to make the content of the config file available to the pod.
+Note that the ConfigMap containing the TOML config file is mapped inside "volumes". This makes the file available to the pod.
 
 1. **Create the pod** with the following command:
 `kubectl apply -f scout/containers/kubernetes/scout-cli.yaml`
@@ -100,8 +100,8 @@ Note that the configMap representing the config file is mapped inside "volumes".
 `kubectl exec -it scout-cli -- bash`
 
 1. From inside the shell, you can run any scout-specific command. For instance to setup the demo database:
-`scout --flask-config /config/config.py setup demo`
-Note that for connecting to the mongo database it is necessary to provide the param --flask-config with the path to the mapped config file on the container.
+`scout --config /config/config.toml setup demo`
+The `--config` option points Scout to the TOML file mounted in the container.
 
 ### Deploying the Scout server
 The scout Deployment file (first file included in the scout-web.yaml example) contains the steps to pull the Scout image from Docker Hub, define a volume with the config file, and launching the server on port 5000:
@@ -136,7 +136,7 @@ spec:
         ports:
         - containerPort: 5000
         command: ["scout"]
-        args: ["--flask-config", "/config/config.py", "serve", "--host", "0.0.0.0"]
+        args: ["--config", "/config/config.toml", "serve", "--host", "0.0.0.0"]
 ```
 The second file present in the configuration represents the service that makes the server available to applications outside the container (for example the web browser):
 ```

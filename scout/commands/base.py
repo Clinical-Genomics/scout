@@ -1,8 +1,8 @@
 import logging
+import os
 
 import click
 import coloredlogs
-import yaml
 from flask.cli import FlaskGroup, with_appcontext
 
 # General, logging
@@ -19,7 +19,6 @@ from scout.commands.update import update as update_command
 from scout.commands.view import view as view_command
 from scout.commands.wipe_database import wipe
 from scout.server.app import create_app
-from scout.utils.config import load_config
 
 LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LOG = logging.getLogger(__name__)
@@ -42,24 +41,7 @@ def get_app(ctx=None):
     loglevel()  # Set up log level even before creating the app object
     options = ctx.find_root()
 
-    # YAML config (deprecated)
-    cli_config = {}
-    if options.params.get("config"):
-        LOG.warning(
-            "Support for launching Scout using a .yaml config file is deprecated "
-            "and will be removed in the next major release (5.0). "
-            "Use a PYTHON (.py) config file instead.",
-        )
-        with open(options.params["config"], "r") as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
-            if cli_config.get("mongodb"):
-                cli_config["mongo_dbname"] = cli_config.pop("mongodb")
-
-    if options.params.get("demo"):
-        cli_config["demo"] = "scout-demo"
-
-    # python config file
-    flask_conf = options.params.get("flask_config")
+    config_file = options.params.get("config_file") or os.environ.get("SCOUT_CONFIG")
 
     # collect CLI options into a dict
     cli_options = {
@@ -71,21 +53,13 @@ def get_app(ctx=None):
         "MONGO_USERNAME": options.params.get("username"),
         "MONGO_PASSWORD": options.params.get("password"),
         "MONGO_URI": options.params.get("mongo_uri"),
-        "OMIM_API_KEY": cli_config.get("omim_api_key"),
     }
 
     # Echo the database name if demo mode is used
     if options.params.get("demo"):
         click.echo(f"Demo mode - database name is: {cli_options['MONGO_DBNAME']}")
 
-    try:
-        config = load_config(cli_options=cli_options, cli_config=cli_config, flask_conf=flask_conf)
-        app = create_app(config=config)
-    except SyntaxError as err:
-        LOG.error(err)
-        raise click.Abort
-
-    return app
+    return create_app(config_file=config_file, config=cli_options)
 
 
 @click.version_option(__version__)
@@ -99,8 +73,11 @@ def get_app(ctx=None):
 @click.option(
     "-c",
     "--config",
-    type=click.Path(exists=True),
-    help="Path to a YAML config file with database info.",
+    "-f",
+    "--flask-config",
+    "config_file",
+    type=click.Path(exists=True, dir_okay=False, readable=True),
+    help="Path to a TOML file with Scout app settings (also selected by SCOUT_CONFIG).",
 )
 @click.option(
     "--loglevel",
@@ -117,12 +94,6 @@ def get_app(ctx=None):
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
-@click.option(
-    "-f",
-    "--flask-config",
-    type=click.Path(exists=True),
-    help="Path to a PYTHON config file",
-)
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""

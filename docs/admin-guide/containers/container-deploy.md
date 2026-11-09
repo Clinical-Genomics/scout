@@ -55,10 +55,10 @@ In our case image is scout. An additional number of arguments are added to open 
 
 Given a MongoDB instance running on localhost, port 27017, a Scout command line command could be launched in this way:
 ```
-docker run (--net=host) --volume="path_to_config.py_on_your_machine":/home/worker/configs/config.py --rm clinicalgenomics/scout scout --flask-config /home/worker/configs/config.py view cases
+docker run (--net=host) --volume="path_to_config.toml_on_your_machine":/home/worker/configs/config.toml --rm clinicalgenomics/scout scout --config /home/worker/configs/config.toml view cases
 ```
 
-Note that in the above command we are mapping a specific custom config file present on the local machine to a new file `/home/worker/configs/config.py`, created in the Docker container.
+Note that in the above command we map a custom TOML app config from the local machine to `/home/worker/configs/config.toml` in the container.
 
 Make sure that the custom config file contains the correct settings to connect to your local database, for instance on a Mac machine, it should contain the following lines:
 
@@ -72,7 +72,7 @@ MONGO_DBNAME = "scout-demo"
 To run an interactive terminal to execute the command line, type the following:
 
 ```
-docker run -it --volume="path_to_config.py_on_your_machine":/home/worker/configs/config.py --rm --entrypoint /bin/sh clinicalgenomics/scout
+docker run -it --volume="path_to_config.toml_on_your_machine":/home/worker/configs/config.toml --rm --entrypoint /bin/sh clinicalgenomics/scout
 ```
 
 

@@ -14,9 +14,9 @@ To avoid dependency conflicts Gens should be installed in an environment separat
 
 ### Configure Gens integration
 
-In the scout config `config.py` provide the connection settings like:
+Add the connection settings to your Scout TOML app config:
 
-```python
+```toml
 GENS_HOST = "127.0.0.1"
 GENS_PORT = 5001
 GENS_VERSION = 4

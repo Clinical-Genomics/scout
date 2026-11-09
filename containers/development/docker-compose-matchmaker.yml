@@ -1,5 +1,5 @@
 # HOWTO:
-# In: scout/server/config.py
+# In your Scout app TOML config:
 # ADD:
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 # MME_URL = "http://pmatcher-web:9020"

@@ -68,6 +68,7 @@ dependencies = [
 	"ped_parser",
 	"pydantic>=2",
 	"PyYaml>=5.1",
+	"tomli>=2; python_version < '3.11'",
 	# extras
 	"intervaltree==3.0.2",
 	"anytree",

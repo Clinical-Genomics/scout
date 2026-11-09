@@ -1,5 +1,5 @@
 # HOWTO:
-# In: scout/server/config.py
+# In your Scout app TOML config:
 # ADD this line:
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test"
 

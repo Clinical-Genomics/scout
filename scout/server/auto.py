@@ -10,6 +10,6 @@ except ModuleNotFoundError:
     from werkzeug.middleware.proxy_fix import ProxyFix
 
 
-app = create_app(config_file=os.environ["SCOUT_CONFIG"])
+app = create_app(config_file=os.environ.get("SCOUT_CONFIG"))
 
 app.wsgi_app = ProxyFix(app.wsgi_app)

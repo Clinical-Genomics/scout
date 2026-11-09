@@ -161,39 +161,38 @@ Scout needs a server config to know which databases to connect to etc. Depending
 information you provide you activate different parts of the interface automatically,
 including user authentication, coverage, and local observations.
 
-This is an example of the config file:
+This is an example of the TOML app configuration file:
 
-```python
-# scoutconfig.py
+```toml
+# scoutconfig.toml
 
 # list of email addresses to send errors to in production
-ADMINS = ['paul.anderson@magnolia.com']
+ADMINS = ["paul.anderson@magnolia.com"]
 
-MONGO_HOST = 'localhost'
+MONGO_HOST = "localhost"
 MONGO_PORT = 27017
-MONGO_DBNAME = 'scout'
-MONGO_USERNAME = 'testUser'
-MONGO_PASSWORD = 'testPass'
-
-# enable user authentication using Google OAuth 2.0
-GOOGLE = dict(
-   client_id="client_id_string.apps.googleusercontent.com",
-   client_secret="client_secret_string",
-   discovery_url="https://accounts.google.com/.well-known/openid-configuration"
-)
+MONGO_DBNAME = "scout"
+MONGO_USERNAME = "testUser"
+MONGO_PASSWORD = "testPass"
 
 # enable Phenomizer gene predictions from phenotype terms
-PHENOMIZER_USERNAME = '???'
-PHENOMIZER_PASSWORD = '???'
+PHENOMIZER_USERNAME = "???"
+PHENOMIZER_PASSWORD = "???"
 
 # enable Chanjo coverage integration
-SQLALCHEMY_DATABASE_URI = '???'
-REPORT_LANGUAGE = 'en'  # or 'sv'
+SQLALCHEMY_DATABASE_URI = "???"
+REPORT_LANGUAGE = "en"  # or "sv"
 
 # other interesting settings
-SQLALCHEMY_TRACK_MODIFICATIONS = False  # this is essential in production
-TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
-SECRET_KEY = 'secret key'               # override in production!
+SQLALCHEMY_TRACK_MODIFICATIONS = false  # essential in production
+TEMPLATES_AUTO_RELOAD = false            # consider turning off in production
+SECRET_KEY = "secret key"                # override in production!
+
+# enable user authentication using Google OAuth 2.0
+[GOOGLE]
+client_id = "client_id_string.apps.googleusercontent.com"
+client_secret = "client_secret_string"
+discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
 ```
 
 Most of the config settings are optional. A minimal config would consist of SECRET_KEY and MONGO_DBNAME.
@@ -201,7 +200,7 @@ Most of the config settings are optional. A minimal config would consist of SECR
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
-scout --flask-config config.py serve
+scout --config config.toml serve
 ```
 
 ![Scout Interface demo](artwork/scout-variant-demo.png)
@@ -213,7 +212,7 @@ such as Gunicorn.
 This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
+SCOUT_CONFIG=./config.toml gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
 For added security and flexibility, we recommend a reverse proxy solution like NGINX.

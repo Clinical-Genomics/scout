@@ -16,7 +16,7 @@ For system administrators configuring communication with either of these tools, 
 Integration with Chanjo2 does not require the installation of any specific libraries.
 However, it needs the availability of a Chanjo2 instance with **access to the disk folder where scout case data files are stored**.
 
-Once the Chanjo2 server is accessible, simply modify [one line in the Scout configuration file](https://github.com/Clinical-Genomics/scout/blob/1b5ca112ca7d8668269d2c3b4cc2e16b3f82bc50/scout/server/config.py#L45) to set the value of 'CHANJO2_URL' to the root endpoint of your Chanjo2 API.
+Once the Chanjo2 server is accessible, set `CHANJO2_URL` to the root endpoint of your Chanjo2 API in your Scout TOML app config.
 
 ### Loading of .d4 file in case data
 
@@ -104,12 +104,11 @@ pip install pymysql
 ```
 
 ### Enabling the chanjo coverage integration in scout
-In order to enable the support for the coverage report visualization in scout the configuration file named `config.py` under `scout/server` must be modified to include the following line:
-<pre>
+To enable coverage report visualization in Scout, set `SQLALCHEMY_DATABASE_URI` in your Scout TOML app config to the URI for the MySQL database containing the coverage data. Include the database username and password in the URI:
+```toml
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://username:password@host:port/chanjo4_demo'
-</pre>
-The database URI provided in the line above refers to the MySQL database with the coverage data, so user and password are those used to connect to the database. Default database host and port are `localhost` and `3306` respectively.
-If your scout implementation is using another configuration file other than the default `config.py` then the database connection URI must be added to this file instead.
+```
+Default database host and port are `localhost` and `3306`, respectively.
 
 <br>
 Once all the above steps are executed you should see the "Coverage report" option on the left side bar under the scout case page. The buttons allow to generate HTML and PDF reports for the case samples.
