@@ -97,16 +97,16 @@ def parse_clnsig(
             revstat = transcripts[0].get("clinvar_revstat")
 
     # There are some versions where ClinVar uses integers to represent terms
-    if (not acc or (isinstance(acc, int) or acc.isdigit())) and (sig or sig_list):
+    if (not acc or (isinstance(acc, int) or acc.isdigit())) and (sig or transcripts_clnsig_set):
         revstat_groups = split_groups(revstat) if revstat else []
 
         sig_groups = split_groups(sig) if sig else []
-        if not sig_groups and sig_list:
-            sig_groups = list(sig_list)
+        if not sig_groups and transcripts_clnsig_set:
+            sig_groups = list(transcripts_clnsig_set)
 
         sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
-        if not sig_groups and sig_list:
-            sig_groups = sig_list
+        if not sig_groups and transcripts_clnsig_set:
+            sig_groups = transcripts_clnsig_set
 
         for sig_term in sig_groups:
             clnsig_accession = {
