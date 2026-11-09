@@ -77,7 +77,7 @@ def parse_clnsig(
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
-    sig_list = set()
+    transcripts_clnsig_set = set()
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
     clnsig_accessions = []
