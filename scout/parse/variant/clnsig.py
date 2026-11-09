@@ -23,26 +23,27 @@ def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
     """Collect somatic oncogenicity ClinVar classifications for a variant, if available."""
     if not variant.INFO.get("ONC"):
         return []
+
     acc = int(variant.INFO.get("CLNVID", 0))
     onc_sig_groups = split_groups(value=variant.INFO.get("ONC", "").lower())
     onc_revstat = ",".join(split_groups(value=variant.INFO.get("ONCREVSTAT", "").lower()))
-    onc_dn_groups = split_groups(variant.INFO.get("ONCDN", ""))
+    onc_dn = variant.INFO.get("ONCDN", "").replace("|", ",")
 
     onc_clnsig_accessions = []
 
-    for i, onc_sig in enumerate(onc_sig_groups):
-        if (
-            onc_sig.replace("_", " ").capitalize() not in ONC_CLNSIG
-        ):  # This is excluding entries with ONC=no_classification_for_the_single_variant
+    for onc_sig in onc_sig_groups:
+        if onc_sig.replace("_", " ").capitalize() not in ONC_CLNSIG:
             continue
+
         onc_clnsig_accessions.append(
             {
                 "accession": acc,
                 "value": onc_sig,
                 "revstat": onc_revstat,
-                "dn": onc_dn_groups[i].replace("|", ","),
+                "dn": onc_dn,
             }
         )
+
     return onc_clnsig_accessions
 
 
