@@ -329,7 +329,16 @@ def variant(
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format ClinVar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj=variant_obj, clnsig_key="clnsig")
+        if variant_obj.get("clnsig")
+        else None
+    )
+    variant_obj["clinsig_human_onc"] = (
+        clinsig_human(variant_obj=variant_obj, clnsig_key="clnsig_onc")
+        if variant_obj.get("clnsig_onc")
+        else None
+    )
 
     variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
