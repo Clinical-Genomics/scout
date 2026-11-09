@@ -1,0 +1,95 @@
+# Scout app settings. Override these defaults in an installation-specific TOML file
+# selected with SCOUT_CONFIG or the CLI --config option.
+
+SECRET_KEY = "this is not secret..."
+REMEMBER_COOKIE_NAME = "scout_remember_me"
+MONGO_DBNAME = "scout"
+
+BOOTSTRAP_SERVE_LOCAL = true
+TEMPLATES_AUTO_RELOAD = true
+DEBUG_TB_INTERCEPT_REDIRECTS = false
+
+SESSION_TIMEOUT_MINUTES = 60
+INSTANCE_NAME = "Development"
+INSTANCE_COLOR = "#800000"
+
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_PORT = 587
+MAIL_USE_TLS = true
+MAIL_USE_SSL = false
+
+ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+
+REPORT_LANGUAGE = "en"
+ACCEPT_LANGUAGES = ["en", "sv"]
+
+SHOW_CAUSATIVES = true
+SHOW_OBSERVED_VARIANT_ARCHIVE = true
+HIDE_ALAMUT_LINK = true
+RERUN_URL = "https://clinical.scilifelab.se/"
+RERUN_MONITOR = true
+PHENOPACKET_API_URL = "https://phenopacket-stage.scilifelab.se"
+
+RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/rank_model_-v"
+RANK_MODEL_LINK_POSTFIX = "-.ini"
+SV_RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/svrank_model_-v"
+SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
+
+# Optional server settings
+# MONGO_URI = "mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/?replicaSet=rs0"
+# LDAP_HOST = "ldap.example.org"
+# LDAP_PORT = 389
+# LDAP_BASE_DN = "dc=example,dc=org"
+# LDAP_USER_LOGIN_ATTR = "mail"
+# SQLALCHEMY_DATABASE_URI = "mysql://user:password@localhost:3306/chanjo"
+# CHANJO2_URL = "http://chanjo2-stage.scilifelab.se"
+# GENS_HOST = "127.0.0.1"
+# GENS_PORT = 5000
+# GENS_VERSION = 4
+# RERUNNER_API_ENTRYPOINT = "http://rerunner:5001/v1.0/rerun"
+# RERUNNER_TIMEOUT = 10
+# RERUNNER_API_KEY = "replace-me"
+# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+# MME_URL = "http://localhost:9020"
+# MME_TOKEN = "replace-me"
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "replace-me"
+# SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
+# USERS_ACTIVITY_LOG_PATH = "users_activity.log"
+# OMIM_API_KEY = "replace-me"
+# PHENOMIZER_USERNAME = "username"
+# PHENOMIZER_PASSWORD = "replace-me"
+# BIONANO_ACCESS = "https://bionano-access.example.org"
+# BIONANO_USERNAME = "username"
+# BIONANO_PASSWORD = "replace-me"
+
+# [[CUSTOM_IGV_TRACKS]]
+# name = "local_tracks"
+# access = "public"
+# tracks = [{ name = "MANE", type = "annotation", format = "bigbed", build = "38", url = "scout/resources/custom_igv_tracks/mane.bb" }]
+
+# [[CLOUD_IGV_TRACKS]]
+# name = "public_bucket"
+# access = "public"
+# tracks = [{ name = "Pathogenic variants", type = "variant", format = "vcf", build = "37", url = "https://example.org/variants.vcf.gz", indexURL = "https://example.org/variants.vcf.gz.tbi" }]
+
+# [GOOGLE]
+# client_id = "client.apps.googleusercontent.com"
+# client_secret = "replace-me"
+# discovery_url = "https://accounts.google.com/.well-known/openid-configuration"
+
+# [KEYCLOAK]
+# client_id = "client"
+# client_secret = "replace-me"
+# discovery_url = "http://localhost:8080/realms/example/.well-known/openid-configuration"
+# logout_url = "http://localhost:8080/realms/example/protocol/openid-connect/logout"
+
+# [LOQUSDB_SETTINGS.default]
+# binary_path = "/path/to/loqusdb"
+# config_path = "/path/to/loqus_default.yaml"
+# description = "CLI LoqusDB instance"
+
+# [LOQUSDB_SETTINGS.loqus_api]
+# api_url = "http://127.0.0.1:9000"
+# description = "API LoqusDB instance"
