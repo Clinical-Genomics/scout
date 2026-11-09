@@ -13,8 +13,9 @@ def split_groups(value: str) -> List[str]:
     value = value.replace("%2c_", ",").replace("%2C_", ",")
     return [
         item.lstrip("_").replace(" ", "_")
-        for group in value.replace("&", ",").split(",")
+        for group in value.replace("&", ",").replace("|", ",").split(",")
         for item in group.split("/")
+        if item
     ]
 
 
@@ -95,17 +96,12 @@ def parse_clnsig(
             revstat = transcripts[0].get("clinvar_revstat")
 
     # There are some versions where ClinVar uses integers to represent terms
-    if not acc or (isinstance(acc, int) or acc.isdigit()) and (sig or sig_list):
-        revstat_groups = []
-        if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
+    if (not acc or (isinstance(acc, int) or acc.isdigit())) and (sig or sig_list):
+        revstat_groups = split_groups(revstat) if revstat else []
 
-        sig_groups = []
-        for significance in sig.replace("&", ",").replace("|", ",").split(","):
-            for term in significance.lstrip("_").split("/"):
-                term = "_".join(term.split(" "))
-                if term:
-                    sig_groups.append(term)
+        sig_groups = split_groups(sig) if sig else []
+        if not sig_groups and sig_list:
+            sig_groups = list(sig_list)
 
         sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
         if not sig_groups and sig_list:
