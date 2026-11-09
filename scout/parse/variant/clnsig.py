@@ -88,7 +88,7 @@ def parse_clnsig(
                     if value:
                         sig_list.add(value)
 
-        # VEP 97+ annotated clinvar info:
+        # VEP 97+ annotated ClinVar info:
         if transcripts[0].get("clinvar_clnvid"):
             acc = transcripts[0]["clinvar_clnvid"]
             sig = transcripts[0].get("clinvar_clnsig")
@@ -113,12 +113,12 @@ def parse_clnsig(
 
         for sig_term in sig_groups:
             clnsig_accession = {
-                "value": sig_term,
+                "value": int(sig_term) if sig_term.isdigit() else sig_term,
             }
-            if isinstance(acc, int) or acc.isdigit():
+            if acc and (isinstance(acc, int) or acc.isdigit()):
                 clnsig_accession["accession"] = int(acc)
             if revstat_groups:
-                clnsig_accession["revstat"] = (",".join(revstat_groups),)
+                clnsig_accession["revstat"] = ",".join(revstat_groups)
             clnsig_accessions.append(clnsig_accession)
 
     # Test to parse the older format
@@ -139,6 +139,7 @@ def parse_clnsig(
                     }
                 )
 
+    LOG.warning(clnsig_accessions)
     return clnsig_accessions
 
 
