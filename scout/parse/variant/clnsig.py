@@ -139,7 +139,6 @@ def parse_clnsig(
                     }
                 )
 
-    LOG.warning(clnsig_accessions)
     return clnsig_accessions
 
 
