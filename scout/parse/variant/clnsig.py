@@ -94,8 +94,8 @@ def parse_clnsig(
             sig = transcripts[0].get("clinvar_clnsig")
             revstat = transcripts[0].get("clinvar_revstat")
 
-    # There are some versions where clinvar uses integers to represent terms
-    if isinstance(acc, int) or acc.isdigit():
+    # There are some versions where ClinVar uses integers to represent terms
+    if sig or sig_list:
         revstat_groups = []
         if revstat:
             revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
@@ -114,9 +114,11 @@ def parse_clnsig(
         for sig_term in sig_groups:
             clnsig_accession = {
                 "value": sig_term,
-                "accession": int(acc),
-                "revstat": ",".join(revstat_groups),
             }
+            if isinstance(acc, int) or acc.isdigit():
+                clnsig_accession["accession"] = int(acc)
+            if revstat_groups:
+                clnsig_accession["revstat"] = (",".join(revstat_groups),)
             clnsig_accessions.append(clnsig_accession)
 
     # Test to parse the older format
