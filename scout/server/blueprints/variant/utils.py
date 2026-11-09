@@ -596,10 +596,10 @@ def default_panels(store: MongoAdapter, case_obj: dict) -> List[dict]:
 
 
 def clinsig_human(variant_obj: dict, clnsig_key: str) -> dict:
-    """Convert germline or oncogenicity eveluation stored in variant documents to human-readable classifications,
+    """Convert germline or oncogenicity eveluations stored in variant documents intto human-readable classifications,
 
     The clinical significance from ClinVar germline classifications are stored as numbers.
-    These needs to be converted to a human readable format. Also the link to the accession is built
+    These needs to be converted to a human-readable format. Also the link to the accession is built
     """
     for clinsig_obj in variant_obj.get(clnsig_key, []):
         # The clinsig objects allways have a accession
