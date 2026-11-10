@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Move Dark regions/SMN to a separate blueprint (#6675)
 - Links to SNVs and SVs from the Dark Regions page are no longer filtered by the gene panels selected on that page (#6693)
+- When a submission is deleted from ClinVar, set its status to "closed" (#6712)
 - Display both ClinVar germline and oncogenicity classifications on variantS page, when available (cancer cases) (#6711)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
