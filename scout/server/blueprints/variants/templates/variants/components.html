@@ -277,7 +277,7 @@
           {% for clinsig in variant.clinsig_human %}
             <li>
               <strong>{{clinsig.human}}</strong>
-              {% if clinsig.revstat %}{{ clinsig.revstat|replace(",", ", ") }} {% endif %}
+              {% if clinsig.revstat %}{{ clinsig.revstat|replace("_", " ")|replace(",", ", ") }} {% endif %}
               {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
             </li>
           {% endfor %}
@@ -288,7 +288,7 @@
           <ul>
           {% for clinsig in variant.clinsig_human_onc %}
             <li>
-              <strong>{{clinsig.human}}</strong>
+              <strong>{{clinsig.human|replace("_", " ")}}</strong>
               {% if clinsig.revstat %}{{ clinsig.revstat|replace("_", " ")|replace(",", ", ") }} {% endif %}
               {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
             </li>
