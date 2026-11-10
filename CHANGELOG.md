@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing of multiple clnsig values separated by `|` (#6705)
 - Bug in code parsing cancer variants' oncogenicity fields, causing all classifications containing an underscore not to be saved (#6708)
 - Fix parsing ClinVar clnsig terms from transcript annotations when they are missing from the VCF INFO field (#6709)
+- Fix display of ClinVar oncogenicity classifications stored with underscores etc (#6715)
 
 ## [4.115.2]
 ### Changed
