@@ -10,38 +10,56 @@ LOG = logging.getLogger(__name__)
 
 def split_groups(value: str) -> List[str]:
     """Removes leading underscores and splits a string into a list of items."""
-    value = value.replace("%2c_", ",").replace("%2C_", ",")
-    return [
-        item.lstrip("_").replace(" ", "_")
-        for group in value.replace("&", ",").split(",")
-        for item in group.split("/")
-    ]
+    value = (
+        value.replace("%2c_", ",")
+        .replace("%2C_", ",")
+        .replace("&", ",")
+        .replace("|", ",")
+        .replace("/", ",")
+    )
+    return [item.lstrip("_").replace(" ", "_") for item in value.split(",") if item]
 
 
 def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
-    """Collect somatic oncogenicity ClinVar classifications for a variant, if available."""
+    """Collect somatic oncogenicity ClinVar classifications for a variant, if available.
+
+    Parses the ClinVar somatic oncogenicity INFO fields:
+    - ONC: Oncogenicity classifications, potentially containing multiple values
+      separated into groups.
+    - CLNVID: ClinVar Variation ID, used as the identifier for the annotations.
+    - ONCREVSTAT: Review status of the oncogenicity classification.
+    - ONCDN: Disease or phenotype names associated with the classification.
+
+    The review status (revstat) and disease names (dn) are stored as comma-separated
+    strings, with multiple values joined by commas.
+
+    Only classifications matching the supported ONC_CLNSIG values are retained.
+    Each classification is stored as a separate dictionary containing its
+    ClinVar identifier, classification, review status, and associated disease names.
+    """
     if not variant.INFO.get("ONC"):
         return []
+
     acc = int(variant.INFO.get("CLNVID", 0))
     onc_sig_groups = split_groups(value=variant.INFO.get("ONC", "").lower())
     onc_revstat = ",".join(split_groups(value=variant.INFO.get("ONCREVSTAT", "").lower()))
-    onc_dn_groups = split_groups(variant.INFO.get("ONCDN", ""))
+    onc_dn = variant.INFO.get("ONCDN", "").replace("|", ",")
 
     onc_clnsig_accessions = []
 
-    for i, onc_sig in enumerate(onc_sig_groups):
-        if (
-            onc_sig.replace("_", " ").capitalize() not in ONC_CLNSIG
-        ):  # This is excluding entries with ONC=no_classification_for_the_single_variant
+    for onc_sig in onc_sig_groups:
+        if onc_sig.replace("_", " ").capitalize() not in ONC_CLNSIG:
             continue
+
         onc_clnsig_accessions.append(
             {
                 "accession": acc,
                 "value": onc_sig,
                 "revstat": onc_revstat,
-                "dn": onc_dn_groups[i].replace("|", ","),
+                "dn": onc_dn,
             }
         )
+
     return onc_clnsig_accessions
 
 
@@ -75,49 +93,49 @@ def parse_clnsig(
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
+    transcripts_clnsig_set = set()
     revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
     clnsig_accessions = []
 
-    if acc == "" and transcripts:
+    if not sig and transcripts:
         if transcripts[0].get("clnsig"):
-            clnsig = set()
-            for transcript in transcripts:
-                for annotation in transcript.get("clnsig", []):
-                    for anno in annotation.split("/"):
-                        clnsig.add(anno.lstrip("_"))
-            for annotation in clnsig:
-                clnsig_accessions.append({"value": annotation})
+            for annotation in transcripts[0].get("clnsig", []):
+                for anno in annotation.split("/"):
+                    value = anno.lstrip("_")
+                    if value:
+                        transcripts_clnsig_set.add(value)
 
-        # VEP 97+ annotated clinvar info:
+        # VEP 97+ annotated ClinVar info:
         if transcripts[0].get("clinvar_clnvid"):
             acc = transcripts[0]["clinvar_clnvid"]
             sig = transcripts[0].get("clinvar_clnsig")
             revstat = transcripts[0].get("clinvar_revstat")
 
-    # There are some versions where clinvar uses integers to represent terms
-    if isinstance(acc, int) or acc.isdigit():
-        revstat_groups = []
-        if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
+    # There are some versions where ClinVar uses integers to represent terms
+    if (not acc or (isinstance(acc, int) or acc.isdigit())) and (sig or transcripts_clnsig_set):
+        revstat_groups = split_groups(revstat) if revstat else []
 
-        sig_groups = []
-        for significance in sig.replace("&", ",").replace("|", ",").split(","):
-            for term in significance.lstrip("_").split("/"):
-                sig_groups.append("_".join(term.split(" ")))
+        sig_groups = split_groups(sig) if sig else []
+        if not sig_groups and transcripts_clnsig_set:
+            sig_groups = list(transcripts_clnsig_set)
 
         sig_groups: List[str] = parse_clnsig_low_penetrance(sig_groups)
+        if not sig_groups and transcripts_clnsig_set:
+            sig_groups = transcripts_clnsig_set
 
         for sig_term in sig_groups:
             clnsig_accession = {
-                "value": sig_term,
-                "accession": int(acc),
-                "revstat": ",".join(revstat_groups),
+                "value": int(sig_term) if sig_term.isdigit() else sig_term,
             }
+            if acc:
+                clnsig_accession["accession"] = int(acc)
+            if revstat_groups:
+                clnsig_accession["revstat"] = ",".join(revstat_groups)
             clnsig_accessions.append(clnsig_accession)
 
     # Test to parse the older format
-    if acc and not clnsig_accessions:
+    if acc and sig and not clnsig_accessions:
         acc_groups = acc.split("|")
         sig_groups = sig.split("|")
         revstat_groups = revstat.split("|")
