@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
 
-## [unreleased]
+## [4.116]
 ### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 - STRchive links for STRs (#6689)
