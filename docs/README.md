@@ -22,6 +22,6 @@
  <figcaption>Gillian Anderson as Stella Gibson in The Fall, representing a Scout. Level up your variant analysis skills, solve cases and rise through the ranks to Superintendent, like Stella - or Commissioner.</figcaption>
 </figure>
 
-**Latest entry in the blog**: [What's new in 4.115?](blog/new-4.115.md)
+**Latest entry in the blog**: [What's new in 4.116?](blog/new-4.116.md)
 
 **Version migration issues**: [Breaking](admin-guide/breaking.md)
