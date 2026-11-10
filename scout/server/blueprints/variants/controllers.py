@@ -1093,7 +1093,16 @@ def parse_variant(
     variant_obj["cosmic_links"] = cosmic_links(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj=variant_obj, clnsig_key="clnsig")
+        if variant_obj.get("clnsig")
+        else None
+    )
+    variant_obj["clinsig_human_onc"] = (
+        clinsig_human(variant_obj=variant_obj, clnsig_key="clnsig_onc")
+        if variant_obj.get("clnsig_onc")
+        else None
+    )
 
     update_representative_gene(variant_obj, variant_genes)
 
