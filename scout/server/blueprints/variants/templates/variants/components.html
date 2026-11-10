@@ -288,7 +288,7 @@
           <ul>
           {% for clinsig in variant.clinsig_human_onc %}
             <li>
-              <strong>{{clinsig.human|replace("_", " ")}}</strong>
+              <strong>{{clinsig.human|capitalize|replace("_", " ")}}</strong>
               {% if clinsig.revstat %}{{ clinsig.revstat|replace("_", " ")|replace(",", ", ") }} {% endif %}
               {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
             </li>
