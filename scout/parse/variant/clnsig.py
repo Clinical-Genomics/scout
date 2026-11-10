@@ -10,13 +10,14 @@ LOG = logging.getLogger(__name__)
 
 def split_groups(value: str) -> List[str]:
     """Removes leading underscores and splits a string into a list of items."""
-    value = value.replace("%2c_", ",").replace("%2C_", ",")
-    return [
-        item.lstrip("_").replace(" ", "_")
-        for group in value.replace("&", ",").replace("|", ",").split(",")
-        for item in group.split("/")
-        if item
-    ]
+    value = (
+        value.replace("%2c_", ",")
+        .replace("%2C_", ",")
+        .replace("&", ",")
+        .replace("|", ",")
+        .replace("/", ",")
+    )
+    return [item.lstrip("_").replace(" ", "_") for item in value.split(",") if item]
 
 
 def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
