@@ -23,7 +23,7 @@
             {% else %}
               <td>n.a.</td>
             {% endif %}
-            <td><div class="text-break">{% if clinsig.revstat %}{{ clinsig.revstat|replace(",", ", ") }}{% else %}n.a.{% endif %}</div></td>
+            <td><div class="text-break">{% if clinsig.revstat %}{{ clinsig.revstat|replace("_", " ")|replace(",", ", ") }}{% else %}n.a.{% endif %}</div></td>
           </tr>
         {% else %}
           <i>No annotations</i>
