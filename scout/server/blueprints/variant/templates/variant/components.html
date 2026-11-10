@@ -23,7 +23,7 @@
             {% else %}
               <td>n.a.</td>
             {% endif %}
-            <td><div class="text-break">{{ clinsig.revstat or "n.a." }}</div></td>
+            <td><div class="text-break">{% if clinsig.revstat %}{{ clinsig.revstat|replace("_", " ")|replace(",", ", ") }}{% else %}n.a.{% endif %}</div></td>
           </tr>
         {% else %}
           <i>No annotations</i>
@@ -42,9 +42,9 @@
       <tbody>
         {% for classif in variant.clnsig_onc %}
           <tr>
-            <td>{{ classif.value|capitalize }}</td>
-            <td>{{ classif.dn|replace("_", " ")|replace(",", ", ") }}</td>
-            <td>{{ classif.revstat }}</td>
+            <td>{{ classif.value|capitalize|replace("_", " ") }}</td>
+            <td>{% if classif.dn %}{{ classif.dn|replace("_", " ")|replace(",", ", ") }}{% else %}n.a.{% endif %}</td>
+            <td>{% if classif.revstat %}{{ classif.revstat|replace("_", " ")|replace(",", ", ") }}{% else %}n.a.{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>
