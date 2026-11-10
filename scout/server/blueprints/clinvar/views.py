@@ -53,18 +53,25 @@ def clinvar_submission_status(submission_id):
     return safe_redirect_back(request)
 
 
-@clinvar_bp.route("/clinvar/delete-enquiry/<submission_id>", methods=["POST"])
-def clinvar_submission_delete(submission_id):
+@clinvar_bp.route(
+    "/clinvar/delete-enquiry/<institute_id>/<clinvar_id>/<submission_id>", methods=["POST"]
+)
+def clinvar_submission_delete(institute_id, clinvar_id, submission_id):
     """Sends a request to ClinVar to delete a successfully processed submission."""
 
     # flash a message with current deletion status for a ClinVar submission
     delete_res: Tuple[int, dict] = clinvar_api.delete_clinvar_submission(
-        submission_id=submission_id, api_key=request.form.get("apiKey")
+        submission_id=clinvar_id, api_key=request.form.get("apiKey")
     )
-    flash(
-        f"ClinVar delete enquiry response: { str(delete_res[1]) }",
-        "success" if delete_res[0] == 201 else "warning",
-    )
+    flash_color = "warning"
+    if delete_res[0] == 201:
+        flash_color = "success"
+        store.update_clinvar_submission_status(
+            institute_id=institute_id, submission_id=submission_id, status="closed"
+        )
+
+    flash(f"ClinVar delete enquiry response: { str(delete_res[1]) }", flash_color)
+
     return redirect(request.referrer)
 
 
