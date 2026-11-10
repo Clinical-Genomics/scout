@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 - Documentation for external services accessed from a Scout installation (#6695)
 - Add automation for creating and uploading a stage branch CLI Docker image (#6696)
-- Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants (#6694)
+- Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants (#6694, )
 - Parse and display AlphaGenome Variant Impact (AVI) and AlphaMissense scores (#6700)
 - Parse and display phase set (PS) information for phased variants (#6701)
 ### Changed
