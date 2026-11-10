@@ -595,23 +595,13 @@ def default_panels(store: MongoAdapter, case_obj: dict) -> List[dict]:
     return default_panels
 
 
-def clinsig_human(variant_obj):
-    """Convert to human readable version of CLINSIG evaluation.
+def clinsig_human(variant_obj: dict, clnsig_key: str) -> dict:
+    """Convert germline or oncogenicity evaluations stored in variant documents into human-readable classifications.
 
-    The clinical significance from ACMG are stored as numbers. These needs to be converted to human
-    readable format. Also the link to the accession is built
-
-    Args:
-        variant_obj(scout.models.Variant)
-
-    Yields:
-        clinsig_objs(dict): {
-                                'human': str,
-                                'link': str
-                            }
-
+    The clinical significance from ClinVar germline classifications are stored as numbers.
+    These needs to be converted to a human-readable format. Also the link to the accession is built
     """
-    for clinsig_obj in variant_obj.get("clnsig", []):
+    for clinsig_obj in variant_obj.get(clnsig_key, []):
         # The clinsig objects allways have a accession
         if not "accession" in clinsig_obj:
             continue
