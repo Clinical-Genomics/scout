@@ -83,8 +83,8 @@ def parse_clnsig(
     clnsig_accessions = []
 
     if not sig and transcripts:
-        for transcript in transcripts:
-            for annotation in transcript.get("clnsig", []):
+        if transcripts[0].get("clnsig"):
+            for annotation in transcripts[0].get("clnsig", []):
                 for anno in annotation.split("/"):
                     value = anno.lstrip("_")
                     if value:
