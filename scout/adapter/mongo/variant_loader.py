@@ -473,9 +473,12 @@ class VariantLoader(object):
                         images = [
                             img
                             for img in custom_images
-                            if img["str_repid"] == variant_obj["str_repid"]
+                            if any(
+                                img.get(key) and img[key] == variant_obj.get(key)
+                                for key in ("str_repid", "str_trid")
+                            )
                         ]
-                        if len(images) > 0:
+                        if images:
                             variant_obj["custom_images"] = images
 
                     if load:
