@@ -20,7 +20,22 @@ def split_groups(value: str) -> List[str]:
 
 
 def parse_clnsig_onc(variant: cyvcf2.Variant) -> List[dict]:
-    """Collect somatic oncogenicity ClinVar classifications for a variant, if available."""
+     """Collect somatic oncogenicity ClinVar classifications for a variant, if available.
+
+        Parses the ClinVar somatic oncogenicity INFO fields:
+        - ONC: Oncogenicity classifications, potentially containing multiple values
+          separated into groups.
+        - CLNVID: ClinVar Variation ID, used as the identifier for the annotations.
+        - ONCREVSTAT: Review status of the oncogenicity classification.
+        - ONCDN: Disease or phenotype names associated with the classification.
+
+        The review status (revstat) and disease names (dn) are stored as comma-separated
+        strings, with multiple values joined by commas.
+
+        Only classifications matching the supported ONC_CLNSIG values are retained.
+        Each classification is stored as a separate dictionary containing its
+        ClinVar identifier, classification, review status, and associated disease names.
+    """
     if not variant.INFO.get("ONC"):
         return []
 
