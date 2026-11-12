@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Optionally load new cases and research variants using an external Rust-based binary executable (#6657)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 
