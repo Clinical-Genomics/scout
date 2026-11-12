@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Restore BLAT visible sequence view in IGV browsers ()
+- Restore BLAT visible sequence view in IGV browsers (#6721)
 
 ## [4.116]
 ### Added
