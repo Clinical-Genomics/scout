@@ -37,6 +37,7 @@ HG19CLINVAR_SVS_URL = (
 HUMAN_REFERENCE_37 = {
     "name": "Human GRCh37/hg19",
     "ucscID": "hg19",
+    "id": "hg19",
     "fastaURL": HG19REF_URL,
     "indexURL": HG19REF_INDEX_URL,
     "cytobandURL": HG19CYTOBAND_URL,
