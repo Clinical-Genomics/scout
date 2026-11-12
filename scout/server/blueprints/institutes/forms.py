@@ -144,13 +144,6 @@ class InstituteForm(FlaskForm):
     submit_btn = SubmitField("Save settings")
 
 
-class BeaconDatasetForm(FlaskForm):
-    """A form that allows admins to create a new Beacon dataset for the institute with a controlled dictionary"""
-
-    beacon_dataset = NonValidatingSelectField("Select dataset to be created")
-    beacon_submit_btn = SubmitField("Create dataset")
-
-
 # make a base class or other utility with this instead..
 class TagListField(Field):
     widget = TextInput()

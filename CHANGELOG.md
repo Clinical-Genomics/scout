@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
+### Changed
+- The functionality for adding and removing VCF variants from a case page in a Beacon database has been removed ()
 
 ## [4.116]
 ### Added
