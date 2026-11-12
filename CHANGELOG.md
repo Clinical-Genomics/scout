@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Restore BLAT visible sequence view in IGV browsers with default references (#6721)
+
+## [4.116]
 ### Added
 - Optionally load variants using an external scout_loader software when loading a new case (#6657)
 ### Fixed

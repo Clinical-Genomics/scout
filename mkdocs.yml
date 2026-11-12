@@ -131,6 +131,7 @@ nav:
       - Whats new in 4.111?: 'blog/new-4.111.md'
       - Whats new in 4.114?: 'blog/new-4.114.md'
       - Whats new in 4.115?: 'blog/new-4.115.md'
+      - Whats new in 4.116?: 'blog/new-4.116.md'
 
 not_in_nav: |
     admin-guide/reference-sets/genes_transcripts.md

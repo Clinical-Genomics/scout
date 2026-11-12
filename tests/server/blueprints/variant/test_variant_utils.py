@@ -27,7 +27,7 @@ def test_clinsig_human():
         ]
     }
     ## WHEN getting the clinsig
-    clinsigs = clinsig_human(var_obj)
+    clinsigs = clinsig_human(variant_obj=var_obj, clnsig_key="clnsig")
     ## THEN assert there where no objects returned
     clinsig_obj = next(clinsigs)
     assert clinsig_obj["human"] == "Likely benign"
@@ -40,7 +40,7 @@ def test_clinsig_human_no_accession():
         "clnsig": [{"value": "Likely benign", "revstat": "criteria_provided, single submitter"}]
     }
     ## WHEN getting the clinsig
-    clinsigs = clinsig_human(var_obj)
+    clinsigs = clinsig_human(variant_obj=var_obj, clnsig_key="clnsig")
     ## THEN assert there where no objects returned since we skip those wothout accession
     i = 0
     for i, obj in enumerate(clinsigs, 1):
@@ -52,7 +52,7 @@ def test_clinsig_human_no_clnsig():
     ## GIVEN a variant with clinsig info
     var_obj = {}
     ## WHEN getting the clinsig
-    clinsigs = clinsig_human(var_obj)
+    clinsigs = clinsig_human(variant_obj=var_obj, clnsig_key="clnsig")
     ## THEN assert there where no objects returned
     i = 0
     for i, obj in enumerate(clinsigs, 1):

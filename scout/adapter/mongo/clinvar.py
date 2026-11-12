@@ -307,10 +307,11 @@ class ClinVarHandler(object):
         limit: int = 15,
     ) -> tuple[List[dict], int]:
         """Collect and, if needed, deprecate ClinVar germline submissions without a type."""
-
         self.deprecate_type_none_germline_submissions(institute_id)
 
         query = {"institute_id": institute_id, "type": {"$exists": False}}
+        total_count = self.clinvar_submission_collection.count_documents(query)
+
         if clinvar_id_filter:
             query["clinvar_subm_id"] = {REGEX: clinvar_id_filter, "$options": "i"}
 
@@ -366,7 +367,7 @@ class ClinVarHandler(object):
 
             submissions.append(submission)
 
-        return submissions, len(submissions)
+        return submissions, total_count
 
     def clinvar_objs(self, submission_id: str, key_id: str) -> list:
         """Collects a list of objects from the ClinVar collection (variants of case data) as specified by the key_id in the submission.
