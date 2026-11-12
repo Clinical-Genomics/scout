@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Optionally load variants using an external scout_loader software when loading a new case (#6657)
+### Fixed
+- Restore BLAT visible sequence view in IGV browsers with default references (#6721)
+
+## [4.116]
+### Added
 - Reintroduced the ability to delete ClinVar submissions from the ClinVar portal using the API (#6643)
 - STRchive links for STRs (#6689)
 - Link to dbNSFP for hg38 variants (#6686)
@@ -13,9 +19,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New GnomAD frequency fields: WES, homalt, AC (#6591)
 - Documentation for external services accessed from a Scout installation (#6695)
 - Add automation for creating and uploading a stage branch CLI Docker image (#6696)
-- Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants (#6694)
+- Support custom image matching for both STR repetitions (REPID) and tandem repeat IDs (TRID), allowing images to be automatically discovered and associated with the corresponding variants (#6694, #6718)
 - Parse and display AlphaGenome Variant Impact (AVI) and AlphaMissense scores (#6700)
-- Optionally load cases or variants using an external, Rust-based, scout_loader. Not yet tested for production use (#6657)
+- Parse and display phase set (PS) information for phased variants (#6701)
 ### Changed
 - More significant digits for GnomAD frequency fields (#6591)
 - Keep the highest-scoring variant when duplicate IDs occur within a loading bulk (#6671)
@@ -23,19 +29,33 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show Bayesian point contribution for each ACMG criterion on the ACMG classification form (#6673)
 - Move Dark regions/SMN to a separate blueprint (#6675)
 - Links to SNVs and SVs from the Dark Regions page are no longer filtered by the gene panels selected on that page (#6693)
+- When a submission is deleted from ClinVar, set its status to "closed" (#6712)
+- Display both ClinVar germline and oncogenicity classifications on variantS page, when available (cancer cases) (#6711)
 ### Fixed
 - Handle non-numeric values in SuperDups fraction match annotations to prevent variant loading from failing when encountering "..." (#6683)
 - Fix STR genotype depth parsing for NumPy strings (#6676)
 - Parse GT for unexpectedly haploid variant allele arrays, e.g. hemizygous LRS STR chrX calls (#6665)
 - Fix a bug where STR variants with identical sort keys could be returned in random order, e.g. for different query index plans, resulting in missed variants when paginating (#6690)
+- Replace the Ubuntu APT installation of wkhtmltopdf with a cached Ubuntu 26.04-compatible binary (#6706)
+- Parsing of multiple clnsig values separated by `|` (#6705)
+- Bug in code parsing cancer variants' oncogenicity fields, causing all classifications containing an underscore not to be saved (#6708)
+- Fix parsing ClinVar clnsig terms from transcript annotations when they are missing from the VCF INFO field (#6709)
+- Fix display of ClinVar oncogenicity classifications stored with underscores etc (#6715)
+- Bug on the ClinVar page that causes the same 15 deprecated submissions to be displayed when more than 15 exist (#6716)
 
-## [4.115.2]
+[4.115.2]
+Changed
+Only color the normalised rank score badge (#6656)
+Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
+Show a header on the Paraphase regions (dark regions) table (#6655)
+Fixed
+Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
+
+## [4.115.1]
 ### Changed
-- Only color the normalised rank score badge (#6656)
-- Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
-- Show a header on the Paraphase regions (dark regions) table (#6655)
+- Updated libs
 ### Fixed
-- Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
+- Bug affecting cancer cases when opening the variants page if one or more variants have comments (#6647)
 
 ## [4.115.1]
 ### Changed
