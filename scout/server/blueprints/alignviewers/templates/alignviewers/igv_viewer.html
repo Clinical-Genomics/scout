@@ -46,6 +46,7 @@
                     {% endif %}
                     reference: {
                         id: "{{ reference_track.id }}",
+                        {% if reference_track.ucscID %}ucscID: "{{ reference_track.ucscID }}",{% endif %}
                         name: "{{ reference_track.name }}",
                         {{- get_custom_track_url("fastaURL", reference_track.fastaURL, institute_id, case_display_name) -}}
                         {{- get_custom_track_url("indexURL", reference_track.indexURL, institute_id, case_display_name) -}}
