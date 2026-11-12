@@ -5,12 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Fixed
-- Restore BLAT visible sequence view in IGV browsers with default references (#6721)
-
-## [4.116]
 ### Added
-- Optionally load variants using an external scout_loader software when loading a new case (#6657)
+- Optionally load new cases and research variants using an external Rust-based binary executable (#6657)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 
@@ -47,13 +43,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix display of ClinVar oncogenicity classifications stored with underscores etc (#6715)
 - Bug on the ClinVar page that causes the same 15 deprecated submissions to be displayed when more than 15 exist (#6716)
 
-[4.115.2]
-Changed
-Only color the normalised rank score badge (#6656)
-Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
-Show a header on the Paraphase regions (dark regions) table (#6655)
-Fixed
-Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
+## [4.115.2]
+### Changed
+- Only color the normalised rank score badge (#6656)
+- Update the contribution documentation with descriptions of the GitHub Actions used for quality checks (#6660)
+- Show a header on the Paraphase regions (dark regions) table (#6655)
+### Fixed
+- Handle missing Sanger recipients in institute settings to prevent verification errors (#6662)
 
 ## [4.115.1]
 ### Changed
