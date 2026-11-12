@@ -48,6 +48,7 @@ HUMAN_REFERENCE_37 = {
 HUMAN_REFERENCE_38 = {
     "name": "Human GRCh38/hg38",
     "ucscID": "hg38",
+    "id": "hg38",
     "fastaURL": HG38REF_URL,
     "indexURL": HG38REF_INDEX_URL,
     "cytobandURL": HG38CYTOBAND_URL,
