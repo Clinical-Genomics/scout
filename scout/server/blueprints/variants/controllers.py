@@ -576,9 +576,7 @@ def get_manual_assessments(variant_obj):
                 assessment["display_class"] = (
                     "success"
                     if any(reason in (3, 4) for reason in reasons)
-                    else "warning"
-                    if any(reason in (1, 2) for reason in reasons)
-                    else "danger"
+                    else "warning" if any(reason in (1, 2) for reason in reasons) else "danger"
                 )
 
             assessments.append(assessment)
