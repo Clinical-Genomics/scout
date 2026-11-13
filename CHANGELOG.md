@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changes
+- Clicking the gene panel Save button (under Full name and Description) updates the panel date even when neither the name nor the description changes. Panel version doesn't increment (#6724)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 
