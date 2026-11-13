@@ -47,7 +47,7 @@ Examples:
 **Remove admin rights**
 
 ```bash
->scout update user -u john@doe.com --remove-admin
+>scout update user -u john@doe.com --remove-role admin
 ```
 
 **Add access to institutes**

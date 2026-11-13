@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
 ### Changed
+- Remove the deprecated `--remove-admin` option from the update user command (#6722)
 - The functionality for adding and removing VCF variants from a case page in a Beacon database has been removed (#6720)
 
 ## [4.116]
