@@ -564,14 +564,22 @@ def get_manual_assessments(variant_obj):
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"
                 assessment["title"] = "mosaicism:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
+
+                reasons = [int(reason) for reason in variant_obj[assessment_type]]
+
+                for reason in reasons:
                     assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
                         MOSAICISM_OPTIONS[reason]["label"],
                         MOSAICISM_OPTIONS[reason]["description"],
                     )
-                assessment["display_class"] = "secondary"
+
+                assessment["display_class"] = (
+                    "success"
+                    if any(reason in (3, 4) for reason in reasons)
+                    else "warning"
+                    if any(reason in (1, 2) for reason in reasons)
+                    else "danger"
+                )
 
             assessments.append(assessment)
 
