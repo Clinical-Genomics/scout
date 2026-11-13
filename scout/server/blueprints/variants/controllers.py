@@ -470,6 +470,7 @@ def fusion_variants(store, institute_obj, case_obj, variants_query, page=1, per_
 
     return {"variants": variants}
 
+
 from typing import Any
 
 
