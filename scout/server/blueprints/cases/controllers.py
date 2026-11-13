@@ -85,10 +85,6 @@ from scout.utils.ccv import get_ccv_temperature
 LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
-JSON_HEADERS = {
-    "Content-type": "application/json; charset=utf-8",
-    "Accept": "text/json",
-}
 
 COVERAGE_REPORT_TIMEOUT = 20
 

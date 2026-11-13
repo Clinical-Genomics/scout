@@ -74,11 +74,6 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # MME_URL = "http://localhost:9020"
 # MME_TOKEN = "DEMO"
 
-# Beacon connection settings
-# - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
-# BEACON_URL = "http://localhost:6000/apiv1.0"
-# BEACON_TOKEN = "DEMO"
-
 # ClinVar API URL
 # The test endpoint is used by default.
 # For a production server, comment out the test endpoint below

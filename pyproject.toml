@@ -12,7 +12,7 @@ include = [
 requires-python = ">=3.10"
 keywords = ["vcf", "variants", "dna", "lrs", "wgs", "wes", "panel", "wts", "rna", "fusion",
 	"snv", "sv", "str", "cnv", "outliers", "cancer", "sma", "ogm",
-	"acmg", "clingen-cgc-vicc", "phenopacket", "clinvar", "coverage", "beacon", "matchmaker exchange","panelapp",
+	"acmg", "clingen-cgc-vicc", "phenopacket", "clinvar", "coverage", "matchmaker exchange","panelapp",
 	"genome visualisation", "variant triage", "variant ranking",]
 classifiers = [
 	"Environment :: Web Environment",

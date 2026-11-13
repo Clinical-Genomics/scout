@@ -911,9 +911,8 @@ class CaseHandler(object):
 
     def update_case_data_sharing(self, old_case: dict, new_case: dict):
         """Update data sharing info for a case that is re-runned/re-uploaded."""
-        for key in ["beacon", "mme_submission"]:
-            if key in old_case:
-                new_case[key] = old_case[key]
+        if "mme_submission" in old_case:
+            new_case["mme_submission"] = old_case["mme_submission"]
 
     def _load_clinical_omics_variants(self, case_obj: dict, build: str, update: bool = False):
         """Load omics variants. The OMICS FILE type dict contains all we need to
@@ -1156,7 +1155,6 @@ class CaseHandler(object):
             "$addToSet": {"collaborators": {"$each": case_obj["collaborators"]}},
             "$set": {
                 "analysis_date": analysis_date,
-                "beacon": case_obj.get("beacon"),
                 "custom_images": case_obj.get("custom_images"),
                 "cnv_report": case_obj.get("cnv_report"),
                 "coverage_qc_report": case_obj.get("coverage_qc_report"),
@@ -1221,7 +1219,6 @@ class CaseHandler(object):
         # Remove non-mandatory key/values if they contain a null value
         unset_keys = {}
         for key in [
-            "beacon",
             "collaborators",
             "custom_images",
             "cnv_report",
