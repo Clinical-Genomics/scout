@@ -14,7 +14,6 @@ LOG = logging.getLogger(__name__)
 @click.command("user", short_help="Update a user")
 @click.option("--user-id", "-u", required=True, help="An email address that identifies the user")
 @click.option("--update-role", "-r", type=click.Choice(USER_ROLES), help="Add a role to the user")
-@click.option("--remove-admin", is_flag=True, help="(Deprecated) Remove admin role from the user")
 @click.option("--remove-role", multiple=True, help="Specify roles to remove from the user")
 @click.option("--add-institute", "-i", multiple=True, help="Specify institutes to add")
 @click.option("--remove-institute", multiple=True, help="Specify institutes to remove")
@@ -22,7 +21,6 @@ LOG = logging.getLogger(__name__)
 def user(
     user_id: str,
     update_role: Optional[str],
-    remove_admin: bool,
     remove_role: Tuple[str, ...],
     add_institute: Tuple[str, ...],
     remove_institute: Tuple[str, ...],
@@ -38,7 +36,6 @@ def user(
         current_roles=user_obj.get("roles", []),
         add_role=update_role,
         remove_roles=remove_role,
-        remove_admin=remove_admin,
         user_id=user_id,
     )
     user_obj["institutes"] = process_institutes(
@@ -55,7 +52,6 @@ def process_roles(
     current_roles: List[str],
     add_role: Optional[str],
     remove_roles: Tuple[str, ...],
-    remove_admin: bool,
     user_id: str,
 ) -> List[str]:
     """Define the list of roles for a user in the database."""
@@ -69,10 +65,6 @@ def process_roles(
             LOG.info("Adding role '%s' to user '%s'", add_role, user_id)
 
     all_remove = set(remove_roles)
-    if remove_admin and "admin" not in all_remove:
-        click.echo("⚠️ --remove-admin is deprecated. Use --remove-role admin instead.")
-        all_remove.add("admin")
-
     for role in all_remove:
         if role in roles:
             roles.remove(role)
