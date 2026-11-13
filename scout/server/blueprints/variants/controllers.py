@@ -573,11 +573,12 @@ def get_manual_assessments(variant_obj):
                         MOSAICISM_OPTIONS[reason]["description"],
                     )
 
-                assessment["display_class"] = (
-                    "success"
-                    if any(reason in (3, 4) for reason in reasons)
-                    else "warning" if any(reason in (1, 2) for reason in reasons) else "danger"
-                )
+                if any(reason in (3, 4) for reason in reasons):
+                    assessment["display_class"] = "success"
+                elif any(reason in (1, 2) for reason in reasons):
+                    assessment["display_class"] = "warning"
+                else:
+                    assessment["display_class"] = "danger"
 
             assessments.append(assessment)
 

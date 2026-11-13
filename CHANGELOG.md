@@ -6,8 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Hide the `mosaicism` badge when the only assessment is "Not evident in parental reads" ()
-- Display `mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads ()
+- Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
+- Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 
