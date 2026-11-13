@@ -471,111 +471,139 @@ def fusion_variants(store, institute_obj, case_obj, variants_query, page=1, per_
     return {"variants": variants}
 
 
-def get_manual_assessments(variant_obj):
+from typing import Any
+
+
+def get_manual_rank_assessment(value: int) -> dict[str, str]:
+    """Build a manual rank assessment for display."""
+    options = MANUAL_RANK_OPTIONS[value]
+    return {
+        "title": f"Manual rank: {options['description']}",
+        "label": options["label"],
+        "display_class": options["label_class"],
+    }
+
+
+def get_cancer_tier_assessment(value: int) -> dict[str, str]:
+    """Build a cancer tier assessment for display."""
+    options = CANCER_TIER_OPTIONS[value]
+    return {
+        "title": f"Cancer tier: {options['description']}",
+        "label": options["label"],
+        "display_class": options["label_class"],
+    }
+
+
+def get_escat_tier_assessment(value: int) -> dict[str, str]:
+    """Build an ESCAT tier assessment for display."""
+    options = ESCAT_TIER_OPTIONS[value]
+    return {
+        "title": f"ESCAT tier: {options['description']}",
+        "label": options["label"],
+        "display_class": options["label_class"],
+    }
+
+
+def get_acmg_assessment(value: Any) -> dict[str, str]:
+    """Build an ACMG classification assessment for display."""
+    if isinstance(value, int):
+        value = ACMG_COMPLETE_MAP[ACMG_MAP[value]]
+
+    return {
+        "title": f"ACMG: {value['label']}",
+        "label": value["short"],
+        "display_class": value["color"],
+    }
+
+
+def get_ccv_assessment(value: Any) -> dict[str, str]:
+    """Build a ClinGen-CGC-VIGG classification assessment for display."""
+    if isinstance(value, int):
+        value = CCV_COMPLETE_MAP[CCV_MAP[value]]
+
+    return {
+        "title": f"ClinGen-CGC-VIGG: {value['label']}",
+        "label": value["short"],
+        "display_class": value["color"],
+    }
+
+
+def get_dismiss_assessment(value: list[str | int]) -> dict[str, str]:
+    """Build a dismissed variant assessment with its reasons for display."""
+    dismiss_variant_options = {
+        **DISMISS_VARIANT_OPTIONS,
+        **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    }
+
+    title = "dismiss:<br>"
+    for reason in value:
+        reason = int(reason)
+        title += "<strong>{}</strong> - {}<br><br>".format(
+            dismiss_variant_options[reason]["label"],
+            dismiss_variant_options[reason]["description"],
+        )
+
+    return {
+        "label": "Dismissed",
+        "title": title,
+        "display_class": "secondary",
+    }
+
+
+def get_mosaic_assessment(value: list[str | int]) -> dict[str, str]:
+    """Build a mosaicism assessment with its reasons and classification color."""
+    reasons = [int(reason) for reason in value]
+
+    title = "mosaicism:<br>"
+    for reason in reasons:
+        title += "<strong>{}</strong> - {}<br><br>".format(
+            MOSAICISM_OPTIONS[reason]["label"],
+            MOSAICISM_OPTIONS[reason]["description"],
+        )
+
+    if any(reason in (3, 4) for reason in reasons):
+        display_class = "success"
+    elif any(reason in (1, 2) for reason in reasons):
+        display_class = "warning"
+    else:
+        display_class = "danger"
+
+    return {
+        "label": "Mosaicism",
+        "title": title,
+        "display_class": display_class,
+    }
+
+
+def get_manual_assessments(variant_obj: dict[str, Any] | None) -> list[dict[str, str]]:
     """Return manual assessments ready for display.
 
-    An assessment dict of str has keys "title", "label" and "display_class".
+    Each assessment contains the keys "title", "label" and "display_class".
 
-    args:
-        variant_obj(variant)
+    Args:
+        variant_obj: Variant document containing manual assessments.
 
-    returns:
-        assessments(array(dict))
+    Returns:
+        A list of assessment dictionaries.
     """
-
-    ## display manual input of interest: classified, commented, tagged, mosaicism or dismissed.
-    assessment_keywords = [
-        "acmg_classification",
-        "ccv_classification",
-        "manual_rank",
-        "cancer_tier",
-        "escat_tier",
-        "dismiss_variant",
-        "mosaic_tags",
-    ]
-
-    assessments = []
+    assessment_handlers = {
+        "acmg_classification": get_acmg_assessment,
+        "ccv_classification": get_ccv_assessment,
+        "manual_rank": get_manual_rank_assessment,
+        "cancer_tier": get_cancer_tier_assessment,
+        "escat_tier": get_escat_tier_assessment,
+        "dismiss_variant": get_dismiss_assessment,
+        "mosaic_tags": get_mosaic_assessment,
+    }
 
     if variant_obj is None:
-        return assessments
+        return []
 
-    for assessment_type in assessment_keywords:
-        assessment = {}
-        if variant_obj.get(assessment_type) is not None:
-            if assessment_type == "manual_rank":
-                manual_rank = variant_obj[assessment_type]
-                assessment["title"] = "Manual rank: {}".format(
-                    MANUAL_RANK_OPTIONS[manual_rank]["description"]
-                )
-                assessment["label"] = MANUAL_RANK_OPTIONS[manual_rank]["label"]
-                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank]["label_class"]
-
-            if assessment_type == "cancer_tier":
-                cancer_tier = variant_obj[assessment_type]
-                assessment["title"] = "Cancer tier: {}".format(
-                    CANCER_TIER_OPTIONS[cancer_tier]["description"]
-                )
-                assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
-                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
-
-            if assessment_type == "escat_tier":
-                escat_tier = variant_obj[assessment_type]
-                assessment["title"] = "ESCAT tier: {}".format(
-                    ESCAT_TIER_OPTIONS[escat_tier]["description"]
-                )
-                assessment["label"] = ESCAT_TIER_OPTIONS[escat_tier]["label"]
-                assessment["display_class"] = ESCAT_TIER_OPTIONS[escat_tier]["label_class"]
-
-            if assessment_type == "acmg_classification":
-                classification = variant_obj[assessment_type]
-                if isinstance(classification, int):
-                    acmg_code = ACMG_MAP[classification]
-                    classification = ACMG_COMPLETE_MAP[acmg_code]
-
-                assessment["title"] = "ACMG: {}".format(classification["label"])
-                assessment["label"] = classification["short"]
-                assessment["display_class"] = classification["color"]
-
-            if assessment_type == "ccv_classification":
-                ccv_classification = variant_obj[assessment_type]
-                if isinstance(ccv_classification, int):
-                    ccv_code = CCV_MAP[ccv_classification]
-                    ccv_classification = CCV_COMPLETE_MAP[ccv_code]
-
-                assessment["title"] = "ClinGen-CGC-VIGG: {}".format(ccv_classification["label"])
-                assessment["label"] = ccv_classification["short"]
-                assessment["display_class"] = ccv_classification["color"]
-
-            if assessment_type == "dismiss_variant":
-                dismiss_variant_options = {
-                    **DISMISS_VARIANT_OPTIONS,
-                    **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                }
-                assessment["label"] = "Dismissed"
-                assessment["title"] = "dismiss:<br>"
-                for reason in variant_obj[assessment_type]:
-                    reason = int(reason)
-                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        dismiss_variant_options[reason]["label"],
-                        dismiss_variant_options[reason]["description"],
-                    )
-                assessment["display_class"] = "secondary"
-
-            if assessment_type == "mosaic_tags":
-                assessment["label"] = "Mosaicism"
-                assessment["title"] = "mosaicism:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"],
-                        MOSAICISM_OPTIONS[reason]["description"],
-                    )
-                assessment["display_class"] = "secondary"
-
-            assessments.append(assessment)
-
-    return assessments
+    return [
+        handler(variant_obj[assessment_type])
+        for assessment_type, handler in assessment_handlers.items()
+        if variant_obj.get(assessment_type) is not None
+    ]
 
 
 def compounds_need_updating(compounds, dismissed):
