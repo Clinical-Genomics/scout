@@ -36,6 +36,8 @@ HG19CLINVAR_SVS_URL = (
 # Human genome reference genome build 37. Always displayed
 HUMAN_REFERENCE_37 = {
     "name": "Human GRCh37/hg19",
+    "ucscID": "hg19",
+    "id": "hg19",
     "fastaURL": HG19REF_URL,
     "indexURL": HG19REF_INDEX_URL,
     "cytobandURL": HG19CYTOBAND_URL,
@@ -45,6 +47,8 @@ HUMAN_REFERENCE_37 = {
 # Human genome reference genome build 38. Always displayed
 HUMAN_REFERENCE_38 = {
     "name": "Human GRCh38/hg38",
+    "ucscID": "hg38",
+    "id": "hg38",
     "fastaURL": HG38REF_URL,
     "indexURL": HG38REF_INDEX_URL,
     "cytobandURL": HG38CYTOBAND_URL,
