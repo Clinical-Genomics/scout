@@ -50,7 +50,6 @@ individual = dict(
 case = dict(
     analysis_date=datetime,
     assignees=list,  # list of str _id of a user (email)
-    beacon=dict,  # beacon submission dictionary {created_at: datetime, user: str(email), samples: list(dict), panels: list(dict), vcf_files: list(str)}
     case_id=str,  # required: True, unique. This is a string with the id for the family
     causatives=list,  # List of variants referred by there _id
     cnv_report=str,  # CNV report is a path to pdf file
