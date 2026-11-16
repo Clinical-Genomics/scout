@@ -52,6 +52,9 @@ class ExternalVariantLoader:
             ],
         }
 
+        if case_obj.get("custom_images") is not None:
+            case_config["custom_images"] = case_obj["custom_images"]
+
         vcf_files = case_obj.get("vcf_files", {})
 
         if is_research:
