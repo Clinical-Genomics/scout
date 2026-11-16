@@ -578,7 +578,7 @@ def get_mosaic_assessment(value: list[str | int]) -> dict[str, str]:
 def get_manual_assessments(variant_obj: dict[str, Any] | None) -> list[dict[str, str]]:
     """Return manual assessments ready for display.
 
-    Each assessment contains the keys "title", "label" and "display_class".
+    Each assessment contains the keys "title", "label", "color" and "display_class".
 
     Args:
         variant_obj: Variant document containing manual assessments.
