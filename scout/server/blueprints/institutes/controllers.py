@@ -64,7 +64,6 @@ NONSPECIFIC_QUERY_TERMS = [
 ALL_CASES_PROJECTION = {
     "analysis_date": 1,
     "assignees": 1,
-    "beacon": 1,
     "case_id": 1,
     "display_name": 1,
     "genome_build": 1,
