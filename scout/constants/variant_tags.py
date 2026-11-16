@@ -628,26 +628,31 @@ MOSAICISM_OPTIONS = {
         "label": "Suspected in parent",
         "description": "Variant is suspected to be mosaic in a parent sample.",
         "evidence": ["allele_count"],
+        "label_class": "warning",
     },
     2: {
         "label": "Suspected in affected",
         "description": "Variant is suspected to be mosaic in a affected sample.",
         "evidence": ["allele_count"],
+        "label_class": "warning",
     },
     3: {
         "label": "Confirmed in parent",
         "description": "Variant is confirmed to be mosaic in a parent sample.",
         "evidence": ["allele_count"],
+        "label_class": "success",
     },
     4: {
         "label": "Confirmed in affected",
         "description": "Variant is confirmed to be mosaic in a affected sample.",
         "evidence": ["allele_count"],
+        "label_class": "success",
     },
     5: {
         "label": "Not evident in parental reads",
         "description": "Variant was inspected for mosaicism, but not seen in reads from parental samples.",
         "evidence": ["allele_count"],
+        "label_class": "danger",
     },
 }
 
