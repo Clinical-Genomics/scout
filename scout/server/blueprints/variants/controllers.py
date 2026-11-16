@@ -559,11 +559,11 @@ def get_mosaic_assessment(value: list[str | int]) -> dict[str, str]:
         )
 
     if any(reason in (3, 4) for reason in reasons):
-        display_class = "success"
+        display_class = MOSAICISM_OPTIONS[4]["label_class"]
     elif any(reason in (1, 2) for reason in reasons):
-        display_class = "warning"
+        display_class = MOSAICISM_OPTIONS[2]["label_class"]
     else:
-        display_class = "danger"
+        display_class = MOSAICISM_OPTIONS[5]["label_class"]
 
     return {
         "label": "Mosaicism",
