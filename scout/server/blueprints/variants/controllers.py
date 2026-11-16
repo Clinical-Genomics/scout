@@ -471,9 +471,6 @@ def fusion_variants(store, institute_obj, case_obj, variants_query, page=1, per_
     return {"variants": variants}
 
 
-from typing import Any
-
-
 def get_manual_rank_assessment(value: int) -> dict[str, str]:
     """Build a manual rank assessment for display."""
     options = MANUAL_RANK_OPTIONS[value]
