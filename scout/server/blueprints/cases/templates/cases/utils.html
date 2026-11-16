@@ -491,7 +491,7 @@
                     {{ clinical_assessments_badge(variant) }}
                     {{ variant_validation_badge(variant) }}
                     {{ tumor_allele_freq(variant) }}
-                    {% if variant.mosaic_tags %}
+                    {% if variant.mosaic_tags and variant.mosaic_tags != ["5"] %}
                       <span class="badge bg-info">mosaic</span>
                     {% endif %}
                   </div>
