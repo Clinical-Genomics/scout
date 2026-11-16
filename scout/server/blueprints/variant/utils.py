@@ -712,7 +712,7 @@ def get_str_mc(variant_obj: dict) -> Optional[int]:
         if sample["genotype_call"] in GT_NO_ALT_CALL:
             continue
         alt_mc = sample.get("alt_mc")
-    if alt_mc:
+    if alt_mc is not None:
         return alt_mc
 
     alt_num = NUM.search(variant_obj["alternative"])

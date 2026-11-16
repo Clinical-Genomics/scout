@@ -143,12 +143,12 @@
             {% else %}
               <tr>
 	          {% endif %}
-              <td>Motif copies</td><td>{{ variant.str_mc or "." }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
+	          <td>Motif copies</td><td>{{ variant.str_mc if variant.str_mc is not none else "." }} <span class="badge bg-secondary text-white">{{ variant.str_status }}</span></td>
             </tr>
             <tr><td colspan=2>&nbsp;</td></tr>
             {% if variant.str_swegen_mean %}
               <tr><td>SweGen Z-score</td><td>
-                {% if variant.str_mc %}
+                {% if variant.str_mc is not none %}
                   {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
                 {% endif %}
               </td></tr>

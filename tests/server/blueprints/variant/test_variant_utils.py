@@ -7,12 +7,31 @@ from scout.server.blueprints.variant.utils import (
     evaluation,
     frequencies,
     frequency,
+    get_str_mc,
     is_affected,
     populate_dismiss_variant_choices,
     predictions,
     transcript_str,
     update_transcripts_information,
 )
+
+
+def test_get_str_mc_preserves_zero_motif_count():
+    variant = {
+        "alternative": "CTGCCGCTGCCGA",
+        "samples": [{"genotype_call": "1/.", "alt_mc": 0}],
+    }
+
+    assert get_str_mc(variant) == 0
+
+
+def test_get_str_mc_missing_count():
+    variant = {
+        "alternative": "CTGCCGCTGCCGA",
+        "samples": [{"genotype_call": "./1", "alt_mc": None}],
+    }
+
+    assert get_str_mc(variant) is None
 
 
 def test_clinsig_human():

@@ -1240,7 +1240,7 @@
           <tr class="bg-warning">
         {% endif %}
           <td><span class="badge bg-info">{{variant.category | upper}}</span></td>
-          <td>{{ variant.str_mc or "." }}</td>
+          <td>{{ variant.str_mc if variant.str_mc is not none else "." }}</td>
           <td>{{ variant.str_ref or "." }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}

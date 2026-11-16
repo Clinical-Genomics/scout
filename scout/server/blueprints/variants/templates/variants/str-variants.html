@@ -66,7 +66,7 @@
     {% if variant.str_display_ru %}{{variant.str_display_ru | truncate(12, True)}}
     {% elif variant.str_ru %}{{ variant.str_ru | truncate(12, True) }}
     {% else %}{{ variant.reference | truncate(12, True) }}{% endif %}</span></td>
-      <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc or "." }}</span></b></td>
+      <td class="text-end"><b><span data-bs-toggle="tooltip" title="{{ variant.alternative }}">{{ variant.str_mc if variant.str_mc is not none else "." }}</span></b></td>
       <td class="text-end"><span data-bs-toggle="tooltip" title="{{ variant.reference }}">{{ variant.str_ref or "." }}</span></td>
       <td>{{ callers_cell(variant) }}</td>
       <td>{{ str_status(variant) }}</td>
@@ -128,7 +128,7 @@
       <tr><td colspan=2>&nbsp;</td></tr>
       {% if variant.str_swegen_mean %}
         <tr><td>SweGen Z-score</td><td>
-          {% if variant.str_mc %}
+          {% if variant.str_mc is not none %}
             {{ ((variant.str_mc - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
           {% endif %}
         </td></tr>

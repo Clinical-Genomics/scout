@@ -1176,7 +1176,8 @@ def download_str_variants(_, case_obj, variant_objs):
         variant_line.append(
             variant.get("str_display_ru", variant.get("str_ru", variant.get("str_motifs", "")))
         )  # Reference repeat unit
-        variant_line.append(str(get_str_mc(variant) or "."))  # Estimated size
+        str_mc = get_str_mc(variant)
+        variant_line.append(str(str_mc) if str_mc is not None else ".")  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))
 
