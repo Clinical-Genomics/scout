@@ -135,6 +135,8 @@ VERBS_MAP = {
     "add_phenotype": "added HPO term for",
     "archive": "archived",
     "assign": "was assigned to",
+    "beacon_add": "exported variants to the Beacon",
+    "beacon_remove": "removed variants from the Beacon",
     "cancel_sanger": "cancelled sanger order for",
     "cancer_tier": "updated AMP tier for",
     "clinvar_add": "added a variant to a ClinVar submission",
