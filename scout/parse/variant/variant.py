@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Dict, List, Optional
+from urllib.parse import unquote
 
 from cyvcf2 import Variant
 
@@ -16,7 +17,7 @@ from .coordinates import parse_coordinates
 from .deleteriousness import parse_cadd
 from .frequency import parse_frequencies, parse_mei_frequencies, parse_sv_frequencies
 from .gene import parse_genes
-from .genotype import parse_genotypes
+from .genotype import parse_genotypes, parse_pathologic_struc
 from .ids import parse_ids
 from .models import parse_genetic_models
 from .rank_score import parse_rank_score, parse_rank_score_other
@@ -433,6 +434,19 @@ def set_dbsnp_id(parsed_variant, variant_id):
         parsed_variant["dbsnp_id"] = variant_id
 
 
+def get_decoded_str(value: Any) -> Optional[str]:
+    """Return an INFO value as a percent-decoded string, or None if missing.
+
+    VCF 4.3 allows characters not permitted in INFO values (e.g. spaces, commas and semicolons)
+    to be percent-encoded, as stranger does for catalog annotations (stranger#124).
+    Values without escapes, and invalid escape sequences, are kept as they are.
+    """
+    value = call_safe(str, value)
+    if value is None:
+        return None
+    return unquote(value)
+
+
 def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """
     ################ Add STR info if present ################
@@ -453,13 +467,16 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["str_motifs"] = call_safe(str, variant.INFO.get("MOTIFS"))
 
     # repeat pathologic motifs structure - list of indicies of pathologic motifs counting towards MC
-    parsed_variant["str_pathologic_struc"] = call_safe(str, variant.INFO.get("PathologicStruc"))
+    # Stored as e.g. "[0, 1, 2, 6]" for both the old String and new Integer format (stranger#124)
+    parsed_variant["str_pathologic_struc"] = call_safe(
+        str, parse_pathologic_struc(variant.INFO.get("PathologicStruc"))
+    )
 
     # repeat unit - used e g in PanelApp naming of STRs
     parsed_variant["str_ru"] = call_safe(str, variant.INFO.get("RU"))
 
     # repeat unit - used e g in PanelApp naming of STRs
-    parsed_variant["str_display_ru"] = call_safe(str, variant.INFO.get("DisplayRU"))
+    parsed_variant["str_display_ru"] = get_decoded_str(variant.INFO.get("DisplayRU"))
 
     # repeat ref - reference copy number
     parsed_variant["str_ref"] = call_safe(int, variant.INFO.get("REF"))
@@ -477,10 +494,10 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["str_pathologic_min"] = call_safe(int, variant.INFO.get("STR_PATHOLOGIC_MIN"))
 
     # str disease - disease name annotation
-    parsed_variant["str_disease"] = call_safe(str, variant.INFO.get("Disease"))
+    parsed_variant["str_disease"] = get_decoded_str(variant.INFO.get("Disease"))
 
     # str disease inheritance mode string annotation
-    parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
+    parsed_variant["str_inheritance_mode"] = get_decoded_str(variant.INFO.get("InheritanceMode"))
 
     # str SweGen mean and std - used for STR z-score calculations
     parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
@@ -583,9 +600,10 @@ def add_gene_and_transcript_info_for_fusions(
 
 def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):
     """Set source in parsed_variant"""
-    str_source_display = variant.INFO.get("SourceDisplay")
-    str_source_type = variant.INFO.get("Source")
-    str_source_id = variant.INFO.get("SourceId")
+    # Catalog annotations added by stranger may be percent-encoded (stranger#124)
+    str_source_display = get_decoded_str(variant.INFO.get("SourceDisplay"))
+    str_source_type = get_decoded_str(variant.INFO.get("Source"))
+    str_source_id = get_decoded_str(variant.INFO.get("SourceId"))
     if str_source_display or str_source_type or str_source_id:
         source = {
             "display": str_source_display,
