@@ -6,15 +6,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Containerized test environment, run with `make test`, in parallel by default (#6730)
+- Containerized test environment, run with `make test`, in parallel by default (#6731)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
-- Tests start from per-stage database snapshots instead of rebuilding the test database for every test (#6730)
+- Tests start from per-stage database snapshots instead of rebuilding the test database for every test (#6731)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
-- Tests that never ran because of duplicate names, or passed for the wrong reason (#6730)
-- Tests calling OMIM and the liftover service over the network are now mocked (#6730)
+- Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
+- Tests calling OMIM and the liftover service over the network are now mocked (#6731)
 
 ## [4.116]
 ### Added
