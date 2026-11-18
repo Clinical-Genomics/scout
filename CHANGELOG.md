@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
+- Show only status and reason on Dark regions page popovers (#6725)
 ### Fixed
 - Parse STR `PathologicStruc` in the Stranger Integer list format (`0,1,2,6`) as well as the old string list format (`[0, 1, 2, 6]`), and no longer count all motifs when the only pathologic motif is motif 0 (#6726)
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)

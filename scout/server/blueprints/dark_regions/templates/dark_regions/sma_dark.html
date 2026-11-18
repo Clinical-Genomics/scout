@@ -164,7 +164,7 @@
         </div>
       {% for region_name, region in paraphrase_regions|dictsort(case_sensitive=False, by='key') %}
         <div class="accordion-item">
-          <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {{ region.status_matches }}">
+          <div class="accordion-header" data-bs-toggle="tooltip" title="Status {{ region.status }} - {% if "status_matches" in region %} {% if "reason" in region.status_matches[0] %} {{ region.status_matches[0].reason }} {% else %} {{ region.status_matches }} {% endif %} {% endif %} ">
            <button class="accordion-button {% if region.get("status", "normal") == "pathological" %}
                   bg-danger
                 {% elif region.get("status", "normal") == "intermediate" %}
