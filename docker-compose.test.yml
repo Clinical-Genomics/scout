@@ -13,6 +13,8 @@ services:
       retries: 30
 
   test:
+    # wkhtmltopdf is only published for amd64, the same as the GitHub CI
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile.test

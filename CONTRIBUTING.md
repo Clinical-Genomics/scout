@@ -59,7 +59,21 @@ Options:
 - `make test WORKERS=4` sets the number of parallel workers (the default is `auto`, one per available CPU).
 - `make test TESTS=tests/utils` runs a subset. Any path, file or test id that pytest accepts works, for example `TESTS=tests/utils/test_acmg.py::test_is_benign_1`.
 
-Running the tests directly on your machine (`uv run pytest`) also works, but then you need `wkhtmltopdf` installed and a MongoDB listening on `localhost:27017`. The tests create and drop the databases `realtestdb` and `testdb` (with a worker suffix such as `realtestdb_gw0` when running in parallel), so do not point them at a MongoDB holding data you want to keep.
+#### Running the tests directly with pytest
+
+You can also run the tests on your machine, without Docker. You need:
+
+- **A MongoDB listening on `localhost:27017`.** The tests create and drop the databases `realtestdb` and `testdb` (with a worker suffix such as `realtestdb_gw0` in parallel runs), so do not point them at a MongoDB holding data you want to keep.
+- **`wkhtmltopdf`** on your `PATH`, for the PDF tests. Debian and Ubuntu packages are unreliable on recent releases, so use the prebuilt binary from the [wkhtml-packaging releases](https://github.com/newinnovations/wkhtml-packaging/releases) that CI uses (`wkhtmltopdf_0.12.6.1-*`).
+- **The dev dependencies:** `uv sync --frozen --dev`. Installing `cyvcf2` can fail on some platforms if compilers or the htslib headers are missing, so install them first if `uv sync` fails.
+
+Then run, from the repository root:
+
+```bash
+uv run pytest -o addopts= tests
+```
+
+`-o addopts=` removes the project's default `-x` option, so the run reports every failure instead of stopping at the first.
 
 ### Coding standards
 
