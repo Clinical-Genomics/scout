@@ -43,6 +43,24 @@ own feature branch, based on an updated master branch.
 	1. _woke_: Woke is a tool that finds insensitive, inconsiderate, and inconsiderate language in code. It is run on the code and reports if it finds any insensitive language. Please check the report and fix any insensitive language before requesting a review.
 	1. _Docker stage_: The PR is automatically built and ready for download to staging servers. Please check the build logs and fix any issues before requesting a review. Functional testing on staging servers is normally mandatory before merging. Tests are documented with screenshots or terminal output, and can be done by either the PR author or a reviewer, or ideally both.
 
+### Running the tests
+
+The only requirement is Docker. From the repository root, run:
+
+```bash
+make test
+```
+
+This builds a test image with the development dependencies and `wkhtmltopdf` (needed by the PDF report tests), starts a dedicated MongoDB 7 container, runs the suite in parallel with [pytest-xdist](https://pytest-xdist.readthedocs.io/), and removes the database container afterwards. The test MongoDB has no published port, so the tests never reach another database on your machine.
+
+Options:
+
+- `make test WORKERS=0` runs the tests serially. For small subsets this is often faster, since starting the workers takes a few seconds.
+- `make test WORKERS=4` sets the number of parallel workers (the default is `auto`, one per available CPU).
+- `make test TESTS=tests/utils` runs a subset. Any path, file or test id that pytest accepts works, for example `TESTS=tests/utils/test_acmg.py::test_is_benign_1`.
+
+Running the tests directly on your machine (`uv run pytest`) also works, but then you need `wkhtmltopdf` installed and a MongoDB listening on `localhost:27017`. The tests create and drop the databases `realtestdb` and `testdb` (with a worker suffix such as `realtestdb_gw0` when running in parallel), so do not point them at a MongoDB holding data you want to keep.
+
 ### Coding standards
 
 - We try to follow [PEP8][pep8] with an line length of 100
