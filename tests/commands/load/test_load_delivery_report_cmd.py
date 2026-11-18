@@ -2,8 +2,6 @@
 import os
 from copy import deepcopy
 
-import pytest
-
 from scout.commands import cli
 from scout.demo import delivery_report_path
 
@@ -37,15 +35,16 @@ def test_exception_load_delivery_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    with pytest.raises(Exception) as raised_exception:
-        result = runner.invoke(
-            cli,
-            [
-                "load",
-                "delivery-report",
-                test_case_obj["_id"],
-                coverage_qc_report_path,
-                "-u",
-            ],
-        )
-        assert result.exit_code == 2
+    result = runner.invoke(
+        cli,
+        [
+            "load",
+            "delivery-report",
+            test_case_obj["_id"],
+            delivery_report_path,
+            "-update",
+        ],
+    )
+    # THEN the command should abort without saving the report
+    assert result.exit_code == 1
+    assert "saved report to case!" not in result.output

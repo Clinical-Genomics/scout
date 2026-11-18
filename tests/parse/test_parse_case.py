@@ -375,7 +375,7 @@ def test_wrong_relations(scout_config):
         parse_case_config(scout_config)
 
 
-def test_remove_none_values():
+def test_remove_none_values_without_none():
     # WHEN a dict *not* containing a None value
     d = {"a": "1", "b": 2, "c": 3}
 
