@@ -1,0 +1,33 @@
+# Test image for running the Scout test suite with all dependencies.
+# Build and run through docker-compose.test.yml (see `make test`).
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim
+
+# wkhtmltopdf is needed by the PDF report tests, git by some tests
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends git wkhtmltopdf && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
+
+ENV PATH="/home/worker/app/.venv/bin:$PATH"
+
+# Work as the non-root user from the start, so the virtualenv is owned by it
+RUN mkdir -p /home/worker/app && chown worker:worker /home/worker/app
+USER worker
+WORKDIR /home/worker/app
+
+# Install dependencies first so they are cached between code changes
+COPY --chown=worker:worker pyproject.toml uv.lock README.md ./
+RUN uv sync --frozen --dev --no-install-project
+
+# Application code and tests
+COPY --chown=worker:worker scout ./scout
+COPY --chown=worker:worker tests ./tests
+COPY --chown=worker:worker pytest.ini ./
+RUN uv sync --frozen --dev
+
+# Quiet run without the default -x so every failure is reported.
+# Arguments replace the CMD, so any test path can be given instead of the whole suite.
+ENTRYPOINT ["uv", "run", "--frozen", "pytest", "-o", "addopts=", "-q"]
+CMD ["tests"]

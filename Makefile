@@ -5,7 +5,7 @@
 # @version 0.1
 
 .DEFAULT_GOAL := help
-.PHONY: build run init prune help up down bash-scout
+.PHONY: build run init prune help up down bash-scout test
 
 build:    ## Build new images
 	docker-compose build
@@ -20,6 +20,9 @@ down:    ## Take down Scout software
 	docker-compose down --volumes
 bash-scout:    ## Enter bash on scout web containers
 	docker-compose exec scout-web /bin/bash
+test:    ## Run the test suite in containers (needs only Docker). Use TESTS=path to run a subset
+	docker compose -f docker-compose.test.yml run --rm --build test $(or $(TESTS),tests); status=$$?; \
+	docker compose -f docker-compose.test.yml down --volumes; exit $$status
 prune:    ## Remove orphans and dangling images
 	docker-compose down --remove-orphans
 	docker images prune
