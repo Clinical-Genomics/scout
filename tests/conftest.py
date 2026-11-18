@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import os
 from pathlib import PosixPath
 from typing import Iterable, List
 
@@ -77,10 +78,20 @@ from scout.server.app import create_app
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
-DATABASE = "testdb"
-REAL_DATABASE = "realtestdb"
+# With pytest-xdist each worker gets its own database, so parallel workers don't
+# drop or overwrite each other's data. Without xdist the names are unchanged.
+_WORKER = os.environ.get("PYTEST_XDIST_WORKER")
+_SUFFIX = f"_{_WORKER}" if _WORKER else ""
+DATABASE = f"testdb{_SUFFIX}"
+REAL_DATABASE = f"realtestdb{_SUFFIX}"
+# Read by test modules that pass the database name to the CLI
+os.environ["SCOUT_TEST_REAL_DATABASE"] = REAL_DATABASE
 
 LOG = logging.getLogger(__name__)
+
+# The test apps run with DEBUG=True, which turns on pymongo's internal debug logging.
+# Keep pymongo at WARNING so its heartbeat and connection chatter doesn't flood the output.
+logging.getLogger("pymongo").setLevel(logging.WARNING)
 
 ##################### App fixtures #####################
 
@@ -860,6 +871,7 @@ def real_pymongo_client(request):
         print("\n")
         LOG.info("Deleting database")
         mongo_client.drop_database(REAL_DATABASE)
+        mongo_client.close()
         LOG.info("Database deleted")
         LOG.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
@@ -1017,6 +1029,7 @@ def real_snapshots(request):
     def teardown():
         for name in [build_name] + [_snapshot_name(stage) for stage in SNAPSHOT_STAGES]:
             client.drop_database(name)
+        client.close()
 
     request.addfinalizer(teardown)
 
