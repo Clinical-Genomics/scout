@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Optionally load new cases and research variants using an external Rust-based binary executable (#6657)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
