@@ -1042,9 +1042,7 @@ def real_restored_stage(request):
     return {"stage": None}
 
 
-def _restore_snapshot(
-    client: pymongo.MongoClient, restored: dict, stage: str
-) -> PymongoAdapter:
+def _restore_snapshot(client: pymongo.MongoClient, restored: dict, stage: str) -> PymongoAdapter:
     """Copy a stage snapshot into the real test database and return an adapter to it.
     Does nothing if the database already holds this stage or a later one."""
     current = restored["stage"]
