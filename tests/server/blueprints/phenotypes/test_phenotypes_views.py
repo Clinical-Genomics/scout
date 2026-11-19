@@ -31,7 +31,7 @@ def test_phenotypes_api(app, real_adapter, hpo_term):
         assert resp.content_type == "application/json"
 
 
-def test_phenotypes_api(app, real_adapter, hpo_term):
+def test_phenotypes_api_search(app, real_adapter, hpo_term):
     adapter = real_adapter
     # GIVEN a database with an HPO term
     adapter.load_hpo_term(hpo_term)

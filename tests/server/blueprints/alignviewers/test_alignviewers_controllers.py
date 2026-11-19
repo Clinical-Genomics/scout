@@ -206,6 +206,7 @@ def test_get_locus_from_omics_variant(app, case_obj):
     assert locus_start_coord
 
 
+@responses.activate
 def test_get_locus_from_omics_variant_liftover(app, case_obj, broad_ucsc_liftover_response):
     """Test getting locus string components for an omics variant zoom in given a case,
     with liftover"""
@@ -218,8 +219,8 @@ def test_get_locus_from_omics_variant_liftover(app, case_obj, broad_ucsc_liftove
     # GIVEN an omics variant with build 38
     omics_variant["build"] = "38"
 
-    # GIVEN a patched response from the liftover tool
-    url = f"{LIFTOVER_URL}/?hg=hg19-to-hg38&format=interval&chrom={omics_variant['chromosome']}&start={omics_variant['position']}&end={omics_variant['end']}"
+    # GIVEN a patched response from the liftover tool, lifting the build 38 variant to the build 37 case
+    url = f"{LIFTOVER_URL}/?hg=hg38-to-hg19&format=interval&chrom={omics_variant['chromosome']}&start={omics_variant['position']}&end={omics_variant['end']}"
     responses.add(
         responses.GET,
         url,

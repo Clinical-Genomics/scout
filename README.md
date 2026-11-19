@@ -61,7 +61,7 @@ This is divided into a user guide, and an admin guide. For some common questions
 A simple demo instance of Scout requires the installation of Docker and can be launched either by using the command:
 `docker-compose up -d` or `make up`.
 
-The repository includes a Makefile with common shortcuts to simplify setting up and working with Scout. To see a full list and description of these shortcuts run: `make help`.
+The repository includes a Makefile with common shortcuts to simplify setting up and working with Scout. To see a full list and description of these shortcuts run: `make help`. To run the test suite in containers, run `make test` (see [Running the tests](CONTRIBUTING.md#running-the-tests)).
 
 This demo is consisting of 3 containers:
 - a MongoDB instance, on the default port 27017 in the container, mapped to host port 27013

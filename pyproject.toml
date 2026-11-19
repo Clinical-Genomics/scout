@@ -133,6 +133,7 @@ dev = [
 	"pytest>=5.2",
 	"pytest-flask",
 	"pytest-test-groups",
+	"pytest-xdist",
 	"pytest-cov",
 	"mongomock",
 	"responses",
