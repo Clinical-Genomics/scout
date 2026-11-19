@@ -110,7 +110,6 @@ def create_app(config_file=None, config=None):
 def configure_extensions(app):
     """Configure Flask extensions."""
 
-    extensions.bootstrap.init_app(app)
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
