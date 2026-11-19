@@ -1,0 +1,30 @@
+{# Minimal WTForms field renderer. Replaces the unmaintained Flask-Bootstrap "bootstrap/wtf.html" macros. #}
+{% macro form_field(field) %}
+  {# Mirror the required flag onto the rendered element unless the caller overrides it #}
+  {% if field.flags.required and "required" not in kwargs %}
+    {% set kwargs = dict(required=True, **kwargs) %}
+  {% endif %}
+  {% if field.widget.input_type == "checkbox" %}
+    <div class="checkbox form-check">
+      <label class="form-check-label">
+        {{ field(class="form-check-input", **kwargs)|safe }} {{ field.label.text|safe }}
+      </label>
+    </div>
+  {% else %}
+    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.flags.required %} required{% endif %}">
+      {{ field.label(class="control-label")|safe }}
+      {% if field.type == "FileField" %}
+        {{ field(**kwargs)|safe }}
+      {% else %}
+        {{ field(class="form-control", **kwargs)|safe }}
+      {% endif %}
+      {% if field.errors %}
+        {% for error in field.errors %}
+          <p class="help-block">{{ error }}</p>
+        {% endfor %}
+      {% elif field.description %}
+        <p class="help-block">{{ field.description|safe }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endmacro %}
