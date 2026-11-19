@@ -8,8 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 ### Changed
-- Replaced the unmaintained Flask-Bootstrap dependency with a local form field macro (#6733)
-- Removed the undeclared `six` import, `chanjo-report` no longer provides it (#6733)
+- Replaced the unmaintained Flask-Bootstrap dependency with a local form field macro (#6734)
+- Install `flask-login` (`>=0.6.3`) from PyPI instead of git `main`, and `intervaltree>=3.2.1`, so that all dependencies ship wheels and `uv sync --no-build` works (#6734)
+- Exclude the unused `pyscss` dependency, pulled in by `chanjo-report`, with a uv override (#6734)
+- Removed the undeclared `six` import, `chanjo-report` no longer provides it (#6734)
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 - Show only status and reason on Dark regions page popovers (#6725)
