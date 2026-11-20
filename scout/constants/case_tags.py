@@ -240,8 +240,6 @@ VERBS_ICONS_MAP = {
     "update_clinical_filter_hpo": ICON_FOLDER_OPEN,
     "mme_add": ICON_SHARE,
     "mme_remove": ICON_TIMES,
-    "beacon_add": ICON_SHARE,
-    "beacon_remove": ICON_TIMES,
     "filter_stash": ICON_SEARCH,
     "filter_audit": ICON_SEARCH,
     "update_sample": ICON_FOLDER_OPEN,

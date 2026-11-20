@@ -78,9 +78,6 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
     # GIVEN that the case has no outdated panels
     case_obj["outdated_panels"] = []
 
-    # update test user by adding beacon_submitter as role
-    user_obj["roles"] = ["beacon_submitter"]
-
     # GIVEN an initialized app
     with app.test_client() as client:
         # WHEN the case sidebar macro is called

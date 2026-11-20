@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal, filter_audits %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, matchmaker_modal, filter_audits %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
@@ -255,7 +255,6 @@
       {{ solve_modal(institute, case, case_tag_options) }}
       {{ research_modal(institute, case) }}
       {{ reanalysis_modal(institute, case) }}
-      {{ beacon_modal(institute, case) }}
       {{ matchmaker_modal(institute, case, suspects, mme_nodes) }}
     </div>
   </div><!-- end of containter -->

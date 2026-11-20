@@ -21,7 +21,7 @@ from scout.constants import (
     VERBS_MAP,
 )
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
-from scout.server.extensions import beacon, loqusdb, store
+from scout.server.extensions import loqusdb, store
 from scout.server.utils import (
     institute_and_case,
     jsonconverter,
@@ -283,24 +283,6 @@ def gene_variants(institute_id):
     )
 
 
-# MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
-@blueprint.route("/overview/<institute_id>/add_beacon_dataset", methods=["POST"])
-def add_beacon_dataset(institute_id):
-    """Add a dataset to Beacon for a given institute"""
-    if current_user.is_admin is False:
-        flash(
-            "Only an admin can create a new Beacon dataset",
-            "warning",
-        )
-        return safe_redirect_back(request)
-
-    dataset_id = request.form.get("beacon_dataset")
-    institute_obj = store.institute(institute_id)
-
-    beacon.add_dataset(institute_obj, dataset_id)
-    return safe_redirect_back(request)
-
-
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])
 def institute_settings(institute_id):
     """Show institute settings page"""
@@ -314,8 +296,6 @@ def institute_settings(institute_id):
 
     institute_obj = store.institute(institute_id)
     institute_form = InstituteForm(request.form)
-
-    beacon_form = controllers.populate_beacon_form(institute_obj)
 
     # if institute is to be updated
     if request.method == "POST" and institute_form.validate_on_submit():
@@ -333,7 +313,6 @@ def institute_settings(institute_id):
     return render_template(
         "/overview/institute_settings.html",
         form=institute_form,
-        beacon_form=beacon_form,
         default_phenotypes=default_phenotypes,
         loqus_instances=loqus_instances,
         panel=1,

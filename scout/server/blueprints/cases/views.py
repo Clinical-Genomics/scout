@@ -30,7 +30,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants import DATE_DAY_FORMATTER
 from scout.server.blueprints.variants.controllers import activate_case
-from scout.server.extensions import beacon, phenopacketapi, store
+from scout.server.extensions import phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -127,26 +127,6 @@ def bionano(institute_id, case_name):
     activate_case(store, institute_obj, case_obj, current_user)
 
     return dict(format="html", **data)
-
-
-@cases_bp.route("/beacon_add_variants/<institute_id>/<case_name>", methods=["POST"])
-def beacon_add_variants(institute_id, case_name):
-    """Submit case variants to Beacon"""
-    _, case_obj = institute_and_case(
-        store, institute_id, case_name
-    )  # This function checks if user has permissions to access the case
-    beacon.add_variants(store, case_obj, request.form)
-    return safe_redirect_back(request)
-
-
-@cases_bp.route("/beacon_remove_variants/<institute_id>/<case_name>", methods=["GET"])
-def beacon_remove_variants(institute_id, case_name):
-    """Remove all variants from a case from Beacon"""
-    _, case_obj = institute_and_case(
-        store, institute_id, case_name
-    )  # This function checks if user has permissions to access the case
-    beacon.remove_variants(store, institute_id, case_obj)
-    return safe_redirect_back(request)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])
