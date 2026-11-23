@@ -113,12 +113,12 @@ def parse_callers(variant: cyvcf2.Variant, category: str = "snv") -> dict:
                 for caller in callers:
                     callers[caller] = PASS_STATUS
                 return callers
-            if "filterIn" in call:
+            if call.startswith("filterIn"):
                 if "Filtered" not in call_status:
                     call_status = FILTERED_STATUS
-                for caller in callers:
-                    if caller in call:
-                        callers[caller] = call_status
+                caller = call[len("filterIn") :]
+                if caller in callers_keys:
+                    callers[caller] = call_status
             elif call in callers_keys:
                 callers[call] = PASS_STATUS
         return callers
