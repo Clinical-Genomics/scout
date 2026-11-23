@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 - Show only status and reason on Dark regions page popovers (#6725)
+- Fetch commented variants for the case report in one query, and remove the unused `variant_ids` option from the variants query
 - Tests start from per-stage database snapshots instead of rebuilding the test database for every test (#6731)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
