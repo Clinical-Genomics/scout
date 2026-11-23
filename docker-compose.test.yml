@@ -1,0 +1,26 @@
+# Test environment: a MongoDB 7 service and the test runner.
+# Run with `make test`.
+name: scout-test
+
+services:
+
+  mongodb:
+    image: mongo:7
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  test:
+    # wkhtmltopdf is only published for amd64, the same as the GitHub CI
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    # Share the MongoDB network namespace so the tests reach it on localhost:27017,
+    # as they do when run on the host
+    network_mode: "service:mongodb"
