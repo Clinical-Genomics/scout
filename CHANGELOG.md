@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
+- Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#1826)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)

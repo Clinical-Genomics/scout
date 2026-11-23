@@ -4,6 +4,7 @@ import responses
 from flask import Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
+    _get_events,
     case,
     coverage_report_contents,
     phenotypes_genes,
@@ -224,3 +225,34 @@ def test_case_controller_non_existing_panel(adapter, app, institute_obj, test_ca
         data = case(adapter, institute_obj, fetched_case)
     # THEN assert that it succeeded to fetch another panel version
     assert len(fetched_case["panel_names"]) == 0
+
+
+def test_get_events_variant_description(adapter, institute_obj, case_obj, user_obj):
+    """Test that variant events get a gene/HGVS description for the activity panel."""
+
+    # GIVEN a database with a case and a SNV with a gene and HGVS c. annotation
+    adapter.case_collection.insert_one(case_obj)
+    variant = {
+        "_id": "a_document_id",
+        "variant_id": "a_variant_id",
+        "case_id": case_obj["_id"],
+        "category": "snv",
+        "simple_id": "1_880086_T_C",
+        "display_name": "1_880086_T_C_clinical",
+        "genes": [{"hgnc_id": 1, "hgnc_symbol": "POT1", "hgvs_identifier": "c.274G>T"}],
+    }
+    adapter.variant_collection.insert_one(variant)
+
+    # GIVEN an event for that variant, and one for a variant no longer in the case
+    adapter.pin_variant(institute_obj, case_obj, user_obj, "a_link", variant)
+    gone_variant = dict(variant, _id="gone_doc_id", variant_id="gone_variant_id")
+    adapter.pin_variant(institute_obj, case_obj, user_obj, "a_link", gone_variant)
+
+    # WHEN preparing the events for display
+    events = _get_events(adapter, institute_obj, case_obj)
+
+    # THEN the event for the existing variant has a gene and HGVS description
+    descriptions = {event["variant_id"]: event.get("variant_description") for event in events}
+    assert descriptions["a_variant_id"] == "POT1 c.274G>T"
+    # THEN the event for the missing variant has none
+    assert descriptions["gone_variant_id"] is None
