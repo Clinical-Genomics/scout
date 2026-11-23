@@ -260,7 +260,6 @@
           {% if rep_gene and rep_gene.representative_transcript %}
             <tr>
               <td colspan="4">
-                HGVS:
                 <a href="{{ url_for('genes.gene', hgnc_id=rep_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Gene with the most severe consequence{% if variant.genes|length > 1 %}, out of {{ variant.genes|length }} genes{% endif %}. See Transcripts below for all transcripts.">{{ rep_gene.hgnc_symbol or rep_gene.hgnc_id }}</a>
                 {{ representative_transcript_hgvs_content(rep_gene.representative_transcript) }}
               </td>
