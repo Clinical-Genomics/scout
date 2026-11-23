@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 from urllib.parse import unquote
 
 from scout.constants import PROTEIN_HGVS_CONSEQUENCES, REPRESENTATIVE_TRANSCRIPT_PRIORITY
+
 from .scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
