@@ -51,6 +51,8 @@ nav:
 
   - FAQ: 'faq.md'
 
+  - Design decisions: 'decisions.md'
+
   - Features:
       - HPO phenotypes: 'features/hpo.md'
 

@@ -138,5 +138,7 @@ Preserve genome build and clinical/research distinctions when changing parsers, 
 Target `main` for feature branches and PRs, as configured in current workflows; the `master`
 references in `CONTRIBUTING.md` are stale. Include tests and an entry in the top `CHANGELOG.md`
 section for new functionality or bug fixes, and update user/admin docs for changed behavior.
+Check `docs/decisions.md` for earlier design decisions, and add an entry when a change settles
+a question likely to come up again.
 Use `.github/pull_request_template.md` for validation details. Consult the current source and
 workflow files when older documentation disagrees with them.
