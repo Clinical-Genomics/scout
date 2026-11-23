@@ -1,4 +1,7 @@
 # Install Scout
+!!! tip
+    Setting up a production instance? [Setting up Scout at a new site](new-site.md) gives an overview of all the steps, from install to loading your own cases.
+
 This guide will walk you through how to setup a working instance of Scout by cloning the repository from GitHub and installing it with a Python package manager.
 Our best recommendation is to use `uv` as the package manager, but you can also use `pip` if you prefer.
 It is also possible to install Scout in containers and launch it from there.
