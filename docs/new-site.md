@@ -9,7 +9,7 @@ If you get stuck, or want to tell us about your pipeline, open a [GitHub issue][
 
 Before installing anything permanently, have a look at a running instance:
 
-- **Containerised demo**: from a clone of the repository, run `docker-compose up -d` (or `make up`) and open <http://localhost:8000>. See the [main README][readme] and [Deploying Scout in containers](admin-guide/containers/container-deploy.md).
+- **Containerised demo**: from a clone of the repository, run `docker-compose up -d` (or `make up`) and, in your browser, open <http://localhost:8000>. See the [main README][readme] and [Deploying Scout in containers](admin-guide/containers/container-deploy.md).
 - **Local demo**: with a MongoDB running, `scout setup demo` followed by `scout --demo serve`. The demo user is `clark.kent@mail.com`. See [Install](install.md#demo-setup).
 
 The demo case (`scout/demo/643594.config.yaml`) and the files next to it in [`scout/demo`][demo] are also good working examples of what Scout expects as input.
