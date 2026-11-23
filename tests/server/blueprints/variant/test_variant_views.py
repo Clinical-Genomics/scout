@@ -226,6 +226,46 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
+def test_variant_summary_hgvs(app, institute_obj, case_obj):
+    """Test that the variant page summary shows transcript HGVS for the representative transcript."""
+
+    # GIVEN a database with an SNV variant with an annotated transcript
+    variant = store.variant_collection.find_one(
+        {"case_id": case_obj["_id"], "category": "snv", "genes.transcripts.0": {"$exists": True}}
+    )
+    assert variant
+
+    # GIVEN that the transcript is a MANE Select transcript with a coding HGVS
+    store.variant_collection.update_one(
+        {"_id": variant["_id"]},
+        {
+            "$set": {
+                "genes.0.transcripts.0.mane_select_transcript": "NM_000059.4",
+                "genes.0.transcripts.0.coding_sequence_name": "c.29_31del",
+            }
+        },
+    )
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN sending a request (GET) to the variant page
+        resp = client.get(
+            url_for(
+                "variant.variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=variant["_id"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
+        # THEN the summary shows a copyable transcript HGVS on the MANE RefSeq transcript
+        assert 'data-copy="NM_000059.4:c.29_31del"' in resp.data.decode()
+
+
 def test_variant_by_document_id(app, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user

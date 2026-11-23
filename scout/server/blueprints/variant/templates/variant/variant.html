@@ -6,7 +6,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import conservations, frequencies, gtcall_panel, mappability, observations_panel, old_observations, severity_list, str_db_card %}
-{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, litvar2_scripts, matching_variants, panel_classify, variant_coverage_scripts, variant_scripts %}
+{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, litvar2_scripts, matching_variants, panel_classify, representative_transcript_hgvs_content, variant_coverage_scripts, variant_scripts %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
@@ -256,6 +256,16 @@
               <td>{{ variant.mei_name|upper }}</td>
             {% endif %}
           </tr>
+          {% set rep_gene = variant.first_rep_gene %}
+          {% if rep_gene and rep_gene.representative_transcript %}
+            <tr>
+              <td colspan="4">
+                HGVS:
+                <a href="{{ url_for('genes.gene', hgnc_id=rep_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Gene with the most severe consequence{% if variant.genes|length > 1 %}, out of {{ variant.genes|length }} genes{% endif %}. See Transcripts below for all transcripts.">{{ rep_gene.hgnc_symbol or rep_gene.hgnc_id }}</a>
+                {{ representative_transcript_hgvs_content(rep_gene.representative_transcript) }}
+              </td>
+            </tr>
+          {% endif %}
           <tr>
             <td width="20%">
               Rank

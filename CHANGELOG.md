@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
+- Copyable transcript HGVS (e.g. `NM_000059.4:c.29_31del`) for the representative transcript in the variant page summary (#6617)
 ### Changed
 - Shared representative transcript selection (panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary, VEP canonical) with transcript HGVS, used on the cancer variant summary (#6070)
 - Brief variant descriptions show p. for protein altering variants and c. otherwise (#6070)
