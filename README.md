@@ -56,6 +56,8 @@ Scout is compatible with a range of genomics pipelines, and open to support new 
 This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: https://clinical-genomics.github.io/scout .
 This is divided into a user guide, and an admin guide. For some common questions and answers, please see our [FAQ](docs/faq.md) or the discussions on GitHub.
 
+Setting up Scout at a new site? [Setting up Scout at a new site](docs/new-site.md) gives an overview of the steps, API keys, integrations and related tools, with links to the relevant parts of the docs.
+
 ## Runnable demo image - does not require installing of software and database
 
 A simple demo instance of Scout requires the installation of Docker and can be launched either by using the command:

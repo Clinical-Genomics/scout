@@ -2,6 +2,8 @@
 
 This includes instructions for bioinformaticians to install, manage and update a scout instance
 
+For an overview of how to set up a new site, start with [Setting up Scout at a new site](../new-site.md).
+
 * [Admin Guide](./README.md)
   * [Deploy Scout in containers](./containers/container-deploy.md)
   * [Setup](./setup-scout.md)
