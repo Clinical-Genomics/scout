@@ -30,14 +30,13 @@ def validate_hgvs(build: str, desc: str) -> bool:
 
     return validated
 
+
 def _transcript_priority(transcript: dict) -> Tuple[int, str]:
     """Return the selection priority (lower is better) and the reason for a transcript."""
     return next(
         (
             (rank, reason)
-            for rank, (key, reason) in enumerate(
-                REPRESENTATIVE_TRANSCRIPT_PRIORITY
-            )
+            for rank, (key, reason) in enumerate(REPRESENTATIVE_TRANSCRIPT_PRIORITY)
             if transcript.get(key)
         ),
         (

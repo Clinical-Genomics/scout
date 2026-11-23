@@ -759,4 +759,3 @@ REPRESENTATIVE_TRANSCRIPT_PRIORITY = [
     ("is_canonical", "VEP canonical transcript"),
     ("refseq_id", "Transcript with a RefSeq identifier"),
 ]
-
