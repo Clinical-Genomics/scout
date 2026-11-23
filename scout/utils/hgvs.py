@@ -2,6 +2,7 @@ import logging
 from typing import Optional, Tuple
 from urllib.parse import unquote
 
+from scout.constants import PROTEIN_HGVS_CONSEQUENCES, REPRESENTATIVE_TRANSCRIPT_PRIORITY
 from .scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
@@ -29,39 +30,21 @@ def validate_hgvs(build: str, desc: str) -> bool:
 
     return validated
 
-
-# Consequences best described in brief by their protein (p.) change, see #6070.
-# Other consequences (synonymous, splicing, intronic, UTR etc.) are better described by c.
-PROTEIN_HGVS_CONSEQUENCES = {
-    "frameshift_variant",
-    "inframe_deletion",
-    "inframe_insertion",
-    "initiator_codon_variant",
-    "missense_variant",
-    "protein_altering_variant",
-    "start_lost",
-    "stop_gained",
-    "stop_lost",
-}
-
-# Representative transcript selection order, with a short human readable reason.
-# Ties keep the (VEP) order of the variant transcripts.
-REPRESENTATIVE_TRANSCRIPT_PRIORITY = [
-    ("is_disease_associated", "Gene panel disease associated transcript"),
-    ("mane_select_transcript", "MANE Select"),
-    ("mane_plus_clinical_transcript", "MANE Plus Clinical"),
-    ("is_primary", "HGNC primary RefSeq transcript"),
-    ("is_canonical", "VEP canonical transcript"),
-    ("refseq_id", "Transcript with a RefSeq identifier"),
-]
-
-
 def _transcript_priority(transcript: dict) -> Tuple[int, str]:
     """Return the selection priority (lower is better) and the reason for a transcript."""
-    for rank, (key, reason) in enumerate(REPRESENTATIVE_TRANSCRIPT_PRIORITY):
-        if transcript.get(key):
-            return rank, reason
-    return len(REPRESENTATIVE_TRANSCRIPT_PRIORITY), "First annotated transcript"
+    return next(
+        (
+            (rank, reason)
+            for rank, (key, reason) in enumerate(
+                REPRESENTATIVE_TRANSCRIPT_PRIORITY
+            )
+            if transcript.get(key)
+        ),
+        (
+            len(REPRESENTATIVE_TRANSCRIPT_PRIORITY),
+            "First annotated transcript",
+        ),
+    )
 
 
 def get_representative_transcript(gene: dict) -> Optional[dict]:
