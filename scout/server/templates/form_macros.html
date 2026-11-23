@@ -1,29 +1,35 @@
-{# Minimal WTForms field renderer. Replaces the unmaintained Flask-Bootstrap "bootstrap/wtf.html" macros.
-   WTForms renders fields and labels as escaped markup already, so nothing is marked safe here. #}
+{# Minimal WTForms field renderer using Bootstrap 5 classes. Replaces the unmaintained Flask-Bootstrap "bootstrap/wtf.html" macros.
+   WTForms renders fields and labels as escaped markup already, so nothing is marked safe here.
+   Labels keep no bottom margin (mb-0) so the dense filter forms stay as compact as before. #}
 {% macro form_field(field) %}
   {# Mirror the required flag onto the rendered element unless the caller overrides it #}
   {% if field.flags.required and "required" not in kwargs %}
     {% set kwargs = dict(required=True, **kwargs) %}
   {% endif %}
+  {# A class passed by the caller (e.g. selectpicker) replaces the default form-control #}
+  {% set field_class = kwargs.pop("class", "form-control") %}
+  {% if field.errors %}
+    {% set field_class = field_class ~ " is-invalid" %}
+  {% endif %}
   {% if field.widget.input_type == "checkbox" %}
-    <div class="checkbox form-check">
+    <div class="form-check">
       {{ field(class="form-check-input", **kwargs) }}
       {{ field.label(class="form-check-label") }}
     </div>
   {% else %}
-    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.flags.required %} required{% endif %}">
-      {{ field.label(class="control-label") }}
+    <div>
+      {{ field.label(class="form-label mb-0") }}
       {% if field.type == "FileField" %}
         {{ field(**kwargs) }}
       {% else %}
-        {{ field(class="form-control", **kwargs) }}
+        {{ field(class=field_class, **kwargs) }}
       {% endif %}
       {% if field.errors %}
         {% for error in field.errors %}
-          <p class="help-block">{{ error }}</p>
+          <div class="invalid-feedback d-block">{{ error }}</div>
         {% endfor %}
       {% elif field.description %}
-        <p class="help-block">{{ field.description }}</p>
+        <div class="form-text">{{ field.description }}</div>
       {% endif %}
     </div>
   {% endif %}
