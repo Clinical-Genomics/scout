@@ -163,13 +163,18 @@ def update_transcripts_information(
                 variant_gene=variant_gene,
             )
 
-        if hgnc_transcript and hgnc_transcript.get("is_primary"):
+        # RefSeq transcripts annotated directly (e.g. by VEP --merged or --refseq) carry a version
+        refseq_id_no_version = refseq_id.split(".")[0]
+
+        if (hgnc_transcript and hgnc_transcript.get("is_primary")) or (
+            refseq_id_no_version in hgnc_gene.get("primary_transcripts", [])
+        ):
             transcript["is_primary"] = True
 
         transcript["refseq_id"] = refseq_id
         variant_obj["has_refseq"] = True
 
-        if refseq_id in disease_associated_no_version:
+        if refseq_id_no_version in disease_associated_no_version:
             transcript["is_disease_associated"] = True
 
         transcript["refseq_identifiers"] = (
