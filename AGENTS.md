@@ -41,13 +41,23 @@ uv run --frozen --dev pytest tests/path/to/test_file.py
 
 Run tests relevant to the changed behavior first. For wider validation, CI uses
 `uv run --frozen --dev pytest --cov`, split into eight groups. `pytest.ini` adds `-v -x`, so the
-default run stops at the first failure.
+default run stops at the first failure; add `-o addopts=` to report every failure.
 
 - Tests use both `mongomock` and real MongoDB. Fixtures such as `real_adapter`,
   `real_populated_database`, and the server `app` fixture require MongoDB on localhost:27017.
   CI uses MongoDB 7. Inspect fixture dependencies before assuming a test needs no external service.
+  The tests create and drop `realtestdb` and `testdb` (suffixed per worker, e.g. `realtestdb_gw0`),
+  so never point them at a MongoDB holding data worth keeping.
 - PDF report tests need the system executable `wkhtmltopdf`; Python dependencies alone are
   insufficient. See `.github/workflows/tests_and_cov.yml` for CI setup.
+- `pytest-xdist` is in the dev group. For larger runs, parallelize with `-n auto`
+  (e.g. `uv run --frozen --dev pytest -o addopts= -n auto tests`); for a few test files, a serial
+  run is usually faster because starting the workers takes a few seconds.
+- When MongoDB or `wkhtmltopdf` is not available locally, `make test` (needs only Docker) runs the
+  suite in a test image against a throwaway, unpublished MongoDB 7. Use `TESTS=<pytest path or id>`
+  for a subset and `WORKERS=0` for a serial run; the default is `auto`. The test image is amd64-only
+  (emulated on Apple Silicon), so prefer `uv` when the services are available.
+  See "Running the tests" in `CONTRIBUTING.md`.
 - Reuse fixtures and the existing HTTP mocks (`responses` or `mocker`) for integration tests.
   Add regression tests for behavior changes; report unavailable services or tools when checks
   cannot run.
