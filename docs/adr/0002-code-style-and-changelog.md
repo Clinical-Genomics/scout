@@ -24,4 +24,5 @@ of what changed.
 - The Black version is deliberately not pinned, so as not to miss updates and bug fixes. Small
   formatting differences between Black versions are accepted (#1683).
 - Ruff is in the lint dependency group but not enforced in CI.
-- Why the line length is 100 rather than Black's default 88 is not recorded.
+- An arbitrary line length of 100 rather than Black's default 88 was chosen to reduce the number
+  of lines slightly, while still being very readable in multiple columns on a modern monitor.

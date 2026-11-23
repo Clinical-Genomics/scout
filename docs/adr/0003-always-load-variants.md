@@ -33,5 +33,6 @@ of these holds, checked lazily in this order:
   ClinVar annotates a new causative (#4087).
 - Managed and causative lookups are cached once per load, which cut load time about 8–10 times
   (#5924).
-- Why MT and STR variants are always loaded is not recorded.
+- MT variants are of interest to the metabolic labs and always loaded, even if the rank model is not trained for them.
+- STR variants are always loaded, as they are currently few and essentially all of clinical interest, and the rank model is not trained for them.
 - Described for admins in [Loading variants](../admin-guide/loading-variants.md).

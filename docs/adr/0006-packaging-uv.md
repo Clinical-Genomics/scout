@@ -24,4 +24,4 @@ version file produced that name. Later, Python 3.9 reached end of life.
 - Installs in CI are faster (#5124).
 - CI tests only the `.python-version` interpreter; support for older Python versions relies on
   care, such as avoiding newer syntax, rather than a test matrix.
-- Why uv and hatchling were chosen over other PEP 625 compliant tools is not recorded.
+- uv and hatchling were chosen arbitrarily among other PEP 625 compliant tools, based on apparent beauty.
