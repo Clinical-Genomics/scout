@@ -177,7 +177,7 @@ def test_parse_sv_callers_filterin_tiddit(cyvcf2_variant):
     assert callers["manta"] == "Pass"
 
 
-def test_parse_callers(one_vep104_annotated_variant):
+def test_parse_callers_vep104(one_vep104_annotated_variant):
     variant = one_vep104_annotated_variant
 
     assert variant.INFO["FOUND_IN"] == "deepvariant"

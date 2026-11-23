@@ -359,7 +359,7 @@ def test_is_likely_benign_1():
     assert not res
 
 
-def test_is_benign_2():
+def test_is_likely_benign_2():
     """Second criterias for likely benign:
 
     Benign

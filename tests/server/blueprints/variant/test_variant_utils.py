@@ -78,12 +78,12 @@ def test_update_transcripts_information_refseq_id(variant_gene, hgnc_gene):
     ## WHEN updating the transcripts information
     update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has been given a ref seq id
-    assert variant_gene["transcripts"][0].get("refseq_id") == "NM_001193301"
+    assert variant_gene["transcripts"][0].get("refseq_id") == "NM_022089"
     ## THEN assert that the variant obj has refseq ids
     assert variant_obj["has_refseq"] is True
 
 
-def test_update_transcripts_information_refseq_id(variant_gene, hgnc_gene):
+def test_update_transcripts_information_refseq_id_no_primary(variant_gene, hgnc_gene):
     ## GIVEN a variants gene with no primary transcript
     assert variant_gene["transcripts"][0].get("refseq_id") is None
 

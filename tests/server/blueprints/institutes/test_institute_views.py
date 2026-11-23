@@ -9,8 +9,8 @@ VARIANT_ID = "4c7d5c70d955875504db72ef8e1abe77"
 
 
 def test_gene_variants(app, user_obj, institute_obj):
-    """Test the page that returns all variants for an institute, without a query.
-    It should return the empty search page."""
+    """Test submitting the variant search form without a gene symbol or simple ID.
+    It should redirect back with a warning instead of searching."""
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -24,14 +24,16 @@ def test_gene_variants(app, user_obj, institute_obj):
                 institute_id=institute_obj["internal_id"],
             ),
         )
-        # THEN it should return a valid page
-        assert resp.status_code == 200
+        # THEN it should redirect back to the page the form was sent from
+        assert resp.status_code == 302
 
-        # THEN the result shall contain a string indicating no variants available yet.
-        assert "No variants to display" in str(resp.data)
+        # THEN the user should be told that a gene symbol or simple ID is required
+        with client.session_transaction() as session:
+            flashed = [message for _, message in session["_flashes"]]
+        assert "Either HGNC gene symbols or a simple variant ID is required" in flashed
 
 
-def test_gene_variants(app, user_obj, institute_obj):
+def test_gene_variants_gene_filter(app, user_obj, institute_obj):
     """Test the page that returns all SNPs and INDELs given a gene provided by user"""
 
     # GIVEN a form filled in by the user

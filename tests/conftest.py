@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import os
 from pathlib import PosixPath
 from typing import Iterable, List
 
@@ -77,10 +78,20 @@ from scout.server.app import create_app
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
-DATABASE = "testdb"
-REAL_DATABASE = "realtestdb"
+# With pytest-xdist each worker gets its own database, so parallel workers don't
+# drop or overwrite each other's data. Without xdist the names are unchanged.
+_WORKER = os.environ.get("PYTEST_XDIST_WORKER")
+_SUFFIX = f"_{_WORKER}" if _WORKER else ""
+DATABASE = f"testdb{_SUFFIX}"
+REAL_DATABASE = f"realtestdb{_SUFFIX}"
+# Read by test modules that pass the database name to the CLI
+os.environ["SCOUT_TEST_REAL_DATABASE"] = REAL_DATABASE
 
 LOG = logging.getLogger(__name__)
+
+# The test apps run with DEBUG=True, which turns on pymongo's internal debug logging.
+# Keep pymongo at WARNING so its heartbeat and connection chatter doesn't flood the output.
+logging.getLogger("pymongo").setLevel(logging.WARNING)
 
 ##################### App fixtures #####################
 
@@ -860,6 +871,7 @@ def real_pymongo_client(request):
         print("\n")
         LOG.info("Deleting database")
         mongo_client.drop_database(REAL_DATABASE)
+        mongo_client.close()
         LOG.info("Database deleted")
         LOG.info("Time to run test:{}".format(datetime.datetime.now() - start_time))
 
@@ -909,14 +921,141 @@ def institute_database(request, adapter, institute_obj, user_obj):
     return adapter
 
 
-@pytest.fixture(scope="function")
-def real_institute_database(request, real_adapter, institute_obj, user_obj):
-    "Returns an adapter to a database populated with institute"
-    adapter = real_adapter
+##################### Real database snapshots #####################
+# The real test database is built in stages (institute, genes, panel, case, variants).
+# Building it once per session and copying a stage into REAL_DATABASE for each test
+# is much faster than rebuilding it from the source files for every test.
+
+SNAPSHOT_STAGES = ["institute", "genes", "panel", "case", "variants"]
+
+
+def _snapshot_name(stage: str) -> str:
+    """Name of the database holding the snapshot for a stage"""
+    return f"{REAL_DATABASE}_snapshot_{stage}"
+
+
+def _copy_database(client: pymongo.MongoClient, source_name: str, target_name: str) -> None:
+    """Replace the target database with a copy of the source, including indexes"""
+    client.drop_database(target_name)
+    source = client[source_name]
+    target = client[target_name]
+    for coll_name in source.list_collection_names():
+        source_coll = source[coll_name]
+        docs = list(source_coll.find({}))
+        if docs:
+            target[coll_name].insert_many(docs)
+        else:
+            target.create_collection(coll_name)
+        for index in source_coll.list_indexes():
+            if index["name"] == "_id_":
+                continue
+            options = {k: v for k, v in index.items() if k not in ("v", "key", "name", "ns")}
+            target[coll_name].create_index(
+                list(index["key"].items()), name=index["name"], **options
+            )
+
+
+@pytest.fixture(scope="session")
+def real_snapshots(request):
+    """Build the real test database once, saving a snapshot after each stage.
+    The per-test fixtures below copy a snapshot into REAL_DATABASE.
+    The inputs below must match the fixtures they replace (institute_obj, user_obj,
+    parsed_panel, parsed_case and the gene file handles)."""
+    client = pymongo.MongoClient()
+    build_name = f"{REAL_DATABASE}_build"
+    client.drop_database(build_name)
+    adapter = PymongoAdapter(client[build_name])
+    adapter.load_indexes()
+
+    # Stage: institute and user
+    institute_obj = build_institute(
+        internal_id="cust000",
+        display_name="test_institute",
+        sanger_recipients=["john@doe.com", "jane@doe.com"],
+    )
+    institute_obj["created_at"] = datetime.datetime.now() - datetime.timedelta(days=1)
+    user_obj = build_user(
+        {
+            "email": "john@doe.com",
+            "name": "John Doe",
+            "location": "here",
+            "institutes": [institute_obj["internal_id"]],
+            "roles": ["admin"],
+        }
+    )
     adapter.add_institute(institute_obj)
     adapter.add_user(user_obj)
+    _copy_database(client, build_name, _snapshot_name("institute"))
 
-    return adapter
+    # Stage: genes
+    load_hgnc_genes(
+        adapter=adapter,
+        ensembl_lines=get_file_handle(genes37_reduced_path),
+        hgnc_lines=get_file_handle(hgnc_reduced_path),
+        exac_lines=get_file_handle(constraint_reduced_path),
+        mim2gene_lines=get_file_handle(mim2gene_reduced_path),
+        genemap_lines=get_file_handle(genemap2_reduced_path),
+        hpo_lines=get_file_handle(genes_to_phenotype_reduced_path),
+        build="37",
+    )
+    _copy_database(client, build_name, _snapshot_name("genes"))
+
+    # Stage: panel
+    parsed_panel = parse_gene_panel(
+        path=panel_path,
+        institute="cust000",
+        panel_id="panel1",
+        panel_type="clinical",
+        date=datetime.datetime.now(),
+        version="1.0",
+        display_name="Test panel",
+    )
+    adapter.load_panel(parsed_panel=parsed_panel)
+    _copy_database(client, build_name, _snapshot_name("panel"))
+
+    # Stage: case
+    parsed_case = parse_case_config(yaml.safe_load(get_file_handle(load_path)))
+    case_obj = build_case(parsed_case, adapter)
+    add_paraphrase_info(case_obj)
+    add_smn_info(case_obj)
+    adapter.add_case(case_obj, institute_obj)
+    _copy_database(client, build_name, _snapshot_name("case"))
+
+    # Stage: variants
+    _load_omics_variants(adapter)
+    _load_variants(adapter)
+    _copy_database(client, build_name, _snapshot_name("variants"))
+
+    def teardown():
+        for name in [build_name] + [_snapshot_name(stage) for stage in SNAPSHOT_STAGES]:
+            client.drop_database(name)
+        client.close()
+
+    request.addfinalizer(teardown)
+
+
+@pytest.fixture(scope="function")
+def real_restored_stage(request):
+    """Tracks which stage the real test database holds in this test.
+    A test can request several stages (e.g. app and real_panel_database), and the
+    database should keep the deepest one, as it did when the stages were built in sequence."""
+    return {"stage": None}
+
+
+def _restore_snapshot(client: pymongo.MongoClient, restored: dict, stage: str) -> PymongoAdapter:
+    """Copy a stage snapshot into the real test database and return an adapter to it.
+    Does nothing if the database already holds this stage or a later one."""
+    current = restored["stage"]
+    if current is None or SNAPSHOT_STAGES.index(stage) > SNAPSHOT_STAGES.index(current):
+        _copy_database(client, _snapshot_name(stage), REAL_DATABASE)
+        restored["stage"] = stage
+    return PymongoAdapter(client[REAL_DATABASE])
+
+
+@pytest.fixture(scope="function")
+def real_institute_database(request, real_pymongo_client, real_snapshots, real_restored_stage):
+    "Returns an adapter to a database populated with institute"
+    return _restore_snapshot(real_pymongo_client, real_restored_stage, "institute")
 
 
 @pytest.fixture(scope="function")
@@ -944,29 +1083,9 @@ def gene_database(request, institute_database, genes):
 
 
 @pytest.fixture(scope="function")
-def real_gene_database(
-    real_institute_database,
-    genes37_handle,
-    hgnc_handle,
-    exac_handle,
-    mim2gene_handle,
-    genemap_handle,
-    hpo_genes_handle,
-):
+def real_gene_database(request, real_pymongo_client, real_snapshots, real_restored_stage):
     "Returns an adapter to a database populated with user, institute, case and genes"
-    adapter = real_institute_database
-
-    load_hgnc_genes(
-        adapter=adapter,
-        ensembl_lines=genes37_handle,
-        hgnc_lines=hgnc_handle,
-        exac_lines=exac_handle,
-        mim2gene_lines=mim2gene_handle,
-        genemap_lines=genemap_handle,
-        hpo_lines=hpo_genes_handle,
-        build="37",
-    )
-    return adapter
+    return _restore_snapshot(real_pymongo_client, real_restored_stage, "genes")
 
 
 @pytest.fixture(scope="function")
@@ -981,14 +1100,9 @@ def panel_database(request, gene_database, parsed_panel):
 
 
 @pytest.fixture(scope="function")
-def real_panel_database(request, real_gene_database, parsed_panel):
+def real_panel_database(request, real_pymongo_client, real_snapshots, real_restored_stage):
     "Returns an adapter to a database populated with user, institute and case"
-    adapter = real_gene_database
-    LOG.info("Adding panel to real adapter")
-
-    adapter.load_panel(parsed_panel=parsed_panel)
-
-    return adapter
+    return _restore_snapshot(real_pymongo_client, real_restored_stage, "panel")
 
 
 @pytest.fixture(scope="function")
@@ -1006,19 +1120,9 @@ def populated_database(request, panel_database, parsed_case, institute_obj):
 
 
 @pytest.fixture(scope="function")
-def real_populated_database(request, real_panel_database, parsed_case, institute_obj):
+def real_populated_database(request, real_pymongo_client, real_snapshots, real_restored_stage):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
-    adapter = real_panel_database
-
-    LOG.info("Adding case to real adapter")
-    case_obj = build_case(parsed_case, adapter)
-
-    add_paraphrase_info(case_obj)
-    add_smn_info(case_obj)
-
-    adapter.add_case(case_obj, institute_obj)
-
-    return adapter
+    return _restore_snapshot(real_pymongo_client, real_restored_stage, "case")
 
 
 def _load_variants(database):
@@ -1058,12 +1162,10 @@ def variant_database(populated_database):
 
 
 @pytest.fixture(scope="function")
-def real_variant_database(real_populated_database):
+def real_variant_database(request, real_pymongo_client, real_snapshots, real_restored_stage):
     """Returns an adapter to a real database populated with user, institute, case
     and variants"""
-
-    _load_omics_variants(real_populated_database)
-    return _load_variants(real_populated_database)
+    return _restore_snapshot(real_pymongo_client, real_restored_stage, "variants")
 
 
 @pytest.fixture(scope="function")
