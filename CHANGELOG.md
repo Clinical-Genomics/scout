@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Documentation page for setting up Scout at a new site, linking to the relevant docs and related repositories (#6735)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
+- Added a decision (ADR) log directory, and some reverse-engineered ADRs for earlier design decisions (#6739)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
