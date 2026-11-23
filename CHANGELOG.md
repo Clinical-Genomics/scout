@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Documentation page for setting up Scout at a new site, linking to the relevant docs and related repositories (#6735)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 - Decode percent-encoded STR catalog annotations from Stranger (`Disease`, `InheritanceMode`, `DisplayRU`, `SourceDisplay`, `Source`, `SourceId`) (#6726)
 ### Changed
