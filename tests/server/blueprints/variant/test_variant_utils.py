@@ -11,6 +11,7 @@ from scout.server.blueprints.variant.utils import (
     populate_dismiss_variant_choices,
     predictions,
     transcript_str,
+    update_representative_gene,
     update_transcripts_information,
 )
 
@@ -482,3 +483,33 @@ def test_populate_dismiss_variant_choices(institute_obj):
     assert len(populate_dismiss_variant_choices(institute_obj=institute_obj)) == len(
         INSTITUTE_DISMISSED_TAGS
     )
+
+
+def test_update_representative_gene_transcript():
+    """Test that the representative gene gets HGVS from its representative transcript."""
+    # GIVEN a variant gene with a canonical and a MANE Select transcript
+    gene = {
+        "hgnc_id": 1,
+        "hgnc_symbol": "POT1",
+        "functional_annotation": "missense_variant",
+        "transcripts": [
+            {"transcript_id": "ENST1", "is_canonical": True, "coding_sequence_name": "c.1A>G"},
+            {
+                "transcript_id": "ENST2",
+                "is_canonical": False,
+                "mane_select_transcript": "NM_003002.4",
+                "coding_sequence_name": "c.274G>T",
+                "protein_sequence_name": "p.Asp92Tyr",
+                "functional_annotations": ["missense_variant"],
+            },
+        ],
+    }
+    variant_obj = {}
+
+    # WHEN updating the representative gene
+    update_representative_gene(variant_obj, [gene])
+
+    # THEN the MANE Select transcript is the representative transcript
+    rep_tx = variant_obj["first_rep_gene"]["representative_transcript"]
+    assert rep_tx["hgvs_c_full"] == "NM_003002.4:c.274G>T"
+    assert rep_tx["hgvs_brief"] == "p.Asp92Tyr"

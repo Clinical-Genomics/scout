@@ -1,4 +1,6 @@
 import logging
+from typing import Optional, Tuple
+from urllib.parse import unquote
 
 from .scout_requests import get_request_json
 
@@ -26,3 +28,112 @@ def validate_hgvs(build: str, desc: str) -> bool:
         LOG.warning(ex)
 
     return validated
+
+
+# Consequences best described in brief by their protein (p.) change, see #6070.
+# Other consequences (synonymous, splicing, intronic, UTR etc.) are better described by c.
+PROTEIN_HGVS_CONSEQUENCES = {
+    "frameshift_variant",
+    "inframe_deletion",
+    "inframe_insertion",
+    "initiator_codon_variant",
+    "missense_variant",
+    "protein_altering_variant",
+    "start_lost",
+    "stop_gained",
+    "stop_lost",
+}
+
+# Representative transcript selection order, with a short human readable reason.
+# Ties keep the (VEP) order of the variant transcripts.
+REPRESENTATIVE_TRANSCRIPT_PRIORITY = [
+    ("is_disease_associated", "Gene panel disease associated transcript"),
+    ("mane_select_transcript", "MANE Select"),
+    ("mane_plus_clinical_transcript", "MANE Plus Clinical"),
+    ("is_primary", "HGNC primary RefSeq transcript"),
+    ("is_canonical", "VEP canonical transcript"),
+    ("refseq_id", "Transcript with a RefSeq identifier"),
+]
+
+
+def _transcript_priority(transcript: dict) -> Tuple[int, str]:
+    """Return the selection priority (lower is better) and the reason for a transcript."""
+    for rank, (key, reason) in enumerate(REPRESENTATIVE_TRANSCRIPT_PRIORITY):
+        if transcript.get(key):
+            return rank, reason
+    return len(REPRESENTATIVE_TRANSCRIPT_PRIORITY), "First annotated transcript"
+
+
+def get_representative_transcript(gene: dict) -> Optional[dict]:
+    """Pick the transcript to represent a variant gene in brief displays, links and reports.
+
+    Priority: gene panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary,
+    VEP canonical, any with a RefSeq identifier, first annotated transcript.
+    MANE and RefSeq information are only present after the gene has been decorated with
+    information from the hgnc_genes collection or if annotated by VEP.
+
+    Args:
+        gene: a variant gene, with its "transcripts"
+
+    Returns:
+        the selected transcript, or None if the gene has no transcripts
+    """
+    transcripts = gene.get("transcripts") or []
+    if not transcripts:
+        return None
+    return min(transcripts, key=lambda transcript: _transcript_priority(transcript)[0])
+
+
+def get_hgvs_reference(transcript: dict) -> Optional[str]:
+    """Return the transcript accession that the transcript HGVS c. and p. are valid for.
+
+    HGVS from VEP is computed on the annotated transcript. A MANE RefSeq accession is only used
+    in place of an Ensembl transcript id since MANE pairs are guaranteed to be identical.
+    Other RefSeq transcripts matched to an Ensembl transcript may differ in sequence, and are not
+    used as HGVS reference.
+    """
+    return (
+        transcript.get("mane_select_transcript")
+        or transcript.get("mane_plus_clinical_transcript")
+        or transcript.get("transcript_id")
+    )
+
+
+def get_brief_hgvs(transcript: dict) -> Optional[str]:
+    """Return the most informative brief HGVS for a transcript: protein change (p.) for protein
+    altering consequences, otherwise coding (c.). Falls back to whichever one is available.
+    """
+    hgvs_c = unquote(transcript.get("coding_sequence_name") or "") or None
+    hgvs_p = unquote(transcript.get("protein_sequence_name") or "") or None
+
+    consequences = set(transcript.get("functional_annotations") or [])
+    if hgvs_p and consequences & PROTEIN_HGVS_CONSEQUENCES:
+        return hgvs_p
+    return hgvs_c or hgvs_p
+
+
+def transcript_hgvs(transcript: dict) -> dict:
+    """Summarise HGVS information for a (representative) transcript, for display.
+
+    Returns:
+        dict with the transcript ids, the selection reason, exon/intron, HGVS c./p.,
+        a full "reference:c." HGVS descriptor and a brief c. or p. HGVS for compact displays
+    """
+    reference = get_hgvs_reference(transcript)
+    hgvs_c = unquote(transcript.get("coding_sequence_name") or "") or None
+    hgvs_p = unquote(transcript.get("protein_sequence_name") or "") or None
+
+    return {
+        "transcript_id": transcript.get("transcript_id"),
+        "refseq_id": transcript.get("refseq_id"),
+        "mane_select": transcript.get("mane_select_transcript"),
+        "mane_plus_clinical": transcript.get("mane_plus_clinical_transcript"),
+        "selection_reason": _transcript_priority(transcript)[1],
+        "exon": transcript.get("exon"),
+        "intron": transcript.get("intron"),
+        "hgvs_reference": reference,
+        "hgvs_c": hgvs_c,
+        "hgvs_p": hgvs_p,
+        "hgvs_c_full": f"{reference}:{hgvs_c}" if reference and hgvs_c else None,
+        "hgvs_brief": get_brief_hgvs(transcript),
+    }

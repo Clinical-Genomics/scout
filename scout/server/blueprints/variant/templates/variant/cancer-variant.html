@@ -4,7 +4,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
-{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, litvar2_scripts, matching_variants, panel_classify, variant_scripts  %}
+{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, litvar2_scripts, matching_variants, panel_classify, representative_transcript_hgvs, variant_scripts  %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
@@ -202,27 +202,9 @@
     <div class="panel-heading">Summary</div>
     <div class="card-body">
 
-    {% set tmp_gene_info = [] %}
-      {% if variant.first_rep_gene %}
-        {% for transcript in variant.first_rep_gene.transcripts %}
-          {% if transcript.is_primary %}
-            {% do tmp_gene_info.append(variant.first_rep_gene) %}
-            {% do tmp_gene_info.append(transcript) %}
-          {% endif %}
-        {% endfor %}
-        {% if tmp_gene_info | length  == 0 %}
-          {% for transcript in variant.first_rep_gene.transcripts %}
-            {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-              {% do tmp_gene_info.append(variant.first_rep_gene) %}
-              {% do tmp_gene_info.append(transcript) %}
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      {% endif %}
-
-      {% set primary_gene = tmp_gene_info[0] %}
-      {% if tmp_gene_info %}
-        {% set primary_transcript = tmp_gene_info[1] %}
+      {% set primary_gene = variant.first_rep_gene %}
+      {% set rep_tx = primary_gene.representative_transcript if primary_gene else none %}
+      {% if primary_gene %}
         {% set nr_genes = variant.genes | length %}
         <table class="table table-bordered table-fixed table-sm">
           <thead class="thead table-light border-top">
@@ -235,7 +217,7 @@
           <tbody>
             <tr>
               <td>
-                <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details.">{{ primary_gene.hgnc_symbol }}</a>
+                <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-bs-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details.">{{ primary_gene.hgnc_symbol or primary_gene.hgnc_id }}</a>
                 {% if nr_genes > 1 %} <span class="badge bg-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
               </td>
               <td>{{primary_gene.description}}</td>
@@ -245,25 +227,13 @@
         </table>
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
-        {% if primary_transcript %}
-          <li class="list-group-item" data-bs-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
-        {% endif %}
-        {% if primary_gene and primary_gene.exon %}
-          <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
-        {% endif %}
-        {% if primary_transcript and primary_transcript.coding_sequence_name %}
-              {{ primary_transcript.coding_sequence_name | url_decode | truncate(50, True) }}
-        {% endif %}
-        {% if primary_transcript and primary_transcript.protein_sequence_name %}
-          <strong>{{ primary_transcript.protein_sequence_name | url_decode | truncate(50, True) }}</strong>
+        {% if rep_tx %}
+          {{ representative_transcript_hgvs(rep_tx) }}
+        {% else %}
+          <span><i>Check complete list of transcripts</i></span>
         {% endif %}
         {% if primary_gene and primary_gene.region_annotation %}
-          <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
-        {% endif %}
-        {% if primary_transcript %}
-          </li>
-        {% else %}
-          <span data-bs-toggle="tooltip" title="No HGNC primary or RefSeq NM_ transcript found"><i>Check complete list of transcripts</i></span>
+          <li class="list-group-item">(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</li>
         {% endif %}
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>

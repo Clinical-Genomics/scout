@@ -16,6 +16,7 @@ from scout.constants.query_terms import GT_NO_ALT_CALL
 from scout.server.links import add_gene_links, add_tx_links
 from scout.server.utils import get_case_genome_build
 from scout.utils.acmg import get_acmg_temperature, get_evaluation_terms
+from scout.utils.hgvs import get_representative_transcript, transcript_hgvs
 
 LOG = logging.getLogger(__name__)
 
@@ -79,7 +80,10 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
 
 def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
     """Set the gene with most severe consequence as being representative
-    Used for display purposes
+    Used for display purposes.
+
+    The representative gene also gets a "representative_transcript" with HGVS information,
+    selected by get_representative_transcript (panel disease associated, MANE, primary, canonical).
     """
 
     if variant_genes:
@@ -99,6 +103,11 @@ def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
                 first_rep_gene["hgvs_identifier"] = tc.get("coding_sequence_name")
 
         first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+
+        representative_transcript = get_representative_transcript(first_rep_gene)
+        first_rep_gene["representative_transcript"] = (
+            transcript_hgvs(representative_transcript) if representative_transcript else None
+        )
 
         variant_obj["first_rep_gene"] = first_rep_gene
     else:

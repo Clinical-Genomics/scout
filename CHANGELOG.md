@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 ### Changed
+- Shared representative transcript selection (panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary, VEP canonical) with transcript HGVS, used on the cancer variant summary (#6070)
+- Brief variant descriptions show p. for protein altering variants and c. otherwise (#6070)
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 - Show only status and reason on Dark regions page popovers (#6725)

@@ -653,3 +653,26 @@
         </div>
   {% endif %}
 {% endmacro %}
+
+{% macro representative_transcript_hgvs(rep_tx) %}
+  {# Transcript HGVS for the representative transcript, see scout.utils.hgvs.transcript_hgvs #}
+  <li class="list-group-item">
+    <span data-bs-toggle="tooltip" title="Representative transcript: {{ rep_tx.selection_reason }}. Selected in order: gene panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary, VEP canonical.">{{ rep_tx.hgvs_reference }}</span>
+    {% if rep_tx.refseq_id and rep_tx.hgvs_reference and not rep_tx.hgvs_reference.startswith(rep_tx.refseq_id) %}
+      <span class="text-muted" data-bs-toggle="tooltip" title="Matching RefSeq transcript. HGVS is computed on {{ rep_tx.hgvs_reference }}; sequences of non-MANE matches may differ.">({{ rep_tx.refseq_id }})</span>
+    {% endif %}
+    {% if rep_tx.mane_select %}<span class="badge bg-secondary">MANE Select</span>{% elif rep_tx.mane_plus_clinical %}<span class="badge bg-secondary">MANE Plus Clinical</span>{% endif %}
+    {% if rep_tx.exon %}
+      <span class="text-muted">exon </span><strong>{{ rep_tx.exon }}</strong>
+    {% elif rep_tx.intron %}
+      <span class="text-muted">intron </span><strong>{{ rep_tx.intron }}</strong>
+    {% endif %}
+    {% if rep_tx.hgvs_c %}
+      {{ rep_tx.hgvs_c | truncate(50, True) }}
+      <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ rep_tx.hgvs_c_full }}" title="Copy {{ rep_tx.hgvs_c_full }} to clipboard"></button>
+    {% endif %}
+    {% if rep_tx.hgvs_p %}
+      <strong>{{ rep_tx.hgvs_p | truncate(50, True) }}</strong>
+    {% endif %}
+  </li>
+{% endmacro %}
