@@ -1,6 +1,11 @@
 """Tests for scout update omim"""
 
+import responses
+
 from scout.commands import cli
+
+MIM2GENE_URL = "https://omim.org/static/omim/data/mim2gene.txt"
+INVALID_KEY_GENEMAP2_URL = "https://data.omim.org/downloads/not_a_valid_key/genemap2.txt"
 
 
 def test_update_omim_non_existing_institute(empty_mock_app):
@@ -34,8 +39,13 @@ def test_update_omim_existing_institute_no_omim_key(mock_app):
     assert "WARNING Please provide a omim api key to load the omim gene panel" in result.output
 
 
+@responses.activate
 def test_update_omim_wrong_omim_key(mock_app):
     """Tests the CLI that updates OMIM terms in database"""
+
+    # GIVEN that OMIM rejects the API key (mocked, so no real request is sent)
+    responses.add(responses.GET, MIM2GENE_URL, body="", status=200)
+    responses.add(responses.GET, INVALID_KEY_GENEMAP2_URL, status=403)
 
     # GIVEN a cli runner
     runner = mock_app.test_cli_runner()
@@ -48,6 +58,8 @@ def test_update_omim_wrong_omim_key(mock_app):
     )
     # THEN assert exit code is non zero since the kwy did not work
     assert result.exit_code != 0
+    # THEN it should have stopped at the OMIM download with the invalid key
+    assert responses.calls[-1].request.url == INVALID_KEY_GENEMAP2_URL
 
 
 def test_update_omim_file_paths(mock_app, genemap_file, mim2gene_file):

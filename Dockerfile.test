@@ -1,0 +1,44 @@
+# Test image for running the Scout test suite with all dependencies.
+# Build and run through docker-compose.test.yml (see `make test`).
+FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim
+
+# wkhtmltopdf is needed by the PDF report tests. Debian trixie no longer ships a usable
+# package, so use the same prebuilt binary as the GitHub CI, verified by its sha256.
+# The binary is amd64 only, which is why the test service is pinned to linux/amd64.
+ARG WKHTMLTOPDF_URL=https://github.com/newinnovations/wkhtml-packaging/releases/download/2026-05-06/wkhtmltopdf_0.12.6.1-trixie_amd64
+ARG WKHTMLTOPDF_SHA256=68fd1db68c7a474691e935f4c6f012fb41aef968dc687f6b67f3e6095c5a3f27
+# Shared libraries and fonts the binary links against, git is needed by some tests
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
+        ca-certificates curl git \
+        fontconfig xfonts-75dpi \
+        libfontconfig1 libfreetype6 libjpeg62-turbo libpng16-16t64 libx11-6 libxrender1 && \
+    curl -fL --proto-redir =https -o /usr/local/bin/wkhtmltopdf "$WKHTMLTOPDF_URL" && \
+    echo "$WKHTMLTOPDF_SHA256  /usr/local/bin/wkhtmltopdf" | sha256sum -c - && \
+    chmod 755 /usr/local/bin/wkhtmltopdf && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
+
+ENV PATH="/home/worker/app/.venv/bin:$PATH"
+
+# Work as the non-root user from the start, so the virtualenv is owned by it
+RUN mkdir -p /home/worker/app && chown worker:worker /home/worker/app
+USER worker
+WORKDIR /home/worker/app
+
+# Install dependencies first so they are cached between code changes
+COPY --chown=worker:worker pyproject.toml uv.lock README.md ./
+RUN uv sync --frozen --dev --no-install-project
+
+# Application code and tests
+COPY --chown=worker:worker scout ./scout
+COPY --chown=worker:worker tests ./tests
+COPY --chown=worker:worker pytest.ini ./
+RUN uv sync --frozen --dev
+
+# Quiet run without the default -x so every failure is reported.
+# Arguments replace the CMD, so any test path can be given instead of the whole suite.
+ENTRYPOINT ["uv", "run", "--frozen", "pytest", "-o", "addopts=", "-q"]
+CMD ["tests"]

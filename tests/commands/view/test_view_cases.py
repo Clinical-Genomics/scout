@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 import pymongo
 
 from scout.commands import cli
 from scout.server.extensions import store
 
-DB_PARAMS = ["-db", "realtestdb"]
+DB_PARAMS = ["-db", os.environ["SCOUT_TEST_REAL_DATABASE"]]
 
 
 def test_view_cases(mock_app, case_obj, test_hpo_terms):

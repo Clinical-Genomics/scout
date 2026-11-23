@@ -15,7 +15,7 @@ def test_match_invalid_date():
     assert not match_date(date_str)
 
 
-def test_match_invalid_date():
+def test_match_invalid_date_text():
     date_str = "hello"
     assert not match_date(date_str)
 
