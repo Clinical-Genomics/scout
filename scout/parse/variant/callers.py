@@ -96,18 +96,23 @@ def parse_callers(variant: cyvcf2.Variant, category: str = "snv") -> dict:
 
         calls = info_set.split("-")
 
-        filtered_status = FILTERED_STATUS
-        if filter_status is not None and len(calls) == 1:
-            filtered_status = FILTERED.format(filter_status.replace(";", " - "))
-
         aggregate_statuses = {
             "FilteredInAll": FILTERED_STATUS,
             "Intersection": PASS_STATUS,
         }
+        aggregate_status = next(
+            (aggregate_statuses[call] for call in calls if call in aggregate_statuses),
+            None,
+        )
+        if aggregate_status is not None:
+            callers.update(dict.fromkeys(callers, aggregate_status))
+            return callers
+
+        filtered_status = FILTERED_STATUS
+        if filter_status is not None and len(calls) == 1:
+            filtered_status = FILTERED.format(filter_status.replace(";", " - "))
+
         for call in calls:
-            if call in aggregate_statuses:
-                callers.update(dict.fromkeys(callers, aggregate_statuses[call]))
-                return callers
             if call.startswith("filterIn"):
                 caller = call[len("filterIn") :]
                 call_status = filtered_status
