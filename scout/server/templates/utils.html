@@ -205,6 +205,7 @@
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
           <a href="{{ event.link }}">{{ event.subject[0:30] }}</a>
+          {%- if event.variant_description %} ({{ event.variant_description }}){% endif %}
           {% if event.hpo_term %}
             ({{ event.hpo_term }})
           {%- endif %}
