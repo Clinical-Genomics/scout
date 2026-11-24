@@ -240,6 +240,23 @@ class VariantHandler(VariantLoader):
         )
         return self.variant_collection.count_documents(query)
 
+    def case_variants_by_variant_ids(
+        self, case_id: str, variant_ids: Iterable[str], projection: Optional[dict] = None
+    ) -> Iterable[dict]:
+        """Return variants of any category from a case, given a list of variant_ids.
+
+        Args:
+            case_id: the case _id
+            variant_ids: (md5) variant_ids, as stored e.g. on events
+            projection: optional MongoDB projection to limit returned fields
+
+        Returns:
+            a pymongo cursor of matching variant documents
+        """
+        return self.variant_collection.find(
+            {"case_id": case_id, "variant_id": {"$in": list(variant_ids)}}, projection
+        )
+
     def variant_update_field(self, variant_id: str, field_name: str, field_value: Any) -> dict:
         """Updates the value of the given key(field_name) in the variant document in the database."""
         return self.variant_collection.find_one_and_update(

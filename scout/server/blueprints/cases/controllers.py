@@ -51,6 +51,7 @@ from scout.parse.matchmaker import (
     parse_matches,
 )
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.blueprints.variant.utils import get_str_mc
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import (
     RerunnerError,
@@ -62,6 +63,7 @@ from scout.server.extensions import (
     rerunner,
     store,
 )
+from scout.server.filters import pretty_variant
 from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
@@ -275,7 +277,25 @@ def _get_events(store, institute_obj, case_obj) -> List:
     for event in events:
         event["verb"] = VERBS_MAP.get(event["verb"], "did {} for".format(event["verb"]))
 
+    _add_event_variant_descriptions(store, case_obj, events)
     return events
+
+
+def _add_event_variant_descriptions(store: MongoAdapter, case_obj: dict, events: List[dict]):
+    """Add a brief, human readable variant description (gene and HGVS where available) to
+    variant events, to show next to the genomic coordinates in the activity panel.
+
+    Variants no longer present in the case (e.g. after a rerun) are left without description.
+
+    An STR motif count is derived, not stored - as for the variant pages and pin table.
+    """
+    event_variants = store.event_variants(case_obj["_id"], events)
+    for event in events:
+        variant = event_variants.get(event.get("variant_id"))
+        if variant:
+            if variant.get("category") == "str":
+                variant["str_mc"] = get_str_mc(variant)
+            event["variant_description"] = pretty_variant(variant)
 
 
 def bionano_case(store, institute_obj, case_obj) -> Dict:
