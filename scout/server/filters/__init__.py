@@ -151,7 +151,11 @@ def pretty_variant(variant: dict) -> str:
             main = (
                 variant.get("str_repid")
                 or variant.get("str_trid")
-                or " ".join(gene.get("symbol", "") for gene in variant.get("genes", []))
+                or " ".join(
+                    symbol
+                    for gene in variant.get("genes", [])
+                    if (symbol := gene.get("hgnc_symbol") or gene.get("symbol"))
+                )
             )
 
             tail = (

@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation page for setting up Scout at a new site, linking to the relevant docs and related repositories (#6735)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 - Added a decision (ADR) log directory, and some reverse-engineered ADRs for earlier design decisions (#6739)
+- Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#6736)
 ### Changed
 - Replaced the unmaintained Flask-Bootstrap dependency with a local form field macro (#6734)
 - Install `flask-login` (`>=0.6.3`) from PyPI instead of git `main`, and `intervaltree>=3.2.1`, so that all dependencies ship wheels and `uv sync --no-build` works (#6734)
