@@ -15,9 +15,47 @@ from scout.constants import (
 
 LOG = logging.getLogger(__name__)
 
+EVENT_VARIANT_PROJECTION = {
+    "variant_id": 1,
+    "category": 1,
+    "sub_category": 1,
+    "simple_id": 1,
+    "chromosome": 1,
+    "end_chrom": 1,
+    "cytoband_start": 1,
+    "cytoband_end": 1,
+    "alternative": 1,
+    "str_repid": 1,
+    "str_trid": 1,
+    "str_mc": 1,
+    "genes.hgnc_symbol": 1,
+    "genes.hgnc_id": 1,
+    "genes.hgvs_identifier": 1,
+}
+
 
 class VariantEventHandler(object):
     """Class to handle variant events for the mongo adapter"""
+
+    def event_variants(self, case_id: str, events: List[dict]) -> Dict[str, dict]:
+        """Fetch the case variants referred to by a list of events, with only the fields
+        needed to describe them briefly (e.g. gene and HGVS in the activity panel).
+
+        Variants no longer present in the case (e.g. after a rerun) are not returned.
+
+        Returns:
+            a dict of variant documents, keyed on variant_id
+        """
+        variant_ids = {event["variant_id"] for event in events if event.get("variant_id")}
+        if not variant_ids:
+            return {}
+
+        return {
+            variant["variant_id"]: variant
+            for variant in self.case_variants_by_variant_ids(
+                case_id, variant_ids, projection=EVENT_VARIANT_PROJECTION
+            )
+        }
 
     def pin_variant(self, institute, case, user, link, variant):
         """Create an event for pinning a variant.

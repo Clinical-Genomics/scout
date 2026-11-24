@@ -280,45 +280,17 @@ def _get_events(store, institute_obj, case_obj) -> List:
     return events
 
 
-EVENT_VARIANT_PROJECTION = {
-    "variant_id": 1,
-    "category": 1,
-    "sub_category": 1,
-    "simple_id": 1,
-    "chromosome": 1,
-    "end_chrom": 1,
-    "cytoband_start": 1,
-    "cytoband_end": 1,
-    "alternative": 1,
-    "str_repid": 1,
-    "str_trid": 1,
-    "str_mc": 1,
-    "genes.hgnc_symbol": 1,
-    "genes.hgnc_id": 1,
-    "genes.hgvs_identifier": 1,
-}
-
-
 def _add_event_variant_descriptions(store: MongoAdapter, case_obj: dict, events: List[dict]):
     """Add a brief, human readable variant description (gene and HGVS where available) to
     variant events, to show next to the genomic coordinates in the activity panel.
 
     Variants no longer present in the case (e.g. after a rerun) are left without description.
     """
-    variant_ids = {event["variant_id"] for event in events if event.get("variant_id")}
-    if not variant_ids:
-        return
-
-    descriptions = {
-        variant["variant_id"]: pretty_variant(variant)
-        for variant in store.case_variants_by_variant_ids(
-            case_obj["_id"], variant_ids, projection=EVENT_VARIANT_PROJECTION
-        )
-    }
+    event_variants = store.event_variants(case_obj["_id"], events)
     for event in events:
-        description = descriptions.get(event.get("variant_id"))
-        if description:
-            event["variant_description"] = description
+        variant = event_variants.get(event.get("variant_id"))
+        if variant:
+            event["variant_description"] = pretty_variant(variant)
 
 
 def bionano_case(store, institute_obj, case_obj) -> Dict:
