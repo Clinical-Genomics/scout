@@ -6,14 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Documentation page for setting up Scout at a new site, linking to the relevant docs and related repositories (#6735)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
-- Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#1826)
+- Added a decision (ADR) log directory, and some reverse-engineered ADRs for earlier design decisions (#6739)
+- Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#6736)
 ### Changed
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 - Show only status and reason on Dark regions page popovers (#6725)
 - Fetch commented variants for the case report in one query, and remove the unused `variant_ids` option from the variants query (#6738)
 - Tests start from per-stage database snapshots instead of rebuilding the test database for every test (#6731)
+- ADR 0007 renamed and reworded to refer to authorization by Scout's user list (#6742)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)

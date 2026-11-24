@@ -256,3 +256,32 @@ def test_get_events_variant_description(adapter, institute_obj, case_obj, user_o
     assert descriptions["a_variant_id"] == "POT1 c.274G>T"
     # THEN the event for the missing variant has none
     assert descriptions["gone_variant_id"] is None
+
+
+def test_get_events_str_variant_description(adapter, institute_obj, case_obj, user_obj):
+    """Test that STR variant events are described by their motif count, which is derived
+    from the samples rather than stored on the variant, as in the pinned variants table."""
+
+    # GIVEN a database with a case and an STR with a sequence ALT and a sample motif count
+    adapter.case_collection.insert_one(case_obj)
+    variant = {
+        "_id": "a_str_document_id",
+        "variant_id": "a_str_variant_id",
+        "case_id": case_obj["_id"],
+        "category": "str",
+        "simple_id": "6_16327633_CTG_CTGCTGCTG",
+        "display_name": "6_16327633_CTG_CTGCTGCTG_clinical",
+        "alternative": "CTGCTGCTG",
+        "str_repid": "ATXN1",
+        "samples": [{"sample_id": "ADM1059A2", "genotype_call": "0/1", "alt_mc": 45}],
+    }
+    adapter.variant_collection.insert_one(variant)
+
+    # GIVEN an event for that variant
+    adapter.pin_variant(institute_obj, case_obj, user_obj, "a_link", variant)
+
+    # WHEN preparing the events for display
+    events = _get_events(adapter, institute_obj, case_obj)
+
+    # THEN the event is described by repeat id and motif count, not the ALT sequence
+    assert events[0]["variant_description"] == "ATXN1 STR45"
