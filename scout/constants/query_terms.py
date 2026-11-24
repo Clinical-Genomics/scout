@@ -6,7 +6,6 @@
 # with implicit '$and'
 FUNDAMENTAL_CRITERIA = [
     "case_id",
-    "variant_ids",
     "category",
     "variant_type",
     "hgnc_symbols",
@@ -15,7 +14,6 @@ FUNDAMENTAL_CRITERIA = [
     "chrom",
     "start",
     "end",
-    "variant_ids",
     "hide_dismissed",
     "show_unaffected",
     "exclude_soft_filtered",
