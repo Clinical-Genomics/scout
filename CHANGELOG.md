@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation page for setting up Scout at a new site, linking to the relevant docs and related repositories (#6735)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 - Added a decision (ADR) log directory, and some reverse-engineered ADRs for earlier design decisions (#6739)
+- Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#6736)
 - Copyable transcript HGVS (e.g. `NM_000059.4:c.29_31del`) for the representative transcript in the variant page summary (#6740)
 ### Changed
 - Shared representative transcript selection (panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary, VEP canonical) with transcript HGVS, used on the cancer variant summary (#6737)
