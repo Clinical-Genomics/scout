@@ -167,7 +167,6 @@ class VariantHandler(VariantLoader):
         self,
         case_id,
         query=None,
-        variant_ids=None,
         category="snv",
         nr_of_variants=10,
         skip=0,
@@ -181,7 +180,6 @@ class VariantHandler(VariantLoader):
         Arguments:
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
-            variant_ids(List[str])
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
@@ -192,10 +190,7 @@ class VariantHandler(VariantLoader):
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
 
-        if variant_ids:
-            nr_of_variants = len(variant_ids)
-
-        elif nr_of_variants == -1:
+        if nr_of_variants == -1:
             nr_of_variants = 0  # This will return all variants
 
         else:
@@ -204,7 +199,6 @@ class VariantHandler(VariantLoader):
         mongo_query = self.build_query(
             case_id,
             query=query,
-            variant_ids=variant_ids,
             category=category,
             build=build,
         )
@@ -222,22 +216,19 @@ class VariantHandler(VariantLoader):
 
         return result
 
-    def count_variants(self, case_id, query, variant_ids, category, build="37"):
+    def count_variants(self, case_id, query, category, build="37"):
         """Returns number of variants
 
         Arguments:
             case_id(str): A string that represents the case
             query(dict): A dictionary with input used to build a database query
-            variant_ids(List[str])
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
 
         Returns:
              integer
         """
 
-        query = self.build_query(
-            case_id, query=query, variant_ids=variant_ids, category=category, build=build
-        )
+        query = self.build_query(case_id, query=query, category=category, build=build)
         return self.variant_collection.count_documents(query)
 
     def case_variants_by_variant_ids(
@@ -949,21 +940,19 @@ class VariantHandler(VariantLoader):
             event["variant_id"] for event in self.event_collection.find(event_query)
         }
 
-        # Get the variant objects for commented variants, if they exist
-        for var_id in comment_variants:
-            # Skip if we already added the variant
-            if var_id in variants:
-                continue
-            # Get the variant with variant_id (not _id!)
-            variant_obj = self.variant(var_id, case_id=case_id)
-
-            # There could be cases with comments that refers to non existing variants
-            # if a case has been reanalysed
-            if not variant_obj:
-                continue
-
+        # Get the variant objects for commented variants not already added, if they exist.
+        # There could be cases with comments that refer to non existing variants
+        # if a case has been reanalysed
+        for variant_obj in self.case_variants_by_variant_ids(
+            case_id, comment_variants - variants.keys()
+        ):
+            variant_obj = self.add_gene_info(
+                variant_obj=variant_obj, build=case_obj["genome_build"]
+            )
+            if variant_obj["chromosome"] in ["X", "Y"]:
+                variant_obj["is_par"] = is_par(variant_obj["chromosome"], variant_obj["position"])
             variant_obj["is_commented"] = True
-            variants[var_id] = variant_obj
+            variants[variant_obj["variant_id"]] = variant_obj
 
         return variants.values(), n_unique_dismissed
 

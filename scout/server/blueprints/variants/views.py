@@ -244,9 +244,7 @@ def fusion_variants(institute_id, case_name):
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
 
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
+    result_size = store.count_variants(case_obj["_id"], form.data, category, build=genome_build)
 
     # if variants should be exported
     if request.form.get("export"):
