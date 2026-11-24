@@ -90,6 +90,19 @@ def test_parse_callers_intersection_svdb_info(cyvcf2_variant):
     assert callers["samtools"] is None
 
 
+def test_parse_cancer_callers_filterin_tnscope_umi(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN a set where tnscope_umi filtered the variant, overall FILTER is PASS
+    variant.INFO["set"] = "filterIntnscope_umi"
+
+    # WHEN parsing the information
+    callers = parse_callers(variant, category="cancer")
+
+    # THEN only tnscope_umi should be filtered, with no substring collision on "tnscope"
+    assert callers["tnscope_umi"] == "Filtered"
+    assert callers["tnscope"] is None
+
+
 def test_parse_callers_filtered_svdb_info(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN FOUND_IN information that manta made a filtered call
