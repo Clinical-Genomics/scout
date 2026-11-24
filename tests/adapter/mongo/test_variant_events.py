@@ -525,3 +525,43 @@ def test_sanger_ordered(adapter, institute_obj, case_obj, user_obj, variant_obj)
     sanger_results = adapter.sanger_ordered(case_id=case_obj["_id"])
     assert sanger_results[0]["_id"] == case_obj["_id"]
     assert [var for var in sanger_results[0]["vars"]] == [updated_variant["variant_id"]]
+
+
+def test_event_variants(adapter, institute_obj, case_obj, user_obj):
+    """Test fetching the variants referred to by events, with a limited projection."""
+
+    # GIVEN a database with a case and a SNV with a gene and HGVS c. annotation
+    adapter.case_collection.insert_one(case_obj)
+    variant = {
+        "_id": "a_document_id",
+        "variant_id": "a_variant_id",
+        "case_id": case_obj["_id"],
+        "category": "snv",
+        "simple_id": "1_880086_T_C",
+        "display_name": "1_880086_T_C_clinical",
+        "rank_score": 10,
+        "genes": [{"hgnc_id": 1, "hgnc_symbol": "POT1", "hgvs_identifier": "c.274G>T"}],
+    }
+    adapter.variant_collection.insert_one(variant)
+
+    # GIVEN events for that variant, for a variant no longer in the case and a case event
+    events = [
+        {"variant_id": "a_variant_id"},
+        {"variant_id": "gone_variant_id"},
+        {"category": "case"},
+    ]
+
+    # WHEN fetching the event variants
+    event_variants = adapter.event_variants(case_obj["_id"], events)
+
+    # THEN only the existing variant is returned, keyed on variant_id
+    assert set(event_variants) == {"a_variant_id"}
+    # THEN with the fields needed for a brief description, but not others
+    returned = event_variants["a_variant_id"]
+    assert returned["genes"][0]["hgvs_identifier"] == "c.274G>T"
+    assert "rank_score" not in returned
+
+
+def test_event_variants_no_variant_events(adapter, case_obj):
+    """Test that no variant lookup result is returned for events without variants."""
+    assert adapter.event_variants(case_obj["_id"], [{"category": "case"}]) == {}
