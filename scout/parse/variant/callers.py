@@ -85,7 +85,7 @@ def parse_callers(variant: cyvcf2.Variant, category: str = "snv") -> dict:
     if svdb_origin:
         return get_callers_from_svdb_origin(svdb_origin, variant.FILTER)
 
-    def get_callers_from_set(info_set: str, filter_status: str) -> dict:
+    def get_callers_from_set(info_set: str, filter_status: Optional[str]) -> dict:
         """
         If the FILTER status is not PASS (e.g. None - cyvcf2 FILTER is None if VCF file column FILTER is "PASS"),
         in all of these cases, if a single caller is found, the "Pass" status is replaced with variant filter
@@ -96,31 +96,31 @@ def parse_callers(variant: cyvcf2.Variant, category: str = "snv") -> dict:
 
         calls = info_set.split("-")
 
-        call_status = PASS_STATUS
-        if filter_status is not None:
-            call_status = (
-                FILTERED.format(filter_status.replace(";", " - "))
-                if len(calls) == 1
-                else FILTERED_STATUS
-            )
+        aggregate_statuses = {
+            "FilteredInAll": FILTERED_STATUS,
+            "Intersection": PASS_STATUS,
+        }
+        aggregate_status = next(
+            (aggregate_statuses[call] for call in calls if call in aggregate_statuses),
+            None,
+        )
+        if aggregate_status is not None:
+            callers.update(dict.fromkeys(callers, aggregate_status))
+            return callers
+
+        filtered_status = FILTERED_STATUS
+        if filter_status is not None and len(calls) == 1:
+            filtered_status = FILTERED.format(filter_status.replace(";", " - "))
 
         for call in calls:
-            if call == "FilteredInAll":
-                for caller in callers:
-                    callers[caller] = FILTERED_STATUS
-                return callers
-            if call == "Intersection":
-                for caller in callers:
-                    callers[caller] = PASS_STATUS
-                return callers
-            if "filterIn" in call:
-                if "Filtered" not in call_status:
-                    call_status = FILTERED_STATUS
-                for caller in callers:
-                    if caller in call:
-                        callers[caller] = call_status
-            elif call in callers_keys:
-                callers[call] = PASS_STATUS
+            if call.startswith("filterIn"):
+                caller = call[len("filterIn") :]
+                call_status = filtered_status
+            else:
+                caller = call
+                call_status = PASS_STATUS
+            if caller in callers_keys:
+                callers[caller] = call_status
         return callers
 
     info_set = variant.INFO.get("set")
