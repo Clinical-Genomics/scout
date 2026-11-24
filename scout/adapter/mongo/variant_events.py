@@ -32,6 +32,14 @@ EVENT_VARIANT_PROJECTION = {
     "genes.hgnc_symbol": 1,
     "genes.hgnc_id": 1,
     "genes.hgvs_identifier": 1,
+    # stored fields used to pick a representative transcript and its brief HGVS
+    "genes.transcripts.transcript_id": 1,
+    "genes.transcripts.is_canonical": 1,
+    "genes.transcripts.mane_select_transcript": 1,
+    "genes.transcripts.mane_plus_clinical_transcript": 1,
+    "genes.transcripts.coding_sequence_name": 1,
+    "genes.transcripts.protein_sequence_name": 1,
+    "genes.transcripts.functional_annotations": 1,
 }
 
 
