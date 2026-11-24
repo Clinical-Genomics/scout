@@ -37,7 +37,6 @@ dependencies = [
 	# Everything needed in production
 	"werkzeug",
 	"Flask>=2.0",
-	"Flask-Bootstrap",
 	"Flask-CORS",
 	"path.py", # this is deprecated
 	"markdown",
@@ -61,7 +60,7 @@ dependencies = [
 	"importlib_resources",
 	# webapp login
 	"authlib",
-	"flask-login",
+	"flask-login>=0.6.3",
 	# Parsing
 	"cyvcf2",
 	"configobj",
@@ -69,7 +68,7 @@ dependencies = [
 	"pydantic>=2",
 	"PyYaml>=5.1",
 	# extras
-	"intervaltree==3.0.2",
+	"intervaltree>=3.2.1",
 	"anytree",
 	# Required by scripts
 	"tabulate",
@@ -124,8 +123,9 @@ line-length = 100
 [tool.isort]
 profile = "black"
 
-[tool.uv.sources]
-flask-login = { git = "https://github.com/maxcountryman/flask-login.git", rev = "main" }
+[tool.uv]
+# pyscss is pulled in by chanjo-report but never imported, and it only ships as a source package
+override-dependencies = ["pyscss; sys_platform == 'never'"]
 
 [dependency-groups]
 dev = [
