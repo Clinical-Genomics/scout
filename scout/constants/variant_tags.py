@@ -734,3 +734,28 @@ SANGER_OPTIONS = {
     "False positive": "bg-danger",
     "Not validated": "bg-secondary",
 }
+
+# Consequences best described in brief by their protein (p.) change, see #6070.
+# Other consequences (synonymous, splicing, intronic, UTR etc.) are better described by c.
+PROTEIN_HGVS_CONSEQUENCES = {
+    "frameshift_variant",
+    "inframe_deletion",
+    "inframe_insertion",
+    "initiator_codon_variant",
+    "missense_variant",
+    "protein_altering_variant",
+    "start_lost",
+    "stop_gained",
+    "stop_lost",
+}
+
+# Representative transcript selection order, with a short human readable reason.
+# Ties keep the (VEP) order of the variant transcripts.
+REPRESENTATIVE_TRANSCRIPT_PRIORITY = [
+    ("is_disease_associated", "Gene panel disease associated transcript"),
+    ("mane_select_transcript", "MANE Select"),
+    ("mane_plus_clinical_transcript", "MANE Plus Clinical"),
+    ("is_primary", "HGNC primary RefSeq transcript"),
+    ("is_canonical", "VEP canonical transcript"),
+    ("refseq_id", "Transcript with a RefSeq identifier"),
+]

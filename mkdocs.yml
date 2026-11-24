@@ -49,7 +49,23 @@ nav:
 
   - Installation: 'install.md'
 
+  - Setting up a new site: 'new-site.md'
+
   - FAQ: 'faq.md'
+
+  - Architecture decisions:
+      - Overview: 'adr/README.md'
+      - 'adr/0001-variant-ids.md'
+      - 'adr/0002-code-style-and-changelog.md'
+      - 'adr/0003-always-load-variants.md'
+      - 'adr/0004-acmg-modifiers-and-points.md'
+      - 'adr/0005-ccv-oncogenicity.md'
+      - 'adr/0006-packaging-uv.md'
+      - 'adr/0007-login-and-user-whitelist.md'
+      - 'adr/0008-representative-transcript-hgvs.md'
+      - 'adr/0009-brief-hgvs.md'
+      - 'adr/0010-variants-by-id-lookup.md'
+      - Template: 'adr/template.md'
 
   - Features:
       - HPO phenotypes: 'features/hpo.md'
