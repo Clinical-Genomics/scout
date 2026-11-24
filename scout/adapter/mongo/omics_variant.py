@@ -222,15 +222,12 @@ class OmicsVariantHandler:
         self,
         case_id: str,
         query: dict,
-        variant_ids: List[str] = None,
         category: Optional[str] = "outlier",
         build: Optional[str] = "37",
     ) -> int:
         """Returns the number of OMICs variants returned for a given query."""
 
-        query = self.build_query(
-            case_id, query=query, variant_ids=variant_ids, category=category, build=build
-        )
+        query = self.build_query(case_id, query=query, category=category, build=build)
         return self.omics_variant_collection.count_documents(query)
 
     def get_omics_variants_hgnc_overlapping(
