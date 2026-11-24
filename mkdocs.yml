@@ -61,7 +61,7 @@ nav:
       - 'adr/0004-acmg-modifiers-and-points.md'
       - 'adr/0005-ccv-oncogenicity.md'
       - 'adr/0006-packaging-uv.md'
-      - 'adr/0007-login-and-user-whitelist.md'
+      - 'adr/0007-login-and-user-list.md'
       - 'adr/0008-representative-transcript-hgvs.md'
       - 'adr/0009-brief-hgvs.md'
       - 'adr/0010-variants-by-id-lookup.md'
