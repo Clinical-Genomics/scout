@@ -286,13 +286,14 @@ def _add_event_variant_descriptions(store: MongoAdapter, case_obj: dict, events:
     variant events, to show next to the genomic coordinates in the activity panel.
 
     Variants no longer present in the case (e.g. after a rerun) are left without description.
+
+    An STR motif count is derived, not stored - as for the variant pages and pin table.
     """
     event_variants = store.event_variants(case_obj["_id"], events)
     for event in events:
         variant = event_variants.get(event.get("variant_id"))
         if variant:
             if variant.get("category") == "str":
-                # motif count is derived, not stored - as for the variant pages and pin table
                 variant["str_mc"] = get_str_mc(variant)
             event["variant_description"] = pretty_variant(variant)
 
