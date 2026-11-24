@@ -15,7 +15,7 @@ Scout: what was decided, why, and what follows from it. They complement the
 | [0004](0004-acmg-modifiers-and-points.md) | ACMG: rule-based classification, criteria strength modifiers, and Bayesian points alongside | Accepted |
 | [0005](0005-ccv-oncogenicity.md) | Separate ClinGen-CGC-VICC oncogenicity classification for cancer variants | Accepted |
 | [0006](0006-packaging-uv.md) | Packaging with pyproject.toml, uv and hatchling | Accepted |
-| [0007](0007-login-and-user-whitelist.md) | Login: one external authentication method per instance, authorization by Scout's user list | Accepted |
+| [0007](0007-login-and-user-list.md) | Login: one external authentication method per instance, authorization by Scout's user list | Accepted |
 | [0008](0008-representative-transcript-hgvs.md) | Representative transcript and the HGVS reference sequence | Accepted |
 | [0009](0009-brief-hgvs.md) | Brief HGVS shows p. for protein-altering variants, c. otherwise | Accepted |
 | [0010](0010-variants-by-id-lookup.md) | Look up variants by id separately from the filtered variants query | Accepted |

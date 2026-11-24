@@ -23,5 +23,5 @@ Connect providers. Scout also needs its own user records for institutes and role
 - Login methods are mutually exclusive per instance.
 - LDAP needs no group rules, and removing a user from Scout revokes access.
 - The fallback email login has no password check and is only meant for demos and development.
-- Why the whitelist model was originally chosen is not recorded; see
+- Why authorization by user list was originally chosen is not recorded; see
   [Login system](../admin-guide/login-system.md) for the current reasoning.
