@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
 - Tests calling OMIM and the liftover service over the network are now mocked (#6731)
+- Fix substring matching when parsing filterIn caller annotations. Match caller names exactly to prevent unintended callers from being marked as filtered (#6741)
 
 ## [4.116]
 ### Added
