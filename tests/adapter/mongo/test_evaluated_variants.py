@@ -101,11 +101,18 @@ def test_get_commented(real_variant_database):
     )
 
     adapter.event_collection.insert_one(comment)
+    ## WHEN also adding a comment for a variant no longer in the case (e.g. after a rerun)
+    gone_comment = {key: value for key, value in comment.items() if key != "_id"}
+    adapter.event_collection.insert_one(dict(gone_comment, variant_id="not_in_case"))
 
     evaluated_variants, _ = adapter.evaluated_variants(case_id, institute_id)
 
-    ## THEN assert the variant is returned by the function evaluated variants
+    ## THEN assert only the existing variant is returned by the function evaluated variants
     assert len(evaluated_variants) == 1
+    evaluated_variant = list(evaluated_variants)[0]
+    assert evaluated_variant["variant_id"] == var_id
+    ## THEN it is flagged as commented
+    assert evaluated_variant["is_commented"] is True
 
 
 def test_get_ranked_and_commented(real_variant_database):
