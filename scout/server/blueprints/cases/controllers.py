@@ -51,6 +51,7 @@ from scout.parse.matchmaker import (
     parse_matches,
 )
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.blueprints.variant.utils import get_str_mc
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import (
     RerunnerError,
@@ -290,6 +291,9 @@ def _add_event_variant_descriptions(store: MongoAdapter, case_obj: dict, events:
     for event in events:
         variant = event_variants.get(event.get("variant_id"))
         if variant:
+            if variant.get("category") == "str":
+                # motif count is derived, not stored - as for the variant pages and pin table
+                variant["str_mc"] = get_str_mc(variant)
             event["variant_description"] = pretty_variant(variant)
 
 
