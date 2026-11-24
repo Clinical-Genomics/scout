@@ -225,7 +225,6 @@ class QueryHandler(object):
         self,
         case_id: str,
         query: Optional[dict] = None,
-        variant_ids: Optional[List[str]] = None,
         category: str = "snv",
         build: str = "37",
     ) -> dict:
@@ -236,16 +235,11 @@ class QueryHandler(object):
 
         ##### Base query params
 
-        # set up the fundamental query params: case_id, category, type and
-        # restrict to list of variants (if var list is provided)
+        # set up the fundamental query params: case_id, category and type
         for criterion in FUNDAMENTAL_CRITERIA:
             match criterion:
                 case "case_id":
                     mongo_query["case_id"] = case_id
-
-                case "variant_ids":
-                    if variant_ids:
-                        mongo_query["variant_id"] = {"$in": variant_ids}
 
                 case "category":
                     mongo_query["category"] = category
