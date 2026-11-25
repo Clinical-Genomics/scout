@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
 - Tests calling OMIM and the liftover service over the network are now mocked (#6731)
 - Fix substring matching when parsing filterIn caller annotations. Match caller names exactly to prevent unintended callers from being marked as filtered (#6741)
-- Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6745)
+- Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6746)
 
 ## [4.116]
 ### Added
