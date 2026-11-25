@@ -20,6 +20,7 @@ def load_disease_terms(
     orpha_to_hpo_lines: Optional[List] = None,
     orpha_to_genes_lines: Optional[List] = None,
     orpha_inheritance_lines: Optional[List] = None,
+    clingen_disease_lines: Optional[List] = None,
 ):
     """Load the diseases into the database."""
     if not genemap_lines:
@@ -39,6 +40,7 @@ def load_disease_terms(
         orpha_to_hpo_lines=orpha_to_hpo_lines,
         orpha_to_genes_lines=orpha_to_genes_lines,
         orpha_inheritance_lines=orpha_inheritance_lines,
+        clingen_disease_lines=clingen_disease_lines,
     )
 
     LOG.info("building disease objects")

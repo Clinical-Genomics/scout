@@ -11,8 +11,27 @@ from scout.server.blueprints.variant.utils import (
     populate_dismiss_variant_choices,
     predictions,
     transcript_str,
+    update_inheritance_model,
     update_transcripts_information,
 )
+
+
+def test_update_inheritance_model_omim_only():
+    """Test that only OMIM models end up as OMIM inheritance, whatever the disease term order."""
+    # GIVEN ClinGen and ORPHA disease terms listed before an OMIM term for a gene
+    disease_terms = [
+        {"source": "MONDO", "inheritance": ["SD"]},
+        {"source": "ORPHA", "inheritance": ["XL"]},
+        {"source": "OMIM", "inheritance": ["AR"]},
+    ]
+    variant_gene = {}
+    all_models = set()
+    # WHEN updating the inheritance models
+    update_inheritance_model(variant_gene, all_models, disease_terms)
+    # THEN the OMIM inheritance holds only the OMIM model
+    assert variant_gene["omim_inheritance"] == ["AR"]
+    # THEN all models are kept for the variant
+    assert all_models == {"SD", "XL", "AR"}
 
 
 def test_clinsig_human():

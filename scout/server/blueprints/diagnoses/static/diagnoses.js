@@ -60,7 +60,7 @@ function generateDiseaseTableRow(disease, rowTemplate) {
     //Add diagnosis links
     let externalLinkElement = newNode.querySelector("#external-link")
 
-    externalLinkElement.setAttribute("href", getExternalLink(source, disease_nr))
+    externalLinkElement.setAttribute("href", getExternalLink(source, disease_nr, disease_id))
     externalLinkElement.textContent = `${disease_id}`
     let internalLinkElement = newNode.querySelector("#internal-link")
     let internalbaseurl = internalLinkElement.getAttribute("href")
@@ -120,12 +120,14 @@ function addHpoOrGeneLinks(parentNode, target, data) {
     }
 }
 
-function getExternalLink(source, disease_nr) {
+function getExternalLink(source, disease_nr, disease_id) {
     let link = ''
     if (source == "OMIM") {
         link = `http://omim.org/entry/${disease_nr}`
     } else if (source == "ORPHA") {
         link = `http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert=${disease_nr}`
+    } else if (source == "MONDO") {
+        link = `https://search.clinicalgenome.org/kb/conditions/${disease_id}`
     }
     return link
 }

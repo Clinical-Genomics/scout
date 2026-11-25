@@ -10,6 +10,7 @@ from scout.server.links import (
     beacon_link,
     cbioportal,
     ckb_gene,
+    disease_link,
     mutalyzer,
     mycancergenome,
     snp_links,
@@ -197,3 +198,15 @@ def test_snp_links():
             assert links[snp] == f"https://www.ncbi.nlm.nih.gov/snp/{snp}"
         else:  # ClinVar variation
             assert links[snp] == f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"
+
+
+def test_disease_link():
+    """Test external links for disease terms of each source."""
+    # GIVEN OMIM, ORPHA and ClinGen MONDO disease ids
+    # THEN each links to its source
+    assert disease_link("OMIM:600233") == "https://www.omim.org/entry/600233"
+    assert disease_link("ORPHA:585").endswith("Expert=585")
+    assert (
+        disease_link("MONDO:0018544")
+        == "https://search.clinicalgenome.org/kb/conditions/MONDO:0018544"
+    )

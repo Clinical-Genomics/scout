@@ -90,3 +90,98 @@ def parse_clingen_dosage_csv(
                 isca_region_infos.append(info)
 
     return gene_dosage_infos, isca_region_infos
+
+
+CLINGEN_GENE_VALIDITY_HEADER_MAP = [
+    "hgnc_symbol",
+    "hgnc_id",
+    "description",
+    "disease_id",
+    "inheritance",
+    "sop",
+    "classification",
+    "online_report",
+    "date",
+    "gcep",
+]
+
+# Classifications that claim the gene is not, or is no longer, shown to cause the disease.
+CLINGEN_NON_SUPPORTIVE_CLASSIFICATIONS = {
+    "Disputed",
+    "Refuted",
+    "No Known Disease Relationship",
+}
+
+
+def parse_clingen_gene_validity_csv(lines: Iterable[str]) -> List[Dict[str, str]]:
+    """Parse the ClinGen gene-disease validity curations file into one dict per curation.
+
+    "CLINGEN GENE DISEASE VALIDITY CURATIONS","","","","","","","","",""
+    "FILE CREATED: 2026-11-25","","","","","","","","",""
+    "WEBPAGE: https://search.clinicalgenome.org/kb/gene-validity","","","","","","","","",""
+    "+++++++++++","++++++++++++++",...
+    "GENE SYMBOL","GENE ID (HGNC)","DISEASE LABEL","DISEASE ID (MONDO)","MOI","SOP","CLASSIFICATION","ONLINE REPORT","CLASSIFICATION DATE","GCEP"
+    "+++++++++++","++++++++++++++",...
+    "ABCD1","HGNC:61","adrenoleukodystrophy","MONDO:0018544","XL","SOP7","Definitive","https://search.clinicalgenome.org/kb/gene-validity/CGGV:assertion_...","2020-12-18T05:00:00.000Z","Peroxisomal Disorders Gene Curation Expert Panel"
+
+    Data lines are recognised by an HGNC id in the second column, which skips the header block.
+    """
+    curations = []
+    for line in lines:
+        line = line.rstrip()
+        if not line:
+            continue
+        data_line = []
+        parse_clingen_dosage_line(line, data_line)
+        if len(data_line) < len(CLINGEN_GENE_VALIDITY_HEADER_MAP) or not data_line[1].startswith(
+            "HGNC:"
+        ):
+            continue
+        curations.append(dict(zip(CLINGEN_GENE_VALIDITY_HEADER_MAP, data_line)))
+    return curations
+
+
+def get_clingen_disease_terms(lines: Iterable[str]) -> Dict[str, dict]:
+    """Collect ClinGen gene-disease validity curations into MONDO disease terms.
+
+    Curations that do not support a gene-disease relation (disputed, refuted, no known relationship)
+    are left out, so that they do not link the gene to the disease. A disease term keeps the
+    per-gene curations, with mode of inheritance and classification, under "clingen_gene_validity".
+    """
+    disease_terms: Dict[str, dict] = {}
+    for curation in parse_clingen_gene_validity_csv(lines):
+        if curation["classification"] in CLINGEN_NON_SUPPORTIVE_CLASSIFICATIONS:
+            continue
+        disease_id = curation["disease_id"]
+        if not disease_id.startswith("MONDO:"):
+            LOG.warning("Skipping ClinGen curation with unexpected disease id %s", disease_id)
+            continue
+        hgnc_id = int(curation["hgnc_id"].split(":")[1])
+
+        disease_term = disease_terms.setdefault(
+            disease_id,
+            {
+                "description": curation["description"],
+                "hgnc_ids": set(),
+                "hgnc_symbols": set(),
+                "hpo_terms": set(),
+                "inheritance": set(),
+                "clingen_gene_validity": [],
+            },
+        )
+        disease_term["hgnc_ids"].add(hgnc_id)
+        if curation["inheritance"]:
+            disease_term["inheritance"].add(curation["inheritance"])
+        disease_term["clingen_gene_validity"].append(
+            {
+                "hgnc_id": hgnc_id,
+                "hgnc_symbol": curation["hgnc_symbol"],
+                "inheritance": curation["inheritance"],
+                "classification": curation["classification"],
+                "online_report": curation["online_report"],
+                "date": curation["date"],
+                "gcep": curation["gcep"],
+            }
+        )
+    LOG.info("Parsed %s ClinGen MONDO disease terms", len(disease_terms))
+    return disease_terms

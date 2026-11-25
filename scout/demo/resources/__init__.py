@@ -33,7 +33,7 @@ clingen_dosage_reduced_path = str(
     files(BASE_PATH).joinpath("clingen_dosage_sensitivity_reduced.csv")
 )
 clingen_disease_reduced_path = str(
-    files(BASE_PATH).joinpath("clingen_gene_disease_validity_reduced.csv")
+    files(BASE_PATH).joinpath("clingen_gene_disease_summary_reduced.csv")
 )
 
 # HPO paths

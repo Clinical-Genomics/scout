@@ -24,12 +24,12 @@
             <a target="_blank" href="{{ disease_link }}" rel="noopener" >{{disease_id}}</a>
         </li>
         <li class="list-group-item">
-          description: <strong>{{description}}</strong>
+          description: <strong>{{ description[:1]|upper }}{{ description[1:] }}</strong>
         </li>
         <li class="list-group-item">
           genes:
-          {% for gene in genes_complete %}
-            <span class="badge bg-secondary">{{gene.hgnc_symbol}}</span>
+          {% for gene in genes_complete if gene %}
+            <a class="me-2" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}" target="_blank" rel="noopener">{{gene.hgnc_symbol}}</a>
           {% else %}
             -
           {% endfor %}
@@ -42,6 +42,39 @@
               -
             {% endfor%}
         </li>
+        {% if clingen_gene_validity %}
+        <li class="list-group-item">
+          ClinGen gene-disease validity:
+          <table class="table table-sm mt-2" aria-label="ClinGen gene-disease validity curations">
+            <thead class="table-light">
+              <tr>
+                <th>Gene</th>
+                <th>Inheritance</th>
+                <th>Classification</th>
+                <th>Date</th>
+                <th>Expert panel</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for curation in clingen_gene_validity|sort(attribute="hgnc_symbol") %}
+                <tr>
+                  <td><a href="{{ url_for('genes.gene', hgnc_id=curation.hgnc_id) }}" target="_blank" rel="noopener">{{ curation.hgnc_symbol }}</a></td>
+                  <td><span class="badge bg-info">{{ curation.inheritance }}</span></td>
+                  <td>
+                    {% if curation.online_report %}
+                      <a href="{{ curation.online_report }}" rel="noopener" target="_blank">{{ curation.classification }}</a>
+                    {% else %}
+                      {{ curation.classification }}
+                    {% endif %}
+                  </td>
+                  <td>{{ (curation.date or "")[:10] }}</td>
+                  <td>{{ curation.gcep }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </li>
+        {% endif %}
         <li class="list-group-item">
           Associated phenotypes:
           <ul class="list-group list-group-flush">
