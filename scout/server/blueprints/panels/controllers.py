@@ -237,7 +237,7 @@ def update_panel(store, panel_name, csv_lines, option):
             )
 
         info_data = {
-            "disease_associated_transcripts": new_gene.get("transcripts", []),
+            "disease_associated_transcripts": new_gene.get("disease_associated_transcripts", []),
             "reduced_penetrance": new_gene.get("reduced_penetrance", ""),
             "mosaicism": new_gene.get("mosaicism", ""),
             "inheritance_models": new_gene.get("inheritance_models", []),

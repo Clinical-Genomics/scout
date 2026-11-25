@@ -1,7 +1,6 @@
 """Code for extensions used by flask"""
 
 from authlib.integrations.flask_client import OAuth
-from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 
@@ -22,7 +21,6 @@ from .panelapp_extension import PanelAppClient
 from .phenopacket_extension import PhenopacketAPI
 from .rerunner_extension import RerunnerError, RerunnerService
 
-bootstrap = Bootstrap()
 store = MongoAdapter()
 clinvar_api = ClinVarApi()
 login_manager = LoginManager()

@@ -138,6 +138,8 @@ Preserve genome build and clinical/research distinctions when changing parsers, 
 Target `main` for feature branches and PRs, as configured in current workflows; the `master`
 references in `CONTRIBUTING.md` are stale. Include tests and an entry in the top `CHANGELOG.md`
 section for new functionality or bug fixes, and update user/admin docs for changed behavior.
+Append each changelog entry at the end of its category in the top section (for example, at the
+end of `Fixed` for a bug fix), rather than at the beginning.
 Check the architecture decision records in `docs/adr/` for earlier design decisions, and add a
 record when a change settles a question likely to come up again.
 Use `.github/pull_request_template.md` for validation details. Consult the current source and

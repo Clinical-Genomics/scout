@@ -12,6 +12,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#6736)
 - Optionally load new cases and research variants using an external Rust-based binary executable (#6657)
 ### Changed
+- Replaced the unmaintained Flask-Bootstrap dependency with a local form field macro (#6734)
+- Install `flask-login` (`>=0.6.3`) from PyPI instead of git `main`, and `intervaltree>=3.2.1`, so that all dependencies ship wheels and `uv sync --no-build` works (#6734)
+- Exclude the unused `pyscss` dependency, pulled in by `chanjo-report`, with a uv override (#6734)
+- Removed the undeclared `six` import, `chanjo-report` no longer provides it (#6734)
 - Hide the `Mosaic` badge when the only assessment is "Not evident in parental reads" (#6723)
 - Display `Mosaicism` assessment labels with color-coded badges: green for confirmed, yellow for suspected, and red when not evident in parental reads (#6723)
 - Show only status and reason on Dark regions page popovers (#6725)
@@ -23,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
 - Tests calling OMIM and the liftover service over the network are now mocked (#6731)
 - Fix substring matching when parsing filterIn caller annotations. Match caller names exactly to prevent unintended callers from being marked as filtered (#6741)
+- Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6746)
 
 ## [4.116]
 ### Added
