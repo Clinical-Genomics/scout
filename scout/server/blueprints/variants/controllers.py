@@ -300,9 +300,7 @@ def render_variants_page(
     variants_query = store.variants(
         case_obj["_id"], category=category, query=form.data, build=genome_build
     )
-    result_size = store.count_variants(
-        case_obj["_id"], form.data, None, category, build=genome_build
-    )
+    result_size = store.count_variants(case_obj["_id"], form.data, category, build=genome_build)
 
     if request.form.get("export"):
         return data_exporter(
