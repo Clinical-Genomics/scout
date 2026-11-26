@@ -1,8 +1,6 @@
 # encoding: utf-8
 import hashlib
 
-from six import string_types
-
 
 def generate_md5_key(list_of_arguments):
     """
@@ -15,7 +13,7 @@ def generate_md5_key(list_of_arguments):
         A md5-key object generated from the list of strings.
     """
     for arg in list_of_arguments:
-        if not isinstance(arg, string_types):
+        if not isinstance(arg, str):
             raise SyntaxError(
                 "Error in generate_md5_key: " "Argument: {0} is a {1}".format(arg, type(arg))
             )

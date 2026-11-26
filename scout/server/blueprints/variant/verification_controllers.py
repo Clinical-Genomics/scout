@@ -6,6 +6,7 @@ from flask_login import current_user
 from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
+from scout.server.filters import pretty_variant
 from scout.server.links import external_primer_order_link
 from scout.server.utils import get_case_genome_build
 
@@ -71,7 +72,7 @@ def variant_verification(
     chromosome = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
     chr_position = (
-        ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv"] else "-"
+        ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv", "str"] else "-"
     )
     breakpoint_1 = (
         ":".join([chromosome, str(variant_obj["position"])])
@@ -101,6 +102,11 @@ def variant_verification(
     external_primer_link = ""
 
     genome_build = get_variant_genome_build(variant_obj, case_obj)
+
+    if category in ["snv", "str"]:
+        # Display names can contain long REF/ALT sequences, e.g. STR repeats or indels.
+        # Keep the subject and link text short; the full name is given in the email body.
+        display_name = pretty_variant(variant_obj)
 
     if category == "snv":  # SNV
         view_type = "variant.variant"
@@ -148,6 +154,9 @@ def variant_verification(
 
                     tx_changes.append("<li>{}</li>".format(":".join(transcript_line)))
 
+    elif category == "str":
+        view_type = "variant.variant"
+
     else:  # SV
         view_type = "variant.sv_variant"
         display_name = "_".join([breakpoint_1, variant_obj.get("sub_category").upper()])
@@ -157,6 +166,7 @@ def variant_verification(
         case_name=case_obj["display_name"],
         url=variant_url,  # this is the complete url to the variant, accessible when clicking on the email link
         display_name=display_name,
+        full_display_name=variant_obj.get("display_name"),
         category=category.upper(),
         subcategory=variant_obj.get("sub_category").upper(),
         build=genome_build,
@@ -226,6 +236,7 @@ def verification_email_body(
     case_name: str,
     url: str,
     display_name: str,
+    full_display_name: str,
     category: str,
     subcategory: str,
     chr_position: str,
@@ -246,7 +257,8 @@ def verification_email_body(
     Args:
         case_name(str): case display name
         url(str): the complete url to the variant, accessible when clicking on the email link
-        display_name(str): a display name for the variant
+        display_name(str): a short display name for the variant
+        full_display_name(str): the full variant display name, with complete REF and ALT
         category(str): category of the variant
         subcategory(str): sub-category of the variant
         chr_position(str): chromosomal position for SNVs (format is 'chr:start')
@@ -273,6 +285,7 @@ def verification_email_body(
          <li>
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
          </li>
+         <li><strong>Variant</strong>: <span style="word-break: break-all;">{full_display_name}</span></li>
          <li><strong>Variant type</strong>: {category} ({subcategory})
          <li><strong>Genome build</strong>: {build}</li>
          <li><strong>Chromosomal position</strong>: {chr_position}</li>
@@ -292,6 +305,7 @@ def verification_email_body(
         case_name=case_name,
         url=url,
         display_name=display_name,
+        full_display_name=full_display_name,
         category=category,
         subcategory=subcategory,
         build=build,
