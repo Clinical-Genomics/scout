@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fetch commented variants for the case report in one query, and remove the unused `variant_ids` option from the variants query (#6738)
 - Tests start from per-stage database snapshots instead of rebuilding the test database for every test (#6731)
 - ADR 0007 renamed and reworded to refer to authorization by Scout's user list (#6742)
+- Documented gene panel maintainers, editing panels in the web interface, and maintaining panels from the command line (#6750)
 ### Fixed
 - Parse STR `PathologicStruc` in the Stranger Integer list format (`0,1,2,6`) as well as the old string list format (`[0, 1, 2, 6]`), and no longer count all motifs when the only pathologic motif is motif 0 (#6726)
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
