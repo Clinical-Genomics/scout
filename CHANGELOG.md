@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix substring matching when parsing filterIn caller annotations. Match caller names exactly to prevent unintended callers from being marked as filtered (#6741)
 - Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6746)
 - Show a short variant name in the Sanger order dialog and email, instead of the full STR repeat sequences, and the position and correct variant link for STRs in the email (#6753)
+- Case controller tests failed when run alone or in parallel, because the ClinVar submission variants were fetched from the global store instead of the one passed to the controller (#6756)
 - Variant page OMIM inheritance column no longer picks up models from ORPHA terms listed before an OMIM term for the gene (#6748)
 - Demo ClinGen gene-disease validity resource path pointed to a missing file (#6748)
 
