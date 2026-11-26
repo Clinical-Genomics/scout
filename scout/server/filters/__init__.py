@@ -16,6 +16,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     SPLICEAI_SCORE_LABEL_COLOR_MAP,
 )
+from scout.utils.hgvs import get_brief_hgvs, get_representative_transcript
 
 
 def human_longint(value: Union[int, str]) -> str:
@@ -172,7 +173,10 @@ def pretty_variant(variant: dict) -> str:
 
             for gene in variant.get("genes", []):
                 symbol = gene.get("hgnc_symbol")
-                hgvs = gene.get("hgvs_identifier")
+                representative_transcript = get_representative_transcript(gene)
+                hgvs = (
+                    get_brief_hgvs(representative_transcript) if representative_transcript else None
+                ) or gene.get("hgvs_identifier")
                 hgnc_id = gene.get("hgnc_id")
 
                 if symbol and hgvs:

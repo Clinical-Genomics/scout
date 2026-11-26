@@ -285,3 +285,54 @@ def test_get_events_str_variant_description(adapter, institute_obj, case_obj, us
 
     # THEN the event is described by repeat id and motif count, not the ALT sequence
     assert events[0]["variant_description"] == "ATXN1 STR45"
+
+
+def test_get_events_representative_transcript_description(
+    adapter, institute_obj, case_obj, user_obj
+):
+    """Test that variant event descriptions use the representative transcript brief HGVS."""
+
+    # GIVEN a database with a case and a missense SNV, where the gene HGVS identifier is
+    # on a different transcript than the MANE Select one
+    adapter.case_collection.insert_one(case_obj)
+    variant = {
+        "_id": "a_document_id",
+        "variant_id": "a_variant_id",
+        "case_id": case_obj["_id"],
+        "category": "snv",
+        "simple_id": "1_880086_T_C",
+        "display_name": "1_880086_T_C_clinical",
+        "genes": [
+            {
+                "hgnc_id": 1,
+                "hgnc_symbol": "POT1",
+                "hgvs_identifier": "c.100G>T",
+                "transcripts": [
+                    {
+                        "transcript_id": "ENST1",
+                        "is_canonical": True,
+                        "coding_sequence_name": "c.100G>T",
+                        "functional_annotations": ["synonymous_variant"],
+                    },
+                    {
+                        "transcript_id": "ENST2",
+                        "is_canonical": False,
+                        "mane_select_transcript": "NM_2.1",
+                        "coding_sequence_name": "c.274G>T",
+                        "protein_sequence_name": "p.Asp92Tyr",
+                        "functional_annotations": ["missense_variant"],
+                    },
+                ],
+            }
+        ],
+    }
+    adapter.variant_collection.insert_one(variant)
+
+    # GIVEN an event for that variant
+    adapter.pin_variant(institute_obj, case_obj, user_obj, "a_link", variant)
+
+    # WHEN preparing the events for display
+    events = _get_events(adapter, institute_obj, case_obj)
+
+    # THEN the MANE Select transcript protein change is shown
+    assert events[0]["variant_description"] == "POT1 p.Asp92Tyr"

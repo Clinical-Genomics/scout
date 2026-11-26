@@ -23,6 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ADR 0007 renamed and reworded to refer to authorization by Scout's user list (#6742)
 - Documented gene panel maintainers, editing panels in the web interface, and maintaining panels from the command line (#6750)
 - Display pending gene panel changes alphabetically by gene symbol (#6754)
+- Shared representative transcript selection (panel disease associated, MANE Select, MANE Plus Clinical, HGNC primary, VEP canonical) with transcript HGVS, used on the cancer variant summary (#6737)
+- Brief variant descriptions show p. for protein altering variants and c. otherwise (#6737)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
