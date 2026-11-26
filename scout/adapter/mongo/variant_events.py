@@ -386,7 +386,7 @@ class VariantEventHandler(object):
             link (str): The url to be used in the event
             variant (dict): A variant object
             validate_type(str): The outcome of validation.
-                                choices=('True positive', 'False positive', 'Not validated')
+                                choices=('Under verification', 'True positive', 'False positive', 'Not validated')
 
         Returns:
             updated_variant(dict)

@@ -158,3 +158,37 @@ def test_get_sanger_unevaluated(
     sanger_unevaluated, _ = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
 
     assert len(sanger_unevaluated[0][case_obj["display_name"]]) == 1
+
+
+def test_under_verification_not_verified(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test that a variant under verification counts as ordered, but not yet verified"""
+
+    ## GIVEN a variant with verification ordered
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+    adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="orderSangerlink",
+        variant=variant_obj,
+    )
+
+    ## WHEN the lab marks the variant as under verification
+    updated_variant = adapter.validate(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="validateSangerlink",
+        variant=variant_obj,
+        validate_type="Under verification",
+    )
+
+    ## THEN the variant has the new status
+    assert updated_variant["validation"] == "Under verification"
+    ## THEN it is not among the verified variants of the institute
+    assert adapter.verified(institute_id=institute_obj["_id"]) == []
+    ## THEN the case still has verification missing
+    assert adapter.verification_missing_cases(institute_obj["_id"]) == [case_obj["_id"]]

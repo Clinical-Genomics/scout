@@ -294,6 +294,8 @@
     <span class="badge bg-success">Validated TP</span>
   {% elif variant.validation == 'False positive' %}
     <span class="badge bg-danger">Validated FP</span>
+  {% elif variant.validation == 'Under verification' %}
+    <span class="badge bg-primary">Under verification</span>
   {% elif variant.sanger_ordered %}
     <span class="badge bg-secondary">Verification ordered</span>
   {% endif %}
