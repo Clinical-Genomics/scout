@@ -115,7 +115,7 @@ On the page of a single panel you can:
 - edit the information for a gene already in the panel
 - delete a gene from the panel
 
-Gene additions, edits and deletions, including those from **Modify** on the Gene Panels page, are not applied at once. They are collected as **pending changes**, listed in the "Pending changes" box. Pending changes are stored on the panel, so other users see them too. From the pending changes box you can:
+Gene additions, edits and deletions, including those from **Modify** on the Gene Panels page, are not applied at once. They are collected as **pending changes**, listed alphabetically by gene symbol in the "Pending changes" box. Pending changes are stored on the panel, so other users see them too. From the pending changes box you can:
 
 - **Update panel**: save the pending changes as a new panel version. The suggested version number is the current version plus one; the new version must not be lower than the current one and must not already exist. Saving the changes under the current version number updates that version in place instead of creating a new one.
 - **Cancel pending actions**: discard all pending changes
