@@ -74,4 +74,52 @@ Choose the menu in top left corner, click `Gene Panel`. Then under 'new panel' t
 
 ### Custom panels: upload with CLI (admins only)
 
-When uploading from CLI there are more options. Use `scout load panel --help` for more information.
+When uploading from CLI there are more options. Use `scout load panel --help` for more information, and see [Maintaining gene panels](../admin-guide/panels.md) in the admin guide.
+
+## Panel maintainers and edit permissions
+
+Each gene panel has a list of **maintainers**: the users allowed to change it. The panel page lists them under "Maintainers", and on the Gene Panels page a tool badge next to a panel name shows that you are one of its maintainers.
+
+A user can change a panel if any of the following is true:
+
+- the user is a Scout admin
+- the user is one of the panel's maintainers
+- the panel has no maintainer field at all (panels created by very old Scout versions)
+
+A panel whose maintainer list exists but is empty can only be changed by admins. Panels loaded from the command line, including PanelApp panels, start out this way.
+
+When you create a new panel from the Gene Panels page, you become its only maintainer. Maintainers can not be added or removed in the web interface; ask a Scout admin to do it from the command line (see [Panel maintainers](../admin-guide/panels.md#panel-maintainers) in the admin guide).
+
+Maintainers are stored on each panel version. A new version made in Scout copies the maintainers of the version it was made from.
+
+Users who are not allowed to change a panel get the message "Permission denied: please ask a panel maintainer or admin for help."
+
+## Editing panels in the web interface
+
+### Gene Panels page
+
+The Gene Panels page lists the latest version of each panel for your institutes. For each panel you can:
+
+- **History**: list the earlier versions of the panel, with links to each of them
+- **Modify**: upload a gene file to either *add genes* to the panel (genes already in the panel get their information updated) or *replace genes*, removing all current genes and adding the ones in the file
+- **Remove**: hide the panel. Removed panels are kept in the database. Untick "Hide removed panels" to show them, with a "Removed" badge, and use the restore button to bring one back
+
+Modify, remove and restore need edit permission on the panel.
+
+### Panel page
+
+On the page of a single panel you can:
+
+- edit the full (display) name and description of the panel
+- add a gene, by searching for it and filling in its panel information (transcripts, inheritance models, mosaicism, reduced penetrance, proxy region, entry version and comment)
+- edit the information for a gene already in the panel
+- delete a gene from the panel
+
+Gene additions, edits and deletions, including those from **Modify** on the Gene Panels page, are not applied at once. They are collected as **pending changes**, listed in the "Pending changes" box. Pending changes are stored on the panel, so other users see them too. From the pending changes box you can:
+
+- **Update panel**: save the pending changes as a new panel version. The suggested version number is the current version plus one; the new version must not be lower than the current one and must not already exist. Saving the changes under the current version number updates that version in place instead of creating a new one.
+- **Cancel pending actions**: discard all pending changes
+
+Saving pending changes, and editing the name or description, need edit permission on the panel.
+
+When a new version is saved, the previous version is archived. Archived versions can still be viewed and used, but their genes can not be edited.
