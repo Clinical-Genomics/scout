@@ -30,6 +30,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix substring matching when parsing filterIn caller annotations. Match caller names exactly to prevent unintended callers from being marked as filtered (#6741)
 - Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6746)
 - Show a short variant name in the Sanger order dialog and email, instead of the full STR repeat sequences, and the position and correct variant link for STRs in the email (#6753)
+- `scout load panel --maintainer` stores the maintainer on the loaded panel (#6749)
+- `scout update panel` saves combined version, maintainer and date changes instead of only one of them, and no longer updates the panel date when there is nothing to change (#6749)
 
 ## [4.116]
 ### Added

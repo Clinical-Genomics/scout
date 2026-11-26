@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 @click.option("--institute", help="Specify the owner of the panel. Defaults to cust000.")
 @click.option(
     "--maintainer",
-    help="Specify the maintainer user id of the panel. Defaults to empty (all users can edit).",
+    help="Maintainer user id for a panel loaded from file. Default: none (only admins can edit).",
 )
 @click.option("-d", "--date", help="date of gene panel on format 2017-12-24, default is today.")
 @click.option("-n", "--display-name", help="display name for the panel, optional")

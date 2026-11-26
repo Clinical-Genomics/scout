@@ -102,3 +102,34 @@ def test_load_panel_maintainer_not_in_db(mock_app):
         ],
     )
     assert "does not exist in user database" in result.output
+
+
+def test_load_panel_maintainer(mock_app):
+    """Test that the maintainer given to the load panel command is stored on the panel"""
+
+    # GIVEN a database with one panel and an existing user
+    assert sum(1 for _ in store.panel_collection.find()) == 1
+    assert store.user(user_id="john@doe.com")
+
+    runner = mock_app.test_cli_runner()
+
+    # WHEN loading a new panel with that user as maintainer
+    result = runner.invoke(
+        cli,
+        [
+            "load",
+            "panel",
+            "--panel-id",
+            "panel2",
+            "--institute",
+            "cust000",
+            "--maintainer",
+            "john@doe.com",
+            panel_path,
+        ],
+    )
+    assert result.exit_code == 0
+
+    # THEN the new panel should have the user as maintainer
+    panel_obj = store.gene_panel("panel2")
+    assert panel_obj["maintainer"] == ["john@doe.com"]

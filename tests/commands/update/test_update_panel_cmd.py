@@ -53,3 +53,61 @@ def test_update_panel_maintainer(mock_app):
     # Test removing the same only user as panel maintainer
     result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"])
     assert "Updating maintainer" in result.output
+
+
+def test_update_panel_version_and_maintainer(mock_app):
+    """Test that a new version and a new maintainer given in one command are both saved"""
+
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a panel with version 1.0 and no maintainers
+    panel_obj = store.gene_panel("panel1")
+    assert panel_obj["version"] == 1.0
+    assert not panel_obj.get("maintainer")
+
+    # WHEN updating the version and adding a maintainer in the same command
+    result = runner.invoke(
+        cli,
+        ["update", "panel", "-p", "panel1", "--update-version", 2.0, "-a", "john@doe.com"],
+    )
+    assert result.exit_code == 0
+
+    # THEN both changes are saved
+    panel_obj = store.gene_panel("panel1")
+    assert panel_obj["version"] == 2.0
+    assert panel_obj["maintainer"] == ["john@doe.com"]
+
+
+def test_update_panel_maintainer_and_date(mock_app):
+    """Test that a new maintainer and a new date given in one command are both saved"""
+
+    runner = mock_app.test_cli_runner()
+
+    # WHEN adding a maintainer and updating the date in the same command
+    result = runner.invoke(
+        cli,
+        ["update", "panel", "-p", "panel1", "-a", "john@doe.com", "--update-date", "2019-03-29"],
+    )
+    assert result.exit_code == 0
+
+    # THEN both changes are saved
+    panel_obj = store.gene_panel("panel1")
+    assert panel_obj["maintainer"] == ["john@doe.com"]
+    assert panel_obj["date"] == get_date("2019-03-29")
+
+
+def test_update_panel_revoke_non_maintainer(mock_app):
+    """Test that revoking a user who is not a maintainer leaves the panel unchanged"""
+
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a panel without maintainers
+    panel_obj = store.gene_panel("panel1")
+    assert not panel_obj.get("maintainer")
+
+    # WHEN revoking a user who is not a maintainer
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"])
+
+    # THEN nothing is updated, not even the panel date
+    assert "Nothing to update" in result.output
+    assert store.gene_panel("panel1")["date"] == panel_obj["date"]
