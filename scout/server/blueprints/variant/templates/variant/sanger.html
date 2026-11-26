@@ -17,12 +17,14 @@
 
 {% macro sanger_form(institute, case, variant, current_user) %}
   <ul class="list-group">
-    <div class="list-group-item">
+    <div class="list-group-item text-break">
       <strong>Case {{ case.display_name }}</strong><br>
       <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                          case_name=case.display_name, variant_id=variant._id) }}">
-        {{ variant.display_name }}
+                          case_name=case.display_name, variant_id=variant._id) }}"
+         title="{{ variant.display_name }}">
+        {{ variant | pretty_variant }}
       </a>
+      <span class="text-muted">({{ variant.chromosome }}:{{ variant.position }})</span>
     </div>
     <div class="list-group-item">
       <strong>HGNC symbols</strong>:
