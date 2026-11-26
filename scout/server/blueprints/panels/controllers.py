@@ -161,7 +161,7 @@ def filter_panels_by_name(
     return filtered
 
 
-def panel(store, panel_obj):
+def panel(store: MongoAdapter, panel_obj: dict) -> dict:
     """Preprocess a panel of genes."""
     panel_obj["institute"] = store.institute(panel_obj["institute"])
     full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
@@ -174,6 +174,11 @@ def panel(store, panel_obj):
         for maintainer_obj in (store.user(user_id=maintainer_id) for maintainer_id in maintainers)
         if maintainer_obj is not None
     ]
+
+    if "pending" in panel_obj:
+        panel_obj["pending"] = sorted(
+            panel_obj["pending"], key=lambda gene: gene["symbol"].casefold()
+        )
 
     return dict(panel=panel_obj)
 
@@ -237,7 +242,7 @@ def update_panel(store, panel_name, csv_lines, option):
             )
 
         info_data = {
-            "disease_associated_transcripts": new_gene.get("transcripts", []),
+            "disease_associated_transcripts": new_gene.get("disease_associated_transcripts", []),
             "reduced_penetrance": new_gene.get("reduced_penetrance", ""),
             "mosaicism": new_gene.get("mosaicism", ""),
             "inheritance_models": new_gene.get("inheritance_models", []),
