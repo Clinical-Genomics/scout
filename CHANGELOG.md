@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased - dev branch only]
 ### Added
-- Optionally load new cases and research variants using an external Rust-based binary executable (#?)
+- Optionally load new cases and research variants using an external Rust-based binary executable (#6757)
 ### Changed
 - Remove the deprecated `--remove-admin` option from the update user command (#6722)
 - The functionality for adding and removing VCF variants from a case page in a Beacon database has been removed (#6720)
