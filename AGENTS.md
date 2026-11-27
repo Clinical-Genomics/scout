@@ -26,7 +26,7 @@ being changed.
 - `scout/utils/`: Shared helpers; ACMG and cancer classification logic is in `acmg.py` and `ccv.py`.
 - `tests/`: Generally mirrors the source layout; shared fixtures are in `tests/conftest.py` and
   more specific `conftest.py` files.
-- `docs/`: MkDocs user and admin guides; case loading is described in
+- `docs/`: Zensical user and admin guides; case loading is described in
   `docs/admin-guide/load-config.md` and `docs/admin-guide/loading-case.md`.
 
 ## Environment and checks
@@ -74,7 +74,7 @@ uv run --frozen --group lint flake8 --select=E9,F63,F7,F82 \
 Black uses 100-character lines and isort uses the Black profile. Ruff is available in the lint
 group, but CI currently checks Black, isort, and selected Flake8 errors; see
 `.github/workflows/linting_only.yml`. The pre-commit configuration runs Black.
-For documentation changes, use `uv run --frozen --group docs mkdocs build --strict` when relevant.
+For documentation changes, use `uv run --frozen --group docs zensical build --strict` when relevant.
 
 ## Configuration
 
