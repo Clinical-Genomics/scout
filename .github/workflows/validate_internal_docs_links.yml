@@ -4,10 +4,10 @@ name: Validate internal documentation links
 
 jobs:
     tests:
-        name: mkdocs serve strict
+        name: Zensical build strict
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v7
             - uses: astral-sh/setup-uv@v9.0.0
-            - name: launch mkdocs in strict mode
-              run: uv run --frozen --no-build --only-group docs mkdocs build --strict
+            - name: Build docs in strict mode
+              run: uv run --frozen --no-build --only-group docs zensical build --strict
