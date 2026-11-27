@@ -24,7 +24,7 @@
     - in `scout/docs/blog/new-2.0.0.md`
     - Update `scout/docs/README.md` to include the blog post
 
-1. You can check the the new blog post looks as expected by running `mkdocs serve`. This way the updated pages will show in you browser if you open up the url written in the terminal (in general http://127.0.0.1:8000/ or http://0.0.0.0:4000/). Pages will rebuild automatically any time a change is introduced, so there is no need to run this command more than once.
+1. You can check the new blog post looks as expected by running `zensical serve`. This way the updated pages will show in your browser at the URL written in the terminal (in general http://127.0.0.1:8000/). Pages will rebuild automatically any time a change is introduced, so there is no need to run this command more than once.
 
 1. Commit changes, push to github and create a pull request
 
@@ -51,5 +51,5 @@ This adds a version tag, builds and submits to PyPi.
 1. build and publish docs (Make sure no unwanted files are added when doing `git add .`, run `git status` first)
 
     ```bash
-    mkdocs gh-deploy
+    zensical build
     ```
