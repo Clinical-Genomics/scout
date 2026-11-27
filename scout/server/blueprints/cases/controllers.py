@@ -129,7 +129,8 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
         case_obj(models.Case)
 
     Returns:
-        html_body_content(str): A string corresponding to the text within the <body> of an HTML chanjo-report page
+        str: The HTML of the coverage report, without page chrome, as returned by the chanjo-report
+            /report/body endpoint
     """
     request_data = {}
     # extract sample ids from case_obj and add them to the post request object:
@@ -153,10 +154,11 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     # add institute-specific cutoff level to the post request object
     request_data["level"] = institute_obj.get("coverage_cutoff", 15)
 
-    # Collect the coverage report HTML string
+    # Collect the coverage report HTML. The body endpoint returns only the report contents, with
+    # tables that fit the page they are embedded in, and no navbar, filters or page head
     try:
         resp = requests.post(
-            base_url + "reports/report",
+            base_url + "reports/report/body",
             timeout=COVERAGE_REPORT_TIMEOUT,
             data=request_data,
         )
@@ -164,9 +166,7 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
         html_body_content = "<span><b>Coverage report unavailable</b></span>"
         return html_body_content
 
-    # Extract the contents between <body> and </body>
-    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
-    return html_body_content
+    return resp.text
 
 
 def _populate_case_groups(

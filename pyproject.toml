@@ -127,6 +127,12 @@ profile = "black"
 # pyscss is pulled in by chanjo-report but never imported, and it only ships as a source package
 override-dependencies = ["pyscss; sys_platform == 'never'"]
 
+[tool.uv.sources]
+# TEMPORARY: the coverage report uses the /report/body endpoint of chanjo-report, which is merged
+# but not released yet. Pinned to the commit that adds it (Clinical-Genomics/chanjo-report#95), to
+# test on stage. Remove this when chanjo-report >= 4.13.0 is released, and require that version.
+chanjo-report = { git = "https://github.com/Clinical-Genomics/chanjo-report.git", rev = "a56ce668d50e43e8d2ffc9799479e0eac68df09f" }
+
 [dependency-groups]
 dev = [
 	"pytest-mock",
