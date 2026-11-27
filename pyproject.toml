@@ -143,8 +143,7 @@ dev = [
 	"coverage",
 ]
 docs = [
-	"mkdocs",
-	"mkdocs-material",
+	"zensical",
 	"markdown-include",
 ]
 lint = [

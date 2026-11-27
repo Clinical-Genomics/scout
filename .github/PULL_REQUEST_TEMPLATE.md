@@ -32,7 +32,7 @@ This PR marks a new Scout release. We apply semantic versioning. This is a major
 
 <details>
 <summary>Testing docs locally with `uv`</summary>
-1. Build and serve documents: `uv run --group docs mkdocs serve --strict`
+1. Build and serve documents: `uv run --group docs zensical serve --strict`
 1. Visit [http://127.0.0.1:4000/scout/](http://127.0.0.1:4000/scout/)
 </details>
 

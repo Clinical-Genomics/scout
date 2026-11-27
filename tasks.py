@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from invoke import task
-from invoke.util import log
 
 
 @task
 def docs(context):
-    """Publish docs to the GitHub pages branch."""
-    context.run("mkdocs gh-deploy")
+    """Build the documentation site."""
+    context.run("zensical build")
 
 
 @task
