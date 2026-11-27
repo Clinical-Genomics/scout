@@ -63,6 +63,7 @@ from .utils import (
     is_affected,
     populate_dismiss_variant_choices,
     predictions,
+    sort_compounds,
 )
 
 LOG = logging.getLogger(__name__)
@@ -305,16 +306,14 @@ def variant(
         acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
         variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
 
-    # sort compounds on combined rank score
+    # Sort compounds by the linked SNV's score for SVs.
     compounds = variant_obj.get("compounds", [])
     if compounds:
         # Gather display information for the compounds
         for compound_obj in compounds:
             compound_obj.update(predictions(compound_obj.get("genes", [])))
 
-        variant_obj["compounds"] = sorted(
-            variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
-        )
+        variant_obj["compounds"] = sort_compounds(compounds, variant_obj.get("category"))
 
     variant_obj["end_position"] = end_position(variant_obj)
     set_edge_genes(store, case_obj, variant_obj)

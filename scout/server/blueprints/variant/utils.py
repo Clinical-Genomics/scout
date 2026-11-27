@@ -20,6 +20,26 @@ from scout.utils.acmg import get_acmg_temperature, get_evaluation_terms
 LOG = logging.getLogger(__name__)
 
 
+def sort_compounds(compounds: List[dict], variant_category: Optional[str]) -> List[dict]:
+    """Sort a variant's compound SNVs for display.
+
+    For SVs, rank SNVs by their own rank score, highest first. When SNVs have the same rank score,
+    the one with the higher combined score comes first. SNVs without a rank score follow scored
+    SNVs, ordered by combined score. For other variant categories, retain combined-score order.
+    """
+    if variant_category in {"sv", "cancer_sv"}:
+        return sorted(
+            compounds,
+            key=lambda compound: (
+                compound.get("rank_score") is None,
+                -(compound.get("rank_score") or 0),
+                -(compound.get("combined_score") or 0),
+            ),
+        )
+
+    return sorted(compounds, key=lambda compound: -compound["combined_score"])
+
+
 def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     """Adds manually curated information from a gene panel to a gene
 

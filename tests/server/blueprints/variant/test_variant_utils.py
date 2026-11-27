@@ -10,9 +10,40 @@ from scout.server.blueprints.variant.utils import (
     is_affected,
     populate_dismiss_variant_choices,
     predictions,
+    sort_compounds,
     transcript_str,
     update_transcripts_information,
 )
+
+
+def test_sort_compounds_for_sv_uses_compound_variant_rank_score():
+    compounds = [
+        {"variant": "lower-rank", "rank_score": 5, "combined_score": 100},
+        {"variant": "unranked", "combined_score": 75},
+        {"variant": "higher-rank", "rank_score": 20, "combined_score": 30},
+    ]
+
+    sorted_compounds = sort_compounds(compounds, "sv")
+
+    assert [compound["variant"] for compound in sorted_compounds] == [
+        "higher-rank",
+        "lower-rank",
+        "unranked",
+    ]
+
+
+def test_sort_compounds_for_snv_uses_combined_score():
+    compounds = [
+        {"variant": "lower-combined", "rank_score": 20, "combined_score": 30},
+        {"variant": "higher-combined", "rank_score": 5, "combined_score": 100},
+    ]
+
+    sorted_compounds = sort_compounds(compounds, "snv")
+
+    assert [compound["variant"] for compound in sorted_compounds] == [
+        "higher-combined",
+        "lower-combined",
+    ]
 
 
 def test_clinsig_human():
