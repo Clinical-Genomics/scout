@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Containerized test environment, run with `make test`, in parallel by default (#6731)
 - Added a decision (ADR) log directory, and some reverse-engineered ADRs for earlier design decisions (#6739)
 - Variant events in the case activity panel show gene and HGVS next to the genomic coordinates (#6736)
+- ClinGen gene-disease validity curations are loaded as MONDO disease terms, shown with mode of inheritance and classification on the variant and disease pages (#6748)
 ### Changed
 - Replaced the unmaintained Flask-Bootstrap dependency with a local form field macro (#6734)
 - Install `flask-login` (`>=0.6.3`) from PyPI instead of git `main`, and `intervaltree>=3.2.1`, so that all dependencies ship wheels and `uv sync --no-build` works (#6734)
@@ -32,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Preserve disease-associated transcripts when updating gene panels from uploaded text files (#6746)
 - Show a short variant name in the Sanger order dialog and email, instead of the full STR repeat sequences, and the position and correct variant link for STRs in the email (#6753)
 - Case controller tests failed when run alone or in parallel, because the ClinVar submission variants were fetched from the global store instead of the one passed to the controller (#6756)
+- Variant page OMIM inheritance column no longer picks up models from ORPHA terms listed before an OMIM term for the gene (#6748)
+- Demo ClinGen gene-disease validity resource path pointed to a missing file (#6748)
 
 ## [4.116]
 ### Added

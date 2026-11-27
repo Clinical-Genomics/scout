@@ -208,6 +208,8 @@ def database(
                 resource_files["orpha_to_hpo_path"] = str(path.resolve())
             if path.stem == "orphadata_en_product6":
                 resource_files["orpha_to_genes_path"] = str(path.resolve())
+            if path.stem == "clingen-gene-disease-summary":
+                resource_files["clingen_disease_path"] = str(path.resolve())
 
     setup_scout(
         adapter=adapter,

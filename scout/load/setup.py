@@ -200,6 +200,10 @@ def setup_scout(
     if resource_files.get("orpha_inheritance_path"):
         orpha_inheritance_handle = get_file_handle(resource_files["orpha_inheritance_path"])
 
+    clingen_disease_handle = None
+    if resource_files.get("clingen_disease_path"):
+        clingen_disease_handle = get_file_handle(resource_files["clingen_disease_path"])
+
     alias_genes = adapter.genes_by_alias()
     # Load HPO terms
     load_hpo_terms(
@@ -217,6 +221,7 @@ def setup_scout(
         orpha_to_hpo_lines=orpha_to_hpo_handle,
         orpha_to_genes_lines=orpha_to_genes_handle,
         orpha_inheritance_lines=orpha_inheritance_handle,
+        clingen_disease_lines=clingen_disease_handle,
     )
 
     # If demo we load a gene panel and some case information

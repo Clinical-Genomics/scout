@@ -20,6 +20,9 @@ def build_disease_term(disease_id: str, disease_info: dict, alias_genes: dict) -
         if key in disease_info:
             disease_obj[key] = list(disease_info[key])
 
+    if disease_info.get("clingen_gene_validity"):
+        disease_obj["clingen_gene_validity"] = disease_info["clingen_gene_validity"]
+
     if disease_info.get("description"):
         disease_obj["description"] = disease_info["description"]
 

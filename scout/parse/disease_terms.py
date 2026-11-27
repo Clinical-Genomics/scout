@@ -1,8 +1,9 @@
-"""Code for parsing disease terms from OMIM and ORPHA data"""
+"""Code for parsing disease terms from OMIM, ORPHA and ClinGen data"""
 
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 
+from scout.parse.clingen import get_clingen_disease_terms
 from scout.parse.hpo_mappings import parse_hpo_annotations
 from scout.parse.omim import get_mim_disease
 from scout.parse.orpha import (
@@ -10,7 +11,11 @@ from scout.parse.orpha import (
     get_orpha_to_genes_information,
     get_orpha_to_hpo_information,
 )
-from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
+from scout.utils.scout_requests import (
+    fetch_clingen_disease,
+    fetch_hpo_disease_annotation,
+    fetch_orpha_files,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -21,7 +26,9 @@ def get_all_disease_terms(
     orpha_inheritance_lines: List,
     hpo_annotation_lines: List,
     genemap_lines: List,
+    clingen_disease_lines: Optional[List] = None,
 ) -> Dict:
+    """Collect OMIM, ORPHA and ClinGen (MONDO) disease terms with gene, HPO and inheritance info."""
     #: Collect ORPHA terms including gene and disease annotations from Orphadata
     orpha_disease_terms: Dict[str, dict] = get_orpha_disease_terms(
         orpha_to_hpo_lines=orpha_to_hpo_lines,
@@ -34,19 +41,31 @@ def get_all_disease_terms(
         genemap_lines=genemap_lines, hpo_annotation_lines=hpo_annotation_lines
     )
 
+    #: Collect MONDO terms from ClinGen gene-disease validity curations
+    clingen_disease_terms: Dict[str, dict] = get_clingen_mondo_disease_terms(
+        clingen_disease_lines=clingen_disease_lines
+    )
+
     #: Combine disease information and return disease_terms to load
     all_disease_terms: Dict = parse_disease_terms(
-        omim_disease_terms=omim_disease_terms, orpha_disease_terms=orpha_disease_terms
+        omim_disease_terms=omim_disease_terms,
+        orpha_disease_terms=orpha_disease_terms,
+        clingen_disease_terms=clingen_disease_terms,
     )
 
     return all_disease_terms
 
 
 def parse_disease_terms(
-    omim_disease_terms: Dict[str, dict], orpha_disease_terms: Dict[str, dict]
+    omim_disease_terms: Dict[str, dict],
+    orpha_disease_terms: Dict[str, dict],
+    clingen_disease_terms: Optional[Dict[str, dict]] = None,
 ) -> Dict[str, dict]:
-    """Pool disease terms and linked HPO terms and genes from OMIM and ORPHAdata files"""
-    LOG.info("Consolidating OMIM and ORPHA disease terms")
+    """Pool disease terms and linked HPO terms and genes from OMIM, ORPHAdata and ClinGen files.
+
+    ClinGen terms are MONDO ids, which do not overlap with the OMIM and ORPHA ids, so they are added as they are.
+    """
+    LOG.info("Consolidating OMIM, ORPHA and ClinGen disease terms")
 
     combined_disease_terms = omim_disease_terms.copy()
 
@@ -69,6 +88,13 @@ def parse_disease_terms(
             combined_disease_terms[disease_id]["inheritance"].update(
                 orpha_disease_content.get("inheritance", set())
             )
+
+    for disease_id, clingen_disease_content in (clingen_disease_terms or {}).items():
+        if disease_id in combined_disease_terms:
+            LOG.warning("ClinGen disease term %s already present, skipping", disease_id)
+            continue
+        combined_disease_terms[disease_id] = clingen_disease_content
+
     return combined_disease_terms
 
 
@@ -158,6 +184,14 @@ def get_orpha_disease_terms(
     )
 
     return orpha_disease_terms
+
+
+def get_clingen_mondo_disease_terms(clingen_disease_lines: Optional[List] = None) -> Dict:
+    """Return MONDO disease terms from ClinGen gene-disease validity curations, downloading them if missing."""
+    if not clingen_disease_lines:
+        LOG.info("Fetching ClinGen gene-disease validity curations from the remote URL.")
+        clingen_disease_lines = fetch_clingen_disease()
+    return get_clingen_disease_terms(lines=clingen_disease_lines)
 
 
 def add_inheritance_information(orpha_disease: Dict, orpha_inheritance: Dict) -> Dict:

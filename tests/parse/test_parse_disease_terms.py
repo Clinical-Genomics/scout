@@ -17,6 +17,7 @@ def test_get_all_disease_terms(
     orpha_inheritance_lines,
     genemap_handle,
     hpo_phenotype_annotation_handle,
+    clingen_disease_lines,
     test_orpha_disease_terms,
     test_omim_disease_terms,
 ):
@@ -30,6 +31,7 @@ def test_get_all_disease_terms(
         orpha_to_genes_lines=orpha_to_genes_lines,
         orpha_to_hpo_lines=orpha_to_hpo_lines,
         orpha_inheritance_lines=orpha_inheritance_lines,
+        clingen_disease_lines=clingen_disease_lines,
     )
     #: THEN assert correct contents are present
     for key in test_omim_disease_terms:
@@ -43,6 +45,34 @@ def test_get_all_disease_terms(
         assert test_orpha_disease_terms[key]["hpo_terms"].issubset(result[key]["hpo_terms"])
         assert test_orpha_disease_terms[key]["hgnc_ids"].issubset(result[key]["hgnc_ids"])
         assert test_orpha_disease_terms[key]["inheritance"].issubset(result[key]["inheritance"])
+    #: THEN ClinGen MONDO terms are included as well
+    assert result["MONDO:0018544"]["description"] == "adrenoleukodystrophy"
+    assert result["MONDO:0018544"]["inheritance"] == {"XL"}
+
+
+def test_parse_disease_terms_clingen(test_omim_disease_terms, test_orpha_disease_terms):
+    """Test that ClinGen MONDO terms are added next to the OMIM and ORPHA terms"""
+    #: GIVEN a ClinGen MONDO disease term
+    clingen_terms = {
+        "MONDO:0008863": {
+            "description": "sitosterolemia",
+            "hgnc_ids": {13886, 13887},
+            "hgnc_symbols": set(),
+            "hpo_terms": set(),
+            "inheritance": {"AR"},
+            "clingen_gene_validity": [],
+        }
+    }
+    #: WHEN the terms are combined
+    result: Dict[str, dict] = parse_disease_terms(
+        omim_disease_terms=test_omim_disease_terms,
+        orpha_disease_terms=test_orpha_disease_terms,
+        clingen_disease_terms=clingen_terms,
+    )
+    #: THEN the MONDO term is kept as is, along with the other terms
+    assert result["MONDO:0008863"] == clingen_terms["MONDO:0008863"]
+    for key in list(test_omim_disease_terms) + list(test_orpha_disease_terms):
+        assert key in result
 
 
 def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):

@@ -200,6 +200,8 @@ def disease_link(disease_id: str) -> str:
         link = f"https://www.omim.org/entry/{disease_nr}"
     elif source == "ORPHA":
         link = f"https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={disease_nr}"
+    elif source == "MONDO":
+        link = f"https://search.clinicalgenome.org/kb/conditions/{disease_id}"
 
     return link
 

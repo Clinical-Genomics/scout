@@ -9,6 +9,7 @@ from scout.load.disease import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
+    fetch_clingen_disease,
     fetch_hpo_disease_annotation,
     fetch_mim_files,
     fetch_orpha_files,
@@ -61,7 +62,8 @@ def _fetch_downloaded_resources(resources, downloads_folder):
 @with_appcontext
 def diseases(downloads_folder, api_key):
     """
-    Update disease terms in mongo database. Use pre-downloaded resource files (phenotype_to_genes and genemap2) or download them from OMIM.
+    Update disease terms in mongo database. Use pre-downloaded resource files (phenotype_to_genes, genemap2,
+    Orphadata and ClinGen gene-disease validity files) or download them.
     Both options require using a valid omim api key.
     """
     adapter = store
@@ -85,6 +87,7 @@ def diseases(downloads_folder, api_key):
             resources["orpha_to_genes_lines"] = orpha_files["orphadata_en_product6"]
             resources["orpha_to_hpo_lines"] = orpha_files["orphadata_en_product4"]
             resources["orpha_inheritance_lines"] = orpha_files["en_product9_ages"]
+            resources["clingen_disease_lines"] = fetch_clingen_disease()
 
         except Exception as err:
             LOG.warning(err)
@@ -99,6 +102,7 @@ def diseases(downloads_folder, api_key):
         orpha_to_genes_lines=resources["orpha_to_genes_lines"],
         orpha_to_hpo_lines=resources["orpha_to_hpo_lines"],
         orpha_inheritance_lines=resources["orpha_inheritance_lines"],
+        clingen_disease_lines=resources["clingen_disease_lines"],
     )
 
     LOG.info("Successfully loaded all disease terms")

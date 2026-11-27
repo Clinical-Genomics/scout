@@ -288,17 +288,19 @@ def update_inheritance_model(variant_gene: dict, all_models: set, disease_terms:
     variable to contain all inheritance models suggested for the gene/disorder.
 
     ORPHA disorders can be more of the umbrella kind, where many genes and inheritance
-    models are implied. Those models are still added to all_models for the variant, but not to the list
-    of OMIM inheritance models for the particular gene.
+    models are implied. Those models, and the ClinGen (MONDO) gene-disease validity models,
+    are still added to all_models for the variant, but not to the list of OMIM inheritance models
+    for the particular gene.
     """
     inheritance_models = set()
     omim_inheritance_models = set()
 
     for disease_term in disease_terms:
-        inheritance_models.update(disease_term.get("inheritance", []))
+        term_models = disease_term.get("inheritance", [])
+        inheritance_models.update(term_models)
 
         if disease_term.get("source") == "OMIM":
-            omim_inheritance_models.update(inheritance_models)
+            omim_inheritance_models.update(term_models)
 
     variant_gene["omim_inheritance"] = list(omim_inheritance_models)
 

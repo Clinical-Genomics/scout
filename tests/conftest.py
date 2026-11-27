@@ -46,6 +46,7 @@ from scout.demo import (
 from scout.demo.resources import genes38_reduced_path  # noqa
 from scout.demo.resources import transcripts38_reduced_path  # noqa
 from scout.demo.resources import (
+    clingen_disease_reduced_path,
     constraint_reduced_path,
     exons37_reduced_path,
     exons38_reduced_path,
@@ -434,6 +435,7 @@ def disease_database(
         orpha_to_hpo_lines=get_file_handle(orpha_to_hpo_reduced_path),
         orpha_to_genes_lines=get_file_handle(orpha_to_genes_reduced_path),
         orpha_inheritance_lines=get_file_handle(orpha_inheritance_reduced_path),
+        clingen_disease_lines=get_file_handle(clingen_disease_reduced_path),
     )
     return adapter
 
@@ -1961,6 +1963,12 @@ def orpha_inheritance_lines(request, en_product9_ages_file: str) -> List[str]:
     """Get the lines of the en_product9_ages_file, which contain orpha_inheritance."""
     orpha_inheritance_lines = get_file_handle(en_product9_ages_file)
     return orpha_inheritance_lines
+
+
+@pytest.fixture
+def clingen_disease_lines(request) -> List[str]:
+    """Get the lines of the reduced ClinGen gene-disease validity file."""
+    return get_file_handle(clingen_disease_reduced_path)
 
 
 #############################################################

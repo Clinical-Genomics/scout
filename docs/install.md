@@ -121,6 +121,11 @@ scout update diseases -f .
 scout update genes -f .
 ```
 
+Disease terms are collected from OMIM, Orphadata and the ClinGen gene-disease validity curations (MONDO terms).
+With `-f`, `scout update diseases` expects the downloaded files from all three sources in the folder,
+including `clingen-gene-disease-summary.csv` from `scout download clingen` (or `scout download everything`).
+ClinGen curations classified as disputed, refuted or with no known disease relationship are not loaded.
+
 A common task is to have a couple of broad screening panels for rare disease genomics set up. We provide automation for two such _in silico_ panels
 out of the box, one with OMIM morbid genes, and one with all PanelApp ``Green`` genes. Here you provide the name of an institute you created that
 will serve as responsible for these panels (`cust002` below):

@@ -393,6 +393,10 @@
                       <a class="btn btn-xs btn-secondary text-white" target="_blank" href="https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={{term}}">
                         {{term}}
                       </a>
+                    {% elif 'MONDO' in term %}
+                      <a class="btn btn-xs btn-secondary text-white" target="_blank" rel="noopener" href="https://search.clinicalgenome.org/kb/conditions/{{term}}">
+                        {{term}}
+                      </a>
                     {% endif %}
                   {% else %}
                     N/A

@@ -51,4 +51,8 @@ UPDATE_DISEASES_RESOURCES = {
         "en_product9_ages.xml",
         "en_product9_ages_reduced.xml",
     ],
+    "clingen_disease_lines": [
+        "clingen-gene-disease-summary.csv",
+        "clingen_gene_disease_summary_reduced.csv",
+    ],
 }

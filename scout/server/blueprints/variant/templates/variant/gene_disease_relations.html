@@ -3,8 +3,20 @@
   <div class="card panel-default">
     <div class="panel-heading">Disease</div>
     <div class="card-body">
+      {% set ns = namespace(omim=false, orpha=false, clingen=false) %}
+      {% for gene in variant.genes if gene.common %}
+        {% for disease_term in gene.disease_terms or [] %}
+          {% if disease_term.source == 'OMIM' %}{% set ns.omim = true %}{% endif %}
+          {% if disease_term.source == 'ORPHA' %}{% set ns.orpha = true %}{% endif %}
+          {% if disease_term.source == 'MONDO' and disease_term.clingen_gene_validity and gene.hgnc_id in disease_term.clingen_gene_validity|map(attribute='hgnc_id') %}{% set ns.clingen = true %}{% endif %}
+        {% endfor %}
+      {% endfor %}
       <div class="table-responsive fixed-panel overflow-auto" style="max-height:700px;">
-        <table class="table table-bordered table-condensed table-sm" aria-label="Table of ORPHA diagnoses">
+        {% if not (ns.omim or ns.orpha or ns.clingen) %}
+          <span class="text-body-secondary">No associated diseases</span>
+        {% endif %}
+        {% if ns.omim %}
+        <table class="table table-bordered table-condensed table-sm" aria-label="Table of OMIM diagnoses">
           <thead class="thead table-light">
             <tr>
               <th>Gene</th>
@@ -36,6 +48,8 @@
             {% endfor %}
           </tbody>
         </table>
+        {% endif %}
+        {% if ns.orpha %}
         <table class="table table-bordered table-condensed table-sm" aria-label="Table of ORPHA diagnoses">
           <thead class="thead table-light">
             <tr>
@@ -67,6 +81,49 @@
             {% endfor %}
           </tbody>
         </table>
+        {% endif %}
+        {% if ns.clingen %}
+        <table class="table table-bordered table-condensed table-sm" aria-label="Table of ClinGen gene-disease validity curations">
+          <thead class="thead table-light">
+            <tr>
+              <th>Gene</th>
+              <th>ClinGen (MONDO) Phenotype</th>
+              <th data-bs-toggle="tooltip" title="Mode of inheritance curated by ClinGen for this gene-disease pair">Inheritance model</th>
+              <th data-bs-toggle="tooltip" title="ClinGen gene-disease validity classification. Disputed, refuted and no known disease relationship curations are not loaded.">Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for gene in variant.genes %}
+              {% if gene.common and gene.disease_terms %}
+                {% for disease_term in gene.disease_terms %}
+                  {% if disease_term.source == 'MONDO' %}
+                    {% for curation in disease_term.clingen_gene_validity or [] %}
+                      {% if curation.hgnc_id == gene.hgnc_id %}
+                        <tr>
+                          <td>{{ gene.common.hgnc_symbol }}</td>
+                          <td>
+                              <a href="{{ disease_term.disease_link }}" rel="noopener" target="_blank">
+                                {{ disease_term.description[:1]|upper }}{{ disease_term.description[1:] }}
+                              </a>
+                          </td>
+                          <td>{{ curation.inheritance }}</td>
+                          <td>
+                            {% if curation.online_report %}
+                              <a href="{{ curation.online_report }}" rel="noopener" target="_blank" {% if curation.gcep %}data-bs-toggle="tooltip" title="{{ curation.gcep }}"{% endif %}>{{ curation.classification }}</a>
+                            {% else %}
+                              {{ curation.classification }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
       </div>
     </div>
   </div>
