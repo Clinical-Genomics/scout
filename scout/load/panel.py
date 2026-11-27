@@ -42,7 +42,7 @@ def load_panel(panel_path, adapter, **kwargs):
             institute=kwargs.get("institute"),
             version=version,
             date=kwargs.get("date"),
-            maintatiner=kwargs.get("maintainer"),
+            maintainer=kwargs.get("maintainer"),
             display_name=kwargs.get("display_name"),
         )
     except Exception as err:

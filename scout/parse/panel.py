@@ -236,7 +236,8 @@ def parse_gene_panel(
         panel_id(str): Panel id
         date(datetime.datetime): Date of creation
         version(float)
-        full_name(str): Option to have a long name
+        display_name(str): Option to have a long name
+        maintainer(str): user._id of a panel maintainer
 
     Returns:
         gene_panel(dict)
@@ -251,6 +252,8 @@ def parse_gene_panel(
     gene_panel["date"] = kwargs.get("date") or datetime.now()
     gene_panel["version"] = float(kwargs.get("version") or 1.0)
     gene_panel["display_name"] = kwargs.get("display_name") or panel_id
+    maintainer = kwargs.get("maintainer")
+    gene_panel["maintainer"] = [maintainer] if maintainer else []
 
     if not path:
         panel_handle = genes

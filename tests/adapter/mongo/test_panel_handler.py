@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from bson.objectid import ObjectId
 
@@ -414,3 +416,38 @@ def test_case_panels_to_genes_latest_fallback(adapter, testpanel_obj):
     # THEN this should equate to genes selected from the panel itself
     selected_genes_single = adapter.panel_to_genes(panel_id=panel_obj["_id"], gene_format="hgnc_id")
     assert selected_genes_from_panels == selected_genes_single
+
+
+def test_update_panel_version_maintainer_and_date(adapter, testpanel_obj):
+    """Test that version, maintainer and date are all updated when given together"""
+
+    # GIVEN an adapter with a gene panel
+    adapter.panel_collection.insert_one(testpanel_obj)
+    panel_obj = adapter.panel_collection.find_one()
+    new_date = datetime.datetime(2020, 1, 1)
+
+    # WHEN updating version, maintainer and date in the same call
+    res = adapter.update_panel(
+        panel_obj, version=panel_obj["version"] + 1, date_obj=new_date, maintainer=["john@doe.com"]
+    )
+
+    # THEN all three changes are saved
+    assert res["version"] == testpanel_obj["version"] + 1
+    assert res["maintainer"] == ["john@doe.com"]
+    assert res["date"] == new_date
+
+
+def test_update_panel_maintainer_keeps_date(adapter, testpanel_obj):
+    """Test that updating only the maintainer of a panel does not change its date"""
+
+    # GIVEN an adapter with a gene panel
+    adapter.panel_collection.insert_one(testpanel_obj)
+    panel_obj = adapter.panel_collection.find_one()
+    old_date = panel_obj["date"]
+
+    # WHEN updating only the maintainer
+    res = adapter.update_panel(panel_obj, maintainer=["john@doe.com"])
+
+    # THEN the maintainer is updated and the date is unchanged
+    assert res["maintainer"] == ["john@doe.com"]
+    assert res["date"] == old_date

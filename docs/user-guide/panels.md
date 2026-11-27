@@ -86,7 +86,7 @@ A user can change a panel if any of the following is true:
 - the user is one of the panel's maintainers
 - the panel has no maintainer field at all (panels created by very old Scout versions)
 
-A panel whose maintainer list exists but is empty can only be changed by admins. Panels loaded from the command line, including PanelApp panels, start out this way.
+A panel whose maintainer list exists but is empty can only be changed by admins. Panels loaded from the command line, including PanelApp panels, start out this way unless the admin names a maintainer when loading the panel from a file.
 
 When you create a new panel from the Gene Panels page, you become its only maintainer. Maintainers can not be added or removed in the web interface; ask a Scout admin to do it from the command line (see [Panel maintainers](../admin-guide/panels.md#panel-maintainers) in the admin guide).
 

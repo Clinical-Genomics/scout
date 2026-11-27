@@ -286,3 +286,24 @@ def test_parse_panel_lines_modified_excel_export():
     for gene in genes:
         assert gene.get("hgnc_id") == 13666
         assert gene.get("hgnc_symbol") == "AAAS"
+
+
+def test_parse_gene_panel_maintainer(panel_info):
+    """Test that a maintainer given to parse_gene_panel ends up in the parsed panel"""
+
+    # GIVEN a panel file and a maintainer user id
+    maintainer = "john@doe.com"
+
+    # WHEN parsing the panel with and without a maintainer
+    panel = parse_gene_panel(
+        path=panel_info["file"],
+        panel_id=panel_info["panel_name"],
+        maintainer=maintainer,
+    )
+    panel_no_maintainer = parse_gene_panel(
+        path=panel_info["file"], panel_id=panel_info["panel_name"]
+    )
+
+    # THEN the maintainer is returned as a list, or an empty list if not given
+    assert panel["maintainer"] == [maintainer]
+    assert panel_no_maintainer["maintainer"] == []

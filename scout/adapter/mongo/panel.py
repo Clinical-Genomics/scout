@@ -381,22 +381,20 @@ class PanelHandler:
             updated_panel(dict)
         """
         LOG.info("Updating panel %s", panel_obj["panel_name"])
-        # update date of panel to "today"
-        date = panel_obj["date"]
         if version:
             LOG.info("Updating version from %s to version %s", panel_obj["version"], version)
             panel_obj["version"] = version
-            # Updating version should not update date
-            if date_obj:
-                date = date_obj
-        elif maintainer is not None:
+        if maintainer is not None:
             LOG.info(
                 "Updating maintainer from {} to {}".format(panel_obj.get("maintainer"), maintainer)
             )
             panel_obj["maintainer"] = maintainer
-        else:
-            date = date_obj or dt.datetime.now()
-        panel_obj["date"] = date
+        if date_obj:
+            panel_obj["date"] = date_obj
+        elif not version and maintainer is None:
+            # Other changes to the panel (e.g. genes or description) update the date to "today".
+            # Updating version or maintainer alone keeps the date.
+            panel_obj["date"] = dt.datetime.now()
 
         updated_panel = self.panel_collection.find_one_and_replace(
             {"_id": panel_obj["_id"]},

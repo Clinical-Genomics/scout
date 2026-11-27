@@ -23,10 +23,7 @@ To load a new version of a panel that already exists, give a version number that
 
 See `scout load panel --help` for all options, including loading the OMIM-AUTO panel (`--omim`) and PanelApp panels (`--panel-app`).
 
-Panels loaded from the command line start out with an empty maintainer list, which means that only admins can change them in the web interface. This also applies to a new version of an existing panel loaded from a file. Use `scout update panel --add-maintainer` (below) to give users edit rights.
-
-!!! note
-    `scout load panel --maintainer <user-id>` checks that the user exists, but the maintainer is not stored on the loaded panel ([#6749](https://github.com/Clinical-Genomics/scout/issues/6749)). Add maintainers with `scout update panel` after loading.
+Use `--maintainer <user-id>` to make a user maintainer of a panel loaded from a file. The user must exist in Scout. Without `--maintainer`, the panel starts out with an empty maintainer list, which means that only admins can change it in the web interface. This also applies to a new version of an existing panel loaded from a file. Use `scout update panel --add-maintainer` (below) to add more maintainers.
 
 ## Updating a panel
 
@@ -75,7 +72,7 @@ Some things to keep in mind:
 
 - Each command adds or removes one user. Run the command once per user.
 - Adding a maintainer fails if the user does not exist in Scout, or is already a maintainer of the panel.
-- Revoking a user that is not a maintainer logs a warning and leaves the maintainers unchanged.
+- Revoking a user that is not a maintainer logs a warning and leaves the maintainers unchanged. If nothing else was requested, the panel is not updated at all.
 - Maintainers are stored on each panel version. Without `--version` only the latest version is changed, which is the version new versions are made from in the web interface.
 - Removing the last maintainer leaves the panel editable by admins only.
-- Change maintainers in a separate command from `--update-version` and `--update-date`. Only one kind of change is saved per command: a new version number takes precedence over maintainer changes, and maintainer changes over a new date.
+- Maintainer changes can be combined with `--update-version` and `--update-date` in the same command. Changing only the maintainers or the version number keeps the panel date.

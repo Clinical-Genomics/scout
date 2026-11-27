@@ -89,6 +89,10 @@ def panel(panel, version, update_date, update_version, add_maintainer, revoke_ma
                 current_maintainers,
             )
 
+    if update_version is None and date_obj is None and new_maintainer is None:
+        LOG.warning("Nothing to update for panel %s", panel)
+        return
+
     update_panel(
         adapter,
         panel,
