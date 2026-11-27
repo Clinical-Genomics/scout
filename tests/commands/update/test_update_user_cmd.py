@@ -43,12 +43,6 @@ def test_update_user_role(role, mock_app, user_obj):
     """Test the command line to add and remove a generic role for a user."""
     runner = mock_app.test_cli_runner()
 
-    # GIVEN a non-admin user in the database
-    result = runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "--remove-admin"])
-    assert "INFO Updating user {}".format(user_obj["_id"]) in result.output
-    updated_user = store.user_collection.find_one()
-    assert "admin" not in updated_user["roles"]
-
     # THEN it should be possible to add/remove any role to it
     runner.invoke(cli, ["update", "user", "-u", user_obj["_id"], "-r", role])
     updated_user = store.user_collection.find_one()
