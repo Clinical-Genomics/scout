@@ -4,10 +4,8 @@ import scout.server.blueprints.cases.controllers as controllers
 from scout.server.extensions import matchmaker, store
 
 
-def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, mock_redirect):
+def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
     """Test that the matchmaker_check_requirements redirects if app settings requirements are not met"""
-
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
 
     # GIVEN an app that is not properly configured and it's missing either
     # matchmaker.host, matchmaker.accept, matchmaker.token
@@ -22,10 +20,8 @@ def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, moc
         assert resp.status_code == 302
 
 
-def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, mock_redirect):
+def test_matchmaker_check_requirements_unauthorized_user(app, user_obj):
     """Test redirect when a user is not authorized to access MatchMaker functionality"""
-
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
 
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
@@ -36,11 +32,8 @@ def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, 
         assert resp.status_code == 302
 
 
-def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mock_redirect):
+def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj):
     """Testing adding a case to matchmaker when the case has no set phenotype or candidate gene/variant"""
-
-    # GIVEN patched responses from the MME server
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
 
     # GIVEN a case with no phenotype terms:
     store.case_collection.find_one_and_update(
