@@ -13,6 +13,7 @@ from scout.parse.variant.genotype import (
     get_ref_depth,
     parse_genotype,
     parse_genotypes,
+    parse_pathologic_struc,
 )
 
 one_cnvnator = "tests/parse/vcfs/one_cnvnator.vcf"
@@ -132,6 +133,79 @@ def test_parse_pathologic_struc(one_trgt_variant, one_individual):
 
     # THEN the correct, second motif MC will be returned
     assert gt_call["alt_mc"] == 0
+
+
+OLD_PATHOLOGIC_STRUC_HEADER = '##INFO=<ID=PathologicStruc,Number=1,Type=String,Description="Struc components counting towards pathogenicity as list of motif numbers">'
+NEW_PATHOLOGIC_STRUC_HEADER = '##INFO=<ID=PathologicStruc,Number=.,Type=Integer,Description="Struc components counting towards pathogenicity">'
+
+
+@pytest.mark.parametrize(
+    "pathologic_struc_entry, expected",
+    [
+        (None, None),
+        ("[0, 1, 2, 6]", [0, 1, 2, 6]),
+        ("[1]", [1]),
+        ("[0]", [0]),
+        ("0,1,2,6", [0, 1, 2, 6]),
+        ("0", [0]),
+        ("[]", []),
+        ((0, 1, 2, 6), [0, 1, 2, 6]),
+        ([1, 2], [1, 2]),
+        (0, [0]),
+        (3, [3]),
+    ],
+)
+def test_parse_pathologic_struc_formats(pathologic_struc_entry, expected):
+    """Test parsing PathologicStruc INFO values of the types cyvcf2 can return"""
+
+    # GIVEN a PathologicStruc INFO value in the old String list or the new Integer list format
+    # WHEN parsing it
+    # THEN a list of motif indexes is returned, also for a single falsy index 0
+    assert parse_pathologic_struc(pathologic_struc_entry) == expected
+
+
+@pytest.mark.parametrize(
+    "header, info",
+    [
+        (OLD_PATHOLOGIC_STRUC_HEADER, "PathologicStruc=[0, 1, 2, 6]"),
+        (NEW_PATHOLOGIC_STRUC_HEADER, "PathologicStruc=0,1,2,6"),
+    ],
+)
+def test_parse_format_entry_trgt_mc_pathologic_struc_vcf(str_vcf_variant, header, info):
+    """Test that only pathologic motifs are summed, for both PathologicStruc formats in a real VCF"""
+
+    # GIVEN motif counts for five motifs, where motifs 0, 1, 2 and 6 (if present) are pathologic
+    variant = str_vcf_variant([header], info, gt="0/1", mc="1_2_3_100_200,10_20_30_100_200")
+
+    # WHEN parsing the MC entry
+    # THEN only the pathologic motifs are summed
+    assert _parse_format_entry_trgt_mc(variant, 0) == (1 + 2 + 3, 10 + 20 + 30)
+
+
+def test_parse_format_entry_trgt_mc_pathologic_struc_single_index_zero(str_vcf_variant):
+    """Test that a new format single PathologicStruc index 0, which cyvcf2 returns as a
+    falsy int 0, does not count all motifs"""
+
+    # GIVEN only motif 0 is pathologic, in the new Integer format
+    variant = str_vcf_variant(
+        [NEW_PATHOLOGIC_STRUC_HEADER], "PathologicStruc=0", gt="0/1", mc="5_100,7_100"
+    )
+    assert variant.INFO.get("PathologicStruc") == 0
+
+    # WHEN parsing the MC entry
+    # THEN only the first motif is counted
+    assert _parse_format_entry_trgt_mc(variant, 0) == (5, 7)
+
+
+def test_parse_format_entry_trgt_mc_without_pathologic_struc(str_vcf_variant):
+    """Test that all motifs are counted when there is no PathologicStruc"""
+
+    # GIVEN no PathologicStruc
+    variant = str_vcf_variant([NEW_PATHOLOGIC_STRUC_HEADER], ".", gt="0/1", mc="5_100,7_100")
+
+    # WHEN parsing the MC entry
+    # THEN all motifs are counted
+    assert _parse_format_entry_trgt_mc(variant, 0) == (105, 107)
 
 
 @pytest.mark.parametrize(

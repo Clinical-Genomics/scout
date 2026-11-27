@@ -18,7 +18,6 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
-import ast
 import logging
 import math
 from typing import Dict, List, Optional, Tuple, Union
@@ -565,20 +564,34 @@ def _parse_format_entry_single(
     return alt
 
 
-def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[list]:
-    """Check for a PathologicStruc on the variant. If not present, return None.
-    If present, and in string format, convert to a list of ints.
-    If it is already parsed to a list by a later improvement in the parser,
-    simply return it.
-    """
+def parse_pathologic_struc(
+    pathologic_struc_entry: Optional[Union[str, int, tuple, list]],
+) -> Optional[List[int]]:
+    """Parse a PathologicStruc INFO value to a list of motif indexes.
 
-    pathologic_struc_entry = variant.INFO.get("PathologicStruc", None)
-    if not pathologic_struc_entry:
-        return pathologic_struc_entry
+    Two formats are supported:
+    - `Number=.,Type=Integer`, e.g. `PathologicStruc=0,1,2,6` (stranger#124). cyvcf2 returns
+      a tuple for several values, and a plain int for a single value - including a falsy 0.
+    - `Number=1,Type=String` with a Python list, e.g. `PathologicStruc=[0, 1, 2, 6]`,
+      written by older stranger versions. Old cases keep this format.
+
+    Return None if the entry is missing.
+    """
+    if pathologic_struc_entry is None:
+        return None
+    if isinstance(pathologic_struc_entry, int):
+        return [pathologic_struc_entry]
     if isinstance(pathologic_struc_entry, str):
-        return ast.literal_eval(pathologic_struc_entry)
-    if isinstance(pathologic_struc_entry, list):
-        return pathologic_struc_entry
+        pathologic_struc_entry = pathologic_struc_entry.strip().strip("[]").split(",")
+
+    return [int(index) for index in pathologic_struc_entry if str(index).strip().isdigit()]
+
+
+def _get_pathologic_struc(variant: cyvcf2.Variant) -> Optional[List[int]]:
+    """Check for a PathologicStruc on the variant. If not present, return None.
+    If present, return the indexes of the motifs counting towards pathologic size.
+    """
+    return parse_pathologic_struc(variant.INFO.get("PathologicStruc"))
 
 
 def _parse_format_entry_trgt_mc(variant: cyvcf2.Variant, pos: int):
