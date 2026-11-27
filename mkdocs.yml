@@ -21,7 +21,7 @@ validation:
     unrecognized_links: warn
 
 theme:
-  name: 'material'
+  variant: 'classic'
   logo: 'img/logo-only.png'
   palette:
     # Palette toggle for light mode
@@ -153,4 +153,3 @@ nav:
 not_in_nav: |
     admin-guide/reference-sets/genes_transcripts.md
     user-guide/defining-scorescheme.md
-

@@ -773,7 +773,7 @@ def populate_case_obj(case_obj: dict, store: MongoAdapter):
         all_analyses_dates
     )
 
-    set_case_clinvar_submission_variants(case_obj)
+    set_case_clinvar_submission_variants(store, case_obj)
 
     case_obj["display_track"] = TRACKS.get(case_obj.get("track", "rare"))
     case_obj["has_rna"] = case_has_rna(case_obj)
