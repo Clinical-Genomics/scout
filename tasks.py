@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from invoke import task
-from invoke.util import log
 
 
 @task
