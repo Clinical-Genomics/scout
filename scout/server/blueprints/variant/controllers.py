@@ -306,7 +306,7 @@ def variant(
         acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
         variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
 
-    # Sort compounds by the linked small variant's score for SVs.
+    # Sort compounds by the linked SNV's score for SVs.
     compounds = variant_obj.get("compounds", [])
     if compounds:
         # Gather display information for the compounds

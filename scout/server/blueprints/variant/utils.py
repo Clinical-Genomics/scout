@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 
 def sort_compounds(compounds: List[dict], variant_category: Optional[str]) -> List[dict]:
-    """Sort compound variants by severity, using small-variant scores for SVs."""
+    """Sort compound variants by severity, using SNV scores for SVs."""
     if variant_category in {"sv", "cancer_sv"}:
         return sorted(
             compounds,
