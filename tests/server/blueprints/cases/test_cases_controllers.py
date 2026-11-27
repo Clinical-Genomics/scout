@@ -1,5 +1,6 @@
 """Tests for the cases controllers"""
 
+import requests
 import responses
 from flask import Flask, url_for
 
@@ -14,20 +15,47 @@ from scout.server.extensions import store
 
 @responses.activate
 def test_coverage_report_contents(app, institute_obj, case_obj):
-    """Test the method that extracts the <body> out of HTML response from a call to chanjo-report"""
+    """Test the method that fetches the coverage report from the chanjo-report body endpoint"""
 
     base_url = "http://test.com/"
 
-    # GIVEN a mocked response from chanjo-report
+    # GIVEN a mocked response from the chanjo-report body endpoint, which has no <body> tags
+    report_html = '<div class="chanjo-report-embed"><h2>Quality report</h2></div>'
     responses.add(
         responses.POST,
-        f"{base_url}reports/report",
-        body="<html><body>This is a test</body></html>",
+        f"{base_url}reports/report/body",
+        body=report_html,
         status=200,
     )
 
-    # THEN the returned result should be the HTML content included in the <body> of the HTML response
-    assert coverage_report_contents(base_url, institute_obj, case_obj) == "This is a test"
+    # THEN the returned result should be the HTML of the response, unchanged
+    assert coverage_report_contents(base_url, institute_obj, case_obj) == report_html
+
+    # AND the case samples and the institute coverage cutoff should be posted to the endpoint
+    posted = responses.calls[0].request.body
+    for individual in case_obj["individuals"]:
+        assert f"sample_id={individual['individual_id']}" in posted
+    assert f"level={institute_obj.get('coverage_cutoff', 15)}" in posted
+
+
+@responses.activate
+def test_coverage_report_contents_timeout(app, institute_obj, case_obj):
+    """Test that a placeholder is returned when chanjo-report does not answer in time"""
+
+    base_url = "http://test.com/"
+
+    # GIVEN a chanjo-report endpoint that times out
+    responses.add(
+        responses.POST,
+        f"{base_url}reports/report/body",
+        body=requests.Timeout(),
+    )
+
+    # THEN a placeholder is returned instead of the report
+    assert (
+        coverage_report_contents(base_url, institute_obj, case_obj)
+        == "<span><b>Coverage report unavailable</b></span>"
+    )
 
 
 def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
