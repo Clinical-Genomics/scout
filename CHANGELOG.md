@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ADR 0007 renamed and reworded to refer to authorization by Scout's user list (#6742)
 - Documented gene panel maintainers, editing panels in the web interface, and maintaining panels from the command line (#6750)
 - Display pending gene panel changes alphabetically by gene symbol (#6754)
-- The coverage report in the case PDF report is fetched from the new `/report/body` route of `chanjo-report`, which returns only the report with tables that fit the page, instead of cutting the `<body>` out of `/report` where wide tables were clipped. For now `chanjo-report` is installed from git, until a release that has the route is published
+- The coverage report in the case PDF report is fetched from the new `/report/body` route of `chanjo-report`, which returns only the report with tables that fit the page, instead of cutting the `<body>` out of `/report` where wide tables were clipped. For now `chanjo-report` is installed from git, until a release that has the route is published (#6759)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)
