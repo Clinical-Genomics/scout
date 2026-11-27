@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documented gene panel maintainers, editing panels in the web interface, and maintaining panels from the command line (#6750)
 - Display pending gene panel changes alphabetically by gene symbol (#6754)
 - Switch documentation builds and GitHub Pages deployment from MkDocs to Zensical (#6760)
+- Sort compounds for structural variants by rank score (#6760)
 ### Fixed
 - Restore BLAT visible sequence view in IGV browsers with default references (#6721)
 - Tests that never ran because of duplicate names, or passed for the wrong reason (#6731)

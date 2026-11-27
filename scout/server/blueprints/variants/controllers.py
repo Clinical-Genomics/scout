@@ -48,6 +48,7 @@ from scout.server.blueprints.variant.utils import (
     get_str_mc,
     populate_dismiss_variant_choices,
     predictions,
+    sort_compounds,
     update_representative_gene,
     update_variant_case_panels,
 )
@@ -644,9 +645,8 @@ def update_compounds(store, variant_obj, case_dismissed_vars):
             variant_obj["compounds"] = new_compounds
             has_changed = True
 
-        # sort compounds on combined rank score
-        variant_obj["compounds"] = sorted(
-            variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
+        variant_obj["compounds"] = sort_compounds(
+            variant_obj["compounds"], variant_obj.get("category")
         )
 
     return has_changed
