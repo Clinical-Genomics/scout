@@ -21,7 +21,12 @@ LOG = logging.getLogger(__name__)
 
 
 def sort_compounds(compounds: List[dict], variant_category: Optional[str]) -> List[dict]:
-    """Sort compound variants by severity, using SNV scores for SVs."""
+    """Sort a variant's compound SNVs for display.
+
+    For SVs, rank SNVs by their own rank score, highest first. When SNVs have the same rank score,
+    the one with the higher combined score comes first. SNVs without a rank score follow scored
+    SNVs, ordered by combined score. For other variant categories, retain combined-score order.
+    """
     if variant_category in {"sv", "cancer_sv"}:
         return sorted(
             compounds,
