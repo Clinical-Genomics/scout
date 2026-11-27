@@ -730,6 +730,7 @@ CALLERS = {
 }
 
 SANGER_OPTIONS = {
+    "Under verification": "bg-primary",
     "True positive": "bg-success",
     "False positive": "bg-danger",
     "Not validated": "bg-secondary",

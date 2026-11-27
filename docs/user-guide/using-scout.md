@@ -16,6 +16,8 @@ Variants can be marked as mosaic. There are some different alternatives on the v
 # Sending Sanger email
 It's possible to send an email to a user defined email address with information regarding a variant for Sanger validation. You can access this functionality through the variant detail view in the upper right hand corner.
 
+The verification status of an ordered variant is set from the case page, in the list of pinned variants. A user from the lab that takes on the order can set it to **Under verification**, so that the person who ordered it can see that the verification is in progress. Once the verification is done, set it to **True positive** or **False positive**.
+
 # Local Frequency Database
 This is not really a local *frequency* database but rather an indication if we have seen a variant before and in what form. It should work as a guide to exclude variants that exists due to artifacts in the sequencing process or if it as been observed in any of the earlier cases.
 Variants are added to the database in the following way:
