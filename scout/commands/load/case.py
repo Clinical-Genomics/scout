@@ -4,8 +4,10 @@ import traceback
 
 import click
 import yaml
+from flask import current_app
 from flask.cli import with_appcontext
 
+from scout.load.external_variant_loader import ExternalVariantLoader as external_loader
 from scout.parse.case import parse_case_data
 from scout.server.extensions import store
 
@@ -81,7 +83,6 @@ def case(
     # Scout needs a config object with the necessary information
     # If no config is used create a dictionary
     config_raw = yaml.load(config, Loader=yaml.SafeLoader) if config else {}
-
     try:
         config_data = parse_case_data(
             config=config_raw,
@@ -120,18 +121,29 @@ def case(
 
     LOG.info("Use family %s" % config_data["family"])
 
+    external_variants_loader = current_app.config.get("VARIANTS_LOADER")
+
     try:
-        adapter.load_case(config_data, update, keep_actions)
+        if external_variants_loader and config:
+            external_loader.run_external_scout_loader(case_obj=config_data, is_research=False)
+        adapter.load_case(
+            config_data=config_data,
+            update=update,
+            keep_actions=keep_actions,
+            skip_variants=external_variants_loader,
+        )
     except SyntaxError as err:
         LOG.error(
             "SyntaxError {} missing when loading '{}' {}".format(
-                err, config.name, traceback.format_exc()
+                err, config.name if config else None, traceback.format_exc()
             )
         )
         raise click.Abort()
     except KeyError as err:
         LOG.error(
-            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+            "KeyError {} when loading '{}' {}".format(
+                err, config.name if config else None, traceback.format_exc()
+            )
         )
         raise click.Abort()
     except Exception as err:
